@@ -1,35 +1,18 @@
-# Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
+# Ignore everything
+*
 
-# dependencies
-node_modules/
+# But not these files...
+!.gitignore
+!app.json
+!App.tsx
+!babel.config.js
+!README.md
+!package.json
+!package-lock.json
+!tsconfig.json
+!metro.config.js
+!eas.json
 
-# Expo
-.expo/
-dist/
-web-build/
-
-# Native
-*.orig.*
-*.jks
-*.p8
-*.p12
-*.key
-*.mobileprovision
-
-# Metro
-.metro-health-check*
-
-# debug
-npm-debug.*
-yarn-debug.*
-yarn-error.*
-
-# macOS
-.DS_Store
-*.pem
-
-# local env files
-.env*.local
-
-# typescript
-*.tsbuildinfo
+# ...and not these folders
+!src/
+!src/**

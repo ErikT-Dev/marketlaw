@@ -1,0 +1,1 @@
+export type Navigation = 'GameWindow' | 'Rules' | 'MainMenu' | 'HighScores'
