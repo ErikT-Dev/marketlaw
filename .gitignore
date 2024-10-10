@@ -1,18 +1,14 @@
 # Ignore everything
 *
 
-# But not these files...
-!.gitignore
+# Allow the src folder and its subfolders
+!src/
+!src/**
+
+# Also allow these files
 !app.json
 !App.tsx
-!babel.config.js
+!.gitignore
 !README.md
 !package.json
 !package-lock.json
-!tsconfig.json
-!metro.config.js
-!eas.json
-
-# ...and not these folders
-!src/
-!src/**
