@@ -65,20 +65,20 @@ export default function StatsBoard() {
 
     const statsConfig: StatItemProps[] = [
         { icon: 'funds', value: playerStats.funds, color: '#ffbaba', popoverText: 'Funds are earned mostly through income, but also through bonus and selling of cards in your hand.', popoverWidth: 200 },
-        { icon: 'workforce', value: playerStats.workforce, color: '#8fff82', popoverText: 'Workforce is earned mostly through playing Residential (green) cards, but also through completing demands.', popoverWidth: 200 },
+        { icon: 'workforce', value: playerStats.workforce, color: '#8fff82', popoverText: 'Workforce is earned mostly through playing Residential (green) cards, but also through completing demands.', popoverWidth: 220 },
         { icon: 'quality', value: playerStats.quality, color: '#ffa1e1', popoverText: 'Quality is earned through playing Public (blue) cards and through completing demands.', popoverWidth: 200 },
         { icon: 'satisfaction', value: playerStats.satisfaction, color: '#d8adff', popoverText: 'Satisfaction is earned through playing Public (blue) cards and through completing demands.', popoverWidth: 200 },
-        { icon: 'product', value: playerStats.product, color: '#fcb3a4', popoverText: 'Product is earned only through playing Industrial (red) cards.', popoverWidth: 200 },
-        { icon: 'sales', value: playerStats.sales, color: '#ffe1a1', popoverText: 'Sales is earned only through playing Service (yellow) cards.', popoverWidth: 200 },
-        { icon: 'income', value: playerStats.income, color: 'white', popoverText: getIncomePopoverText(), popoverHeight: 125, popoverWidth: 200, customRender: (value) => <StatText stat={'basic'} text={` ${value}`} /> },
+        { icon: 'product', value: playerStats.product, color: '#fcb3a4', popoverText: 'Product is earned only through playing Industrial (red) cards.', popoverWidth: 150 },
+        { icon: 'sales', value: playerStats.sales, color: '#ffe1a1', popoverText: 'Sales is earned only through playing Service (yellow) cards.', popoverWidth: 150 },
+        { icon: 'income', value: playerStats.income, color: 'white', popoverText: getIncomePopoverText(), popoverHeight: 140, popoverWidth: 200, customRender: (value) => <StatText stat={'basic'} text={` ${value}`} /> },
         { icon: 'bonus', value: playerStats.bonus, color: 'white', popoverText: getBonusPopoverText(), popoverWidth: 200, customRender: (value) => <StatText stat={'basic'} text={` ${value}`} /> },
-        { icon: 'Turns played', value: playerStats.turnsPlayed, color: 'white', popoverText: 'Number of turns played. Try to finish the game with as few turns as possible.', customRender: (value) => <StatText stat={'basic'} text={` ${value}`} /> },
+        { icon: 'Turns played', value: playerStats.turnsPlayed, color: 'white', popoverText: 'Number of turns played. Try to finish the game with as few turns as possible.', popoverWidth: 200, customRender: (value) => <StatText stat={'basic'} text={` ${value}`} /> },
         {
             icon: playerStats.buildPassesRemaining > 0 ? 'Has Build pass' : 'Build pass',
             value: playerStats.buildPassesRemaining > 1 ? `x${playerStats.buildPassesRemaining}` : ' ',
             color: '#78ff93',
             popoverText: 'Build pass: the icon turns green whenever you gain build pass. Playing more than one card each turn requires build pass.',
-            popoverWidth: 200
+            popoverWidth: 230
         },
     ];
 

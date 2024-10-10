@@ -76,7 +76,7 @@ export default function Tutorial() {
                     {tutorialData.tutorialStep === 1 &&
                         <ScrollView>
                             <Text style={repeatingElementsStyles.tutorialText}>
-                                Welcome to Marek!
+                                Welcome to Market Law!
                             </Text>
                             <Text style={repeatingElementsStyles.tutorialText}>
                                 To get you started here is a short overview of how the game is played.
