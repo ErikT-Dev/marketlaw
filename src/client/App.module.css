@@ -1,0 +1,38 @@
+.page {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-large);
+  padding: var(--space-medium);
+  box-sizing: border-box;
+}
+
+.count {
+  font-size: 4rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  margin: 0;
+}
+
+.status {
+  color: var(--color-muted);
+  margin: 0;
+}
+
+.button {
+  min-width: 160px;
+  min-height: 56px;
+  font-size: 1.25rem;
+  border: none;
+  border-radius: var(--radius);
+  background: var(--color-accent);
+  color: var(--color-accent-text);
+  cursor: pointer;
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
