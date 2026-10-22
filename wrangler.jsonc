@@ -9,5 +9,13 @@
   "durable_objects": {
     "bindings": [{ "name": "ROOM", "class_name": "CounterRoom" }]
   },
-  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["CounterRoom"] }]
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["CounterRoom"] }],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "marketlaw",
+      "database_id": "653e1029-fa40-4d41-b786-aa74d6078761",
+      "migrations_dir": "migrations"
+    }
+  ]
 }

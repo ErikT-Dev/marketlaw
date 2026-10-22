@@ -3,6 +3,7 @@ import type { ServerMessage } from "../shared/ServerMessage";
 import { PROTOCOL_VERSION } from "../shared/PROTOCOL_VERSION";
 import { parseClientMessage } from "../shared/parseClientMessage";
 import { parseJsonObject } from "../shared/parseJsonObject";
+import { recordPressInHistory } from "./recordPressInHistory";
 import type { StoredRoomState } from "./StoredRoomState";
 
 const SCHEMA_VERSION = 1;
@@ -28,7 +29,7 @@ export class CounterRoom extends DurableObject<Env> {
     return new Response(null, { status: 101, webSocket: pair[0] });
   }
 
-  override webSocketMessage(socket: WebSocket, message: string | ArrayBuffer): void {
+  override async webSocketMessage(socket: WebSocket, message: string | ArrayBuffer): Promise<void> {
     if (typeof message !== "string") {
       return;
     }
@@ -40,9 +41,12 @@ export class CounterRoom extends DurableObject<Env> {
       case "resync":
         socket.send(JSON.stringify(toServerMessage(this.readState())));
         return;
-      case "press":
-        this.broadcast(this.recordPress());
+      case "press": {
+        const state = this.recordPress();
+        await recordPressInHistory(this.env.DB, { pressNumber: state.pressCount, pressedAtEpochMs: Date.now() });
+        this.broadcast(state);
         return;
+      }
       default: {
         const unhandled: never = clientMessage;
         throw new Error(`Unhandled client message: ${JSON.stringify(unhandled)}`);
