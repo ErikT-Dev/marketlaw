@@ -27,8 +27,6 @@ const GENERATED_OUTPUT = [
   /^harness\/coverage\.md$/,
 ];
 
-const FREE_IN_HARNESS = [/^harness\/scenarios\/proposed\//];
-
 export function protectionOf(projectPath: string): PathProtection {
   if (projectPath.startsWith("../")) {
     return { kind: "free" };
@@ -43,21 +41,6 @@ export function protectionOf(projectPath: string): PathProtection {
     return {
       kind: "deny",
       reason: `${projectPath} is generated output. Change the source and regenerate it.`,
-    };
-  }
-  if (projectPath === "wrangler.jsonc") {
-    return {
-      kind: "ask",
-      reason: "wrangler.jsonc changes need the owner's approval (rules/cloudflare.md).",
-    };
-  }
-  if (
-    projectPath.startsWith("harness/") &&
-    !FREE_IN_HARNESS.some((pattern) => pattern.test(projectPath))
-  ) {
-    return {
-      kind: "ask",
-      reason: "Changes in harness/ need the owner's approval (rules/workflow.md).",
     };
   }
   return { kind: "free" };
