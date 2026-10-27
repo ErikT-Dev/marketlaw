@@ -45,7 +45,10 @@ test("two players play turn 1 together and never see each other's hands", async 
     await expect(player.page.getByRole("heading", { name: "Turn 1" })).toBeVisible();
     expect(await new AxeBuilder({ page: player.page }).analyze()).toHaveProperty("violations", []);
   }
+  const annStartingHand = await handOf(ann.page);
+  const beaStartingHand = await handOf(bea.page);
   await sellFirstCardAndEndTurn(ann.page);
+  const annFramesBeforeTurnEnds = ann.frames.length;
   await sellFirstCardAndEndTurn(bea.page);
   for (const player of [ann, bea]) {
     await expect(player.page.getByRole("heading", { name: "Turn 2" })).toBeVisible();
@@ -55,6 +58,11 @@ test("two players play turn 1 together and never see each other's hands", async 
   for (const card of beaHand) {
     expect(ann.frames.some((frame) => frame.includes(`"${card}"`))).toBe(false);
   }
+  for (const card of beaStartingHand) {
+    const framesInTurnOne = ann.frames.slice(0, annFramesBeforeTurnEnds);
+    expect(framesInTurnOne.some((frame) => frame.includes(`"${card}"`))).toBe(false);
+  }
+  expect(annStartingHand.length).toBeGreaterThan(0);
   for (const card of annHand) {
     expect(bea.frames.some((frame) => frame.includes(`"${card}"`))).toBe(false);
   }

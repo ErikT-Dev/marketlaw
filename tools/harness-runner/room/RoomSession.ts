@@ -4,7 +4,8 @@ import type { GameState } from "../../../src/rules/GameState.ts";
 import { SAVE_SCHEMA_VERSION } from "../../../src/rules/SAVE_SCHEMA_VERSION.ts";
 import type { Random } from "../../../src/rules/Random.ts";
 import type { ConnectionState } from "../../../src/server/room/ConnectionState.ts";
-import { handleMessage } from "../../../src/server/room/handleMessage.ts";
+import { receiveMessage } from "../../../src/server/room/receiveMessage.ts";
+import type { RoomStorage } from "../../../src/server/room/RoomStorage.ts";
 import type { Identity } from "../../../src/server/room/Identity.ts";
 import { ROOM_SCHEMA_VERSION } from "../../../src/server/room/ROOM_SCHEMA_VERSION.ts";
 import type { RoomRecord } from "../../../src/server/room/RoomRecord.ts";
@@ -28,6 +29,17 @@ function tokenOf(name: string): string {
 
 export class RoomSession {
   record: RoomRecord;
+  rowsWritten = 0;
+  private readonly storage: RoomStorage = {
+    read: () => this.record,
+    write: (record) => {
+      this.record = record;
+      this.rowsWritten += 1;
+    },
+    remove: () => {
+      throw new Error("the room driver never removes its room");
+    },
+  };
   readonly accounts: Map<string, Identity>;
   readonly connections = new Map<string, Connection>();
   readonly seatNames: ReadonlyArray<string>;
@@ -35,6 +47,7 @@ export class RoomSession {
   isLastStepUnchanged = false;
   rowsForAccepted: number[] = [];
   rowsForOther: number[] = [];
+  handlingMs: number[] = [];
   private nextActionNumber = 1;
   private readonly random: Random;
 
@@ -100,17 +113,21 @@ export class RoomSession {
     const parsed = parseClientMessage(text);
     const sender = parsed.isOk ? this.identityByToken(parsed.value.token) : null;
     const before = JSON.stringify(this.record);
-    const outcome = handleMessage({
-      record: this.record,
+    const rowsBefore = this.rowsWritten;
+    const startedMs = performance.now();
+    const outcome = receiveMessage(this.storage, {
       connection: connection.state,
       parsed,
       sender,
       now: v.parse(EpochMs, 0),
       randomFor: () => this.random,
     });
+    this.handlingMs.push(performance.now() - startedMs);
+    if (outcome.isRoomGone) {
+      throw new Error("the room is gone");
+    }
     const isAccepted = outcome.reply.type === "update" && outcome.reply.acceptedActionId !== null;
-    (isAccepted ? this.rowsForAccepted : this.rowsForOther).push(outcome.shouldSave ? 1 : 0);
-    this.record = outcome.record;
+    (isAccepted ? this.rowsForAccepted : this.rowsForOther).push(this.rowsWritten - rowsBefore);
     this.connections.set(name, { state: outcome.connection, isClosed: outcome.shouldClose });
     this.lastReply = outcome.reply;
     this.isLastStepUnchanged = before === JSON.stringify(this.record);
