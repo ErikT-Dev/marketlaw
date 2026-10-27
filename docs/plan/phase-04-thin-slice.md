@@ -1,6 +1,6 @@
 # Phase 04: Thin slice: one turn on the live server
 
-Status: in progress
+Status: done
 Milestone: 2 Slice
 
 ## Goal
@@ -138,13 +138,16 @@ These 10 scenarios are added to `harness/required.yaml` in this phase, by file a
   deploying. The test runs two browsers through turn 1 at all three sizes, with the accessibility
   check, a refresh, and the first leak check (no frame to a player holds a card of the other's
   hand). `playwright-core` pinned (Q13).
-- [ ] 10. Measurements: O4 done (`decisions.md`); Workers Logs on (Q14). B11 and awake time (O9)
-  need the live room, so they are measured right after the merge, which waits for the site lock.
+- [x] 10. Measurements: O4 (`decisions.md`); Workers Logs on (Q14); live on 2026-10-28, while the
+  owner played turn 1 in two windows: CPU time per message 0-2 ms, 6 ms for the join that deals
+  the game (B11, limit 10 ms); no messages from idle clients (B10); 0.7 s active time and
+  0.093 GB-s for the whole session (O9, now D20). The daily usage check for the owner: the
+  Cloudflare dashboard, Workers & Pages, `marketlaw`, Metrics (requests and CPU time), and Storage
+  & Databases for D1 and Durable Objects (rows read and written).
 
 ## Report
 
-Written before the merge; the live measurements (B11 CPU time and awake time, O9) are added after
-it.
+Merged and deployed 2026-10-27; live measurements taken 2026-10-28 (Progress, item 10; D20).
 
 **What was built.**
 - **Server:** guests (D1 `players`, token hashes only), rooms created and joined by code, and the
@@ -164,7 +167,7 @@ and see turn 2 in both. Refreshing reloads the same game.
 **Differences from the phase file.**
 - Seats follow the join order. Random seats (R4.3) come with rooms in phase 16.
 - `valibot` stays in knip's ignore list until the owner changes the protected `knip.json`.
-- B11 and awake time are measured on the live site after the merge.
+- The worker's HTTP routes have no unit tests yet (review finding 7); the browser tests cover them.
 
 **Decisions:** Q10 (Access is free), Q11 (repeated action ids), Q12 (B1 and B2 required), Q13
 (`playwright-core` pinned), Q14 (Workers Logs on, tokens only in bodies), Q15 (room storage and the
