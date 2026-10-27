@@ -1,6 +1,6 @@
 # Phase 02: Scenario runner and card data
 
-Status: approved
+Status: in progress
 Milestone: 1 Foundations
 
 ## Goal
@@ -69,3 +69,11 @@ C and T with its scenarios, all "not yet", and the card-data check passing.
 ## Required scenarios
 
 None. This phase adds no scenarios to `harness/required.yaml`.
+
+## Progress
+
+- [ ] 1. Card and quest catalogue in `src/shared/`
+- [ ] 2. Card-data check (R3.1, R3.2, R3.5)
+- [ ] 3. Scenario runner with the driver interface and scripted random results
+- [ ] 4. `harness/required.yaml` and its section in `HARNESS.md`
+- [ ] 5. `harness/report.html` from `npm run harness`, kept by GitHub
