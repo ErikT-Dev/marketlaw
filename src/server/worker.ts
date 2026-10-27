@@ -1,6 +1,7 @@
 import * as v from "valibot";
 import { CreateRoomRequest } from "../shared/api/CreateRoomRequest";
 import { GuestRequest } from "../shared/api/GuestRequest";
+import { JoinRoomRequest } from "../shared/api/JoinRoomRequest";
 import type { GuestResponse } from "../shared/api/GuestResponse";
 import type { RoomResponse } from "../shared/api/RoomResponse";
 import { PlayerId } from "../shared/PlayerId";
@@ -28,9 +29,8 @@ async function bodyOf<T extends v.GenericSchema>(
   return parsed.success ? parsed.output : null;
 }
 
-async function identityOf(request: Request, env: Env): Promise<Identity | null> {
-  const token = request.headers.get("Authorization")?.replace(/^Bearer /, "") ?? "";
-  return token === "" ? null : findPlayerByTokenHash(env.DB, await sha256Hex(token));
+async function identityOf(token: string, env: Env): Promise<Identity | null> {
+  return findPlayerByTokenHash(env.DB, await sha256Hex(token));
 }
 
 async function createGuest(request: Request, env: Env): Promise<Response> {
@@ -46,10 +46,14 @@ async function createGuest(request: Request, env: Env): Promise<Response> {
   return json({ token, playerId, name: body.name });
 }
 
-async function createRoom(request: Request, env: Env, identity: Identity): Promise<Response> {
+async function createRoom(request: Request, env: Env): Promise<Response> {
   const body = await bodyOf(request, CreateRoomRequest);
   if (body === null) {
     return json({ isOk: false, reason: "invalid_room_size" }, 400);
+  }
+  const identity = await identityOf(body.token, env);
+  if (identity === null) {
+    return json({ isOk: false, reason: "invalid_token" }, 401);
   }
   for (let attempt = 0; attempt < CODE_ATTEMPTS; attempt += 1) {
     const code = newRoomCode();
@@ -70,7 +74,8 @@ async function routeRoom(request: Request, env: Env, path: RegExpExecArray): Pro
   if (path[2] === "socket") {
     return room.fetch(request);
   }
-  const identity = await identityOf(request, env);
+  const body = await bodyOf(request, JoinRoomRequest);
+  const identity = body === null ? null : await identityOf(body.token, env);
   if (identity === null) {
     return json({ isOk: false, reason: "invalid_token" }, 401);
   }
@@ -90,10 +95,7 @@ async function route(request: Request, env: Env): Promise<Response> {
     return createGuest(request, env);
   }
   if (request.method === "POST" && pathname === "/api/rooms") {
-    const identity = await identityOf(request, env);
-    return identity === null
-      ? json({ isOk: false, reason: "invalid_token" }, 401)
-      : createRoom(request, env, identity);
+    return createRoom(request, env);
   }
   return new Response("Not found", { status: 404 });
 }

@@ -67,12 +67,12 @@ export class ClientStore {
     }
   };
 
-  private async openRoom(path: string, body: unknown): Promise<void> {
+  private async openRoom(path: string, body: Readonly<Record<string, unknown>>): Promise<void> {
     const session = this.state.session;
     if (session === null) {
       return;
     }
-    const response = await requestRoom(path, body, session.token);
+    const response = await requestRoom(path, { ...body, token: session.token });
     if (!response.isOk) {
       this.change({ notice: `The room could not be opened (${response.reason}).` });
       return;

@@ -1,10 +1,11 @@
 import * as v from "valibot";
+import { SessionToken } from "../api/SessionToken";
 import { PROTOCOL_VERSION } from "../PROTOCOL_VERSION";
 import { ActionIntent } from "./ActionIntent";
 
 const ENVELOPE = {
   protocolVersion: v.literal(PROTOCOL_VERSION),
-  token: v.pipe(v.string(), v.minLength(1), v.maxLength(64)),
+  token: SessionToken,
 };
 
 export const ClientMessage = v.variant("type", [

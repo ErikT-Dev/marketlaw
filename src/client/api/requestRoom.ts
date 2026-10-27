@@ -4,11 +4,7 @@ import { postJson } from "./postJson";
 
 const NO_ANSWER: RoomResponse = { isOk: false, reason: "no_answer" };
 
-export async function requestRoom(
-  path: string,
-  body: unknown,
-  token: string,
-): Promise<RoomResponse> {
-  const parsed = v.safeParse(RoomResponse, await postJson(path, body, token));
+export async function requestRoom(path: string, body: unknown): Promise<RoomResponse> {
+  const parsed = v.safeParse(RoomResponse, await postJson(path, body));
   return parsed.success ? parsed.output : NO_ANSWER;
 }

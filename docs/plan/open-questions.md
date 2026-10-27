@@ -182,3 +182,18 @@ file.
   2026-10-07, 20 days before it was added), so npm keeps one copy. It is part of `@playwright/test`
   already, so it adds no size anywhere and nothing to the client bundle.
 - **Implemented:** `package.json` (phase 04).
+
+## Q14. Workers Logs, and keeping session tokens out of them
+
+- **Phase:** 04, item 10.
+- **Question:** are Workers Logs on the Free plan enough for error logs, and can they record
+  session tokens, which must never be logged (`rules/multiplayer.md`, Identity)?
+- **Answer:** the Free plan keeps 200,000 log events a day for 3 days; past that, Cloudflare logs a
+  sample instead of failing (https://developers.cloudflare.com/workers/observability/logs/workers-logs/).
+  That is enough for errors. Each logged request records its metadata, which can include headers,
+  and the room routes sent the token in an `Authorization` header.
+- **Solution:** turn on `observability` in `wrangler.jsonc`, and send the token only in request
+  bodies (`CreateRoomRequest`, `JoinRoomRequest`) and WebSocket messages, which are not logged.
+  The code itself never logs.
+- **Implemented:** `wrangler.jsonc`, `src/server/worker.ts`, `src/shared/api/`, `src/client/api/`
+  (phase 04).
