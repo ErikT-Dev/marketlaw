@@ -1,5 +1,15 @@
 # Frontend
 
+### The design is a visual reference; the spec wins
+The design export in `design/export/` (board images, `contents.md` per file, `tokens.json`,
+`components.md`; local only, not committed) shows how screens look. What screens show and do is
+defined by `harness/spec/`, mainly `screens.md`. Where the design and the spec contradict each
+other, the spec wins, every time; known differences are listed in `screens.md`. Penpot is frozen:
+change the app, not the design.
+**Why:** the design was frozen while the spec kept changing; old texts in it must not turn back
+into behaviour.
+**Enforced by:** judgment.
+
 ### The client renders, the server decides
 The UI displays the latest `PlayerView` and sends intents. It never computes legality or
 outcomes; any "can I play this" hint comes from data in the view.
@@ -18,11 +28,14 @@ rejection, with the rejection reason shown to the player.
 **Why:** silent rollbacks look like the game ignoring the player.
 **Enforced by:** e2e test for a rejected move.
 
-### Touch first, large hands
-Design for a phone in portrait first. The hand must stay usable with the spec's maximum hand
-size: overlap, scroll or zoom, with tap targets at least 44x44 CSS px.
-**Why:** most casual players are on phones, and large hands are the core of this game.
-**Enforced by:** Playwright screenshots at phone and desktop sizes.
+### Desktop first, large hands
+Design for a desktop or laptop browser with mouse and keyboard. The game must be fully usable
+from 1280×720 up to 2560×1440 without horizontal scrolling. The hand must stay usable with the
+any number of cards, since hands grow large late in a game: overlap, scroll or zoom, with click
+targets at least 24×24 CSS px.
+Below 1280 px wide, show a clear "please use a larger screen" message instead of a broken layout.
+**Why:** the game shows a lot of information at once; a phone layout would cut it down too far.
+**Enforced by:** Playwright screenshots at 1280×720, 1920×1080 and 2560×1440.
 
 ### Accessible controls
 Interactive elements are real `button`s or have proper roles and labels. Cards have accessible

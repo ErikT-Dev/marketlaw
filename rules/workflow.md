@@ -14,18 +14,33 @@ summarise a partial result as success.
 
 ### The spec wins; contradictions are questions
 `harness/spec/` and `harness/scenarios/` define behaviour. When the request, the spec and the
-scenarios disagree, or a case is not covered, stop and ask. After the owner decides, the owner
-updates the spec, then you implement.
-**Why:** silently chosen interpretations turn into behaviour nobody asked for.
+scenarios disagree, or a case is not covered, stop and ask.
+- Where the spec and the design (`design/export/`) contradict each other, the spec wins, every
+  time.
+- The spec is never ignored, worked around or reinterpreted without the owner confirming the
+  change first.
+- Any deviation from the spec is first written into the spec, after the owner confirms it, and
+  only then implemented.
+**Why:** silently chosen interpretations turn into behaviour nobody asked for, and a spec that
+the code no longer matches stops being the owner's view of the game.
 **Enforced by:** judgment.
 
 ### Protected files
-Never create, edit or delete files under `harness/` (except `harness/screens/` and
-`harness/report.html`), nor `tsconfig*.json`, `eslint.config.*`, `.dependency-cruiser.*`,
-`knip.*`, `vitest.config.*`, `playwright.config.*`, `.claude/`. Propose changes in chat.
-You may add new scenarios only in `harness/scenarios/proposed/`, for the owner to accept.
+Never create, edit or delete `tsconfig*.json`, `eslint.config.*`, `.dependency-cruiser.*`,
+`knip.*`, `vitest.config.*`, `playwright.config.*` or `.claude/`. Propose changes in chat.
 **Why:** the agent must not be able to grade its own work by moving the goalposts.
 **Enforced by:** Claude Code PreToolUse hook blocks writes to these paths.
+
+### The harness changes only with the owner's approval
+Never create, edit or delete anything in `harness/` (specs, scenarios, invariants, budgets,
+format files) without the owner approving that change first. Describe the change in chat, wait
+for approval, then make exactly the approved change. Exceptions: generated output
+(`harness/screens/`, `harness/report.html`, `harness/coverage.md` written by
+`npm run harness:check`), and new scenario proposals in `harness/scenarios/proposed/`, which
+you mention to the owner.
+**Why:** the harness is the owner's view of the game and the measure of the code; it must not move
+without them.
+**Enforced by:** judgment.
 
 ### Fix the code, never the check
 Never add `eslint-disable`, `@ts-ignore`, `@ts-expect-error`, `as any`, `.skip`, `.only`,

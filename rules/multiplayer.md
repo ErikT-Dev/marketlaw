@@ -22,7 +22,9 @@ A crash after the ack must never lose an acknowledged move.
 ### Idempotent, ordered actions
 Each client action carries a client-generated action id and the state version it was based on.
 Duplicate action ids return the original result; stale versions are rejected with
-`stale_state`, and the client resyncs.
+`stale_state`, and the client resyncs. The state version is per player: it changes only with
+that player's own accepted actions and with changes they are allowed to see (phase changes,
+reveals), never with another player's hidden actions.
 **Why:** reconnects and retries will resend messages.
 **Enforced by:** hostile client scenarios.
 
@@ -33,15 +35,18 @@ reconnect and any version gap.
 **Enforced by:** e2e reconnect tests.
 
 ### Identity
-Guests get a random, unguessable player token (128+ bits from `crypto.getRandomValues`) stored
-client-side and sent on connect. Room codes are for joining only and are never proof of
-identity. Never log tokens.
-**Why:** a guessable token lets anyone take over another player's seat.
+Every account, guest or registered user (`harness/spec/accounts.md` A1), is identified by a
+random, unguessable session token (128+ bits from `crypto.getRandomValues`) stored client-side
+and sent on connect. A guest user's token is their only way back into their account. A
+registered user gets a new token at every login, and logging out invalidates it. Passwords are
+stored only as a slow, salted hash. Room codes are for joining only and are never proof of
+identity. Never log tokens, passwords or email addresses.
+**Why:** a guessable or leaked token lets anyone take over another player's account and seat.
 **Enforced by:** review · forged-token scenario.
 
 ### Disconnects are normal
-A disconnected player keeps their seat for the spec-defined grace period. Turn timers and
-abandonment follow the spec; nothing is decided by "the socket closed".
+A disconnected player keeps their seat; time-outs, leaving after 3 time-outs in a row, pausing
+and abandonment follow the spec (R9, M5, M6); nothing is decided by "the socket closed".
 **Why:** mobile connections drop constantly.
 **Enforced by:** e2e disconnect tests · scenarios.
 

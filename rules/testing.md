@@ -33,7 +33,7 @@ may contain any card id that is hidden from A.
 
 ### Hostile client tests
 The protocol is tested with out-of-turn actions, cards not held, replayed and duplicated
-messages, wrong sequence numbers, malformed payloads and forged player tokens. Each must be
+messages, stale state versions, malformed payloads and forged player tokens. Each must be
 rejected with a typed reason and leave state unchanged.
 **Why:** anything the browser can send, a cheater can send.
 **Enforced by:** scenario tests.
