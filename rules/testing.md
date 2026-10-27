@@ -21,7 +21,9 @@ prints the seed and the action log needed to replay it.
 ### Invariants under simulation
 The simulator plays at least 10,000 seeded random games per `npm run harness` and checks every
 invariant in `harness/invariants.yaml` after every action. A violation produces a minimal
-reproducing seed.
+reproducing seed. If `npm run check` cannot finish in 5 minutes even with games run in parallel,
+the Stop hook may run a smaller seeded set; `npm run harness` and GitHub always run at least
+10,000 games.
 **Why:** random play finds the rare states that hand-written cases miss.
 **Enforced by:** `npm run harness`.
 
@@ -46,7 +48,9 @@ rejoin, second tab for the same player. Screenshots of key screens go to `harnes
 
 ### Never weaken tests
 Do not delete, skip, loosen assertions in, or rewrite a failing test to match broken behaviour.
-If a test is genuinely wrong, stop and explain.
+If a test is genuinely wrong, stop and explain. Until version 1 is done (plan phase 30),
+scenarios not on the required list (`harness/required.yaml`) do not fail the check; this is the
+only allowed form of skipping, and names leave that list only with the owner's approval.
 **Why:** a test changed to pass is a test that no longer tests.
 **Enforced by:** ESLint `vitest/no-disabled-tests`, `vitest/no-focused-tests` · protected paths.
 

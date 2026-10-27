@@ -2,7 +2,8 @@
 
 Which tool enforces each rule. When a rule moves fully into a tool, shrink its prose in
 `rules/*.md` to one line. Rules marked **judgment** or **review** have no automatic check; they are
-candidates for the reviewer agent (`.claude/agents/reviewer.md`).
+checked by the phase review (`.claude/agents/phase-reviewer.md`, plan decision D16) at the end of
+every phase.
 
 ## Tooling
 

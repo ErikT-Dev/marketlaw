@@ -71,7 +71,9 @@ logic on the server.
 
 ### One save format
 A saved game is `{ schemaVersion, seed, setup, actionLog, state }`, stored in the room's Durable
-Object. Loading an older `schemaVersion` goes through an explicit migration function.
+Object. Loading an older `schemaVersion` goes through an explicit migration function. Until
+version 1 is public (plan decision D1), the save format may change without a migration; a room
+whose saved `schemaVersion` is not current closes itself on load.
 **Why:** saves, replays and debug exports share one format, and rooms saved by an older deploy
 must load in new code.
 **Enforced by:** tests that load fixtures of every previous save version.

@@ -81,9 +81,11 @@ Change the source and regenerate.
 **Enforced by:** `.gitignore` · PreToolUse hook.
 
 ### Commits
-Commits are made by the owner unless asked otherwise. When asked to write a commit message, use
-`<AREA>: <description>` where AREA is 1-3 ALL-CAPS words (`RULES`, `SERVER`, `CLIENT`,
-`HARNESS`, `INFRA`, `BUG FIX`, `REFACTOR`). One logical change per commit.
+While building a plan phase, Claude commits to that phase's branch as it goes (`docs/plan/README.md`,
+"How a phase is built"). Merging a branch into master, which deploys, happens only after the owner
+confirms it. Outside plan phases, commits are made by the owner unless asked otherwise. Commit
+messages use `<AREA>: <description>` where AREA is 1-3 ALL-CAPS words (`RULES`, `SERVER`,
+`CLIENT`, `HARNESS`, `INFRA`, `BUG FIX`, `REFACTOR`). One logical change per commit.
 **Why:** a readable history is how the owner audits change without reading code.
 **Enforced by:** judgment.
 

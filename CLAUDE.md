@@ -40,6 +40,13 @@ tutorial room on the server like any other game. Every rule in `rules/multiplaye
 9. **Reuse first.** Search for an existing helper, type or pattern before adding a new one.
 10. **Ask before adding a dependency.**
 
+## Development plan
+
+Version 1 is built phase by phase from `docs/plan/` (approved by the owner). When the owner says
+"continue implementing", find the phase and step yourself as `docs/plan/README.md` "Where to
+continue" describes, and build it as "How a phase is built" describes. Merging into master always
+waits for the owner's confirmation.
+
 ## Commands
 
 ```bash
