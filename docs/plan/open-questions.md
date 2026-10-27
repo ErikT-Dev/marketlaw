@@ -130,3 +130,17 @@ file.
 - **Why:** a player who left can take no action (I18), so waiting for them would stall the game.
   `turns-and-time` #30 gives the leaver `done: true` either way.
 - **Implemented:** `game-rules.md` R8.2; `src/rules/` (phase 03).
+
+## Q10. Is Cloudflare Access free for the site lock (D6)?
+
+- **Phase:** 04, item 8.
+- **Question:** D6 locks the live site to the owner and invited testers with Cloudflare Access,
+  after confirming it is free (`rules/cloudflare.md`, Free-plan features only).
+- **Answer:** yes. Cloudflare's Zero Trust pricing lists the Free plan at $0, with no time limit,
+  for teams under 50 users (https://www.cloudflare.com/plans/sase-zero-trust.md). Since October
+  2025, a Worker's workers.dev address can be put behind Access in one click: the Worker's
+  Settings, Domains & Routes, "Enable Cloudflare Access" for workers.dev
+  (https://developers.cloudflare.com/workers/configuration/cloudflare-access/).
+- **Solution:** use it; the owner turns it on in the dashboard and adds the testers' email
+  addresses (only the owner can change dashboard settings).
+- **Implemented:** phase 04, "Waiting for the owner".

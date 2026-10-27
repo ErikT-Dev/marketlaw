@@ -1,6 +1,6 @@
 # Phase 04: Thin slice: one turn on the live server
 
-Status: approved
+Status: in progress
 Milestone: 2 Slice
 
 ## Goal
@@ -91,3 +91,28 @@ These 10 scenarios are added to `harness/required.yaml` in this phase, by file a
 - `hostile-client` #8: a repeated action id returns the original result and changes nothing more
 - `hostile-client` #9: rejects an action from a player who is not in the game
 - `hostile-client` #15: a connection that sends 30 rejected messages within a minute is closed
+
+## Waiting for the owner
+
+1. **Turn on the site lock (D6, Q10).** In the Cloudflare dashboard: Workers & Pages, open the
+   `marketlaw` Worker, Settings, Domains & Routes. Next to the workers.dev address, click
+   **Enable Cloudflare Access**. Then click **Manage Cloudflare Access** and list the email
+   addresses allowed in: yours and each tester's. If Cloudflare asks you to choose a Zero Trust
+   plan, choose **Free** (up to 50 users, $0). Check it by opening
+   https://marketlaw.mlawd.workers.dev in a private window: it should ask for an email code.
+2. **Tell Claude the testers' email addresses**, or add them yourself in step 1.
+
+## Progress
+
+- [ ] 1. Room core in `src/server/` with a storage interface and clock; `GameRoom` as a thin
+  adapter; the room driver
+- [ ] 2. Protocol schemas in `src/shared/`; `valibot` leaves knip's ignore list
+- [ ] 3. Saving: one row per accepted action; views only after the write; old saves close the room
+- [ ] 4. Guest identity, minimal
+- [ ] 5. Rooms, minimal: create, join by code, start when full
+- [ ] 6. `RemoteGameHost` and the client store
+- [ ] 7. Bare screens
+- [ ] 8. Site lock (owner, see above)
+- [ ] 9. Browser tests on GitHub, with the first leak test
+- [ ] 10. Measurements on the live platform (B11, awake time, O4, logs, usage check)
+
