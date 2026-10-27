@@ -1,3 +1,43 @@
-scenarios: {}
+scenarios:
+  hostile-client:
+    - rejects selling a card another player holds
+    - rejects selling the same card twice in one message
+  playing-cards:
+    - playing a Residential card pays its cost and applies its stats and types
+    - playing an Industry card gives product and uses workforce quality and satisfaction
+    - playing a Service card gives distribution
+    - playing a Public card gives quality and satisfaction and uses workforce
+    - a card that counts a type twice adds 2 to that type count
+    - real cost adds 1 for each card of the same sector and tier already in the city
+    - cards of another tier do not raise the real cost
+    - rejects a card the player cannot afford at its real cost
+    - rejects a tier 2 card before turn 5
+    - a tier 2 card can be played from turn 5
+    - rejects a second card in a turn without a build pass
+    - a build pass allows a second card and is used up
+    - rejects playing a card after skip build even with a build pass
+    - rejects a card that is not in the hand
+    - selling several cards is one action and puts them in the holding pile
+    - rejects any action after the 50th main-phase action but still allows ending the turn
+    - a player at the action limit can end their turn
+  setup:
+    - a new game gives every player the starting stats and time bank
+    - starting hands are dealt from the top of the deck one player at a time in seat order
+    - the marketplace is filled after the hands in the fixed place order
+    - the quests table starts with 4 random tier 1 quests and 2 different bonus types are picked
+    - after setup the deck holds every card not dealt or on display
+    - turn 1 starts with the main phase and every player can act
+  turns-and-time:
+    - ending the turn marks the player done and further actions are rejected
+    - the main phase ends only when every player is done
+    - the order in which players become done is recorded
+    - end-of-turn steps pay influence income and bonus and keep build passes
+    - negative stats lower the bonus and a negative bonus gives no funds
+    - every full 10 bonus becomes 1 fund
+    - players who left get no end-of-turn steps
+    - skip build is reset at the end of the turn
+  visibility:
+    - other players' hands are shown only as a number of cards
+    - a player sees their own hand
 invariants: []
 budgets: []
