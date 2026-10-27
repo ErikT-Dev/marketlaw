@@ -1,0 +1,1 @@
+export const FIRST_TURN_FOR_HIGHER_TIERS = 5;
