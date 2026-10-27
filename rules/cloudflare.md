@@ -48,9 +48,10 @@ room's alarm.
 
 ### Free-plan features only
 Use only features available on the Workers Free plan. Before using any Cloudflare product or
-binding not already in `wrangler.jsonc`, stop and confirm it is free.
+binding not already in `wrangler.jsonc`, confirm from Cloudflare's documentation that it is free
+and record the source in `docs/plan/open-questions.md`; if it is not free, stop and ask the owner.
 **Why:** one paid-only binding turns the whole project into a paid project.
-**Enforced by:** protected `wrangler.jsonc` · judgment.
+**Enforced by:** judgment · the phase review.
 
 ### Configuration and secrets
 Configuration lives in `wrangler.jsonc`. Secrets go through `wrangler secret`, never into the

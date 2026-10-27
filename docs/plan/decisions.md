@@ -101,7 +101,29 @@ Claude finds the phase and step itself from git and the Status column of the pha
 `README.md` "Where to continue" describes, and says in one line where it continues from. A phase
 awaiting go-ahead blocks the next one until the owner confirms the merge.
 
+**D19. Claude builds version 1 on its own.** (2026-10-27, owner)
+From phase 02 until version 1 is done, Claude works through the phases without the owner: it
+merges and deploys each finished phase itself and starts the next. It solves unclear or
+contradictory spec, missing cases and the open decisions below itself, implements the
+solutions, and records each question it would otherwise have asked the owner, with its solution,
+in `open-questions.md`, for the owner to review at the end. It may change
+`harness/` (each change its own `HARNESS:` commit), the spec, `wrangler.jsonc` (Free plan only)
+and dependencies (pinned, at least 14 days old). It never changes the protected check configs,
+never weakens a check, and never removes a name from `harness/required.yaml`. It stops for the
+owner only for secrets, API keys, outside accounts, payments, dashboard settings, protected
+config changes, a check that fails after 3 real attempts, and paid-only Cloudflare features.
+Rule lessons go to `proposed-rules.md`. The PreToolUse hook no longer asks before writes to
+`harness/` and `wrangler.jsonc`; it still denies protected configs and generated output.
+*Why:* the owner wants version 1 built without waiting on them, and to review the decisions at
+the end instead of one by one. Replaces the per-phase go-ahead of D15, D17 and D18 and the asking
+parts of D7 and D11.
+*Effect:* `README.md` ("Deciding without the owner", "Waiting for the owner"), `CLAUDE.md`,
+`rules/workflow.md`, `rules/cloudflare.md`, `tools/hooks/protectionOf.ts`.
+
 ## Open
+
+From D19 on, Claude solves these itself when the phase that needs them starts, records the
+solution in `open-questions.md`, and moves the point to Decided.
 
 **O2. Screen sizes in version 1.** Decided during phase 05.
 `rules/frontend.md` requires 1280×720 to 2560×1440; `screens.md` S1.1 and the design cover only

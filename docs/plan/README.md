@@ -3,7 +3,8 @@
 Status: approved by the owner, 2026-10-27 (D15), after the plan review the same day.
 
 This is the overview. Each phase has its own file in this folder. Decisions made while planning
-and building are in `decisions.md`.
+are in `decisions.md`; the questions Claude solved on its own that the owner should review, with
+the solutions it chose, are in `open-questions.md`.
 
 ## Goal
 
@@ -15,7 +16,7 @@ Build version 1 as defined by `harness/spec/`, until the game passes the harness
 1. **Structure.** This overview, one file per phase, and `decisions.md`. The overview holds only
    the phase list, the order, the dependencies and each phase's status.
 2. **Every phase deploys on its own.** Each phase is built on its own branch and merged to
-   master, which deploys, only when the phase is done and the owner accepts it (D7). At that
+   master, which deploys, only when the phase is done and its checks and review pass (D7, D19). At that
    point `npm run check` and the browser tests are green on GitHub, the deploy succeeds, and every
    reachable screen works for what it shows. Unfinished features are reachable only by the owner
    and invited testers (D6), and each phase file lists its known gaps.
@@ -29,14 +30,13 @@ Build version 1 as defined by `harness/spec/`, until the game passes the harness
    architecture (Durable Object, WebSockets, saving, budgets) is proven before the rules are
    filled in. Hidden information follows right after drawing (phase 09), so every screen after
    it uses the final view.
-6. **Approval: once up front, then one go-ahead per phase.** The owner approved the whole plan
-   at once (D15). That approves the dependencies, secrets, protected-file changes and
-   `harness/required.yaml` additions each phase file names. Claude then works through the phases
-   in order without asking before each one. When a phase is done, Claude reports what was built,
-   what to try, and anything that differed from the phase file; the owner gives the go-ahead, the
-   branch is merged and deployed, and the next phase starts. Claude asks in between only for
-   the open decisions, for anything a phase file does not name (a new dependency, secret,
-   protected-file or harness change), and when the spec is unclear or contradicts itself.
+6. **Claude builds version 1 on its own (D19).** The owner approved the whole plan at once
+   (D15) and, from phase 02 on, hands the building of version 1 to Claude. Claude works through
+   the phases in order, merges and deploys each finished phase itself, and starts the next one.
+   It solves open points and unclear spec itself, implements the solutions, and records each
+   such question with its solution in `open-questions.md` (see "Deciding without the owner"). It stops for the owner only for what only the owner can do (see "Waiting
+   for the owner"). The owner reviews the decisions log and the phase reports when version 1 is
+   done.
 7. **The spec wins.** The plan describes the order of work, never behaviour. Where a phase file
    and `harness/spec/` disagree, the spec is right and the phase file is corrected.
 8. **Until version 1 is public, stored data may be wiped** between phases (D1).
@@ -59,8 +59,9 @@ In addition to its own exit criteria:
 - The phase review has run (D16): the `phase-reviewer` agent, with a fresh context, has
   reviewed the branch against the phase file, the spec and the project rules; every finding is
   fixed or answered, and the checks are green again.
-- Claude has reported the phase (what was built, what to try, any difference from the phase
-  file, and the review's findings with what happened to each) and the owner has given the go-ahead; then the branch is merged and deployed.
+- Claude has written the phase report (what was built, what to try, any difference from the
+  phase file, the decisions made, and the review's findings with what happened to each) into the
+  phase file; then Claude merges and deploys the branch and checks the live site.
 
 ## Where to continue
 
@@ -71,16 +72,18 @@ When the owner says "continue implementing" (or anything like it), Claude finds 
    belongs to that phase; commit or finish it first.
 2. Read the **Status** column of the phase table below. It is the one source of truth; each phase
    file's Status line mirrors it.
-   - A phase **awaiting go-ahead**: do not start anything else. Remind the owner what is waiting
-     (the phase report in short) and ask to confirm the merge.
+   - A phase **waiting for the owner**: do what the phase can still do without the owner; if
+     nothing is left, start the next phase whose dependencies are done, or stop and tell the
+     owner what is needed.
    - A phase **in progress**: switch to its branch, read its Progress checklist, and continue with
      the first item not ticked off.
    - Otherwise: start the first **approved** phase in the table whose dependencies are all
      **done**, following "How a phase is built".
 3. Say in one line which phase and which step the work continues from, then work.
 
-Statuses move in this order: **approved** → **in progress** (branch created) → **awaiting
-go-ahead** (review done, report given) → **done** (merged and deployed). Claude updates the table
+Statuses move in this order: **approved** → **in progress** (branch created) → **done** (review
+done, report written, merged and deployed). A phase blocked on something only the owner can do is
+**waiting for the owner**, with the reason in its file. Claude updates the table
 and the phase file's Status line at each change, and commits that with the phase's work.
 
 ## How a phase is built
@@ -91,8 +94,8 @@ Every phase follows these steps (D17).
 
 - Create the branch `phase-NN-name` from master.
 - Read the phase file, `decisions.md`, every spec rule under Covers, and the phase's scenarios.
-- List anything unclear or contradictory in the spec, and any open decision the phase needs; ask
-  the owner about all of them in one message before building.
+- List anything unclear or contradictory in the spec, and any open decision the phase needs;
+  decide each one as "Deciding without the owner" describes before building.
 - Turn the phase's Builds items into a **Progress** checklist at the end of the phase file. This
   is the one part of an approved phase file Claude keeps editing; it shows where the phase stands,
   so any session can resume it.
@@ -110,10 +113,15 @@ Every phase follows these steps (D17).
 
 **3. Stop rules, at any point**
 
-- The spec is unclear or contradicts itself: stop and ask; never pick an interpretation.
-- A check still fails after 3 real attempts: stop and report what was tried; never weaken a check.
-- Something the phase file does not name is needed (a dependency, secret, protected-file or
-  harness change): stop and ask.
+- The spec is unclear or contradicts itself: decide and record it ("Deciding without the owner");
+  never pick an interpretation silently.
+- A check still fails after 3 real attempts: stop and tell the owner what was tried; never weaken
+  a check.
+- A protected check config needs a change, or something only the owner can do is needed (a
+  secret, an API key, an account, a payment, a Cloudflare dashboard setting): see "Waiting for
+  the owner".
+- A new dependency or a harness change is needed: make it and record it in `open-questions.md`
+  (D19).
 
 **4. Finish**
 
@@ -121,10 +129,53 @@ Every phase follows these steps (D17).
 2. Run the full `npm run check`, the browser tests and the budget checks.
 3. Update `docs/enforcement.md` if a check now applies that did not before.
 4. Run the phase review (D16); fix or answer every finding; run the checks again.
-5. Report to the owner: what was built, what to try, differences from the phase file, the
-   review's findings and what happened to each.
-6. Ask the owner to confirm the merge. Only after confirmation: merge to master, watch the
-   deploy, and check that the live site works.
+5. Write the phase report under **Report** at the end of the phase file: what was built, what to
+   try, differences from the phase file, decisions made, the review's findings and what happened
+   to each.
+6. Merge to master (`docs/merging-and-rollback.md`), watch the deploy, and check that the live
+   site works. If the deploy fails, fix it on the phase branch and merge again; roll back if the
+   live site is broken and the fix is not quick.
+7. Mark the phase **done** and start the next one.
+
+## Deciding without the owner
+
+Until version 1 is done (D19), Claude decides what the rules would otherwise send to the owner:
+
+Each question below, the kind Claude would otherwise have stopped to ask the owner, goes into
+`open-questions.md` the moment it comes up: the question, where it came from, the options, the
+solution chosen and why, and where it was implemented (spec rule, commit, phase). Claude then
+implements the solution and keeps going. Everyday choices, tool quirks and platform problems do
+not go there; they go into commit messages, Progress notes or `proposed-rules.md`.
+
+- **Unclear or contradictory spec, missing cases, and the open decisions in `decisions.md`.**
+  Choose the option closest to the spec's intent and the plan's recommendation. When the solution
+  changes or adds behaviour, write it into the spec first, then the code. The spec still wins over
+  the code. When an open decision in `decisions.md` is solved, move it to Decided there with a
+  pointer to its entry in `open-questions.md`.
+- **Harness changes** (scenarios, invariants, budgets, the required list, spec files): allowed,
+  each in its own `HARNESS:` commit and recorded in `open-questions.md`. Never to get a failing check
+  green: a scenario is changed only when it contradicts the spec, never because the code
+  disagrees with it. Names still leave `harness/required.yaml` only with the owner's approval.
+- **Dependencies:** allowed, pinned to a release at least 14 days old, recorded in
+  `open-questions.md` with what it is for and its client bundle size.
+- **`wrangler.jsonc`:** allowed, within the Free plan (`rules/cloudflare.md`).
+- **Rule lessons:** proposed additions to `rules/*.md` go to `docs/plan/proposed-rules.md` for the
+  owner to review at the end.
+
+## Waiting for the owner
+
+Claude stops and asks only for:
+
+- Anything only the owner can do: secrets, API keys, accounts with outside services, payments,
+  settings in the Cloudflare or GitHub dashboards, inviting testers.
+- A change to a protected check config (`rules/workflow.md`, Protected files). Claude never
+  changes them.
+- A check that still fails after 3 real attempts.
+- A Cloudflare feature that is not on the Free plan.
+
+Claude writes what it needs under **Waiting for the owner** in the phase file, marks the phase
+**waiting for the owner** if it cannot finish without it, sends the owner a notification, and
+continues with any work that does not depend on the answer.
 
 ## How scenarios, invariants and budgets are tracked
 
