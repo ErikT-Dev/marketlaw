@@ -1,6 +1,6 @@
 # Phase 05: Game screen: layout and components
 
-Status: approved
+Status: in progress
 Milestone: 3 Playthrough
 
 ## Goal
@@ -65,3 +65,16 @@ Screenshots at three sizes next to the design board, for the O2 decision.
 ## Required scenarios
 
 None. This phase adds no scenarios to `harness/required.yaml`.
+
+## Progress
+
+- [ ] 1. Design tokens from `design/export/tokens.json` into `src/client/tokens.css`
+- [ ] 2. Assets: card photos as WebP, type icons, backgrounds under `src/client/assets/`
+- [ ] 3. Components: Button, Button loading labels, Modal, Modal backdrop, Toast, Stat chip,
+  Hand card, Big card, Played card, Player badge, Type chip, Type tooltip, Pending marker, Tab,
+  Text input, Timer chip
+- [ ] 4. Game screen layout (S1.2): top bar, three columns, scrolling panels
+- [ ] 5. Size test for O2 at 1280×720, 1920×1080 and 2560×1440
+- [ ] 6. Bundle check (`.size-limit.js`, protected: owner)
+- [ ] 7. Accessibility check on every screenshot (`knip.json`, protected: owner)
+
