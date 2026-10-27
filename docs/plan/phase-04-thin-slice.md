@@ -104,15 +104,34 @@ These 10 scenarios are added to `harness/required.yaml` in this phase, by file a
 
 ## Progress
 
-- [ ] 1. Room core in `src/server/` with a storage interface and clock; `GameRoom` as a thin
-  adapter; the room driver
-- [ ] 2. Protocol schemas in `src/shared/`; `valibot` leaves knip's ignore list
-- [ ] 3. Saving: one row per accepted action; views only after the write; old saves close the room
-- [ ] 4. Guest identity, minimal
-- [ ] 5. Rooms, minimal: create, join by code, start when full
-- [ ] 6. `RemoteGameHost` and the client store
-- [ ] 7. Bare screens
-- [ ] 8. Site lock (owner, see above)
-- [ ] 9. Browser tests on GitHub, with the first leak test
-- [ ] 10. Measurements on the live platform (B11, awake time, O4, logs, usage check)
+- [x] 1. Room core in `src/server/room/` (`handleMessage`, `joinRoom`, `createRoomRecord`): pure
+  functions over a `RoomRecord` that say what to save, what to reply and whom to update; the clock
+  and the random sequence are passed in. `GameRoom` is the thin Durable Object adapter
+  (Hibernation API, `serializeAttachment` per socket, key-value storage of the record). The room
+  driver (`tools/harness-runner/room/`) runs raw messages through the same core and counts the
+  rows each would write (B1, B2). Seats follow the join order; random seats (R4.3) come with rooms
+  in phase 16.
+- [x] 2. Protocol in `src/shared/protocol/` and `src/shared/api/` as valibot schemas; messages are
+  parsed in `parseClientMessage` before any logic, in the reason-code order of `HARNESS.md`.
+  `valibot` cannot leave knip's ignore list: `knip.json` is protected (Waiting for the owner).
+- [x] 3. Saving: the record (game, action log and state versions) is one key, written once per
+  accepted action and per membership change, before replies and updates. A record with another
+  schema version is deleted on load and its sockets closed (D1). Repeated action ids: Q11.
+- [x] 4. Guest identity: `POST /api/guests` with a name gives a 256-bit token from
+  `crypto.getRandomValues`; D1 `players` keeps only its SHA-256 hash. Tokens travel only in
+  bodies and WebSocket messages (Q14).
+- [x] 5. Rooms: `POST /api/rooms` (size 2-4) returns a code of 6 characters (M1.5); `POST
+  /api/rooms/{code}/join`; the game starts when the room is full.
+- [x] 6. `RemoteGameHost` in `src/hosts/` (resync on open, on a version gap and after
+  `stale_state`; reconnects with growing delays; no heartbeats, B10) with host contract tests;
+  one `ClientStore` in the client.
+- [x] 7. Bare screens: start, room choice, waiting with the code, game page with Play, Sell and End
+  turn per card; a "please use a larger screen" message below 1280 px.
+- [ ] 8. Site lock: waiting for the owner (see above).
+- [x] 9. Browser tests: a GitHub job runs them on every branch, and the deploy runs them before
+  deploying. The test runs two browsers through turn 1 at all three sizes, with the accessibility
+  check, a refresh, and the first leak check (no frame to a player holds a card of the other's
+  hand). `playwright-core` pinned (Q13).
+- [ ] 10. Measurements: O4 done (`decisions.md`); Workers Logs on (Q14). B11 and awake time (O9)
+  need the live room, so they are measured right after the merge, which waits for the site lock.
 
