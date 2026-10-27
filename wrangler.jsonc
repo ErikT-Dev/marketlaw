@@ -2,7 +2,7 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "marketlaw",
   "main": "src/server/worker.ts",
-  "compatibility_date": "2025-06-01",
+  "compatibility_date": "2026-10-06",
   "assets": {
     "directory": "./dist/client"
   },

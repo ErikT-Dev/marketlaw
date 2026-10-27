@@ -70,8 +70,9 @@ None. This phase adds no scenarios to `harness/required.yaml`.
 
 ## Progress
 
-- [ ] 1. Upgrades: Wrangler and `compatibility_date`, Vite and `@vitejs/plugin-react`, TypeScript,
-  React; `npm audit` result recorded
+- [x] 1. Upgrades: Wrangler and `compatibility_date`, Vite and `@vitejs/plugin-react`, TypeScript,
+  React; `npm audit` result recorded. Also `ajv` and `yaml` (patch-level, to clear audit
+  warnings); 10 audit warnings remain, listed in `docs/tooling-setup-proposal.md`.
 - [ ] 2. Remove the prototype; D1 migration `0002_drop_press_log.sql`; Durable Object migration
   deleting `CounterRoom`
 - [ ] 3. New skeleton: worker serving the client, empty `GameRoom`, "MarketLaw is being built"

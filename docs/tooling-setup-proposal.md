@@ -20,6 +20,28 @@ Differences from the proposal below, forced by compatibility:
 - `npm audit` reports 0 problems in what players download, and 16 in development tools, mostly
   through the old Wrangler 4.20 and Vite 6.3; they go away with the separate upgrade step.
 
+Upgraded in plan phase 01 (2026-10-27), each to the newest release at least 14 days old:
+
+| Package | Before | Now |
+|---|---|---|
+| `wrangler` | 4.20.0 | 4.150.0 (Workers `compatibility_date` 2026-10-06, its bundled runtime) |
+| `vite` | 6.3.5 | 8.3.4 |
+| `@vitejs/plugin-react` | 4.5.2 | 6.1.2 |
+| `typescript` | 5.8.3 | 6.0.3, the newest `typescript-eslint` 8.71 supports (below 6.1; TypeScript 7 is out but unsupported) |
+| `react`, `react-dom` | 19.1.0 | 19.3.0 (and `@types/react`, `@types/react-dom` 19.3.0) |
+| `ajv` | 8.17.1 | 8.20.0, to clear an `npm audit` warning |
+| `yaml` | 2.8.0 | 2.9.1, to clear an `npm audit` warning |
+
+`npm audit` after the upgrades: 10 warnings (5 moderate, 5 high), all in development tools,
+none in what players download. They remain because no fixed release is 14 days old yet:
+
+- `undici`, `miniflare`, `wrangler`, `zod`, `@cloudflare/vitest-plugin`: fixed in Wrangler
+  4.153 and `@cloudflare/vitest-plugin` 1.4.8, released 2026-10-26 and later.
+- `vitest`, `@vitest/mocker`, `@vitest/coverage-v8`: fixed in Vitest 4.1.12, released
+  2026-10-15.
+- `deepmerge-ts` through `eslint-plugin-functional`: no release of the plugin uses the fixed
+  `deepmerge-ts` 8 yet. It runs only inside ESLint on our own code.
+
 The proposal as approved:
 
 ## Why
