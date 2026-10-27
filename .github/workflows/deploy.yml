@@ -33,6 +33,15 @@ jobs:
       - name: Check
         run: npm run check
 
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Prepare the local database
+        run: npm run db:migrate:local
+
+      - name: Browser tests
+        run: npm run e2e
+
       - name: Build
         run: npm run build
 

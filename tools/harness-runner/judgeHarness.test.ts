@@ -21,6 +21,7 @@ function runOf(name: string, result: ScenarioResult, isRequired: boolean): Scena
     },
     result,
     isRequired,
+    measurements: [],
   };
 }
 

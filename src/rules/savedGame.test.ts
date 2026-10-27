@@ -1,12 +1,13 @@
 import { describe, expect, it } from "vitest";
 import { applyToSavedGame } from "./applyToSavedGame";
 import type { GameAction } from "./GameAction";
+import { randomForNextAction } from "./randomForNextAction";
 import type { SavedGame } from "./SavedGame";
 import { startSavedGame } from "./startSavedGame";
 
 function replay(saved: SavedGame): SavedGame {
   return saved.actionLog.reduce((game, action) => {
-    const result = applyToSavedGame(game, action);
+    const result = applyToSavedGame(game, action, randomForNextAction(game));
     if (!result.isOk) {
       throw new Error(`replay rejected ${action.type}: ${result.error.code}`);
     }
@@ -20,7 +21,7 @@ function playThreeTurns(saved: SavedGame): SavedGame {
     { type: "end_turn", seat: 2 },
   ]);
   return actions.reduce((game, action) => {
-    const result = applyToSavedGame(game, action);
+    const result = applyToSavedGame(game, action, randomForNextAction(game));
     return result.isOk ? result.value : game;
   }, saved);
 }
@@ -50,7 +51,7 @@ describe("saved games", () => {
 
   it("does not record a rejected action", () => {
     const saved = startSavedGame({ players: 2 }, 5);
-    const result = applyToSavedGame(saved, { type: "end_turn", seat: 3 });
+    const result = applyToSavedGame(saved, { type: "end_turn", seat: 3 }, randomForNextAction(saved));
     expect(result).toEqual({ isOk: false, error: { code: "not_in_game" } });
   });
 });

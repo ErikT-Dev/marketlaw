@@ -1,5 +1,7 @@
 import { escapeHtml } from "./escapeHtml.ts";
+import { highestMeasured } from "./highestMeasured.ts";
 import type { IdentifiedEntry } from "./IdentifiedEntry.ts";
+import { MEASURED_BUDGET_LIMITS } from "./MEASURED_BUDGET_LIMITS.ts";
 import { REPORT_STYLE } from "./REPORT_STYLE.ts";
 import type { ReportInput } from "./ReportInput.ts";
 import { reportRules } from "./reportRules.ts";
@@ -40,14 +42,27 @@ function identifiedList(
   title: string,
   entries: ReadonlyArray<IdentifiedEntry>,
   required: ReadonlyArray<string>,
+  problems: ReadonlyArray<string>,
 ): string {
   const items = entries
     .map(({ id, name }) => {
-      const status = required.includes(id) ? "fails" : "not yet";
+      const hasProblem = problems.some((problem) => problem.startsWith(`required ${id} `));
+      const status = required.includes(id) ? (hasProblem ? "fails" : "passes") : "not yet";
       return `<li>${statusBadge(status)}${escapeHtml(`${id}: ${name}`)}</li>`;
     })
     .join("");
   return `<h2>${title}</h2><ul>${items}</ul>`;
+}
+
+function budgetList(input: ReportInput): string {
+  const measured = input.budgets.map(({ id, name }) => {
+    const value = highestMeasured(input.run.runs, id);
+    const limit = MEASURED_BUDGET_LIMITS[id];
+    return value === undefined || limit === undefined
+      ? { id, name }
+      : { id, name: `${name} (highest measured ${value}, limit ${limit})` };
+  });
+  return identifiedList("Budgets", measured, input.run.required.budgets, input.problems);
 }
 
 export function buildReport(input: ReportInput): string {
@@ -62,8 +77,8 @@ export function buildReport(input: ReportInput): string {
     checks(input),
     "<h2>Rules</h2>",
     reportRules(input.ruleSpecs, input.run.runs, input.exceptions),
-    identifiedList("Invariants", input.invariants, input.run.required.invariants),
-    identifiedList("Budgets", input.budgets, input.run.required.budgets),
+    identifiedList("Invariants", input.invariants, input.run.required.invariants, input.problems),
+    budgetList(input),
     "</body></html>",
   ].join("\n");
 }

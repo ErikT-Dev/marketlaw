@@ -139,6 +139,15 @@ S1.1, with approval.
 (`accounts.md` open question 2)
 *Recommendation:* a one-hour experiment in phase 04 measures a secure hash on the live Worker. If
 it does not fit, the owner decides on another login method before rooms and accounts are built.
+*Measured 2026-10-27 (phase 04):* a temporary Worker on the Free plan hashed a password with
+PBKDF2-SHA256 (Web Crypto, the only built-in slow hash). CPU time per hash, from `wrangler tail`:
+1,000 iterations 0-1 ms; 10,000 3-4 ms; 50,000 8-16 ms; 100,000 15-19 ms (still accepted,
+although over the 10 ms limit). Above 100,000 the runtime refuses: "Pbkdf2 failed: iteration
+counts above 100000 are not supported". OWASP asks for 600,000 iterations of PBKDF2-SHA256, so a
+hash that strong is impossible in a Worker. Options for phase 23: PBKDF2 at 100,000 iterations
+(about 6 times weaker than OWASP, and over B11 for each login), a hash in WebAssembly (still
+limited by the 10 ms CPU limit), or a login without passwords (an emailed sign-in link). The probe
+Worker was deleted after the measurement.
 
 **O5. Game length.** Reviewed after phase 15, decided before phase 20.
 (`game-rules.md` open question 1)

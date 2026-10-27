@@ -39,3 +39,11 @@ ESLint relative to the shell's working directory, and from a subfolder every fil
 "Cannot find module .../node_modules/eslint".
 **Why:** found in phase 03; the errors looked like lint failures but were not.
 **Enforced by:** judgment.
+
+### Stop `wrangler dev` by its process, not its task
+On Windows, stopping a background `npm run dev` leaves `wrangler dev` (node) and its `workerd`
+running on port 8787, and Playwright's `reuseExistingServer` then tests the old code. Before
+browser tests, check that nothing listens on 8787, and stop the `wrangler ... dev` node process
+first, then `workerd`.
+**Why:** found in phase 04; the browser tests failed against a stale server.
+**Enforced by:** judgment.

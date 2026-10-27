@@ -12,7 +12,7 @@ export function buildScenarioRuns(
 ): ReadonlyArray<ScenarioRun> {
   return readScenarios(scenarioFiles).map((scenario) => ({
     scenario,
-    result: runScenario(scenario, drivers),
+    ...runScenario(scenario, drivers),
     isRequired: required.scenarios.some(
       ({ file, name }) => file === scenario.file && name === scenario.name,
     ),

@@ -1,10 +1,27 @@
+import { useSyncExternalStore } from "react";
 import styles from "./App.module.css";
+import { CurrentScreen } from "./CurrentScreen";
+import type { ClientStore } from "./store/ClientStore";
 
-export function App() {
+type Props = {
+  readonly store: ClientStore;
+};
+
+export function App({ store }: Props) {
+  const notice = useSyncExternalStore(store.subscribe, () => store.getSnapshot().notice);
   return (
-    <main className={styles["page"]}>
-      <h1 className={styles["title"]}>MarketLaw</h1>
-      <p className={styles["status"]}>MarketLaw is being built</p>
-    </main>
+    <>
+      <p className={styles["tooSmall"]}>
+        Please use a larger screen: MarketLaw needs at least 1280 pixels of width.
+      </p>
+      <div className={styles["app"]}>
+        {notice === null ? null : (
+          <p role="alert" className={styles["notice"]}>
+            {notice}
+          </p>
+        )}
+        <CurrentScreen store={store} />
+      </div>
+    </>
   );
 }
