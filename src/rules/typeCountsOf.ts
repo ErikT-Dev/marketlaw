@@ -2,8 +2,7 @@ import { cardOf } from "../shared/catalogue/cardOf";
 import { TYPE_NAMES } from "../shared/catalogue/TYPE_NAMES";
 import type { TypeName } from "../shared/catalogue/TypeName";
 import type { SeatState } from "./SeatState";
-
-type TypeCounts = Readonly<Partial<Record<TypeName, number>>>;
+import type { TypeCounts } from "./TypeCounts";
 
 function addCount(counts: TypeCounts, type: TypeName, count: number): TypeCounts {
   return { ...counts, [type]: (counts[type] ?? 0) + count };

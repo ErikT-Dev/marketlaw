@@ -66,5 +66,3 @@ export const GIVEN_SCHEMA = v.strictObject({
   quest_list: v.optional(v.array(QUEST_NAME)),
   bonus_types: v.optional(v.array(TypeName)),
 });
-
-export type Given = v.InferOutput<typeof GIVEN_SCHEMA>;

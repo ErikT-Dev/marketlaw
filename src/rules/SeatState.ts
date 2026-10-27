@@ -1,14 +1,14 @@
 import type { CardName } from "../shared/catalogue/CardName";
-import type { TypeName } from "../shared/catalogue/TypeName";
 import type { SeatNumber } from "../shared/SeatNumber";
 import type { Stats } from "../shared/Stats";
+import type { TypeCounts } from "./TypeCounts";
 
 export type SeatState = {
   readonly seat: SeatNumber;
   readonly stats: Stats;
   readonly hand: ReadonlyArray<CardName>;
   readonly city: ReadonlyArray<CardName>;
-  readonly gainedTypes: Readonly<Partial<Record<TypeName, number>>>;
+  readonly gainedTypes: TypeCounts;
   readonly buildPasses: number;
   readonly buildPassesBought: number;
   readonly hasPlayedThisTurn: boolean;

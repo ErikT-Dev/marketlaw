@@ -39,10 +39,12 @@ function startSession(
         return;
       }
       const before = current();
+      const beforeAsText = JSON.stringify(before);
       const result = apply(before, actionFromStep(step), random);
       lastRejection = result.isOk ? undefined : result.error.code;
       state = result.isOk ? result.value : before;
-      isLastStepUnchanged = JSON.stringify(before) === JSON.stringify(state);
+      isLastStepUnchanged =
+        JSON.stringify(before) === beforeAsText && JSON.stringify(state) === beforeAsText;
     },
     readThen(field, expected) {
       if (field === "rejected") {

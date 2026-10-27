@@ -1,7 +1,7 @@
 import { newSeat } from "../../../src/rules/newSeat.ts";
 import type { SeatState } from "../../../src/rules/SeatState.ts";
 import type { SeatNumber } from "../../../src/shared/SeatNumber.ts";
-import type { Given } from "./GIVEN_SCHEMA.ts";
+import type { Given } from "./Given.ts";
 
 type GivenSeat = NonNullable<Given["seats"]>[number];
 

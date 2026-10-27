@@ -4,13 +4,18 @@ import { SEAT_NUMBERS } from "../../../src/rules/SEAT_NUMBERS.ts";
 import { CARD_NAMES } from "../../../src/shared/catalogue/CARD_NAMES.ts";
 import { QUESTS } from "../../../src/shared/catalogue/QUESTS.ts";
 import { TYPE_NAMES } from "../../../src/shared/catalogue/TYPE_NAMES.ts";
-import type { Given } from "./GIVEN_SCHEMA.ts";
+import type { Given } from "./Given.ts";
 import { seatFromGiven } from "./seatFromGiven.ts";
 
 const DEFAULT_PLAYERS = 2;
 
 export function stateFromGiven(given: Given): GameState {
-  const seats = SEAT_NUMBERS.slice(0, given.players ?? DEFAULT_PLAYERS).map((seat) =>
+  const players = given.players ?? DEFAULT_PLAYERS;
+  const extraSeat = given.seats?.find((entry) => entry.seat > players);
+  if (extraSeat !== undefined) {
+    throw new Error(`given seat ${extraSeat.seat} is above the ${players} players`);
+  }
+  const seats = SEAT_NUMBERS.slice(0, players).map((seat) =>
     seatFromGiven(
       seat,
       given.seats?.find((entry) => entry.seat === seat),
