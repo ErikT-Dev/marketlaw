@@ -1,6 +1,6 @@
 # Phase 01: Toolchain and clean slate
 
-Status: awaiting go-ahead
+Status: done
 Milestone: 1 Foundations
 
 ## Goal
@@ -83,4 +83,5 @@ None. This phase adds no scenarios to `harness/required.yaml`.
   it as unused now that nothing imports it.
 - [x] 4. Branch per phase: checks on every branch push, deploy only from master; merge and
   rollback note in `docs/merging-and-rollback.md`. Checks run in `.github/workflows/check.yml`.
-- [ ] 5. Owner action: back up `design/export/` and `design/assets/` (reminded in the report)
+- [x] 5. Owner action: back up `design/export/` and `design/assets/` (done by the owner
+  2026-10-27)
