@@ -1,0 +1,37 @@
+.chip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: 2px var(--space-xs);
+  border-radius: var(--radius-sm);
+  font-weight: var(--font-weight-bold);
+  line-height: 1.2;
+}
+
+.icon {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+}
+
+.tooltip {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-sm);
+  background: var(--color-panel-highlight);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-regular);
+  white-space: nowrap;
+  pointer-events: none;
+  visibility: hidden;
+  z-index: 10;
+}
+
+.chip:hover .tooltip {
+  visibility: visible;
+}

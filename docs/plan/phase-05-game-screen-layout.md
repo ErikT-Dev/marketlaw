@@ -68,9 +68,12 @@ None. This phase adds no scenarios to `harness/required.yaml`.
 
 ## Progress
 
-- [ ] 1. Design tokens from `design/export/tokens.json` into `src/client/tokens.css`
-- [ ] 2. Assets: card photos as WebP, type icons, backgrounds under `src/client/assets/`
-- [ ] 3. Components: Button, Button loading labels, Modal, Modal backdrop, Toast, Stat chip,
+- [x] 1. Design tokens: `npm run design:tokens` writes `src/client/tokens.css` from the export
+- [x] 2. Assets: `npm run design:assets` (52 tinted icons from the Penpot library; 240 photos
+  at 554x478 and 2 backgrounds as WebP through Playwright's Chromium, so no new dependency)
+- [ ] 3. (in progress: Button, Modal, Modal backdrop, Toast, Stat chip, Type chip with tooltip,
+  Hand card, Played card, Big card, Player badge, Timer chip, Pending marker, Tab, Text input are
+  written but not yet tested or used; next: component tests, then item 4) Components: Button, Button loading labels, Modal, Modal backdrop, Toast, Stat chip,
   Hand card, Big card, Played card, Player badge, Type chip, Type tooltip, Pending marker, Tab,
   Text input, Timer chip
 - [ ] 4. Game screen layout (S1.2): top bar, three columns, scrolling panels

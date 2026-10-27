@@ -6,6 +6,7 @@ import type { Sector } from "./Sector";
 import type { Tier } from "./Tier";
 
 export type Card = {
+  readonly number: number;
   readonly name: CardName;
   readonly sector: Sector;
   readonly tier: Tier;
