@@ -120,6 +120,15 @@ parts of D7 and D11.
 *Effect:* `README.md` ("Deciding without the owner", "Waiting for the owner"), `CLAUDE.md`,
 `rules/workflow.md`, `rules/cloudflare.md`, `tools/hooks/protectionOf.ts`.
 
+**D20. Durable Object awake time is within B12 (was O9).** (2026-10-28, measured in phase 04)
+On the live site, a 2-player room was created, joined and dealt; both players played turn 1; one
+refreshed; then both idled for several minutes. Cloudflare's analytics billed the room 0.7 s of
+active time and 0.093 GB-s of duration for the whole session. CPU time per message was 0-2 ms
+(`wrangler tail`), 6 ms for the join that deals the game (B11 limit 10 ms). Idle clients sent
+nothing. With the Hibernation API, a room costs only while it handles messages, so a 25-turn
+game should stay far below B12's 600 s, and 50 games a day far below the Free plan's 13,000 GB-s.
+*Effect:* B12 stays as it is; the simulator measures it per game from phase 08.
+
 ## Open
 
 From D19 on, Claude solves these itself when the phase that needs them starts, records the
@@ -171,9 +180,3 @@ A room's alarm ends with the room, so replay records kept 30 days (M4.3) and gue
 90 days (A1.1) need something else to delete them, most likely a scheduled job (Cron Trigger).
 *Recommendation:* phase 19 confirms Cron Triggers are free, decides where replay records live,
 and adds the trigger to `wrangler.jsonc` (owner's approval).
-
-**O9. Durable Object awake time.** Measured in phase 04.
-B12 allows 600 seconds awake per game. A room may stay awake while players send messages through
-most of a game. *Recommendation:* phase 04 measures awake time and computing time per message
-(B11) on the live site; if B12 cannot be met, the owner decides the budget question then, not in
-phase 14.
