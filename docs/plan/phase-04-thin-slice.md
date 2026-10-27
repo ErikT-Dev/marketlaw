@@ -1,6 +1,6 @@
 # Phase 04: Thin slice: one turn on the live server
 
-Status: waiting for the owner (site lock, item 8)
+Status: in progress
 Milestone: 2 Slice
 
 ## Goal
@@ -94,7 +94,7 @@ These 10 scenarios are added to `harness/required.yaml` in this phase, by file a
 
 ## Waiting for the owner
 
-1. **Turn on the site lock (D6, Q10).** In the Cloudflare dashboard: Workers & Pages, open the
+1. **Done 2026-10-27.** Turn on the site lock (D6, Q10). In the Cloudflare dashboard: Workers & Pages, open the
    `marketlaw` Worker, Settings, Domains & Routes. Next to the workers.dev address, click
    **Enable Cloudflare Access**. Then click **Manage Cloudflare Access** and list the email
    addresses allowed in: yours and each tester's. If Cloudflare asks you to choose a Zero Trust
@@ -130,7 +130,10 @@ These 10 scenarios are added to `harness/required.yaml` in this phase, by file a
   one `ClientStore` in the client.
 - [x] 7. Bare screens: start, room choice, waiting with the code, game page with Play, Sell and End
   turn per card; a "please use a larger screen" message below 1280 px.
-- [ ] 8. Site lock: waiting for the owner (see above).
+- [x] 8. Site lock: the owner turned on Cloudflare Access for the whole Worker (scope: all
+  traffic; policy: members of the owner's Cloudflare account; testers will be added by email).
+  Checked 2026-10-27: a request without a login, to the page and to the API, is redirected to
+  Cloudflare's login (302).
 - [x] 9. Browser tests: a GitHub job runs them on every branch, and the deploy runs them before
   deploying. The test runs two browsers through turn 1 at all three sizes, with the accessibility
   check, a refresh, and the first leak check (no frame to a player holds a card of the other's

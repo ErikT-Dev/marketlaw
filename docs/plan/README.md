@@ -199,7 +199,7 @@ The 425 scenarios cover all of version 1, but each phase implements only part of
 | 01 | [Toolchain and clean slate](phase-01-toolchain-and-clean-slate.md) | 1 Foundations | – | done |
 | 02 | [Scenario runner and card data](phase-02-scenario-runner-and-card-data.md) | 1 Foundations | 01 | done |
 | 03 | [Engine core: setup and the first turn](phase-03-engine-core.md) | 1 Foundations | 02 | done |
-| 04 | [Thin slice: one turn on the live server](phase-04-thin-slice.md) | 2 Slice | 03 | waiting for the owner |
+| 04 | [Thin slice: one turn on the live server](phase-04-thin-slice.md) | 2 Slice | 03 | in progress |
 | 05 | [Game screen: layout and components](phase-05-game-screen-layout.md) | 3 Playthrough | 04 | approved |
 | 06 | [Game screen: hand, actions and moves](phase-06-game-screen-hand-and-actions.md) | 3 Playthrough | 05 | approved |
 | 07 | [Drawing and income](phase-07-drawing-and-income.md) | 3 Playthrough | 06 | approved |
