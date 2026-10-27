@@ -1,28 +1,32 @@
-:root {
-  --color-background: #f6f4ef;
-  --color-text: #1d1b16;
-  --color-muted: #6b665c;
-  --color-accent: #2f5d50;
-  --color-accent-text: #ffffff;
-  --space-medium: 16px;
-  --space-large: 32px;
-  --radius: 12px;
-  --font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+@font-face {
+  font-family: "Source Sans 3";
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url("./assets/fonts/SourceSans3-latin.woff2") format("woff2");
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-background: #161513;
-    --color-text: #f1eee8;
-    --color-muted: #a19b8f;
-    --color-accent: #6fb39f;
-    --color-accent-text: #0d1a16;
-  }
+:root {
+  --color-background-game-window: #03071e;
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #cbd5e1;
+  --color-text-title-from: #feffcb;
+  --color-text-title-to: #d6fff5;
+  --font-family-base: "Source Sans 3", "Source Sans Pro", system-ui, sans-serif;
+  --font-size-md: 16px;
+  --font-size-xl: 24px;
+  --font-size-xxl: 32px;
+  --font-weight-regular: 400;
+  --font-weight-bold: 700;
+  --space-lg: 16px;
+  --space-xxl: 32px;
 }
 
 body {
   margin: 0;
-  background: var(--color-background);
-  color: var(--color-text);
-  font-family: var(--font-family);
+  background: var(--color-background-game-window);
+  color: var(--color-text-primary);
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-regular);
 }
