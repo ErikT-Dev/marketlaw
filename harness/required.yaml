@@ -1,5 +1,15 @@
 scenarios:
   hostile-client:
+    - rejects a message that cannot be read
+    - rejects a message with a missing field
+    - rejects an unknown action
+    - rejects a message with an old protocol version
+    - rejects a forged player token
+    - a room code is not proof of identity
+    - rejects an action based on an older state version
+    - a repeated action id returns the original result and changes nothing more
+    - rejects an action from a player who is not in the game
+    - a connection that sends 30 rejected messages within a minute is closed
     - rejects selling a card another player holds
     - rejects selling the same card twice in one message
   playing-cards:
@@ -40,4 +50,6 @@ scenarios:
     - other players' hands are shown only as a number of cards
     - a player sees their own hand
 invariants: []
-budgets: []
+budgets:
+  - B1
+  - B2
