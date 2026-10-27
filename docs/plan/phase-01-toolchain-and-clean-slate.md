@@ -74,8 +74,10 @@ None. This phase adds no scenarios to `harness/required.yaml`.
   React; `npm audit` result recorded. Also `ajv` and `yaml` (patch-level, to clear audit
   warnings); 10 audit warnings remain, listed in `docs/tooling-setup-proposal.md`.
 - [x] 2. Remove the prototype; D1 migration `0002_drop_press_log.sql`; Durable Object migration
-  deleting `CounterRoom` (tag `v2`, which also adds `GameRoom` on the same `ROOM` binding).
-  Applied locally; the live database and class are changed by the first deploy from master.
+  deleting `CounterRoom` (tag `v2`). Cloudflare refused to delete the class in the same deploy
+  that still had a Durable Object binding (code 10061), so the first deploy failed after the D1
+  migration had run; `v2` was then deployed without any binding, and `GameRoom` with the `ROOM`
+  binding followed in a second deploy (tag `v3`).
 - [x] 3. New skeleton: worker serving the client, empty `GameRoom`, "MarketLaw is being built"
   page in the design's colours and font (font files committed, owner's choice 2026-10-27).
   Source Sans 3 is one variable font file (29 KB, both weights) with its OFL licence in
