@@ -81,6 +81,6 @@ None. This phase adds no scenarios to `harness/required.yaml`.
   Source Sans 3 is one variable font file (29 KB, both weights) with its OFL licence in
   `src/client/assets/fonts/`. `PROTOCOL_VERSION` got a small schema test so knip does not report
   it as unused now that nothing imports it.
-- [ ] 4. Branch per phase: checks on every branch push, deploy only from master; merge and
-  rollback note in `docs/`
+- [x] 4. Branch per phase: checks on every branch push, deploy only from master; merge and
+  rollback note in `docs/merging-and-rollback.md`. Checks run in `.github/workflows/check.yml`.
 - [ ] 5. Owner action: back up `design/export/` and `design/assets/` (reminded in the report)
