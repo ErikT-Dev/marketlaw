@@ -59,7 +59,7 @@ describe("runScenario", () => {
   it("reports a scenario as not yet when there is no driver", () => {
     expect(runScenario(scenario({}), [])).toEqual({
       status: "not_yet",
-      missing: ["no driver yet"],
+      missing: ["a driver"],
     });
   });
 

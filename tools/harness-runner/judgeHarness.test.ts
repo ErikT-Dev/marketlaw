@@ -64,10 +64,10 @@ describe("judgeHarness", () => {
   it("fails the check when a required scenario cannot run yet", () => {
     const run = harnessRun({
       required: { ...NOTHING_REQUIRED, scenarios: [{ file: "setup", name: "deals hands" }] },
-      runs: [runOf("deals hands", { status: "not_yet", missing: ["no driver yet"] }, true)],
+      runs: [runOf("deals hands", { status: "not_yet", missing: ["a driver"] }, true)],
     });
     expect(judgeHarness(run)).toEqual([
-      'required scenario "setup: deals hands" cannot run yet: no driver yet',
+      'required scenario "setup: deals hands" cannot run yet: a driver',
     ]);
   });
 

@@ -9,4 +9,6 @@ export type HarnessFiles = {
   readonly cards: ReadonlyArray<unknown>;
   readonly scenarioFormat: unknown;
   readonly coverageExceptions: unknown;
+  readonly invariants: unknown;
+  readonly budgets: unknown;
 };

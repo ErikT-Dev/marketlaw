@@ -45,7 +45,7 @@ export function runScenario(
   const ready = candidates.find(({ missing }) => missing.length === 0);
   if (ready === undefined) {
     const fewestMissing = [...candidates].sort((a, b) => a.missing.length - b.missing.length)[0];
-    return { status: "not_yet", missing: fewestMissing?.missing ?? ["no driver yet"] };
+    return { status: "not_yet", missing: fewestMissing?.missing ?? ["a driver"] };
   }
   const problems = play(scenario, ready.driver);
   return problems.length === 0 ? { status: "passes" } : { status: "fails", problems };
