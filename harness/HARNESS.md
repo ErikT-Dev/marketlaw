@@ -209,7 +209,8 @@ When several codes apply, the first one in this order wins:
 8. whether the thing exists or is free: `card_not_in_hand` (also for the same card named twice),
    `card_not_in_marketplace`, `marketplace_empty`, `quest_not_on_table`, `room_not_found`,
    `room_full`, `room_not_waiting`, `no_vote_open`, `nothing_to_undo`, `nothing_to_claim`
-9. every other rule-specific code
+9. every other rule-specific code; for playing a card, in the order of R6.1: `tier_not_allowed`,
+   `no_build_pass`, `build_skipped`
 10. `not_enough_funds`, `cannot_afford_trade`
 
 **Messages and identity**

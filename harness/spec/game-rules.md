@@ -181,7 +181,7 @@ chat are in `accounts.md` (rules `A…`). The card data is `cards.json`.
 
 - **R8.1** When you end your turn you are marked as **done**. Done is final: you can take no more
   main-phase actions this turn.
-- **R8.2** The main phase ends once **every** player is done.
+- **R8.2** The main phase ends once **every** player still in the game is done.
 - **R8.3** The order in which players became done is recorded; it breaks ties at the end of the
   game (R21.8).
 - **R8.4** Players who are made done at the same moment (R9.10) become done in player order
