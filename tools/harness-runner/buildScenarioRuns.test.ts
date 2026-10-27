@@ -20,6 +20,7 @@ const TURN_ONE_DRIVER: ScenarioDriver = {
   givenFields: new Set(),
   steps: new Set(),
   thenFields: new Set(["turn"]),
+  nestedFields: new Map(),
   startSession() {
     return {
       runStep() {
