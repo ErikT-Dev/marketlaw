@@ -1,6 +1,6 @@
 # Phase 01: Toolchain and clean slate
 
-Status: approved
+Status: done
 Milestone: 1 Foundations
 
 ## Goal
@@ -67,3 +67,21 @@ Nothing. The tooling setup of 2026-10-27 is done.
 ## Required scenarios
 
 None. This phase adds no scenarios to `harness/required.yaml`.
+
+## Progress
+
+- [x] 1. Upgrades: Wrangler and `compatibility_date`, Vite and `@vitejs/plugin-react`, TypeScript,
+  React; `npm audit` result recorded. Also `ajv` and `yaml` (patch-level, to clear audit
+  warnings); 10 audit warnings remain, listed in `docs/tooling-setup-proposal.md`.
+- [x] 2. Remove the prototype; D1 migration `0002_drop_press_log.sql`; Durable Object migration
+  deleting `CounterRoom` (tag `v2`, which also adds `GameRoom` on the same `ROOM` binding).
+  Applied locally; the live database and class are changed by the first deploy from master.
+- [x] 3. New skeleton: worker serving the client, empty `GameRoom`, "MarketLaw is being built"
+  page in the design's colours and font (font files committed, owner's choice 2026-10-27).
+  Source Sans 3 is one variable font file (29 KB, both weights) with its OFL licence in
+  `src/client/assets/fonts/`. `PROTOCOL_VERSION` got a small schema test so knip does not report
+  it as unused now that nothing imports it.
+- [x] 4. Branch per phase: checks on every branch push, deploy only from master; merge and
+  rollback note in `docs/merging-and-rollback.md`. Checks run in `.github/workflows/check.yml`.
+- [x] 5. Owner action: back up `design/export/` and `design/assets/` (done by the owner
+  2026-10-27)

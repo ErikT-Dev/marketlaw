@@ -145,7 +145,7 @@ The 425 scenarios cover all of version 1, but each phase implements only part of
 
 | # | Phase | Milestone | Depends on | Status |
 |---|---|---|---|---|
-| 01 | [Toolchain and clean slate](phase-01-toolchain-and-clean-slate.md) | 1 Foundations | – | approved |
+| 01 | [Toolchain and clean slate](phase-01-toolchain-and-clean-slate.md) | 1 Foundations | – | done |
 | 02 | [Scenario runner and card data](phase-02-scenario-runner-and-card-data.md) | 1 Foundations | 01 | approved |
 | 03 | [Engine core: setup and the first turn](phase-03-engine-core.md) | 1 Foundations | 02 | approved |
 | 04 | [Thin slice: one turn on the live server](phase-04-thin-slice.md) | 2 Slice | 03 | approved |
