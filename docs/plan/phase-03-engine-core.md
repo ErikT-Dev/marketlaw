@@ -1,6 +1,6 @@
 # Phase 03: Engine core: setup and the first turn
 
-Status: approved
+Status: in progress
 Milestone: 1 Foundations
 
 ## Goal
@@ -94,3 +94,15 @@ These 35 scenarios are added to `harness/required.yaml` in this phase, by file a
 - `turns-and-time` #34: skip build is reset at the end of the turn
 - `visibility` #1: other players' hands are shown only as a number of cards
 - `visibility` #2: a player sees their own hand
+
+## Progress
+
+- [ ] 1. Game state and actions (discriminated unions, readonly), save shape
+- [ ] 2. Seeded random sequence and the scripted version for scenarios
+- [ ] 3. Setup in the order of R4.6
+- [ ] 4. `apply`: play card, sell, end turn, with reason codes in priority order
+- [ ] 5. End of turn (R10.1, R10.3) and bonus (R14)
+- [ ] 6. `viewFor`, first version
+- [ ] 7. Engine driver for the scenario runner
+- [ ] 8. Invariant checks I1, I5, I6, I7, I10, I17, I18, I27
+

@@ -106,3 +106,27 @@ file.
 - **Why:** it keeps both rules without a config change, and makes ids stricter.
 - **Implemented:** `src/shared/catalogue/` (phase 03, first commit). A clarification of the
   branded-ids rule is proposed in `proposed-rules.md`.
+
+## Q8. Which rule-specific code wins when several apply to playing a card?
+
+- **Phase:** 03, start.
+- **Question:** `HARNESS.md` ranks reason codes in groups. `tier_not_allowed`, `no_build_pass` and
+  `build_skipped` are all in group 9 ("every other rule-specific code"), so a card that breaks
+  more than one of them has no defined code.
+- **Options:** any fixed order.
+- **Solution:** the order of R6.1's list: `tier_not_allowed`, then `no_build_pass`, then
+  `build_skipped`. `not_enough_funds` stays last (group 10).
+- **Why:** it follows the spec's own order. No scenario combines them.
+- **Implemented:** `HARNESS.md` reason-code order, point 9; `src/rules/` (phase 03).
+
+## Q9. Do players who left count when the main phase waits for everyone to be done?
+
+- **Phase:** 03, start.
+- **Question:** R8.2 says the main phase ends once every player is done. R4.5 and R10.1 skip
+  players who left, but R8.2 does not say whether a player who left must be done.
+- **Options:** wait only for players still in the game; treat leaving as being done.
+- **Solution:** the main phase ends once every player still in the game is done. Players who
+  left are never waited for.
+- **Why:** a player who left can take no action (I18), so waiting for them would stall the game.
+  `turns-and-time` #30 gives the leaver `done: true` either way.
+- **Implemented:** `game-rules.md` R8.2; `src/rules/` (phase 03).
