@@ -12,12 +12,17 @@
   --color-text-secondary: #cbd5e1;
   --color-text-title-from: #feffcb;
   --color-text-title-to: #d6fff5;
+  --color-border: #334155;
+  --color-accent: #60a5fa;
+  --color-error: #ef4444;
   --font-family-base: "Source Sans 3", "Source Sans Pro", system-ui, sans-serif;
   --font-size-md: 16px;
   --font-size-xl: 24px;
   --font-size-xxl: 32px;
   --font-weight-regular: 400;
   --font-weight-bold: 700;
+  --space-sm: 8px;
+  --space-md: 12px;
   --space-lg: 16px;
   --space-xxl: 32px;
 }

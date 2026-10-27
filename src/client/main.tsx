@@ -1,6 +1,8 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { App } from "./App";
+import { openRoomHost } from "./openRoomHost";
+import { ClientStore } from "./store/ClientStore";
 import "./tokens.css";
 
 const rootElement = document.getElementById("root");
@@ -10,6 +12,6 @@ if (rootElement === null) {
 
 createRoot(rootElement).render(
   <StrictMode>
-    <App />
+    <App store={new ClientStore(openRoomHost)} />
   </StrictMode>,
 );

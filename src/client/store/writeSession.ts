@@ -1,0 +1,10 @@
+import { SESSION_KEY } from "./SESSION_KEY";
+import type { StoredSession } from "./StoredSession";
+
+export function writeSession(session: StoredSession): void {
+  try {
+    localStorage.setItem(SESSION_KEY, JSON.stringify(session));
+  } catch {
+    return;
+  }
+}
