@@ -101,6 +101,9 @@ These 10 scenarios are added to `harness/required.yaml` in this phase, by file a
    plan, choose **Free** (up to 50 users, $0). Check it by opening
    https://marketlaw.mlawd.workers.dev in a private window: it should ask for an email code.
 2. **Tell Claude the testers' email addresses**, or add them yourself in step 1.
+3. **A protected config change (approved with this phase, but only the owner may make it):** in
+   `knip.json`, remove `"valibot"` from `ignoreDependencies`. It is used now, and knip prints a
+   hint about it. Nothing fails without the change.
 
 ## Progress
 
