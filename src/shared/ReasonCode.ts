@@ -1,24 +1,29 @@
-export type ReasonCode =
-  | "malformed_message"
-  | "unknown_action"
-  | "wrong_protocol_version"
-  | "invalid_token"
-  | "stale_state"
-  | "not_in_game"
-  | "game_over"
-  | "not_this_step"
-  | "out_of_time"
-  | "wrong_phase"
-  | "out_of_market"
-  | "not_your_go"
-  | "already_done"
-  | "action_limit_reached"
-  | "card_not_in_hand"
-  | "not_enough_funds"
-  | "tier_not_allowed"
-  | "no_build_pass"
-  | "build_skipped"
-  | "room_not_found"
-  | "room_full"
-  | "room_not_waiting"
-  | "invalid_room_size";
+import * as v from "valibot";
+
+export const ReasonCode = v.picklist([
+  "malformed_message",
+  "unknown_action",
+  "wrong_protocol_version",
+  "invalid_token",
+  "stale_state",
+  "not_in_game",
+  "game_over",
+  "not_this_step",
+  "out_of_time",
+  "wrong_phase",
+  "out_of_market",
+  "not_your_go",
+  "already_done",
+  "action_limit_reached",
+  "card_not_in_hand",
+  "not_enough_funds",
+  "tier_not_allowed",
+  "no_build_pass",
+  "build_skipped",
+  "room_not_found",
+  "room_full",
+  "room_not_waiting",
+  "invalid_room_size",
+]);
+
+export type ReasonCode = v.InferOutput<typeof ReasonCode>;
