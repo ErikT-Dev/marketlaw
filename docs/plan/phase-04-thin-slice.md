@@ -107,13 +107,13 @@ These 10 scenarios are added to `harness/required.yaml` in this phase, by file a
 
 ## Progress
 
-- [x] 1. Room core in `src/server/room/` (`handleMessage`, `joinRoom`, `createRoomRecord`): pure
-  functions over a `RoomRecord` that say what to save, what to reply and whom to update; the clock
-  and the random sequence are passed in. `GameRoom` is the thin Durable Object adapter
-  (Hibernation API, `serializeAttachment` per socket, key-value storage of the record). The room
-  driver (`tools/harness-runner/room/`) runs raw messages through the same core and counts the
-  rows each would write (B1, B2). Seats follow the join order; random seats (R4.3) come with rooms
-  in phase 16.
+- [x] 1. Room logic in `src/server/room/` over a synchronous `RoomStorage` (`loadRoom`,
+  `createRoomIn`, `joinRoomIn`, `receiveMessage`); the clock and the random sequence are passed in.
+  `GameRoom` is the thin Durable Object adapter (Hibernation API, `serializeAttachment` per socket,
+  the synchronous key-value storage). The room driver (`tools/harness-runner/room/`) runs raw
+  messages through the same logic with an in-memory store that counts its writes (B1, B2), and
+  times each message (B11). Seats follow the join order; random seats (R4.3) come with rooms in
+  phase 16. Reworked after the phase review (Q15).
 - [x] 2. Protocol in `src/shared/protocol/` and `src/shared/api/` as valibot schemas; messages are
   parsed in `parseClientMessage` before any logic, in the reason-code order of `HARNESS.md`.
   `valibot` cannot leave knip's ignore list: `knip.json` is protected (Waiting for the owner).

@@ -167,7 +167,10 @@ file.
   scenarios.
 - **Solution:** the room driver counts the rows each message would write; B1 (at most 1 per
   accepted action) and B2 (none for anything else) are added to `required.yaml`, so the check
-  fails if either is broken. B10 and B11 are measured in the browser tests and on the live site.
+  fails if either is broken. B10 is checked by a browser test (an idle client sends nothing in
+  5 minutes, on a fake clock). B11 is shown in the report as the room driver's time per message
+  (Node time, so it is shown, not required), and is measured as CPU time on the live site after
+  the merge. Corrected after the phase review, which found that B10 and B11 were not measured yet.
 - **Implemented:** `harness/required.yaml`, `tools/harness-runner/` (phase 04).
 
 ## Q13. New development dependency: `playwright-core` 1.64.0
@@ -197,3 +200,49 @@ file.
   The code itself never logs.
 - **Implemented:** `wrangler.jsonc`, `src/server/worker.ts`, `src/shared/api/`, `src/client/api/`
   (phase 04).
+
+## Q15. How the room reads and writes its storage
+
+- **Phase:** 04, phase review findings 1, 4 and 6.
+- **Question:** the review found that a move confirmed to one player could be lost. The room read
+  its state, then waited for D1 (looking up a session token), during which another message could
+  be handled and saved; it then saved its old copy. It also found that the room logic did not run
+  against a storage interface, and that only the room's schema version was checked on load.
+- **Solution:** the room logic (`loadRoom`, `createRoomIn`, `joinRoomIn`, `receiveMessage` in
+  `src/server/room/`) runs against a synchronous `RoomStorage`. `GameRoom` provides it with the
+  Durable Object's synchronous key-value API, and the room driver with an in-memory store that
+  counts its writes. The sender's identity is looked up first; loading, handling and saving then
+  run with no wait in between. A room is kept only when both its own and its saved game's schema
+  version are current; otherwise it is removed, and its sockets are closed with code 4404. The
+  stored record is the room's own writing, so it is read as a `RoomRecord` after the version check,
+  without a full schema.
+- **Why:** no other message can run between reading and saving, so no confirmed move is lost.
+- **Implemented:** `src/server/room/`, `src/server/GameRoom.ts`, `tools/harness-runner/room/`
+  (phase 04).
+
+## Q16. Room messages from players who are not in the room, and room actions before the game
+
+- **Phase:** 04, phase review findings 9 and 10.
+- **Question:** what does someone with a valid account but no place in the room get, and what does
+  a player in a waiting room get for a game action? In scenario `hostile-client` #6, the raw
+  message also names a `seat` and a `room_code`, which the real protocol does not have.
+- **Solution:** any message from someone not in the room, including a resync, is rejected with
+  `not_in_game`, so they see no names. A game action from a player in a room whose game has not
+  started is rejected with `wrong_phase`. The room driver leaves out `seat` and `room_code` when it
+  builds the message, because the protocol never trusts a seat named by the client: the seat comes
+  from the token.
+- **Implemented:** `src/server/room/handleMessage.ts`, `tools/harness-runner/room/rawMessageText.ts`
+  (phase 04).
+
+## Q17. What a browser does when its room or its session no longer exists
+
+- **Phase:** 04, phase review finding 2.
+- **Question:** stored data may be wiped between phases (D1). A browser that remembered a room that
+  no longer existed reconnected about once a second forever (up to 86,400 requests a day), and
+  stayed on "Connecting".
+- **Solution:** the room closes such a socket with code 4404. The browser then stops reconnecting,
+  forgets the room and shows "That room no longer exists" on the room choice page. If its session
+  token is no longer valid (`invalid_token`), it forgets the session and shows the start page.
+  The reconnect delay grows until the first update arrives, not merely until the socket opens.
+- **Implemented:** `src/hosts/RemoteGameHost.ts`, `src/client/store/ClientStore.ts`,
+  `src/server/GameRoom.ts` (phase 04).
