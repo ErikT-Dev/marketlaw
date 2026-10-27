@@ -17,4 +17,8 @@ export type ReasonCode =
   | "not_enough_funds"
   | "tier_not_allowed"
   | "no_build_pass"
-  | "build_skipped";
+  | "build_skipped"
+  | "room_not_found"
+  | "room_full"
+  | "room_not_waiting"
+  | "invalid_room_size";
