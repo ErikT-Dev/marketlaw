@@ -9,12 +9,16 @@ export function openBrowserSocket(url: string, handlers: SocketHandlers): HostSo
       handlers.onMessage(event.data);
     }
   });
-  socket.addEventListener("close", handlers.onClose);
+  socket.addEventListener("close", (event) => {
+    handlers.onClose(event.code);
+  });
   return {
     send: (text) => {
-      if (socket.readyState === WebSocket.OPEN) {
-        socket.send(text);
+      if (socket.readyState !== WebSocket.OPEN) {
+        return false;
       }
+      socket.send(text);
+      return true;
     },
     close: () => {
       socket.close();

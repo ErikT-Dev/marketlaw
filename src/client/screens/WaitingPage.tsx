@@ -25,8 +25,8 @@ export function WaitingPage({ room, connection }: Props) {
         {room.playerNames.length} of {room.size} players
       </p>
       <ul className={styles["list"]} aria-label="Players in the room">
-        {room.playerNames.map((name) => (
-          <li key={name}>{name}</li>
+        {room.playerNames.map((name, index) => (
+          <li key={`${String(index)}-${name}`}>{name}</li>
         ))}
       </ul>
     </main>

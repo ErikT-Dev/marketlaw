@@ -3,6 +3,7 @@ import type { HostEvent } from "../shared/HostEvent";
 import type { ActionIntent } from "../shared/protocol/ActionIntent";
 import { parseServerMessage } from "../shared/protocol/parseServerMessage";
 import { PROTOCOL_VERSION } from "../shared/PROTOCOL_VERSION";
+import { ROOM_GONE_CLOSE_CODE } from "../shared/ROOM_GONE_CLOSE_CODE";
 import type { HostSocket } from "./HostSocket";
 import type { RemoteHostOptions } from "./RemoteHostOptions";
 
@@ -22,9 +23,9 @@ export class RemoteGameHost implements GameHost {
     this.connect();
   }
 
-  readonly sendAction = (action: ActionIntent): string => {
+  readonly sendAction = (action: ActionIntent): string | null => {
     const actionId = this.options.newActionId();
-    this.socket?.send(
+    const isSent = this.socket?.send(
       JSON.stringify({
         protocolVersion: PROTOCOL_VERSION,
         token: this.options.token,
@@ -34,7 +35,7 @@ export class RemoteGameHost implements GameHost {
         action,
       }),
     );
-    return actionId;
+    return isSent === true ? actionId : null;
   };
 
   readonly requestResync = (): void => {
@@ -71,6 +72,7 @@ export class RemoteGameHost implements GameHost {
       const next = message.update.game?.stateVersion ?? null;
       const hasGap = next !== null && this.stateVersion !== null && next > this.stateVersion + 1;
       this.stateVersion = next;
+      this.failedConnects = 0;
       this.emit({
         type: "update",
         update: message.update,
@@ -91,17 +93,17 @@ export class RemoteGameHost implements GameHost {
     this.emit({ type: "connection", status: "connecting" });
     this.socket = this.options.openSocket(this.options.url, {
       onOpen: () => {
-        this.failedConnects = 0;
         this.emit({ type: "connection", status: "open" });
         this.requestResync();
       },
       onMessage: (text) => {
         this.receive(text);
       },
-      onClose: () => {
+      onClose: (code) => {
         this.socket = null;
-        this.emit({ type: "connection", status: "closed" });
-        if (!this.isClosedByPlayer) {
+        const isRoomGone = code === ROOM_GONE_CLOSE_CODE;
+        this.emit({ type: "connection", status: isRoomGone ? "room_gone" : "closed" });
+        if (!this.isClosedByPlayer && !isRoomGone) {
           const delay = Math.min(
             FIRST_RECONNECT_DELAY_MS * 2 ** this.failedConnects,
             LONGEST_RECONNECT_DELAY_MS,

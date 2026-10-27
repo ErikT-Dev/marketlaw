@@ -10,6 +10,7 @@ type FakeNetwork = {
   delays: number[];
   handlers: () => SocketHandlers;
   connects: () => number;
+  goOffline: () => void;
 };
 
 function connectedHost(): FakeNetwork {
@@ -18,15 +19,19 @@ function connectedHost(): FakeNetwork {
   const delays: number[] = [];
   const opened: SocketHandlers[] = [];
   let nextId = 1;
+  let isOpen = true;
   const host = new RemoteGameHost({
     url: SOCKET_URL,
     token: "secret-token",
     openSocket: (url, handlers) => {
       opened.push(handlers);
       return {
-        send: (text) => sent.push({ ...JSON.parse(text), url }),
+        send: (text) => {
+          sent.push({ ...JSON.parse(text), url });
+          return isOpen;
+        },
         close: () => {
-          handlers.onClose();
+          handlers.onClose(1000);
         },
       };
     },
@@ -44,7 +49,17 @@ function connectedHost(): FakeNetwork {
     }
     return last;
   }
-  return { host, sent, events, delays, handlers, connects: () => opened.length };
+  return {
+    host,
+    sent,
+    events,
+    delays,
+    handlers,
+    connects: () => opened.length,
+    goOffline: () => {
+      isOpen = false;
+    },
+  };
 }
 
 const ROOM_UPDATE_TEXT = JSON.stringify({
@@ -107,8 +122,8 @@ describe("RemoteGameHost", () => {
 
   it("reconnects with a growing delay until the player closes it", () => {
     const network = connectedHost();
-    network.handlers().onClose();
-    network.handlers().onClose();
+    network.handlers().onClose(1006);
+    network.handlers().onClose(1006);
     expect(network.delays).toEqual([1000, 2000]);
     network.host.close();
     expect(network.connects()).toBe(3);
@@ -121,5 +136,18 @@ describe("RemoteGameHost", () => {
     unsubscribe();
     network.handlers().onOpen();
     expect(seen).toEqual([]);
+  });
+
+  it("stops reconnecting when the room is gone", () => {
+    const network = connectedHost();
+    network.handlers().onClose(4404);
+    expect(network.connects()).toBe(1);
+    expect(network.events).toEqual([{ type: "connection", status: "room_gone" }]);
+  });
+
+  it("returns no action id when the action could not be sent", () => {
+    const network = connectedHost();
+    network.goOffline();
+    expect(network.host.sendAction({ type: "end_turn" })).toBeNull();
   });
 });
