@@ -322,6 +322,7 @@ A repeated action id is not rejected: it returns the original result again.
 
 - a YAML file cannot be read
 - a scenario does not match `scenario-format.yaml`, or uses a field this file does not explain
+- two scenarios in one file have the same name
 - a scenario names a card, quest or type that does not exist, or covers a rule that does not exist
 - a scenario uses an action, influence trade or reason code not listed in this file
 - a link in the rulebook points to a section that does not exist

@@ -77,3 +77,13 @@ file.
 - **Why:** scenarios write `seats: [{seat: 1, stats: {funds: 10}}]` to check one stat; lists such as
   `deck` and `done_order` are orders, so their order is part of what is checked.
 - **Implemented:** `harness/HARNESS.md` (`then`), `tools/harness-runner/findMismatches.ts` (phase 02).
+
+## Q6. Must scenario names be unique within a file?
+
+- **Phase:** 02, found by the phase review.
+- **Question:** `required.yaml` names scenarios by file and name, but nothing stopped two scenarios
+  in one file from sharing a name, which would make both required at once.
+- **Options:** match by number instead; check that names are unique.
+- **Solution:** `npm run harness:check` fails when two scenarios in one file have the same name;
+  listed under "Checking the harness itself" in `HARNESS.md`. No scenario breaks it today.
+- **Implemented:** `harness/HARNESS.md`, `tools/harness-check/checkUniqueNames.ts` (phase 02).

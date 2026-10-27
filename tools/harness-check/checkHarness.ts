@@ -6,6 +6,7 @@ import { checkFieldsDocumented } from "./checkFieldsDocumented.ts";
 import { checkNames } from "./checkNames.ts";
 import { checkRulebookLinks } from "./checkRulebookLinks.ts";
 import { checkScenarioFormat } from "./checkScenarioFormat.ts";
+import { checkUniqueNames } from "./checkUniqueNames.ts";
 import { HARNESS_PATHS } from "./HARNESS_PATHS.ts";
 import type { HarnessProblem } from "./HarnessProblem.ts";
 import { loadHarnessFiles } from "./loadHarnessFiles.ts";
@@ -17,6 +18,7 @@ export function checkHarness(): number {
   const problems: ReadonlyArray<HarnessProblem> = [
     ...loadProblems,
     ...checkScenarioFormat(files),
+    ...checkUniqueNames(files),
     ...checkCoveredRulesExist(files),
     ...checkNames(files),
     ...checkCodesAndActions(files),
