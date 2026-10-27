@@ -30,3 +30,12 @@ arrays and records, never `Map` or `Set`.
 **Why:** `prefer-readonly-parameter-types` reports branded strings, `Map` and `Set` as writable
 (Q7, phase 03). Literal unions are stricter than brands.
 **Enforced by:** `@typescript-eslint/prefer-readonly-parameter-types` · types.
+
+## For `rules/workflow.md`
+
+### Keep the shell in the project root
+Do not leave the shell inside a subfolder (`cd src/rules`). The PostToolUse lint hook looks for
+ESLint relative to the shell's working directory, and from a subfolder every file write reports
+"Cannot find module .../node_modules/eslint".
+**Why:** found in phase 03; the errors looked like lint failures but were not.
+**Enforced by:** judgment.

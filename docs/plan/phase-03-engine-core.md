@@ -97,12 +97,28 @@ These 35 scenarios are added to `harness/required.yaml` in this phase, by file a
 
 ## Progress
 
-- [ ] 1. Game state and actions (discriminated unions, readonly), save shape
-- [ ] 2. Seeded random sequence and the scripted version for scenarios
-- [ ] 3. Setup in the order of R4.6
-- [ ] 4. `apply`: play card, sell, end turn, with reason codes in priority order
-- [ ] 5. End of turn (R10.1, R10.3) and bonus (R14)
-- [ ] 6. `viewFor`, first version
-- [ ] 7. Engine driver for the scenario runner
-- [ ] 8. Invariant checks I1, I5, I6, I7, I10, I17, I18, I27
+- [x] 1. Game state and actions in `src/rules/` (shared view, stats, reason-code and marketplace
+  types in `src/shared/`); save shape `SavedGame` with `startSavedGame` and `applyToSavedGame`,
+  which replays exactly from seed and action log. Card, type and quest names became literal unions
+  first (Q7), because brands fail the read-only parameter rule in `src/rules/`.
+- [x] 2. `Random` interface and `seededRandom(seed, stream)`: each accepted action gets its own
+  stream (its place in the action log), so replays need only the seed. A pick with one possible
+  result is never asked (`pickTier`). The scripted version is the driver's `engineRandom` in
+  `tools/harness-runner/engine/`.
+- [x] 3. Setup in the order of R4.6 (`setUpGame`), with the full draw procedure of R17.4
+  (`drawCard`). Seats are numbered 1 to N; which account sits where (R4.3) is the room's job
+  (phase 16).
+- [x] 4. `apply` for play card, sell and end turn; reason codes in the `HARNESS.md` order, with
+  R6.1's order inside group 9 (Q8). The main phase ends when every player still in the game is
+  done (Q9).
+- [x] 5. End-of-turn steps (R10.1, R10.3) and bonus (R14). Differs from the phase file: the new
+  turn also refills empty marketplace places (R11.1), because `apply` takes the random sequence and
+  the spec asks for it; the scenarios that end a turn give a full marketplace. No market phase yet.
+- [x] 6. `viewFor`, first version: own hand, others as hand counts, public stats and piles; never
+  the deck order or the seed.
+- [x] 7. Engine driver (`tools/harness-runner/engine/`). Drivers now also declare the fields they
+  handle inside `seats`, `marketplace`, `quests` and `view`, so a scenario using any other is "not
+  yet" rather than wrongly passing. All 35 scenarios pass; 8 more from later phases pass too.
+- [x] 8. Invariant checks in `src/rules/invariantViolations.ts` for phase 08's simulator, with
+  unit tests that play actions and that trigger each violation.
 
