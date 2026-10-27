@@ -1,6 +1,6 @@
 # Phase 01: Toolchain and clean slate
 
-Status: approved
+Status: in progress
 Milestone: 1 Foundations
 
 ## Goal
@@ -67,3 +67,15 @@ Nothing. The tooling setup of 2026-10-27 is done.
 ## Required scenarios
 
 None. This phase adds no scenarios to `harness/required.yaml`.
+
+## Progress
+
+- [ ] 1. Upgrades: Wrangler and `compatibility_date`, Vite and `@vitejs/plugin-react`, TypeScript,
+  React; `npm audit` result recorded
+- [ ] 2. Remove the prototype; D1 migration `0002_drop_press_log.sql`; Durable Object migration
+  deleting `CounterRoom`
+- [ ] 3. New skeleton: worker serving the client, empty `GameRoom`, "MarketLaw is being built"
+  page in the design's colours and font (font files committed, owner's choice 2026-10-27)
+- [ ] 4. Branch per phase: checks on every branch push, deploy only from master; merge and
+  rollback note in `docs/`
+- [ ] 5. Owner action: back up `design/export/` and `design/assets/` (reminded in the report)
