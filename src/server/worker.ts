@@ -62,7 +62,7 @@ async function createRoom(request: Request, env: Env): Promise<Response> {
       return json({ isOk: true, code });
     }
   }
-  return json({ isOk: false, reason: "room_not_found" }, 503);
+  return json({ isOk: false, reason: "no_free_room_code" }, 503);
 }
 
 async function routeRoom(request: Request, env: Env, path: RegExpExecArray): Promise<Response> {
@@ -73,6 +73,9 @@ async function routeRoom(request: Request, env: Env, path: RegExpExecArray): Pro
   const room = env.ROOM.get(env.ROOM.idFromName(code.output));
   if (path[2] === "socket") {
     return room.fetch(request);
+  }
+  if (request.method !== "POST") {
+    return new Response("Method not allowed", { status: 405 });
   }
   const body = await bodyOf(request, JoinRoomRequest);
   const identity = body === null ? null : await identityOf(body.token, env);

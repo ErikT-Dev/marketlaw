@@ -91,7 +91,10 @@ export function handleMessage(input: MessageInput): MessageOutcome {
     return rejectMessage(record, connection, { code: "invalid_token", actionId, now });
   }
   const bound = { ...connection, identity: sender };
-  return message.type === "resync"
+  if (message.type === "action") {
+    return handleAction(input, bound, sender.playerId, message);
+  }
+  return record.players.some((player) => player.playerId === sender.playerId)
     ? updated(record, bound, sender.playerId, null)
-    : handleAction(input, bound, sender.playerId, message);
+    : rejectMessage(record, connection, { code: "not_in_game", actionId: null, now });
 }
