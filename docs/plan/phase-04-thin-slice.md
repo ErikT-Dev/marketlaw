@@ -1,6 +1,6 @@
 # Phase 04: Thin slice: one turn on the live server
 
-Status: in progress
+Status: waiting for the owner (site lock, item 8)
 Milestone: 2 Slice
 
 ## Goal
@@ -137,4 +137,62 @@ These 10 scenarios are added to `harness/required.yaml` in this phase, by file a
   hand). `playwright-core` pinned (Q13).
 - [ ] 10. Measurements: O4 done (`decisions.md`); Workers Logs on (Q14). B11 and awake time (O9)
   need the live room, so they are measured right after the merge, which waits for the site lock.
+
+## Report
+
+Written before the merge; the live measurements (B11 CPU time and awake time, O9) are added after
+it.
+
+**What was built.**
+- **Server:** guests (D1 `players`, token hashes only), rooms created and joined by code, and the
+  `GameRoom` Durable Object that runs the engine. It saves each accepted move before replying or
+  updating anyone.
+- **Protocol:** versioned messages with session tokens, action ids and state versions. Unreadable,
+  unknown, outdated, forged, stale and repeated messages are rejected or answered as `HARNESS.md`
+  says. A connection is closed after 30 rejected messages in a minute.
+- **Browser:** `RemoteGameHost` reconnects and resyncs on its own; bare start, room, waiting and
+  game screens; a "please use a larger screen" message below 1280 px.
+- **Browser tests:** they run on GitHub on every branch and before every deploy.
+
+**What to try (after the merge).** Behind the site lock: open two windows (one private), create a
+room in one and join with its code in the other, sell or play a card and end the turn in both,
+and see turn 2 in both. Refreshing reloads the same game.
+
+**Differences from the phase file.**
+- Seats follow the join order. Random seats (R4.3) come with rooms in phase 16.
+- `valibot` stays in knip's ignore list until the owner changes the protected `knip.json`.
+- B11 and awake time are measured on the live site after the merge.
+
+**Decisions:** Q10 (Access is free), Q11 (repeated action ids), Q12 (B1 and B2 required), Q13
+(`playwright-core` pinned), Q14 (Workers Logs on, tokens only in bodies), Q15 (room storage and the
+lost-move race), Q16 (non-members and waiting rooms), Q17 (rooms and sessions that are gone). O4 was
+measured (`decisions.md`): PBKDF2 is capped at 100,000 iterations in Workers.
+
+**Phase review findings and what happened to each:**
+1. **Blocker: a confirmed move could be lost** while the room waited for D1. Fixed (Q15): the
+   sender is looked up first, and loading, handling and saving run with no wait in between.
+2. **Blocker: a browser whose room was gone reconnected forever.** Fixed (Q17): close code 4404,
+   no reconnect, back to the room choice or start page; the backoff resets only after an update.
+3. **B10 and B11 were not measured.** Fixed: an idle-client browser test (B10); the room driver's
+   time per message is shown in the report (B11, highest 1 ms); live CPU time follows the merge.
+   Q12 corrected.
+4. **There was no storage interface, so B1 could not fail.** Fixed (Q15): `RoomStorage`, and the
+   driver counts real writes.
+5. **valibot was still in knip's ignore list.** Answered: `knip.json` is protected, so the change
+   is listed for the owner.
+6. **The saved game's schema version was not checked.** Fixed: both versions are checked on load.
+7. **There were no tests for joining or the room logic.** Fixed: room tests in the Workers runtime
+   (creating with a taken code, full and started rooms, joining twice, seat order, writes per
+   message, non-member resync, old saves). Answered for the worker's HTTP routes: they need D1
+   migrations inside the Workers test pool, which needs a change to the protected
+   `vitest.config.ts`; the browser tests cover them for now.
+8. **Progress and enforcement docs were behind.** Fixed: Progress was updated while the review
+   ran, and `enforcement.md` now.
+9. **Anyone with a token could watch a room's names.** Fixed (Q16): non-members get `not_in_game`.
+10. **The room driver dropped `seat` and `room_code` without saying so.** Answered: recorded in
+    Q16.
+11. **Smaller items.** Fixed: the error when no free code is found; `/join` accepts POST only;
+    the leak check now also covers the turn-1 hands during turn 1; an action that cannot be sent
+    is reported instead of left pending; pending actions are cleared on disconnect; the waiting
+    list's keys. Answered: a shared host contract suite comes when a second host exists.
 
