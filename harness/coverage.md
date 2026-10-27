@@ -160,7 +160,7 @@ it by hand.
 | M1.11 | rooms (3) | Covered |
 | M1.12 | rooms (2) | Covered |
 | M1.13 | rooms (1) | Covered |
-| M2.1 | client (1), rooms (1) | Covered |
+| M2.1 | client (1), rooms (2) | Covered |
 | M2.2 | connections-and-leaving (1), rooms (1) | Covered |
 | M3.1 | – | Checked another way: A description of how players interact; each part is tested by its own rule. *(approved by the owner, 2026-10-25)* |
 | M3.2 | visibility (4) | Covered |
@@ -202,6 +202,7 @@ it by hand.
 | M9.3 | hostile-client (1) | Covered |
 | M9.4 | hostile-client (2) | Covered |
 | M9.5 | hostile-client (3) | Covered |
+| M9.6 | hostile-client (1) | Covered |
 
 ## Accounts (A)
 
@@ -256,8 +257,8 @@ it by hand.
 | A8.9 | lobby-queue-and-limits (2) | Covered |
 | A8.10 | lobby-queue-and-limits (1) | Covered |
 | A8.11 | connections-and-leaving (1), lobby-queue-and-limits (2) | Covered |
-| A9.1 | lobby-queue-and-limits (3) | Covered |
-| A9.2 | lobby-queue-and-limits (3) | Covered |
+| A9.1 | lobby-queue-and-limits (4) | Covered |
+| A9.2 | lobby-queue-and-limits (5) | Covered |
 | A9.3 | lobby-queue-and-limits (2) | Covered |
 | A9.4 | lobby-queue-and-limits (3) | Covered |
 | A9.5 | lobby-queue-and-limits (1) | Covered |
@@ -342,7 +343,7 @@ it by hand.
 
 ## Summary
 
-- Rules: 306
-- Scenarios: 421
+- Rules: 307
+- Scenarios: 425
 - Gaps: 0
 - Checked another way or also checked another way: R3.2, R3.5, R17.10, R19.2, M3.1, M3.6, M4.2, A6.4, A10.6

@@ -160,3 +160,41 @@
         state_version: 6
       - seat: 2
         state_version: 7
+
+- name: a connection that sends 30 rejected messages within a minute is closed
+  covers: [M9.6]
+  when:
+    - {raw: {seat: 1, text: "{not json"}}
+    - {raw: {seat: 1, text: "{not json"}}
+    - {raw: {seat: 1, text: "{not json"}}
+    - {raw: {seat: 1, text: "{not json"}}
+    - {raw: {seat: 1, text: "{not json"}}
+    - {raw: {seat: 1, text: "{not json"}}
+    - {raw: {seat: 1, text: "{not json"}}
+    - {raw: {seat: 1, text: "{not json"}}
+    - {raw: {seat: 1, text: "{not json"}}
+    - {raw: {seat: 1, text: "{not json"}}
+    - {raw: {seat: 1, text: "{not json"}}
+    - {raw: {seat: 1, text: "{not json"}}
+    - {raw: {seat: 1, text: "{not json"}}
+    - {raw: {seat: 1, text: "{not json"}}
+    - {raw: {seat: 1, text: "{not json"}}
+    - {raw: {seat: 1, text: "{not json"}}
+    - {raw: {seat: 1, text: "{not json"}}
+    - {raw: {seat: 1, text: "{not json"}}
+    - {raw: {seat: 1, text: "{not json"}}
+    - {raw: {seat: 1, text: "{not json"}}
+    - {raw: {seat: 1, text: "{not json"}}
+    - {raw: {seat: 1, text: "{not json"}}
+    - {raw: {seat: 1, text: "{not json"}}
+    - {raw: {seat: 1, text: "{not json"}}
+    - {raw: {seat: 1, text: "{not json"}}
+    - {raw: {seat: 1, text: "{not json"}}
+    - {raw: {seat: 1, text: "{not json"}}
+    - {raw: {seat: 1, text: "{not json"}}
+    - {raw: {seat: 1, text: "{not json"}}
+    - {raw: {seat: 1, text: "{not json"}}
+  then:
+    seats:
+      - seat: 1
+        connected: false

@@ -347,3 +347,26 @@
   then:
     rejected: daily_game_start_limit
     room: {state: waiting}
+
+- name: a guest at 2000 actions today cannot join a room
+  covers: [A9.2]
+  given:
+    accounts: [{name: Ann, actions_today: 2000}, {name: Bea}]
+    room: {code: K7QR2P, size: 2, public: true, owner: Bea, players: [Bea], state: waiting}
+  when:
+    - {player: Ann, action: join_room, code: K7QR2P}
+  then:
+    rejected: daily_action_limit
+    unchanged: true
+
+- name: the daily action count resets at midnight UTC for joining a room
+  covers: [A9.1, A9.2]
+  given:
+    clock_ms: 1761436800000
+    accounts: [{name: Ann, actions_today: 2000}, {name: Bea}]
+    room: {code: K7QR2P, size: 3, public: true, owner: Bea, players: [Bea], state: waiting}
+  when:
+    - wait_ms: 86400000
+    - {player: Ann, action: join_room, code: K7QR2P}
+  then:
+    room: {players: [Bea, Ann]}

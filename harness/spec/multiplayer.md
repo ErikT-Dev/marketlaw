@@ -172,3 +172,5 @@ None yet.
   older version is rejected with `stale_state`.
 - **M9.5** A message that cannot be read, or lacks a field, is rejected with `malformed_message`;
   an unknown action with `unknown_action`.
+- **M9.6** A connection that has sent 30 rejected messages within one minute, for any reason, is
+  closed. The player can connect again.

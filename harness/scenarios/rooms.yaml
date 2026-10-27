@@ -287,3 +287,15 @@
     - {player: Bea, action: decline_game}
   then:
     room: {state: ended, players: [Ann, Bea]}
+
+- name: a player waiting in a room cannot join another room
+  covers: [M2.1]
+  given:
+    accounts: [{name: Ann}, {name: Bea}, {name: Cat}]
+    room: {code: K7QR2P, size: 3, public: true, owner: Bea, players: [Bea, Ann], state: waiting}
+    other_rooms: [{code: M4TX9C, size: 3, public: true, owner: Cat, players: [Cat], state: waiting}]
+  when:
+    - {player: Ann, action: join_room, code: M4TX9C}
+  then:
+    rejected: busy_elsewhere
+    unchanged: true
