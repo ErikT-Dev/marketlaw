@@ -144,3 +144,41 @@ file.
 - **Solution:** use it; the owner turns it on in the dashboard and adds the testers' email
   addresses (only the owner can change dashboard settings).
 - **Implemented:** phase 04, "Waiting for the owner".
+
+## Q11. What does a repeated action id return when the first try was rejected?
+
+- **Phase:** 04, item 1 (M9.3).
+- **Question:** M9.3 says an action whose id was already used gets the original result again.
+  Remembering a rejection would cost a row written per rejected message, which B2 forbids (0 rows
+  for rejected actions).
+- **Options:** store every result (breaks B2); store only accepted results and evaluate a repeated
+  rejected action again.
+- **Solution:** the room remembers the last 100 accepted action ids per player. A repeat of one of
+  them returns the current view and changes nothing. A repeat of a rejected action is evaluated
+  again. Because a rejection changes nothing, and the repeat carries the same state version, it
+  gets the same result unless the game moved on, in which case it is rejected as `stale_state`.
+- **Why:** it keeps M9.3's promise (no action is ever applied twice) within B2.
+- **Implemented:** `src/server/room/handleMessage.ts`, `acceptAction.ts` (phase 04).
+
+## Q12. Budgets B1 and B2 on the required list
+
+- **Phase:** 04.
+- **Question:** the phase measures B1 and B2 from now on, but its list of required names has only
+  scenarios.
+- **Solution:** the room driver counts the rows each message would write; B1 (at most 1 per
+  accepted action) and B2 (none for anything else) are added to `required.yaml`, so the check
+  fails if either is broken. B10 and B11 are measured in the browser tests and on the live site.
+- **Implemented:** `harness/required.yaml`, `tools/harness-runner/` (phase 04).
+
+## Q13. New development dependency: `playwright-core` 1.64.0
+
+- **Phase:** 04, item 9.
+- **Question:** `@axe-core/playwright` declares `playwright-core` as a peer dependency, and npm
+  installed the newest one (1.64.1) next to the 1.64.0 inside `@playwright/test`. The two copies
+  have different `Page` types, so the browser test does not compile.
+- **Options:** pin `playwright-core` to the version `@playwright/test` uses; drop the accessibility
+  check.
+- **Solution:** `playwright-core` 1.64.0 as an exact development dependency (published
+  2026-10-07, 20 days before it was added), so npm keeps one copy. It is part of `@playwright/test`
+  already, so it adds no size anywhere and nothing to the client bundle.
+- **Implemented:** `package.json` (phase 04).

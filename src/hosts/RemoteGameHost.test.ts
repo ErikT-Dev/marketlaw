@@ -85,16 +85,14 @@ describe("RemoteGameHost", () => {
   it("passes on updates and rejections and asks again after a stale state", () => {
     const network = connectedHost();
     network.handlers().onMessage(ROOM_UPDATE_TEXT);
-    network
-      .handlers()
-      .onMessage(
-        JSON.stringify({
-          type: "rejected",
-          protocolVersion: 1,
-          actionId: "id-1",
-          code: "stale_state",
-        }),
-      );
+    network.handlers().onMessage(
+      JSON.stringify({
+        type: "rejected",
+        protocolVersion: 1,
+        actionId: "id-1",
+        code: "stale_state",
+      }),
+    );
     expect(network.events.map((event) => event.type)).toEqual(["update", "rejected"]);
     expect(network.sent).toEqual([
       { protocolVersion: 1, token: "secret-token", type: "resync", url: SOCKET_URL },
