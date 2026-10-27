@@ -1,12 +1,10 @@
-import * as v from "valibot";
 import type { Result } from "../Result";
 import type { Card } from "./Card";
-import { CardId } from "./CardId";
-import { CardName } from "./CardName";
 import type { CardTypeCount } from "./CardTypeCount";
 import type { Combo } from "./Combo";
 import { comboFromRaw } from "./comboFromRaw";
-import { knownTypeName } from "./knownTypeName";
+import { TypeName } from "./TypeName";
+import * as v from "valibot";
 import type { RawCard } from "./RawCard";
 
 const COMBO_SLOTS = [1, 2, 3, 4] as const;
@@ -21,7 +19,7 @@ function typesOf(card: RawCard): Result<ReadonlyArray<CardTypeCount>, ReadonlyAr
   ].filter(({ text }) => text !== "");
   const problems = [
     ...listed
-      .filter(({ text }) => knownTypeName(text) === undefined)
+      .filter(({ text }) => !v.is(TypeName, text))
       .map(({ text }) => `type "${text}" is not one of the 33 types`),
     ...listed
       .filter(({ text }, index) => listed.findIndex((other) => other.text === text) !== index)
@@ -31,15 +29,14 @@ function typesOf(card: RawCard): Result<ReadonlyArray<CardTypeCount>, ReadonlyAr
     return { isOk: false, error: ["has no types"] };
   }
   const types = listed.flatMap(({ text, count }) => {
-    const type = knownTypeName(text);
-    return type === undefined ? [] : [{ type, count }];
+    return v.is(TypeName, text) ? [{ type: text, count }] : [];
   });
   return problems.length > 0 ? { isOk: false, error: problems } : { isOk: true, value: types };
 }
 
 function combosOf(
   card: RawCard,
-  cardNames: ReadonlySet<string>,
+  cardNames: ReadonlyArray<string>,
 ): Result<ReadonlyArray<Combo>, ReadonlyArray<string>> {
   const results = COMBO_SLOTS.map((slot) => comboFromRaw(card, slot, cardNames));
   const problems = results.flatMap((result) => (result.isOk ? [] : [result.error]));
@@ -51,7 +48,7 @@ function combosOf(
 
 export function cardFromRaw(
   card: RawCard,
-  cardNames: ReadonlySet<string>,
+  cardNames: ReadonlyArray<string>,
 ): Result<Card, ReadonlyArray<string>> {
   const types = typesOf(card);
   const combos = combosOf(card, cardNames);
@@ -64,8 +61,7 @@ export function cardFromRaw(
   return {
     isOk: true,
     value: {
-      id: v.parse(CardId, card.cardId),
-      name: v.parse(CardName, card.cardName),
+      name: card.cardName,
       sector: card.sector,
       tier: card.tier,
       baseCost: card.cost,

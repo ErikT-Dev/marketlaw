@@ -87,3 +87,22 @@ file.
 - **Solution:** `npm run harness:check` fails when two scenarios in one file have the same name;
   listed under "Checking the harness itself" in `HARNESS.md`. No scenario breaks it today.
 - **Implemented:** `harness/HARNESS.md`, `tools/harness-check/checkUniqueNames.ts` (phase 02).
+
+## Q7. Branded ids against read-only parameters in `src/rules/`
+
+- **Phase:** 03, start.
+- **Question:** `rules/typescript.md` asks for branded ids, and ESLint's
+  `prefer-readonly-parameter-types` in `src/rules/` must pass. That rule reports every parameter
+  holding a branded string (`string & {brand}`), a `Map` or a `Set`, because it counts their
+  methods as writable. Engine state full of card names could not be passed to any function.
+- **Options:** ask the owner to set `treatMethodsAsReadonly` in the protected ESLint config;
+  wrap ids in objects; use literal unions for names that come from fixed lists.
+- **Solution:** literal unions. `CardName` is the union of the 240 names (`CARD_NAMES`, checked
+  against `cards.json`), `TypeName` the 33 types of R21.7, `QuestName` the 45 quests of R20.7.
+  They are stricter than brands (only real names compile) and pass the rule. The engine uses
+  arrays and records instead of `Map` and `Set`. The phase 02 `CardId` was dropped: card names are
+  unique, and nothing used the id. Random ids (players, rooms, tokens) are not in `src/rules/` and
+  stay branded.
+- **Why:** it keeps both rules without a config change, and makes ids stricter.
+- **Implemented:** `src/shared/catalogue/` (phase 03, first commit). A clarification of the
+  branded-ids rule is proposed in `proposed-rules.md`.

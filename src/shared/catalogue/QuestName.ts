@@ -1,5 +1,3 @@
-import * as v from "valibot";
+import type { QUEST_NAMES_BY_TIER } from "./QUEST_NAMES_BY_TIER";
 
-export const QuestName = v.pipe(v.string(), v.minLength(1), v.brand("QuestName"));
-
-export type QuestName = v.InferOutput<typeof QuestName>;
+export type QuestName = (typeof QUEST_NAMES_BY_TIER)[number]["names"][number];

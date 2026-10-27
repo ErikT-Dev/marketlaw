@@ -20,3 +20,13 @@ When a phase is merged, deployed and the live site checked, start the next phase
 session with a one-line status; do not end the turn to report and wait for "continue".
 **Why:** the owner asked for this after phase 02 (2026-10-27), when Claude stopped after the merge.
 **Enforced by:** judgment.
+
+## For `rules/typescript.md`
+
+### Ids from fixed lists are literal unions
+"Branded ids" applies to ids made at run time (players, rooms, tokens). Names from a fixed list
+(cards, types, quests, seats) are literal unions of the allowed values. In `src/rules/`, use
+arrays and records, never `Map` or `Set`.
+**Why:** `prefer-readonly-parameter-types` reports branded strings, `Map` and `Set` as writable
+(Q7, phase 03). Literal unions are stricter than brands.
+**Enforced by:** `@typescript-eslint/prefer-readonly-parameter-types` · types.
