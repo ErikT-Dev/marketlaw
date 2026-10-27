@@ -1,0 +1,97 @@
+import { applyToSavedGame } from "../../rules/applyToSavedGame";
+import type { PlayerId } from "../../shared/PlayerId";
+import { PROTOCOL_VERSION } from "../../shared/PROTOCOL_VERSION";
+import type { ClientMessage } from "../../shared/protocol/ClientMessage";
+import type { ReasonCode } from "../../shared/ReasonCode";
+import { acceptAction } from "./acceptAction";
+import type { ConnectionState } from "./ConnectionState";
+import { gameActionOf } from "./gameActionOf";
+import type { MessageInput } from "./MessageInput";
+import type { MessageOutcome } from "./MessageOutcome";
+import type { RoomRecord } from "./RoomRecord";
+import { rejectMessage } from "./rejectMessage";
+import { updateFor } from "./updateFor";
+
+type ActionMessage = Extract<ClientMessage, { readonly type: "action" }>;
+
+function updated(
+  record: RoomRecord,
+  connection: ConnectionState,
+  playerId: PlayerId,
+  acceptedActionId: string | null,
+): MessageOutcome {
+  return {
+    record,
+    connection,
+    shouldSave: false,
+    reply: {
+      type: "update",
+      protocolVersion: PROTOCOL_VERSION,
+      acceptedActionId,
+      update: updateFor(record, playerId),
+    },
+    shouldUpdateEveryone: false,
+    shouldClose: false,
+  };
+}
+
+function handleAction(
+  input: MessageInput,
+  connection: ConnectionState,
+  playerId: PlayerId,
+  message: ActionMessage,
+): MessageOutcome {
+  const { record, now, randomFor } = input;
+  function reject(code: ReasonCode): MessageOutcome {
+    return rejectMessage(record, connection, { code, actionId: message.actionId, now });
+  }
+  const seat = record.game?.seats.find((candidate) => candidate.playerId === playerId);
+  if (record.game === null || seat === undefined) {
+    return reject(
+      record.players.some((player) => player.playerId === playerId) ? "wrong_phase" : "not_in_game",
+    );
+  }
+  if (seat.acceptedActionIds.includes(message.actionId)) {
+    return updated(record, connection, playerId, message.actionId);
+  }
+  if (message.stateVersion !== seat.stateVersion) {
+    return reject("stale_state");
+  }
+  const action = gameActionOf(seat.seat, message.action);
+  const result =
+    action === undefined
+      ? undefined
+      : applyToSavedGame(record.game.saved, action, randomFor(record.game.saved));
+  if (result === undefined || !result.isOk) {
+    return reject(result?.error.code ?? "malformed_message");
+  }
+  const game = acceptAction(
+    record.game,
+    { seat: seat.seat, actionId: message.actionId },
+    result.value,
+  );
+  const next = { ...record, game };
+  return {
+    ...updated(next, connection, playerId, message.actionId),
+    shouldSave: true,
+    shouldUpdateEveryone: true,
+  };
+}
+
+export function handleMessage(input: MessageInput): MessageOutcome {
+  const { record, connection, parsed, sender, now } = input;
+  if (!parsed.isOk) {
+    return rejectMessage(record, connection, { code: parsed.error, actionId: null, now });
+  }
+  const message = parsed.value;
+  const actionId = message.type === "action" ? message.actionId : null;
+  const isOtherPlayer =
+    connection.identity !== null && connection.identity.playerId !== sender?.playerId;
+  if (sender === null || isOtherPlayer) {
+    return rejectMessage(record, connection, { code: "invalid_token", actionId, now });
+  }
+  const bound = { ...connection, identity: sender };
+  return message.type === "resync"
+    ? updated(record, bound, sender.playerId, null)
+    : handleAction(input, bound, sender.playerId, message);
+}
