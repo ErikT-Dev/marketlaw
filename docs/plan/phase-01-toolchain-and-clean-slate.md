@@ -1,6 +1,6 @@
 # Phase 01: Toolchain and clean slate
 
-Status: in progress
+Status: awaiting go-ahead
 Milestone: 1 Foundations
 
 ## Goal
