@@ -12,3 +12,11 @@ class and its binding in the next deploy.
 **Why:** Cloudflare rejects a delete while the same deploy has a binding (code 10061), and the
 deploy workflow has already run the D1 migrations by then (phase 01 merge, 2026-10-27).
 **Enforced by:** judgment.
+
+## For `rules/workflow.md`
+
+### No pause between phases
+When a phase is merged, deployed and the live site checked, start the next phase in the same
+session with a one-line status; do not end the turn to report and wait for "continue".
+**Why:** the owner asked for this after phase 02 (2026-10-27), when Claude stopped after the merge.
+**Enforced by:** judgment.
