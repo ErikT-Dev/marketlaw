@@ -1,0 +1,352 @@
+# The MarketLaw harness
+
+The harness is the owner's definition of how MarketLaw must behave, and the proof that it does.
+The game is correct when every check here passes. Nothing in this folder describes how the game
+is built; it only describes what the game does.
+
+## Who owns what
+
+- The owner owns everything in `harness/`. Only the owner changes the specs, scenarios,
+  invariants, budgets and coverage.
+- The coding agent may only add new scenario files in `scenarios/proposed/`, for the owner to
+  accept or reject. Accepted scenarios move out of `proposed/`.
+- Generated output (`screens/`, `report.html`) is written by the test run, never by hand.
+
+## The files
+
+| File | What it is for |
+|---|---|
+| `HARNESS.md` | This file: the files, the scenario format, the reason codes, what passing means |
+| `spec/overview.md` | The pitch, version 1 at a glance, what is in and out of scope |
+| `spec/glossary.md` | The exact meaning of every term |
+| `spec/game-rules.md` | How a game is played (rules R1–R21) |
+| `spec/cards.json` | The 240 cards |
+| `spec/multiplayer.md` | Rooms, connections, leaving, what each player can see (rules M1–M8) |
+| `spec/accounts.md` | Accounts, records, ratings, lobby, ranked queue, limits, chat (rules A1–A11) |
+| `spec/client.md` | Game menu, rules viewer, card set, tutorial (rules C1–C4) |
+| `spec/tutorial.md` | The tutorial script (steps T0–T5) |
+| `spec/rulebook.md` | The rulebook players read in the game |
+| `scenarios/*.yaml` | Concrete test cases, one file per topic |
+| `scenarios/proposed/*.yaml` | Scenarios suggested by the coding agent, waiting for the owner |
+| `invariants.yaml` | What must be true after every action in random simulated games |
+| `budgets.yaml` | Limits per game and per player, from the Cloudflare Free plan |
+| `coverage.md` | Every rule against the scenarios that test it, with gaps flagged; generated, never edited by hand |
+| `scenario-format.yaml` | The formal version of the scenario format below; every scenario file must match it |
+| `coverage-exceptions.yaml` | Rules the owner approved as checked another way instead of, or as well as, by scenarios |
+| `screens/` | Screenshots from the browser tests (generated) |
+| `report.html` | The result of the last test run (generated) |
+
+## The scenario format
+
+Every scenario file is a list of scenarios. Every scenario has exactly these parts:
+
+| Part | Meaning |
+|---|---|
+| `name` | What the scenario shows, as a plain English sentence: `rejects a tier 2 card before turn 5`. Letters, digits, spaces and simple punctuation only. |
+| `covers` | The rules and tutorial steps it tests: `[R6.1]`, `[M6.8, A3.1]`. |
+| `given` | The starting situation. Only what matters is written; everything else is as at the start of a normal game. |
+| `when` | The actions, in order, each by one player. |
+| `then` | What must be true afterwards. |
+
+### `given`
+
+| Field | Meaning | If left out |
+|---|---|---|
+| `players` | Number of seats, 1 to 4 (1 only for the tutorial) | 2 |
+| `kind` | `casual`, `ranked` or `tutorial` | `casual` |
+| `turn` | The turn number | 1 |
+| `phase` | `new_game` (not started yet), `market`, `main` or `ended` | `main` |
+| `first_player` | Seat number of this turn's first player | as R4.4 |
+| `market_go` | In the market phase: whose go it is | the first player's go |
+| `seats` | Per seat: `stats`, `hand`, `city`, `gained_types`, `build_passes`, `build_passes_bought`, `influence_uses`, `projects`, `quests_completed`, `combos_claimed`, `played_this_turn`, `skipped_build`, `actions_this_turn`, `done`, `left`, `connected`, `time_bank_ms`, `timeouts_in_a_row`, `market` (`in` before their market go this turn, `out` after it), `new_cards`, `state_version`, `actions_this_game` (accepted actions in this game so far, for A9.2), `player` (the account in that seat) | starting values (R2.1), empty hand and city, nothing used or claimed, connected |
+| `deck` | The deck, top first, as card names | all cards not placed elsewhere, in `cards.json` order |
+| `discard` | The discard pile, as card names | empty |
+| `marketplace` | Each `place` and its `card`, plus `phases_shown`: how many market phases it has been on display | empty; `phases_shown` 0 |
+| `quests` | Each quest on the table, and `turns_on_table` so far | empty; `turns_on_table` 1 |
+| `quest_list` | Quests still in the quest list | all quests not on the table |
+| `bonus_types` | The 2 bonus types | the first 2 types in R21.7 |
+| `random` | The random results the rules will ask for, in the order they are asked. Each entry is one of `sector`, `tier`, `shuffle` (the resulting order), `quest`, `type` (a bonus type), `seats` (accounts in seat order) or `generated_name` | none; see below |
+| `clock_ms` | The server time at the start, in milliseconds | 0 |
+| `first_completions` | Projects someone has already completed in an earlier turn (R16.6) | none |
+| `paused`, `last_vote_turn` | Whether the game is paused (R9.12); the turn of the last abandon vote (M7.2) | not paused; no vote yet |
+| `room`, `other_rooms` | A room's `code`, `size`, `public`, `owner`, `players`, `state` (`waiting`, `accepting`, `playing`, `ended`), `kind` of its last game, `chat`, `messages_sent` per player, `ended_ms` | none |
+| `accounts` | Each account's `name`, `kind` (`guest` or `registered`), `email`, `email_confirmed`, `pending_email`, `password`, `rating`, `ranked_games`, `highest_rating`, `games` (how many game records), `online`, `in_game`, `ranking_place`, `last_used_ms`, `last_username_change_ms`, and today's counts `actions_today`, `games_started_today`, `emails_today` | none |
+| `email_counts` | Emails sent to each address today (A1.9) | none |
+| `queue`, `match`, `queue_count` | Players in the ranked queue in order, each a name (game size 3 only) or `{player, sizes}`; a match being confirmed; the queue count, a total or `{total, by_size}` | empty |
+| `tutorial` | A player in the tutorial, at the start of a step; the state is the one `tutorial.md` gives for that step | none |
+| `site_games_today` | Games started on the site today (A9.4) | 0 |
+| `ranked_accounts`, `records` | How many accounts are in the ranking table (A5.4); saved game records (A3) | none |
+| `site_counts_today` | Site-wide counts for today: `tutorials`, `chat_messages` (A9.6) | 0 |
+
+Cards are always named exactly as in `cards.json`. Stats are written as numbers, for example
+`stats: {funds: 10, workforce: -1}`; the stat names are `funds`, `income`, `influence`, `workforce`,
+`quality`, `satisfaction`, `product`, `distribution` and `bonus`.
+
+Random results: a random pick with only one possible result (for example the tier in turn 1) is
+not asked for and takes no entry in `random`. A shuffle is given as the resulting order of the
+whole deck, top first, for example `{shuffle: [Orchard, Pub, Library]}`. A scenario must list
+every random result the rules ask for, in order, or it fails, with one exception: when a game is
+set up during the scenario (`start_game`, everyone accepting a game or a rematch, or a match
+being confirmed), setup results the scenario does not list may be anything, as long as `then`
+checks nothing that depends on them. A scenario that lists any setup result lists all of them
+up to the last one it needs. In a new game, `deck` is the order after
+the starting shuffle. Marketplace places are named `residential`, `industry`, `service`,
+`public_quality`, `public_satisfaction`, `open_1`, `open_2` and `open_3`.
+
+### `when`
+
+Each step is one of:
+
+- `seat: 1` with an `action` and its details, for example `{seat: 1, action: play_card, card: Row House}`
+- `player: Ann` with an `action`, for room, account, lobby, chat and tutorial actions by an account
+- `visitor: v1` with an `action`, for someone on the site who is not logged in
+- `start_game`: a game in phase `new_game` is set up and starts
+- `wait_ms: 30000`: the server clock moves on and every deadline reached fires; with
+  `alarm_fires: false` the deadline has passed but its alarm is late (R9.6)
+- `disconnect: 2` or `reconnect: 2` (a seat or a player name): a connection closes or opens
+- `raw: …`: an exact message from a client, for hostile-client scenarios (malformed, forged,
+  duplicated or stale messages)
+
+Action details: `kind` for a draw action (`Residential`, `Industry`, `Service`, `Public quality
+card` or `Public satisfaction card`), `option` (`A` or `B`) for a turn draw, `human_check` (`passed` or `missing`),
+`login` (a username or email address), `username` for a new or changed username, `text` for a chat message, or `text_length`,
+`text_bytes` and `text_kind` (for example `emoji`) to describe a long message without writing
+it out, `player_to_mute` for a mute and `player_to_unmute` for an unmute.
+
+### `then`
+
+| Field | Meaning |
+|---|---|
+| `rejected` | The last step was rejected with this reason code (see below) |
+| `unchanged` | `true`: the rejected step changed nothing at all |
+| `seats` | Per seat, any of the `given` fields, with their expected values |
+| `deck`, `deck_count`, `discard`, `holding_pile`, `marketplace`, `quests`, `quest_list`, `turn`, `phase`, `first_player`, `market_go`, `paused`, `done_order` | Expected values; `market_go` can include `time_left_ms` |
+| `type_counts`, `new_cards` (inside `seats`) | A seat's type counts (R12.1) and cards marked new (R18.10) |
+| `quest_list_excludes` | Quests that must not be in the quest list |
+| `away`, `time_bank_shown`, `known_in_hand` (inside `view`) | Whether a seat is shown as away, a bank as shown in whole seconds, and marketplace cards known to be in a hand (M3.3) |
+| `vote_answers` (inside `view`) | During an abandon vote: `answered` and `of`, the only things the view holds about other players' answers (M7.5) |
+| Marker values | `none` (no game record), `kept` and `removed` (a replay record), `closed` and `deleted` (a room), `ended` (the tutorial), `unchanged` (ratings), `open` and `closed` (a vote) |
+| `room` (in `then`) | Besides the `given` room fields: `code_format` (the allowed characters) and `chat_last` (the last chat message) |
+| `tutorial_room`, `generated_name`, `connected_tab`, `chat_count`, `view_chat`, `view_lobby`, `ranking_page`, `record_usernames`, `replay_record` (`kept` or `removed`), `saved_before_shown`, `rules_viewer`, `rulebook_covers` | The tutorial room, a generated username, which tab holds the game, chat as stored and as one player sees it, the lobby as one player sees it, a page of the ranking table, usernames shown in records, whether a replay record exists, chat saved before shown, the rules viewer, and the R sections the rulebook covers |
+| `room`, `game`, `lobby_rooms`, `queue`, `match`, `accounts`, `players_online`, `chat`, `notified`, `emails_sent`, `logged_in`, `match_history`, `ranking`, `menu`, `card_set`, `card_detail` | The expected state of rooms, accounts, the lobby and client screens |
+| `view` | What one seat's view shows: `{seat: 2, of_seat: 1, stats: {...}, hand_count: 5, contains: [...], hides: [...]}` |
+| `message_to` | That a seat or player was sent a particular notice or text |
+| `log_contains`, `log_excludes` (inside `view`) | Public draw-log entries that must or must not appear (M3.3) |
+| `ended` | The game has ended: `winner`, `places` (seats, 1st first), `scores`, `bonus_type_points`, or `abandoned: true` |
+| `record` | The saved game record (A3) |
+| `ratings` | ELO ratings after the game (A10) |
+| `tutorial_step` | The tutorial step the player is on (T…) |
+
+A scenario passes when every field in `then` matches exactly. Fields not mentioned are not
+checked.
+
+### Example
+
+```yaml
+- name: rejects a tier 3 card before turn 5
+  covers: [R6.1]
+  given:
+    turn: 4
+    seats:
+      - seat: 1
+        stats: {funds: 20}
+        hand: [Small Apartment, Garden Skyscraper]
+  when:
+    - {seat: 1, action: play_card, card: Garden Skyscraper}
+  then:
+    rejected: tier_not_allowed
+    unchanged: true
+```
+
+## Actions
+
+| Action | Details | Rule |
+|---|---|---|
+| `play_card` | `card` | R6 |
+| `sell` | `cards` (one or more) | R5.1 |
+| `claim_all` | | R12.6 |
+| `influence` | `trade` (one of the names below), and for draw actions `kind` and `tier` | R15 |
+| `complete_project` | `project`: `quality`, `satisfaction` or `workforce` | R16 |
+| `complete_quest` | `quest` | R19.5 |
+| `undo` | | R7 |
+| `end_turn` | | R8 |
+| `turn_draw` | `option: A` with `card`, or `option: B` with `sector` | R18.8 |
+| `leave_game` | | M6 |
+| `call_vote`, `vote` | `vote`: `yes` or `no` | M7 |
+| `create_room`, `join_room`, `leave_room`, `change_size`, `accept_game`, `decline_game`, `ask_rematch` | room details | M1, M8 |
+| `join_queue`, `change_sizes`, `leave_queue`, `confirm_match`, `decline_match` | `sizes` for joining and changing: a list of 2, 3 and 4 (joining without it means 3 only) | A8 |
+| `create_guest`, `sign_up`, `confirm_email`, `log_in`, `log_out`, `reset_password`, `change_email`, `change_username`, `delete_account` | account details | A1, A2 |
+| `send_chat`, `mute`, `unmute` | `text`, `player_to_mute`, `player_to_unmute` | A11 |
+| `start_tutorial`, `leave_tutorial`, `continue` | | C4, T |
+| `open_site`, `open_lobby`, `open_game`, `open_menu`, `open_rules`, `open_card_set`, `open_card`, `filter_cards`, `search_cards`, `open_match_history`, `open_ranking`, `ask_generated_name` | screen details: `from` (where the menu is opened), `tab`, `card`, `sector`, `tier`, `type`, `text`, `of` (whose history), `jump_to_me` | A4–A7, C1–C3, M5.1 |
+
+Influence trades, in the order of R15.1: `influence_to_funds`, `influence_to_quality`,
+`influence_to_satisfaction`, `influence_to_workforce`, `fund_to_influence`, `buy_build_pass`,
+`influence_to_build_pass`, `skip_build`, `quality_to_satisfaction_with_influence`,
+`satisfaction_to_quality_with_influence`, `product_to_distribution`, `distribution_to_product`,
+`quality_to_workforce_with_influence`, `satisfaction_to_workforce_with_influence`,
+`workforce_to_satisfaction`, `workforce_to_quality`, `two_quality_to_satisfaction`,
+`two_satisfaction_to_quality`, `four_quality_to_workforce`, `four_satisfaction_to_workforce`,
+`draw_tier_1`, `draw_tier_2`, `draw_tier_3`.
+
+## Reason codes
+
+Every rejected action gives exactly one of these codes and changes nothing, except `out_of_time`,
+which also applies the player's time-out (R9.6).
+
+When several codes apply, the first one in this order wins:
+
+1. `malformed_message`, `unknown_action`, `wrong_protocol_version`
+2. `invalid_token`, `stale_state`
+3. `not_in_game` (including a player who left), `game_over`
+4. `not_this_step`
+5. `out_of_time`
+6. `wrong_phase`, `out_of_market`, `not_your_go`, `already_done`
+7. `action_limit_reached`, the daily limits, `rejoin_too_soon`, `busy_elsewhere`, `human_check_failed`
+8. whether the thing exists or is free: `card_not_in_hand` (also for the same card named twice),
+   `card_not_in_marketplace`, `marketplace_empty`, `quest_not_on_table`, `room_not_found`,
+   `room_full`, `room_not_waiting`, `no_vote_open`, `nothing_to_undo`, `nothing_to_claim`
+9. every other rule-specific code
+10. `not_enough_funds`, `cannot_afford_trade`
+
+**Messages and identity**
+
+| Code | When |
+|---|---|
+| `malformed_message` | The message cannot be read, or a field is missing or of the wrong kind |
+| `unknown_action` | The action name does not exist |
+| `wrong_protocol_version` | The client speaks an older or unknown protocol version |
+| `invalid_token` | The player token is unknown or forged |
+| `stale_state` | The action was based on an older state version for that player |
+| `not_in_game` | The player has no seat in this game, or has left it |
+
+A repeated action id is not rejected: it returns the original result again.
+
+**Timing and phases**
+
+| Code | When |
+|---|---|
+| `wrong_phase` | The action is not possible in the current phase |
+| `not_your_go` | In the market phase, it is another player's go |
+| `already_done` | The player is already done this main phase |
+| `out_of_time` | The message arrived at or after the player's deadline (R9.6) |
+| `action_limit_reached` | The player already took 50 main-phase actions this turn (R5.3) |
+| `game_over` | The game has ended |
+
+**Playing cards and selling**
+
+| Code | When |
+|---|---|
+| `card_not_in_hand` | The card is not in the player's hand |
+| `not_enough_funds` | The player cannot pay the real cost |
+| `tier_not_allowed` | A tier 2 or 3 card before turn 5 |
+| `no_build_pass` | A second card this turn without a build pass |
+| `build_skipped` | The player used skip build this turn |
+
+**Combos, influence, projects, quests and undo**
+
+| Code | When |
+|---|---|
+| `nothing_to_claim` | Claim all with no combo ready |
+| `trade_limit_reached` | The influence action was used as often as allowed |
+| `cannot_afford_trade` | The player lacks something the trade costs |
+| `skip_build_after_play` | Skip build after playing a card this turn |
+| `no_card_of_kind` | No card of that kind and tier in the deck or discard pile as the player sees them |
+| `project_already_completed` | The player already completed this project |
+| `project_needs_not_met` | Not enough of the stat, or a negative stat (R16.2) |
+| `quest_not_on_table` | The quest is not on the quests table |
+| `quest_already_completed` | The player already completed this quest |
+| `quest_needs_not_met` | The requirement is not met |
+| `nothing_to_undo` | No action to undo |
+| `cannot_undo` | The latest action cannot be undone (R7.2–R7.4) |
+
+**Market phase**
+
+| Code | When |
+|---|---|
+| `out_of_market` | The player has already had their market go this turn |
+| `card_not_in_marketplace` | The card is not in the marketplace |
+| `marketplace_empty` | Option A when the marketplace is empty |
+
+**Votes, rooms and rematches**
+
+| Code | When |
+|---|---|
+| `vote_not_allowed` | A vote in a ranked game |
+| `vote_too_soon` | A vote within 5 turns of the last one |
+| `vote_already_open` | A vote while another is open |
+| `no_vote_open` | Voting when no vote is open |
+| `room_not_found` | No room has that code |
+| `room_full` | The room has no free place |
+| `room_not_waiting` | The room's game has already started |
+| `not_room_owner` | Only the owner can do this |
+| `room_size_too_small` | The new size is less than the players in the room |
+| `invalid_room_size` | A size other than 2, 3 or 4 |
+| `invalid_game_sizes` | No game size chosen for the ranked queue, or a size other than 2, 3 or 4 (A8.2, A8.3) |
+| `rejoin_too_soon` | Rejoining within 2 minutes of not accepting (M1.11, A8.9) |
+| `busy_elsewhere` | The player is already waiting in a room, in the queue or in a game (M2) |
+| `rematch_not_possible` | Fewer than 2 players in the room, or its game has not ended |
+
+**Limits, accounts and chat**
+
+| Code | When |
+|---|---|
+| `daily_action_limit` | The player reached 2,000 actions today (A9.2) |
+| `daily_game_start_limit` | The player started 10 games today (A9.3) |
+| `site_game_limit` | 50 games started on the site today (A9.4) |
+| `site_daily_cap` | A site-wide daily cap on tutorials or chat messages is reached (A9.6) |
+| `human_check_failed` | The human check is missing or failed (A1.12) |
+| `username_taken` | The username is in use |
+| `username_invalid` | The username breaks A2.1 |
+| `username_reserved` | "Deleted player" (A2.3) |
+| `username_change_too_soon` | A change within 7 days of the last (A2.4) |
+| `email_invalid` | Not an email address |
+| `password_invalid` | Shorter than 8 or longer than 64 characters |
+| `login_failed` | Wrong username, email or password |
+| `email_not_confirmed` | The action needs a confirmed email address |
+| `email_limit_reached` | 3 emails today for this account or address (A1.9) |
+| `not_registered` | The action needs a registered user |
+| `message_empty` | An empty chat message |
+| `message_too_long` | Over 200 characters or 800 bytes |
+| `chat_too_fast` | Within 2 seconds of the player's last message |
+| `chat_room_limit` | The player already sent 100 messages in this room |
+| `not_this_step` | In the tutorial, an action other than the one the step asks for (C4.4) |
+
+## Checking the harness itself
+
+`npm run harness:check` checks the harness files before any game code exists, and regenerates
+`coverage.md`. It reports every problem with its file and scenario name, and fails when:
+
+- a YAML file cannot be read
+- a scenario does not match `scenario-format.yaml`, or uses a field this file does not explain
+- a scenario names a card, quest or type that does not exist, or covers a rule that does not exist
+- a scenario uses an action, influence trade or reason code not listed in this file
+- a link in the rulebook points to a section that does not exist
+- a rule has no scenario and no approved exception
+
+## What passing means
+
+The game passes the harness when all of these are true:
+
+0. `npm run harness:check` reports no problems.
+
+1. Every scenario in `scenarios/` passes. Scenarios in `scenarios/proposed/` are run and reported
+   but do not count until the owner accepts them.
+2. Every invariant in `invariants.yaml` holds after every action in at least 10,000 random
+   simulated games. A failure reports the shortest seed and action list that reproduces it.
+3. No message to any player contains a card that is hidden from that player (the leak test).
+4. Every budget in `budgets.yaml` is met.
+5. Every rule in the spec files is covered by at least one scenario in `coverage.md`, or is
+   marked there by the owner as checked another way (for example by a screenshot or a budget).
+6. The browser tests run 2–4 players through full games, refreshes, disconnects and a second tab,
+   and save screenshots to `screens/`.
+7. The checks that `coverage.md` lists instead of scenarios all pass:
+   - a card-data check: `cards.json` has 240 cards, each with a sector, tier, cost, stat numbers,
+     types and combos, and the costs and product or distribution per tier match R3.5
+   - a statistical check: over 100,000 simulated draws per turn, the share of each tier matches
+     R17.10 to within 1 percentage point
+   - a rating calculation check: the formula of A10 gives the expected totals, including a total
+     of exactly +2.5 rounding to +3 and −2.5 to −3
+   - a replay export check: a running and an ended room are exported and replay exactly (M4.2)
+
+`report.html` shows the result of each of these after every run.

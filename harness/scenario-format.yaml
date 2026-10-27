@@ -1,0 +1,266 @@
+$schema: http://json-schema.org/draft-07/schema#
+title: MarketLaw scenario file
+description: >
+  The formal version of the scenario format in HARNESS.md. Every scenario file must match it.
+  Field names here must also be explained in HARNESS.md.
+type: array
+items:
+  $ref: "#/definitions/scenario"
+definitions:
+  scenario:
+    type: object
+    additionalProperties: false
+    required: [name, covers, then]
+    properties:
+      name:
+        type: string
+        pattern: "^[A-Za-z0-9 ,.'()-]+$"
+      covers:
+        type: array
+        minItems: 1
+        items:
+          type: string
+          pattern: "^[RMACT][0-9]+\\.[0-9]+$"
+      given:
+        $ref: "#/definitions/given"
+      when:
+        type: array
+        items:
+          $ref: "#/definitions/step"
+      then:
+        $ref: "#/definitions/then"
+  given:
+    type: object
+    additionalProperties: false
+    properties:
+      players: {type: integer, minimum: 1, maximum: 4}
+      kind: {enum: [casual, ranked, tutorial]}
+      turn: {type: integer, minimum: 1, maximum: 40}
+      phase: {enum: [new_game, market, main, ended]}
+      first_player: {type: integer, minimum: 1, maximum: 4}
+      market_go: {type: object}
+      seats:
+        type: array
+        items:
+          $ref: "#/definitions/seat"
+      deck: {type: array, items: {type: string}}
+      discard: {type: array, items: {type: string}}
+      marketplace: {type: array, items: {$ref: "#/definitions/marketplace_place"}}
+      quests: {type: array, items: {type: object}}
+      quest_list: {type: array, items: {type: string}}
+      bonus_types: {type: array, items: {type: string}, minItems: 2, maxItems: 2}
+      random: {type: array, items: {type: object, minProperties: 1, maxProperties: 1}}
+      clock_ms: {type: integer}
+      first_completions: {type: array, items: {enum: [quality, satisfaction, workforce]}}
+      paused: {type: boolean}
+      last_vote_turn: {type: integer}
+      room: {type: object}
+      other_rooms: {type: array}
+      accounts: {type: array}
+      ranked_accounts: {type: integer}
+      records: {type: array}
+      queue: {type: array, items: {oneOf: [{type: string}, {$ref: "#/definitions/queue_entry"}]}}
+      queue_count: {oneOf: [{type: integer}, {type: object}]}
+      match: {type: object}
+      tutorial: {type: object}
+      site_games_today: {type: integer}
+      site_counts_today: {type: object}
+      email_counts: {type: object}
+  queue_entry:
+    type: object
+    additionalProperties: false
+    required: [player, sizes]
+    properties:
+      player: {type: string}
+      sizes: {type: array, items: {enum: [2, 3, 4]}, minItems: 1}
+  seat:
+    type: object
+    additionalProperties: false
+    required: [seat]
+    properties:
+      seat: {type: integer, minimum: 1, maximum: 4}
+      player: {type: string}
+      stats: {$ref: "#/definitions/stats"}
+      hand: {type: array, items: {type: string}}
+      city: {type: array, items: {type: string}}
+      gained_types: {type: object}
+      type_counts: {type: object}
+      build_passes: {type: integer, minimum: 0}
+      build_passes_bought: {type: integer, minimum: 0}
+      influence_uses: {type: object}
+      projects: {type: array, items: {enum: [quality, satisfaction, workforce]}}
+      quests_completed: {type: array, items: {type: string}}
+      combos_claimed: {type: array, items: {type: object}}
+      played_this_turn: {type: boolean}
+      skipped_build: {type: boolean}
+      actions_this_turn: {type: integer, minimum: 0}
+      done: {type: boolean}
+      left: {type: boolean}
+      connected: {type: boolean}
+      time_bank_ms: {type: integer, minimum: 0, maximum: 900000}
+      timeouts_in_a_row: {type: integer, minimum: 0}
+      market: {enum: [in, out]}
+      new_cards: {type: array, items: {type: string}}
+      state_version: {type: integer}
+      actions_this_game: {type: integer, minimum: 0}
+  stats:
+    type: object
+    additionalProperties: false
+    properties:
+      funds: {type: integer}
+      income: {type: integer}
+      influence: {type: integer}
+      workforce: {type: integer}
+      quality: {type: integer}
+      satisfaction: {type: integer}
+      product: {type: integer}
+      distribution: {type: integer}
+      bonus: {type: integer}
+  marketplace_place:
+    type: object
+    additionalProperties: false
+    required: [place, card]
+    properties:
+      place: {enum: [residential, industry, service, public_quality, public_satisfaction, open_1, open_2, open_3]}
+      card: {type: [string, "null"]}
+      phases_shown: {type: integer, minimum: 0, maximum: 2}
+  step:
+    oneOf:
+      - const: start_game
+      - type: object
+        additionalProperties: false
+        minProperties: 1
+        properties:
+          seat: {type: integer}
+          player: {type: string}
+          visitor: {type: string}
+          action: {type: string}
+          wait_ms: {type: integer, minimum: 0}
+          alarm_fires: {type: boolean}
+          disconnect: {type: [integer, string]}
+          reconnect: {type: [integer, string]}
+          raw: {type: object}
+          card: {type: string}
+          cards: {type: array, items: {type: string}}
+          trade: {type: string}
+          kind: {type: string}
+          tier: {type: integer}
+          sector: {type: string}
+          option: {enum: [A, B]}
+          project: {enum: [quality, satisfaction, workforce]}
+          quest: {type: string}
+          vote: {enum: ["yes", "no"]}
+          code: {type: string}
+          size: {type: integer}
+          sizes: {type: array, items: {type: integer}}
+          public: {type: boolean}
+          human_check: {enum: [passed, missing]}
+          email: {type: string}
+          password: {type: string}
+          login: {type: string}
+          username: {type: string}
+          text: {type: string}
+          text_length: {type: integer}
+          text_bytes: {type: integer}
+          text_kind: {type: string}
+          player_to_mute: {type: string}
+          player_to_unmute: {type: string}
+          from: {type: string}
+          of: {type: string}
+          tab: {type: integer}
+          type: {type: string}
+          jump_to_me: {type: boolean}
+  then:
+    type: object
+    additionalProperties: false
+    minProperties: 1
+    properties:
+      rejected: {type: string}
+      unchanged: {const: true}
+      seats: {type: array, items: {$ref: "#/definitions/seat"}}
+      deck: {type: array, items: {type: string}}
+      deck_count: {type: integer}
+      discard: {type: array, items: {type: string}}
+      holding_pile: {type: array, items: {type: string}}
+      marketplace: {type: array, items: {$ref: "#/definitions/marketplace_place"}}
+      quests: {type: array}
+      quest_list: {type: array, items: {type: string}}
+      quest_list_excludes: {type: array, items: {type: string}}
+      turn: {type: integer}
+      phase: {enum: [new_game, market, main, ended]}
+      first_player: {type: integer}
+      market_go: {type: object}
+      paused: {type: boolean}
+      done_order: {type: array, items: {type: integer}}
+      bonus_types: {type: array, items: {type: string}}
+      view: {$ref: "#/definitions/view"}
+      message_to: {type: object}
+      ended: {type: object}
+      record: {}
+      ratings: {}
+      tutorial_step: {type: string}
+      tutorial: {}
+      tutorial_room: {}
+      room: {}
+      game: {type: object}
+      lobby_rooms: {type: array}
+      queue: {type: array}
+      queue_count: {oneOf: [{type: integer}, {type: object}]}
+      match: {type: object}
+      accounts: {type: array}
+      players_online: {type: array}
+      chat: {}
+      chat_count: {type: integer}
+      view_chat: {type: object}
+      view_lobby: {type: object}
+      notified: {type: array}
+      emails_sent: {type: array}
+      logged_in: {type: object}
+      generated_name: {type: object}
+      connected_tab: {type: object}
+      match_history: {type: array}
+      ranking: {type: array}
+      ranking_page: {type: object}
+      record_usernames: {type: array}
+      replay_record: {enum: [kept, removed]}
+      vote: {enum: [open, closed]}
+      saved_before_shown: {type: boolean}
+      menu: {type: array}
+      card_set: {type: object}
+      card_detail: {type: object}
+      rules_viewer: {type: object}
+      rulebook_covers: {type: array}
+  view:
+    type: object
+    additionalProperties: false
+    required: [seat]
+    properties:
+      seat: {type: integer}
+      of_seat: {type: integer}
+      stats: {$ref: "#/definitions/stats"}
+      hand: {type: array, items: {type: string}}
+      hand_count: {type: integer}
+      city: {type: array, items: {type: string}}
+      type_counts: {type: object}
+      build_passes: {type: integer}
+      influence_uses: {type: object}
+      projects: {type: array}
+      quests_completed: {type: array}
+      done: {type: boolean}
+      away: {type: boolean}
+      time_bank_ms: {type: integer}
+      time_bank_shown: {type: integer}
+      deck_count: {type: integer}
+      discard: {type: array, items: {type: string}}
+      known_in_hand: {type: array, items: {type: string}}
+      vote_answers:
+        type: object
+        additionalProperties: false
+        required: [answered, of]
+        properties:
+          answered: {type: integer}
+          of: {type: integer}
+      log_contains: {type: array}
+      log_excludes: {type: array}
+      contains: {type: array}
+      hides: {type: array}

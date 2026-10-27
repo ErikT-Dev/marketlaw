@@ -1,0 +1,214 @@
+- id: I1
+  name: every card is in exactly one place
+  covers: [R3.1, R17.1, R17.7]
+  when: after every action
+  holds: >
+    Each of the 240 cards is in exactly one of these places: the deck, the discard pile, the
+    holding pile, the marketplace, one player's hand, or one player's city. No card is lost,
+    added or duplicated.
+
+- id: I2
+  name: the holding pile is empty outside the main phase
+  covers: [R17.7]
+  when: after every action
+  holds: >
+    Outside the main phase the holding pile holds no cards.
+
+- id: I3
+  name: the marketplace has at most 8 cards and kind places hold their kind
+  covers: [R18.1, R18.2, R18.3]
+  when: after every action
+  holds: >
+    The marketplace holds at most 8 cards, one per place. Every card in a kind place is of that
+    place's kind.
+
+- id: I4
+  name: no marketplace card stays longer than 2 market phases
+  covers: [R18.13, R18.14]
+  when: after every action
+  holds: >
+    Every marketplace card has been on display during at most 2 market phases.
+
+- id: I5
+  name: no tier 2 or 3 card is played before turn 5
+  covers: [R6.1]
+  when: after every action
+  holds: >
+    Every tier 2 or tier 3 card in a city was played in turn 5 or later.
+
+- id: I6
+  name: cards played per turn stay within build passes
+  covers: [R6.1, R15.1]
+  when: after every action
+  holds: >
+    In each turn, the number of cards a player has played is at most 1 plus the build passes they
+    used in that turn, and 0 if they used skip build before playing.
+
+- id: I7
+  name: funds, influence, build passes, product and distribution are never negative
+  covers: [R2.1, R6.1, R15.1, R13.1]
+  when: after every action
+  holds: >
+    Every player's funds, influence, build passes, product and distribution are 0 or more.
+
+- id: I8
+  name: income never goes down
+  covers: [R2.1, R13.1, R16.3]
+  when: after every action
+  holds: >
+    A player's income is at least 3 and never goes down.
+
+- id: I9
+  name: income is always taken when possible
+  covers: [R13.1, R13.2]
+  when: after every action
+  holds: >
+    After every action, no player has at least 1 product and at least 1 distribution while their
+    workforce, quality and satisfaction are all 0 or more.
+
+- id: I10
+  name: bonus is turned into funds at the end of every turn
+  covers: [R14.3]
+  when: after the end-of-turn steps
+  holds: >
+    After the end-of-turn steps, every player's bonus is less than 10.
+
+- id: I11
+  name: limited influence actions stay within their limits
+  covers: [R15.1]
+  when: after every action
+  holds: >
+    No player has used an influence action more often than its limit per game in R15.1.
+
+- id: I12
+  name: projects and quests are completed at most once per player
+  covers: [R16.1, R19.5]
+  when: after every action
+  holds: >
+    No player has completed the same project twice, or the same quest twice.
+
+- id: I13
+  name: type counts match cities and gained types
+  covers: [R12.1, R20.6]
+  when: after every action
+  holds: >
+    Every player's count of each type equals the sum of that type over their cards in play (a
+    card that counts a type twice adds 2) plus the types they gained from quests.
+
+- id: I14
+  name: combos are never claimed more often than allowed
+  covers: [R12.3, R12.4]
+  when: after every action
+  holds: >
+    No card-name or ordinary type-count combo has been claimed more than once by a player. An
+    infinite combo has never been claimed more times than the player's current type count divided
+    by the combo's count, rounded down.
+
+- id: I15
+  name: each quest is in exactly one place
+  covers: [R19.1, R19.6, R19.7, R19.9]
+  when: after every action
+  holds: >
+    Each of the 45 quests is in exactly one of: the quest list, the quests table, or gone for good
+    because it was completed.
+
+- id: I16
+  name: the quests table respects its size, ages and tiers
+  covers: [R19.1, R19.7, R19.8]
+  when: after every action
+  holds: >
+    The quests table holds at most 4 quests, or 5 from the start of turn 20. No quest has been on
+    the table for more than 5 turns. No tier 2 quest was placed before turn 5, and no tier 3
+    quest before turn 13.
+
+- id: I17
+  name: the action limit is never exceeded
+  covers: [R5.3]
+  when: after every action
+  holds: >
+    No player has taken more than 50 accepted main-phase actions in one turn.
+
+- id: I18
+  name: done players and players who left take no game actions
+  covers: [R8.1, M6.2]
+  when: after every action
+  holds: >
+    No main-phase action is accepted from a player who is done this turn, and no game action is
+    accepted from a player who has left the game. Chat and room actions are not game actions.
+
+- id: I19
+  name: time banks stay within 0 and 15 minutes and never grow
+  covers: [R9.3, R9.8]
+  when: after every action
+  holds: >
+    Every player's time bank is between 0 and 900,000 milliseconds and never goes up.
+
+- id: I20
+  name: the first player follows the seat rotation
+  covers: [R4.4, R4.5]
+  when: at the start of every turn
+  holds: >
+    The first player of turn n is the player in seat ((n - 1) mod N) + 1, or if that player has
+    left, the next seat still in the game.
+
+- id: I21
+  name: every game ends
+  covers: [R21.1, R21.3, R9.14, M6.8, M6.9]
+  when: at the end of every simulated game
+  holds: >
+    Every game ends, at the latest after the main phase of turn 40, unless it is abandoned or
+    ends earlier because one or no players are left.
+
+- id: I22
+  name: the end of the game is scored correctly
+  covers: [R21.4, R21.7, R21.8, R21.9, A3.4]
+  when: when a game ends
+  holds: >
+    Every player's score equals the score formula applied to their final values. The places are
+    every player exactly once, ordered by R21.8, R21.9 and A3.4. A game that is not abandoned has
+    exactly one winner, who is in 1st place and has not left.
+
+- id: I23
+  name: no player sees another player's hidden cards
+  covers: [M3.2, M3.4]
+  when: for every message sent to a player
+  holds: >
+    No message to a player names or identifies a card in another player's hand, the order of the
+    deck, a card drawn by another player during the current main phase, or the random seed.
+    Other players' hands appear only as a number of cards.
+
+- id: I24
+  name: other players' main-phase actions stay hidden until the phase ends
+  covers: [R5.4, R5.5, R5.7]
+  when: for every message sent to a player during a main phase
+  holds: >
+    During a main phase, everything a player is shown about another player equals that player's
+    state at the start of the phase, except whether they are done, away or have left, and their
+    time bank. The deck
+    and discard pile shown equal their state at the start of the phase, minus the viewer's own
+    draws, plus the discard shuffles the viewer caused.
+
+- id: I25
+  name: a player's state version only moves with what they may see
+  covers: [M3.2]
+  when: for every message sent to a player
+  holds: >
+    A player's state version changes only with their own accepted actions, phase changes and
+    reveals, never with another player's hidden actions.
+
+- id: I26
+  name: every game replays exactly
+  covers: [M4.1, R17.2]
+  when: at the end of every simulated game
+  holds: >
+    Replaying the game's seed and action log from the start produces exactly the same state after
+    every action, and the same end result.
+
+- id: I27
+  name: rejected actions change nothing
+  covers: [R5.1, R18.6, R9.6]
+  when: after every rejected action
+  holds: >
+    A rejected action leaves the game state, every player's view and every player's state version
+    exactly as they were. The one exception is a rejection as out of time, which also applies
+    that player's time-out (R9.6).

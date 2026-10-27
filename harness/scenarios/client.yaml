@@ -1,0 +1,163 @@
+- name: the game menu offers rules card set and tutorial in the lobby
+  covers: [C1.1, C1.2]
+  given:
+    accounts: [{name: Ann}]
+  when:
+    - {player: Ann, action: open_menu, from: lobby}
+  then:
+    menu: [Rules, Card set, Tutorial]
+
+- name: during a game the menu offers rules and card set but not the tutorial
+  covers: [C1.1, C1.2]
+  given:
+    seats:
+      - seat: 1
+        player: Ann
+  when:
+    - {player: Ann, action: open_menu, from: game}
+  then:
+    menu: [Rules, Card set]
+
+- name: opening the menu during a game does not stop the clock
+  covers: [C1.3]
+  given:
+    seats:
+      - seat: 1
+        player: Ann
+  when:
+    - {player: Ann, action: open_menu, from: game}
+    - {player: Ann, action: open_rules}
+    - wait_ms: 60000
+  then:
+    seats:
+      - seat: 1
+        time_bank_ms: 885000
+
+- name: anyone can open the rulebook with its table of contents
+  covers: [C2.1, C2.2, C2.3]
+  when:
+    - {visitor: v1, action: open_rules}
+  then:
+    rules_viewer: {source: rulebook.md, contents: 21, links_work: true}
+
+- name: the rulebook explains every section of the game rules
+  covers: [C2.4]
+  then:
+    rulebook_covers: [R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11, R12, R13, R14, R15, R16, R17, R18, R19, R20, R21]
+
+- name: anyone can open the card set and see all 240 cards
+  covers: [C3.1, C3.4]
+  when:
+    - {visitor: v1, action: open_card_set}
+  then:
+    card_set: {count: 240}
+
+- name: the card set filters by sector tier and type and searches by name
+  covers: [C3.2]
+  when:
+    - {visitor: v1, action: open_card_set}
+    - {visitor: v1, action: filter_cards, sector: Public, tier: 1, type: Safety}
+  then:
+    card_set: {cards: [Trauma Center, Fire Station]}
+
+- name: searching the card set by name finds matching cards
+  covers: [C3.2]
+  when:
+    - {visitor: v1, action: open_card_set}
+    - {visitor: v1, action: search_cards, text: "row house"}
+  then:
+    card_set: {cards: [Row House, Modern Row House, Tall Row Houses]}
+
+- name: opening a card shows everything about it
+  covers: [C3.3]
+  when:
+    - {visitor: v1, action: open_card, card: Repetitive Housing}
+  then:
+    card_detail: {name: Repetitive Housing, sector: Residential, tier: 2, base_cost: 9, workforce: 4, quality: 3, satisfaction: 2, types: [Town Housing], double_types: [Low Wealth], combos: [{needs: 1 Retail, gives: 1 workforce, infinite: true}, {needs: Real Estate Agency, gives: 1 quality, infinite: false}, {needs: Recycling Center, gives: 1 quality, infinite: false}, {needs: Fish Market and Trade, gives: 1 quality, infinite: false}]}
+
+- name: a visitor who is not logged in becomes a guest before the tutorial starts
+  covers: [C4.7, C4.2]
+  given:
+    random: [{generated_name: Busy Harbour Mayor}]
+  when:
+    - {visitor: v1, action: start_tutorial}
+    - {visitor: v1, action: create_guest, username: Busy Harbour Mayor, human_check: passed}
+  then:
+    tutorial_room: {seats: 1, player: Busy Harbour Mayor}
+    tutorial_step: T1.1
+
+- name: in the tutorial any action other than the step's action is rejected
+  covers: [C4.4]
+  given:
+    accounts: [{name: Ann}]
+    tutorial: {player: Ann, step: T1.2}
+  when:
+    - {player: Ann, action: sell, cards: [Hiking Trail]}
+  then:
+    rejected: not_this_step
+    unchanged: true
+
+- name: the tutorial has no time limits
+  covers: [C4.5]
+  given:
+    accounts: [{name: Ann}]
+    tutorial: {player: Ann, step: T1.2}
+  when:
+    - wait_ms: 3600000
+  then:
+    tutorial_step: T1.2
+
+- name: finishing the tutorial creates no game record and changes no rating
+  covers: [C4.6]
+  given:
+    accounts: [{name: Ann, rating: 1000}]
+    tutorial: {player: Ann, step: T5.4}
+  when:
+    - {player: Ann, action: continue}
+  then:
+    tutorial: ended
+    record: none
+    ratings: {Ann: 1000}
+
+- name: leaving the tutorial deletes its room and it can start again from the beginning
+  covers: [C4.8]
+  given:
+    accounts: [{name: Ann}]
+    tutorial: {player: Ann, step: T3.2}
+  when:
+    - {player: Ann, action: leave_tutorial}
+    - {player: Ann, action: start_tutorial}
+  then:
+    tutorial_step: T1.1
+
+- name: a player in the tutorial cannot join a room or the queue
+  covers: [C4.9, M2.1]
+  given:
+    accounts: [{name: Ann}, {name: Bea}]
+    room: {code: K7QR2P, size: 3, public: true, owner: Bea, players: [Bea], state: waiting}
+    tutorial: {player: Ann, step: T2.1}
+  when:
+    - {player: Ann, action: join_room, code: K7QR2P}
+  then:
+    rejected: busy_elsewhere
+
+- name: the menu in a waiting room does not offer the tutorial
+  covers: [C1.2]
+  given:
+    accounts: [{name: Ann}]
+    room: {code: K7QR2P, size: 3, public: true, owner: Ann, players: [Ann], state: waiting}
+  when:
+    - {player: Ann, action: open_menu, from: waiting_room}
+  then:
+    menu: [Rules, Card set]
+
+- name: a tutorial room whose player has been away for 30 minutes is deleted
+  covers: [C4.10]
+  given:
+    accounts: [{name: Ann}]
+    tutorial: {player: Ann, step: T2.1}
+  when:
+    - {disconnect: Ann}
+    - wait_ms: 1800000
+  then:
+    tutorial_room: deleted

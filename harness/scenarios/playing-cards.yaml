@@ -1,0 +1,284 @@
+- name: playing a Residential card pays its cost and applies its stats and types
+  covers: [R6.2, R3.4, R5.1, R1.2]
+  given:
+    seats:
+      - seat: 1
+        hand: [Row House]
+  when:
+    - {seat: 1, action: play_card, card: Row House}
+  then:
+    seats:
+      - seat: 1
+        stats: {funds: 3, workforce: 4, quality: -2, satisfaction: -1}
+        hand: []
+        city: [Row House]
+        type_counts: {Town Housing: 1}
+        played_this_turn: true
+
+- name: playing an Industry card gives product and uses workforce quality and satisfaction
+  covers: [R6.2, R3.4]
+  given:
+    seats:
+      - seat: 1
+        hand: [Orchard]
+  when:
+    - {seat: 1, action: play_card, card: Orchard}
+  then:
+    seats:
+      - seat: 1
+        stats: {funds: 3, workforce: -2, quality: 0, satisfaction: -1, product: 1}
+        type_counts: {Raw Material: 1, Farm: 1, Food: 1}
+
+- name: playing a Service card gives distribution
+  covers: [R6.2, R3.4]
+  given:
+    seats:
+      - seat: 1
+        hand: [Liquor Shop]
+  when:
+    - {seat: 1, action: play_card, card: Liquor Shop}
+  then:
+    seats:
+      - seat: 1
+        stats: {funds: 3, workforce: -1, quality: -1, satisfaction: 0, distribution: 1}
+
+- name: playing a Public card gives quality and satisfaction and uses workforce
+  covers: [R6.2, R3.4]
+  given:
+    seats:
+      - seat: 1
+        hand: [Library]
+  when:
+    - {seat: 1, action: play_card, card: Library}
+  then:
+    seats:
+      - seat: 1
+        stats: {funds: 2, workforce: -1, quality: 1, satisfaction: 2}
+        type_counts: {Education: 1, Culture: 1}
+
+- name: a card that counts a type twice adds 2 to that type count
+  covers: [R12.1, R3.3]
+  given:
+    turn: 5
+    seats:
+      - seat: 1
+        stats: {funds: 9}
+        hand: [Repetitive Housing]
+  when:
+    - {seat: 1, action: play_card, card: Repetitive Housing}
+  then:
+    seats:
+      - seat: 1
+        type_counts: {Town Housing: 1, Low Wealth: 2}
+
+- name: real cost adds 1 for each card of the same sector and tier already in the city
+  covers: [R3.8, R6.1]
+  given:
+    seats:
+      - seat: 1
+        city: [Row House, Small Home]
+        hand: [Cottage]
+  when:
+    - {seat: 1, action: play_card, card: Cottage}
+  then:
+    seats:
+      - seat: 1
+        stats: {funds: 1}
+
+- name: cards of another tier do not raise the real cost
+  covers: [R3.8]
+  given:
+    turn: 6
+    seats:
+      - seat: 1
+        city: [Dorm, Orchard]
+        hand: [Row House]
+  when:
+    - {seat: 1, action: play_card, card: Row House}
+  then:
+    seats:
+      - seat: 1
+        stats: {funds: 3}
+
+- name: rejects a card the player cannot afford at its real cost
+  covers: [R6.1, R3.8]
+  given:
+    seats:
+      - seat: 1
+        stats: {funds: 5}
+        city: [Row House, Small Home]
+        hand: [Cottage]
+  when:
+    - {seat: 1, action: play_card, card: Cottage}
+  then:
+    rejected: not_enough_funds
+    unchanged: true
+
+- name: rejects a tier 2 card before turn 5
+  covers: [R6.1]
+  given:
+    turn: 4
+    seats:
+      - seat: 1
+        stats: {funds: 20}
+        hand: [Brownstone]
+  when:
+    - {seat: 1, action: play_card, card: Brownstone}
+  then:
+    rejected: tier_not_allowed
+    unchanged: true
+
+- name: a tier 2 card can be played from turn 5
+  covers: [R6.1, R6.2]
+  given:
+    turn: 5
+    seats:
+      - seat: 1
+        hand: [Brownstone]
+  when:
+    - {seat: 1, action: play_card, card: Brownstone}
+  then:
+    seats:
+      - seat: 1
+        stats: {funds: 0, workforce: 6, quality: -4, satisfaction: -3}
+        city: [Brownstone]
+
+- name: rejects a second card in a turn without a build pass
+  covers: [R6.1]
+  given:
+    seats:
+      - seat: 1
+        stats: {funds: 20}
+        played_this_turn: true
+        city: [Row House]
+        hand: [Small Home]
+  when:
+    - {seat: 1, action: play_card, card: Small Home}
+  then:
+    rejected: no_build_pass
+    unchanged: true
+
+- name: a build pass allows a second card and is used up
+  covers: [R6.1]
+  given:
+    seats:
+      - seat: 1
+        stats: {funds: 20}
+        played_this_turn: true
+        build_passes: 1
+        city: [Row House]
+        hand: [Orchard]
+  when:
+    - {seat: 1, action: play_card, card: Orchard}
+  then:
+    seats:
+      - seat: 1
+        build_passes: 0
+        city: [Row House, Orchard]
+
+- name: rejects playing a card after skip build even with a build pass
+  covers: [R6.1, R15.1]
+  given:
+    seats:
+      - seat: 1
+        skipped_build: true
+        build_passes: 1
+        hand: [Row House]
+  when:
+    - {seat: 1, action: play_card, card: Row House}
+  then:
+    rejected: build_skipped
+    unchanged: true
+
+- name: rejects a card that is not in the hand
+  covers: [R5.1, R6.1]
+  given:
+    seats:
+      - seat: 1
+        hand: [Row House]
+      - seat: 2
+        hand: [Small Home]
+  when:
+    - {seat: 1, action: play_card, card: Small Home}
+  then:
+    rejected: card_not_in_hand
+    unchanged: true
+
+- name: selling several cards is one action and puts them in the holding pile
+  covers: [R5.1, R17.7]
+  given:
+    seats:
+      - seat: 1
+        hand: [Row House, Pub, Library]
+  when:
+    - {seat: 1, action: sell, cards: [Pub, Library]}
+  then:
+    seats:
+      - seat: 1
+        stats: {funds: 9}
+        hand: [Row House]
+        actions_this_turn: 1
+    holding_pile: [Pub, Library]
+    discard: []
+
+- name: sold cards join the discard pile when the main phase ends
+  covers: [R5.1, R17.7, R10.3]
+  given:
+    turn: 3
+    marketplace: [{place: residential, card: Row House}, {place: industry, card: Metal Mining}, {place: service, card: Liquor Shop}, {place: public_quality, card: Fire Station}, {place: public_satisfaction, card: Public Playground}, {place: open_1, card: Dentist}, {place: open_2, card: Apparel Store}, {place: open_3, card: Forest Plantation}]
+    quests: [{quest: Farmland}, {quest: Sports town}, {quest: Trading post}, {quest: Mining town}]
+    seats:
+      - seat: 1
+        hand: [Pub]
+  when:
+    - {seat: 1, action: sell, cards: [Pub]}
+    - {seat: 1, action: end_turn}
+    - {seat: 2, action: end_turn}
+  then:
+    turn: 4
+    phase: market
+    discard: [Pub]
+    holding_pile: []
+
+- name: rejects any action after the 50th main-phase action but still allows ending the turn
+  covers: [R5.3, R5.2]
+  given:
+    seats:
+      - seat: 1
+        actions_this_turn: 50
+        hand: [Pub]
+  when:
+    - {seat: 1, action: sell, cards: [Pub]}
+  then:
+    rejected: action_limit_reached
+    unchanged: true
+
+- name: a player at the action limit can end their turn
+  covers: [R5.3, R8.1]
+  given:
+    seats:
+      - seat: 1
+        actions_this_turn: 50
+  when:
+    - {seat: 1, action: end_turn}
+  then:
+    seats:
+      - seat: 1
+        done: true
+
+- name: undo counts toward the action limit
+  covers: [R5.3, R7.1]
+  given:
+    seats:
+      - seat: 1
+        actions_this_turn: 49
+        hand: [Row House]
+  when:
+    - {seat: 1, action: play_card, card: Row House}
+    - {seat: 1, action: undo}
+  then:
+    rejected: action_limit_reached
+    seats:
+      - seat: 1
+        city: [Row House]
+        actions_this_turn: 50

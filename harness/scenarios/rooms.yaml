@@ -1,0 +1,289 @@
+- name: a player creates a public room with a chosen size and becomes its owner
+  covers: [M1.2, M1.3, M1.5, M1.7]
+  given:
+    accounts: [{name: Ann}]
+  when:
+    - {player: Ann, action: create_room, public: true, size: 3, human_check: passed}
+  then:
+    room: {size: 3, public: true, owner: Ann, players: [Ann], state: waiting, code_format: "6 characters from ABCDEFGHJKMNPQRSTUVWXYZ23456789"}
+    lobby_rooms: [{owner: Ann, players: [Ann], free_places: 2}]
+
+- name: creating a room needs the human check
+  covers: [M1.2, A1.12]
+  given:
+    accounts: [{name: Ann}]
+  when:
+    - {player: Ann, action: create_room, public: true, size: 3, human_check: missing}
+  then:
+    rejected: human_check_failed
+    unchanged: true
+
+- name: rejects a room size other than 2 3 or 4
+  covers: [M1.1, M1.2]
+  given:
+    accounts: [{name: Ann}]
+  when:
+    - {player: Ann, action: create_room, public: true, size: 5, human_check: passed}
+  then:
+    rejected: invalid_room_size
+    unchanged: true
+
+- name: a private room is not listed in the lobby but can be joined with its code
+  covers: [M1.6, M1.8, M1.7]
+  given:
+    accounts: [{name: Ann}, {name: Bea}]
+    room: {code: K7QR2P, size: 3, public: false, owner: Ann, players: [Ann], state: waiting}
+  when:
+    - {player: Bea, action: join_room, code: K7QR2P}
+  then:
+    lobby_rooms: []
+    room: {players: [Ann, Bea]}
+
+- name: rejects joining a full room
+  covers: [M1.6]
+  given:
+    accounts: [{name: Ann}, {name: Bea}, {name: Cat}]
+    room: {code: K7QR2P, size: 2, public: true, owner: Ann, players: [Ann, Bea], state: accepting}
+  when:
+    - {player: Cat, action: join_room, code: K7QR2P}
+  then:
+    rejected: room_full
+    unchanged: true
+
+- name: rejects joining a room whose game has started
+  covers: [M1.6]
+  given:
+    accounts: [{name: Ann}, {name: Bea}, {name: Cat}]
+    room: {code: K7QR2P, size: 3, public: true, owner: Ann, players: [Ann, Bea], state: playing}
+  when:
+    - {player: Cat, action: join_room, code: K7QR2P}
+  then:
+    rejected: room_not_waiting
+    unchanged: true
+
+- name: rejects an unknown room code
+  covers: [M1.6]
+  given:
+    accounts: [{name: Bea}]
+  when:
+    - {player: Bea, action: join_room, code: ZZZZZZ}
+  then:
+    rejected: room_not_found
+
+- name: only the owner can change the size and not below the players in the room
+  covers: [M1.4]
+  given:
+    accounts: [{name: Ann}, {name: Bea}, {name: Cat}]
+    room: {code: K7QR2P, size: 4, public: true, owner: Ann, players: [Ann, Bea, Cat], state: waiting}
+  when:
+    - {player: Bea, action: change_size, size: 3}
+  then:
+    rejected: not_room_owner
+    unchanged: true
+
+- name: rejects a new size below the number of players in the room
+  covers: [M1.4]
+  given:
+    accounts: [{name: Ann}, {name: Bea}, {name: Cat}]
+    room: {code: K7QR2P, size: 4, public: true, owner: Ann, players: [Ann, Bea, Cat], state: waiting}
+  when:
+    - {player: Ann, action: change_size, size: 2}
+  then:
+    rejected: room_size_too_small
+    unchanged: true
+
+- name: when the owner leaves the player who joined next becomes owner
+  covers: [M1.3, M1.9]
+  given:
+    accounts: [{name: Ann}, {name: Bea}, {name: Cat}]
+    room: {code: K7QR2P, size: 4, public: true, owner: Ann, players: [Ann, Bea, Cat], state: waiting}
+  when:
+    - {player: Ann, action: leave_room}
+  then:
+    room: {owner: Bea, players: [Bea, Cat]}
+
+- name: a room with no players left is closed
+  covers: [M1.9]
+  given:
+    accounts: [{name: Ann}]
+    room: {code: K7QR2P, size: 3, public: true, owner: Ann, players: [Ann], state: waiting}
+  when:
+    - {player: Ann, action: leave_room}
+  then:
+    room: closed
+
+- name: a full room asks everyone to accept and starts when all accept
+  covers: [M1.10, M1.13, R4.3]
+  given:
+    accounts: [{name: Ann}, {name: Bea}]
+    room: {code: K7QR2P, size: 2, public: true, owner: Ann, players: [Ann], state: waiting}
+    random: [{seats: [Bea, Ann]}]
+  when:
+    - {player: Bea, action: join_room, code: K7QR2P}
+    - {player: Ann, action: accept_game}
+    - {player: Bea, action: accept_game}
+  then:
+    room: {state: playing}
+    game: {kind: casual, seats: {1: Bea, 2: Ann}}
+
+- name: every player in the room sees who has accepted so far
+  covers: [M1.10]
+  given:
+    accounts: [{name: Ann}, {name: Bea}, {name: Cat}]
+    room: {code: K7QR2P, size: 3, public: true, owner: Ann, players: [Ann, Bea, Cat], state: accepting}
+  when:
+    - {player: Bea, action: accept_game}
+  then:
+    room: {state: accepting, accepted: [Bea]}
+    message_to: {player: Cat, contains: [{accepted: [Bea]}]}
+
+- name: a player who does not accept in time is removed and the others keep waiting
+  covers: [M1.11]
+  given:
+    accounts: [{name: Ann}, {name: Bea}, {name: Cat}]
+    room: {code: K7QR2P, size: 3, public: true, owner: Ann, players: [Ann, Bea, Cat], state: accepting}
+  when:
+    - {player: Ann, action: accept_game}
+    - {player: Bea, action: accept_game}
+    - wait_ms: 20000
+  then:
+    room: {state: waiting, players: [Ann, Bea]}
+
+- name: a player who declined cannot rejoin the room for 2 minutes
+  covers: [M1.11]
+  given:
+    accounts: [{name: Ann}, {name: Bea}, {name: Cat}]
+    room: {code: K7QR2P, size: 3, public: true, owner: Ann, players: [Ann, Bea, Cat], state: accepting}
+  when:
+    - {player: Cat, action: decline_game}
+    - wait_ms: 119999
+    - {player: Cat, action: join_room, code: K7QR2P}
+  then:
+    rejected: rejoin_too_soon
+
+- name: a player who declined can rejoin after 2 minutes
+  covers: [M1.11]
+  given:
+    accounts: [{name: Ann}, {name: Bea}, {name: Cat}]
+    room: {code: K7QR2P, size: 3, public: true, owner: Ann, players: [Ann, Bea, Cat], state: accepting}
+  when:
+    - {player: Cat, action: decline_game}
+    - wait_ms: 120000
+    - {player: Cat, action: join_room, code: K7QR2P}
+  then:
+    room: {players: [Ann, Bea, Cat], state: accepting}
+
+- name: a player disconnected from a waiting room for 10 seconds is removed
+  covers: [M1.12]
+  given:
+    accounts: [{name: Ann}, {name: Bea}]
+    room: {code: K7QR2P, size: 3, public: true, owner: Ann, players: [Ann, Bea], state: waiting}
+  when:
+    - {disconnect: Bea}
+    - wait_ms: 10000
+  then:
+    room: {players: [Ann]}
+
+- name: a page refresh within 10 seconds keeps the place in a waiting room
+  covers: [M1.12]
+  given:
+    accounts: [{name: Ann}, {name: Bea}]
+    room: {code: K7QR2P, size: 3, public: true, owner: Ann, players: [Ann, Bea], state: waiting}
+  when:
+    - {disconnect: Bea}
+    - wait_ms: 9000
+    - {reconnect: Bea}
+    - wait_ms: 5000
+  then:
+    room: {players: [Ann, Bea]}
+
+- name: a player in a room cannot join another room or the queue
+  covers: [M2.1]
+  given:
+    accounts: [{name: Ann, kind: registered, email_confirmed: true}, {name: Bea}]
+    room: {code: K7QR2P, size: 3, public: true, owner: Bea, players: [Bea, Ann], state: waiting}
+  when:
+    - {player: Ann, action: join_queue}
+  then:
+    rejected: busy_elsewhere
+    unchanged: true
+
+- name: after a game ends joining the queue takes the player out of the finished room
+  covers: [M2.2]
+  given:
+    accounts: [{name: Ann, kind: registered, email_confirmed: true}, {name: Bea}]
+    room: {code: K7QR2P, size: 2, public: true, owner: Ann, players: [Ann, Bea], state: ended}
+  when:
+    - {player: Ann, action: join_queue}
+  then:
+    room: {players: [Bea]}
+    queue: [Ann]
+
+- name: after a game the room stays and is deleted 24 hours after the game ended
+  covers: [M8.1, M8.2, M8.3]
+  given:
+    accounts: [{name: Ann}, {name: Bea}]
+    room: {code: K7QR2P, size: 2, public: true, owner: Ann, players: [Ann, Bea], state: ended, ended_ms: 0}
+  when:
+    - wait_ms: 86400000
+  then:
+    room: deleted
+    record: kept
+
+- name: the room is deleted when the last player leaves it
+  covers: [M8.2]
+  given:
+    accounts: [{name: Ann}]
+    room: {code: K7QR2P, size: 2, public: true, owner: Ann, players: [Ann], state: ended}
+  when:
+    - {player: Ann, action: leave_room}
+  then:
+    room: deleted
+
+- name: a rematch starts a new casual game when everyone in the room accepts
+  covers: [M8.4, M8.5, M8.6]
+  given:
+    accounts: [{name: Ann}, {name: Bea}, {name: Cat}]
+    room: {code: K7QR2P, size: 3, public: true, owner: Ann, players: [Ann, Bea], state: ended, kind: ranked}
+    random: [{seats: [Ann, Bea]}]
+  when:
+    - {player: Bea, action: ask_rematch}
+    - {player: Ann, action: accept_game}
+    - {player: Bea, action: accept_game}
+  then:
+    room: {state: playing, chat: kept}
+    game: {kind: casual, turn: 1, seats: {1: Ann, 2: Bea}}
+
+- name: every player in the room sees who has accepted a rematch so far
+  covers: [M8.4]
+  given:
+    accounts: [{name: Ann}, {name: Bea}, {name: Cat}]
+    room: {code: K7QR2P, size: 3, public: true, owner: Ann, players: [Ann, Bea, Cat], state: ended}
+  when:
+    - {player: Bea, action: ask_rematch}
+    - {player: Cat, action: accept_game}
+  then:
+    room: {state: ended, accepted: [Cat]}
+    message_to: {player: Ann, contains: [{accepted: [Cat]}]}
+
+- name: rejects a rematch with fewer than 2 players in the room
+  covers: [M8.4]
+  given:
+    accounts: [{name: Ann}]
+    room: {code: K7QR2P, size: 3, public: true, owner: Ann, players: [Ann], state: ended}
+  when:
+    - {player: Ann, action: ask_rematch}
+  then:
+    rejected: rematch_not_possible
+    unchanged: true
+
+- name: a declined rematch leaves the room as it was
+  covers: [M8.5]
+  given:
+    accounts: [{name: Ann}, {name: Bea}]
+    room: {code: K7QR2P, size: 2, public: true, owner: Ann, players: [Ann, Bea], state: ended}
+  when:
+    - {player: Ann, action: ask_rematch}
+    - {player: Bea, action: decline_game}
+  then:
+    room: {state: ended, players: [Ann, Bea]}

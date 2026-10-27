@@ -1,0 +1,349 @@
+- name: anyone can see the players online with their status and rating
+  covers: [A7.1, A7.2, A7.3]
+  given:
+    accounts: [{name: Ann, kind: registered, online: true, in_game: true, rating: 1040, ranked_games: 3}, {name: Bea, kind: guest, online: true}, {name: Cat, kind: registered, online: false}]
+    queue_count: 2
+  when:
+    - {visitor: v1, action: open_lobby}
+  then:
+    players_online: [{username: Ann, status: in a game, rating: 1040}, {username: Bea, status: online}]
+    queue_count: 2
+
+- name: only registered users with a confirmed email can join the ranked queue
+  covers: [A8.1]
+  given:
+    accounts: [{name: Ann, kind: registered, email_confirmed: false}]
+  when:
+    - {player: Ann, action: join_queue}
+  then:
+    rejected: email_not_confirmed
+
+- name: guest users cannot join the ranked queue
+  covers: [A8.1]
+  given:
+    accounts: [{name: Bea, kind: guest}]
+  when:
+    - {player: Bea, action: join_queue}
+  then:
+    rejected: not_registered
+
+- name: joining the queue without choosing game sizes means 3 players only
+  covers: [A8.2]
+  given:
+    accounts: [{name: Ann, kind: registered, email_confirmed: true}]
+  when:
+    - {player: Ann, action: join_queue}
+  then:
+    queue: [{player: Ann, sizes: [3]}]
+
+- name: a player can join the queue with several game sizes
+  covers: [A8.2]
+  given:
+    accounts: [{name: Ann, kind: registered, email_confirmed: true}]
+  when:
+    - {player: Ann, action: join_queue, sizes: [2, 4]}
+  then:
+    queue: [{player: Ann, sizes: [2, 4]}]
+
+- name: rejects joining the queue with no game size
+  covers: [A8.2]
+  given:
+    accounts: [{name: Ann, kind: registered, email_confirmed: true}]
+  when:
+    - {player: Ann, action: join_queue, sizes: []}
+  then:
+    rejected: invalid_game_sizes
+    unchanged: true
+
+- name: rejects a game size other than 2 3 or 4
+  covers: [A8.2]
+  given:
+    accounts: [{name: Ann, kind: registered, email_confirmed: true}]
+  when:
+    - {player: Ann, action: join_queue, sizes: [3, 5]}
+  then:
+    rejected: invalid_game_sizes
+    unchanged: true
+
+- name: changing game sizes keeps the place in the queue
+  covers: [A8.3]
+  given:
+    accounts: [{name: Ann, kind: registered, email_confirmed: true}, {name: Bea, kind: registered, email_confirmed: true}]
+    queue: [Ann, Bea]
+  when:
+    - {player: Ann, action: change_sizes, sizes: [3, 4]}
+  then:
+    queue: [{player: Ann, sizes: [3, 4]}, {player: Bea, sizes: [3]}]
+
+- name: rejects changing to no game size while in the queue
+  covers: [A8.3]
+  given:
+    accounts: [{name: Ann, kind: registered, email_confirmed: true}]
+    queue: [Ann]
+  when:
+    - {player: Ann, action: change_sizes, sizes: []}
+  then:
+    rejected: invalid_game_sizes
+    unchanged: true
+
+- name: changing game sizes can make a match straight away
+  covers: [A8.3, A8.5]
+  given:
+    accounts: [{name: Ann, kind: registered, email_confirmed: true}, {name: Bea, kind: registered, email_confirmed: true}]
+    queue: [{player: Ann, sizes: [2]}, Bea]
+  when:
+    - {player: Bea, action: change_sizes, sizes: [2, 3]}
+  then:
+    match: {players: [Ann, Bea], size: 2, state: confirming}
+    queue: []
+
+- name: the queue count is public per game size and members see only themselves
+  covers: [A8.4]
+  given:
+    accounts: [{name: Ann, kind: registered, email_confirmed: true}, {name: Bea, kind: registered, email_confirmed: true}, {name: Cat, kind: registered, email_confirmed: true}]
+  when:
+    - {player: Ann, action: join_queue, sizes: [3, 4]}
+    - {player: Bea, action: join_queue, sizes: [4]}
+  then:
+    view_lobby: {player: Cat, queue_count: {total: 2, by_size: {2: 0, 3: 1, 4: 2}}, in_queue: false, hides: [Ann, Bea]}
+
+- name: three players in the queue are matched and asked to confirm without seeing each other
+  covers: [A8.5, A8.7]
+  given:
+    accounts: [{name: Ann, kind: registered, email_confirmed: true}, {name: Bea, kind: registered, email_confirmed: true}, {name: Cat, kind: registered, email_confirmed: true}, {name: Dan, kind: registered, email_confirmed: true}]
+    queue: [Ann, Bea]
+  when:
+    - {player: Cat, action: join_queue}
+    - {player: Dan, action: join_queue}
+  then:
+    match: {players: [Ann, Bea, Cat], size: 3, state: confirming}
+    queue: [Dan]
+    message_to: {player: Ann, notice: match_found, size: 3, hides: [Bea, Cat]}
+
+- name: the longest waiting player is matched first even into a smaller game
+  covers: [A8.5, A8.6]
+  given:
+    accounts: [{name: Ann, kind: registered, email_confirmed: true}, {name: Bea, kind: registered, email_confirmed: true}, {name: Cat, kind: registered, email_confirmed: true}, {name: Dan, kind: registered, email_confirmed: true}]
+    queue: [{player: Ann, sizes: [2]}, Bea, Cat]
+  when:
+    - {player: Dan, action: join_queue, sizes: [2, 3]}
+  then:
+    match: {players: [Ann, Dan], size: 2, state: confirming}
+    queue: [Bea, Cat]
+    message_to: {player: Dan, notice: match_found, size: 2, hides: [Ann]}
+
+- name: a larger game size is tried before a smaller one
+  covers: [A8.5, A8.6]
+  given:
+    accounts: [{name: Ann, kind: registered, email_confirmed: true}, {name: Bea, kind: registered, email_confirmed: true}, {name: Cat, kind: registered, email_confirmed: true}]
+    queue: [{player: Ann, sizes: [2, 3]}, Bea]
+  when:
+    - {player: Cat, action: join_queue, sizes: [2, 3]}
+  then:
+    match: {players: [Ann, Bea, Cat], size: 3, state: confirming}
+    queue: []
+
+- name: four players who chose 4 are matched into a 4 player game
+  covers: [A8.5]
+  given:
+    accounts: [{name: Ann, kind: registered, email_confirmed: true}, {name: Bea, kind: registered, email_confirmed: true}, {name: Cat, kind: registered, email_confirmed: true}, {name: Dan, kind: registered, email_confirmed: true}, {name: Eve, kind: registered, email_confirmed: true}]
+    queue: [{player: Ann, sizes: [4]}, {player: Bea, sizes: [3, 4]}, {player: Cat, sizes: [4]}, {player: Eve, sizes: [2]}]
+  when:
+    - {player: Dan, action: join_queue, sizes: [4]}
+  then:
+    match: {players: [Ann, Bea, Cat, Dan], size: 4, state: confirming}
+    queue: [{player: Eve, sizes: [2]}]
+
+- name: when all three confirm a ranked game starts in a new room
+  covers: [A8.8, A8.11]
+  given:
+    accounts: [{name: Ann, kind: registered, email_confirmed: true}, {name: Bea, kind: registered, email_confirmed: true}, {name: Cat, kind: registered, email_confirmed: true}]
+    match: {players: [Ann, Bea, Cat], size: 3, state: confirming}
+    random: [{seats: [Cat, Ann, Bea]}]
+  when:
+    - {player: Ann, action: confirm_match}
+    - {player: Bea, action: confirm_match}
+    - {player: Cat, action: confirm_match}
+  then:
+    game: {kind: ranked, seats: {1: Cat, 2: Ann, 3: Bea}}
+
+- name: when both players of a 2 player match confirm a ranked 2 player game starts
+  covers: [A8.8, A8.11]
+  given:
+    accounts: [{name: Ann, kind: registered, email_confirmed: true}, {name: Bea, kind: registered, email_confirmed: true}]
+    match: {players: [Ann, Bea], size: 2, state: confirming}
+    random: [{seats: [Bea, Ann]}]
+  when:
+    - {player: Ann, action: confirm_match}
+    - {player: Bea, action: confirm_match}
+  then:
+    game: {kind: ranked, seats: {1: Bea, 2: Ann}}
+
+- name: a player who does not confirm leaves the queue and the others go back to the front
+  covers: [A8.9, A8.5]
+  given:
+    accounts: [{name: Ann, kind: registered, email_confirmed: true}, {name: Bea, kind: registered, email_confirmed: true}, {name: Cat, kind: registered, email_confirmed: true}, {name: Dan, kind: registered, email_confirmed: true}]
+    match: {players: [Ann, Bea, Cat], size: 3, state: confirming}
+    queue: [Dan]
+  when:
+    - {player: Ann, action: confirm_match}
+    - {player: Cat, action: confirm_match}
+    - wait_ms: 20000
+  then:
+    queue: []
+    match: {players: [Ann, Cat, Dan], size: 3, state: confirming}
+
+- name: a player who declined a match cannot rejoin the queue for 2 minutes
+  covers: [A8.9]
+  given:
+    accounts: [{name: Ann, kind: registered, email_confirmed: true}, {name: Bea, kind: registered, email_confirmed: true}, {name: Cat, kind: registered, email_confirmed: true}]
+    match: {players: [Ann, Bea, Cat], size: 3, state: confirming}
+  when:
+    - {player: Bea, action: decline_match}
+    - wait_ms: 60000
+    - {player: Bea, action: join_queue}
+  then:
+    rejected: rejoin_too_soon
+
+- name: a player can leave the queue and a closed connection for 10 seconds leaves it
+  covers: [A8.10]
+  given:
+    accounts: [{name: Ann, kind: registered, email_confirmed: true}, {name: Bea, kind: registered, email_confirmed: true}]
+    queue: [Ann, Bea]
+  when:
+    - {player: Ann, action: leave_queue}
+    - {disconnect: Bea}
+    - wait_ms: 10000
+  then:
+    queue: []
+
+- name: a player at 2000 actions today cannot join a new game
+  covers: [A9.1, A9.2]
+  given:
+    accounts: [{name: Ann, kind: registered, email_confirmed: true, actions_today: 2000}]
+  when:
+    - {player: Ann, action: join_queue}
+  then:
+    rejected: daily_action_limit
+
+- name: the daily action count resets at midnight UTC
+  covers: [A9.1, A9.2]
+  given:
+    clock_ms: 1761436800000
+    accounts: [{name: Ann, kind: registered, email_confirmed: true, actions_today: 2000}]
+  when:
+    - wait_ms: 86400000
+    - {player: Ann, action: join_queue}
+  then:
+    queue: [Ann]
+
+- name: a player's actions in a game are added to the daily count when the game ends
+  covers: [A9.2]
+  given:
+    players: 2
+    accounts: [{name: Ann, kind: registered, email_confirmed: true, actions_today: 1990}, {name: Bea}]
+    seats:
+      - seat: 1
+        player: Ann
+        actions_this_game: 15
+      - seat: 2
+        player: Bea
+  when:
+    - {seat: 2, action: leave_game}
+    - {player: Ann, action: join_queue}
+  then:
+    rejected: daily_action_limit
+    accounts: [{name: Ann, actions_today: 2005}]
+
+- name: a player who started 10 games today cannot start another
+  covers: [A9.3]
+  given:
+    accounts: [{name: Ann, games_started_today: 10}, {name: Bea}]
+    room: {code: K7QR2P, size: 2, public: true, owner: Bea, players: [Bea], state: waiting}
+  when:
+    - {player: Ann, action: join_room, code: K7QR2P}
+  then:
+    rejected: daily_game_start_limit
+
+- name: after 50 games start on the site today no more games start
+  covers: [A9.4]
+  given:
+    site_games_today: 50
+    accounts: [{name: Ann}, {name: Bea}]
+    room: {code: K7QR2P, size: 2, public: true, owner: Ann, players: [Ann, Bea], state: accepting}
+  when:
+    - {player: Ann, action: accept_game}
+    - {player: Bea, action: accept_game}
+  then:
+    rejected: site_game_limit
+    message_to: {player: Ann, text: "Daily game limit reached, try again after 00:00 UTC"}
+    room: {state: waiting}
+
+- name: the ranked queue makes no match while the site game limit is reached
+  covers: [A9.4, A8.5]
+  given:
+    site_games_today: 50
+    accounts: [{name: Ann, kind: registered, email_confirmed: true}, {name: Bea, kind: registered, email_confirmed: true}, {name: Cat, kind: registered, email_confirmed: true}]
+    queue: [Ann, Bea]
+  when:
+    - {player: Cat, action: join_queue}
+  then:
+    queue: [Ann, Bea, Cat]
+    message_to: {player: Cat, text: "Daily game limit reached, try again after 00:00 UTC"}
+
+- name: the ranked queue makes its matches at midnight UTC after the site game limit
+  covers: [A9.4, A8.5, A9.1]
+  given:
+    clock_ms: 1761523199000
+    site_games_today: 50
+    accounts: [{name: Ann, kind: registered, email_confirmed: true}, {name: Bea, kind: registered, email_confirmed: true}, {name: Cat, kind: registered, email_confirmed: true}]
+    queue: [Ann, Bea, Cat]
+  when:
+    - wait_ms: 1000
+  then:
+    match: {players: [Ann, Bea, Cat], size: 3, state: confirming}
+    queue: []
+
+- name: the tutorial does not count toward the daily limits
+  covers: [A9.5, C4.6]
+  given:
+    site_games_today: 50
+    accounts: [{name: Ann, games_started_today: 10, actions_today: 2000}]
+  when:
+    - {player: Ann, action: start_tutorial}
+  then:
+    tutorial_step: T1.1
+
+- name: after 100 tutorials start on the site today no more tutorials start
+  covers: [A9.6]
+  given:
+    site_counts_today: {tutorials: 100}
+    accounts: [{name: Ann}]
+  when:
+    - {player: Ann, action: start_tutorial}
+  then:
+    rejected: site_daily_cap
+    message_to: {player: Ann, text: "Daily limit reached, try again after 00:00 UTC"}
+
+- name: after 2000 chat messages on the site today no more messages are sent
+  covers: [A9.6]
+  given:
+    site_counts_today: {chat_messages: 2000}
+    accounts: [{name: Ann}]
+    room: {code: K7QR2P, size: 3, public: true, owner: Ann, players: [Ann], state: waiting}
+  when:
+    - {player: Ann, action: send_chat, text: "hello"}
+  then:
+    rejected: site_daily_cap
+
+- name: the game start limit is checked again when a game starts
+  covers: [A9.3]
+  given:
+    accounts: [{name: Ann, games_started_today: 10}, {name: Bea}]
+    room: {code: K7QR2P, size: 2, public: true, owner: Bea, players: [Bea, Ann], state: accepting}
+  when:
+    - {player: Bea, action: accept_game}
+    - {player: Ann, action: accept_game}
+  then:
+    rejected: daily_game_start_limit
+    room: {state: waiting}

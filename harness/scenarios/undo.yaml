@@ -1,0 +1,241 @@
+- name: undo takes back playing a card
+  covers: [R7.1, R7.2]
+  given:
+    seats:
+      - seat: 1
+        hand: [Row House]
+  when:
+    - {seat: 1, action: play_card, card: Row House}
+    - {seat: 1, action: undo}
+  then:
+    seats:
+      - seat: 1
+        stats: {funds: 7, workforce: 0, quality: 0, satisfaction: 0}
+        hand: [Row House]
+        city: []
+        played_this_turn: false
+
+- name: undo takes back claim all
+  covers: [R7.2, R12.6]
+  given:
+    seats:
+      - seat: 1
+        city: [Row House, Fire Station]
+  when:
+    - {seat: 1, action: claim_all}
+    - {seat: 1, action: undo}
+  then:
+    seats:
+      - seat: 1
+        stats: {quality: 0}
+        combos_claimed: []
+
+- name: undo takes back a trade that draws no card
+  covers: [R7.2, R15.1]
+  given:
+    seats:
+      - seat: 1
+        stats: {quality: 2}
+  when:
+    - {seat: 1, action: influence, trade: two_quality_to_satisfaction}
+    - {seat: 1, action: undo}
+  then:
+    seats:
+      - seat: 1
+        stats: {quality: 2, satisfaction: 0}
+
+- name: undo takes back skip build and the build pass it gave
+  covers: [R7.2, R15.1]
+  when:
+    - {seat: 1, action: influence, trade: skip_build}
+    - {seat: 1, action: undo}
+  then:
+    seats:
+      - seat: 1
+        skipped_build: false
+        build_passes: 0
+        influence_uses: {}
+
+- name: undo takes back completing a quest whose reward draws no card
+  covers: [R7.2, R19.5]
+  given:
+    quests: [{quest: Trading post}]
+    seats:
+      - seat: 1
+        stats: {income: 4}
+        city: [Liquor Shop]
+  when:
+    - {seat: 1, action: complete_quest, quest: Trading post}
+    - {seat: 1, action: undo}
+  then:
+    seats:
+      - seat: 1
+        stats: {funds: 7, influence: 0}
+        quests_completed: []
+
+- name: undo takes back the latest action first
+  covers: [R7.1]
+  given:
+    seats:
+      - seat: 1
+        stats: {quality: 2, satisfaction: 2}
+  when:
+    - {seat: 1, action: influence, trade: two_quality_to_satisfaction}
+    - {seat: 1, action: influence, trade: two_satisfaction_to_quality}
+    - {seat: 1, action: undo}
+  then:
+    seats:
+      - seat: 1
+        stats: {quality: 0, satisfaction: 3}
+
+- name: selling cannot be undone
+  covers: [R7.3]
+  given:
+    seats:
+      - seat: 1
+        hand: [Pub]
+  when:
+    - {seat: 1, action: sell, cards: [Pub]}
+    - {seat: 1, action: undo}
+  then:
+    rejected: cannot_undo
+    unchanged: true
+
+- name: completing a project cannot be undone
+  covers: [R7.3]
+  given:
+    seats:
+      - seat: 1
+        stats: {quality: 8}
+    random: [{sector: Service}]
+  when:
+    - {seat: 1, action: complete_project, project: quality}
+    - {seat: 1, action: undo}
+  then:
+    rejected: cannot_undo
+    unchanged: true
+
+- name: a draw action cannot be undone
+  covers: [R7.3, R15.2]
+  given:
+    seats:
+      - seat: 1
+        stats: {influence: 3}
+  when:
+    - {seat: 1, action: influence, trade: draw_tier_1, kind: Residential}
+    - {seat: 1, action: undo}
+  then:
+    rejected: cannot_undo
+    unchanged: true
+
+- name: playing a card that triggers income cannot be undone because income draws a card
+  covers: [R7.2, R13.1]
+  given:
+    seats:
+      - seat: 1
+        stats: {workforce: 1, quality: 1, product: 1}
+        hand: [Liquor Shop]
+    random: [{sector: Public}]
+  when:
+    - {seat: 1, action: play_card, card: Liquor Shop}
+    - {seat: 1, action: undo}
+  then:
+    rejected: cannot_undo
+    unchanged: true
+
+- name: completing a quest whose reward draws a card cannot be undone
+  covers: [R7.2]
+  given:
+    quests: [{quest: Supply chain}]
+    seats:
+      - seat: 1
+        stats: {income: 5}
+        city: [Metal Mining]
+    random: [{sector: Service}]
+  when:
+    - {seat: 1, action: complete_quest, quest: Supply chain}
+    - {seat: 1, action: undo}
+  then:
+    rejected: cannot_undo
+    unchanged: true
+
+- name: nothing before an action that cannot be undone can be undone
+  covers: [R7.4]
+  given:
+    seats:
+      - seat: 1
+        stats: {quality: 2, satisfaction: 2}
+        hand: [Pub]
+  when:
+    - {seat: 1, action: influence, trade: two_quality_to_satisfaction}
+    - {seat: 1, action: sell, cards: [Pub]}
+    - {seat: 1, action: influence, trade: two_satisfaction_to_quality}
+    - {seat: 1, action: undo}
+    - {seat: 1, action: undo}
+  then:
+    rejected: cannot_undo
+    seats:
+      - seat: 1
+        stats: {quality: 0, satisfaction: 3, funds: 8}
+
+- name: rejects undo when there is nothing to undo
+  covers: [R7.1]
+  when:
+    - {seat: 1, action: undo}
+  then:
+    rejected: nothing_to_undo
+    unchanged: true
+
+- name: undo is only for the player's own actions
+  covers: [R7.1]
+  given:
+    seats:
+      - seat: 2
+        hand: [Row House]
+  when:
+    - {seat: 2, action: play_card, card: Row House}
+    - {seat: 1, action: undo}
+  then:
+    rejected: nothing_to_undo
+    seats:
+      - seat: 2
+        city: [Row House]
+
+- name: undoing a card played with a build pass gives the pass back
+  covers: [R7.2, R6.1]
+  given:
+    seats:
+      - seat: 1
+        stats: {funds: 20}
+        played_this_turn: true
+        build_passes: 1
+        city: [Row House]
+        hand: [Orchard]
+  when:
+    - {seat: 1, action: play_card, card: Orchard}
+    - {seat: 1, action: undo}
+  then:
+    seats:
+      - seat: 1
+        build_passes: 1
+        hand: [Orchard]
+        city: [Row House]
+        stats: {funds: 20}
+
+- name: undoing a bought build pass makes the next one cost the same again
+  covers: [R7.1, R15.1]
+  given:
+    seats:
+      - seat: 1
+        stats: {funds: 10}
+        build_passes_bought: 1
+  when:
+    - {seat: 1, action: influence, trade: buy_build_pass}
+    - {seat: 1, action: undo}
+    - {seat: 1, action: influence, trade: buy_build_pass}
+  then:
+    seats:
+      - seat: 1
+        stats: {funds: 7}
+        build_passes: 1
+        build_passes_bought: 2

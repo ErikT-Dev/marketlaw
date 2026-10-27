@@ -1,0 +1,132 @@
+- name: a message is seen by everyone in the room and notifies the others
+  covers: [A11.1, A11.2, A11.3, A11.4, A11.8]
+  given:
+    accounts: [{name: Ann}, {name: Bea}, {name: Cat}]
+    room: {code: K7QR2P, size: 3, public: true, owner: Ann, players: [Ann, Bea, Cat], state: waiting}
+  when:
+    - {player: Ann, action: send_chat, text: "hello mayors"}
+  then:
+    chat: [{from: Ann, text: "hello mayors"}]
+    notified: [Bea, Cat]
+    saved_before_shown: true
+
+- name: a player sees only messages sent since they joined
+  covers: [A11.2]
+  given:
+    accounts: [{name: Ann}, {name: Bea}]
+    room: {code: K7QR2P, size: 3, public: true, owner: Ann, players: [Ann], state: waiting, chat: [{from: Ann, text: "anyone?"}]}
+  when:
+    - {player: Bea, action: join_room, code: K7QR2P}
+  then:
+    view_chat: {player: Bea, messages: []}
+
+- name: spaces at the ends are removed and line breaks become spaces
+  covers: [A11.5]
+  given:
+    accounts: [{name: Ann}]
+    room: {code: K7QR2P, size: 3, public: true, owner: Ann, players: [Ann], state: waiting}
+  when:
+    - {player: Ann, action: send_chat, text: "  good\ngame  "}
+  then:
+    chat: [{from: Ann, text: "good game"}]
+
+- name: rejects an empty message
+  covers: [A11.5]
+  given:
+    accounts: [{name: Ann}]
+    room: {code: K7QR2P, size: 3, public: true, owner: Ann, players: [Ann], state: waiting}
+  when:
+    - {player: Ann, action: send_chat, text: "   "}
+  then:
+    rejected: message_empty
+
+- name: rejects a message over 200 characters
+  covers: [A11.5]
+  given:
+    accounts: [{name: Ann}]
+    room: {code: K7QR2P, size: 3, public: true, owner: Ann, players: [Ann], state: waiting}
+  when:
+    - {player: Ann, action: send_chat, text_length: 201}
+  then:
+    rejected: message_too_long
+
+- name: an emoji counts as one character
+  covers: [A11.5]
+  given:
+    accounts: [{name: Ann}]
+    room: {code: K7QR2P, size: 3, public: true, owner: Ann, players: [Ann], state: waiting}
+  when:
+    - {player: Ann, action: send_chat, text_length: 200, text_kind: emoji}
+  then:
+    chat_count: 1
+
+- name: rejects a message over 800 bytes even under 200 characters
+  covers: [A11.5]
+  given:
+    accounts: [{name: Ann}]
+    room: {code: K7QR2P, size: 3, public: true, owner: Ann, players: [Ann], state: waiting}
+  when:
+    - {player: Ann, action: send_chat, text_length: 10, text_bytes: 801}
+  then:
+    rejected: message_too_long
+
+- name: rejects a second message within 2 seconds
+  covers: [A11.6]
+  given:
+    accounts: [{name: Ann}]
+    room: {code: K7QR2P, size: 3, public: true, owner: Ann, players: [Ann], state: waiting}
+  when:
+    - {player: Ann, action: send_chat, text: "one"}
+    - wait_ms: 1999
+    - {player: Ann, action: send_chat, text: "two"}
+  then:
+    rejected: chat_too_fast
+
+- name: rejects the 101st message from a player in one room
+  covers: [A11.6]
+  given:
+    accounts: [{name: Ann}]
+    room: {code: K7QR2P, size: 3, public: true, owner: Ann, players: [Ann], state: waiting, messages_sent: {Ann: 100}}
+  when:
+    - {player: Ann, action: send_chat, text: "more"}
+  then:
+    rejected: chat_room_limit
+
+- name: muting hides a player's messages only for the one who muted
+  covers: [A11.7]
+  given:
+    accounts: [{name: Ann}, {name: Bea}, {name: Cat}]
+    room: {code: K7QR2P, size: 3, public: true, owner: Ann, players: [Ann, Bea, Cat], state: waiting}
+  when:
+    - {player: Ann, action: mute, player_to_mute: Bea}
+    - {player: Bea, action: send_chat, text: "hi"}
+  then:
+    view_chat: {player: Ann, messages: []}
+    notified: [Cat]
+    message_to: {player: Bea, hides: [muted]}
+
+- name: after unmuting a player their new messages are shown again
+  covers: [A11.7]
+  given:
+    accounts: [{name: Ann}, {name: Bea}]
+    room: {code: K7QR2P, size: 3, public: true, owner: Ann, players: [Ann, Bea], state: waiting}
+  when:
+    - {player: Ann, action: mute, player_to_mute: Bea}
+    - {player: Bea, action: send_chat, text: "first"}
+    - {player: Ann, action: unmute, player_to_unmute: Bea}
+    - {player: Bea, action: send_chat, text: "second"}
+  then:
+    view_chat: {player: Ann, messages: [{from: Bea, text: "second"}]}
+    notified: [Ann]
+
+- name: chat continues after the game and is deleted with the room
+  covers: [A11.1, A11.9, M8.2]
+  given:
+    accounts: [{name: Ann}]
+    room: {code: K7QR2P, size: 2, public: true, owner: Ann, players: [Ann], state: ended, chat: [{from: Ann, text: "gg"}]}
+  when:
+    - {player: Ann, action: send_chat, text: "bye"}
+    - {player: Ann, action: leave_room}
+  then:
+    room: deleted
+    chat: deleted

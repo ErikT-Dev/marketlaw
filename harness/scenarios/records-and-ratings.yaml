@@ -1,0 +1,289 @@
+- name: a finished game saves a game record with every player's result and values
+  covers: [A3.1, A3.2]
+  given:
+    kind: casual
+    turn: 40
+    bonus_types: [Farm, Finance]
+    seats:
+      - seat: 1
+        player: Ann
+        stats: {income: 15, workforce: 3, quality: 2, satisfaction: -1, product: 1, distribution: 2, funds: 10}
+        hand: [Pub, Library, Cottage]
+        city: [Orchard, Livestock Farm]
+      - seat: 2
+        player: Bea
+  when:
+    - {seat: 1, action: end_turn}
+    - {seat: 2, action: end_turn}
+  then:
+    record:
+      turns: 40
+      winner: Ann
+      bonus_types: [Farm, Finance]
+      ranked: false
+      players:
+        - {username: Ann, result: won, place: 1, score: 11, reached_end_goal: false, income: 15, funds_plus_hand: 13, workforce: 3, quality: 2, satisfaction: -1, product: 1, distribution: 2, bonus_type_points: 6}
+        - {username: Bea, result: lost, place: 2, score: -85}
+
+- name: a player who left is recorded with their values when they left
+  covers: [A3.2, A3.3, A3.4]
+  given:
+    players: 3
+    turn: 10
+    seats:
+      - seat: 1
+        player: Ann
+      - seat: 2
+        player: Bea
+        stats: {income: 6, funds: 3}
+        hand: [Pub]
+      - seat: 3
+        player: Cat
+  when:
+    - {seat: 2, action: leave_game}
+    - {seat: 3, action: leave_game}
+  then:
+    record:
+      winner: Ann
+      players:
+        - {username: Ann, result: won, place: 1}
+        - {username: Cat, result: left, place: 2}
+        - {username: Bea, result: left, place: 3, score: 684, funds_plus_hand: 4}
+
+- name: an abandoned game saves no game record
+  covers: [A3.1]
+  given:
+    players: 3
+  when:
+    - {seat: 1, action: call_vote}
+    - {seat: 2, action: vote, vote: yes}
+    - {seat: 3, action: vote, vote: yes}
+  then:
+    record: none
+
+- name: game records always show the current username
+  covers: [A3.5]
+  given:
+    accounts: [{name: Ann, games: 1}]
+  when:
+    - {player: Ann, action: change_username, username: Ann City}
+  then:
+    record_usernames: [Ann City]
+
+- name: the match history lists games newest first with a short overview
+  covers: [A4.1, A4.2, A6.1]
+  given:
+    accounts: [{name: Ann}, {name: Bea}]
+    records: [{date: 2026-10-20, players: [{username: Ann, place: 2, score: 700, result: lost}, {username: Bea, place: 1, score: 760, result: won}], turns: 28}, {date: 2026-10-22, players: [{username: Ann, place: 1, score: 810, result: won}, {username: Bea, place: 2, score: 790, result: lost}], turns: 25}]
+  when:
+    - {player: Bea, action: open_match_history, of: Ann}
+  then:
+    match_history:
+      - {date: 2026-10-22, result: won, place: "1st of 2", score: 810, winner: Ann, winner_score: 810, players: 2, turns: 25}
+      - {date: 2026-10-20, result: lost, place: "2nd of 2", score: 700, winner: Bea, winner_score: 760, players: 2, turns: 28}
+
+- name: the ranking table lists registered users with a ranked game by rating
+  covers: [A5.1, A5.2, A5.3, A6.2]
+  given:
+    accounts: [{name: Ann, kind: registered, rating: 1040, ranked_games: 3}, {name: Bea, kind: registered, rating: 1040, ranked_games: 5}, {name: Cat, kind: registered, rating: 1000, ranked_games: 0}, {name: Dan, kind: guest, rating: 1000, ranked_games: 0}, {name: Eve, kind: registered, rating: 980, ranked_games: 2}]
+  when:
+    - {visitor: v1, action: open_ranking}
+  then:
+    ranking: [{place: 1, username: Bea, rating: 1040, ranked_games: 5}, {place: 2, username: Ann, rating: 1040, ranked_games: 3}, {place: 3, username: Eve, rating: 980, ranked_games: 2}]
+
+- name: the ranking table shows 50 players per page and can jump to the player's position
+  covers: [A5.4]
+  given:
+    ranked_accounts: 120
+    accounts: [{name: Ann, kind: registered, ranking_place: 77}]
+  when:
+    - {player: Ann, action: open_ranking, jump_to_me: true}
+  then:
+    ranking_page: {page: 2, first_place: 51, last_place: 100, shows: Ann}
+
+- name: email addresses and queue members are never shown to other players
+  covers: [A6.3]
+  given:
+    accounts: [{name: Ann, kind: registered, email: player@example.com}, {name: Bea}]
+    queue: [Ann]
+  when:
+    - {player: Bea, action: open_match_history, of: Ann}
+  then:
+    message_to: {player: Bea, hides: [player@example.com, queue_members]}
+
+- name: three new players change rating by 20 0 and minus 20
+  covers: [A10.1, A10.2, A10.3, A10.4, A10.6, A10.7, A10.11]
+  given:
+    kind: ranked
+    players: 3
+    turn: 40
+    seats:
+      - seat: 1
+        player: Ann
+        stats: {income: 10}
+      - seat: 2
+        player: Bea
+        stats: {income: 9}
+      - seat: 3
+        player: Cat
+    accounts: [{name: Ann, rating: 1000, ranked_games: 0}, {name: Bea, rating: 1000, ranked_games: 0}, {name: Cat, rating: 1000, ranked_games: 0}]
+  when:
+    - {seat: 1, action: end_turn}
+    - {seat: 2, action: end_turn}
+    - {seat: 3, action: end_turn}
+  then:
+    ratings: {Ann: 1020, Bea: 1000, Cat: 980}
+
+- name: rating changes use each player's own k and the ratings before the game
+  covers: [A10.3, A10.4, A10.5, A10.6, A10.7]
+  given:
+    kind: ranked
+    players: 3
+    turn: 40
+    seats:
+      - seat: 1
+        player: Ann
+        stats: {income: 9}
+      - seat: 2
+        player: Bea
+        stats: {income: 10}
+      - seat: 3
+        player: Cat
+    accounts: [{name: Ann, rating: 1200, ranked_games: 10}, {name: Bea, rating: 1000, ranked_games: 10}, {name: Cat, rating: 900, ranked_games: 35}]
+  when:
+    - {seat: 1, action: end_turn}
+    - {seat: 2, action: end_turn}
+    - {seat: 3, action: end_turn}
+  then:
+    ratings: {Ann: 1188, Bea: 1022, Cat: 895}
+
+- name: a rating difference over 400 counts as 400
+  covers: [A10.3]
+  given:
+    kind: ranked
+    players: 3
+    turn: 40
+    seats:
+      - seat: 1
+        player: Ann
+        stats: {income: 10}
+      - seat: 2
+        player: Bea
+        stats: {income: 9}
+      - seat: 3
+        player: Cat
+    accounts: [{name: Ann, rating: 1000, ranked_games: 10}, {name: Bea, rating: 1500, ranked_games: 10}, {name: Cat, rating: 1400, ranked_games: 10}]
+  when:
+    - {seat: 1, action: end_turn}
+    - {seat: 2, action: end_turn}
+    - {seat: 3, action: end_turn}
+  then:
+    ratings: {Ann: 1036}
+
+- name: a player who ever reached 2400 uses k 5
+  covers: [A10.4]
+  given:
+    kind: ranked
+    players: 3
+    turn: 40
+    seats:
+      - seat: 1
+        player: Ann
+        stats: {income: 10}
+      - seat: 2
+        player: Bea
+      - seat: 3
+        player: Cat
+    accounts: [{name: Ann, rating: 2000, ranked_games: 50, highest_rating: 2410}, {name: Bea, rating: 2000, ranked_games: 50}, {name: Cat, rating: 2000, ranked_games: 50}]
+  when:
+    - {seat: 1, action: end_turn}
+    - {seat: 2, action: end_turn}
+    - {seat: 3, action: end_turn}
+  then:
+    ratings: {Ann: 2005}
+
+- name: two new players in a 2 player ranked game change rating by 20 and minus 20
+  covers: [A10.4, A10.12]
+  given:
+    kind: ranked
+    players: 2
+    turn: 40
+    seats:
+      - seat: 1
+        player: Ann
+        stats: {income: 10}
+      - seat: 2
+        player: Bea
+    accounts: [{name: Ann, rating: 1000, ranked_games: 0}, {name: Bea, rating: 1000, ranked_games: 0}]
+  when:
+    - {seat: 1, action: end_turn}
+    - {seat: 2, action: end_turn}
+  then:
+    ratings: {Ann: 1020, Bea: 980}
+
+- name: four new players in a 4 player ranked game change rating by 20 7 minus 7 and minus 20
+  covers: [A10.4, A10.6, A10.12]
+  given:
+    kind: ranked
+    players: 4
+    turn: 40
+    seats:
+      - seat: 1
+        player: Ann
+        stats: {income: 10}
+      - seat: 2
+        player: Bea
+        stats: {income: 9}
+      - seat: 3
+        player: Cat
+        stats: {income: 8}
+      - seat: 4
+        player: Dan
+    accounts: [{name: Ann, rating: 1000, ranked_games: 0}, {name: Bea, rating: 1000, ranked_games: 0}, {name: Cat, rating: 1000, ranked_games: 0}, {name: Dan, rating: 1000, ranked_games: 0}]
+  when:
+    - {seat: 1, action: end_turn}
+    - {seat: 2, action: end_turn}
+    - {seat: 3, action: end_turn}
+    - {seat: 4, action: end_turn}
+  then:
+    ratings: {Ann: 1020, Bea: 1007, Cat: 993, Dan: 980}
+
+- name: a player who left is placed below the players who stayed for ratings
+  covers: [A10.8, A10.10]
+  given:
+    kind: ranked
+    players: 3
+    seats:
+      - seat: 1
+        player: Ann
+      - seat: 2
+        player: Bea
+      - seat: 3
+        player: Cat
+    accounts: [{name: Ann, rating: 1000, ranked_games: 0}, {name: Bea, rating: 1000, ranked_games: 0}, {name: Cat, rating: 1000, ranked_games: 0}]
+  when:
+    - {seat: 3, action: leave_game}
+    - {seat: 2, action: leave_game}
+  then:
+    ratings: {Ann: 1020, Bea: 1000, Cat: 980}
+
+- name: an abandoned game leaves ratings unchanged
+  covers: [A10.9, M6.9]
+  given:
+    kind: ranked
+    players: 3
+    seats:
+      - seat: 1
+        time_bank_ms: 0
+        timeouts_in_a_row: 2
+      - seat: 2
+        time_bank_ms: 0
+        timeouts_in_a_row: 2
+      - seat: 3
+        time_bank_ms: 0
+        timeouts_in_a_row: 2
+  when:
+    - wait_ms: 45000
+  then:
+    ended: {abandoned: true}
+    ratings: unchanged

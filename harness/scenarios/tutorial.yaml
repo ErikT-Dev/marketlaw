@@ -1,0 +1,119 @@
+- name: the tutorial starts with the fixed hand quests and bonus types
+  covers: [T0.1, T0.2, T0.3, T0.4, T0.6, C4.3, T1.1, C4.1]
+  given:
+    accounts: [{name: Ann}]
+  when:
+    - {player: Ann, action: start_tutorial}
+  then:
+    tutorial_step: T1.1
+    seats:
+      - seat: 1
+        stats: {funds: 7, income: 3, influence: 0, workforce: 0, quality: 0, satisfaction: 0}
+        hand: [Row House, Stone Quarry, Liquor Shop, Library, Cottage, Pub, Hiking Trail]
+    quests: [{quest: Trading post}, {quest: Working district}, {quest: Green city}, {quest: Fishing village}]
+    bonus_types: [Retail, Safety]
+
+- name: tutorial turn 1 teaches playing selling and ending the turn
+  covers: [T1.1, T1.2, T1.3, T1.4]
+  given:
+    accounts: [{name: Ann}]
+    tutorial: {player: Ann, step: T1.1}
+  when:
+    - {player: Ann, action: continue}
+    - {player: Ann, action: play_card, card: Row House}
+    - {player: Ann, action: sell, cards: [Hiking Trail]}
+    - {player: Ann, action: end_turn}
+  then:
+    tutorial_step: T2.1
+    turn: 2
+    marketplace: [{place: residential, card: Farm House}, {place: industry, card: Metal Mining}, {place: service, card: Dentist}, {place: public_quality, card: Fire Station}, {place: public_satisfaction, card: Basketball Court}, {place: open_1, card: Apparel Store}, {place: open_2, card: Clinic}, {place: open_3, card: Forest Plantation}]
+    seats:
+      - seat: 1
+        stats: {funds: 7, influence: 1, workforce: 4, quality: -2, satisfaction: -1, bonus: 1}
+        city: [Row House]
+
+- name: tutorial turn 2 teaches the market and combos
+  covers: [T2.1, T2.2, T2.3, T2.4, T2.5, T0.5]
+  given:
+    accounts: [{name: Ann}]
+    tutorial: {player: Ann, step: T2.1}
+  when:
+    - {player: Ann, action: continue}
+    - {player: Ann, action: turn_draw, option: A, card: Fire Station}
+    - {player: Ann, action: play_card, card: Fire Station}
+    - {player: Ann, action: claim_all}
+    - {player: Ann, action: end_turn}
+  then:
+    tutorial_step: T3.1
+    turn: 3
+    seats:
+      - seat: 1
+        stats: {funds: 6, influence: 2, workforce: 3, quality: 1, satisfaction: -1, bonus: 4}
+        city: [Row House, Fire Station]
+        hand: [Stone Quarry, Liquor Shop, Library, Cottage, Pub, Elementary School]
+
+- name: tutorial turn 3 teaches drawing from the deck and real cost
+  covers: [T3.1, T3.2, T3.3]
+  given:
+    accounts: [{name: Ann}]
+    tutorial: {player: Ann, step: T3.1}
+  when:
+    - {player: Ann, action: turn_draw, option: B, sector: Public}
+    - {player: Ann, action: play_card, card: Public Playground}
+    - {player: Ann, action: end_turn}
+  then:
+    tutorial_step: T4.1
+    turn: 4
+    marketplace: [{place: residential, card: Log House}, {place: industry, card: Orchard}, {place: service, card: Fast Food Restaurant}, {place: public_quality, card: Trauma Center}, {place: public_satisfaction, card: Green Park}, {place: open_1, card: Gym}, {place: open_2, card: Bus Depot}, {place: open_3, card: Poultry Farm}]
+    seats:
+      - seat: 1
+        stats: {funds: 4, influence: 3, workforce: 3, quality: 1, satisfaction: 1, bonus: 9}
+        city: [Row House, Fire Station, Public Playground]
+        hand: [Stone Quarry, Liquor Shop, Library, Cottage, Pub, Elementary School, Tennis Court]
+
+- name: tutorial turn 4 teaches product and the first bonus fund
+  covers: [T4.1, T4.2, T4.3]
+  given:
+    accounts: [{name: Ann}]
+    tutorial: {player: Ann, step: T4.1}
+  when:
+    - {player: Ann, action: turn_draw, option: A, card: Orchard}
+    - {player: Ann, action: play_card, card: Orchard}
+    - {player: Ann, action: end_turn}
+  then:
+    tutorial_step: T5.1
+    turn: 5
+    seats:
+      - seat: 1
+        stats: {funds: 4, influence: 4, workforce: 1, quality: 1, satisfaction: 0, product: 1, bonus: 5}
+        city: [Row House, Fire Station, Public Playground, Orchard]
+        hand: [Stone Quarry, Liquor Shop, Library, Cottage, Pub, Elementary School, Tennis Court, Extensive Wheat Farm]
+
+- name: tutorial turn 5 teaches income and quests and then ends
+  covers: [T5.1, T5.2, T5.3, T5.4, C4.6]
+  given:
+    accounts: [{name: Ann}]
+    tutorial: {player: Ann, step: T5.1}
+  when:
+    - {player: Ann, action: turn_draw, option: B, sector: Service}
+    - {player: Ann, action: play_card, card: Liquor Shop}
+    - {player: Ann, action: complete_quest, quest: Trading post}
+  then:
+    tutorial_step: T5.4
+    seats:
+      - seat: 1
+        stats: {funds: 1, income: 4, influence: 6, workforce: 0, quality: 0, satisfaction: 0, product: 0, distribution: 0}
+        city: [Row House, Fire Station, Public Playground, Orchard, Liquor Shop]
+        hand: [Stone Quarry, Library, Cottage, Pub, Elementary School, Tennis Court, Extensive Wheat Farm, Cafe, Night Club, Small Home]
+        quests_completed: [Trading post]
+
+- name: the tutorial rejects playing a different card than the step asks for
+  covers: [C4.4, T1.2]
+  given:
+    accounts: [{name: Ann}]
+    tutorial: {player: Ann, step: T1.2}
+  when:
+    - {player: Ann, action: play_card, card: Cottage}
+  then:
+    rejected: not_this_step
+    unchanged: true

@@ -1,0 +1,227 @@
+- name: option A takes a free market card and draws one card of the same sector from the deck
+  covers: [R18.8, R18.10, R18.12]
+  given:
+    turn: 2
+    phase: market
+    first_player: 2
+    marketplace: [{place: residential, card: Row House}, {place: industry, card: Metal Mining}, {place: service, card: Liquor Shop}, {place: public_quality, card: Fire Station}, {place: public_satisfaction, card: Public Playground}, {place: open_1, card: Dentist}, {place: open_2, card: Apparel Store}, {place: open_3, card: Forest Plantation}]
+    random: [{tier: 1}]
+  when:
+    - {seat: 2, action: turn_draw, option: A, card: Public Playground}
+  then:
+    marketplace: [{place: residential, card: Row House}, {place: industry, card: Metal Mining}, {place: service, card: Liquor Shop}, {place: public_quality, card: Fire Station}, {place: public_satisfaction, card: null}, {place: open_1, card: Dentist}, {place: open_2, card: Apparel Store}, {place: open_3, card: Forest Plantation}]
+    seats:
+      - seat: 2
+        hand: [Public Playground, Landfill]
+        new_cards: [Public Playground, Landfill]
+        market: out
+    market_go: {seat: 1}
+
+- name: option B draws 2 cards of a chosen sector from the deck
+  covers: [R18.8, R17.3]
+  given:
+    turn: 2
+    phase: market
+    first_player: 2
+    marketplace: [{place: residential, card: Row House}, {place: industry, card: Metal Mining}, {place: service, card: Liquor Shop}, {place: public_quality, card: Fire Station}, {place: public_satisfaction, card: Public Playground}, {place: open_1, card: Dentist}, {place: open_2, card: Apparel Store}, {place: open_3, card: Forest Plantation}]
+    random: [{tier: 1}, {tier: 1}]
+  when:
+    - {seat: 2, action: turn_draw, option: B, sector: Service}
+  then:
+    seats:
+      - seat: 2
+        hand: [Fast Food Restaurant, Pub]
+        market: out
+
+- name: a player whose market go comes with an empty marketplace must take option B
+  covers: [R18.9]
+  given:
+    turn: 2
+    phase: market
+    first_player: 2
+    marketplace: []
+  when:
+    - {seat: 2, action: turn_draw, option: A, card: Row House}
+  then:
+    rejected: marketplace_empty
+    unchanged: true
+
+- name: rejects a market action when it is another player's go
+  covers: [R18.6]
+  given:
+    turn: 2
+    phase: market
+    first_player: 2
+    marketplace: [{place: residential, card: Row House}]
+  when:
+    - {seat: 1, action: turn_draw, option: B, sector: Service}
+  then:
+    rejected: not_your_go
+    unchanged: true
+
+- name: rejects a second market go in the same turn
+  covers: [R18.6]
+  given:
+    players: 3
+    turn: 2
+    phase: market
+    first_player: 2
+    market_go: {seat: 3}
+    marketplace: [{place: residential, card: Row House}]
+    seats:
+      - seat: 2
+        market: out
+  when:
+    - {seat: 2, action: turn_draw, option: A, card: Row House}
+  then:
+    rejected: out_of_market
+    unchanged: true
+
+- name: rejects taking a card that is not in the marketplace
+  covers: [R18.8]
+  given:
+    turn: 2
+    phase: market
+    first_player: 2
+    marketplace: [{place: residential, card: Row House}]
+  when:
+    - {seat: 2, action: turn_draw, option: A, card: Dorm}
+  then:
+    rejected: card_not_in_marketplace
+    unchanged: true
+
+- name: after the last marketplace card is taken the next player still gets their market go
+  covers: [R18.6, R18.9]
+  given:
+    players: 3
+    turn: 2
+    phase: market
+    first_player: 2
+    marketplace: [{place: residential, card: Row House}]
+    random: [{tier: 1}]
+  when:
+    - {seat: 2, action: turn_draw, option: A, card: Row House}
+  then:
+    seats:
+      - seat: 2
+        market: out
+    market_go: {seat: 3}
+
+- name: the market phase ends when every player has had their market go
+  covers: [R18.7]
+  given:
+    turn: 2
+    phase: market
+    first_player: 2
+    market_go: {seat: 1}
+    marketplace: [{place: residential, card: Row House}]
+    seats:
+      - seat: 2
+        market: out
+    random: [{tier: 1}, {tier: 1}]
+  when:
+    - {seat: 1, action: turn_draw, option: B, sector: Service}
+  then:
+    phase: main
+    seats:
+      - seat: 1
+        market: out
+
+- name: a time-out on the market go takes option B with a random sector
+  covers: [R18.11, R9.10]
+  given:
+    turn: 2
+    phase: market
+    first_player: 2
+    marketplace: [{place: residential, card: Row House}]
+    seats:
+      - seat: 2
+        time_bank_ms: 0
+    random: [{sector: Service}, {tier: 1}, {tier: 1}]
+  when:
+    - wait_ms: 5000
+  then:
+    seats:
+      - seat: 2
+        hand: [Fast Food Restaurant, Pub]
+        market: out
+
+- name: the market time beyond the first 5 seconds of a go comes from the bank
+  covers: [R18.11, R9.4]
+  given:
+    turn: 2
+    phase: market
+    first_player: 2
+    marketplace: [{place: residential, card: Row House}]
+    random: [{tier: 1}, {tier: 1}]
+  when:
+    - wait_ms: 15000
+    - {seat: 2, action: turn_draw, option: B, sector: Service}
+  then:
+    seats:
+      - seat: 2
+        time_bank_ms: 890000
+
+- name: new marks last until the end of the turn
+  covers: [R18.10]
+  given:
+    turn: 2
+    marketplace: [{place: residential, card: Row House}, {place: industry, card: Metal Mining}, {place: service, card: Liquor Shop}, {place: public_quality, card: Fire Station}, {place: public_satisfaction, card: Public Playground}, {place: open_1, card: Dentist}, {place: open_2, card: Apparel Store}, {place: open_3, card: Forest Plantation}]
+    quests: [{quest: Farmland}, {quest: Sports town}, {quest: Trading post}, {quest: Mining town}]
+    seats:
+      - seat: 1
+        hand: [Pub]
+        new_cards: [Pub]
+  when:
+    - {seat: 1, action: end_turn}
+    - {seat: 2, action: end_turn}
+  then:
+    seats:
+      - seat: 1
+        new_cards: []
+
+- name: a kind place with no card of its kind left stays empty
+  covers: [R18.3, R17.5]
+  given:
+    turn: 3
+    deck: [Pub, Landfill]
+    marketplace: [{place: residential, card: Row House}, {place: industry, card: Metal Mining}, {place: service, card: Liquor Shop}, {place: public_quality, card: Fire Station}, {place: open_1, card: Dentist}, {place: open_2, card: Apparel Store}, {place: open_3, card: Forest Plantation}]
+    quests: [{quest: Farmland}, {quest: Sports town}, {quest: Trading post}, {quest: Mining town}]
+    random: [{tier: 1}]
+  when:
+    - {seat: 1, action: end_turn}
+    - {seat: 2, action: end_turn}
+  then:
+    turn: 4
+    deck: [Pub, Landfill]
+    marketplace: [{place: residential, card: Row House}, {place: industry, card: Metal Mining}, {place: service, card: Liquor Shop}, {place: public_quality, card: Fire Station}, {place: public_satisfaction, card: null}, {place: open_1, card: Dentist}, {place: open_2, card: Apparel Store}, {place: open_3, card: Forest Plantation}]
+
+- name: a kind place falls back to another tier of its kind
+  covers: [R18.3, R17.4]
+  given:
+    turn: 3
+    deck: [Pub, Landfill, Beach]
+    marketplace: [{place: residential, card: Row House}, {place: industry, card: Metal Mining}, {place: service, card: Liquor Shop}, {place: public_quality, card: Fire Station}, {place: open_1, card: Dentist}, {place: open_2, card: Apparel Store}, {place: open_3, card: Forest Plantation}]
+    quests: [{quest: Farmland}, {quest: Sports town}, {quest: Trading post}, {quest: Mining town}]
+    random: [{tier: 1}]
+  when:
+    - {seat: 1, action: end_turn}
+    - {seat: 2, action: end_turn}
+  then:
+    marketplace: [{place: residential, card: Row House}, {place: industry, card: Metal Mining}, {place: service, card: Liquor Shop}, {place: public_quality, card: Fire Station}, {place: public_satisfaction, card: Beach}, {place: open_1, card: Dentist}, {place: open_2, card: Apparel Store}, {place: open_3, card: Forest Plantation}]
+
+- name: option A with no cards left of that sector draws the top card of the deck
+  covers: [R18.8, R17.4]
+  given:
+    turn: 2
+    phase: market
+    first_player: 2
+    deck: [Pub, Library]
+    marketplace: [{place: residential, card: Row House}]
+    random: [{tier: 1}]
+  when:
+    - {seat: 2, action: turn_draw, option: A, card: Row House}
+  then:
+    seats:
+      - seat: 2
+        hand: [Row House, Pub]

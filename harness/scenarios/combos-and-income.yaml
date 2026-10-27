@@ -1,0 +1,206 @@
+- name: a card-name combo is claimed when the named card is in the city
+  covers: [R12.2, R12.3, R12.5, R12.6]
+  given:
+    seats:
+      - seat: 1
+        city: [Fast Food Restaurant]
+        hand: [Row House]
+  when:
+    - {seat: 1, action: play_card, card: Row House}
+    - {seat: 1, action: claim_all}
+  then:
+    seats:
+      - seat: 1
+        stats: {workforce: 4, quality: -2, satisfaction: 0}
+        combos_claimed: [{card: Row House, combo: Fast Food Restaurant, times: 1}]
+
+- name: a card-name combo works whichever card was played first
+  covers: [R12.3]
+  given:
+    seats:
+      - seat: 1
+        city: [Row House]
+        hand: [Fast Food Restaurant]
+  when:
+    - {seat: 1, action: play_card, card: Fast Food Restaurant}
+    - {seat: 1, action: claim_all}
+  then:
+    seats:
+      - seat: 1
+        stats: {satisfaction: 0}
+        combos_claimed: [{card: Row House, combo: Fast Food Restaurant, times: 1}]
+
+- name: a card-name combo does not count another player's city
+  covers: [R12.3]
+  given:
+    seats:
+      - seat: 1
+        city: [Row House]
+      - seat: 2
+        city: [Fast Food Restaurant]
+  when:
+    - {seat: 1, action: claim_all}
+  then:
+    rejected: nothing_to_claim
+    unchanged: true
+
+- name: a type-count combo is claimed once
+  covers: [R12.3, R12.6]
+  given:
+    seats:
+      - seat: 1
+        city: [Row House, Fire Station]
+  when:
+    - {seat: 1, action: claim_all}
+    - {seat: 1, action: claim_all}
+  then:
+    rejected: nothing_to_claim
+    seats:
+      - seat: 1
+        stats: {quality: 1}
+
+- name: claim all claims an infinite combo as many times as the type count allows
+  covers: [R12.4, R12.6, R12.1]
+  given:
+    seats:
+      - seat: 1
+        city: [Farmers Market, Livestock Farm, Fiber Crop Farm, Orchard, Poultry Farm]
+  when:
+    - {seat: 1, action: claim_all}
+  then:
+    seats:
+      - seat: 1
+        stats: {workforce: 2, satisfaction: 2}
+        combos_claimed: [{card: Farmers Market, combo: 2 Farm, times: 2}, {card: Farmers Market, combo: Orchard, times: 1}, {card: Livestock Farm, combo: 4 Farm, times: 1}]
+
+- name: an infinite combo already claimed is claimed again at the next multiple
+  covers: [R12.4]
+  given:
+    seats:
+      - seat: 1
+        city: [Farmers Market, Livestock Farm, Fiber Crop Farm, Orchard, Poultry Farm]
+        combos_claimed: [{card: Farmers Market, combo: 2 Farm, times: 1}, {card: Farmers Market, combo: Orchard, times: 1}, {card: Livestock Farm, combo: 4 Farm, times: 1}]
+  when:
+    - {seat: 1, action: claim_all}
+  then:
+    seats:
+      - seat: 1
+        stats: {workforce: 1, satisfaction: 0}
+        combos_claimed: [{card: Farmers Market, combo: 2 Farm, times: 2}, {card: Farmers Market, combo: Orchard, times: 1}, {card: Livestock Farm, combo: 4 Farm, times: 1}]
+
+- name: types gained from quests count for type combos
+  covers: [R12.1, R12.3, R20.6]
+  given:
+    seats:
+      - seat: 1
+        city: [Farmers Market, Livestock Farm]
+        gained_types: {Farm: 1}
+  when:
+    - {seat: 1, action: claim_all}
+  then:
+    seats:
+      - seat: 1
+        stats: {workforce: 1}
+        combos_claimed: [{card: Farmers Market, combo: 2 Farm, times: 1}]
+
+- name: rejects claim all when no combo is ready
+  covers: [R12.6]
+  given:
+    seats:
+      - seat: 1
+        city: [Row House]
+  when:
+    - {seat: 1, action: claim_all}
+  then:
+    rejected: nothing_to_claim
+    unchanged: true
+
+- name: income happens by itself when product and distribution are both there and no stat is negative
+  covers: [R13.1, R2.3]
+  given:
+    seats:
+      - seat: 1
+        stats: {workforce: 1, quality: 1, product: 1}
+        hand: [Liquor Shop]
+    random: [{sector: Public}]
+  when:
+    - {seat: 1, action: play_card, card: Liquor Shop}
+  then:
+    seats:
+      - seat: 1
+        stats: {income: 4, product: 0, distribution: 0, workforce: 0, quality: 0}
+        hand: [Landfill]
+
+- name: income repeats as long as it is possible
+  covers: [R13.2]
+  given:
+    seats:
+      - seat: 1
+        stats: {influence: 6, workforce: -1, satisfaction: 1, product: 2, distribution: 2}
+    random: [{sector: Service}, {sector: Public}]
+  when:
+    - {seat: 1, action: influence, trade: influence_to_workforce}
+  then:
+    seats:
+      - seat: 1
+        stats: {income: 5, product: 0, distribution: 0, workforce: 0, influence: 0}
+        hand: [Fast Food Restaurant, Landfill]
+
+- name: no income while a stat is negative
+  covers: [R13.1, R2.3]
+  given:
+    seats:
+      - seat: 1
+        stats: {quality: -1, product: 1}
+        hand: [Liquor Shop]
+  when:
+    - {seat: 1, action: play_card, card: Liquor Shop}
+  then:
+    seats:
+      - seat: 1
+        stats: {income: 3, product: 1, distribution: 1}
+        hand: []
+
+- name: no income with product but no distribution
+  covers: [R13.1]
+  given:
+    seats:
+      - seat: 1
+        stats: {workforce: 2, satisfaction: 1}
+        hand: [Orchard]
+  when:
+    - {seat: 1, action: play_card, card: Orchard}
+  then:
+    seats:
+      - seat: 1
+        stats: {income: 3, product: 1}
+
+- name: an infinite combo with a count of 1 is claimed once for every count
+  covers: [R12.4]
+  given:
+    seats:
+      - seat: 1
+        city: [Livestock Farm, Extensive Wheat Farm, Intensive Corn Farm]
+  when:
+    - {seat: 1, action: claim_all}
+  then:
+    seats:
+      - seat: 1
+        stats: {satisfaction: 3}
+        combos_claimed: [{card: Livestock Farm, combo: 1 Grain, times: 2}, {card: Extensive Wheat Farm, combo: 2 Farm, times: 1}]
+
+- name: a card drawn in the main phase is marked new
+  covers: [R18.10, R13.1]
+  given:
+    seats:
+      - seat: 1
+        stats: {workforce: 1, quality: 1, product: 1}
+        hand: [Liquor Shop]
+    random: [{sector: Public}]
+  when:
+    - {seat: 1, action: play_card, card: Liquor Shop}
+  then:
+    seats:
+      - seat: 1
+        hand: [Landfill]
+        new_cards: [Landfill]

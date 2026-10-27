@@ -1,0 +1,360 @@
+- name: opening the game in a second tab moves it there
+  covers: [M5.1]
+  given:
+    accounts: [{name: Ann}]
+    seats:
+      - seat: 1
+        player: Ann
+  when:
+    - {player: Ann, action: open_game, tab: 2}
+  then:
+    message_to: {player: Ann, tab: 1, notice: game_opened_elsewhere}
+    connected_tab: {player: Ann, tab: 2}
+
+- name: a disconnected player is shown as away to everyone
+  covers: [M5.2, M3.5]
+  when:
+    - disconnect: 1
+  then:
+    view: {seat: 2, of_seat: 1, away: true}
+
+- name: an away player keeps their seat and their time runs as normal
+  covers: [M5.3, R9.10]
+  given:
+    seats:
+      - seat: 1
+        time_bank_ms: 0
+  when:
+    - disconnect: 1
+    - wait_ms: 45000
+  then:
+    seats:
+      - seat: 1
+        done: true
+        left: false
+
+- name: an away player's time runs out on a market go as for any player
+  covers: [M5.3, R18.11]
+  given:
+    turn: 2
+    phase: market
+    first_player: 2
+    marketplace: [{place: residential, card: Row House}]
+    seats:
+      - seat: 2
+        time_bank_ms: 0
+    random: [{sector: Service}, {tier: 1}, {tier: 1}]
+  when:
+    - disconnect: 2
+    - wait_ms: 5000
+  then:
+    seats:
+      - seat: 2
+        hand: [Fast Food Restaurant, Pub]
+
+- name: a player who leaves is done straight away and keeps their city
+  covers: [M6.1, M6.2, M6.4]
+  given:
+    players: 3
+    seats:
+      - seat: 1
+        city: [Row House]
+  when:
+    - {seat: 1, action: leave_game}
+  then:
+    seats:
+      - seat: 1
+        left: true
+        done: true
+        city: [Row House]
+
+- name: a player who left cannot act again
+  covers: [M6.1]
+  given:
+    players: 3
+    seats:
+      - seat: 1
+        hand: [Row House]
+  when:
+    - {seat: 1, action: leave_game}
+    - {seat: 1, action: play_card, card: Row House}
+  then:
+    rejected: not_in_game
+
+- name: a leaver's main-phase actions this turn are kept and revealed at the end of the phase
+  covers: [M6.3]
+  given:
+    players: 3
+    marketplace: [{place: residential, card: Row House}, {place: industry, card: Metal Mining}, {place: service, card: Liquor Shop}, {place: public_quality, card: Fire Station}, {place: public_satisfaction, card: Public Playground}, {place: open_1, card: Dentist}, {place: open_2, card: Apparel Store}, {place: open_3, card: Forest Plantation}]
+    quests: [{quest: Farmland}, {quest: Sports town}, {quest: Trading post}, {quest: Mining town}]
+    seats:
+      - seat: 1
+        hand: [Small Home]
+  when:
+    - {seat: 1, action: play_card, card: Small Home}
+    - {seat: 1, action: leave_game}
+    - {seat: 2, action: end_turn}
+    - {seat: 3, action: end_turn}
+  then:
+    view: {seat: 2, of_seat: 1, city: [Small Home]}
+
+- name: a leaver's hand waits in the holding pile during a main phase
+  covers: [M6.5, R17.7]
+  given:
+    players: 3
+    seats:
+      - seat: 1
+        hand: [Pub, Library]
+  when:
+    - {seat: 1, action: leave_game}
+  then:
+    holding_pile: [Pub, Library]
+    seats:
+      - seat: 1
+        hand: []
+
+- name: a leaver's hand goes straight to the discard pile outside the main phase
+  covers: [M6.5]
+  given:
+    players: 3
+    turn: 2
+    phase: market
+    first_player: 2
+    marketplace: [{place: residential, card: Row House}]
+    seats:
+      - seat: 1
+        hand: [Pub]
+  when:
+    - {seat: 1, action: leave_game}
+  then:
+    discard: [Pub]
+
+- name: a leaver takes no more market goes and is skipped in player order
+  covers: [M6.2, M6.6]
+  given:
+    players: 3
+    turn: 2
+    phase: market
+    first_player: 2
+    marketplace: [{place: residential, card: Row House}, {place: industry, card: Metal Mining}]
+    random: [{tier: 1}, {tier: 1}]
+  when:
+    - {seat: 3, action: leave_game}
+    - {seat: 2, action: turn_draw, option: B, sector: Service}
+  then:
+    market_go: {seat: 1}
+
+- name: when only one player is left the game ends and that player wins
+  covers: [M6.8, A3.1]
+  given:
+    players: 2
+  when:
+    - {seat: 2, action: leave_game}
+  then:
+    ended: {winner: 1, places: [1, 2]}
+    record: {results: {1: won, 2: left}}
+
+- name: players who leave at the same moment leave in player order
+  covers: [M6.9, A3.4]
+  given:
+    players: 3
+    turn: 4
+    first_player: 1
+    seats:
+      - seat: 2
+        time_bank_ms: 0
+        timeouts_in_a_row: 2
+      - seat: 3
+        time_bank_ms: 0
+        timeouts_in_a_row: 2
+  when:
+    - wait_ms: 45000
+  then:
+    ended: {winner: 1, places: [1, 3, 2]}
+
+- name: if every player leaves at the same moment the game is abandoned
+  covers: [M6.9]
+  given:
+    players: 2
+    seats:
+      - seat: 1
+        time_bank_ms: 0
+        timeouts_in_a_row: 2
+      - seat: 2
+        time_bank_ms: 0
+        timeouts_in_a_row: 2
+  when:
+    - wait_ms: 45000
+  then:
+    ended: {abandoned: true}
+
+- name: a leaver stays in the room and its chat and can join another room straight away
+  covers: [M6.7, M2.2]
+  given:
+    accounts: [{name: Ann}, {name: Bea}, {name: Cat}, {name: Dan}]
+    room: {code: K7QR2P, size: 3, public: true, owner: Ann, players: [Ann, Bea, Cat], state: playing}
+    other_rooms: [{code: M4TX9C, size: 2, public: true, owner: Dan, players: [Dan], state: waiting}]
+  when:
+    - {player: Cat, action: leave_game}
+    - {player: Cat, action: send_chat, text: "gg"}
+    - {player: Cat, action: join_room, code: M4TX9C}
+  then:
+    room: {players: [Ann, Bea], chat_last: {from: Cat, text: "gg"}}
+
+- name: a leaver no longer sees the game but sees the result when it ends
+  covers: [M6.7]
+  given:
+    accounts: [{name: Ann}, {name: Bea}, {name: Cat}]
+    room: {code: K7QR2P, size: 3, public: true, owner: Ann, players: [Ann, Bea, Cat], state: playing}
+  when:
+    - {player: Cat, action: leave_game}
+    - {player: Ann, action: leave_game}
+  then:
+    room: {state: ended, players: [Ann, Bea, Cat]}
+    message_to: {player: Cat, contains: [left_game, room_chat, exit_to_lobby, game_result]}
+
+- name: deleting the account during a game counts as leaving it
+  covers: [M6.10, A1.15]
+  given:
+    players: 3
+    accounts: [{name: Ann, kind: registered}]
+    seats:
+      - seat: 1
+        player: Ann
+  when:
+    - {player: Ann, action: delete_account}
+  then:
+    seats:
+      - seat: 1
+        left: true
+
+- name: a guest who logs out during a game leaves it
+  covers: [M6.10, A1.14]
+  given:
+    players: 3
+    accounts: [{name: Ann}]
+    seats:
+      - seat: 1
+        player: Ann
+  when:
+    - {player: Ann, action: log_out}
+  then:
+    seats:
+      - seat: 1
+        left: true
+
+- name: everyone else voting yes abandons a casual game
+  covers: [M7.1, M7.3, M7.4]
+  given:
+    players: 3
+  when:
+    - {seat: 1, action: call_vote}
+    - {seat: 2, action: vote, vote: yes}
+    - {seat: 3, action: vote, vote: yes}
+  then:
+    ended: {abandoned: true}
+
+- name: players see how many have answered a vote but not who or how
+  covers: [M7.5]
+  given:
+    players: 4
+  when:
+    - {seat: 1, action: call_vote}
+    - {seat: 2, action: vote, vote: yes}
+  then:
+    view: {seat: 3, vote_answers: {answered: 1, of: 3}}
+
+- name: an away player who does not answer counts as voting no
+  covers: [M7.3, M7.4]
+  given:
+    players: 3
+    seats:
+      - seat: 3
+        connected: false
+  when:
+    - {seat: 1, action: call_vote}
+    - {seat: 2, action: vote, vote: yes}
+    - wait_ms: 60000
+  then:
+    phase: main
+    vote: closed
+
+- name: timers keep running during a vote
+  covers: [M7.3]
+  given:
+    players: 3
+  when:
+    - {seat: 1, action: call_vote}
+    - wait_ms: 60000
+  then:
+    seats:
+      - seat: 2
+        time_bank_ms: 885000
+
+- name: ranked games cannot be abandoned by vote
+  covers: [M7.1, A8.11]
+  given:
+    kind: ranked
+    players: 3
+  when:
+    - {seat: 1, action: call_vote}
+  then:
+    rejected: vote_not_allowed
+    unchanged: true
+
+- name: a game can have at most one vote every 5 turns
+  covers: [M7.2]
+  given:
+    players: 3
+    turn: 7
+    last_vote_turn: 3
+  when:
+    - {seat: 1, action: call_vote}
+  then:
+    rejected: vote_too_soon
+    unchanged: true
+
+- name: a new vote can be called 5 turns after the last one
+  covers: [M7.2]
+  given:
+    players: 3
+    turn: 8
+    last_vote_turn: 3
+  when:
+    - {seat: 2, action: call_vote}
+  then:
+    vote: open
+
+- name: only one vote can be open at a time
+  covers: [M7.2]
+  given:
+    players: 3
+    turn: 8
+  when:
+    - {seat: 1, action: call_vote}
+    - {seat: 2, action: call_vote}
+  then:
+    rejected: vote_already_open
+
+- name: rejects voting when no vote is open
+  covers: [M7.3]
+  given:
+    players: 3
+  when:
+    - {seat: 2, action: vote, vote: yes}
+  then:
+    rejected: no_vote_open
+    unchanged: true
+
+- name: a player who leaves during their own market go is skipped and the next player goes
+  covers: [M6.2, M6.6, R18.6]
+  given:
+    players: 3
+    turn: 2
+    phase: market
+    first_player: 2
+    marketplace: [{place: residential, card: Row House}]
+  when:
+    - {seat: 2, action: leave_game}
+  then:
+    market_go: {seat: 3}

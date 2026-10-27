@@ -1,0 +1,159 @@
+- id: B1
+  name: rows written per accepted game action
+  limit: 1, plus any alarm change counted under B3
+  unit: Durable Object rows written
+  measured: in every simulated game, for every accepted action
+  why: >
+    Rows written is the binding Free plan limit (100,000 per day); the state and the action-log
+    entry are saved together as one row.
+
+- id: B2
+  name: rows written for anything that is not an accepted action
+  limit: 0
+  unit: Durable Object rows written
+  measured: in every simulated game, for connects, reconnects, resyncs, views and rejected actions
+  why: >
+    Only accepted actions, alarm changes, chat messages and room membership changes may cost a
+    write; reading and showing the game must be free. Exceptions that count as accepted actions
+    under B1: a time-out (including one applied by an out-of-time rejection, R9.6), and a game
+    pausing or resuming (R9.12, R9.13).
+
+- id: B3
+  name: alarm changes per turn
+  limit: number of market goes in the turn + number of players + 2
+  unit: alarm set or delete calls
+  measured: in every simulated game, per turn
+  why: >
+    Each alarm change counts as a row written; the room keeps one alarm and moves it only when
+    the next deadline changes (one per market go, one per player's main-phase deadline, plus the
+    start and end of the phase).
+
+- id: B4
+  name: rows written per 3-player game
+  limit: 1600
+  unit: Durable Object rows written, average over simulated 3-player games
+  measured: simulator, 1,000 seeded 3-player games
+  why: >
+    The day's rows must fit 100,000: 50 games × 1,600 = 80,000, plus 100 tutorials × 60 = 6,000
+    (A9.6), plus 2,000 chat messages (A9.6), plus at most 5,000 for rooms, the lobby, the queue
+    and accounts (B18) = 93,000, leaving 7,000 spare.
+
+- id: B5
+  name: rows written per 4-player game
+  limit: 1600
+  unit: Durable Object rows written, average over simulated 4-player games
+  measured: simulator, 1,000 seeded 4-player games
+  why: >
+    The daily game limit counts games, not players, so a day of only 4-player games must fit
+    the same arithmetic as B4.
+
+- id: B6
+  name: rows written for a full tutorial
+  limit: 60
+  unit: Durable Object rows written
+  measured: playing tutorial steps T0 to T5 once
+  why: >
+    The tutorial does not count toward the daily game limit (C4.6), so it must stay small.
+
+- id: B7
+  name: rows written per chat message
+  limit: 1
+  unit: Durable Object rows written
+  measured: in chat scenarios
+  why: >
+    Every message is saved (A11.8); at most 100 per player per room (A11.6) caps a room at 400,
+    and the site-wide cap of 2,000 messages a day (A9.6) caps all chat.
+
+- id: B8
+  name: rows written per finished game outside the room
+  limit: 12
+  unit: D1 rows written
+  measured: simulator, per finished game
+  why: >
+    The game record, one row per player, ratings and daily counters; D1 also allows
+    100,000 rows written per day.
+
+- id: B9
+  name: incoming messages per 3-player game
+  limit: 1000
+  unit: WebSocket messages from clients, average over simulated 3-player games
+  measured: simulator, 1,000 seeded 3-player games
+  why: >
+    Even if every incoming message counted as a request, 50 games × 1,000 = 50,000 stays well
+    under the 100,000 requests per day.
+
+- id: B10
+  name: client heartbeat messages
+  limit: 0
+  unit: messages per minute from an idle client
+  measured: browser tests, a connected client that takes no action for 5 minutes
+  why: >
+    Every incoming message counts toward the daily request limit; the platform keeps the
+    connection alive.
+
+- id: B11
+  name: computing time per message
+  limit: 10
+  unit: milliseconds of CPU time, 99th percentile
+  measured: simulator and browser tests, per handled message
+  why: >
+    The Workers Free plan stops a request after 10 ms of CPU time.
+
+- id: B12
+  name: time a room stays awake per game
+  limit: 600
+  unit: seconds a room is in memory, average over simulated 3-player games
+  measured: simulator with hibernation, per game
+  why: >
+    Durable Object duration is limited to 13,000 GB-s per day; rooms must sleep while players
+    think, and 50 games × 600 s × 128 MB stays far below it.
+
+- id: B13
+  name: saved size of one room
+  limit: 100
+  unit: kilobytes
+  measured: simulator, the largest saved room state in any game
+  why: >
+    Keeps every save fast and well inside storage limits; total storage is capped at 5 GB.
+
+- id: B14
+  name: initial download
+  limit: 300
+  unit: kilobytes compressed, scripts and styles needed for the first screen
+  measured: production build
+  why: >
+    A fast first load keeps players; card images and screens not needed at once load later.
+
+- id: B15
+  name: time from a move to the updated view
+  limit: 500
+  unit: milliseconds, 95th percentile
+  measured: browser tests against the local server
+  why: >
+    A move must feel immediate; anything slower looks like the game ignored the click.
+
+- id: B16
+  name: rows read per game
+  limit: 50000
+  unit: Durable Object and D1 rows read, average over simulated 3-player games
+  measured: simulator, 1,000 seeded 3-player games
+  why: >
+    Each allows 5,000,000 rows read per day; 50 games × 50,000 = 2,500,000 leaves half for the
+    lobby, match histories and the ranking table.
+
+- id: B17
+  name: size of one replay record
+  limit: 100
+  unit: kilobytes
+  measured: simulator, the largest replay record in any game
+  why: >
+    Replay records are kept 30 days (M4.3); 50 games a day × 30 days × 100 KB = 150 MB, well
+    inside the 5 GB storage cap.
+
+- id: B18
+  name: rows written per day outside games, tutorials and chat
+  limit: 5000
+  unit: rows written, Durable Object and D1, for a simulated busy day
+  measured: simulator of a day with 50 games, 100 tutorials, room joins, queue use and signups
+  why: >
+    Rooms, the lobby, the queue and accounts share the rows left after B4, B6 and B7.

@@ -1,0 +1,162 @@
+- name: rejects a message that cannot be read
+  covers: [M9.5]
+  when:
+    - {raw: {seat: 1, text: "{not json"}}
+  then:
+    rejected: malformed_message
+    unchanged: true
+
+- name: rejects a message with a missing field
+  covers: [M9.5]
+  when:
+    - {raw: {seat: 1, message: {action: play_card}}}
+  then:
+    rejected: malformed_message
+    unchanged: true
+
+- name: rejects an unknown action
+  covers: [M9.5]
+  when:
+    - {raw: {seat: 1, message: {action: win_game}}}
+  then:
+    rejected: unknown_action
+    unchanged: true
+
+- name: rejects a message with an old protocol version
+  covers: [M9.1]
+  when:
+    - {raw: {seat: 1, protocol_version: 0, message: {action: end_turn}}}
+  then:
+    rejected: wrong_protocol_version
+    unchanged: true
+
+- name: rejects a forged player token
+  covers: [M9.2]
+  when:
+    - {raw: {token: forged, message: {action: end_turn}}}
+  then:
+    rejected: invalid_token
+    unchanged: true
+
+- name: a room code is not proof of identity
+  covers: [M9.2, M1.6]
+  given:
+    room: {code: K7QR2P, size: 2, public: false, players: [Ann, Bea], state: playing}
+    accounts: [{name: Ann}, {name: Bea}, {name: Cat}]
+  when:
+    - {raw: {player: Cat, room_code: K7QR2P, message: {action: end_turn, seat: 1}}}
+  then:
+    rejected: not_in_game
+    unchanged: true
+
+- name: rejects an action based on an older state version
+  covers: [M9.4]
+  given:
+    seats:
+      - seat: 1
+        state_version: 5
+        hand: [Row House]
+  when:
+    - {raw: {seat: 1, state_version: 4, action_id: a1, message: {action: play_card, card: Row House}}}
+  then:
+    rejected: stale_state
+    unchanged: true
+
+- name: a repeated action id returns the original result and changes nothing more
+  covers: [M9.3]
+  given:
+    seats:
+      - seat: 1
+        state_version: 5
+        hand: [Row House, Pub]
+  when:
+    - {raw: {seat: 1, state_version: 5, action_id: a1, message: {action: sell, cards: [Pub]}}}
+    - {raw: {seat: 1, state_version: 5, action_id: a1, message: {action: sell, cards: [Pub]}}}
+  then:
+    seats:
+      - seat: 1
+        stats: {funds: 8}
+        hand: [Row House]
+        actions_this_turn: 1
+
+- name: rejects an action from a player who is not in the game
+  covers: [M6.1]
+  given:
+    players: 2
+  when:
+    - {raw: {seat: 3, message: {action: end_turn}}}
+  then:
+    rejected: not_in_game
+    unchanged: true
+
+- name: rejects selling a card another player holds
+  covers: [R5.1]
+  given:
+    seats:
+      - seat: 2
+        hand: [Pub]
+  when:
+    - {seat: 1, action: sell, cards: [Pub]}
+  then:
+    rejected: card_not_in_hand
+    unchanged: true
+
+- name: rejects selling the same card twice in one message
+  covers: [R5.1]
+  given:
+    seats:
+      - seat: 1
+        hand: [Pub]
+  when:
+    - {seat: 1, action: sell, cards: [Pub, Pub]}
+  then:
+    rejected: card_not_in_hand
+    unchanged: true
+
+- name: rejects a main-phase action during the market phase
+  covers: [R5.1, R18.6]
+  given:
+    turn: 2
+    phase: market
+    first_player: 1
+    marketplace: [{place: residential, card: Row House}]
+    seats:
+      - seat: 1
+        hand: [Pub]
+  when:
+    - {seat: 1, action: sell, cards: [Pub]}
+  then:
+    rejected: wrong_phase
+    unchanged: true
+
+- name: rejects any action after the game has ended
+  covers: [R21.1]
+  given:
+    phase: ended
+    seats:
+      - seat: 1
+        hand: [Pub]
+  when:
+    - {seat: 1, action: sell, cards: [Pub]}
+  then:
+    rejected: game_over
+    unchanged: true
+
+- name: another player's hidden action does not change my state version
+  covers: [M9.4]
+  given:
+    seats:
+      - seat: 1
+        state_version: 5
+        hand: [Row House]
+      - seat: 2
+        state_version: 7
+        hand: [Pub]
+  when:
+    - {seat: 1, action: play_card, card: Row House}
+  then:
+    seats:
+      - seat: 1
+        state_version: 6
+      - seat: 2
+        state_version: 7

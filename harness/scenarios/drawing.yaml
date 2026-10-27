@@ -1,0 +1,233 @@
+- name: a draw takes the first card of that sector and tier from the top of the deck
+  covers: [R17.3, R17.4, R17.2]
+  given:
+    deck: [Pub, Orchard, Library, Small Home, Row House]
+    seats:
+      - seat: 1
+        stats: {influence: 3}
+  when:
+    - {seat: 1, action: influence, trade: draw_tier_1, kind: Residential}
+  then:
+    deck: [Pub, Orchard, Library, Row House]
+    seats:
+      - seat: 1
+        hand: [Small Home]
+
+- name: if the deck has none the discard pile cards of that sector and tier are shuffled in
+  covers: [R17.4]
+  given:
+    deck: [Pub]
+    discard: [Cottage, Library, Small Home]
+    seats:
+      - seat: 1
+        stats: {influence: 3}
+    random: [{shuffle: [Small Home, Pub, Cottage]}]
+  when:
+    - {seat: 1, action: influence, trade: draw_tier_1, kind: Residential}
+  then:
+    deck: [Pub, Cottage]
+    discard: [Library]
+    seats:
+      - seat: 1
+        hand: [Small Home]
+
+- name: if a tier is empty the nearest other tier is used and the lower one first
+  covers: [R17.4]
+  given:
+    deck: [Garden Skyscraper, Pub, Row House]
+    seats:
+      - seat: 1
+        stats: {workforce: 1, quality: 1, product: 1}
+        hand: [Liquor Shop]
+    turn: 13
+    random: [{sector: Residential}, {tier: 2}]
+  when:
+    - {seat: 1, action: play_card, card: Liquor Shop}
+  then:
+    seats:
+      - seat: 1
+        hand: [Row House]
+
+- name: tier 3 falls back to tier 2 before tier 1
+  covers: [R17.4]
+  given:
+    turn: 27
+    deck: [Row House, Pub, Dorm]
+    seats:
+      - seat: 1
+        stats: {workforce: 1, quality: 1, product: 1}
+        hand: [Liquor Shop]
+    random: [{sector: Residential}]
+  when:
+    - {seat: 1, action: play_card, card: Liquor Shop}
+  then:
+    seats:
+      - seat: 1
+        hand: [Dorm]
+
+- name: if the whole sector is gone the top card of the deck is drawn
+  covers: [R17.4]
+  given:
+    deck: [Pub, Library]
+    seats:
+      - seat: 1
+        stats: {workforce: 1, quality: 1, product: 1}
+        hand: [Liquor Shop]
+    random: [{sector: Residential}]
+  when:
+    - {seat: 1, action: play_card, card: Liquor Shop}
+  then:
+    deck: [Library]
+    seats:
+      - seat: 1
+        hand: [Pub]
+
+- name: with an empty deck the discard pile is shuffled in before the top card is drawn
+  covers: [R17.4]
+  given:
+    deck: []
+    discard: [Pub, Library]
+    seats:
+      - seat: 1
+        stats: {workforce: 1, quality: 1, product: 1}
+        hand: [Liquor Shop]
+    random: [{sector: Residential}, {shuffle: [Library, Pub]}]
+  when:
+    - {seat: 1, action: play_card, card: Liquor Shop}
+  then:
+    deck: [Pub]
+    seats:
+      - seat: 1
+        hand: [Library]
+
+- name: with no cards left at all nothing is drawn
+  covers: [R17.4]
+  given:
+    deck: []
+    discard: []
+    seats:
+      - seat: 1
+        stats: {workforce: 1, quality: 1, product: 1}
+        hand: [Liquor Shop]
+    random: [{sector: Residential}]
+  when:
+    - {seat: 1, action: play_card, card: Liquor Shop}
+  then:
+    seats:
+      - seat: 1
+        stats: {income: 4}
+        hand: []
+
+- name: other players see only the sector and tier asked for when a fallback is used
+  covers: [R17.6, M3.3]
+  given:
+    deck: [Pub, Dorm]
+    marketplace: [{place: residential, card: Row House}, {place: industry, card: Metal Mining}, {place: service, card: Liquor Shop}, {place: public_quality, card: Fire Station}, {place: public_satisfaction, card: Public Playground}, {place: open_1, card: Dentist}, {place: open_2, card: Apparel Store}, {place: open_3, card: Forest Plantation}]
+    quests: [{quest: Farmland}, {quest: Sports town}, {quest: Trading post}, {quest: Mining town}]
+    seats:
+      - seat: 1
+        stats: {workforce: 1, quality: 1, product: 1}
+        hand: [Liquor Shop]
+    random: [{sector: Residential}]
+  when:
+    - {seat: 1, action: play_card, card: Liquor Shop}
+    - {seat: 1, action: end_turn}
+    - {seat: 2, action: end_turn}
+  then:
+    view: {seat: 2, log_contains: [{seat: 1, drew: 1, sector: Residential, tier: 1}], hides: [Dorm]}
+
+- name: main-phase draws do not use cards sold in the same main phase
+  covers: [R17.7, R5.5]
+  given:
+    deck: [Pub, Dorm]
+    discard: []
+    seats:
+      - seat: 1
+        stats: {workforce: 1, quality: 1, product: 1}
+        hand: [Liquor Shop]
+      - seat: 2
+        hand: [Cottage]
+    random: [{sector: Residential}]
+  when:
+    - {seat: 2, action: sell, cards: [Cottage]}
+    - {seat: 1, action: play_card, card: Liquor Shop}
+  then:
+    holding_pile: [Cottage]
+    seats:
+      - seat: 1
+        hand: [Dorm]
+
+- name: a discard shuffle in the main phase is shown to others only when the phase ends
+  covers: [R17.8, M3.3]
+  given:
+    deck: [Pub]
+    discard: [Cottage]
+    seats:
+      - seat: 1
+        stats: {influence: 3}
+    random: [{shuffle: [Pub, Cottage]}]
+  when:
+    - {seat: 1, action: influence, trade: draw_tier_1, kind: Residential}
+  then:
+    view: {seat: 2, discard: [Cottage], deck_count: 1}
+
+- name: the player who caused a discard shuffle sees it straight away
+  covers: [R17.8, R5.5]
+  given:
+    deck: [Pub]
+    discard: [Cottage]
+    seats:
+      - seat: 1
+        stats: {influence: 3}
+    random: [{shuffle: [Pub, Cottage]}]
+  when:
+    - {seat: 1, action: influence, trade: draw_tier_1, kind: Residential}
+  then:
+    view: {seat: 1, discard: [], deck_count: 1}
+
+- name: a random draw in turn 13 asks for a sector and then a tier
+  covers: [R17.3, R17.10]
+  given:
+    turn: 13
+    seats:
+      - seat: 1
+        stats: {workforce: 1, quality: 1, product: 1}
+        hand: [Liquor Shop]
+    random: [{sector: Residential}, {tier: 3}]
+  when:
+    - {seat: 1, action: play_card, card: Liquor Shop}
+  then:
+    seats:
+      - seat: 1
+        hand: [Idyllic View Condominium]
+
+- name: from turn 27 every tier-by-turn draw is tier 3 and no tier is asked for
+  covers: [R17.10]
+  given:
+    turn: 27
+    seats:
+      - seat: 1
+        stats: {workforce: 1, quality: 1, product: 1}
+        hand: [Liquor Shop]
+    random: [{sector: Service}]
+  when:
+    - {seat: 1, action: play_card, card: Liquor Shop}
+  then:
+    seats:
+      - seat: 1
+        hand: [Television Studio]
+
+- name: turn draws use the number of the turn that is starting
+  covers: [R17.11]
+  given:
+    turn: 27
+    phase: market
+    first_player: 1
+    deck: [Row House, Idyllic View Condominium, Pub]
+    marketplace: [{place: residential, card: Art Deco Skyrise}, {place: industry, card: Nuclear Power Plant}, {place: service, card: Casino}, {place: public_quality, card: City Hall}, {place: public_satisfaction, card: Beach}]
+  when:
+    - {seat: 1, action: turn_draw, option: A, card: Art Deco Skyrise}
+  then:
+    seats:
+      - seat: 1
+        hand: [Art Deco Skyrise, Idyllic View Condominium]

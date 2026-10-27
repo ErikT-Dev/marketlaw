@@ -1,0 +1,392 @@
+- name: 4 influence buys 2 funds once per game
+  covers: [R15.1]
+  given:
+    seats:
+      - seat: 1
+        stats: {influence: 8}
+  when:
+    - {seat: 1, action: influence, trade: influence_to_funds}
+    - {seat: 1, action: influence, trade: influence_to_funds}
+  then:
+    rejected: trade_limit_reached
+    seats:
+      - seat: 1
+        stats: {funds: 9, influence: 4}
+        influence_uses: {influence_to_funds: 1}
+
+- name: 4 influence buys 1 quality
+  covers: [R15.1]
+  given:
+    seats:
+      - seat: 1
+        stats: {influence: 4}
+  when:
+    - {seat: 1, action: influence, trade: influence_to_quality}
+  then:
+    seats:
+      - seat: 1
+        stats: {influence: 0, quality: 1}
+
+- name: 4 influence buys 1 satisfaction
+  covers: [R15.1]
+  given:
+    seats:
+      - seat: 1
+        stats: {influence: 4}
+  when:
+    - {seat: 1, action: influence, trade: influence_to_satisfaction}
+  then:
+    seats:
+      - seat: 1
+        stats: {influence: 0, satisfaction: 1}
+
+- name: 6 influence buys 1 workforce
+  covers: [R15.1]
+  given:
+    seats:
+      - seat: 1
+        stats: {influence: 6}
+  when:
+    - {seat: 1, action: influence, trade: influence_to_workforce}
+  then:
+    seats:
+      - seat: 1
+        stats: {influence: 0, workforce: 1}
+
+- name: 1 fund buys 1 influence any number of times
+  covers: [R15.1]
+  when:
+    - {seat: 1, action: influence, trade: fund_to_influence}
+    - {seat: 1, action: influence, trade: fund_to_influence}
+  then:
+    seats:
+      - seat: 1
+        stats: {funds: 5, influence: 2}
+
+- name: a bought build pass costs 1 more fund each time
+  covers: [R15.1]
+  given:
+    seats:
+      - seat: 1
+        stats: {funds: 10}
+  when:
+    - {seat: 1, action: influence, trade: buy_build_pass}
+    - {seat: 1, action: influence, trade: buy_build_pass}
+    - {seat: 1, action: influence, trade: buy_build_pass}
+  then:
+    seats:
+      - seat: 1
+        stats: {funds: 1}
+        build_passes: 3
+        build_passes_bought: 3
+
+- name: 5 influence buys 1 build pass once per game
+  covers: [R15.1]
+  given:
+    seats:
+      - seat: 1
+        stats: {influence: 10}
+  when:
+    - {seat: 1, action: influence, trade: influence_to_build_pass}
+    - {seat: 1, action: influence, trade: influence_to_build_pass}
+  then:
+    rejected: trade_limit_reached
+    seats:
+      - seat: 1
+        stats: {influence: 5}
+        build_passes: 1
+
+- name: skip build gives a build pass and blocks playing cards this turn
+  covers: [R15.1, R6.1]
+  when:
+    - {seat: 1, action: influence, trade: skip_build}
+  then:
+    seats:
+      - seat: 1
+        build_passes: 1
+        skipped_build: true
+        influence_uses: {skip_build: 1}
+
+- name: skip build is rejected after playing a card this turn
+  covers: [R15.1]
+  given:
+    seats:
+      - seat: 1
+        played_this_turn: true
+  when:
+    - {seat: 1, action: influence, trade: skip_build}
+  then:
+    rejected: skip_build_after_play
+    unchanged: true
+
+- name: skip build can be used 3 times per game
+  covers: [R15.1]
+  given:
+    seats:
+      - seat: 1
+        influence_uses: {skip_build: 3}
+  when:
+    - {seat: 1, action: influence, trade: skip_build}
+  then:
+    rejected: trade_limit_reached
+    unchanged: true
+
+- name: 1 influence and 1 quality buy 1 satisfaction
+  covers: [R15.1]
+  given:
+    seats:
+      - seat: 1
+        stats: {influence: 1, quality: 1}
+  when:
+    - {seat: 1, action: influence, trade: quality_to_satisfaction_with_influence}
+  then:
+    seats:
+      - seat: 1
+        stats: {influence: 0, quality: 0, satisfaction: 1}
+
+- name: 1 influence and 1 satisfaction buy 1 quality
+  covers: [R15.1]
+  given:
+    seats:
+      - seat: 1
+        stats: {influence: 1, satisfaction: 1}
+  when:
+    - {seat: 1, action: influence, trade: satisfaction_to_quality_with_influence}
+  then:
+    seats:
+      - seat: 1
+        stats: {influence: 0, satisfaction: 0, quality: 1}
+
+- name: 2 influence and 1 product buy 1 distribution and 1 satisfaction
+  covers: [R15.1]
+  given:
+    seats:
+      - seat: 1
+        stats: {influence: 2, product: 1}
+  when:
+    - {seat: 1, action: influence, trade: product_to_distribution}
+  then:
+    seats:
+      - seat: 1
+        stats: {influence: 0, product: 0, distribution: 1, satisfaction: 1}
+
+- name: 2 influence 1 distribution and 1 satisfaction buy 1 product
+  covers: [R15.1]
+  given:
+    seats:
+      - seat: 1
+        stats: {influence: 2, distribution: 1, satisfaction: 1}
+  when:
+    - {seat: 1, action: influence, trade: distribution_to_product}
+  then:
+    seats:
+      - seat: 1
+        stats: {influence: 0, distribution: 0, satisfaction: 0, product: 1}
+
+- name: 2 influence and 1 quality buy 1 workforce
+  covers: [R15.1]
+  given:
+    seats:
+      - seat: 1
+        stats: {influence: 2, quality: 1}
+  when:
+    - {seat: 1, action: influence, trade: quality_to_workforce_with_influence}
+  then:
+    seats:
+      - seat: 1
+        stats: {influence: 0, quality: 0, workforce: 1}
+
+- name: 2 influence and 1 satisfaction buy 1 workforce
+  covers: [R15.1]
+  given:
+    seats:
+      - seat: 1
+        stats: {influence: 2, satisfaction: 1}
+  when:
+    - {seat: 1, action: influence, trade: satisfaction_to_workforce_with_influence}
+  then:
+    seats:
+      - seat: 1
+        stats: {influence: 0, satisfaction: 0, workforce: 1}
+
+- name: 1 workforce buys 1 satisfaction once per game
+  covers: [R15.1]
+  given:
+    seats:
+      - seat: 1
+        stats: {workforce: 2}
+  when:
+    - {seat: 1, action: influence, trade: workforce_to_satisfaction}
+    - {seat: 1, action: influence, trade: workforce_to_satisfaction}
+  then:
+    rejected: trade_limit_reached
+    seats:
+      - seat: 1
+        stats: {workforce: 1, satisfaction: 1}
+
+- name: 1 workforce buys 1 quality
+  covers: [R15.1]
+  given:
+    seats:
+      - seat: 1
+        stats: {workforce: 1}
+  when:
+    - {seat: 1, action: influence, trade: workforce_to_quality}
+  then:
+    seats:
+      - seat: 1
+        stats: {workforce: 0, quality: 1}
+
+- name: 2 quality buy 1 satisfaction any number of times
+  covers: [R15.1]
+  given:
+    seats:
+      - seat: 1
+        stats: {quality: 4}
+  when:
+    - {seat: 1, action: influence, trade: two_quality_to_satisfaction}
+    - {seat: 1, action: influence, trade: two_quality_to_satisfaction}
+  then:
+    seats:
+      - seat: 1
+        stats: {quality: 0, satisfaction: 2}
+
+- name: 2 satisfaction buy 1 quality
+  covers: [R15.1]
+  given:
+    seats:
+      - seat: 1
+        stats: {satisfaction: 2}
+  when:
+    - {seat: 1, action: influence, trade: two_satisfaction_to_quality}
+  then:
+    seats:
+      - seat: 1
+        stats: {satisfaction: 0, quality: 1}
+
+- name: 4 quality buy 1 workforce
+  covers: [R15.1]
+  given:
+    seats:
+      - seat: 1
+        stats: {quality: 4}
+  when:
+    - {seat: 1, action: influence, trade: four_quality_to_workforce}
+  then:
+    seats:
+      - seat: 1
+        stats: {quality: 0, workforce: 1}
+
+- name: 4 satisfaction buy 1 workforce
+  covers: [R15.1]
+  given:
+    seats:
+      - seat: 1
+        stats: {satisfaction: 4}
+  when:
+    - {seat: 1, action: influence, trade: four_satisfaction_to_workforce}
+  then:
+    seats:
+      - seat: 1
+        stats: {satisfaction: 0, workforce: 1}
+
+- name: rejects a trade the player cannot afford
+  covers: [R15.1]
+  given:
+    seats:
+      - seat: 1
+        stats: {influence: 3}
+  when:
+    - {seat: 1, action: influence, trade: influence_to_funds}
+  then:
+    rejected: cannot_afford_trade
+    unchanged: true
+
+- name: 3 influence draw a tier 1 card of a chosen kind
+  covers: [R15.1, R15.2, R15.3, R3.7]
+  given:
+    seats:
+      - seat: 1
+        stats: {influence: 3}
+  when:
+    - {seat: 1, action: influence, trade: draw_tier_1, kind: Residential}
+  then:
+    seats:
+      - seat: 1
+        stats: {influence: 0}
+        hand: [Farm House]
+
+- name: 4 influence draw a tier 2 card of a chosen kind
+  covers: [R15.1, R15.2]
+  given:
+    seats:
+      - seat: 1
+        stats: {influence: 4}
+  when:
+    - {seat: 1, action: influence, trade: draw_tier_2, kind: Industry}
+  then:
+    seats:
+      - seat: 1
+        stats: {influence: 0}
+        hand: [Saw Mill]
+
+- name: 5 influence draw a tier 3 card of a chosen kind
+  covers: [R15.1, R15.2]
+  given:
+    seats:
+      - seat: 1
+        stats: {influence: 5}
+  when:
+    - {seat: 1, action: influence, trade: draw_tier_3, kind: Residential}
+  then:
+    seats:
+      - seat: 1
+        stats: {influence: 0}
+        hand: [Idyllic View Condominium]
+
+- name: a draw action for a Public kind draws only that kind
+  covers: [R15.2, R3.6, R3.7]
+  given:
+    seats:
+      - seat: 1
+        stats: {influence: 3}
+  when:
+    - {seat: 1, action: influence, trade: draw_tier_1, kind: Public satisfaction card}
+  then:
+    seats:
+      - seat: 1
+        hand: [Public Playground]
+
+- name: rejects a draw action when no card of that kind and tier is left
+  covers: [R15.3]
+  given:
+    deck: [Pub, Library]
+    discard: [Orchard]
+    seats:
+      - seat: 1
+        stats: {influence: 3}
+  when:
+    - {seat: 1, action: influence, trade: draw_tier_1, kind: Residential}
+  then:
+    rejected: no_card_of_kind
+    unchanged: true
+
+- name: a draw action whose last card another player took this phase gives another tier
+  covers: [R15.3, R15.4, R17.4]
+  given:
+    deck: [Row House, Dorm, Pub]
+    seats:
+      - seat: 1
+        stats: {influence: 3}
+      - seat: 2
+        stats: {influence: 3}
+  when:
+    - {seat: 2, action: influence, trade: draw_tier_1, kind: Residential}
+    - {seat: 1, action: influence, trade: draw_tier_1, kind: Residential}
+  then:
+    seats:
+      - seat: 1
+        stats: {influence: 0}
+        hand: [Dorm]
+      - seat: 2
+        hand: [Row House]

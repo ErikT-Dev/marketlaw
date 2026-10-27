@@ -1,0 +1,280 @@
+- name: joining without being logged in offers a free generated name and creates a guest user
+  covers: [A1.1, A1.2, A1.12]
+  given:
+    room: {code: K7QR2P, size: 3, public: true, owner: Bea, players: [Bea], state: waiting}
+    accounts: [{name: Bea}]
+    random: [{generated_name: Busy Harbour Mayor}]
+  when:
+    - {visitor: v1, action: join_room, code: K7QR2P}
+    - {visitor: v1, action: create_guest, username: Busy Harbour Mayor, human_check: passed}
+  then:
+    accounts: [{name: Bea}, {name: Busy Harbour Mayor, kind: guest}]
+    room: {players: [Bea, Busy Harbour Mayor]}
+
+- name: creating a guest user needs the human check
+  covers: [A1.2, A1.12]
+  when:
+    - {visitor: v1, action: create_guest, username: Quiet Mayor, human_check: missing}
+  then:
+    rejected: human_check_failed
+
+- name: generated names are unique not taken and at most 20 characters
+  covers: [A1.2]
+  given:
+    accounts: [{name: Busy Harbour Mayor}]
+  when:
+    - {visitor: v1, action: ask_generated_name}
+  then:
+    generated_name: {taken: false, max_length: 20, not: Busy Harbour Mayor}
+
+- name: a guest user can sign up during a game and keeps their seat and history
+  covers: [A1.1, A1.3, A4.3]
+  given:
+    accounts: [{name: Ann, kind: guest, games: 2}]
+    seats:
+      - seat: 1
+        player: Ann
+  when:
+    - {player: Ann, action: sign_up, email: player@example.com, password: "correct horse", human_check: passed}
+  then:
+    accounts: [{name: Ann, kind: registered, email_confirmed: false, games: 2}]
+    seats:
+      - seat: 1
+        player: Ann
+    emails_sent: [{to: player@example.com, kind: confirm}]
+
+- name: changing the username during signup does not count toward the 7-day limit
+  covers: [A1.3, A2.4]
+  given:
+    accounts: [{name: Ann, kind: guest}]
+  when:
+    - {player: Ann, action: sign_up, email: player@example.com, password: "correct horse", username: Ann Mayor, human_check: passed}
+    - {player: Ann Mayor, action: change_username, username: Ann City}
+  then:
+    accounts: [{name: Ann City, kind: registered}]
+
+- name: signing up with an address already confirmed elsewhere looks the same
+  covers: [A1.3, A1.8]
+  given:
+    accounts: [{name: Bea, kind: registered, email: player@example.com, email_confirmed: true}, {name: Ann, kind: guest}]
+  when:
+    - {player: Ann, action: sign_up, email: player@example.com, password: "correct horse", human_check: passed}
+  then:
+    message_to: {player: Ann, notice: signup_done_confirm_email}
+    accounts: [{name: Bea, email: player@example.com, email_confirmed: true}, {name: Ann, kind: registered, email: null}]
+    emails_sent: [{to: player@example.com, kind: already_in_use}]
+
+- name: signup needs the human check
+  covers: [A1.3, A1.12]
+  given:
+    accounts: [{name: Ann, kind: guest}]
+  when:
+    - {player: Ann, action: sign_up, email: player@example.com, password: "correct horse", human_check: missing}
+  then:
+    rejected: human_check_failed
+    unchanged: true
+
+- name: rejects a password shorter than 8 or longer than 64 characters
+  covers: [A1.6]
+  given:
+    accounts: [{name: Ann, kind: guest}]
+  when:
+    - {player: Ann, action: sign_up, email: player@example.com, password: "short", human_check: passed}
+  then:
+    rejected: password_invalid
+    unchanged: true
+
+- name: confirming the email address lets a registered user reset their password
+  covers: [A1.4, A1.7]
+  given:
+    accounts: [{name: Ann, kind: registered, email: player@example.com, email_confirmed: false}]
+  when:
+    - {player: Ann, action: confirm_email}
+    - {visitor: v1, action: reset_password, email: player@example.com, human_check: passed}
+  then:
+    emails_sent: [{to: player@example.com, kind: reset}]
+
+- name: an unconfirmed address cannot be used to reset the password
+  covers: [A1.4, A1.7]
+  given:
+    accounts: [{name: Ann, kind: registered, email: player@example.com, email_confirmed: false}]
+  when:
+    - {visitor: v1, action: reset_password, email: player@example.com, human_check: passed}
+  then:
+    rejected: email_not_confirmed
+
+- name: a registered user logs in with username or email and password
+  covers: [A1.5]
+  given:
+    accounts: [{name: Ann, kind: registered, email: player@example.com, password: "correct horse"}]
+  when:
+    - {visitor: v1, action: log_in, login: player@example.com, password: "correct horse"}
+  then:
+    logged_in: {visitor: v1, as: Ann}
+
+- name: a wrong password is rejected
+  covers: [A1.5]
+  given:
+    accounts: [{name: Ann, kind: registered, email: player@example.com, password: "correct horse"}]
+  when:
+    - {visitor: v1, action: log_in, login: Ann, password: "wrong horse"}
+  then:
+    rejected: login_failed
+
+- name: after 3 failed logins in 15 minutes further logins need the human check but the account is not locked
+  covers: [A1.13, A1.12]
+  given:
+    accounts: [{name: Ann, kind: registered, password: "correct horse"}]
+  when:
+    - {visitor: v1, action: log_in, login: Ann, password: "a"}
+    - {visitor: v1, action: log_in, login: Ann, password: "b"}
+    - {visitor: v1, action: log_in, login: Ann, password: "c"}
+    - {visitor: v2, action: log_in, login: Ann, password: "correct horse", human_check: passed}
+  then:
+    logged_in: {visitor: v2, as: Ann}
+
+- name: after 3 failed logins a login without the human check is rejected
+  covers: [A1.13]
+  given:
+    accounts: [{name: Ann, kind: registered, password: "correct horse"}]
+  when:
+    - {visitor: v1, action: log_in, login: Ann, password: "a"}
+    - {visitor: v1, action: log_in, login: Ann, password: "b"}
+    - {visitor: v1, action: log_in, login: Ann, password: "c"}
+    - {visitor: v2, action: log_in, login: Ann, password: "correct horse"}
+  then:
+    rejected: human_check_failed
+
+- name: at most 3 emails a day are sent for one account
+  covers: [A1.9]
+  given:
+    accounts: [{name: Ann, kind: registered, email: player@example.com, email_confirmed: true, emails_today: 3}]
+  when:
+    - {visitor: v1, action: reset_password, email: player@example.com, human_check: passed}
+  then:
+    rejected: email_limit_reached
+
+- name: changing the email address keeps the old one until the new one is confirmed
+  covers: [A1.10]
+  given:
+    accounts: [{name: Ann, kind: registered, email: player@example.com, email_confirmed: true}]
+  when:
+    - {player: Ann, action: change_email, email: player2@example.com, human_check: passed}
+  then:
+    accounts: [{name: Ann, email: player@example.com, pending_email: player2@example.com}]
+    emails_sent: [{to: player2@example.com, kind: confirm}]
+
+- name: the first account to confirm an address keeps it and it is removed from the other
+  covers: [A1.11]
+  given:
+    accounts: [{name: Ann, kind: registered, email: player@example.com, email_confirmed: false}, {name: Bea, kind: registered, email: Player+games@example.com, email_confirmed: false}]
+  when:
+    - {player: Bea, action: confirm_email}
+  then:
+    accounts: [{name: Ann, email: null}, {name: Bea, email: Player+games@example.com, email_confirmed: true}]
+
+- name: dots in gmail addresses do not make a different address
+  covers: [A1.11]
+  given:
+    accounts: [{name: Ann, kind: registered, email: player.one@gmail.com, email_confirmed: true}, {name: Bea, kind: guest}]
+  when:
+    - {player: Bea, action: sign_up, email: playerone@gmail.com, password: "correct horse", human_check: passed}
+  then:
+    emails_sent: [{to: playerone@gmail.com, kind: already_in_use}]
+
+- name: a login lasts until the site has not been used for 90 days
+  covers: [A1.14]
+  given:
+    accounts: [{name: Ann, kind: guest, last_used_ms: 0}]
+  when:
+    - wait_ms: 7775999000
+    - {player: Ann, action: open_site}
+  then:
+    logged_in: {as: Ann}
+
+- name: a guest account not used for 90 days is deleted and shows as Deleted player
+  covers: [A1.1, A3.5]
+  given:
+    accounts: [{name: Ann, kind: guest, last_used_ms: 0, games: 1}]
+  when:
+    - wait_ms: 7776000000
+  then:
+    accounts: []
+    record_usernames: [Deleted player]
+
+- name: deleting a registered account frees the username and shows Deleted player in records
+  covers: [A1.15]
+  given:
+    accounts: [{name: Ann, kind: registered, email: player@example.com, games: 1}]
+  when:
+    - {player: Ann, action: delete_account}
+    - {visitor: v1, action: create_guest, username: Ann, human_check: passed}
+  then:
+    record_usernames: [Deleted player]
+    accounts: [{name: Ann, kind: guest}]
+
+- name: rejects a username with letters outside A to Z
+  covers: [A2.1]
+  when:
+    - {visitor: v1, action: create_guest, username: "Mayör", human_check: passed}
+  then:
+    rejected: username_invalid
+
+- name: rejects a username shorter than 3 characters
+  covers: [A2.1]
+  when:
+    - {visitor: v1, action: create_guest, username: "Ab", human_check: passed}
+  then:
+    rejected: username_invalid
+
+- name: usernames are unique ignoring capital letters
+  covers: [A2.2]
+  given:
+    accounts: [{name: Mayor}]
+  when:
+    - {visitor: v1, action: create_guest, username: mayor, human_check: passed}
+  then:
+    rejected: username_taken
+
+- name: Deleted player cannot be used as a username
+  covers: [A2.3]
+  when:
+    - {visitor: v1, action: create_guest, username: Deleted player, human_check: passed}
+  then:
+    rejected: username_reserved
+
+- name: a username can be changed at most once every 7 days
+  covers: [A2.4, A3.5]
+  given:
+    accounts: [{name: Ann, kind: guest, last_username_change_ms: 0}]
+  when:
+    - wait_ms: 604799000
+    - {player: Ann, action: change_username, username: Ann City}
+  then:
+    rejected: username_change_too_soon
+
+- name: rejects a username with two spaces in a row
+  covers: [A2.1]
+  when:
+    - {visitor: v1, action: create_guest, username: "Ann  Mayor", human_check: passed}
+  then:
+    rejected: username_invalid
+
+- name: at most 3 emails a day are sent to one address
+  covers: [A1.9]
+  given:
+    email_counts: {player@example.com: 3}
+    accounts: [{name: Ann, kind: guest}]
+  when:
+    - {player: Ann, action: sign_up, email: player@example.com, password: "correct horse", human_check: passed}
+  then:
+    rejected: email_limit_reached
+
+- name: googlemail addresses count as gmail addresses
+  covers: [A1.11]
+  given:
+    accounts: [{name: Ann, kind: registered, email: playerone@gmail.com, email_confirmed: true}, {name: Bea, kind: guest}]
+  when:
+    - {player: Bea, action: sign_up, email: player.one@googlemail.com, password: "correct horse", human_check: passed}
+  then:
+    emails_sent: [{to: player.one@googlemail.com, kind: already_in_use}]

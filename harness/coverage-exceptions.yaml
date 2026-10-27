@@ -1,0 +1,44 @@
+- rule: R3.2
+  kind: instead
+  how: "Card data check: `cards.json` is loaded and every card has a sector, tier, cost, stats, types and combos."
+  approved: 2026-10-25
+
+- rule: R3.5
+  kind: instead
+  how: "Card data check: base costs and product or distribution per tier match the table."
+  approved: 2026-10-25
+
+- rule: R17.10
+  kind: also
+  how: "Scenarios check which tier is asked for and used; the percentages themselves are checked by a statistical test of 100,000 simulated draws per turn."
+  approved: 2026-10-25
+
+- rule: R19.2
+  kind: instead
+  how: "The quest list scenarios in `quests.yaml` have one scenario for each of the 45 quests."
+  approved: 2026-10-25
+
+- rule: M3.1
+  kind: instead
+  how: "A description of how players interact; each part is tested by its own rule."
+  approved: 2026-10-25
+
+- rule: M3.6
+  kind: instead
+  how: "A pointer to A6; tested there."
+  approved: 2026-10-25
+
+- rule: M4.2
+  kind: instead
+  how: "Replay export check: a running and an ended room are exported and replay exactly."
+  approved: 2026-10-25
+
+- rule: A6.4
+  kind: instead
+  how: "A pointer to M3; tested there."
+  approved: 2026-10-25
+
+- rule: A10.6
+  kind: also
+  how: "A total ending in exactly .5 is checked by a calculation test of the rating formula."
+  approved: 2026-10-25

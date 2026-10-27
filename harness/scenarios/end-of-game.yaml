@@ -1,0 +1,152 @@
+- name: reaching the end goal ends the game after that main phase without end-of-turn steps
+  covers: [R1.3, R21.1, R21.2, R16.4, R16.6, R1.1]
+  given:
+    turn: 12
+    seats:
+      - seat: 1
+        stats: {income: 20, workforce: 8}
+        projects: [quality, satisfaction]
+    first_completions: [quality, satisfaction]
+    random: [{sector: Service}, {tier: 2}, {sector: Public}, {tier: 2}]
+  when:
+    - {seat: 1, action: complete_project, project: workforce}
+    - {seat: 1, action: end_turn}
+    - {seat: 2, action: end_turn}
+  then:
+    turn: 12
+    ended: {winner: 1, places: [1, 2], scores: {1: 740, 2: 615}}
+    seats:
+      - seat: 1
+        stats: {income: 22, funds: 11, influence: 3}
+        hand: [Law Firm, Recycling Center]
+      - seat: 2
+        stats: {funds: 7, influence: 0}
+
+- name: the game goes on until the main phase ends after the end goal is reached
+  covers: [R21.1]
+  given:
+    turn: 12
+    seats:
+      - seat: 1
+        stats: {income: 22}
+        projects: [quality, satisfaction, workforce]
+      - seat: 2
+        hand: [Row House]
+  when:
+    - {seat: 1, action: end_turn}
+    - {seat: 2, action: play_card, card: Row House}
+  then:
+    phase: main
+    seats:
+      - seat: 2
+        city: [Row House]
+
+- name: an end goal reached by a player who then leaves does not end the game
+  covers: [R21.1, M6.1]
+  given:
+    players: 3
+    turn: 12
+    marketplace: [{place: residential, card: Row House}, {place: industry, card: Metal Mining}, {place: service, card: Liquor Shop}, {place: public_quality, card: Fire Station}, {place: public_satisfaction, card: Public Playground}, {place: open_1, card: Dentist}, {place: open_2, card: Apparel Store}, {place: open_3, card: Forest Plantation}]
+    quests: [{quest: Farmland}, {quest: Sports town}, {quest: Trading post}, {quest: Mining town}]
+    seats:
+      - seat: 1
+        stats: {income: 22}
+        projects: [quality, satisfaction, workforce]
+  when:
+    - {seat: 1, action: leave_game}
+    - {seat: 2, action: end_turn}
+    - {seat: 3, action: end_turn}
+  then:
+    turn: 13
+    phase: market
+
+- name: the game ends after the main phase of turn 40 and is scored with the formula
+  covers: [R21.3, R21.4, R21.5, R21.7]
+  given:
+    turn: 40
+    bonus_types: [Farm, Finance]
+    seats:
+      - seat: 1
+        stats: {income: 15, workforce: 3, quality: 2, satisfaction: -1, product: 1, distribution: 2, funds: 10}
+        hand: [Pub, Library, Cottage]
+        city: [Orchard, Livestock Farm]
+  when:
+    - {seat: 1, action: end_turn}
+    - {seat: 2, action: end_turn}
+  then:
+    turn: 40
+    ended: {winner: 1, scores: {1: 11, 2: -85}}
+
+- name: the score is computed exactly before rounding down
+  covers: [R21.4]
+  given:
+    turn: 1
+    seats:
+      - seat: 1
+        stats: {income: 22}
+        projects: [quality, satisfaction, workforce]
+      - seat: 2
+        stats: {workforce: 2, quality: 6, funds: 4}
+  when:
+    - {seat: 1, action: end_turn}
+    - {seat: 2, action: end_turn}
+  then:
+    ended: {scores: {1: 1014, 2: 895}}
+
+- name: bonus types score their point value for every count in the type counts including gained types
+  covers: [R21.7, R20.6]
+  given:
+    turn: 40
+    bonus_types: [Finance, Retail]
+    seats:
+      - seat: 1
+        city: [Liquor Shop, Apparel Store]
+        gained_types: {Finance: 1}
+  when:
+    - {seat: 1, action: end_turn}
+    - {seat: 2, action: end_turn}
+  then:
+    ended: {bonus_type_points: {1: 8, 2: 0}}
+
+- name: equal scores are broken by who became done earlier in the final turn
+  covers: [R21.8, R21.9, R8.3]
+  given:
+    turn: 40
+  when:
+    - {seat: 1, action: end_turn}
+    - {seat: 2, action: end_turn}
+  then:
+    ended: {winner: 1, places: [1, 2], scores: {1: -85, 2: -85}}
+
+- name: players made done at the same moment in the final turn are placed in player order
+  covers: [R21.9, R8.4]
+  given:
+    turn: 40
+    first_player: 2
+    seats:
+      - seat: 1
+        time_bank_ms: 0
+      - seat: 2
+        time_bank_ms: 0
+  when:
+    - wait_ms: 45000
+  then:
+    ended: {winner: 2, places: [2, 1]}
+
+- name: players who left come after every player still in the game
+  covers: [R21.8, A3.4]
+  given:
+    players: 3
+    turn: 40
+    seats:
+      - seat: 1
+        stats: {income: 30}
+        left: true
+        done: true
+      - seat: 3
+        stats: {income: 4}
+  when:
+    - {seat: 2, action: end_turn}
+    - {seat: 3, action: end_turn}
+  then:
+    ended: {winner: 3, places: [3, 2, 1]}

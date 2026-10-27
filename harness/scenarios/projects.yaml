@@ -1,0 +1,132 @@
+- name: completing a project uses up 8 of the stat and gives income funds influence and a card
+  covers: [R16.1, R16.2, R16.3, R16.5]
+  given:
+    seats:
+      - seat: 1
+        stats: {quality: 9}
+    random: [{sector: Service}]
+  when:
+    - {seat: 1, action: complete_project, project: quality}
+  then:
+    seats:
+      - seat: 1
+        stats: {quality: 1, income: 4, funds: 9, influence: 3}
+        projects: [quality]
+        hand: [Fast Food Restaurant]
+
+- name: rejects a project without enough of the stat
+  covers: [R16.2]
+  given:
+    seats:
+      - seat: 1
+        stats: {satisfaction: 7}
+  when:
+    - {seat: 1, action: complete_project, project: satisfaction}
+  then:
+    rejected: project_needs_not_met
+    unchanged: true
+
+- name: rejects a project while another stat is negative
+  covers: [R16.2, R2.3]
+  given:
+    seats:
+      - seat: 1
+        stats: {workforce: 8, quality: -1}
+  when:
+    - {seat: 1, action: complete_project, project: workforce}
+  then:
+    rejected: project_needs_not_met
+    unchanged: true
+
+- name: rejects completing the same project twice
+  covers: [R16.1]
+  given:
+    seats:
+      - seat: 1
+        stats: {quality: 8}
+        projects: [quality]
+  when:
+    - {seat: 1, action: complete_project, project: quality}
+  then:
+    rejected: project_already_completed
+    unchanged: true
+
+- name: the third project gives an extra income and an extra card
+  covers: [R16.4]
+  given:
+    seats:
+      - seat: 1
+        stats: {workforce: 8, income: 10}
+        projects: [quality, satisfaction]
+    random: [{sector: Industry}, {sector: Public}]
+  when:
+    - {seat: 1, action: complete_project, project: workforce}
+  then:
+    seats:
+      - seat: 1
+        stats: {workforce: 0, income: 12}
+        projects: [quality, satisfaction, workforce]
+        hand: [Timber Harvesting Industry, Landfill]
+
+- name: rejects a project outside the main phase
+  covers: [R16.5]
+  given:
+    turn: 2
+    phase: market
+    seats:
+      - seat: 1
+        stats: {quality: 8}
+  when:
+    - {seat: 1, action: complete_project, project: quality}
+  then:
+    rejected: wrong_phase
+    unchanged: true
+
+- name: everyone who completes a project in the first turn anyone does gets 2 extra funds at the end of the turn
+  covers: [R16.6, R10.1]
+  given:
+    players: 3
+    turn: 3
+    marketplace: [{place: residential, card: Row House}, {place: industry, card: Metal Mining}, {place: service, card: Liquor Shop}, {place: public_quality, card: Fire Station}, {place: public_satisfaction, card: Public Playground}, {place: open_1, card: Dentist}, {place: open_2, card: Apparel Store}, {place: open_3, card: Forest Plantation}]
+    quests: [{quest: Farmland}, {quest: Sports town}, {quest: Trading post}, {quest: Mining town}]
+    seats:
+      - seat: 1
+        stats: {quality: 8}
+      - seat: 2
+        stats: {quality: 8}
+    random: [{sector: Service}, {tier: 1}, {sector: Service}, {tier: 1}]
+  when:
+    - {seat: 1, action: complete_project, project: quality}
+    - {seat: 2, action: complete_project, project: quality}
+    - {seat: 1, action: end_turn}
+    - {seat: 2, action: end_turn}
+    - {seat: 3, action: end_turn}
+  then:
+    seats:
+      - seat: 1
+        stats: {funds: 15}
+      - seat: 2
+        stats: {funds: 15}
+      - seat: 3
+        stats: {funds: 10}
+
+- name: a project completed in a later turn gives no first-completion funds
+  covers: [R16.6]
+  given:
+    players: 2
+    turn: 4
+    first_completions: [quality]
+    marketplace: [{place: residential, card: Row House}, {place: industry, card: Metal Mining}, {place: service, card: Liquor Shop}, {place: public_quality, card: Fire Station}, {place: public_satisfaction, card: Public Playground}, {place: open_1, card: Dentist}, {place: open_2, card: Apparel Store}, {place: open_3, card: Forest Plantation}]
+    quests: [{quest: Farmland}, {quest: Sports town}, {quest: Trading post}, {quest: Mining town}]
+    seats:
+      - seat: 2
+        stats: {quality: 8}
+    random: [{sector: Service}, {tier: 1}]
+  when:
+    - {seat: 2, action: complete_project, project: quality}
+    - {seat: 1, action: end_turn}
+    - {seat: 2, action: end_turn}
+  then:
+    seats:
+      - seat: 2
+        stats: {funds: 13}
