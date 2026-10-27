@@ -16,7 +16,7 @@ export function parseCards(raw: unknown): Result<ReadonlyArray<Card>, ReadonlyAr
       ),
     };
   }
-  const cardNames = new Set(parsed.output.map((card) => card.cardName));
+  const cardNames = parsed.output.map((card) => card.cardName);
   const results = parsed.output.map((card) => ({ card, result: cardFromRaw(card, cardNames) }));
   const problems = results.flatMap(({ card, result }) =>
     result.isOk ? [] : result.error.map((problem) => `${card.cardName}: ${problem}`),

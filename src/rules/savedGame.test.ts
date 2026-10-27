@@ -1,0 +1,56 @@
+import { describe, expect, it } from "vitest";
+import { applyToSavedGame } from "./applyToSavedGame";
+import type { GameAction } from "./GameAction";
+import type { SavedGame } from "./SavedGame";
+import { startSavedGame } from "./startSavedGame";
+
+function replay(saved: SavedGame): SavedGame {
+  return saved.actionLog.reduce((game, action) => {
+    const result = applyToSavedGame(game, action);
+    if (!result.isOk) {
+      throw new Error(`replay rejected ${action.type}: ${result.error.code}`);
+    }
+    return result.value;
+  }, startSavedGame(saved.setup, saved.seed));
+}
+
+function playThreeTurns(saved: SavedGame): SavedGame {
+  const actions: ReadonlyArray<GameAction> = [1, 2, 3].flatMap(() => [
+    { type: "end_turn", seat: 1 },
+    { type: "end_turn", seat: 2 },
+  ]);
+  return actions.reduce((game, action) => {
+    const result = applyToSavedGame(game, action);
+    return result.isOk ? result.value : game;
+  }, saved);
+}
+
+describe("saved games", () => {
+  it("starts a game with the setup, the seed and an empty action log", () => {
+    const saved = startSavedGame({ players: 3 }, 42);
+    expect(saved.schemaVersion).toBe(1);
+    expect(saved.actionLog).toEqual([]);
+    expect(saved.state.seats.map((seat) => seat.hand.length)).toEqual([7, 7, 7]);
+    expect(saved.state.deck).toHaveLength(240 - 21 - 8);
+  });
+
+  it("deals the same game from the same seed and a different game from another seed", () => {
+    expect(startSavedGame({ players: 2 }, 7).state).toEqual(startSavedGame({ players: 2 }, 7).state);
+    expect(startSavedGame({ players: 2 }, 7).state.deck).not.toEqual(
+      startSavedGame({ players: 2 }, 8).state.deck,
+    );
+  });
+
+  it("records accepted actions and replays them to the same state", () => {
+    const saved = playThreeTurns(startSavedGame({ players: 2 }, 11));
+    expect(saved.state.turn).toBe(4);
+    expect(saved.actionLog).toHaveLength(6);
+    expect(replay(saved).state).toEqual(saved.state);
+  });
+
+  it("does not record a rejected action", () => {
+    const saved = startSavedGame({ players: 2 }, 5);
+    const result = applyToSavedGame(saved, { type: "end_turn", seat: 3 });
+    expect(result).toEqual({ isOk: false, error: { code: "not_in_game" } });
+  });
+});

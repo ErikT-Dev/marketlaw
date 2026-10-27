@@ -18,11 +18,11 @@ Set up on 2026-10-27 (`docs/tooling-setup-proposal.md`). `npm run check` runs ev
 | dependency-cruiser | layer boundaries, no cycles | in check |
 | knip | unused files, exports, dependencies | in check |
 | jscpd | duplicated code | in check |
-| Vitest (engine: Node; server: Workers runtime via `@cloudflare/vitest-plugin`; client: jsdom) | unit + scenario tests, coverage thresholds on `src/rules/` (95% lines, statements, functions; 90% branches) | in check; one test so far |
+| Vitest (engine: Node; server: Workers runtime via `@cloudflare/vitest-plugin`; client: jsdom) | unit + scenario tests, coverage thresholds on `src/rules/` (95% lines, statements, functions; 90% branches) | in check; the engine is measured from phase 03 |
 | Playwright | multi-browser e2e at 1280×720, 1920×1080, 2560×1440, screenshots, axe | `npm run e2e`; no tests yet; Chromium installed locally (phase 01) |
 | size-limit | client bundle budget, read from `harness/budgets.yaml` B14 | in check |
 | secretlint | no secrets in the repo | in check |
-| Harness runner (`tools/harness-runner/`, run by Vitest in `npm run harness`) | scenarios through drivers, the required list `harness/required.yaml`, the card-data check, then invariants, simulator, leak test, budgets -> `harness/report.html` (kept by GitHub with every run) | in check since phase 02: harness format check, card-data check, required list (empty); no driver yet, so every scenario is "not yet" |
+| Harness runner (`tools/harness-runner/`, run by Vitest in `npm run harness`) | scenarios through drivers, the required list `harness/required.yaml`, the card-data check, then invariants, simulator, leak test, budgets -> `harness/report.html` (kept by GitHub with every run) | in check since phase 02 (format check, card-data check, required list); phase 03 adds the engine driver and requires 35 scenarios |
 | GitHub Actions (`.github/workflows/check.yml`, `deploy.yml`) | `npm run check` on every branch push; master runs it again, then migrates D1 and deploys (D7, `docs/merging-and-rollback.md`) | active since phase 01 |
 | Claude Code hooks (`.claude/settings.json`, `tools/hooks/`) | PreToolUse: deny protected configs and generated output, ask before `harness/` and `wrangler.jsonc`; PostToolUse: lint the edited file; Stop: `npm run check` when code or harness changed | active |
 

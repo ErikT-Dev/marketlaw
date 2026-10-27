@@ -27,14 +27,10 @@ function countProblems(cards: ReadonlyArray<Card>): ReadonlyArray<string> {
 
 function uniquenessProblems(cards: ReadonlyArray<Card>): ReadonlyArray<string> {
   const names = cards.map((card) => card.name);
-  const ids = cards.map((card) => card.id);
   return [
     ...names
       .filter((name, index) => names.indexOf(name) !== index)
       .map((name) => `"${name}" is listed twice`),
-    ...ids
-      .filter((id, index) => ids.indexOf(id) !== index)
-      .map((id) => `card id ${id} is used twice`),
   ];
 }
 

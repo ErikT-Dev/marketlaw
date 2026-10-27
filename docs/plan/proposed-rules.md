@@ -12,3 +12,30 @@ class and its binding in the next deploy.
 **Why:** Cloudflare rejects a delete while the same deploy has a binding (code 10061), and the
 deploy workflow has already run the D1 migrations by then (phase 01 merge, 2026-10-27).
 **Enforced by:** judgment.
+
+## For `rules/workflow.md`
+
+### No pause between phases
+When a phase is merged, deployed and the live site checked, start the next phase in the same
+session with a one-line status; do not end the turn to report and wait for "continue".
+**Why:** the owner asked for this after phase 02 (2026-10-27), when Claude stopped after the merge.
+**Enforced by:** judgment.
+
+## For `rules/typescript.md`
+
+### Ids from fixed lists are literal unions
+"Branded ids" applies to ids made at run time (players, rooms, tokens). Names from a fixed list
+(cards, types, quests, seats) are literal unions of the allowed values. In `src/rules/`, use
+arrays and records, never `Map` or `Set`.
+**Why:** `prefer-readonly-parameter-types` reports branded strings, `Map` and `Set` as writable
+(Q7, phase 03). Literal unions are stricter than brands.
+**Enforced by:** `@typescript-eslint/prefer-readonly-parameter-types` · types.
+
+## For `rules/workflow.md`
+
+### Keep the shell in the project root
+Do not leave the shell inside a subfolder (`cd src/rules`). The PostToolUse lint hook looks for
+ESLint relative to the shell's working directory, and from a subfolder every file write reports
+"Cannot find module .../node_modules/eslint".
+**Why:** found in phase 03; the errors looked like lint failures but were not.
+**Enforced by:** judgment.

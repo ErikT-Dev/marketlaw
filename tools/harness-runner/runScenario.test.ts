@@ -9,6 +9,7 @@ const COUNTER_DRIVER: ScenarioDriver = {
   givenFields: new Set(["turn"]),
   steps: new Set(["start_game", "end_turn", "draw", "crash"]),
   thenFields: new Set(["turn", "drawn", "seats"]),
+  nestedFields: new Map([["then.seats", new Set(["seat", "stats"])]]),
   startSession(given, random) {
     let turn = typeof given["turn"] === "number" ? given["turn"] : 1;
     const drawn: unknown[] = [];
@@ -72,6 +73,13 @@ describe("runScenario", () => {
       status: "not_yet",
       missing: ["given room", "step sell", "then ended"],
     });
+  });
+
+  it("reports nested fields the driver cannot do yet", () => {
+    const result = runScenario(scenario({ then: { seats: [{ seat: 1, connected: false }] } }), [
+      COUNTER_DRIVER,
+    ]);
+    expect(result).toEqual({ status: "not_yet", missing: ["then seats.connected"] });
   });
 
   it("passes a scenario whose then fields match", () => {

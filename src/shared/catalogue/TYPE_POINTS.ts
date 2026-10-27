@@ -1,52 +1,37 @@
-import * as v from "valibot";
-import { TypeName } from "./TypeName";
+import type { TypeName } from "./TypeName";
 
-const TYPES_BY_POINTS = [
-  {
-    points: 2,
-    types: [
-      "Suburban Housing",
-      "Low Wealth",
-      "Town Housing",
-      "Luxury",
-      "City Housing",
-      "Light Industry",
-      "Heavy Industry",
-      "High Tech",
-      "Service",
-      "Leisure",
-      "Retail",
-      "Culture",
-      "Office",
-    ],
-  },
-  {
-    points: 3,
-    types: [
-      "Raw Material",
-      "Forestry",
-      "Farm",
-      "Power Plant",
-      "Mine",
-      "Food",
-      "Sea",
-      "Utility",
-      "Mass Transit",
-      "Health",
-      "Mercantile",
-      "Beautification",
-      "Safety",
-      "Education",
-    ],
-  },
-  {
-    points: 4,
-    types: ["Alcohol", "Grain", "Petroleum", "Mass Media", "Finance", "Rental Space"],
-  },
-] as const;
-
-export const TYPE_POINTS: ReadonlyMap<TypeName, 2 | 3 | 4> = new Map(
-  TYPES_BY_POINTS.flatMap(({ points, types }) =>
-    types.map((type) => [v.parse(TypeName, type), points] as const),
-  ),
-);
+export const TYPE_POINTS: Readonly<Record<TypeName, 2 | 3 | 4>> = {
+  "Suburban Housing": 2,
+  "Low Wealth": 2,
+  "Town Housing": 2,
+  Luxury: 2,
+  "City Housing": 2,
+  "Light Industry": 2,
+  "Heavy Industry": 2,
+  "High Tech": 2,
+  Service: 2,
+  Leisure: 2,
+  Retail: 2,
+  Culture: 2,
+  Office: 2,
+  "Raw Material": 3,
+  Forestry: 3,
+  Farm: 3,
+  "Power Plant": 3,
+  Mine: 3,
+  Food: 3,
+  Sea: 3,
+  Utility: 3,
+  "Mass Transit": 3,
+  Health: 3,
+  Mercantile: 3,
+  Beautification: 3,
+  Safety: 3,
+  Education: 3,
+  Alcohol: 4,
+  Grain: 4,
+  Petroleum: 4,
+  "Mass Media": 4,
+  Finance: 4,
+  "Rental Space": 4,
+};

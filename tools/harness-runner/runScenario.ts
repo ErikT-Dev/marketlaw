@@ -4,6 +4,7 @@ import type { ScenarioResult } from "./ScenarioResult.ts";
 import { ScriptedRandom } from "./ScriptedRandom.ts";
 import { findMismatches } from "./findMismatches.ts";
 import { stepKindOf } from "./stepKindOf.ts";
+import { unhandledNestedFields } from "./unhandledNestedFields.ts";
 
 function missingFor(scenario: Scenario, driver: ScenarioDriver): ReadonlyArray<string> {
   return [
@@ -17,6 +18,7 @@ function missingFor(scenario: Scenario, driver: ScenarioDriver): ReadonlyArray<s
     ...Object.keys(scenario.then)
       .filter((field) => !driver.thenFields.has(field))
       .map((field) => `then ${field}`),
+    ...unhandledNestedFields(scenario, driver.nestedFields),
   ];
 }
 

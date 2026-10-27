@@ -1,4 +1,3 @@
-import type { CardId } from "./CardId";
 import type { CardName } from "./CardName";
 import type { CardStats } from "./CardStats";
 import type { CardTypeCount } from "./CardTypeCount";
@@ -7,7 +6,6 @@ import type { Sector } from "./Sector";
 import type { Tier } from "./Tier";
 
 export type Card = {
-  readonly id: CardId;
   readonly name: CardName;
   readonly sector: Sector;
   readonly tier: Tier;

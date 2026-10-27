@@ -1,4 +1,5 @@
 import * as v from "valibot";
+import { CardName } from "./CardName";
 import { ComboStat } from "./ComboStat";
 import { Sector } from "./Sector";
 import { Tier } from "./Tier";
@@ -11,7 +12,7 @@ const COMBO_INFINITE = v.nullable(v.boolean());
 
 export const RawCard = v.strictObject({
   cardId: v.pipe(v.number(), v.integer(), v.minValue(1)),
-  cardName: v.pipe(v.string(), v.minLength(1)),
+  cardName: CardName,
   imgName: v.pipe(v.string(), v.minLength(1)),
   tier: Tier,
   sector: Sector,

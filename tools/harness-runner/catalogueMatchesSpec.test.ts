@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { QUESTS } from "../../src/shared/catalogue/QUESTS.ts";
-import { TYPE_POINTS } from "../../src/shared/catalogue/TYPE_POINTS.ts";
+import { TYPE_NAMES } from "../../src/shared/catalogue/TYPE_NAMES.ts";
 import { collectKnownNames } from "../harness-check/collectKnownNames.ts";
 import { loadHarnessFiles } from "../harness-check/loadHarnessFiles.ts";
 
@@ -12,6 +12,6 @@ describe("the catalogue", () => {
   });
 
   it("gives points to exactly the types the cards use", () => {
-    expect([...TYPE_POINTS.keys()].sort()).toEqual([...KNOWN.types].sort());
+    expect([...TYPE_NAMES].sort()).toEqual([...KNOWN.types].sort());
   });
 });

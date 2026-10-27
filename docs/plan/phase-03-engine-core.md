@@ -1,6 +1,6 @@
 # Phase 03: Engine core: setup and the first turn
 
-Status: approved
+Status: done
 Milestone: 1 Foundations
 
 ## Goal
@@ -41,6 +41,8 @@ Phase 02.
 
 - No market phase until phase 12: turns from 2 on continue with main phases only.
 - Other players' main-phase actions are visible at once until phase 09 (R5.4).
+- R11.1 is half built: a new turn refills empty marketplace places, but cards shown in 2 market
+  phases are removed only from phase 12, with the market phase.
 
 ## What you can see when it's done
 
@@ -94,3 +96,73 @@ These 35 scenarios are added to `harness/required.yaml` in this phase, by file a
 - `turns-and-time` #34: skip build is reset at the end of the turn
 - `visibility` #1: other players' hands are shown only as a number of cards
 - `visibility` #2: a player sees their own hand
+
+## Progress
+
+- [x] 1. Game state and actions in `src/rules/` (shared view, stats, reason-code and marketplace
+  types in `src/shared/`); save shape `SavedGame` with `startSavedGame` and `applyToSavedGame`,
+  which replays exactly from seed and action log. Card, type and quest names became literal unions
+  first (Q7), because brands fail the read-only parameter rule in `src/rules/`.
+- [x] 2. `Random` interface and `seededRandom(seed, stream)`: each accepted action gets its own
+  stream (its place in the action log), so replays need only the seed. A pick with one possible
+  result is never asked (`pickTier`). The scripted version is the driver's `engineRandom` in
+  `tools/harness-runner/engine/`.
+- [x] 3. Setup in the order of R4.6 (`setUpGame`), with the full draw procedure of R17.4
+  (`drawCard`). Seats are numbered 1 to N; which account sits where (R4.3) is the room's job
+  (phase 16).
+- [x] 4. `apply` for play card, sell and end turn; reason codes in the `HARNESS.md` order, with
+  R6.1's order inside group 9 (Q8). The main phase ends when every player still in the game is
+  done (Q9).
+- [x] 5. End-of-turn steps (R10.1, R10.3) and bonus (R14). Differs from the phase file: the new
+  turn also refills empty marketplace places (R11.1), because `apply` takes the random sequence and
+  the spec asks for it; the scenarios that end a turn give a full marketplace. No market phase yet.
+- [x] 6. `viewFor`, first version: own hand, others as hand counts, public stats and piles; never
+  the deck order or the seed.
+- [x] 7. Engine driver (`tools/harness-runner/engine/`). Drivers now also declare the fields they
+  handle inside `seats`, `marketplace`, `quests` and `view`, so a scenario using any other is "not
+  yet" rather than wrongly passing. All 35 scenarios pass; 8 more from later phases pass too.
+- [x] 8. Invariant checks in `src/rules/invariantViolations.ts` for phase 08's simulator, with
+  unit tests that play actions and that trigger each violation.
+
+## Report
+
+**What was built.** The rules engine in `src/rules/` sets up a game (R4.6) and plays the main
+phase: playing cards (with real cost, the tier gate, build passes and the skip-build block),
+selling to the holding pile, the 50-action limit, ending the turn, and the end-of-turn steps and
+bonus. It is pure: randomness comes in as a `Random`, and a saved game (`{ schemaVersion, seed,
+setup, actionLog, state }`) replays exactly from its seed and action log. `viewFor` shows a
+player their own hand and only hand counts for others. The invariant checks for phase 08's
+simulator exist and are unit-tested. The engine driver runs scenarios through the engine.
+
+**What to try.** Run `npm run harness` and open `harness/report.html`: the 35 required scenarios
+pass, 8 more from later phases pass ("passes, not yet required"), and 2 run but fail because their
+rules come later (`combos-and-income` #9, R13, phase 07; `visibility` #3, R5.4, phase 09).
+
+**Differences from the phase file.**
+- Card, type and quest names are literal unions instead of brands (Q7).
+- The new turn already refills empty marketplace places (R11.1). Removing cards shown in 2 market
+  phases comes with phase 12 (Known gaps).
+- Drivers now declare which nested fields they handle.
+
+**Decisions:** Q7 (literal unions), Q8 (code order for playing a card), Q9 (the main phase waits
+only for players still in the game). The 35 scenarios were added to `harness/required.yaml` as
+the phase file lists them.
+
+**Phase review findings and what happened to each:**
+1. `unchanged: true` could never fail after a rejection (the driver compared the state with
+   itself). Fixed: it now compares with text taken before `apply`.
+2. Seats above the player count were dropped without an error. Fixed: the driver stops the
+   scenario.
+3. R11.1 is half built. Answered: deliberate, now listed under Known gaps.
+4. Unit tests call internal helpers (`drawCard`, `typeCountsOf`, `tierChancesByTurn`), and some
+   seeded-random assertions are loose. Answered: kept for now, because the R17.4 and R17.10
+   behaviour has no required scenarios until phases 07 and 08. They will be replaced by
+   scenarios and the statistical check then.
+5. `Given` and `TypeCounts` did not have their own files. Fixed.
+6. knip hints that `valibot` can leave `ignoreDependencies` in the protected `knip.json`.
+   Answered: this is a proposal for the owner, not a failure. It is listed here and in the final
+   report.
+
+**Checks.** `npm run check` is green locally (80 unit tests; coverage on `src/rules/` is 100%
+lines and 97.8% branches; harness passes) and on GitHub.
+
