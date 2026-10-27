@@ -1,0 +1,22 @@
+import type { CardName } from "../shared/catalogue/CardName";
+import type { QuestName } from "../shared/catalogue/QuestName";
+import type { TypeName } from "../shared/catalogue/TypeName";
+import type { GamePhase } from "../shared/GamePhase";
+import type { MarketplaceSlot } from "../shared/MarketplaceSlot";
+import type { QuestOnTable } from "../shared/QuestOnTable";
+import type { SeatNumber } from "../shared/SeatNumber";
+import type { SeatState } from "./SeatState";
+
+export type GameState = {
+  readonly turn: number;
+  readonly phase: GamePhase;
+  readonly seats: ReadonlyArray<SeatState>;
+  readonly deck: ReadonlyArray<CardName>;
+  readonly discard: ReadonlyArray<CardName>;
+  readonly holdingPile: ReadonlyArray<CardName>;
+  readonly marketplace: ReadonlyArray<MarketplaceSlot>;
+  readonly quests: ReadonlyArray<QuestOnTable>;
+  readonly questList: ReadonlyArray<QuestName>;
+  readonly bonusTypes: ReadonlyArray<TypeName>;
+  readonly doneOrder: ReadonlyArray<SeatNumber>;
+};
