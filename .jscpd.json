@@ -1,0 +1,9 @@
+{
+  "path": ["src", "tools", "eslint-rules"],
+  "format": ["typescript", "tsx"],
+  "minLines": 10,
+  "threshold": 0,
+  "reporters": ["console"],
+  "ignore": ["**/*.test.ts", "**/*.test.tsx"],
+  "exitCode": 1
+}

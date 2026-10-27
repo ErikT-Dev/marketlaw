@@ -1,0 +1,20 @@
+export const HARNESS_PATHS = {
+  root: "harness",
+  scenarios: "harness/scenarios",
+  harnessGuide: "harness/HARNESS.md",
+  scenarioFormat: "harness/scenario-format.yaml",
+  coverageExceptions: "harness/coverage-exceptions.yaml",
+  coverage: "harness/coverage.md",
+  invariants: "harness/invariants.yaml",
+  budgets: "harness/budgets.yaml",
+  cards: "harness/spec/cards.json",
+  gameRules: "harness/spec/game-rules.md",
+  rulebook: "harness/spec/rulebook.md",
+  ruleSpecs: [
+    { path: "harness/spec/game-rules.md", title: "Game rules (R)" },
+    { path: "harness/spec/multiplayer.md", title: "Multiplayer (M)" },
+    { path: "harness/spec/accounts.md", title: "Accounts (A)" },
+    { path: "harness/spec/client.md", title: "Client (C)" },
+    { path: "harness/spec/tutorial.md", title: "Tutorial (T)" },
+  ],
+} as const;

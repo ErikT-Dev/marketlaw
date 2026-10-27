@@ -43,7 +43,10 @@ export class CounterRoom extends DurableObject<Env> {
         return;
       case "press": {
         const state = this.recordPress();
-        await recordPressInHistory(this.env.DB, { pressNumber: state.pressCount, pressedAtEpochMs: Date.now() });
+        await recordPressInHistory(this.env.DB, {
+          pressNumber: state.pressCount,
+          pressedAtEpochMs: Date.now(),
+        });
         this.broadcast(state);
         return;
       }
@@ -81,7 +84,11 @@ export class CounterRoom extends DurableObject<Env> {
     if (!Number.isSafeInteger(pressCount)) {
       throw new Error("Stored room state is corrupt");
     }
-    return { schemaVersion: row.schema_version, version: row.version, pressCount: Number(pressCount) };
+    return {
+      schemaVersion: row.schema_version,
+      version: row.version,
+      pressCount: Number(pressCount),
+    };
   }
 
   private broadcast(state: StoredRoomState): void {

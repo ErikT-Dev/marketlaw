@@ -1,0 +1,20 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "jsx": "react-jsx",
+    "types": ["node"],
+    "allowImportingTsExtensions": true,
+    "erasableSyntaxOnly": true
+  },
+  "include": [
+    "tools",
+    "eslint-rules",
+    "e2e",
+    "src/**/*.test.ts",
+    "src/**/*.test.tsx",
+    "vitest.config.ts",
+    "playwright.config.ts",
+    "vite.config.ts"
+  ]
+}

@@ -1,0 +1,8 @@
+harness/
+design/
+docs/
+rules/
+*.md
+package-lock.json
+worker-configuration.d.ts
+wrangler.jsonc

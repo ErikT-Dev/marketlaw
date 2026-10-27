@@ -4,22 +4,30 @@ Which tool enforces each rule. When a rule moves fully into a tool, shrink its p
 `rules/*.md` to one line. Rules marked **judgment** or **review** have no automatic check; they are
 candidates for the reviewer agent (`.claude/agents/reviewer.md`).
 
-## Tooling to set up
+## Tooling
 
-| Tool | Purpose |
-|------|---------|
-| `tsconfig.json` | strict compiler flags |
-| ESLint (`typescript-eslint` strict-type-checked, `sonarjs`, `functional`, `import`, `vitest`, `jsx-a11y`, `react`, `testing-library`, `eslint-comments`) | code rules |
-| Prettier | formatting |
-| dependency-cruiser | layer boundaries, no cycles |
-| knip | unused files, exports, dependencies |
-| jscpd | duplicated code |
-| Vitest | unit + scenario tests, coverage thresholds |
-| Playwright | multi-browser e2e, screenshots, axe |
-| size-limit | client bundle budget |
-| secretlint | no secrets in the repo |
-| Harness runner | scenarios, invariants, simulator, leak test, budgets -> `harness/report.html` |
-| Claude Code hooks (`.claude/settings.json`) | PostToolUse: typecheck + lint the edited file; PreToolUse: block protected paths; Stop: `npm run check` |
+Set up on 2026-10-27 (`docs/tooling-setup-proposal.md`). `npm run check` runs every row marked
+"in check".
+
+| Tool | Purpose | Status |
+|------|---------|--------|
+| `tsconfig.*.json` (engine, client, server, tools) | strict compiler flags; the engine has no browser or Node types | in check |
+| ESLint (`typescript-eslint` strict-type-checked, `sonarjs`, `functional`, `import-x`, `@vitest/eslint-plugin`, `jsx-a11y`, `react`, `react-hooks`, `testing-library`, `eslint-comments`, project rule `eslint-rules/noComments.ts`) | code rules | in check |
+| Prettier | formatting | in check |
+| dependency-cruiser | layer boundaries, no cycles | in check |
+| knip | unused files, exports, dependencies | in check |
+| jscpd | duplicated code | in check |
+| Vitest (engine: Node; server: Workers runtime via `@cloudflare/vitest-plugin`; client: jsdom) | unit + scenario tests, coverage thresholds on `src/rules/` (95% lines, statements, functions; 90% branches) | in check; no tests yet |
+| Playwright | multi-browser e2e at 1280×720, 1920×1080, 2560×1440, screenshots, axe | `npm run e2e`; no tests yet; browsers not installed yet |
+| size-limit | client bundle budget, read from `harness/budgets.yaml` B14 | in check |
+| secretlint | no secrets in the repo | in check |
+| Harness runner | scenarios, invariants, simulator, leak test, budgets -> `harness/report.html` | only `harness:check` so far; the rest is built with the engine |
+| Claude Code hooks (`.claude/settings.json`, `tools/hooks/`) | PreToolUse: deny protected configs and generated output, ask before `harness/` and `wrangler.jsonc`; PostToolUse: lint the edited file; Stop: `npm run check` when code or harness changed | active |
+
+Not yet enforced by a tool, because what they check does not exist yet: scenario tests, the
+simulator and invariants, the leak test, the budget checks B1–B13 and B15–B18, hostile client
+tests, replay determinism, state fixture tests and the restart e2e test. Until each exists, the
+rules that rely on it are enforced by review only.
 
 ## Rule -> enforcement
 
@@ -33,10 +41,11 @@ candidates for the reviewer agent (`.claude/agents/reviewer.md`).
 | Reuse first | workflow | jscpd · review |
 | Dependencies | workflow | `.npmrc save-exact` · knip · judgment |
 | Never edit generated output | workflow | PreToolUse hook |
+| Harness changes only with the owner's approval | workflow | PreToolUse hook (asks) · judgment |
 | Dependency direction | architecture | dependency-cruiser |
 | Pure rules engine | architecture | dependency-cruiser · ESLint `no-restricted-globals` · simulator |
 | One source of truth for state | architecture | dependency-cruiser · review |
-| One way out: `viewFor` | architecture | ESLint `no-restricted-syntax` · leak test |
+| One way out: `viewFor` | architecture | leak test · review |
 | Thin server | architecture | review · coverage |
 | Validate at the boundary | architecture | types · hostile client scenarios |
 | Versioned protocol and state | architecture | state fixture tests |
@@ -75,7 +84,7 @@ candidates for the reviewer agent (`.claude/agents/reviewer.md`).
 | Free-plan features only | cloudflare | protected `wrangler.jsonc` · judgment |
 | Secrets | cloudflare | secretlint |
 | Client renders, server decides | frontend | dependency-cruiser |
-| Touch first, large hands | frontend | Playwright screenshots |
+| Desktop first, large hands | frontend | Playwright screenshots at 1280×720, 1920×1080, 2560×1440 |
 | Accessible controls | frontend | `jsx-a11y` · axe |
 | Bundle size | frontend | size-limit |
 | Testable UI | frontend | `testing-library` ESLint plugin |

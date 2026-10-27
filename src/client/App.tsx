@@ -25,7 +25,8 @@ export function App() {
           <ol className={styles["historyList"]}>
             {recentPresses.map((recentPress) => (
               <li key={recentPress.pressNumber}>
-                #{recentPress.pressNumber} at {new Date(recentPress.pressedAtEpochMs).toLocaleTimeString()}
+                #{recentPress.pressNumber} at{" "}
+                {new Date(recentPress.pressedAtEpochMs).toLocaleTimeString()}
               </li>
             ))}
           </ol>

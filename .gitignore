@@ -5,3 +5,9 @@ dist/
 worker-configuration.d.ts
 coverage/
 .idea/
+
+*.penpot
+design/
+harness/report.html
+playwright-report/
+test-results/

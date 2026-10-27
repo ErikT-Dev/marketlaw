@@ -1,0 +1,16 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "entry": [
+    "tools/hooks/guardProtectedPaths.ts",
+    "tools/hooks/lintEditedFile.ts",
+    "tools/hooks/checkBeforeStop.ts"
+  ],
+  "project": ["src/**/*.{ts,tsx}", "tools/**/*.ts", "eslint-rules/**/*.ts"],
+  "ignoreDependencies": [
+    "cloudflare",
+    "@secretlint/secretlint-rule-preset-recommend",
+    "@axe-core/playwright",
+    "@testing-library/react",
+    "valibot"
+  ]
+}

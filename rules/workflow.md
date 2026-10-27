@@ -26,10 +26,13 @@ the code no longer matches stops being the owner's view of the game.
 **Enforced by:** judgment.
 
 ### Protected files
-Never create, edit or delete `tsconfig*.json`, `eslint.config.*`, `.dependency-cruiser.*`,
-`knip.*`, `vitest.config.*`, `playwright.config.*` or `.claude/`. Propose changes in chat.
+Never create, edit or delete `tsconfig*.json`, `eslint.config.*`, `eslint-rules/`,
+`.dependency-cruiser.*`, `knip.*`, `vitest.config.*`, `playwright.config.*`, `.prettierrc*`,
+`.prettierignore`, `.size-limit.*`, `.secretlint*`, `.jscpd.*`, `tools/hooks/` or `.claude/`.
+Propose changes in chat.
 **Why:** the agent must not be able to grade its own work by moving the goalposts.
-**Enforced by:** Claude Code PreToolUse hook blocks writes to these paths.
+**Enforced by:** Claude Code PreToolUse hook (`tools/hooks/guardProtectedPaths.ts`) blocks writes
+to these paths with the file tools.
 
 ### The harness changes only with the owner's approval
 Never create, edit or delete anything in `harness/` (specs, scenarios, invariants, budgets,
@@ -40,7 +43,8 @@ for approval, then make exactly the approved change. Exceptions: generated outpu
 you mention to the owner.
 **Why:** the harness is the owner's view of the game and the measure of the code; it must not move
 without them.
-**Enforced by:** judgment.
+**Enforced by:** Claude Code PreToolUse hook asks the owner before any file-tool write in
+`harness/` · judgment.
 
 ### Fix the code, never the check
 Never add `eslint-disable`, `@ts-ignore`, `@ts-expect-error`, `as any`, `.skip`, `.only`,

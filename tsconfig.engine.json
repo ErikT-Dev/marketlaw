@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "lib": ["ES2022"],
+    "types": []
+  },
+  "include": ["src/rules", "src/bots", "src/shared"],
+  "exclude": ["**/*.test.ts"]
+}

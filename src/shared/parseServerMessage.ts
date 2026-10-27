@@ -9,7 +9,11 @@ export function parseServerMessage(raw: string): ServerMessage | null {
   }
   const version = candidate["version"];
   const pressCount = candidate["pressCount"];
-  if (candidate["type"] !== "pressCount" || !Number.isSafeInteger(version) || !Number.isSafeInteger(pressCount)) {
+  if (
+    candidate["type"] !== "pressCount" ||
+    !Number.isSafeInteger(version) ||
+    !Number.isSafeInteger(pressCount)
+  ) {
     return null;
   }
   return {

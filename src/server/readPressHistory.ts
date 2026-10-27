@@ -12,6 +12,9 @@ export async function readPressHistory(database: D1Database): Promise<PressHisto
     .all<PressLogRow>();
   return {
     protocolVersion: PROTOCOL_VERSION,
-    recentPresses: results.map((row) => ({ pressNumber: row.press_number, pressedAtEpochMs: row.pressed_at })),
+    recentPresses: results.map((row) => ({
+      pressNumber: row.press_number,
+      pressedAtEpochMs: row.pressed_at,
+    })),
   };
 }

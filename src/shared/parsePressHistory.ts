@@ -13,14 +13,17 @@ export function parsePressHistory(raw: string): PressHistory | null {
   if (recentPresses.some((press) => press === null)) {
     return null;
   }
-  return { protocolVersion: PROTOCOL_VERSION, recentPresses: recentPresses.filter((press) => press !== null) };
+  return {
+    protocolVersion: PROTOCOL_VERSION,
+    recentPresses: recentPresses.filter((press) => press !== null),
+  };
 }
 
 function parseRecentPress(entry: unknown): RecentPress | null {
   if (typeof entry !== "object" || entry === null) {
     return null;
   }
-  const fields = Object.fromEntries(Object.entries(entry));
+  const fields: Readonly<Record<string, unknown>> = Object.fromEntries(Object.entries(entry));
   const pressNumber = fields["pressNumber"];
   const pressedAtEpochMs = fields["pressedAtEpochMs"];
   if (!Number.isSafeInteger(pressNumber) || !Number.isSafeInteger(pressedAtEpochMs)) {
