@@ -1,4 +1,6 @@
 import type { HarnessRun } from "./HarnessRun.ts";
+import { highestMeasured } from "./highestMeasured.ts";
+import { MEASURED_BUDGET_LIMITS } from "./MEASURED_BUDGET_LIMITS.ts";
 import type { ScenarioRun } from "./ScenarioRun.ts";
 
 function unknownNames(run: HarnessRun): ReadonlyArray<string> {
@@ -33,11 +35,26 @@ function requiredScenarioProblem({ scenario, result }: ScenarioRun): ReadonlyArr
   }
 }
 
+function budgetProblem(run: HarnessRun, budget: string): ReadonlyArray<string> {
+  const limit = MEASURED_BUDGET_LIMITS[budget];
+  const measured = highestMeasured(run.runs, budget);
+  if (limit === undefined || measured === undefined) {
+    return [`required ${budget} has no check yet`];
+  }
+  return measured > limit
+    ? [`required ${budget} measured ${measured}, over its limit of ${limit}`]
+    : [];
+}
+
 export function judgeHarness(run: HarnessRun): ReadonlyArray<string> {
   const unchecked = [
-    ...run.required.invariants.filter((id) => run.invariantIds.includes(id)),
-    ...run.required.budgets.filter((id) => run.budgetIds.includes(id)),
-  ].map((id) => `required ${id} has no check yet`);
+    ...run.required.invariants
+      .filter((id) => run.invariantIds.includes(id))
+      .map((id) => `required ${id} has no check yet`),
+    ...run.required.budgets
+      .filter((id) => run.budgetIds.includes(id))
+      .flatMap((id) => budgetProblem(run, id)),
+  ];
   return [
     ...unknownNames(run),
     ...run.runs.filter(({ isRequired }) => isRequired).flatMap(requiredScenarioProblem),

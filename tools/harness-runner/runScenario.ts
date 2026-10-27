@@ -1,6 +1,7 @@
 import type { Scenario } from "./Scenario.ts";
 import type { ScenarioDriver } from "./ScenarioDriver.ts";
-import type { ScenarioResult } from "./ScenarioResult.ts";
+import type { BudgetMeasurement } from "./BudgetMeasurement.ts";
+import type { ScenarioOutcome } from "./ScenarioOutcome.ts";
 import { ScriptedRandom } from "./ScriptedRandom.ts";
 import { findMismatches } from "./findMismatches.ts";
 import { stepKindOf } from "./stepKindOf.ts";
@@ -22,7 +23,12 @@ function missingFor(scenario: Scenario, driver: ScenarioDriver): ReadonlyArray<s
   ];
 }
 
-function play(scenario: Scenario, driver: ScenarioDriver): ReadonlyArray<string> {
+type Played = {
+  readonly problems: ReadonlyArray<string>;
+  readonly measurements: ReadonlyArray<BudgetMeasurement>;
+};
+
+function play(scenario: Scenario, driver: ScenarioDriver): Played {
   const random = new ScriptedRandom(scenario.random);
   try {
     const session = driver.startSession(scenario.given, random);
@@ -32,23 +38,32 @@ function play(scenario: Scenario, driver: ScenarioDriver): ReadonlyArray<string>
     const mismatches = Object.entries(scenario.then).flatMap(([field, expected]) =>
       findMismatches(expected, session.readThen(field, expected), `then.${field}`),
     );
-    return [...mismatches, ...random.problems()];
+    return {
+      problems: [...mismatches, ...random.problems()],
+      measurements: session.measurements?.() ?? [],
+    };
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    return [`the ${driver.name} driver stopped: ${message}`];
+    return { problems: [`the ${driver.name} driver stopped: ${message}`], measurements: [] };
   }
 }
 
 export function runScenario(
   scenario: Scenario,
   drivers: ReadonlyArray<ScenarioDriver>,
-): ScenarioResult {
+): ScenarioOutcome {
   const candidates = drivers.map((driver) => ({ driver, missing: missingFor(scenario, driver) }));
   const ready = candidates.find(({ missing }) => missing.length === 0);
   if (ready === undefined) {
     const fewestMissing = [...candidates].sort((a, b) => a.missing.length - b.missing.length)[0];
-    return { status: "not_yet", missing: fewestMissing?.missing ?? ["a driver"] };
+    return {
+      result: { status: "not_yet", missing: fewestMissing?.missing ?? ["a driver"] },
+      measurements: [],
+    };
   }
-  const problems = play(scenario, ready.driver);
-  return problems.length === 0 ? { status: "passes" } : { status: "fails", problems };
+  const { problems, measurements } = play(scenario, ready.driver);
+  return {
+    result: problems.length === 0 ? { status: "passes" } : { status: "fails", problems },
+    measurements,
+  };
 }
