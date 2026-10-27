@@ -14,7 +14,7 @@ export class ScriptedRandom {
 
   next(kind: RandomKind, purpose: RandomPurpose): RandomDraw {
     const entry = this.entries[this.nextIndex];
-    if (entry === undefined) {
+    if (entry === undefined || (purpose === "setup" && entry.kind !== kind)) {
       if (purpose === "play") {
         this.foundProblems.push(`the rules asked for a random ${kind} the scenario does not list`);
       }

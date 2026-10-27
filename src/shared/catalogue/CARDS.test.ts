@@ -57,6 +57,22 @@ describe("CARDS", () => {
   });
 
   it("leaves out empty combo places", () => {
-    expect(cardNamed("Fast Food Restaurant").combos.length).toBeLessThan(4);
+    expect(cardNamed("Fast Food Restaurant").combos).toEqual([
+      {
+        kind: "type_count",
+        type: "Food",
+        count: 2,
+        isInfinite: true,
+        gains: { stat: "satisfaction", amount: 1 },
+      },
+      {
+        kind: "type_count",
+        type: "Low Wealth",
+        count: 1,
+        isInfinite: false,
+        gains: { stat: "satisfaction", amount: 1 },
+      },
+      { kind: "card_name", card: "Landfill", gains: { stat: "quality", amount: 1 } },
+    ]);
   });
 });

@@ -1,11 +1,10 @@
 import { collectDefinedRules } from "../harness-check/collectDefinedRules.ts";
 import type { CoverageException } from "../harness-check/CoverageException.ts";
 import { HARNESS_PATHS } from "../harness-check/HARNESS_PATHS.ts";
+import type { RuleSpecText } from "../harness-check/RuleSpecText.ts";
 import { escapeHtml } from "./escapeHtml.ts";
 import { reportScenarioItem } from "./reportScenarioItem.ts";
 import type { ScenarioRun } from "./ScenarioRun.ts";
-
-type RuleSpec = { readonly path: string; readonly text: string };
 
 function ruleRow(
   rule: string,
@@ -20,7 +19,7 @@ function ruleRow(
 }
 
 export function reportRules(
-  ruleSpecs: ReadonlyArray<RuleSpec>,
+  ruleSpecs: ReadonlyArray<RuleSpecText>,
   runs: ReadonlyArray<ScenarioRun>,
   exceptions: ReadonlyMap<string, CoverageException>,
 ): string {

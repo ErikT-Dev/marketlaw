@@ -5,20 +5,15 @@ import { HARNESS_PATHS } from "../harness-check/HARNESS_PATHS.ts";
 import { loadHarnessFiles } from "../harness-check/loadHarnessFiles.ts";
 import { readCoverageExceptions } from "../harness-check/readCoverageExceptions.ts";
 import { buildReport } from "./buildReport.ts";
+import { buildScenarioRuns } from "./buildScenarioRuns.ts";
 import { checkCardData } from "./checkCardData.ts";
+import type { HarnessOutcome } from "./HarnessOutcome.ts";
 import type { HarnessRun } from "./HarnessRun.ts";
 import { judgeHarness } from "./judgeHarness.ts";
 import { readIdentifiedEntries } from "./readIdentifiedEntries.ts";
 import { readRequiredList } from "./readRequiredList.ts";
-import { readScenarios } from "./readScenarios.ts";
 import type { RequiredList } from "./RequiredList.ts";
-import { runScenario } from "./runScenario.ts";
 import type { ScenarioDriver } from "./ScenarioDriver.ts";
-
-type HarnessOutcome = {
-  readonly run: HarnessRun;
-  readonly problems: ReadonlyArray<string>;
-};
 
 const NOTHING_REQUIRED: RequiredList = { scenarios: [], invariants: [], budgets: [] };
 
@@ -33,13 +28,7 @@ export function runHarness(drivers: ReadonlyArray<ScenarioDriver>): HarnessOutco
   const budgets = readIdentifiedEntries(files.budgets);
   const run: HarnessRun = {
     required,
-    runs: readScenarios(files.scenarioFiles).map((scenario) => ({
-      scenario,
-      result: runScenario(scenario, drivers),
-      isRequired: required.scenarios.some(
-        ({ file, name }) => file === scenario.file && name === scenario.name,
-      ),
-    })),
+    runs: buildScenarioRuns(files.scenarioFiles, required, drivers),
     invariantIds: invariants.map(({ id }) => id),
     budgetIds: budgets.map(({ id }) => id),
     cardDataProblems: checkCardData(files.cards),

@@ -23,7 +23,9 @@ describe("readRequiredList", () => {
   });
 
   it("rejects a file without one of the three lists", () => {
-    const result = readRequiredList({ scenarios: {}, invariants: [] });
-    expect(result.isOk).toBe(false);
+    expect(readRequiredList({ scenarios: {}, invariants: [] })).toEqual({
+      isOk: false,
+      error: ['required.yaml budgets: Invalid key: Expected "budgets" but received undefined'],
+    });
   });
 });

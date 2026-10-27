@@ -12,4 +12,9 @@ describe("TYPE_POINTS", () => {
     expect(pointsOf("Farm")).toBe(3);
     expect(pointsOf("Rental Space")).toBe(4);
   });
+
+  it("lists the types in the order of R21.7", () => {
+    expect([...TYPE_POINTS.keys()].slice(0, 2)).toEqual(["Suburban Housing", "Low Wealth"]);
+    expect([...TYPE_POINTS.keys()].at(-1)).toBe("Rental Space");
+  });
 });

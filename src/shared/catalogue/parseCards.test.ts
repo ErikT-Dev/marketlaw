@@ -24,7 +24,9 @@ describe("parseCards", () => {
 
   it("rejects a card with a missing field", () => {
     const withoutCost = Object.fromEntries(Object.entries(ALONE).filter(([key]) => key !== "cost"));
-    expect(problemsOf([withoutCost]).join()).toContain("cost");
+    expect(problemsOf([withoutCost])).toEqual([
+      '0.cost: Invalid key: Expected "cost" but received undefined',
+    ]);
   });
 
   it("rejects a card with an unknown type", () => {

@@ -27,7 +27,9 @@ describe("checkCardData", () => {
         Object.entries(card).filter(([key]) => card.cardId !== 7 || key !== "tier"),
       ),
     );
-    expect(checkCardData(withoutTier).join()).toContain("tier");
+    expect(checkCardData(withoutTier)).toEqual([
+      '6.tier: Invalid key: Expected "tier" but received undefined',
+    ]);
   });
 
   it("reports a base cost outside its tier's range", () => {

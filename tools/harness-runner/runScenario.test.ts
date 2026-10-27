@@ -97,8 +97,10 @@ describe("runScenario", () => {
   });
 
   it("compares lists exactly including their length", () => {
-    const result = runScenario(scenario({ then: { seats: [] } }), [COUNTER_DRIVER]);
-    expect(result.status).toBe("fails");
+    expect(runScenario(scenario({ then: { seats: [] } }), [COUNTER_DRIVER])).toEqual({
+      status: "fails",
+      problems: ['then.seats: expected [], got [{"seat":1,"stats":{"funds":5,"income":1}}]'],
+    });
   });
 
   it("supplies listed random results in order", () => {
@@ -132,6 +134,20 @@ describe("runScenario", () => {
   it("lets setup use random results the scenario does not list", () => {
     const result = runScenario(scenario({ when: ["start_game"] }), [COUNTER_DRIVER]);
     expect(result).toEqual({ status: "passes" });
+  });
+
+  it("keeps listed play results for play when setup lists none", () => {
+    const result = runScenario(
+      scenario({
+        random: [{ kind: "tier", value: 2 }],
+        when: ["start_game", { seat: 1, action: "draw" }],
+      }),
+      [COUNTER_DRIVER],
+    );
+    expect(result).toEqual({
+      status: "fails",
+      problems: ["the rules asked for a random sector, but random result 1 is a tier"],
+    });
   });
 
   it("fails when a listed random result is of another kind", () => {
