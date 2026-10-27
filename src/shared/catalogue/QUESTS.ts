@@ -1,0 +1,70 @@
+import * as v from "valibot";
+import type { Quest } from "./Quest";
+import { QuestName } from "./QuestName";
+
+const QUEST_NAMES_BY_TIER = [
+  {
+    tier: 1,
+    names: [
+      "Working district",
+      "Farming industry",
+      "Local services",
+      "Green city",
+      "Countryside",
+      "Farmland",
+      "Fishing village",
+      "Sports town",
+      "High street",
+      "Mining town",
+      "Workers' housing",
+      "Tidy streets",
+      "Healthy town",
+      "Trading post",
+      "Supply chain",
+    ],
+  },
+  {
+    tier: 2,
+    names: [
+      "Growing suburbs",
+      "Upmarket homes",
+      "Modern industry",
+      "Service economy",
+      "Culture hub",
+      "Factory town",
+      "Market town",
+      "Industrial zone",
+      "Shopping centre",
+      "Leisure park",
+      "Culture district",
+      "Safe streets",
+      "Happy residents",
+      "Civic pride",
+      "Service boom",
+    ],
+  },
+  {
+    tier: 3,
+    names: [
+      "Penthouses",
+      "Heavy industry",
+      "Office district",
+      "Public institutions",
+      "City living",
+      "Tech campus",
+      "Commuter city",
+      "Business district",
+      "Media city",
+      "Tech industry",
+      "Metropolis",
+      "Balanced city",
+      "Cultural capital",
+      "Civic leader",
+      "High-tech economy",
+    ],
+  },
+] as const;
+
+export const QUESTS: ReadonlyArray<Quest> = QUEST_NAMES_BY_TIER.flatMap(({ tier, names }) =>
+  names.map((name) => ({ name: v.parse(QuestName, name), tier })),
+);

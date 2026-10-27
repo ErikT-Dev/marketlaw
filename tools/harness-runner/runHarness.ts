@@ -1,0 +1,52 @@
+import { readFileSync, writeFileSync } from "node:fs";
+import { parse } from "yaml";
+import { checkScenarioFormat } from "../harness-check/checkScenarioFormat.ts";
+import { HARNESS_PATHS } from "../harness-check/HARNESS_PATHS.ts";
+import { loadHarnessFiles } from "../harness-check/loadHarnessFiles.ts";
+import { readCoverageExceptions } from "../harness-check/readCoverageExceptions.ts";
+import { buildReport } from "./buildReport.ts";
+import { buildScenarioRuns } from "./buildScenarioRuns.ts";
+import { checkCardData } from "./checkCardData.ts";
+import type { HarnessOutcome } from "./HarnessOutcome.ts";
+import type { HarnessRun } from "./HarnessRun.ts";
+import { judgeHarness } from "./judgeHarness.ts";
+import { readIdentifiedEntries } from "./readIdentifiedEntries.ts";
+import { readRequiredList } from "./readRequiredList.ts";
+import type { RequiredList } from "./RequiredList.ts";
+import type { ScenarioDriver } from "./ScenarioDriver.ts";
+
+const NOTHING_REQUIRED: RequiredList = { scenarios: [], invariants: [], budgets: [] };
+
+export function runHarness(drivers: ReadonlyArray<ScenarioDriver>): HarnessOutcome {
+  const { files, problems: loadProblems } = loadHarnessFiles();
+  const readingProblems = [...loadProblems, ...checkScenarioFormat(files)].map(
+    ({ file, where, message }) => `${file} | ${where} | ${message}`,
+  );
+  const requiredResult = readRequiredList(parse(readFileSync(HARNESS_PATHS.required, "utf8")));
+  const required = requiredResult.isOk ? requiredResult.value : NOTHING_REQUIRED;
+  const invariants = readIdentifiedEntries(files.invariants);
+  const budgets = readIdentifiedEntries(files.budgets);
+  const run: HarnessRun = {
+    required,
+    runs: buildScenarioRuns(files.scenarioFiles, required, drivers),
+    invariantIds: invariants.map(({ id }) => id),
+    budgetIds: budgets.map(({ id }) => id),
+    cardDataProblems: checkCardData(files.cards),
+  };
+  const problems = [
+    ...readingProblems,
+    ...(requiredResult.isOk ? [] : requiredResult.error),
+    ...judgeHarness(run),
+  ];
+  const report = buildReport({
+    run,
+    problems,
+    ruleSpecs: files.ruleSpecs,
+    exceptions: readCoverageExceptions(files.coverageExceptions),
+    invariants,
+    budgets,
+    generatedAt: new Date().toISOString(),
+  });
+  writeFileSync(HARNESS_PATHS.report, report);
+  return { run, problems };
+}

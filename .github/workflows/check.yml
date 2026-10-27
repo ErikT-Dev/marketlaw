@@ -30,3 +30,11 @@ jobs:
 
       - name: Check
         run: npm run check
+
+      - name: Keep the harness report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: harness-report
+          path: harness/report.html
+          if-no-files-found: warn

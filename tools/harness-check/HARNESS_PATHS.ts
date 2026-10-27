@@ -7,6 +7,8 @@ export const HARNESS_PATHS = {
   coverage: "harness/coverage.md",
   invariants: "harness/invariants.yaml",
   budgets: "harness/budgets.yaml",
+  required: "harness/required.yaml",
+  report: "harness/report.html",
   cards: "harness/spec/cards.json",
   gameRules: "harness/spec/game-rules.md",
   rulebook: "harness/spec/rulebook.md",

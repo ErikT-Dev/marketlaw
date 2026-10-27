@@ -33,6 +33,7 @@ is built; it only describes what the game does.
 | `coverage.md` | Every rule against the scenarios that test it, with gaps flagged; generated, never edited by hand |
 | `scenario-format.yaml` | The formal version of the scenario format below; every scenario file must match it |
 | `coverage-exceptions.yaml` | Rules the owner approved as checked another way instead of, or as well as, by scenarios |
+| `required.yaml` | What must pass now, while version 1 is built phase by phase (see below) |
 | `screens/` | Screenshots from the browser tests (generated) |
 | `report.html` | The result of the last test run (generated) |
 
@@ -89,7 +90,8 @@ every random result the rules ask for, in order, or it fails, with one exception
 set up during the scenario (`start_game`, everyone accepting a game or a rematch, or a match
 being confirmed), setup results the scenario does not list may be anything, as long as `then`
 checks nothing that depends on them. A scenario that lists any setup result lists all of them
-up to the last one it needs. In a new game, `deck` is the order after
+up to the last one it needs. A listed result the rules never ask for, or one of another kind than the
+rules ask for at that point, also fails the scenario. In a new game, `deck` is the order after
 the starting shuffle. Marketplace places are named `residential`, `industry`, `service`,
 `public_quality`, `public_satisfaction`, `open_1`, `open_2` and `open_3`.
 
@@ -138,7 +140,8 @@ it out, `player_to_mute` for a mute and `player_to_unmute` for an unmute.
 | `tutorial_step` | The tutorial step the player is on (T…) |
 
 A scenario passes when every field in `then` matches exactly. Fields not mentioned are not
-checked.
+checked, at any depth: inside an object, only the keys the scenario writes are compared. A list
+is compared whole, in order and with its length; `seats` lists only the seats it checks.
 
 ### Example
 
@@ -319,10 +322,26 @@ A repeated action id is not rejected: it returns the original result again.
 
 - a YAML file cannot be read
 - a scenario does not match `scenario-format.yaml`, or uses a field this file does not explain
+- two scenarios in one file have the same name
 - a scenario names a card, quest or type that does not exist, or covers a rule that does not exist
 - a scenario uses an action, influence trade or reason code not listed in this file
 - a link in the rulebook points to a section that does not exist
 - a rule has no scenario and no approved exception
+
+## What must pass now: `required.yaml`
+
+Version 1 is built phase by phase, and each phase makes part of the harness required.
+`required.yaml` lists what must pass now, in three lists:
+
+- `scenarios`: per scenario file (named without `.yaml`), the exact names of its scenarios
+- `invariants`: ids from `invariants.yaml`
+- `budgets`: ids from `budgets.yaml`
+
+The check fails when anything on the list fails or cannot run yet, or when a name on the list
+does not exist. Everything else is still run and shown in `report.html` as "not yet" or "passes,
+not yet required", and does not fail the check. Each phase adds the names its phase file lists;
+names leave the list only with the owner's approval. When version 1 is done, everything is on the
+list.
 
 ## What passing means
 

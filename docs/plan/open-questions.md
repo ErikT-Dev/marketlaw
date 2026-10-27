@@ -36,3 +36,54 @@ file.
   the 10 that remain, whose fixes are newer than 14 days or do not exist yet.
 - **Implemented:** `package.json`, `docs/tooling-setup-proposal.md` ("As installed").
 
+
+## Q3. What shape does `harness/required.yaml` take?
+
+- **Phase:** 02, item 4.
+- **Question:** the phase file asks for three lists (scenarios by file and name, invariants,
+  budgets) but not their exact form, and `HARNESS.md` needed a section explaining the file.
+- **Options:** scenarios as a flat list of `{file, name}`; as a map from file to names; by file
+  and number.
+- **Solution:** a map from scenario file (named without `.yaml`) to exact scenario names, plus
+  lists of invariant and budget ids. Names, not numbers, so inserting a scenario cannot shift
+  which ones are required; the runner fails on any name that does not exist. New section "What
+  must pass now: `required.yaml`" in `HARNESS.md`, and a row in its file table.
+- **Why:** readable for the owner, and a renamed scenario cannot drop out silently.
+- **Implemented:** `harness/required.yaml`, `harness/HARNESS.md`, `tools/harness-runner/`
+  (phase 02).
+
+## Q4. Does a scenario fail when it lists random results the rules never ask for?
+
+- **Phase:** 02, item 3.
+- **Question:** `HARNESS.md` says a scenario must list every random result the rules ask for, in
+  order, or it fails. It does not say what happens to listed results the rules never ask for.
+- **Options:** ignore them; fail the scenario.
+- **Solution:** fail the scenario, naming how many were never asked for. A listed result of
+  another kind than the one asked for also fails it.
+- **Why:** a listed result that is never used means the scenario expects the rules to ask for
+  something they do not; ignoring it would hide that disagreement.
+- **Implemented:** `harness/HARNESS.md` ("Random results"), `tools/harness-runner/ScriptedRandom.ts`
+  (phase 02). The spec sentence was added after the code, found by the phase review.
+
+## Q5. How exactly are `then` fields compared?
+
+- **Phase:** 02, item 3, found by the phase review.
+- **Question:** `HARNESS.md` says every `then` field must match exactly and fields not mentioned
+  are not checked, but not whether that holds inside nested objects, or how lists compare.
+- **Options:** "not mentioned" only at the top level; at every depth. Lists exact and in order;
+  lists as sets; lists as "contains".
+- **Solution:** "not mentioned" at every depth for objects; lists compared whole, in order and with
+  their length. `seats` lists only the seats a scenario checks, so the driver returns those seats.
+- **Why:** scenarios write `seats: [{seat: 1, stats: {funds: 10}}]` to check one stat; lists such as
+  `deck` and `done_order` are orders, so their order is part of what is checked.
+- **Implemented:** `harness/HARNESS.md` (`then`), `tools/harness-runner/findMismatches.ts` (phase 02).
+
+## Q6. Must scenario names be unique within a file?
+
+- **Phase:** 02, found by the phase review.
+- **Question:** `required.yaml` names scenarios by file and name, but nothing stopped two scenarios
+  in one file from sharing a name, which would make both required at once.
+- **Options:** match by number instead; check that names are unique.
+- **Solution:** `npm run harness:check` fails when two scenarios in one file have the same name;
+  listed under "Checking the harness itself" in `HARNESS.md`. No scenario breaks it today.
+- **Implemented:** `harness/HARNESS.md`, `tools/harness-check/checkUniqueNames.ts` (phase 02).

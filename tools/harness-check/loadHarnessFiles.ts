@@ -35,8 +35,6 @@ function loadScenarioFiles(problems: HarnessProblem[]): ReadonlyArray<ScenarioFi
 
 export function loadHarnessFiles(): LoadResult {
   const problems: HarnessProblem[] = [];
-  parseYamlFile(HARNESS_PATHS.invariants, problems);
-  parseYamlFile(HARNESS_PATHS.budgets, problems);
   const cards: unknown = JSON.parse(readText(HARNESS_PATHS.cards));
   const files: HarnessFiles = {
     scenarioFiles: loadScenarioFiles(problems),
@@ -50,6 +48,8 @@ export function loadHarnessFiles(): LoadResult {
     cards: Array.isArray(cards) ? cards : [],
     scenarioFormat: parseYamlFile(HARNESS_PATHS.scenarioFormat, problems),
     coverageExceptions: parseYamlFile(HARNESS_PATHS.coverageExceptions, problems),
+    invariants: parseYamlFile(HARNESS_PATHS.invariants, problems),
+    budgets: parseYamlFile(HARNESS_PATHS.budgets, problems),
   };
   return { files, problems };
 }
