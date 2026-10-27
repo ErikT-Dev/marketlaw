@@ -90,7 +90,8 @@ every random result the rules ask for, in order, or it fails, with one exception
 set up during the scenario (`start_game`, everyone accepting a game or a rematch, or a match
 being confirmed), setup results the scenario does not list may be anything, as long as `then`
 checks nothing that depends on them. A scenario that lists any setup result lists all of them
-up to the last one it needs. In a new game, `deck` is the order after
+up to the last one it needs. A listed result the rules never ask for, or one of another kind than the
+rules ask for at that point, also fails the scenario. In a new game, `deck` is the order after
 the starting shuffle. Marketplace places are named `residential`, `industry`, `service`,
 `public_quality`, `public_satisfaction`, `open_1`, `open_2` and `open_3`.
 
@@ -139,7 +140,8 @@ it out, `player_to_mute` for a mute and `player_to_unmute` for an unmute.
 | `tutorial_step` | The tutorial step the player is on (T…) |
 
 A scenario passes when every field in `then` matches exactly. Fields not mentioned are not
-checked.
+checked, at any depth: inside an object, only the keys the scenario writes are compared. A list
+is compared whole, in order and with its length; `seats` lists only the seats it checks.
 
 ### Example
 

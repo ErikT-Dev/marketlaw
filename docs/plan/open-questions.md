@@ -62,4 +62,18 @@ file.
   another kind than the one asked for also fails it.
 - **Why:** a listed result that is never used means the scenario expects the rules to ask for
   something they do not; ignoring it would hide that disagreement.
-- **Implemented:** `tools/harness-runner/ScriptedRandom.ts` (phase 02).
+- **Implemented:** `harness/HARNESS.md` ("Random results"), `tools/harness-runner/ScriptedRandom.ts`
+  (phase 02). The spec sentence was added after the code, found by the phase review.
+
+## Q5. How exactly are `then` fields compared?
+
+- **Phase:** 02, item 3, found by the phase review.
+- **Question:** `HARNESS.md` says every `then` field must match exactly and fields not mentioned
+  are not checked, but not whether that holds inside nested objects, or how lists compare.
+- **Options:** "not mentioned" only at the top level; at every depth. Lists exact and in order;
+  lists as sets; lists as "contains".
+- **Solution:** "not mentioned" at every depth for objects; lists compared whole, in order and with
+  their length. `seats` lists only the seats a scenario checks, so the driver returns those seats.
+- **Why:** scenarios write `seats: [{seat: 1, stats: {funds: 10}}]` to check one stat; lists such as
+  `deck` and `done_order` are orders, so their order is part of what is checked.
+- **Implemented:** `harness/HARNESS.md` (`then`), `tools/harness-runner/findMismatches.ts` (phase 02).
