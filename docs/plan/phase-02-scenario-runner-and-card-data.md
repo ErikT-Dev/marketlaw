@@ -72,8 +72,24 @@ None. This phase adds no scenarios to `harness/required.yaml`.
 
 ## Progress
 
-- [ ] 1. Card and quest catalogue in `src/shared/`
-- [ ] 2. Card-data check (R3.1, R3.2, R3.5)
-- [ ] 3. Scenario runner with the driver interface and scripted random results
-- [ ] 4. `harness/required.yaml` and its section in `HARNESS.md`
-- [ ] 5. `harness/report.html` from `npm run harness`, kept by GitHub
+- [x] 1. Card and quest catalogue in `src/shared/catalogue/`: `CARDS` (parsed by `parseCards`
+  through a valibot schema; a combo's need is a type when it is one of the 33 types, otherwise a
+  card name), `QUESTS` and `TYPE_POINTS`; branded `CardId`, `CardName`, `TypeName`, `QuestName`;
+  `Result` in `src/shared/`. Quests hold name and tier only: requirements and rewards as data are
+  phase 13, item 1, which designs them for the checks.
+- [x] 2. Card-data check (`tools/harness-runner/checkCardData.ts`): the schema (every field
+  present, known types, complete combos), 240 cards with 20 per sector and tier, unique names and
+  ids, R3.5 base costs and product or distribution per tier.
+- [x] 3. Scenario runner (`tools/harness-runner/`). Differs from the phase file: a driver gets the
+  whole `given` at once (`startSession`) instead of one method per field group, because setup
+  needs the fields together; it declares the given fields, steps and then fields it handles, and
+  a scenario using anything it does not handle is "not yet". Then fields are read with the
+  expected value, so a driver returns only the seats asked for; objects compare only the keys the
+  scenario mentions, lists compare exactly. Random results come from `ScriptedRandom`; the driver
+  says whether it asks for setup or play, and only setup may go past the listed results. Unused
+  listed results fail the scenario (Q4).
+- [x] 4. `harness/required.yaml` (Q3), empty; `HARNESS.md` section "What must pass now".
+- [x] 5. `npm run harness` = `harness:check` + `tools/harness-runner/harness.test.ts`, which
+  writes `harness/report.html` and fails on any problem with the required list. The harness test
+  also runs in `npm run test`, so `npm run check` runs it twice; it takes about a second.
+  GitHub uploads the report as the `harness-report` artifact of every check run.
