@@ -52,6 +52,8 @@ Phase 07.
 
 - From phase 06: add a browser test of the action limit (S8.4) at every size, using a test room
   that starts a player at 49 actions, with a screenshot ("action-limit-reached").
+- From phase 07: add a browser test that reaches real income in a test room (product and
+  distribution ready) and finds the income draw in the draw log at every size.
 
 ## Required scenarios
 

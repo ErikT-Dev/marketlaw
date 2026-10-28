@@ -46,7 +46,8 @@ while the other waits for its go, then both play the main phase.
 
 ## Open points
 
-- None.
+- Q23: log turn draws and marketplace refill draws and shuffles in the draw log; decide how a
+  refill shuffle that no player caused is shown.
 
 ## Required scenarios
 

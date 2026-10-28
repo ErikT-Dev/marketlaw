@@ -29,7 +29,15 @@ Phase 06.
 
 ## Known gaps after this phase
 
-- Others' actions still visible at once (phase 09); no market phase (phase 12).
+- Others' actions still visible at once (phase 09): every player sees other players' income
+  draws, discard shuffles and the deck count straight away, not when the main phase ends
+  (M3.3, R17.8, R5.5).
+- No market phase (phase 12); marketplace refills and starting hands write no draw log entries
+  yet (Q23).
+- The draw log panel has a title instead of the Draw log and Chat tabs of S7.1 (chat comes in
+  phase 21).
+- No browser test reaches real income; the draw log is checked in the browser with entries
+  added on the socket. Phase 08's test rooms add a real one.
 
 ## What you can see when it's done
 
@@ -63,7 +71,7 @@ These 11 scenarios are added to `harness/required.yaml` in this phase, by file a
 ## Progress
 
 - [x] 1. Drawing complete in the engine. R17.4 was already built in phase 03; `drawCard` now also
-  reports the discard shuffles it causes. Every draw and shuffle goes into a public draw log in
+  reports the discard shuffles it causes. Every income draw and the shuffles it causes go into a public draw log in
   the game state and the view, with who drew, how many, and the sector or kind and tier asked
   for, never the card (M3.3, R17.6). The save version went to 2. The statistical tier check runs
   in `npm run harness` (100,000 draws per turn, turns 1 to 40, within 1 percentage point of
