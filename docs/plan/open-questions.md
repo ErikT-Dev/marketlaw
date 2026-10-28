@@ -435,3 +435,14 @@ file.
   R17.6.
 - **Why:** a shuffle entry that named the wrong tier would contradict the public discard pile.
 - **Implemented:** `harness/spec/game-rules.md` R17.6 (phase 09; the code already did this).
+
+## Q30. `projects` #6 needs the market phase
+
+- **Phase:** 10, item 2.
+- **Question:** phase 10 lists `projects` #6 ("rejects a project outside the main phase") as
+  required, but the scenario starts in the market phase, which phase 12 builds.
+- **Options:** a stand-in market phase now; require the scenario in phase 12.
+- **Solution:** it becomes required in phase 12. Until then the only phase besides the main phase
+  is the end of the game, where a project is rejected with `game_over`.
+- **Why:** as in Q27, a required scenario must pass, and stand-ins would be unasked behaviour.
+- **Implemented:** the Required scenarios of phases 10 and 12.

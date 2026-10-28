@@ -47,7 +47,8 @@ totals, complete a project, and see the first-completion funds at the end of the
 
 ## Required scenarios
 
-These 17 scenarios are added to `harness/required.yaml` in this phase, by file and number:
+These 16 scenarios are added to `harness/required.yaml` in this phase, by file and number
+(`projects` #6 moved to phase 12, Q30):
 
 - `combos-and-income` #1: a card-name combo is claimed when the named card is in the city
 - `combos-and-income` #2: a card-name combo works whichever card was played first
@@ -63,6 +64,5 @@ These 17 scenarios are added to `harness/required.yaml` in this phase, by file a
 - `projects` #3: rejects a project while another stat is negative
 - `projects` #4: rejects completing the same project twice
 - `projects` #5: the third project gives an extra income and an extra card
-- `projects` #6: rejects a project outside the main phase
 - `projects` #7: everyone who completes a project in the first turn anyone does gets 2 extra funds at the end of the turn
 - `projects` #8: a project completed in a later turn gives no first-completion funds
