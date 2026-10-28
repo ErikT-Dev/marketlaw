@@ -4,9 +4,12 @@ import { handOf } from "./handOf";
 import { signedInPlayer } from "./signedInPlayer";
 
 async function sellFirstCardAndEndTurn(page: Page): Promise<void> {
-  const [card] = await handOf(page);
-  await page.getByRole("button", { name: `Sell ${card ?? ""}` }).click();
-  await expect(page.getByRole("button", { name: `Sell ${card ?? ""}` })).toHaveCount(0);
+  const [card = ""] = await handOf(page);
+  const hand = page.getByRole("list", { name: "Your hand" });
+  await page.getByRole("button", { name: "Sell cards" }).click();
+  await hand.getByRole("button", { name: card, exact: true }).click();
+  await page.getByRole("button", { name: "Sell 1 card" }).click();
+  await expect(hand.getByRole("button", { name: card, exact: true })).toHaveCount(0);
   await page.getByRole("button", { name: "End turn" }).click();
 }
 

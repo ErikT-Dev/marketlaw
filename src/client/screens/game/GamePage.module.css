@@ -42,3 +42,15 @@
 .right {
   grid-template-rows: minmax(0, 300fr) minmax(0, 416fr) auto;
 }
+
+.right {
+  position: relative;
+}
+
+.toasts {
+  position: fixed;
+  top: 68px;
+  right: var(--space-lg);
+  z-index: 20;
+  width: 340px;
+}
