@@ -1,6 +1,5 @@
 import { cardOf } from "../shared/catalogue/cardOf";
 import type { ReasonCode } from "../shared/ReasonCode";
-import { ACTION_LIMIT } from "./ACTION_LIMIT";
 import { FIRST_TURN_FOR_HIGHER_TIERS } from "./FIRST_TURN_FOR_HIGHER_TIERS";
 import type { GameAction } from "./GameAction";
 import type { GameState } from "./GameState";
@@ -8,24 +7,9 @@ import { realCostOf } from "./realCostOf";
 import { removeCards } from "./removeCards";
 import { seatOf } from "./seatOf";
 import type { SeatState } from "./SeatState";
+import { turnRejectionOf } from "./turnRejectionOf";
 
 type PlayCard = Extract<GameAction, { readonly type: "play_card" }>;
-
-function turnRejection(state: GameState, action: GameAction): ReasonCode | undefined {
-  const seat = seatOf(state, action.seat);
-  if (seat === undefined || seat.hasLeft) {
-    return "not_in_game";
-  }
-  if (state.phase === "ended") {
-    return "game_over";
-  }
-  if (seat.isDone) {
-    return "already_done";
-  }
-  return action.type !== "end_turn" && seat.actionsThisTurn >= ACTION_LIMIT
-    ? "action_limit_reached"
-    : undefined;
-}
 
 function playRejection(state: GameState, seat: SeatState, action: PlayCard): ReasonCode | undefined {
   if (!seat.hand.includes(action.card)) {
@@ -45,7 +29,7 @@ function playRejection(state: GameState, seat: SeatState, action: PlayCard): Rea
 }
 
 export function rejectionOf(state: GameState, action: GameAction): ReasonCode | undefined {
-  const turnCode = turnRejection(state, action);
+  const turnCode = turnRejectionOf(state, action.seat, action.type);
   const seat = seatOf(state, action.seat);
   if (turnCode !== undefined || seat === undefined) {
     return turnCode;

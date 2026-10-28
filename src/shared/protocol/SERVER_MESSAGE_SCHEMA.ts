@@ -41,6 +41,8 @@ const SEAT_VIEW = v.variant("kind", [
         playRejection: v.nullable(ReasonCode),
       }),
     ),
+    sellRejection: v.nullable(ReasonCode),
+    endTurnRejection: v.nullable(ReasonCode),
     hasPlayedThisTurn: v.boolean(),
     hasSkippedBuild: v.boolean(),
     actionsThisTurn: COUNT,

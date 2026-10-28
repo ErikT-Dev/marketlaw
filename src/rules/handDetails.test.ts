@@ -15,9 +15,16 @@ function gameWithSeatOne(turn: number, changes: Partial<SeatState>): GameState {
   };
 }
 
-function detailsOf(state: GameState) {
+function ownViewOf(state: GameState) {
   const own = viewFor(state, 1).seats.find((seat) => seat.kind === "own");
-  return own?.kind === "own" ? own.handDetails : [];
+  if (own?.kind !== "own") {
+    throw new Error("no own seat in the view");
+  }
+  return own;
+}
+
+function detailsOf(state: GameState) {
+  return ownViewOf(state).handDetails;
 }
 
 const HAND: ReadonlyArray<CardName> = ["Farm House", "Dorm", "Fishing Industry"];
@@ -55,5 +62,14 @@ describe("hand card details in the own view", () => {
     expect(detailsOf(state).map(({ realCost, playRejection }) => [realCost, playRejection])).toEqual([
       [7, "not_enough_funds"],
     ]);
+  });
+
+  it("says whether selling and ending the turn would be accepted", () => {
+    const playing = ownViewOf(gameWithSeatOne(1, {}));
+    expect([playing.sellRejection, playing.endTurnRejection]).toEqual([null, null]);
+    const atLimit = ownViewOf(gameWithSeatOne(1, { actionsThisTurn: 50 }));
+    expect([atLimit.sellRejection, atLimit.endTurnRejection]).toEqual(["action_limit_reached", null]);
+    const done = ownViewOf(gameWithSeatOne(1, { isDone: true }));
+    expect([done.sellRejection, done.endTurnRejection]).toEqual(["already_done", "already_done"]);
   });
 });

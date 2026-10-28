@@ -4,6 +4,7 @@ import type { PlayerView } from "../shared/PlayerView";
 import type { SeatNumber } from "../shared/SeatNumber";
 import type { GameState } from "./GameState";
 import { handDetailsOf } from "./handDetailsOf";
+import { turnRejectionOf } from "./turnRejectionOf";
 import { playerOrderOf } from "./playerOrderOf";
 import type { SeatState } from "./SeatState";
 
@@ -14,6 +15,8 @@ function ownSeatView(state: GameState, seat: SeatState): OwnSeatView {
     stats: seat.stats,
     hand: seat.hand,
     handDetails: handDetailsOf(state, seat),
+    sellRejection: turnRejectionOf(state, seat.seat, "sell") ?? null,
+    endTurnRejection: turnRejectionOf(state, seat.seat, "end_turn") ?? null,
     city: seat.city,
     buildPasses: seat.buildPasses,
     hasPlayedThisTurn: seat.hasPlayedThisTurn,
