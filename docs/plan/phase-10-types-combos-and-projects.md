@@ -1,6 +1,6 @@
 # Phase 10: Types, combos and projects
 
-Status: approved
+Status: in progress
 Milestone: 3 Playthrough
 
 ## Goal
@@ -66,3 +66,16 @@ These 16 scenarios are added to `harness/required.yaml` in this phase, by file a
 - `projects` #5: the third project gives an extra income and an extra card
 - `projects` #7: everyone who completes a project in the first turn anyone does gets 2 extra funds at the end of the turn
 - `projects` #8: a project completed in a later turn gives no first-completion funds
+
+## Progress
+
+- [x] 1. Combos: card-name and type-count combos, infinite ones at every multiple, claimed with
+  claim all in one action; type counts include gained types, so quests (phase 13) will count.
+  Views carry type counts, combos and whether claim all would be accepted. Save version 6.
+- [x] 2. Projects: use up 8 of the stat, give income, funds, influence and a card; the third
+  gives one more income and card; first-completion funds at the end of the turn. `projects` #6
+  needs the market phase and moved to phase 12 (Q30). I12 and I14 are checked after every action,
+  I13 by the simulator.
+- [x] 3. Screens: city by sector, combos panel with the ready count, claim all and projects
+  pop-ups, type chips and project progress (S6.1–S6.3, S8.1, S8.2), with a browser test in a test
+  room and screenshots.
