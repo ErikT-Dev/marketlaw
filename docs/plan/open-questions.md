@@ -290,3 +290,17 @@ file.
 - **Why:** the spec wins over the design; a tooltip keeps the design's dense stats row.
 - **Implemented:** `harness/spec/screens.md` S2.2 and S6.2, `orderBadgesOf.ts`,
   `Chip.module.css` (phase 05).
+
+## Q21. Rejection messages for codes S16.3 does not list
+
+- **Phase:** 06, item 5.
+- **Question:** S16.3 gives a message for each reason code a game move can get, but has none for
+  `not_this_step` (tutorial, C4.4), nor for the room codes (`room_not_found`, `room_full`,
+  `room_not_waiting`, `invalid_room_size`), which share the reason-code list.
+- **Options:** no message; the shared "Something went wrong" message; a message of their own.
+- **Solution:** `not_this_step` gets "In the tutorial, take the step it asks for."; the room codes
+  share "Something went wrong. The page reloads your game.", as only a broken client could get
+  them for a game move. Written into S16.3.
+- **Why:** every rejected move then shows a message, as S16.3 asks.
+- **Implemented:** `harness/spec/screens.md` S16.3, `src/client/screens/game/rejectionMessage.ts`
+  (phase 06).
