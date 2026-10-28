@@ -18,8 +18,8 @@ Build version 1 as defined by `harness/spec/`, until the game passes the harness
 2. **Every phase deploys on its own.** Each phase is built on its own branch and merged to
    master, which deploys, only when the phase is done and its checks and review pass (D7, D19). At that
    point `npm run check` and the browser tests are green on GitHub, the deploy succeeds, and every
-   reachable screen works for what it shows. Unfinished features are reachable only by the owner
-   and invited testers (D6), and each phase file lists its known gaps.
+   reachable screen works for what it shows. The site is open to anyone with the link (D22, which
+   replaced the lock of D6), and each phase file lists its known gaps.
 3. **Every phase is testable on its own.** Each phase file lists, by file and number, the exact
    scenarios that become required in it, and says what the owner can see or try. Where a phase
    adds nothing visible, the owner sees the harness report.
