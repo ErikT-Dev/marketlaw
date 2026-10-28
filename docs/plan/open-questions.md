@@ -273,3 +273,20 @@ file.
   phase 13 with 5 quests and 4 players.
 - **Why:** the size test passed at all three sizes; the densest content does not exist yet.
 - **Implemented:** `harness/spec/screens.md` S1.1, `decisions.md` D21, phase 13's Open points.
+
+## Q20. Your own badge, statuses after the main phase, and stat names as tooltips
+
+- **Phase:** 05, phase review findings 3, 7 and 10.
+- **Question:** the design shows your own top-bar badge as "You", but S2.2 asks for usernames. S2.2
+  limits statuses to the main phase, but the code showed "left" in every phase. S6.2 asks for
+  each stat's "icon and name", and the design shows names only on hover.
+- **Options:** for the badge, "You" or the username; for the names, visible text, a hover tooltip,
+  or a tooltip that keyboard focus also opens.
+- **Solution:** your badge shows your username, as S2.2 says (the size test now measures the
+  longest name). Statuses show only in the main phase. Stat names are hover tooltips placed under
+  the icon and the icon's accessible name, as in the design;
+  written into S2.2 and S6.2. A focusable chip was left out: the icons are not controls, and
+  `jsx-a11y` keeps non-interactive elements out of the tab order.
+- **Why:** the spec wins over the design; a tooltip keeps the design's dense stats row.
+- **Implemented:** `harness/spec/screens.md` S2.2 and S6.2, `orderBadgesOf.ts`,
+  `Chip.module.css` (phase 05).

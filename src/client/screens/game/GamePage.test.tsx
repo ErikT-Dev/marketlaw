@@ -80,14 +80,22 @@ describe("game page top bar", () => {
     const badges = within(screen.getByRole("list", { name: "Player order" }))
       .getAllByRole("listitem")
       .map((item) => item.textContent);
-    expect(badges).toEqual(["Cydonefirst player", "Di", "You", "Annleft"]);
+    expect(badges).toEqual(["Cydonefirst player", "Di", "Bea", "Annleft"]);
+  });
+
+  it("shows no player status once the game is over", () => {
+    render(<GamePage update={updateWith({ phase: "ended" })} onAction={vi.fn()} />);
+    const badges = within(screen.getByRole("list", { name: "Player order" }))
+      .getAllByRole("listitem")
+      .map((item) => item.textContent);
+    expect(badges).toEqual(["Cyfirst player", "Di", "Bea", "Ann"]);
   });
 });
 
 describe("your stats panel", () => {
   it("shows every stat of S6.2 as an icon named after the stat", () => {
     render(<GamePage update={updateWith({})} onAction={vi.fn()} />);
-    const stats = within(screen.getByRole("list", { name: "Your stats" }))
+    const stats = within(screen.getByRole("region", { name: "Your stats" }))
       .getAllByRole("img")
       .map((chip) => chip.getAttribute("aria-label"));
     expect(stats).toEqual([

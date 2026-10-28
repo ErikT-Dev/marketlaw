@@ -5,10 +5,13 @@ import type { OrderBadge } from "./OrderBadge";
 
 function statusOf(view: PlayerView, seat: SeatNumber): PlayerStatus {
   const seatView = view.seats.find((candidate) => candidate.seat === seat);
-  if (seatView?.hasLeft === true) {
+  if (view.phase !== "main" || seatView === undefined) {
+    return "none";
+  }
+  if (seatView.hasLeft) {
     return "left";
   }
-  return view.phase === "main" && seatView?.isDone === true ? "done" : "none";
+  return seatView.isDone ? "done" : "none";
 }
 
 export function orderBadgesOf(
@@ -18,7 +21,7 @@ export function orderBadgesOf(
   const seatsThatLeft = view.seats.filter((seat) => seat.hasLeft).map((seat) => seat.seat);
   return [...view.playerOrder, ...seatsThatLeft].map((seat) => ({
     seat,
-    name: seat === view.seat ? "You" : (playerNames[seat - 1] ?? `Seat ${String(seat)}`),
+    name: playerNames[seat - 1] ?? `Seat ${String(seat)}`,
     status: statusOf(view, seat),
     isFirstPlayer: seat === view.playerOrder[0],
   }));

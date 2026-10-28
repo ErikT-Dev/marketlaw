@@ -2,7 +2,7 @@ import type { OwnSeatView } from "../../../shared/OwnSeatView";
 import { Panel } from "../../components/Panel";
 import { StatChip } from "../../components/StatChip";
 import type { StatName } from "../../icons/StatName";
-import styles from "./GamePage.module.css";
+import styles from "./YourStatsPanel.module.css";
 
 type Props = {
   readonly seat: OwnSeatView;
@@ -28,7 +28,7 @@ function valueOf(seat: OwnSeatView, stat: (typeof SHOWN_STATS)[number]): number 
 export function YourStatsPanel({ seat }: Props) {
   return (
     <Panel title="Your stats">
-      <ul className={styles["statGrid"]} aria-label="Your stats">
+      <ul className={styles["statGrid"]}>
         {SHOWN_STATS.map((stat) => (
           <li key={stat}>
             <StatChip stat={stat} value={valueOf(seat, stat)} />

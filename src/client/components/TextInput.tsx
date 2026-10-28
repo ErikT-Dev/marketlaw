@@ -1,5 +1,5 @@
 import { useId } from "react";
-import styles from "./Tab.module.css";
+import styles from "./TextInput.module.css";
 
 type Props = {
   readonly label: string;
