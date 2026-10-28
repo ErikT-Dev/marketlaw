@@ -126,6 +126,55 @@ describe("legal bot", () => {
     );
   });
 
+  it("claims ready combos and completes a project it can complete before anything else", () => {
+    const canClaim = viewWith({ claimAllRejection: null });
+    expect(new Set(SEEDS.map((seed) => legalBot(canClaim, chooserFrom(seed))?.type))).toEqual(
+      new Set(["claim_all"]),
+    );
+    const canComplete = viewWith({
+      projectRejections: {
+        quality: "project_needs_not_met",
+        satisfaction: null,
+        workforce: "project_needs_not_met",
+      },
+    });
+    expect(
+      SEEDS.map((seed) => legalBot(canComplete, chooserFrom(seed))).every(
+        (move) => move?.type === "complete_project" && move.project === "satisfaction",
+      ),
+    ).toBe(true);
+  });
+
+  it("aims at the open project whose stat is closest to 8", () => {
+    function playedWith(projects: OwnSeatView["projects"]) {
+      const view = viewWith({
+        stats: { ...STATS, workforce: 3, quality: 4, satisfaction: 6 },
+        projects,
+        hand: ["Public Playground", "Fire Station"],
+        handDetails: [
+          {
+            card: "Public Playground",
+            realCost: 4,
+            sameSectorAndTierInCity: 0,
+            playRejection: null,
+          },
+          { card: "Fire Station", realCost: 4, sameSectorAndTierInCity: 0, playRejection: null },
+        ],
+      });
+      return SEEDS.map((seed) => legalBot(view, chooserFrom(seed))).flatMap((move) =>
+        move?.type === "play_card" ? [move.card] : [],
+      );
+    }
+    const towardSatisfaction = playedWith([]);
+    expect(
+      towardSatisfaction.filter((card) => card === "Public Playground").length,
+    ).toBeGreaterThan(towardSatisfaction.filter((card) => card === "Fire Station").length * 2);
+    const towardQuality = playedWith(["satisfaction"]);
+    expect(towardQuality.filter((card) => card === "Fire Station").length).toBeGreaterThan(
+      towardQuality.filter((card) => card === "Public Playground").length * 2,
+    );
+  });
+
   it("does not sell when selling would be rejected and makes no move when done", () => {
     const cannotSell = viewWith({ sellRejection: "action_limit_reached", handDetails: [] });
     expect(SEEDS.map((seed) => legalBot(cannotSell, chooserFrom(seed))?.type)).not.toContain(

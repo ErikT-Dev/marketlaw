@@ -28,6 +28,7 @@ function playedOrCrashed(
       rowsPerOtherMessage: [],
       turnsPlayed: 0,
       acceptedActions: 0,
+      acceptedByType: {},
     };
   }
 }
@@ -44,6 +45,7 @@ function summaryOf(game: SimulatedGame): SimulationSummary {
   return {
     games: 1,
     acceptedActions: game.acceptedActions,
+    acceptedByType: game.acceptedByType,
     turnsPlayed: game.turnsPlayed,
     mostRowsPerAcceptedAction: Math.max(0, ...game.rowsPerAcceptedAction),
     mostRowsPerOtherMessage: Math.max(0, ...game.rowsPerOtherMessage),
