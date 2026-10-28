@@ -446,3 +446,34 @@ file.
   is the end of the game, where a project is rejected with `game_over`.
 - **Why:** as in Q27, a required scenario must pass, and stand-ins would be unasked behaviour.
 - **Implemented:** the Required scenarios of phases 10 and 12.
+
+## Q31. Scenarios could not check which projects are recorded as completed first
+
+- **Phase:** 10, phase review.
+- **Question:** R16.6 gives first-completion funds only in the first turn anyone completes a
+  project. The engine records that turn's projects at the end of the turn, but no scenario could
+  see the record: `projects` #8 sets it up in `given`, and `then` had no field for it. Dropping the
+  record passed every check.
+- **Options:** a `then.first_completions` field checked in `projects` #7; a new two-turn scenario;
+  an invariant.
+- **Solution:** add `first_completions` to `then` (`scenario-format.yaml`, `HARNESS.md`) and check
+  `first_completions: [quality]` at the end of `projects` #7. A deliberate break (the record
+  dropped) now fails #7.
+- **Why:** the smallest change that makes the existing scenario prove the rule; together with #8
+  it covers both turns.
+- **Implemented:** `harness/scenario-format.yaml`, `harness/HARNESS.md`, `projects` #7 (phase 10).
+
+## Q32. Is the Projects button disabled when no project can be completed?
+
+- **Phase:** 10, phase review.
+- **Question:** S6.6 says buttons for actions you cannot take are disabled, and S8.4 disables every
+  action but End turn at 50 actions. The Projects button opens the S8.2 pop-up, which also shows
+  each project's need, your progress and whether the first-completion bonus is still possible.
+- **Options:** disable the button when no project can be completed; keep it enabled and disable
+  each project's Complete button inside the pop-up.
+- **Solution:** keep it enabled; the action is the Complete button, which is disabled whenever the
+  room would reject it, and then says why (S16.3 messages). Written into S6.6.
+- **Why:** most of the game no project can be completed, and S8.2's information would then be
+  unreachable. Claim all stays disabled when nothing is ready, since its pop-up only confirms the
+  claim (S8.1).
+- **Implemented:** `harness/spec/screens.md` S6.6; `ProjectsDialog`, `ProgressButtons` (phase 10).
