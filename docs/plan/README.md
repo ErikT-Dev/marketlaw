@@ -272,7 +272,6 @@ Listed in full in `decisions.md`:
 
 | Decision | Needed before phase |
 |---|---|
-| O2 Screen sizes in version 1 | decided during 05 |
 | O4 Password hashing within the free plan | measured in 04, decided before 23 |
 | O5 Game length, after simulation | reviewed after 15, decided before 20 |
 | O6 Lobby, presence and global counters | 16 |

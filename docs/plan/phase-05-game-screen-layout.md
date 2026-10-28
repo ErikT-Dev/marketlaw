@@ -118,3 +118,61 @@ tests that import CSS modules type-check; `eslint.config.js` lets a labelled `gr
 `vitest.config.ts` runs `src/client/testing/cleanUpAfterEachTest.ts` before client tests; the
 owner also formatted `eslint.config.js` with Prettier, and applied items 6 and 7
 (`.size-limit.js`, `knip.json`).
+
+## Report
+
+**What was built.**
+- **Design system:** `tokens.css` generated from the design export (plus the few raw values the
+  boards used, from `tools/design-export/BOARD_VALUES.ts`); card photos, icons and backgrounds as
+  files that load only when shown.
+- **Components:** the 16 listed, one per file, each tested by role and accessible name.
+- **Game table (S1.2):** top bar with the turn ("Turn 1 of 40"), the phase and the player order
+  from the first player, marked "first player" (S2.1, S2.2); three columns of panels in the
+  design's proportions that scroll and take keyboard focus when they overflow (S1.3); Your stats
+  with the 10 stats of S6.2 as icons, names as tooltips.
+- **Engine:** every view now holds the turn's player order (R4.4, R4.5), so the browser never
+  works it out.
+- **Checks:** a browser size test at 1280×720, 1920×1080 and 2560×1440 with 4 players and the
+  longest names (screenshots, role and name checks, no horizontal scrolling, 24 px targets, axe,
+  leak check); the bundle check counts only the first screen: 83.0 KB of 300 (B14).
+
+**What to try (after the merge).** Behind the site lock, start a game with 2 to 4 windows and
+look at the table: the order in the top bar, the first-player mark, the stat icons (hover one for
+its name), and a window narrower than 1280 px. Compare `harness/screens/gameScreenSizes/` with
+your local board `design/export/library/images/Game main phase 1920x940.png` (the design export
+is not committed, so the screenshots cannot sit next to it in the repo).
+
+**Differences from the phase file.**
+- The player order was pulled forward from phase 12 into the engine.
+- Button colours that failed the 4.5:1 contrast check use the darker token shade.
+- "The densest content the design allows" cannot be shown yet; phase 13 reruns the size test
+  (D21).
+- Known gaps are listed above.
+
+**Decisions:** Q18 (players who left come after the order), Q19 and D21 (screen sizes, answered by
+the owner), Q20 (own badge shows the username, statuses only in the main phase, stat names as
+tooltips). The owner made the protected config changes listed under **Waiting for the owner**.
+
+**Phase review findings and what happened to each:**
+1. **The browser test did not find the screen's elements by role and name.** Fixed: the size test
+   finds the player order and its badges, the first-player mark, all 9 panels and the 10 stats.
+2. **The 4-player browser test had no leak check.** Fixed: it checks every message each player
+   got against the other three hands; shared helpers with `turnOne.spec.ts`.
+3. **Your badge showed "You" instead of your username.** Fixed (Q20, S2.2); the size test now
+   measures the longest name.
+4. **All 52 icons were inlined in the first script.** Fixed: `assetsInlineLimit: 0` in
+   `vite.config.ts`; the first screen went from 143.6 KB to 83.0 KB.
+5. **Hard-coded colours.** Fixed: generated into `tokens.css` from one list.
+6. **Type counts missing but not listed as a gap.** Fixed: Known gaps lists them and the other
+   empty panels.
+7. **Stat names only as hover tooltips, not recorded; tooltips might be clipped.** Recorded (Q20,
+   S6.2); the tooltip now opens below the icon, inside the panel. A focusable icon was left out
+   (not a control).
+8. **A Progress note pointed to a missing proposal.** Fixed, and the stray blank line removed.
+9. **No screenshots next to the design boards.** Answered: the design export is local only;
+   "What to try" names the screenshots and the board to compare.
+10. **"Left" shown after the main phase.** Fixed: statuses only in the main phase; S2.2 reworded.
+11. **Small points.** TextInput and Your stats have their own stylesheets; the stats list's
+    extra label was removed. The section and its scroll area keep the same name, because the
+    focusable scroll area needs one. "New" versus "selected" is phase 06's.
+12. **The size test never closed its browsers.** Fixed.
