@@ -1,6 +1,6 @@
 # Phase 09: Hidden information and opponents
 
-Status: approved
+Status: in progress
 Milestone: 3 Playthrough
 
 ## Goal
@@ -35,6 +35,11 @@ Phase 08. Closes the visibility gap of phases 03–08.
 ## Known gaps after this phase
 
 - Time banks on opponent cards are static until phase 14.
+- The opponent's board shows stats, build passes, influence, time bank, done and the city by
+  sector; type counts and combos (phase 10), influence actions used and the next build pass
+  price (phase 11), completed projects (phase 10) and quests (phase 13), and project progress on
+  the opponent cards (phase 10) come with those phases. "Away" comes with phase 18.
+- `visibility` #11 becomes required in phase 18 (Q27).
 
 ## What you can see when it's done
 
@@ -60,3 +65,21 @@ These 6 scenarios are added to `harness/required.yaml` in this phase, by file an
 - `visibility` #4: whether another player is done is shown during the main phase
 - `visibility` #5: main-phase actions are revealed when the main phase ends
 - `visibility` #12: no player receives the random seed or the deck order
+
+## Progress
+
+- [x] 1. `viewFor` complete for what exists: the state keeps a snapshot of the start of the main
+  phase; during it, other players are shown from the snapshot with live done, left and time bank;
+  the deck count and discard pile are as at the start minus the viewer's own draws plus the
+  viewer's own shuffles (R5.5, R17.8); others' draw log entries appear when the phase ends (M3.3).
+  Save version 4.
+- [x] 2. State versions per player: already in place since phase 04 (only the actor's version
+  moves, everyone's on a phase change); the room driver now runs game steps, so
+  `hostile-client` #14 checks it.
+- [x] 3. Leak test: the simulator checks every update every seat could get, after every message,
+  for cards hidden from it and the seed (I23), for others shown as at the start of the main phase
+  (I24) and for state versions (I25); the browser tests check every message for other players'
+  hands. Two deliberate breaks (others shown live; another hand sent) were caught in every game.
+  The harness takes about 1.5 minutes and `npm run check` about 4.
+- [x] 4. Opponents overview and opponent's board, with what exists so far (see Known gaps). Stat
+  numbers got a light tint and the sector chips a darker shade, for contrast.
