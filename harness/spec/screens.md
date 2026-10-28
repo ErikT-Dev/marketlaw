@@ -295,8 +295,9 @@ None yet.
   | `vote_too_soon` | Next vote possible in turn N. |
   | `vote_already_open` | A vote is already open. |
   | `no_vote_open` | There is no vote to answer. |
-  | `not_this_step` | In the tutorial, take the step it asks for. |
-  | `malformed_message`, `unknown_action`, `invalid_token`, and any other code a game move cannot get (`room_not_found`, `room_full`, `room_not_waiting`, `invalid_room_size`) | Something went wrong. The page reloads your game. |
+  | `not_this_step` | Not this step, with what the tutorial is waiting for (S15.3). |
+  | `invalid_token` | Your guest session has ended. Enter your name again. (The start page opens.) |
+  | `malformed_message`, `unknown_action`, and any other code a game move cannot get (`room_not_found`, `room_full`, `room_not_waiting`, `invalid_room_size`) | Something went wrong. The page reloads your game. |
   | `wrong_protocol_version` | A new version is available: reload. |
 
 ## S17. Known differences in the design
