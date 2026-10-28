@@ -66,3 +66,13 @@ stop the server (see "Stop `wrangler dev` by its process") before the browser te
 the old build.
 **Why:** found in phase 09; a fixed contrast problem kept failing against the stale build.
 **Enforced by:** judgment.
+
+## For `rules/testing.md`
+
+### A hand can hold two copies of a card
+Card names in a hand are not unique. A browser test that finds a hand card by its name picks a
+card held once (`e2e/cardsHeldOnce.ts`), or its locator matches two buttons and fails in strict
+mode on some random deals.
+**Why:** found in phase 10; `rejectedMove.spec.ts` failed at one screen size on a deal with two
+Stone Houses.
+**Enforced by:** judgment.
