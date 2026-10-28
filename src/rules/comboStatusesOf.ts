@@ -6,7 +6,7 @@ import type { SeatState } from "./SeatState";
 export function comboStatusesOf(seat: SeatState): ReadonlyArray<ComboStatus> {
   const ready = readyCombosOf(seat);
   return seat.city.flatMap((card) =>
-    cardOf(card).combos.map((unused, combo) => ({
+    Array.from(cardOf(card).combos.keys(), (combo) => ({
       card,
       combo,
       claimedTimes:

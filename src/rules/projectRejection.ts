@@ -1,6 +1,6 @@
 import type { ProjectName } from "../shared/ProjectName";
 import type { ReasonCode } from "../shared/ReasonCode";
-import { PROJECT_NEED } from "./PROJECT_NEED";
+import { PROJECT_NEED } from "../shared/PROJECT_NEED";
 import type { SeatState } from "./SeatState";
 
 export function projectRejection(seat: SeatState, project: ProjectName): ReasonCode | undefined {

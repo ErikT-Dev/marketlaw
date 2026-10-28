@@ -1,6 +1,6 @@
 import type { ProjectName } from "../shared/ProjectName";
 import type { GameState } from "./GameState";
-import { PROJECT_NAMES } from "./PROJECT_NAMES";
+import { PROJECT_NAMES } from "../shared/PROJECT_NAMES";
 
 export function firstCompletionsOf(state: GameState): ReadonlyArray<ProjectName> {
   return PROJECT_NAMES.filter(
