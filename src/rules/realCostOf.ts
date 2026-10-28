@@ -1,10 +1,7 @@
 import type { Card } from "../shared/catalogue/Card";
-import { cardOf } from "../shared/catalogue/cardOf";
+import { sameSectorAndTierInCityOf } from "./sameSectorAndTierInCityOf";
 import type { SeatState } from "./SeatState";
 
 export function realCostOf(card: Card, seat: SeatState): number {
-  const sameSectorAndTier = seat.city
-    .map(cardOf)
-    .filter((inCity) => inCity.sector === card.sector && inCity.tier === card.tier).length;
-  return card.baseCost + sameSectorAndTier;
+  return card.baseCost + sameSectorAndTierInCityOf(card, seat);
 }

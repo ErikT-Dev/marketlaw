@@ -26,5 +26,13 @@ export function CurrentScreen({ store }: Props) {
   if (state.update?.game === null || state.update === null) {
     return <WaitingPage room={state.update?.room ?? null} connection={state.connection} />;
   }
-  return <GamePage update={state.update} onAction={store.sendAction} />;
+  return (
+    <GamePage
+      update={state.update}
+      pendingActions={state.pendingActions}
+      rejectedMove={state.rejectedMove}
+      onAction={store.sendAction}
+      onDismissRejection={store.dismissRejection}
+    />
+  );
 }

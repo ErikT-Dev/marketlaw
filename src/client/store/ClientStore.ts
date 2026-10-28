@@ -7,6 +7,8 @@ import type { RoomCode } from "../../shared/RoomCode";
 import { requestGuest } from "../api/requestGuest";
 import { requestRoom } from "../api/requestRoom";
 import type { ClientState } from "./ClientState";
+import { CODES_THAT_RELOAD_THE_GAME } from "./CODES_THAT_RELOAD_THE_GAME";
+import type { PendingAction } from "./PendingAction";
 import { readSession } from "./readSession";
 import type { StoredSession } from "./StoredSession";
 import { writeSession } from "./writeSession";
@@ -26,7 +28,8 @@ export class ClientStore {
       session,
       connection: "closed",
       update: null,
-      pendingActionIds: [],
+      pendingActions: [],
+      rejectedMove: null,
       notice: null,
     };
     if (session?.roomCode !== null && session !== null) {
@@ -68,14 +71,29 @@ export class ClientStore {
       this.change({ notice: "Not connected to the room. Try again in a moment." });
       return;
     }
-    this.change({ pendingActionIds: [...this.state.pendingActionIds, actionId], notice: null });
+    this.change({
+      pendingActions: [...this.state.pendingActions, { id: actionId, action }],
+      rejectedMove: null,
+      notice: null,
+    });
+  };
+
+  readonly dismissRejection = (): void => {
+    this.change({ rejectedMove: null });
   };
 
   private leaveRoom(notice: string, session: StoredSession | null): void {
     this.host?.close();
     this.host = null;
     writeSession(session);
-    this.change({ session, update: null, pendingActionIds: [], notice, connection: "closed" });
+    this.change({
+      session,
+      update: null,
+      pendingActions: [],
+      rejectedMove: null,
+      notice,
+      connection: "closed",
+    });
   }
 
   private async openRoom(path: string, body: Readonly<Record<string, unknown>>): Promise<void> {
@@ -108,9 +126,7 @@ export class ClientStore {
       case "update":
         this.change({
           update: event.update,
-          pendingActionIds: this.state.pendingActionIds.filter(
-            (id) => id !== event.acceptedActionId,
-          ),
+          pendingActions: this.withoutPending(event.acceptedActionId),
         });
         return;
       case "rejected":
@@ -126,7 +142,7 @@ export class ClientStore {
     }
     this.change({
       connection: status,
-      pendingActionIds: status === "closed" ? [] : this.state.pendingActionIds,
+      pendingActions: status === "closed" ? [] : this.state.pendingActions,
     });
   }
 
@@ -139,10 +155,18 @@ export class ClientStore {
       this.leaveRoom("You are not in that room.", this.sessionOutsideRooms());
       return;
     }
+    if (CODES_THAT_RELOAD_THE_GAME.includes(code)) {
+      this.host?.requestResync();
+    }
+    const rejected = this.state.pendingActions.find((pending) => pending.id === actionId);
     this.change({
-      pendingActionIds: this.state.pendingActionIds.filter((id) => id !== actionId),
-      notice: `That was not allowed (${code}).`,
+      pendingActions: this.withoutPending(actionId),
+      rejectedMove: code === "stale_state" ? null : { action: rejected?.action ?? null, code },
     });
+  }
+
+  private withoutPending(actionId: string | null): ReadonlyArray<PendingAction> {
+    return this.state.pendingActions.filter((pending) => pending.id !== actionId);
   }
 
   private sessionOutsideRooms(): StoredSession | null {

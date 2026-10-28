@@ -2,6 +2,7 @@ import { useId } from "react";
 import type { Card } from "../../shared/catalogue/Card";
 import styles from "./Card.module.css";
 import { CardTileFace } from "./CardTileFace";
+import { PendingMarker } from "./PendingMarker";
 import type { HandCardState } from "./HandCardState";
 import { sectorColor } from "./sectorColor";
 
@@ -10,6 +11,7 @@ type Props = {
   readonly realCost: number;
   readonly isPlayable: boolean;
   readonly state: HandCardState;
+  readonly isPending: boolean;
   readonly onSelect: () => void;
 };
 
@@ -29,12 +31,13 @@ function handCardDescription(card: Card, realCost: number, isPlayable: boolean, 
   ].join(", ");
 }
 
-export function HandCard({ card, realCost, isPlayable, state, onSelect }: Props) {
+export function HandCard({ card, realCost, isPlayable, state, isPending, onSelect }: Props) {
   const descriptionId = useId();
   const classes = [
     styles["handCard"],
     styles[isPlayable ? "playable" : "unplayable"],
     styles[STATE_CLASS[state]],
+    isPending ? styles["pending"] : "",
   ].join(" ");
   return (
     <button
@@ -43,6 +46,7 @@ export function HandCard({ card, realCost, isPlayable, state, onSelect }: Props)
       aria-label={card.name}
       aria-describedby={descriptionId}
       aria-pressed={state === "selected" || state === "markedToSell"}
+      disabled={isPending}
       style={{ background: sectorColor(card.sector, card.tier) }}
       onClick={onSelect}
     >
@@ -50,6 +54,7 @@ export function HandCard({ card, realCost, isPlayable, state, onSelect }: Props)
       <span className={styles["cost"]} aria-hidden="true">
         ${realCost}
       </span>
+      {isPending ? <PendingMarker label="Waiting for the server…" /> : null}
       <span id={descriptionId} className={styles["visuallyHidden"]}>
         {handCardDescription(card, realCost, isPlayable, state === "new")}
       </span>

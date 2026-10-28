@@ -1,4 +1,6 @@
 import type { CardName } from "./catalogue/CardName";
+import type { HandCardDetails } from "./HandCardDetails";
+import type { ReasonCode } from "./ReasonCode";
 import type { SeatNumber } from "./SeatNumber";
 import type { Stats } from "./Stats";
 
@@ -7,6 +9,9 @@ export type OwnSeatView = {
   readonly seat: SeatNumber;
   readonly stats: Stats;
   readonly hand: ReadonlyArray<CardName>;
+  readonly handDetails: ReadonlyArray<HandCardDetails>;
+  readonly sellRejection: ReasonCode | null;
+  readonly endTurnRejection: ReasonCode | null;
   readonly city: ReadonlyArray<CardName>;
   readonly buildPasses: number;
   readonly hasPlayedThisTurn: boolean;

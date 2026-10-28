@@ -33,6 +33,16 @@ const SEAT_VIEW = v.variant("kind", [
     ...SEAT_COMMON,
     kind: v.literal("own"),
     hand: CARDS,
+    handDetails: v.array(
+      v.object({
+        card: CardName,
+        realCost: COUNT,
+        sameSectorAndTierInCity: COUNT,
+        playRejection: v.nullable(ReasonCode),
+      }),
+    ),
+    sellRejection: v.nullable(ReasonCode),
+    endTurnRejection: v.nullable(ReasonCode),
     hasPlayedThisTurn: v.boolean(),
     hasSkippedBuild: v.boolean(),
     actionsThisTurn: COUNT,

@@ -69,3 +69,13 @@
   clip-path: inset(50%);
   white-space: nowrap;
 }
+.pending {
+  opacity: 0.6;
+  cursor: default;
+}
+.pending > [role="status"] {
+  position: absolute;
+  top: 50%;
+  right: var(--space-sm);
+  transform: translateY(-50%);
+}

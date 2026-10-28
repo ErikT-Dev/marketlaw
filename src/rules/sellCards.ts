@@ -1,4 +1,5 @@
 import type { CardName } from "../shared/catalogue/CardName";
+import { FUNDS_PER_SOLD_CARD } from "../shared/FUNDS_PER_SOLD_CARD";
 import type { SeatNumber } from "../shared/SeatNumber";
 import type { GameState } from "./GameState";
 import { withoutCard } from "./withoutCard";
@@ -11,7 +12,7 @@ export function sellCards(
 ): GameState {
   const sold = updateSeat(state, seat, (current) => ({
     ...current,
-    stats: { ...current.stats, funds: current.stats.funds + cards.length },
+    stats: { ...current.stats, funds: current.stats.funds + cards.length * FUNDS_PER_SOLD_CARD },
     hand: cards.reduce(withoutCard, current.hand),
     actionsThisTurn: current.actionsThisTurn + 1,
   }));

@@ -1,0 +1,29 @@
+.buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+
+.notice {
+  margin: 0 0 var(--space-sm);
+  color: var(--color-toast-warning);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+}
+
+.done {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px var(--space-lg);
+  border: 2px solid var(--color-card-tile-selected-ring);
+  border-radius: 8px;
+  background: var(--color-panel-base);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.done strong {
+  color: var(--color-text-primary);
+  font-size: var(--font-size-md);
+}

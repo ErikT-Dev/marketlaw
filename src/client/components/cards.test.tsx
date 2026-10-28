@@ -9,7 +9,16 @@ const LOFT = cardOf("Loft");
 
 describe("HandCard", () => {
   it("is named after the card and describes its number and real cost", () => {
-    render(<HandCard card={LOFT} realCost={11} isPlayable state="default" onSelect={vi.fn()} />);
+    render(
+      <HandCard
+        card={LOFT}
+        realCost={11}
+        isPlayable
+        state="default"
+        isPending={false}
+        onSelect={vi.fn()}
+      />,
+    );
     const card = screen.getByRole("button", {
       name: "Loft",
       description: "Number 24, real cost $11",
@@ -19,7 +28,16 @@ describe("HandCard", () => {
   });
 
   it("says when the card is new and cannot be played", () => {
-    render(<HandCard card={LOFT} realCost={8} isPlayable={false} state="new" onSelect={vi.fn()} />);
+    render(
+      <HandCard
+        card={LOFT}
+        realCost={8}
+        isPlayable={false}
+        state="new"
+        isPending={false}
+        onSelect={vi.fn()}
+      />,
+    );
     expect(
       screen.getByRole("button", {
         name: "Loft",
@@ -31,12 +49,26 @@ describe("HandCard", () => {
   it("is pressed when selected or marked to sell and reports clicks", () => {
     const onSelect = vi.fn();
     const view = render(
-      <HandCard card={LOFT} realCost={8} isPlayable state="selected" onSelect={onSelect} />,
+      <HandCard
+        card={LOFT}
+        realCost={8}
+        isPlayable
+        state="selected"
+        isPending={false}
+        onSelect={onSelect}
+      />,
     );
     const card = screen.getByRole("button", { name: "Loft" });
     expect(card.getAttribute("aria-pressed")).toBe("true");
     view.rerender(
-      <HandCard card={LOFT} realCost={8} isPlayable state="markedToSell" onSelect={onSelect} />,
+      <HandCard
+        card={LOFT}
+        realCost={8}
+        isPlayable
+        state="markedToSell"
+        isPending={false}
+        onSelect={onSelect}
+      />,
     );
     expect(card.getAttribute("aria-pressed")).toBe("true");
     fireEvent.click(card);

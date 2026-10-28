@@ -50,7 +50,8 @@ Phase 07.
 
 ## Open points
 
-- None.
+- From phase 06: add a browser test of the action limit (S8.4) at every size, using a test room
+  that starts a player at 49 actions, with a screenshot ("action-limit-reached").
 
 ## Required scenarios
 

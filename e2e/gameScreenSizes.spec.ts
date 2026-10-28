@@ -1,11 +1,9 @@
-import AxeBuilder from "@axe-core/playwright";
-import { expect, test, type Page, type ViewportSize } from "@playwright/test";
-import { handOf } from "./handOf";
-import type { Player } from "./Player";
-import { signedInPlayer } from "./signedInPlayer";
+import { expect, test, type Page } from "@playwright/test";
+import { expectScreenFits } from "./expectScreenFits";
+import { hiddenCardsSentToOthers } from "./hiddenCardsSentToOthers";
+import { LONGEST_NAMES } from "./LONGEST_NAMES";
+import { startFourPlayerGame } from "./startFourPlayerGame";
 
-const MINIMUM_TARGET_PX = 24;
-const LONGEST_NAMES = ["Busy Harbour Mayor", "Quiet River Baron", "Grand Canal Trader", "Ann"];
 const TABLE_PANELS = [
   "Opponents",
   "Draw log",
@@ -30,41 +28,6 @@ const STAT_NAMES = [
   "Influence",
 ];
 
-async function startFourPlayerGame(
-  browser: Parameters<typeof signedInPlayer>[0],
-  viewport: ViewportSize,
-): Promise<ReadonlyArray<Player>> {
-  const players = await Promise.all(
-    LONGEST_NAMES.map((name) => signedInPlayer(browser, name, viewport)),
-  );
-  const [host, ...guests] = players;
-  if (host === undefined) {
-    throw new Error("no players");
-  }
-  await host.page.getByLabel("Players").selectOption("4");
-  await host.page.getByRole("button", { name: "Create room" }).click();
-  await expect(host.page.getByRole("heading", { name: "Waiting for players" })).toBeVisible();
-  const code = (await host.page.getByLabel("Room code").textContent()) ?? "";
-  for (const guest of guests) {
-    await guest.page.getByLabel("Room code").fill(code);
-    await guest.page.getByRole("button", { name: "Join room" }).click();
-  }
-  for (const player of players) {
-    await expect(player.page.getByRole("heading", { name: "Turn 1 of 40" })).toBeVisible();
-  }
-  return players;
-}
-
-async function targetsSmallerThanMinimum(page: Page): Promise<ReadonlyArray<string>> {
-  return page.evaluate((minimum) => {
-    const targets = document.querySelectorAll("button, a, input, select, [role=tab]");
-    return [...targets]
-      .map((target) => ({ name: target.textContent, box: target.getBoundingClientRect() }))
-      .filter(({ box }) => box.width > 0 && (box.width < minimum || box.height < minimum))
-      .map(({ name, box }) => `${name} ${String(box.width)}x${String(box.height)}`);
-  }, MINIMUM_TARGET_PX);
-}
-
 async function expectTableElements(page: Page): Promise<void> {
   const order = page.getByRole("list", { name: "Player order" });
   for (const name of LONGEST_NAMES) {
@@ -80,18 +43,6 @@ async function expectTableElements(page: Page): Promise<void> {
   }
 }
 
-async function hiddenCardsSentToOthers(
-  players: ReadonlyArray<Player>,
-): Promise<ReadonlyArray<string>> {
-  const hands = await Promise.all(players.map(async (player) => handOf(player.page)));
-  return players.flatMap((receiver, receiverIndex) =>
-    hands
-      .filter((ownerHand, ownerIndex) => ownerHand.length > 0 && ownerIndex !== receiverIndex)
-      .flat()
-      .filter((card) => receiver.frames.some((frame) => frame.includes(`"${card}"`))),
-  );
-}
-
 test("the game screen fits the window with large enough targets and no accessibility problems", async ({
   browser,
   viewport,
@@ -102,14 +53,7 @@ test("the game screen fits the window with large enough targets and no accessibi
     throw new Error("no host");
   }
   await expectTableElements(host);
-  await host.screenshot({
-    path: `harness/screens/gameScreenSizes/game-${testInfo.project.name}.png`,
-  });
-  expect(await host.evaluate(() => document.documentElement.scrollWidth > window.innerWidth)).toBe(
-    false,
-  );
-  expect(await targetsSmallerThanMinimum(host)).toEqual([]);
-  expect(await new AxeBuilder({ page: host }).analyze()).toHaveProperty("violations", []);
+  await expectScreenFits(host, "game-table", testInfo);
   expect(await hiddenCardsSentToOthers(players)).toEqual([]);
   await Promise.all(players.map(async (player) => player.page.context().close()));
 });
