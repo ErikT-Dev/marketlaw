@@ -34,7 +34,7 @@ export function shownPilesViolations(
   const drawnFromDeck = drawn.filter(
     (card) => !state.mainPhaseStart.discard.includes(card) || shuffledAway.includes(card),
   ).length;
-  const expectedDeckCount = state.mainPhaseStart.deck.length + shuffledIn - drawnFromDeck;
+  const expectedDeckCount = state.mainPhaseStart.deckCount + shuffledIn - drawnFromDeck;
   const ownCards = [...(own?.hand ?? []), ...(own?.city ?? [])];
   return [
     ...(JSON.stringify(view.discard) === JSON.stringify(expectedDiscard)

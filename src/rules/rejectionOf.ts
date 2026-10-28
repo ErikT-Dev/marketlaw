@@ -2,6 +2,7 @@ import { cardOf } from "../shared/catalogue/cardOf";
 import type { ReasonCode } from "../shared/ReasonCode";
 import { drawActionRejection } from "./drawActionRejection";
 import { FIRST_TURN_FOR_HIGHER_TIERS } from "./FIRST_TURN_FOR_HIGHER_TIERS";
+import { kindTiersLeftAsSeenBy } from "./kindTiersLeftAsSeenBy";
 import type { GameAction } from "./GameAction";
 import type { GameState } from "./GameState";
 import { realCostOf } from "./realCostOf";
@@ -59,7 +60,12 @@ export function rejectionOf(state: GameState, action: GameAction): ReasonCode | 
     case "influence":
       return tradeRejection(seat, action.trade);
     case "draw_action":
-      return drawActionRejection(state, seat, action.kind, action.tier);
+      return drawActionRejection(
+        seat,
+        kindTiersLeftAsSeenBy(state, seat.seat),
+        action.kind,
+        action.tier,
+      );
     case "undo":
       return undoRejection(seat);
   }

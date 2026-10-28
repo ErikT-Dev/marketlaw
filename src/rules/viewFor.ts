@@ -37,7 +37,7 @@ function ownSeatView(state: GameState, seat: SeatState): OwnSeatView {
     influenceUses: seat.influenceUses,
     trades: tradeStatusesOf(state, seat.seat),
     buildPassPrice: tradeCostsOf(seat, "buy_build_pass").funds ?? 0,
-    drawActions: drawActionStatusesOf(state, seat.seat),
+    drawActions: drawActionStatusesOf(state, seat),
     undoRejection: rejectionOf(state, { type: "undo", seat: seat.seat }) ?? null,
     actionsThisTurn: seat.actionsThisTurn,
     isDone: seat.isDone,

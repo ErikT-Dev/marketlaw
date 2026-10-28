@@ -3,7 +3,8 @@ import type { SeatState } from "./SeatState";
 
 export type MainPhaseStart = {
   readonly seats: ReadonlyArray<SeatState>;
-  readonly deck: ReadonlyArray<CardName>;
+  readonly deckCount: number;
+  readonly kindTierCounts: Readonly<Record<string, number>>;
   readonly discard: ReadonlyArray<CardName>;
   readonly drawLogLength: number;
 };

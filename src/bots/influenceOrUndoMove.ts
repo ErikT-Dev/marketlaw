@@ -8,7 +8,7 @@ const TRADE_ROLL = 1;
 const DRAW_ACTION_ROLL = 2;
 
 export function influenceOrUndoMove(seat: OwnSeatView, chooser: BotChooser): ActionIntent | null {
-  const roll = chooser.pickIndex(10);
+  const roll = chooser.pickIndex(20);
   if (roll === UNDO_ROLL && seat.undoRejection === null) {
     return { type: "undo" };
   }

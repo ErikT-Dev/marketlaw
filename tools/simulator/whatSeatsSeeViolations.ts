@@ -22,13 +22,21 @@ function hiddenFrom(state: GameState, viewer: SeatNumber): ReadonlyArray<CardNam
   return hidden;
 }
 
-function quotedIn(sent: string): ReadonlySet<string> {
-  return new Set([...sent.matchAll(/"([^"\\]*)"/g)].map((match) => match[1] ?? ""));
+function quotedAmong(sent: string, wanted: ReadonlySet<string>): ReadonlySet<string> {
+  const found = new Set<string>();
+  for (const match of sent.matchAll(/"([^"\\]*)"/g)) {
+    const text = match[1] ?? "";
+    if (wanted.has(text)) {
+      found.add(text);
+    }
+  }
+  return found;
 }
 
 function leakViolations(state: GameState, viewer: SeatNumber, sent: string): ReadonlyArray<string> {
-  const quoted = quotedIn(sent);
-  const leaked = hiddenFrom(state, viewer).filter((card) => quoted.has(card));
+  const hidden = hiddenFrom(state, viewer);
+  const quoted = quotedAmong(sent, new Set<string>([...hidden, "seed"]));
+  const leaked = hidden.filter((card) => quoted.has(card));
   return [
     ...leaked.map(
       (card) => `I23: seat ${String(viewer)} was sent ${card}, which is hidden from it`,
