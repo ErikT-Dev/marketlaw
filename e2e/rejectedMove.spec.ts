@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { expectScreenFits } from "./expectScreenFits";
 import { handOf } from "./handOf";
 import { signedInPlayer } from "./signedInPlayer";
 
@@ -33,7 +34,7 @@ async function firstPlayableCard(page: Page): Promise<string> {
   throw new Error("no playable card in the starting hand");
 }
 
-test("a rejected move rolls back and says why", async ({ browser }) => {
+test("a rejected move rolls back and says why", async ({ browser }, testInfo) => {
   const ann = await signedInPlayer(browser, "Ann");
   const bea = await signedInPlayer(browser, "Bea");
   let cardNotInHand = "";
@@ -57,5 +58,6 @@ test("a rejected move rolls back and says why", async ({ browser }) => {
     "That card is not in your hand any more.",
   );
   await expect(hand.getByRole("button", { name: card, exact: true })).toBeEnabled();
+  await expectScreenFits(ann.page, "move-rejected", testInfo);
   await expect(ann.page.getByRole("region", { name: /^Your city/ })).toContainText("Empty");
 });
