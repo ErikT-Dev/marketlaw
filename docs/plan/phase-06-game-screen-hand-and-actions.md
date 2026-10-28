@@ -36,6 +36,9 @@ Phase 05.
 ## Known gaps after this phase
 
 - No market phase, clocks, combos, influence, quests or opponents overview yet.
+- The action limit (S8.4) is tested with component tests only; a browser test needs a game at
+  50 actions, which the test rooms of phase 08 can set up.
+- Hand cards are never marked "new" until phase 12 sets the marks.
 
 ## What you can see when it's done
 
