@@ -3,6 +3,7 @@ import type { OwnSeatView } from "../shared/OwnSeatView";
 import type { PlayerView } from "../shared/PlayerView";
 import type { SeatNumber } from "../shared/SeatNumber";
 import type { GameState } from "./GameState";
+import { playerOrderOf } from "./playerOrderOf";
 import type { SeatState } from "./SeatState";
 
 function ownSeatView(seat: SeatState): OwnSeatView {
@@ -50,5 +51,6 @@ export function viewFor(state: GameState, viewer: SeatNumber): PlayerView {
     quests: state.quests,
     bonusTypes: state.bonusTypes,
     doneOrder: state.doneOrder,
+    playerOrder: playerOrderOf(state),
   };
 }
