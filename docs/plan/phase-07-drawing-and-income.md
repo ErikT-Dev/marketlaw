@@ -1,6 +1,6 @@
 # Phase 07: Drawing and income
 
-Status: approved
+Status: in progress
 Milestone: 3 Playthrough
 
 ## Goal
@@ -59,3 +59,18 @@ These 11 scenarios are added to `harness/required.yaml` in this phase, by file a
 - `drawing` #9: main-phase draws do not use cards sold in the same main phase
 - `drawing` #12: a random draw in turn 13 asks for a sector and then a tier
 - `drawing` #13: from turn 27 every tier-by-turn draw is tier 3 and no tier is asked for
+
+## Progress
+
+- [x] 1. Drawing complete in the engine. R17.4 was already built in phase 03; `drawCard` now also
+  reports the discard shuffles it causes. Every draw and shuffle goes into a public draw log in
+  the game state and the view, with who drew, how many, and the sector or kind and tier asked
+  for, never the card (M3.3, R17.6). The save version went to 2. The statistical tier check runs
+  in `npm run harness` (100,000 draws per turn, turns 1 to 40, within 1 percentage point of
+  R17.10), and the engine driver can now check `log_contains`, so `drawing` #8 also passes.
+- [x] 2. Income (R13) after every play and every sale, repeated while possible; End turn changes
+  no stats, so it needs no check.
+- [x] 3. Draw log panel, newest first with turn numbers, in the left column (the Chat tab comes
+  with phase 21, so the panel has a title instead of tabs); the marketplace header shows the
+  deck count and opens the discard pile. Browser tests find both at every size and screenshot
+  the discard pile.
