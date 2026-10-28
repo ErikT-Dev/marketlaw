@@ -48,12 +48,3 @@ first, then `workerd`.
 **Why:** found in phase 04; the browser tests failed against a stale server.
 **Enforced by:** judgment.
 
-## For `rules/testing.md`
-
-### Client tests clean up only when told to
-Vitest runs without globals here, so React Testing Library does not unmount between tests, while
-`testing-library/no-manual-cleanup` forbids calling `cleanup`. Until `vitest.config.ts` (protected)
-gets a client `setupFiles` entry that calls `cleanup` after each test, a client test that renders
-something another test in the same file also renders ends with `view.unmount()`.
-**Why:** found in phase 05; the card tests found two "Loft" buttons from earlier tests.
-**Enforced by:** judgment · proposed config change for the owner.

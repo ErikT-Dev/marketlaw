@@ -70,25 +70,23 @@ function updateWith(changes: Partial<PlayerView>): RoomUpdate {
 
 describe("game page top bar", () => {
   it("shows the turn out of the turn limit and the phase", () => {
-    const view = render(<GamePage update={updateWith({})} onAction={vi.fn()} />);
+    render(<GamePage update={updateWith({})} onAction={vi.fn()} />);
     expect(screen.getByRole("heading", { level: 1, name: "Turn 3 of 40" })).toBeDefined();
     expect(screen.getByText("Main phase")).toBeDefined();
-    view.unmount();
   });
 
   it("shows the player order from the first player, then players who left, with their status", () => {
-    const view = render(<GamePage update={updateWith({})} onAction={vi.fn()} />);
+    render(<GamePage update={updateWith({})} onAction={vi.fn()} />);
     const badges = within(screen.getByRole("list", { name: "Player order" }))
       .getAllByRole("listitem")
       .map((item) => item.textContent);
     expect(badges).toEqual(["Cydonefirst player", "Di", "You", "Annleft"]);
-    view.unmount();
   });
 });
 
 describe("your stats panel", () => {
   it("shows every stat of S6.2 as an icon named after the stat", () => {
-    const view = render(<GamePage update={updateWith({})} onAction={vi.fn()} />);
+    render(<GamePage update={updateWith({})} onAction={vi.fn()} />);
     const stats = within(screen.getByRole("list", { name: "Your stats" }))
       .getAllByRole("img")
       .map((chip) => chip.getAttribute("aria-label"));
@@ -104,6 +102,5 @@ describe("your stats panel", () => {
       "Build passes 2",
       "Influence 3",
     ]);
-    view.unmount();
   });
 });

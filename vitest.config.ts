@@ -33,6 +33,7 @@ export default defineConfig({
         test: {
           name: "client",
           environment: "jsdom",
+          setupFiles: ["src/client/testing/cleanUpAfterEachTest.ts"],
           include: ["src/client/**/*.test.tsx", "src/hosts/**/*.test.ts"],
         },
       },

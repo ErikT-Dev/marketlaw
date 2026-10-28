@@ -26,3 +26,7 @@
   overflow: auto;
   scrollbar-gutter: stable;
 }
+
+.body:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+}

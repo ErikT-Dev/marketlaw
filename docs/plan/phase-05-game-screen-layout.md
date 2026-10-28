@@ -94,24 +94,15 @@ None. This phase adds no scenarios to `harness/required.yaml`.
 
 ## Waiting for the owner
 
-0. **Type checking of client tests: a change to `tsconfig.tools.json` (protected).** That project
-   type-checks every `src/**/*.test.tsx`, but loads only the `node` types, so a component test
-   that renders a component with a CSS module fails with TS2307 ("Cannot find module
-   './Button.module.css'"). Proposed change: `"types": ["node", "vite/client"]`. Until then
-   `npm run check` stops at the typecheck (23 errors, all TS2307 on `.module.css`); every other
-   step passes on its own. Phase 06's component tests need the same change.
-1. **Keyboard access to scrolling panels: a change to `eslint.config.ts` (protected).** S1.3's
-   panels scroll. When a scrolling panel holds only text (today the opponents panel at 1280×720;
-   later the draw log and chat), axe's `scrollable-region-focusable` rule fails the browser test,
-   because a keyboard user cannot reach it. The standard fix is `tabIndex={0}` on the panel's
-   scroll area with the panel title as its label, but `jsx-a11y/no-noninteractive-tabindex`
-   forbids that as configured. Proposed change, in the `jsxA11y` block:
-   `"jsx-a11y/no-noninteractive-tabindex": ["error", { tags: [], roles: ["tabpanel", "group"] }]`,
-   so a labelled `group` (the scroll area) may be focusable; nothing else changes. Until then the
-   e2e test fails at 1280×720 only (it passes at 1920×1080 and 2560×1440).
+1. **Formatting of `eslint.config.js` (protected).** The owner applied the three config changes
+   below on 2026-10-28, but the script put the new jsx-a11y rule on four lines and Prettier
+   wants one, so `npm run check` stops at `prettier --check`. Fix: `npx prettier --write
+   eslint.config.js`.
 2. **Items 6 and 7 edit protected files** (`.size-limit.js`, `knip.json`), approved with this
    phase but blocked for Claude by the protected-path hook. Proposed contents follow in the
    phase when item 5 is done.
-3. **Client test cleanup (optional): `vitest.config.ts` (protected).** A client `setupFiles`
-   entry that calls `cleanup` after each test would let client tests drop their manual
-   `view.unmount()` (`proposed-rules.md`, "Client tests clean up only when told to").
+
+Done by the owner, 2026-10-28: `tsconfig.tools.json` loads `vite/client` types, so client
+tests that import CSS modules type-check; `eslint.config.js` lets a labelled `group` take
+`tabIndex`, so a scrolling panel is reachable by keyboard (axe `scrollable-region-focusable`);
+`vitest.config.ts` runs `src/client/testing/cleanUpAfterEachTest.ts` before client tests.
