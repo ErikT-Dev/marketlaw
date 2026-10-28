@@ -12,8 +12,11 @@ function realCostOfRejectedPlay(move: RejectedMove, seat: OwnSeatView): number |
 
 export function rejectionMessage(move: RejectedMove, seat: OwnSeatView): string {
   const realCost = realCostOfRejectedPlay(move, seat);
-  if (move.code !== "not_enough_funds" || realCost === undefined) {
+  if (move.code !== "not_enough_funds") {
     return REJECTION_MESSAGES[move.code];
+  }
+  if (realCost === undefined) {
+    return `You do not have enough funds; you have ${String(seat.stats.funds)}.`;
   }
   return `You need ${String(realCost)} funds; you have ${String(seat.stats.funds)}.`;
 }

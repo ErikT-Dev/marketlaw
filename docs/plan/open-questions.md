@@ -298,9 +298,29 @@ file.
   `not_this_step` (tutorial, C4.4), nor for the room codes (`room_not_found`, `room_full`,
   `room_not_waiting`, `invalid_room_size`), which share the reason-code list.
 - **Options:** no message; the shared "Something went wrong" message; a message of their own.
-- **Solution:** `not_this_step` gets "In the tutorial, take the step it asks for."; the room codes
-  share "Something went wrong. The page reloads your game.", as only a broken client could get
-  them for a game move. Written into S16.3.
+- **Solution:** `not_this_step` shows "Not this step", as S15.3 already says (phase 29 adds what
+  the tutorial is waiting for); the room codes share "Something went wrong. The page reloads your
+  game.", as only a broken client could get them for a game move, and the game then resyncs.
+  Written into S16.3. (Corrected after the phase review, which found that S15.3 already defines
+  the tutorial text.)
 - **Why:** every rejected move then shows a message, as S16.3 asks.
 - **Implemented:** `harness/spec/screens.md` S16.3, `src/client/screens/game/rejectionMessage.ts`
   (phase 06).
+
+## Q22. `invalid_token`, and a funds rejection without the card's cost
+
+- **Phase:** 06, phase review finding 4 and suggestion 10.
+- **Question:** S16.3 grouped `invalid_token` with "Something went wrong. The page reloads your
+  game.", but since phase 04 (Q17) the browser forgets the session and opens the start page with
+  "Your guest session has ended. Enter your name again.", because a reload cannot help with a
+  token the server no longer knows. Also, "You need N funds; you have M." needs the card's real
+  cost, which is missing if the card has left the hand by the time the rejection arrives.
+- **Options:** follow the old row, or write the existing behaviour into S16.3; for the funds text,
+  leave out N, or keep the cost from when the move was sent.
+- **Solution:** `invalid_token` gets its own S16.3 row with the Q17 text. When the card's cost is
+  unknown, the message reads "You do not have enough funds; you have M." The codes that promise a
+  reload now resync the game.
+- **Why:** a message must say what really happens; the funds case is rare and still gives the
+  player the number they can act on.
+- **Implemented:** `harness/spec/screens.md` S16.3, `src/client/store/ClientStore.ts`,
+  `src/client/screens/game/rejectionMessage.ts` (phase 06).

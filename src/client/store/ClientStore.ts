@@ -7,6 +7,7 @@ import type { RoomCode } from "../../shared/RoomCode";
 import { requestGuest } from "../api/requestGuest";
 import { requestRoom } from "../api/requestRoom";
 import type { ClientState } from "./ClientState";
+import { CODES_THAT_RELOAD_THE_GAME } from "./CODES_THAT_RELOAD_THE_GAME";
 import type { PendingAction } from "./PendingAction";
 import { readSession } from "./readSession";
 import type { StoredSession } from "./StoredSession";
@@ -153,6 +154,9 @@ export class ClientStore {
     if (code === "not_in_game" && actionId === null) {
       this.leaveRoom("You are not in that room.", this.sessionOutsideRooms());
       return;
+    }
+    if (CODES_THAT_RELOAD_THE_GAME.includes(code)) {
+      this.host?.requestResync();
     }
     const rejected = this.state.pendingActions.find((pending) => pending.id === actionId);
     this.change({
