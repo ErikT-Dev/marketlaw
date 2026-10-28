@@ -1,9 +1,34 @@
 import { newSeat } from "../../../src/rules/newSeat.ts";
+import { cardOf } from "../../../src/shared/catalogue/cardOf.ts";
+import type { CardName } from "../../../src/shared/catalogue/CardName.ts";
 import type { SeatState } from "../../../src/rules/SeatState.ts";
 import type { SeatNumber } from "../../../src/shared/SeatNumber.ts";
+import { comboLabel } from "./comboLabel.ts";
 import type { Given } from "./Given.ts";
 
 type GivenSeat = NonNullable<Given["seats"]>[number];
+
+function comboIndexOf(card: CardName, label: string): number {
+  const index = cardOf(card).combos.findIndex(
+    (combo, position) => comboLabel(card, position) === label,
+  );
+  if (index < 0) {
+    throw new Error(`${card} has no combo "${label}"`);
+  }
+  return index;
+}
+
+function progressFromGiven(given: GivenSeat) {
+  return {
+    combosClaimed: (given.combos_claimed ?? []).map(({ card, combo, times }) => ({
+      card,
+      combo: comboIndexOf(card, combo),
+      times,
+    })),
+    projects: given.projects ?? [],
+    projectsThisTurn: [],
+  };
+}
 
 export function seatFromGiven(seat: SeatNumber, given: GivenSeat | undefined): SeatState {
   const start = newSeat(seat);
@@ -17,6 +42,7 @@ export function seatFromGiven(seat: SeatNumber, given: GivenSeat | undefined): S
     city: given.city ?? start.city,
     gainedTypes: given.gained_types ?? start.gainedTypes,
     drawnThisPhase: start.drawnThisPhase,
+    ...progressFromGiven(given),
     buildPasses: given.build_passes ?? start.buildPasses,
     buildPassesBought: given.build_passes_bought ?? start.buildPassesBought,
     hasPlayedThisTurn: given.played_this_turn ?? start.hasPlayedThisTurn,

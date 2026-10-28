@@ -5,6 +5,7 @@ import type { PlayerView } from "../../src/shared/PlayerView.ts";
 import type { SeatNumber } from "../../src/shared/SeatNumber.ts";
 import type { SentToSeat } from "./SentToSeat.ts";
 import { shownPilesViolations } from "./shownPilesViolations.ts";
+import { typeCountViolations } from "./typeCountViolations.ts";
 
 function hiddenFrom(state: GameState, viewer: SeatNumber): ReadonlyArray<CardName> {
   const others = state.seats.filter((seat) => seat.seat !== viewer);
@@ -105,6 +106,7 @@ export function whatSeatsSeeViolations(
   const seen = [...sentTo.entries()].flatMap(([viewer, sent]) => [
     ...leakViolations(state, viewer, sent.text),
     ...startViewViolations(state, viewer, sent.view),
+    ...(sent.view === undefined ? [] : typeCountViolations(state, viewer, sent.view)),
     ...(sent.isFrameSent && sent.isUnchanged
       ? [`I24: seat ${String(viewer)} was sent an update although nothing it may see changed`]
       : []),

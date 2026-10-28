@@ -12,6 +12,8 @@ const SEAT_FIELDS = [
   "done",
   "left",
   "time_bank_ms",
+  "combos_claimed",
+  "projects",
 ];
 
 const SLOT_FIELDS = new Set(["place", "card", "phases_shown"]);
@@ -29,8 +31,9 @@ export const ENGINE_FIELDS = {
     "quests",
     "quest_list",
     "bonus_types",
+    "first_completions",
   ]),
-  steps: new Set(["start_game", "play_card", "sell", "end_turn"]),
+  steps: new Set(["start_game", "play_card", "sell", "end_turn", "claim_all", "complete_project"]),
   thenFields: new Set([
     "rejected",
     "unchanged",

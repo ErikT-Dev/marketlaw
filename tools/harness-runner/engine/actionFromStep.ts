@@ -1,6 +1,7 @@
 import * as v from "valibot";
 import type { GameAction } from "../../../src/rules/GameAction.ts";
 import { CardName } from "../../../src/shared/catalogue/CardName.ts";
+import { ProjectName } from "../../../src/shared/ProjectName.ts";
 
 const SEAT = v.picklist([1, 2, 3, 4]);
 
@@ -12,6 +13,8 @@ const STEP_SCHEMA = v.variant("action", [
     cards: v.pipe(v.array(CardName), v.nonEmpty()),
   }),
   v.strictObject({ seat: SEAT, action: v.literal("end_turn") }),
+  v.strictObject({ seat: SEAT, action: v.literal("claim_all") }),
+  v.strictObject({ seat: SEAT, action: v.literal("complete_project"), project: ProjectName }),
 ]);
 
 export function actionFromStep(step: Readonly<Record<string, unknown>>): GameAction {
@@ -28,6 +31,10 @@ export function actionFromStep(step: Readonly<Record<string, unknown>>): GameAct
     }
     case "end_turn":
       return { type: "end_turn", seat: parsed.seat };
+    case "claim_all":
+      return { type: "claim_all", seat: parsed.seat };
+    case "complete_project":
+      return { type: "complete_project", seat: parsed.seat, project: parsed.project };
     default: {
       const unknownStep: never = parsed;
       throw new Error(`unknown step ${JSON.stringify(unknownStep)}`);
