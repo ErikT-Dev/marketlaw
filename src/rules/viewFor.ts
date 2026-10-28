@@ -57,5 +57,6 @@ export function viewFor(state: GameState, viewer: SeatNumber): PlayerView {
     bonusTypes: state.bonusTypes,
     doneOrder: state.doneOrder,
     playerOrder: playerOrderOf(state),
+    drawLog: state.drawLog,
   };
 }

@@ -1,5 +1,7 @@
 import * as v from "valibot";
 import { CardName } from "../catalogue/CardName";
+import { Kind } from "../catalogue/Kind";
+import { Sector } from "../catalogue/Sector";
 import { QuestName } from "../catalogue/QuestName";
 import { TypeName } from "../catalogue/TypeName";
 import { ReasonCode } from "../ReasonCode";
@@ -49,6 +51,28 @@ const SEAT_VIEW = v.variant("kind", [
   }),
   v.object({ ...SEAT_COMMON, kind: v.literal("other"), handCount: COUNT }),
 ]);
+const TIER = v.picklist([1, 2, 3]);
+const DRAW_ASKED = v.variant("by", [
+  v.object({ by: v.literal("sector"), sector: Sector, tier: TIER }),
+  v.object({ by: v.literal("kind"), kind: Kind, tier: TIER }),
+]);
+const DRAW_LOG_ENTRY = v.variant("kind", [
+  v.object({
+    kind: v.literal("draw"),
+    turn: COUNT,
+    seat: SEAT,
+    cause: v.literal("income"),
+    count: COUNT,
+    asked: DRAW_ASKED,
+  }),
+  v.object({
+    kind: v.literal("shuffle"),
+    turn: COUNT,
+    seat: SEAT,
+    asked: v.nullable(DRAW_ASKED),
+    count: COUNT,
+  }),
+]);
 const PLAYER_VIEW = v.object({
   seat: SEAT,
   turn: COUNT,
@@ -76,6 +100,7 @@ const PLAYER_VIEW = v.object({
   bonusTypes: v.array(TypeName),
   doneOrder: v.array(SEAT),
   playerOrder: v.array(SEAT),
+  drawLog: v.array(DRAW_LOG_ENTRY),
 });
 
 export const SERVER_MESSAGE_SCHEMA = v.variant("type", [

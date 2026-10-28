@@ -65,6 +65,7 @@ export function roomUpdateWith(
     bonusTypes: [],
     doneOrder: [3],
     playerOrder: [3, 4, 2],
+    drawLog: [],
     ...changes,
   };
   return {

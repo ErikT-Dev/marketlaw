@@ -7,14 +7,19 @@ import { playCard } from "./playCard";
 import type { Random } from "./Random";
 import { rejectionOf } from "./rejectionOf";
 import { sellCards } from "./sellCards";
+import { takeIncome } from "./takeIncome";
 import { updateSeat } from "./updateSeat";
 
 function accepted(state: GameState, action: GameAction, random: Random): GameState {
   switch (action.type) {
     case "play_card":
-      return updateSeat(state, action.seat, (seat) => playCard(seat, action.card));
+      return takeIncome(
+        updateSeat(state, action.seat, (seat) => playCard(seat, action.card)),
+        action.seat,
+        random,
+      );
     case "sell":
-      return sellCards(state, action.seat, action.cards);
+      return takeIncome(sellCards(state, action.seat, action.cards), action.seat, random);
     case "end_turn":
       return endTurn(state, action.seat, random);
   }
