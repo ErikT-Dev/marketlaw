@@ -94,6 +94,12 @@ None. This phase adds no scenarios to `harness/required.yaml`.
 
 ## Waiting for the owner
 
+0. **Type checking of client tests: a change to `tsconfig.tools.json` (protected).** That project
+   type-checks every `src/**/*.test.tsx`, but loads only the `node` types, so a component test
+   that renders a component with a CSS module fails with TS2307 ("Cannot find module
+   './Button.module.css'"). Proposed change: `"types": ["node", "vite/client"]`. Until then
+   `npm run check` stops at the typecheck (23 errors, all TS2307 on `.module.css`); every other
+   step passes on its own. Phase 06's component tests need the same change.
 1. **Keyboard access to scrolling panels: a change to `eslint.config.ts` (protected).** S1.3's
    panels scroll. When a scrolling panel holds only text (today the opponents panel at 1280×720;
    later the draw log and chat), axe's `scrollable-region-focusable` rule fails the browser test,
