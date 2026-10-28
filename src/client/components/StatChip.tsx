@@ -15,7 +15,9 @@ export function StatChip({ stat, value }: Props) {
       <img className={styles["icon"]} src={iconUrl(file)} alt="" />
       <span
         aria-hidden="true"
-        style={{ color: `var(--color-stat-${stat === "buildPasses" ? "build-pass" : stat})` }}
+        style={{
+          color: `color-mix(in srgb, var(--color-stat-${stat === "buildPasses" ? "build-pass" : stat}) 35%, white)`,
+        }}
       >
         {value}
       </span>
