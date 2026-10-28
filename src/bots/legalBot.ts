@@ -8,6 +8,7 @@ import { ownSeatOf } from "./ownSeatOf";
 import { kindWanted } from "./kindWanted";
 
 const OTHER_CARD_CHANCE_IN_TEN = 2;
+const PROJECT_ORDER = ["quality", "satisfaction", "workforce"] as const;
 const SELL_CHANCE_IN_TEN = 3;
 const HAND_KEPT_WHEN_SELLING = 3;
 
@@ -33,6 +34,13 @@ export function legalBot(view: PlayerView, chooser: BotChooser): ActionIntent | 
   const seat = ownSeatOf(view);
   if (seat.endTurnRejection !== null) {
     return null;
+  }
+  if (seat.claimAllRejection === null) {
+    return { type: "claim_all" };
+  }
+  const project = PROJECT_ORDER.find((name) => seat.projectRejections[name] === null);
+  if (project !== undefined) {
+    return { type: "complete_project", project };
   }
   const playable = seat.handDetails.filter((details) => details.playRejection === null);
   const wanted = playable.filter(

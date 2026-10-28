@@ -1,4 +1,8 @@
 import type { CardName } from "./catalogue/CardName";
+import type { ComboStatus } from "./ComboStatus";
+import type { ProjectName } from "./ProjectName";
+import type { ProjectRejections } from "./ProjectRejections";
+import type { SeatTypeCounts } from "./SeatTypeCounts";
 import type { HandCardDetails } from "./HandCardDetails";
 import type { ReasonCode } from "./ReasonCode";
 import type { SeatNumber } from "./SeatNumber";
@@ -12,6 +16,11 @@ export type OwnSeatView = {
   readonly handDetails: ReadonlyArray<HandCardDetails>;
   readonly sellRejection: ReasonCode | null;
   readonly endTurnRejection: ReasonCode | null;
+  readonly typeCounts: SeatTypeCounts;
+  readonly combos: ReadonlyArray<ComboStatus>;
+  readonly claimAllRejection: ReasonCode | null;
+  readonly projects: ReadonlyArray<ProjectName>;
+  readonly projectRejections: ProjectRejections;
   readonly city: ReadonlyArray<CardName>;
   readonly buildPasses: number;
   readonly hasPlayedThisTurn: boolean;

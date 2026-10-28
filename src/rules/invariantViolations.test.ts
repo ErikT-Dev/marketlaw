@@ -115,4 +115,19 @@ describe("invariantViolations", () => {
       "I9: seat 1 could still take income",
     ]);
   });
+
+  it("reports a project completed twice and a combo claimed more often than allowed", () => {
+    const after = withSeat1(START, {
+      city: ["Row House", "Fire Station"],
+      projects: ["quality", "quality"],
+      combosClaimed: [{ card: "Row House", combo: 0, times: 2 }],
+    });
+    const found = invariantViolations(transition(START, { type: "end_turn", seat: 1 }, after)).filter(
+      (violation) => violation.startsWith("I12") || violation.startsWith("I14"),
+    );
+    expect(found).toEqual([
+      "I12: seat 1 completed the quality project more than once",
+      "I14: seat 1 claimed Row House combo 1 2 times",
+    ]);
+  });
 });

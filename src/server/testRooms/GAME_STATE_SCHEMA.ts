@@ -2,6 +2,7 @@ import * as v from "valibot";
 import { CardName } from "../../shared/catalogue/CardName";
 import { QuestName } from "../../shared/catalogue/QuestName";
 import { TypeName } from "../../shared/catalogue/TypeName";
+import { ProjectName } from "../../shared/ProjectName";
 import { DRAW_LOG_ENTRY_SCHEMA } from "../../shared/protocol/DRAW_LOG_ENTRY_SCHEMA";
 import { MARKETPLACE_SLOT_SCHEMA } from "../../shared/protocol/MARKETPLACE_SLOT_SCHEMA";
 import { SEAT_NUMBER_SCHEMA } from "../../shared/protocol/SEAT_NUMBER_SCHEMA";
@@ -15,6 +16,9 @@ const SEAT_STATE = v.object({
   city: CARDS,
   drawnThisPhase: CARDS,
   gainedTypes: v.record(TypeName, v.number()),
+  combosClaimed: v.array(v.object({ card: CardName, combo: v.number(), times: v.number() })),
+  projects: v.array(ProjectName),
+  projectsThisTurn: v.array(ProjectName),
   buildPasses: v.number(),
   buildPassesBought: v.number(),
   hasPlayedThisTurn: v.boolean(),
@@ -38,4 +42,5 @@ export const GAME_STATE_SCHEMA = v.object({
   bonusTypes: v.array(TypeName),
   doneOrder: v.array(SEAT_NUMBER_SCHEMA),
   drawLog: v.array(DRAW_LOG_ENTRY_SCHEMA),
+  firstCompletions: v.array(ProjectName),
 });

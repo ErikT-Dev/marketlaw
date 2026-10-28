@@ -24,7 +24,11 @@ function illegalIntent(view: PlayerView, chooser: BotChooser): ActionIntent {
     (details) => details.playRejection !== null,
   );
   const blocked = unplayable[chooser.pickIndex(unplayable.length)];
-  switch (chooser.pickIndex(3)) {
+  switch (chooser.pickIndex(5)) {
+    case 3:
+      return { type: "claim_all" };
+    case 4:
+      return { type: "complete_project", project: "quality" };
     case 0:
       return { type: "play_card", card: cardNotHeld(view, chooser) };
     case 1:

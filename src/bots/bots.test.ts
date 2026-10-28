@@ -37,6 +37,15 @@ function viewWith(own: Partial<OwnSeatView>): PlayerView {
     ],
     sellRejection: null,
     endTurnRejection: null,
+    typeCounts: {},
+    combos: [],
+    claimAllRejection: "nothing_to_claim",
+    projects: [],
+    projectRejections: {
+      quality: "project_needs_not_met",
+      satisfaction: "project_needs_not_met",
+      workforce: "project_needs_not_met",
+    },
     hasPlayedThisTurn: false,
     hasSkippedBuild: false,
     actionsThisTurn: 0,
@@ -55,6 +64,7 @@ function viewWith(own: Partial<OwnSeatView>): PlayerView {
     doneOrder: [],
     playerOrder: [1],
     drawLog: [],
+    firstCompletions: [],
   };
 }
 

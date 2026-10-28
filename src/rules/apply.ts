@@ -1,5 +1,7 @@
 import type { Rejection } from "../shared/Rejection";
 import type { Result } from "../shared/Result";
+import { claimAll } from "./claimAll";
+import { completeProject } from "./completeProject";
 import { endTurn } from "./endTurn";
 import type { GameAction } from "./GameAction";
 import type { GameState } from "./GameState";
@@ -22,6 +24,14 @@ function accepted(state: GameState, action: GameAction, random: Random): GameSta
       return takeIncome(sellCards(state, action.seat, action.cards), action.seat, random);
     case "end_turn":
       return endTurn(state, action.seat, random);
+    case "claim_all":
+      return takeIncome(updateSeat(state, action.seat, claimAll), action.seat, random);
+    case "complete_project":
+      return takeIncome(
+        completeProject(state, action.seat, action.project, random),
+        action.seat,
+        random,
+      );
   }
 }
 

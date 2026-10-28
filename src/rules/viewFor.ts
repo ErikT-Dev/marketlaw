@@ -5,7 +5,11 @@ import type { SeatNumber } from "../shared/SeatNumber";
 import type { GameState } from "./GameState";
 import { handDetailsOf } from "./handDetailsOf";
 import { turnRejectionOf } from "./turnRejectionOf";
+import { comboStatusesOf } from "./comboStatusesOf";
 import { pilesShownTo } from "./pilesShownTo";
+import { projectRejectionsOf } from "./projectRejectionsOf";
+import { rejectionOf } from "./rejectionOf";
+import { typeCountsOf } from "./typeCountsOf";
 import { playerOrderOf } from "./playerOrderOf";
 import type { SeatState } from "./SeatState";
 
@@ -18,6 +22,11 @@ function ownSeatView(state: GameState, seat: SeatState): OwnSeatView {
     handDetails: handDetailsOf(state, seat),
     sellRejection: turnRejectionOf(state, seat.seat, "sell") ?? null,
     endTurnRejection: turnRejectionOf(state, seat.seat, "end_turn") ?? null,
+    typeCounts: typeCountsOf(seat),
+    combos: comboStatusesOf(seat),
+    claimAllRejection: rejectionOf(state, { type: "claim_all", seat: seat.seat }) ?? null,
+    projects: seat.projects,
+    projectRejections: projectRejectionsOf(state, seat.seat),
     city: seat.city,
     buildPasses: seat.buildPasses,
     hasPlayedThisTurn: seat.hasPlayedThisTurn,
@@ -39,6 +48,9 @@ function otherSeatView(state: GameState, seat: SeatState): OtherSeatView {
     seat: seat.seat,
     stats: shown.stats,
     handCount: shown.hand.length,
+    typeCounts: typeCountsOf(shown),
+    combosClaimed: shown.combosClaimed,
+    projects: shown.projects,
     city: shown.city,
     buildPasses: shown.buildPasses,
     isDone: seat.isDone,
@@ -64,5 +76,6 @@ export function viewFor(state: GameState, viewer: SeatNumber): PlayerView {
     doneOrder: state.doneOrder,
     playerOrder: playerOrderOf(state),
     drawLog: piles.drawLog,
+    firstCompletions: state.firstCompletions,
   };
 }

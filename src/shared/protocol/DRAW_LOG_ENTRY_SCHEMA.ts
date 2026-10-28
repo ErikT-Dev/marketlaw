@@ -14,7 +14,7 @@ export const DRAW_LOG_ENTRY_SCHEMA = v.variant("kind", [
     kind: v.literal("draw"),
     turn: v.number(),
     seat: SEAT_NUMBER_SCHEMA,
-    cause: v.literal("income"),
+    cause: v.picklist(["income", "project"]),
     count: v.number(),
     asked: DRAW_ASKED,
   }),

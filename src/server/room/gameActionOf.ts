@@ -12,5 +12,9 @@ export function gameActionOf(seat: SeatNumber, intent: ActionIntent): GameAction
     }
     case "end_turn":
       return { type: "end_turn", seat };
+    case "claim_all":
+      return { type: "claim_all", seat };
+    case "complete_project":
+      return { type: "complete_project", seat, project: intent.project };
   }
 }

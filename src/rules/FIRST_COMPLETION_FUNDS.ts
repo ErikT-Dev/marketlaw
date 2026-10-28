@@ -1,0 +1,1 @@
+export const FIRST_COMPLETION_FUNDS = 2;

@@ -11,6 +11,8 @@ export function pendingCardsOf(
       case "sell":
         return action.cards;
       case "end_turn":
+      case "claim_all":
+      case "complete_project":
         return [];
     }
   });
