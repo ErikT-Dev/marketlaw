@@ -23,7 +23,8 @@ None yet.
 ## S1. Screen size and layout
 
 - **S1.1** Every screen is designed for a page area of **1920×940**: a 1920×1080 monitor with the
-  browser window maximized. Other screen sizes are designed later.
+  browser window maximized. Every screen stretches to work from 1280×720 to 2560×1440
+  (`rules/frontend.md`, decision D21).
 - **S1.2** The game screen shows everything on one table, without tabs or toggles: a top bar
   across the full width, then three columns.
   - Left: the opponents overview (S3), and under it the draw log and chat (S7).
