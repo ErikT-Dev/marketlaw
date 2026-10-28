@@ -18,8 +18,10 @@ import { PROTOCOL_VERSION } from "../../src/shared/PROTOCOL_VERSION.ts";
 import { parseClientMessage } from "../../src/shared/protocol/parseClientMessage.ts";
 import { RoomCode } from "../../src/shared/RoomCode.ts";
 import type { SeatNumber } from "../../src/shared/SeatNumber.ts";
+import type { ServerMessage } from "../../src/shared/protocol/ServerMessage.ts";
 import type { BotKind } from "./BotKind.ts";
 import type { SeatUpdates } from "./SeatUpdates.ts";
+import { scanTextOf } from "./scanTextOf.ts";
 import type { SentToSeat } from "./SentToSeat.ts";
 import type { SimulatedSeat } from "./SimulatedSeat.ts";
 import { whatSeatsSeeViolations } from "./whatSeatsSeeViolations.ts";
@@ -40,7 +42,7 @@ export class GameSimulation {
   readonly rowsPerOtherMessage: number[] = [];
   readonly statesAfterEachAction: string[] = [];
   firstViolationAt: number | null = null;
-  private lastViewsText: string | null = null;
+  private lastUpdates: SeatUpdates | null = null;
   private rowsWritten = 0;
   private nowMs = 0;
   private readonly storage: RoomStorage = {
@@ -150,7 +152,7 @@ export class GameSimulation {
     const parsed = parseClientMessage(text);
     const sender = parsed.isOk ? this.identityByToken(parsed.value.token) : null;
     const before = this.record;
-    const viewsBefore = this.lastViewsText ?? this.updatesNow().allText;
+    const updatesBefore = this.lastUpdates ?? this.updatesNow();
     const rowsBefore = this.rowsWritten;
     const outcome = receiveMessage(this.storage, {
       connection: seat.connection,
@@ -168,20 +170,20 @@ export class GameSimulation {
       this.rowsWritten - rowsBefore,
     );
     const after = this.updatesNow();
-    this.check(before, viewsBefore === after.allText, isAccepted);
+    this.check(before, updatesBefore.allText === after.allText, isAccepted);
     this.addViolations(
       whatSeatsSeeViolations(
         before,
         this.record,
         { seat: seat.seat, isAccepted },
-        this.sentTo(seat, JSON.stringify(outcome.reply), after),
+        this.sentTo(seat, outcome, { before: updatesBefore, after }),
       ),
     );
     seat.connection = outcome.shouldClose
       ? { identity: null, rejectionTimes: [] }
       : outcome.connection;
     this.refreshViews(after);
-    this.lastViewsText = after.allText;
+    this.lastUpdates = after;
   }
 
   private updatesNow(): SeatUpdates {
@@ -192,17 +194,23 @@ export class GameSimulation {
 
   private sentTo(
     sender: SimulatedSeat,
-    reply: string,
-    after: SeatUpdates,
+    outcome: { readonly reply: ServerMessage; readonly playersToUpdate: ReadonlyArray<PlayerId> },
+    updates: { readonly before: SeatUpdates; readonly after: SeatUpdates },
   ): ReadonlyMap<SeatNumber, SentToSeat> {
+    const reply = outcome.reply;
+    const replyText = reply.type === "update" ? scanTextOf(reply.update) : JSON.stringify(reply);
     return new Map(
       this.seats.map((seat, index) => {
-        const sent = after.texts[index] ?? "";
+        const update = updates.after.updates[index];
+        const scanned = update === undefined ? "" : scanTextOf(update);
         return [
           seat.seat,
           {
-            text: seat === sender ? `${sent}${reply}` : sent,
-            view: after.updates[index]?.game?.view,
+            text: seat === sender ? `${scanned}${replyText}` : scanned,
+            view: update?.game?.view,
+            isFrameSent:
+              seat !== sender && outcome.playersToUpdate.includes(seat.identity.playerId),
+            isUnchanged: updates.before.texts[index] === updates.after.texts[index],
           },
         ];
       }),

@@ -1,5 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import { expectScreenFits } from "./expectScreenFits";
+import { hiddenCardsSentToOthers } from "./hiddenCardsSentToOthers";
 import { signedInPlayer } from "./signedInPlayer";
 
 const DRAW_LOG = [
@@ -75,5 +76,6 @@ test("the draw log sent by the room is listed newest first and fits the screen",
     "T1Turn 1: Bea drew 1 card: Service, tier 1 (income)",
   ]);
   await expectScreenFits(ann.page, "draw-log", testInfo);
+  expect(await hiddenCardsSentToOthers([ann, bea])).toEqual([]);
   await Promise.all([ann, bea].map(async (player) => player.page.context().close()));
 });

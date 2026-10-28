@@ -4,6 +4,7 @@ import type { CardName } from "../../src/shared/catalogue/CardName.ts";
 import type { PlayerView } from "../../src/shared/PlayerView.ts";
 import type { SeatNumber } from "../../src/shared/SeatNumber.ts";
 import type { SentToSeat } from "./SentToSeat.ts";
+import { shownPilesViolations } from "./shownPilesViolations.ts";
 
 function hiddenFrom(state: GameState, viewer: SeatNumber): ReadonlyArray<CardName> {
   const others = state.seats.filter((seat) => seat.seat !== viewer);
@@ -17,9 +18,7 @@ function hiddenFrom(state: GameState, viewer: SeatNumber): ReadonlyArray<CardNam
     ...state.holdingPile,
     ...(state.phase === "main" ? playedThisPhase : []),
   ];
-  return state.phase === "main"
-    ? hidden.filter((card) => !state.mainPhaseStart.discard.includes(card))
-    : hidden;
+  return hidden;
 }
 
 function quotedIn(sent: string): ReadonlySet<string> {
@@ -64,6 +63,7 @@ function startViewViolations(
     .some((entry) => entry.seat !== viewer);
   return [
     ...changedSeats,
+    ...shownPilesViolations(state, viewer, view),
     ...(hasOthersNewDraws
       ? [`I24: seat ${String(viewer)} sees another player's draw before the phase ends`]
       : []),
@@ -105,6 +105,9 @@ export function whatSeatsSeeViolations(
   const seen = [...sentTo.entries()].flatMap(([viewer, sent]) => [
     ...leakViolations(state, viewer, sent.text),
     ...startViewViolations(state, viewer, sent.view),
+    ...(sent.isFrameSent && sent.isUnchanged
+      ? [`I24: seat ${String(viewer)} was sent an update although nothing it may see changed`]
+      : []),
   ]);
   return [...seen, ...versionViolations(before, after, sender)];
 }
