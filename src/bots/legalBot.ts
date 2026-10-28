@@ -1,10 +1,13 @@
 import type { CardName } from "../shared/catalogue/CardName";
+import { cardOf } from "../shared/catalogue/cardOf";
+import { kindOf } from "../shared/catalogue/kindOf";
 import type { PlayerView } from "../shared/PlayerView";
 import type { ActionIntent } from "../shared/protocol/ActionIntent";
 import type { BotChooser } from "./BotChooser";
 import { ownSeatOf } from "./ownSeatOf";
+import { kindWanted } from "./kindWanted";
 
-const PLAY_CHANCE_IN_TEN = 6;
+const OTHER_CARD_CHANCE_IN_TEN = 2;
 const SELL_CHANCE_IN_TEN = 3;
 const HAND_KEPT_WHEN_SELLING = 3;
 
@@ -32,8 +35,12 @@ export function legalBot(view: PlayerView, chooser: BotChooser): ActionIntent | 
     return null;
   }
   const playable = seat.handDetails.filter((details) => details.playRejection === null);
-  const toPlay = oneOf(playable, chooser);
-  if (toPlay !== undefined && chooser.pickIndex(10) < PLAY_CHANCE_IN_TEN) {
+  const wanted = playable.filter(
+    (details) => kindOf(cardOf(details.card)) === kindWanted(seat.stats),
+  );
+  const isOtherCardPlayed = chooser.pickIndex(10) < OTHER_CARD_CHANCE_IN_TEN;
+  const toPlay = oneOf(wanted.length > 0 || !isOtherCardPlayed ? wanted : playable, chooser);
+  if (toPlay !== undefined) {
     return { type: "play_card", card: toPlay.card };
   }
   const canSell = seat.sellRejection === null && seat.hand.length > HAND_KEPT_WHEN_SELLING;

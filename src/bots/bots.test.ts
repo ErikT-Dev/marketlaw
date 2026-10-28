@@ -59,11 +59,14 @@ function viewWith(own: Partial<OwnSeatView>): PlayerView {
 }
 
 function chooserFrom(seed: number): BotChooser {
-  let state = seed;
+  let state = seed >>> 0;
   return {
     pickIndex: (count) => {
-      state = (state * 1_103_515_245 + 12_345) % 2_147_483_648;
-      return count === 0 ? 0 : state % count;
+      state = (state + 0x6d2b79f5) >>> 0;
+      let mixed = Math.imul(state ^ (state >>> 15), state | 1);
+      mixed ^= mixed + Math.imul(mixed ^ (mixed >>> 7), mixed | 61);
+      const fraction = ((mixed ^ (mixed >>> 14)) >>> 0) / 4_294_967_296;
+      return Math.floor(fraction * Math.max(count, 1));
     },
   };
 }
@@ -76,11 +79,41 @@ describe("legal bot", () => {
     const moves = SEEDS.map((seed) => legalBot(view, chooserFrom(seed)));
     const played = moves.flatMap((move) => (move?.type === "play_card" ? [move.card] : []));
     const sold = moves.flatMap((move) => (move?.type === "sell" ? move.cards : []));
-    expect(new Set(played)).toEqual(new Set(["Farm House", "Pub", "Cottage"]));
+    expect(played.every((card) => ["Farm House", "Pub", "Cottage"].includes(card))).toBe(true);
+    expect(new Set(played)).toContain("Farm House");
+    expect(new Set(played)).toContain("Cottage");
     expect(
       sold.every((card) => view.seats[0]?.kind === "own" && view.seats[0].hand.includes(card)),
     ).toBe(true);
-    expect(moves.some((move) => move?.type === "end_turn")).toBe(true);
+  });
+
+  it("ends its turn when nothing worth playing is left", () => {
+    const view = viewWith({ handDetails: [] });
+    const moves = SEEDS.map((seed) => legalBot(view, chooserFrom(seed))?.type);
+    expect(moves).toContain("end_turn");
+    expect(moves).not.toContain("play_card");
+  });
+
+  it("prefers the kind of card that fixes its weakest stat", () => {
+    const view = viewWith({ stats: { ...STATS, workforce: 3, quality: 0, satisfaction: 2 } });
+    const played = SEEDS.map((seed) => legalBot(view, chooserFrom(seed))).flatMap((move) =>
+      move?.type === "play_card" ? [move.card] : [],
+    );
+    expect(played.filter((card) => card === "Pub").length).toBeLessThan(played.length / 2);
+    const withQualityCard = viewWith({
+      stats: { ...STATS, workforce: 3, quality: 0, satisfaction: 2 },
+      hand: ["Fire Station", "Pub"],
+      handDetails: [
+        { card: "Fire Station", realCost: 4, sameSectorAndTierInCity: 0, playRejection: null },
+        { card: "Pub", realCost: 5, sameSectorAndTierInCity: 0, playRejection: null },
+      ],
+    });
+    const choices = SEEDS.map((seed) => legalBot(withQualityCard, chooserFrom(seed)));
+    expect(
+      choices.filter((move) => move?.type === "play_card" && move.card === "Fire Station").length,
+    ).toBeGreaterThan(
+      choices.filter((move) => move?.type === "play_card" && move.card === "Pub").length,
+    );
   });
 
   it("does not sell when selling would be rejected and makes no move when done", () => {
