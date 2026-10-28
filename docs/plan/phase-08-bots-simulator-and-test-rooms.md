@@ -1,6 +1,6 @@
 # Phase 08: Bots, simulator, replays and test rooms
 
-Status: approved
+Status: in progress
 Milestone: 3 Playthrough
 
 ## Goal
@@ -37,6 +37,10 @@ Phase 07.
 ## Known gaps after this phase
 
 - Simulated games stop at a fixed turn until phase 15.
+- Simulated players get cards only from their starting hands until the market phase (phase 12),
+  so income, and with it I8 and I9, is rarely reached in simulation; a mutation check showed the
+  simulator catches a lost card (I1) in every game. Phases 10 and 12 widen this.
+- The live site has no test-room secret until the owner sets one (see Waiting for the owner).
 
 ## What you can see when it's done
 
@@ -58,3 +62,31 @@ Phase 07.
 ## Required scenarios
 
 None. This phase adds no scenarios to `harness/required.yaml`.
+
+## Progress
+
+- [x] 1. Two bots in `src/bots/`: the legal bot plays only cards its view marks playable,
+  preferring the kind that fixes its weakest stat, sells sometimes, and ends its turn; the chaos
+  bot also sends illegal, stale and malformed messages.
+- [x] 2. Simulator (`tools/simulator/`): 10,000 seeded games with 2, 3 and 4 seats, half per bot,
+  through the room core (`receiveMessage` with counting storage), until turn 10. After every
+  message it checks the invariants (the engine's check for accepted moves; for rejected and
+  repeated ones, that no view or state version changed, I27) and counts rows written (B1, B2). A
+  failure names the shortest failing game: seed, seats, bot and every message. I2, I8 and I9 were
+  added to the engine's check. The 12 invariants are now required (Q24).
+- [x] 3. Run time: one worker per core, from a Vite bundle; 10,000 games take about 40 seconds on
+  8 cores and `npm run check` about 2 minutes, so the smaller Stop-hook set of D9 is not needed.
+- [x] 4. Replay check (I26): every game is replayed from its seed and action log, comparing the
+  state after every action.
+- [x] 5. Test rooms as a command (Q25): `npm run test-room -- <file> <number> [site]`, a
+  secret-protected `POST /api/test-rooms` that answers "Not found" without the secret, and seat
+  links that sign a browser in. Server tests check the secret; browser tests check the 404 and use
+  test rooms for real income and the action limit (the follow-ups from phases 06 and 07), with
+  screenshots. Guide: `docs/test-rooms.md`.
+
+## Waiting for the owner
+
+1. **The live test-room secret.** Run `npx wrangler secret put TEST_ROOM_SECRET` and enter a long
+   random value. Until then the live site answers "Not found" to every test-room request, so
+   nothing is exposed; only starting a test room on the live site waits for it. Test rooms work
+   locally and in the browser tests without it.

@@ -203,7 +203,7 @@ The 425 scenarios cover all of version 1, but each phase implements only part of
 | 05 | [Game screen: layout and components](phase-05-game-screen-layout.md) | 3 Playthrough | 04 | done |
 | 06 | [Game screen: hand, actions and moves](phase-06-game-screen-hand-and-actions.md) | 3 Playthrough | 05 | done |
 | 07 | [Drawing and income](phase-07-drawing-and-income.md) | 3 Playthrough | 06 | done |
-| 08 | [Bots, simulator, replays and test rooms](phase-08-bots-simulator-and-test-rooms.md) | 3 Playthrough | 07 | approved |
+| 08 | [Bots, simulator, replays and test rooms](phase-08-bots-simulator-and-test-rooms.md) | 3 Playthrough | 07 | in progress |
 | 09 | [Hidden information and opponents](phase-09-hidden-information-and-opponents.md) | 3 Playthrough | 08 | approved |
 | 10 | [Types, combos and projects](phase-10-types-combos-and-projects.md) | 3 Playthrough | 09 | approved |
 | 11 | [Influence and undo](phase-11-influence-and-undo.md) | 3 Playthrough | 10 | approved |
