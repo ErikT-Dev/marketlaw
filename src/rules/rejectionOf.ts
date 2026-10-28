@@ -4,6 +4,8 @@ import { FIRST_TURN_FOR_HIGHER_TIERS } from "./FIRST_TURN_FOR_HIGHER_TIERS";
 import type { GameAction } from "./GameAction";
 import type { GameState } from "./GameState";
 import { realCostOf } from "./realCostOf";
+import { projectRejection } from "./projectRejection";
+import { readyCombosOf } from "./readyCombosOf";
 import { removeCards } from "./removeCards";
 import { seatOf } from "./seatOf";
 import type { SeatState } from "./SeatState";
@@ -41,5 +43,9 @@ export function rejectionOf(state: GameState, action: GameAction): ReasonCode | 
       return removeCards(seat.hand, action.cards) === undefined ? "card_not_in_hand" : undefined;
     case "end_turn":
       return undefined;
+    case "claim_all":
+      return readyCombosOf(seat).length === 0 ? "nothing_to_claim" : undefined;
+    case "complete_project":
+      return projectRejection(seat, action.project);
   }
 }

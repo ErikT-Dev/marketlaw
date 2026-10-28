@@ -51,8 +51,9 @@ while the other waits for its go, then both play the main phase.
 
 ## Required scenarios
 
-These 24 scenarios are added to `harness/required.yaml` in this phase, by file and number:
+These 25 scenarios are added to `harness/required.yaml` in this phase, by file and number:
 
+- `projects` #6: rejects a project outside the main phase (moved here from phase 10, Q30)
 - `combos-and-income` #14: a card drawn in the main phase is marked new
 - `drawing` #14: turn draws use the number of the turn that is starting
 - `hostile-client` #12: rejects a main-phase action during the market phase

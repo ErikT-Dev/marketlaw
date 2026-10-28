@@ -1,4 +1,5 @@
 import type { DrawAsked } from "./DrawAsked";
+import type { DrawCause } from "./DrawCause";
 import type { SeatNumber } from "./SeatNumber";
 
 export type DrawLogEntry =
@@ -6,7 +7,7 @@ export type DrawLogEntry =
       readonly kind: "draw";
       readonly turn: number;
       readonly seat: SeatNumber;
-      readonly cause: "income";
+      readonly cause: DrawCause;
       readonly count: number;
       readonly asked: DrawAsked;
     }

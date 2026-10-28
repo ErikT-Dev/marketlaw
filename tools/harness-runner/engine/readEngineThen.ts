@@ -34,6 +34,7 @@ export function readEngineThen(state: GameState, field: string, expected: unknow
     quest_list: () => state.questList,
     bonus_types: () => state.bonusTypes,
     done_order: () => state.doneOrder,
+    first_completions: () => state.firstCompletions,
   };
   const read = fields[field];
   if (read === undefined) {

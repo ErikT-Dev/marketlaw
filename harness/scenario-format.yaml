@@ -192,6 +192,7 @@ definitions:
       market_go: {type: object}
       paused: {type: boolean}
       done_order: {type: array, items: {type: integer}}
+      first_completions: {type: array, items: {enum: [quality, satisfaction, workforce]}}
       bonus_types: {type: array, items: {type: string}}
       view: {$ref: "#/definitions/view"}
       message_to: {type: object}

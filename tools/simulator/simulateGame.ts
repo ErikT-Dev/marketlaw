@@ -1,3 +1,4 @@
+import type { GameAction } from "../../src/rules/GameAction.ts";
 import type { RoomRecord } from "../../src/server/room/RoomRecord.ts";
 import type { BotChooser } from "../../src/bots/BotChooser.ts";
 import type { BotKind } from "./BotKind.ts";
@@ -8,6 +9,13 @@ import type { SimulatedSeat } from "./SimulatedSeat.ts";
 import type { SimulatedGame } from "./SimulatedGame.ts";
 
 const MESSAGES_PER_GAME = 3_000;
+
+function countsByType(actions: ReadonlyArray<GameAction>): Readonly<Record<string, number>> {
+  return actions.reduce<Readonly<Record<string, number>>>(
+    (counts, { type }) => ({ ...counts, [type]: (counts[type] ?? 0) + 1 }),
+    {},
+  );
+}
 
 function nextActingSeat(
   simulation: GameSimulation,
@@ -59,5 +67,6 @@ export function simulateGame(
     rowsPerOtherMessage: simulation.rowsPerOtherMessage,
     turnsPlayed: (saved?.state.turn ?? 1) - 1,
     acceptedActions: saved?.actionLog.length ?? 0,
+    acceptedByType: countsByType(saved?.actionLog ?? []),
   };
 }

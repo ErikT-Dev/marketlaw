@@ -14,6 +14,15 @@ scenarios:
     - rejects selling the same card twice in one message
     - another player's hidden action does not change my state version
   combos-and-income:
+    - a card-name combo is claimed when the named card is in the city
+    - a card-name combo works whichever card was played first
+    - a card-name combo does not count another player's city
+    - a type-count combo is claimed once
+    - claim all claims an infinite combo as many times as the type count allows
+    - an infinite combo already claimed is claimed again at the next multiple
+    - types gained from quests count for type combos
+    - rejects claim all when no combo is ready
+    - an infinite combo with a count of 1 is claimed once for every count
     - income happens by itself when product and distribution are both there and no stat is negative
     - no income while a stat is negative
     - no income with product but no distribution
@@ -45,6 +54,14 @@ scenarios:
     - selling several cards is one action and puts them in the holding pile
     - rejects any action after the 50th main-phase action but still allows ending the turn
     - a player at the action limit can end their turn
+  projects:
+    - completing a project uses up 8 of the stat and gives income funds influence and a card
+    - rejects a project without enough of the stat
+    - rejects a project while another stat is negative
+    - rejects completing the same project twice
+    - the third project gives an extra income and an extra card
+    - everyone who completes a project in the first turn anyone does gets 2 extra funds at the end of the turn
+    - a project completed in a later turn gives no first-completion funds
   setup:
     - a new game gives every player the starting stats and time bank
     - starting hands are dealt from the top of the deck one player at a time in seat order
@@ -77,6 +94,9 @@ invariants:
   - I8
   - I9
   - I10
+  - I12
+  - I13
+  - I14
   - I17
   - I18
   - I23

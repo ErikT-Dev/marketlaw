@@ -48,5 +48,6 @@ export function setUpGame(setup: GameSetup, random: Random): GameState {
     questList: QUESTS.map(({ name }) => name).filter((name) => !quests.includes(name)),
     bonusTypes: pickBonusTypes(random),
     doneOrder: [],
+    firstCompletions: [],
   });
 }

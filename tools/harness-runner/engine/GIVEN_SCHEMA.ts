@@ -3,6 +3,7 @@ import { STARTING_STATS } from "../../../src/rules/STARTING_STATS.ts";
 import { CardName } from "../../../src/shared/catalogue/CardName.ts";
 import { QuestName } from "../../../src/shared/catalogue/QuestName.ts";
 import { TypeName } from "../../../src/shared/catalogue/TypeName.ts";
+import { ProjectName } from "../../../src/shared/ProjectName.ts";
 
 const COUNT = v.pipe(v.number(), v.integer());
 const CARDS = v.array(CardName);
@@ -27,6 +28,10 @@ const SEAT = v.strictObject({
   hand: v.optional(CARDS),
   city: v.optional(CARDS),
   gained_types: v.optional(v.record(TypeName, COUNT)),
+  combos_claimed: v.optional(
+    v.array(v.strictObject({ card: CardName, combo: v.string(), times: COUNT })),
+  ),
+  projects: v.optional(v.array(ProjectName)),
   build_passes: v.optional(COUNT),
   build_passes_bought: v.optional(COUNT),
   played_this_turn: v.optional(v.boolean()),
@@ -65,4 +70,5 @@ export const GIVEN_SCHEMA = v.strictObject({
   ),
   quest_list: v.optional(v.array(QUEST_NAME)),
   bonus_types: v.optional(v.array(TypeName)),
+  first_completions: v.optional(v.array(ProjectName)),
 });

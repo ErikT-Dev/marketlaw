@@ -2,6 +2,7 @@ import * as v from "valibot";
 import { CardName } from "../catalogue/CardName";
 import { QuestName } from "../catalogue/QuestName";
 import { TypeName } from "../catalogue/TypeName";
+import { ProjectName } from "../ProjectName";
 import { ReasonCode } from "../ReasonCode";
 import { RoomCode } from "../RoomCode";
 import { DRAW_LOG_ENTRY_SCHEMA } from "./DRAW_LOG_ENTRY_SCHEMA";
@@ -22,6 +23,8 @@ const SEAT_COMMON = {
   hasLeft: v.boolean(),
   timeBankMs: COUNT,
 };
+const TYPE_COUNTS = v.record(TypeName, COUNT);
+const PROJECTS = v.array(ProjectName);
 const SEAT_VIEW = v.variant("kind", [
   v.object({
     ...SEAT_COMMON,
@@ -37,11 +40,29 @@ const SEAT_VIEW = v.variant("kind", [
     ),
     sellRejection: v.nullable(ReasonCode),
     endTurnRejection: v.nullable(ReasonCode),
+    typeCounts: TYPE_COUNTS,
+    combos: v.array(
+      v.object({ card: CardName, combo: COUNT, claimedTimes: COUNT, readyTimes: COUNT }),
+    ),
+    claimAllRejection: v.nullable(ReasonCode),
+    projects: PROJECTS,
+    projectRejections: v.object({
+      quality: v.nullable(ReasonCode),
+      satisfaction: v.nullable(ReasonCode),
+      workforce: v.nullable(ReasonCode),
+    }),
     hasPlayedThisTurn: v.boolean(),
     hasSkippedBuild: v.boolean(),
     actionsThisTurn: COUNT,
   }),
-  v.object({ ...SEAT_COMMON, kind: v.literal("other"), handCount: COUNT }),
+  v.object({
+    ...SEAT_COMMON,
+    kind: v.literal("other"),
+    handCount: COUNT,
+    typeCounts: TYPE_COUNTS,
+    combosClaimed: v.array(v.object({ card: CardName, combo: COUNT, times: COUNT })),
+    projects: PROJECTS,
+  }),
 ]);
 const PLAYER_VIEW = v.object({
   seat: SEAT,
@@ -56,6 +77,7 @@ const PLAYER_VIEW = v.object({
   doneOrder: v.array(SEAT),
   playerOrder: v.array(SEAT),
   drawLog: v.array(DRAW_LOG_ENTRY_SCHEMA),
+  firstCompletions: PROJECTS,
 });
 
 export const SERVER_MESSAGE_SCHEMA = v.variant("type", [

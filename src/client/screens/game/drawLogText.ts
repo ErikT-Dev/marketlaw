@@ -5,6 +5,7 @@ import { playerNameOf } from "./playerNameOf";
 
 const CAUSE_TEXT: Readonly<Record<Extract<DrawLogEntry, { kind: "draw" }>["cause"], string>> = {
   income: "income",
+  project: "project",
 };
 
 function askedText(asked: DrawAsked): string {

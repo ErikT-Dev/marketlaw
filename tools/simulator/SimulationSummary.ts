@@ -3,6 +3,7 @@ import type { FoundViolation } from "./FoundViolation.ts";
 export type SimulationSummary = {
   readonly games: number;
   readonly acceptedActions: number;
+  readonly acceptedByType: Readonly<Record<string, number>>;
   readonly turnsPlayed: number;
   readonly mostRowsPerAcceptedAction: number;
   readonly mostRowsPerOtherMessage: number;

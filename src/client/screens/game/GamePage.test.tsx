@@ -31,7 +31,7 @@ describe("game page top bar", () => {
 describe("your stats panel", () => {
   it("shows every stat of S6.2 as an icon named after the stat", () => {
     render(<GamePage {...gamePageProps(roomUpdateWith({}))} />);
-    const stats = within(screen.getByRole("region", { name: "Your stats" }))
+    const stats = within(screen.getByRole("list", { name: "Stat values" }))
       .getAllByRole("img")
       .map((chip) => chip.getAttribute("aria-label"));
     expect(stats).toEqual([

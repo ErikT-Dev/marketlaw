@@ -28,6 +28,7 @@ export function mergeSummaries(summaries: ReadonlyArray<SimulationSummary>): Sim
     (merged, summary) => ({
       games: merged.games + summary.games,
       acceptedActions: merged.acceptedActions + summary.acceptedActions,
+      acceptedByType: addCounts(merged.acceptedByType, summary.acceptedByType),
       turnsPlayed: merged.turnsPlayed + summary.turnsPlayed,
       mostRowsPerAcceptedAction: Math.max(
         merged.mostRowsPerAcceptedAction,

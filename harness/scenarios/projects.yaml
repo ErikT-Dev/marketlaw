@@ -109,6 +109,7 @@
         stats: {funds: 15}
       - seat: 3
         stats: {funds: 10}
+    first_completions: [quality]
 
 - name: a project completed in a later turn gives no first-completion funds
   covers: [R16.6]

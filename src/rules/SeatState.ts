@@ -1,4 +1,6 @@
 import type { CardName } from "../shared/catalogue/CardName";
+import type { ClaimedCombo } from "../shared/ClaimedCombo";
+import type { ProjectName } from "../shared/ProjectName";
 import type { SeatNumber } from "../shared/SeatNumber";
 import type { Stats } from "../shared/Stats";
 import type { TypeCounts } from "./TypeCounts";
@@ -10,6 +12,9 @@ export type SeatState = {
   readonly city: ReadonlyArray<CardName>;
   readonly drawnThisPhase: ReadonlyArray<CardName>;
   readonly gainedTypes: TypeCounts;
+  readonly combosClaimed: ReadonlyArray<ClaimedCombo>;
+  readonly projects: ReadonlyArray<ProjectName>;
+  readonly projectsThisTurn: ReadonlyArray<ProjectName>;
   readonly buildPasses: number;
   readonly buildPassesBought: number;
   readonly hasPlayedThisTurn: boolean;

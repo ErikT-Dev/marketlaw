@@ -11,4 +11,5 @@ export type SimulatedGame = {
   readonly rowsPerOtherMessage: ReadonlyArray<number>;
   readonly turnsPlayed: number;
   readonly acceptedActions: number;
+  readonly acceptedByType: Readonly<Record<string, number>>;
 };

@@ -5,6 +5,8 @@ import { Toast } from "../components/Toast";
 import type { PendingAction } from "../store/PendingAction";
 import type { RejectedMove } from "../store/RejectedMove";
 import styles from "./game/GamePage.module.css";
+import { CityPanel } from "./game/CityPanel";
+import { CombosPanel } from "./game/CombosPanel";
 import { DeckAndDiscard } from "./game/DeckAndDiscard";
 import { DrawLogPanel } from "./game/DrawLogPanel";
 import { GameTopBar } from "./game/GameTopBar";
@@ -43,10 +45,8 @@ export function GamePage(props: Props) {
           />
           <Panel title="Quests" />
           <div className={styles["cityRow"]}>
-            <Panel title={`Your city · ${String(mine.city.length)} cards`}>
-              <p>{mine.city.length === 0 ? "Empty" : mine.city.join(", ")}</p>
-            </Panel>
-            <Panel title="Combos" />
+            <CityPanel city={mine.city} />
+            <CombosPanel combos={mine.combos} />
           </div>
         </div>
         <RightColumn

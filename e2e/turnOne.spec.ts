@@ -1,11 +1,12 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Page } from "@playwright/test";
 import { expectScreenFits } from "./expectScreenFits";
+import { cardsHeldOnce } from "./cardsHeldOnce";
 import { handOf } from "./handOf";
 import { signedInPlayer } from "./signedInPlayer";
 
 async function sellFirstCardAndEndTurn(page: Page): Promise<string> {
-  const [card = ""] = await handOf(page);
+  const [card = ""] = await cardsHeldOnce(page);
   const hand = page.getByRole("list", { name: "Your hand" });
   await page.getByRole("button", { name: "Sell cards" }).click();
   await hand.getByRole("button", { name: card, exact: true }).click();

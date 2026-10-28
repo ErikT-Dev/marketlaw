@@ -35,13 +35,31 @@ const OWN_SEAT: OwnSeatView = {
   ],
   sellRejection: null,
   endTurnRejection: null,
+  typeCounts: {},
+  combos: [],
+  claimAllRejection: "nothing_to_claim",
+  projects: [],
+  projectRejections: {
+    quality: "project_needs_not_met",
+    satisfaction: "project_needs_not_met",
+    workforce: "project_needs_not_met",
+  },
   hasPlayedThisTurn: false,
   hasSkippedBuild: false,
   actionsThisTurn: 0,
 };
 
 function other(seat: SeatNumber, changes: Partial<OtherSeatView>): OtherSeatView {
-  return { ...SEAT_COMMON, kind: "other", seat, handCount: 7, ...changes };
+  return {
+    ...SEAT_COMMON,
+    kind: "other",
+    seat,
+    handCount: 7,
+    typeCounts: {},
+    combosClaimed: [],
+    projects: [],
+    ...changes,
+  };
 }
 
 export function roomUpdateWith(
@@ -66,6 +84,7 @@ export function roomUpdateWith(
     doneOrder: [3],
     playerOrder: [3, 4, 2],
     drawLog: [],
+    firstCompletions: [],
     ...changes,
   };
   return {

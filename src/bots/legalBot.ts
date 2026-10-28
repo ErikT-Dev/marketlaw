@@ -2,12 +2,15 @@ import type { CardName } from "../shared/catalogue/CardName";
 import { cardOf } from "../shared/catalogue/cardOf";
 import { kindOf } from "../shared/catalogue/kindOf";
 import type { PlayerView } from "../shared/PlayerView";
+import { PROJECT_NAMES } from "../shared/PROJECT_NAMES";
 import type { ActionIntent } from "../shared/protocol/ActionIntent";
 import type { BotChooser } from "./BotChooser";
 import { ownSeatOf } from "./ownSeatOf";
 import { kindWanted } from "./kindWanted";
+import { projectKindWanted } from "./projectKindWanted";
 
 const OTHER_CARD_CHANCE_IN_TEN = 2;
+const PROJECT_AIM_CHANCE_IN_TEN = 5;
 const SELL_CHANCE_IN_TEN = 3;
 const HAND_KEPT_WHEN_SELLING = 3;
 
@@ -34,10 +37,17 @@ export function legalBot(view: PlayerView, chooser: BotChooser): ActionIntent | 
   if (seat.endTurnRejection !== null) {
     return null;
   }
+  if (seat.claimAllRejection === null) {
+    return { type: "claim_all" };
+  }
+  const project = PROJECT_NAMES.find((name) => seat.projectRejections[name] === null);
+  if (project !== undefined) {
+    return { type: "complete_project", project };
+  }
   const playable = seat.handDetails.filter((details) => details.playRejection === null);
-  const wanted = playable.filter(
-    (details) => kindOf(cardOf(details.card)) === kindWanted(seat.stats),
-  );
+  const isAimingAtProject = chooser.pickIndex(10) < PROJECT_AIM_CHANCE_IN_TEN;
+  const kind = (isAimingAtProject ? projectKindWanted(seat) : undefined) ?? kindWanted(seat.stats);
+  const wanted = playable.filter((details) => kindOf(cardOf(details.card)) === kind);
   const isOtherCardPlayed = chooser.pickIndex(10) < OTHER_CARD_CHANCE_IN_TEN;
   const toPlay = oneOf(wanted.length > 0 || !isOtherCardPlayed ? wanted : playable, chooser);
   if (toPlay !== undefined) {

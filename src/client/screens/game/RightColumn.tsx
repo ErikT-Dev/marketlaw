@@ -2,13 +2,16 @@ import type { ActionIntent } from "../../../shared/protocol/ActionIntent";
 import type { OwnSeatView } from "../../../shared/OwnSeatView";
 import type { PlayerView } from "../../../shared/PlayerView";
 import type { PendingAction } from "../../store/PendingAction";
+import { useState } from "react";
 import { ActionsPanel } from "./ActionsPanel";
+import type { OpenDialog } from "./OpenDialog";
+import { ProgressDialogs } from "./ProgressDialogs";
 import styles from "./GamePage.module.css";
 import { HandPanel } from "./HandPanel";
 import { pendingCardsOf } from "./pendingCardsOf";
 import { playerNameOf } from "./playerNameOf";
 import { SelectedCardPanel } from "./SelectedCardPanel";
-import { useHandChoice } from "./useHandChoice";
+import { useHandMoves } from "./useHandMoves";
 import { YourStatsPanel } from "./YourStatsPanel";
 
 type Props = {
@@ -26,30 +29,16 @@ function namesStillPlaying(view: PlayerView, playerNames: ReadonlyArray<string>)
 }
 
 export function RightColumn({ view, seat, playerNames, pendingActions, onAction }: Props) {
-  const { choice, pressCard, startSelling, clear } = useHandChoice(seat.hand);
+  const { choice, selected, pressCard, clear, playSelected, sell } = useHandMoves(
+    seat.hand,
+    onAction,
+  );
+  const [dialog, setDialog] = useState<OpenDialog>("none");
   const isBusy = pendingActions.length > 0;
-  const selected = choice.mode === "choosing" ? choice.selected : null;
   const selectedDetails = seat.handDetails.find((details) => details.card === selected);
-  function playSelected() {
-    if (selected !== null) {
-      onAction({ type: "play_card", card: selected });
-    }
-    clear();
-  }
-  function sell() {
-    if (choice.mode === "choosing") {
-      startSelling();
-      return;
-    }
-    const [first, ...rest] = choice.marked;
-    if (first !== undefined) {
-      onAction({ type: "sell", cards: [first, ...rest] });
-    }
-    clear();
-  }
   return (
     <div className={styles["right"]}>
-      <YourStatsPanel seat={seat} />
+      <YourStatsPanel seat={seat} view={view} playerNames={playerNames} />
       <HandPanel
         handDetails={seat.handDetails}
         choice={choice}
@@ -66,6 +55,17 @@ export function RightColumn({ view, seat, playerNames, pendingActions, onAction 
         onSell={sell}
         onEndTurn={() => {
           onAction({ type: "end_turn" });
+        }}
+        onOpenDialog={setDialog}
+      />
+      <ProgressDialogs
+        dialog={dialog}
+        seat={seat}
+        view={view}
+        playerNames={playerNames}
+        onAction={onAction}
+        onClose={() => {
+          setDialog("none");
         }}
       />
       {selectedDetails === undefined ? null : (

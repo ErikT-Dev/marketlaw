@@ -6,6 +6,8 @@ import styles from "./ActionsPanel.module.css";
 import { counted } from "./counted";
 import { DoneBanner } from "./DoneBanner";
 import type { HandChoice } from "./HandChoice";
+import type { OpenDialog } from "./OpenDialog";
+import { ProgressButtons } from "./ProgressButtons";
 import { REJECTION_MESSAGES } from "./REJECTION_MESSAGES";
 
 type Props = {
@@ -17,6 +19,7 @@ type Props = {
   readonly onPlaySelected: () => void;
   readonly onSell: () => void;
   readonly onEndTurn: () => void;
+  readonly onOpenDialog: (dialog: OpenDialog) => void;
 };
 
 function sellLabel(choice: HandChoice): string {
@@ -67,6 +70,7 @@ export function ActionsPanel(props: Props) {
         >
           {sellLabel(choice)}
         </Button>
+        <ProgressButtons seat={seat} isBusy={isBusy} onOpenDialog={props.onOpenDialog} />
         <Button
           look="success"
           isDisabled={isBusy || seat.endTurnRejection !== null}

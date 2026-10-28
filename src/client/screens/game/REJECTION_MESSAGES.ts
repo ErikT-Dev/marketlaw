@@ -15,6 +15,10 @@ export const REJECTION_MESSAGES: Readonly<Record<ReasonCode, string>> = {
   tier_not_allowed: "Tier 2 and 3 cards can be played from turn 5.",
   no_build_pass: "You already played a card this turn. A build pass lets you play another.",
   build_skipped: "You skipped build this turn, so you cannot play a card.",
+  nothing_to_claim: "No combo is ready to claim.",
+  project_already_completed: "You already completed this project.",
+  project_needs_not_met:
+    "You need 8 of the stat, and no negative workforce, quality or satisfaction.",
   out_of_market: "You already had your market go this turn.",
   not_this_step: "Not this step.",
   wrong_protocol_version: "A new version is available: reload.",

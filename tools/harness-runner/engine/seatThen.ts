@@ -1,5 +1,6 @@
 import type { SeatState } from "../../../src/rules/SeatState.ts";
 import { typeCountsOf } from "../../../src/rules/typeCountsOf.ts";
+import { comboLabel } from "./comboLabel.ts";
 
 export function seatThen(seat: SeatState): Readonly<Record<string, unknown>> {
   return {
@@ -9,6 +10,12 @@ export function seatThen(seat: SeatState): Readonly<Record<string, unknown>> {
     city: seat.city,
     gained_types: seat.gainedTypes,
     type_counts: typeCountsOf(seat),
+    combos_claimed: seat.combosClaimed.map(({ card, combo, times }) => ({
+      card,
+      combo: comboLabel(card, combo),
+      times,
+    })),
+    projects: seat.projects,
     build_passes: seat.buildPasses,
     build_passes_bought: seat.buildPassesBought,
     played_this_turn: seat.hasPlayedThisTurn,

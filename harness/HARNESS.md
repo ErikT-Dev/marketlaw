@@ -122,7 +122,7 @@ it out, `player_to_mute` for a mute and `player_to_unmute` for an unmute.
 | `rejected` | The last step was rejected with this reason code (see below) |
 | `unchanged` | `true`: the rejected step changed nothing at all |
 | `seats` | Per seat, any of the `given` fields, with their expected values |
-| `deck`, `deck_count`, `discard`, `holding_pile`, `marketplace`, `quests`, `quest_list`, `turn`, `phase`, `first_player`, `market_go`, `paused`, `done_order` | Expected values; `market_go` can include `time_left_ms` |
+| `deck`, `deck_count`, `discard`, `holding_pile`, `marketplace`, `quests`, `quest_list`, `turn`, `phase`, `first_player`, `market_go`, `paused`, `done_order`, `first_completions` | Expected values; `market_go` can include `time_left_ms` |
 | `type_counts`, `new_cards` (inside `seats`) | A seat's type counts (R12.1) and cards marked new (R18.10) |
 | `quest_list_excludes` | Quests that must not be in the quest list |
 | `away`, `time_bank_shown`, `known_in_hand` (inside `view`) | Whether a seat is shown as away, a bank as shown in whole seconds, and marketplace cards known to be in a hand (M3.3) |

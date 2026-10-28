@@ -12,6 +12,13 @@ function shortestFailures(simulation: SimulationSummary): string {
     .join("");
 }
 
+function acceptedByTypeText(simulation: SimulationSummary): string {
+  return Object.entries(simulation.acceptedByType)
+    .sort(([first], [second]) => first.localeCompare(second))
+    .map(([type, count]) => `${type} ${String(count)}`)
+    .join(", ");
+}
+
 export function reportSimulation(
   simulation: SimulationSummary,
   checkedInvariants: ReadonlyArray<string>,
@@ -19,7 +26,7 @@ export function reportSimulation(
   const status = Object.keys(simulation.violationCounts).length === 0 ? "passes" : "fails";
   const facts = [
     `${String(simulation.games)} seeded games with 2, 3 and 4 seats, half with the legal bot and half with the chaos bot, until turn ${String(LAST_SIMULATED_TURN)}`,
-    `${String(simulation.acceptedActions)} accepted actions over ${String(simulation.turnsPlayed)} turns`,
+    `${String(simulation.acceptedActions)} accepted actions over ${String(simulation.turnsPlayed)} turns: ${acceptedByTypeText(simulation)}`,
     `invariants checked after every message: ${checkedInvariants.join(", ")}; every game replayed from its seed and action log (I26)`,
     `rows written: at most ${String(simulation.mostRowsPerAcceptedAction)} per accepted action (B1), ${String(simulation.mostRowsPerOtherMessage)} for any other message (B2)`,
   ];
