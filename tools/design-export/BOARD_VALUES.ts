@@ -9,5 +9,6 @@ export const BOARD_VALUES: Readonly<Record<string, string>> = {
   "--color-board-toast-warning": "#451a03",
   "--color-board-timer-low": "#3f1d24",
   "--color-board-pending": "rgba(0, 0, 0, 0.6)",
+  "--color-board-shuffle-text": "#fcd34d",
   "--font-size-panel-title": "13px",
 };

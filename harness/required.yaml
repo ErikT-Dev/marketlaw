@@ -12,6 +12,19 @@ scenarios:
     - a connection that sends 30 rejected messages within a minute is closed
     - rejects selling a card another player holds
     - rejects selling the same card twice in one message
+  combos-and-income:
+    - income happens by itself when product and distribution are both there and no stat is negative
+    - no income while a stat is negative
+    - no income with product but no distribution
+  drawing:
+    - if a tier is empty the nearest other tier is used and the lower one first
+    - tier 3 falls back to tier 2 before tier 1
+    - if the whole sector is gone the top card of the deck is drawn
+    - with an empty deck the discard pile is shuffled in before the top card is drawn
+    - with no cards left at all nothing is drawn
+    - main-phase draws do not use cards sold in the same main phase
+    - a random draw in turn 13 asks for a sector and then a tier
+    - from turn 27 every tier-by-turn draw is tier 3 and no tier is asked for
   playing-cards:
     - playing a Residential card pays its cost and applies its stats and types
     - playing an Industry card gives product and uses workforce quality and satisfaction

@@ -1,5 +1,6 @@
 import type { CardName } from "./catalogue/CardName";
 import type { TypeName } from "./catalogue/TypeName";
+import type { DrawLogEntry } from "./DrawLogEntry";
 import type { GamePhase } from "./GamePhase";
 import type { MarketplaceSlot } from "./MarketplaceSlot";
 import type { OtherSeatView } from "./OtherSeatView";
@@ -19,4 +20,5 @@ export type PlayerView = {
   readonly bonusTypes: ReadonlyArray<TypeName>;
   readonly doneOrder: ReadonlyArray<SeatNumber>;
   readonly playerOrder: ReadonlyArray<SeatNumber>;
+  readonly drawLog: ReadonlyArray<DrawLogEntry>;
 };

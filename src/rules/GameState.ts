@@ -1,6 +1,7 @@
 import type { CardName } from "../shared/catalogue/CardName";
 import type { QuestName } from "../shared/catalogue/QuestName";
 import type { TypeName } from "../shared/catalogue/TypeName";
+import type { DrawLogEntry } from "../shared/DrawLogEntry";
 import type { GamePhase } from "../shared/GamePhase";
 import type { MarketplaceSlot } from "../shared/MarketplaceSlot";
 import type { QuestOnTable } from "../shared/QuestOnTable";
@@ -19,4 +20,5 @@ export type GameState = {
   readonly questList: ReadonlyArray<QuestName>;
   readonly bonusTypes: ReadonlyArray<TypeName>;
   readonly doneOrder: ReadonlyArray<SeatNumber>;
+  readonly drawLog: ReadonlyArray<DrawLogEntry>;
 };

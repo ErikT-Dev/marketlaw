@@ -5,6 +5,8 @@ import { Toast } from "../components/Toast";
 import type { PendingAction } from "../store/PendingAction";
 import type { RejectedMove } from "../store/RejectedMove";
 import styles from "./game/GamePage.module.css";
+import { DeckAndDiscard } from "./game/DeckAndDiscard";
+import { DrawLogPanel } from "./game/DrawLogPanel";
 import { GameTopBar } from "./game/GameTopBar";
 import { playerNameOf } from "./game/playerNameOf";
 import { rejectionMessage } from "./game/rejectionMessage";
@@ -43,10 +45,13 @@ export function GamePage(props: Props) {
               ) : null,
             )}
           </Panel>
-          <Panel title="Draw log" />
+          <DrawLogPanel drawLog={view.drawLog} playerNames={playerNames} />
         </div>
         <div className={styles["middle"]}>
-          <Panel title="Marketplace" />
+          <Panel
+            title="Marketplace"
+            aside={<DeckAndDiscard deckCount={view.deckCount} discard={view.discard} />}
+          />
           <Panel title="Quests" />
           <div className={styles["cityRow"]}>
             <Panel title={`Your city · ${String(mine.city.length)} cards`}>

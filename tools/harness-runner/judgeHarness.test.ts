@@ -32,6 +32,7 @@ function harnessRun(parts: Partial<HarnessRun>): HarnessRun {
     invariantIds: ["I1"],
     budgetIds: ["B1"],
     cardDataProblems: [],
+    tierShareProblems: [],
     ...parts,
   };
 }
@@ -106,5 +107,14 @@ describe("judgeHarness", () => {
   it("fails the check when the card data has problems", () => {
     const run = harnessRun({ cardDataProblems: ["239 cards, not 240"] });
     expect(judgeHarness(run)).toEqual(["card-data check: 239 cards, not 240"]);
+  });
+
+  it("fails the check when a tier share is off", () => {
+    const run = harnessRun({
+      tierShareProblems: ["turn 5 tier 2: drawn 31.00%, R17.10 says 28.57%"],
+    });
+    expect(judgeHarness(run)).toEqual([
+      "statistical tier check: turn 5 tier 2: drawn 31.00%, R17.10 says 28.57%",
+    ]);
   });
 });

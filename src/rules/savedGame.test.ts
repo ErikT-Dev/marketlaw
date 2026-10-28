@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { applyToSavedGame } from "./applyToSavedGame";
 import type { GameAction } from "./GameAction";
 import { randomForNextAction } from "./randomForNextAction";
+import { SAVE_SCHEMA_VERSION } from "./SAVE_SCHEMA_VERSION";
 import type { SavedGame } from "./SavedGame";
 import { startSavedGame } from "./startSavedGame";
 
@@ -29,7 +30,7 @@ function playThreeTurns(saved: SavedGame): SavedGame {
 describe("saved games", () => {
   it("starts a game with the setup, the seed and an empty action log", () => {
     const saved = startSavedGame({ players: 3 }, 42);
-    expect(saved.schemaVersion).toBe(1);
+    expect(saved.schemaVersion).toBe(SAVE_SCHEMA_VERSION);
     expect(saved.actionLog).toEqual([]);
     expect(saved.state.seats.map((seat) => seat.hand.length)).toEqual([7, 7, 7]);
     expect(saved.state.deck).toHaveLength(240 - 21 - 8);

@@ -41,6 +41,7 @@ export function setUpGame(setup: GameSetup, random: Random): GameState {
     deck: filled.piles.deck,
     discard: filled.piles.discard,
     holdingPile: [],
+    drawLog: [],
     marketplace: filled.marketplace,
     quests: quests.map((quest) => ({ quest, turnsOnTable: 1 })),
     questList: QUESTS.map(({ name }) => name).filter((name) => !quests.includes(name)),

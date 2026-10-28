@@ -324,3 +324,18 @@ file.
   player the number they can act on.
 - **Implemented:** `harness/spec/screens.md` S16.3, `src/client/store/ClientStore.ts`,
   `src/client/screens/game/rejectionMessage.ts` (phase 06).
+
+## Q23. Which draws write draw log entries before the market phase exists
+
+- **Phase:** 07, phase review finding 2.
+- **Question:** M3.3 and S7.2 make every draw and discard shuffle public. Starting hands (R17.9)
+  and marketplace refills (R18) also draw, but R17.5 does not list starting hands as draws, and a
+  refill shuffle is caused by no player, while a draw log entry names one.
+- **Options:** log starting hands and refills now; log them when the market phase is built.
+- **Solution:** for now only income draws and the shuffles they cause are logged. Starting hands
+  stay out of the log: the deal is public by rule (R17.9) and the discard pile is empty then.
+  Phase 12, which builds refills and turn draws, decides how a refill shuffle with no player is
+  shown, and may make the seat of a shuffle optional.
+- **Why:** no place empties and nothing is refilled before phase 12, so no refill shuffle can
+  happen yet.
+- **Implemented:** `src/rules/takeIncome.ts`, `src/shared/DrawLogEntry.ts`; open for phase 12.

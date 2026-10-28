@@ -7,6 +7,7 @@ import { readCoverageExceptions } from "../harness-check/readCoverageExceptions.
 import { buildReport } from "./buildReport.ts";
 import { buildScenarioRuns } from "./buildScenarioRuns.ts";
 import { checkCardData } from "./checkCardData.ts";
+import { checkTierShares } from "./checkTierShares.ts";
 import type { HarnessOutcome } from "./HarnessOutcome.ts";
 import type { HarnessRun } from "./HarnessRun.ts";
 import { judgeHarness } from "./judgeHarness.ts";
@@ -15,6 +16,7 @@ import { readRequiredList } from "./readRequiredList.ts";
 import type { RequiredList } from "./RequiredList.ts";
 import type { ScenarioDriver } from "./ScenarioDriver.ts";
 
+const DRAWS_PER_TURN = 100_000;
 const NOTHING_REQUIRED: RequiredList = { scenarios: [], invariants: [], budgets: [] };
 
 export function runHarness(drivers: ReadonlyArray<ScenarioDriver>): HarnessOutcome {
@@ -32,6 +34,7 @@ export function runHarness(drivers: ReadonlyArray<ScenarioDriver>): HarnessOutco
     invariantIds: invariants.map(({ id }) => id),
     budgetIds: budgets.map(({ id }) => id),
     cardDataProblems: checkCardData(files.cards),
+    tierShareProblems: checkTierShares(DRAWS_PER_TURN),
   };
   const problems = [
     ...readingProblems,

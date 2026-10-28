@@ -42,6 +42,7 @@ export function stateFromGiven(given: Given): GameState {
     deck: given.deck ?? CARD_NAMES.filter((name) => !placed.includes(name)),
     discard,
     holdingPile: [],
+    drawLog: [],
     marketplace,
     quests,
     questList:
