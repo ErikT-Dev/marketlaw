@@ -29,9 +29,14 @@ export function pilesShownTo(state: GameState, viewer: SeatNumber): PilesShown {
   const start = state.mainPhaseStart;
   const earlier = state.drawLog.slice(0, start.drawLogLength);
   const own = state.drawLog.slice(start.drawLogLength).filter((entry) => entry.seat === viewer);
+  const discardAfterShuffles = own.reduce(afterShuffle, start.discard);
+  const drawn = state.seats.find((seat) => seat.seat === viewer)?.drawnThisPhase ?? [];
+  const drawnFromShownDiscard = drawn.filter((card) => discardAfterShuffles.includes(card));
   return {
-    deckCount: own.reduce((count, entry) => count + deckChange(entry), start.deckCount),
-    discard: own.reduce(afterShuffle, start.discard),
+    deckCount:
+      own.reduce((count, entry) => count + deckChange(entry), start.deckCount) +
+      drawnFromShownDiscard.length,
+    discard: discardAfterShuffles.filter((card) => !drawnFromShownDiscard.includes(card)),
     drawLog: [...earlier, ...own],
   };
 }

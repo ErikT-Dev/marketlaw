@@ -93,6 +93,29 @@ describe("what other players see during the main phase", () => {
     ]);
     expect(seatOneSeenBySeatTwo(after)?.city).toEqual(["Liquor Shop"]);
     expect(viewFor(after, 2).drawLog).toHaveLength(1);
-    expect(viewFor(after, 2).deckCount).toBe(viewFor(after, 1).deckCount);
+    expect(viewFor(after, 2).deckCount).toBe(2);
+    expect(viewFor(after, 1).deckCount).toBe(2);
+  });
+
+  it("takes my own draw of a card another player reshuffled off the discard shown, not off the deck", () => {
+    const start = gameWith([], ["Landfill", "Library"]);
+    const bothReady = withMainPhaseStart({
+      ...start,
+      seats: start.seats.map((seat) => ({
+        ...seat,
+        hand: seat.seat === 1 ? ["Liquor Shop"] : ["Pub"],
+        stats: { ...STARTING_STATS, workforce: 1, quality: 1, product: 1 },
+      })),
+    });
+    const after = played(bothReady, [
+      { type: "play_card", seat: 2, card: "Pub" },
+      { type: "play_card", seat: 1, card: "Liquor Shop" },
+    ]);
+    const mine = viewFor(after, 1);
+    const ownSeat = mine.seats.find((seat) => seat.kind === "own");
+    const drawn = ownSeat?.kind === "own" ? ownSeat.hand : [];
+    expect(mine.deckCount).toBe(0);
+    expect(mine.discard).toHaveLength(1);
+    expect(mine.discard.some((card) => drawn.includes(card))).toBe(false);
   });
 });

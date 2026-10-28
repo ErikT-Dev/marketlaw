@@ -9,6 +9,7 @@ export function newSeat(seat: SeatNumber): SeatState {
     stats: STARTING_STATS,
     hand: [],
     city: [],
+    drawnThisPhase: [],
     gainedTypes: {},
     buildPasses: 0,
     buildPassesBought: 0,

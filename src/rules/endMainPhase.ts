@@ -13,7 +13,8 @@ export function endMainPhase(state: GameState, random: Random): GameState {
     turn,
     seats: state.seats.map((seat) => {
       const afterSteps = endOfTurnSteps(seat);
-      return seat.hasLeft ? afterSteps : { ...afterSteps, isDone: false, actionsThisTurn: 0 };
+      const started = { ...afterSteps, drawnThisPhase: [] };
+      return seat.hasLeft ? started : { ...started, isDone: false, actionsThisTurn: 0 };
     }),
     deck: refilled.piles.deck,
     discard: refilled.piles.discard,
