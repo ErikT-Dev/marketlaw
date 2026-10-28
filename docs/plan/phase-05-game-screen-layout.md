@@ -85,18 +85,28 @@ None. This phase adds no scenarios to `harness/required.yaml`.
   their names as tooltips; type counts wait for phase 10, which puts them in the view. Success
   and danger buttons use the darker shade from the tokens and warning buttons dark text, because
   the design's white-on-colour text fails the 4.5:1 contrast the axe check needs. No user box or
-  Leave game yet (S2.3 is not in this phase). The browser test at 1280×720 still fails, see
-  **Waiting for the owner**.
-- [ ] 5. Size test for O2 at 1280×720, 1920×1080 and 2560×1440
-- [ ] 6. Bundle check (`.size-limit.js`, protected: owner)
-- [ ] 7. Accessibility check on every screenshot (`knip.json`, protected: owner)
+  Leave game yet (S2.3 is not in this phase). A scrolling panel's scroll area takes keyboard
+  focus while its content overflows (after the owner's config change below).
+- [x] 5. Size test for O2: `e2e/gameScreenSizes.spec.ts` starts a 4-player game with the longest
+  names and, at each of the three sizes, saves a screenshot to `harness/screens/gameScreenSizes/`,
+  checks there is no horizontal scrolling, that every button, link, input and tab is at least
+  24×24 px, and runs axe. All pass. Difference: "the densest content the design allows" cannot be
+  shown yet. Quests appear in phase 13, a long hand needs later turns or the test rooms of phase
+  08, and the hand and opponents are still phase 04's bare content. The screenshots show the
+  table, top bar and stats at full density for 4 players; the test reruns them as panels fill.
+- [ ] 6. Bundle check (`.size-limit.js`, protected: owner). `vite.config.ts` now writes Vite's
+  manifest, so the check can count the entry script, its stylesheet and every chunk they
+  import, and nothing loaded later.
+- [ ] 7. Accessibility check on every screenshot (`knip.json`, protected: owner). Axe already
+  runs in both browser tests that take or check the game screen.
 
 
 ## Waiting for the owner
 
 1. **Items 6 and 7 edit protected files** (`.size-limit.js`, `knip.json`), approved with this
-   phase but blocked for Claude by the protected-path hook. Proposed contents follow in the
-   phase when item 5 is done.
+   phase but blocked for Claude by the protected-path hook. A script makes both changes:
+   `.size-limit.js` measures only the first screen's files from Vite's manifest, and knip's
+   ignore list drops `@axe-core/playwright` and `@testing-library/react`, which are now used.
 
 Done by the owner, 2026-10-28: `tsconfig.tools.json` loads `vite/client` types, so client
 tests that import CSS modules type-check; `eslint.config.js` lets a labelled `group` take
