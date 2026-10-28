@@ -49,9 +49,9 @@ describe("your city and combos", () => {
     ).toEqual(["Row House"]);
     const combos = within(screen.getByRole("region", { name: "Combos · 1 ready" }));
     expect(combos.getAllByRole("listitem").map((row) => row.textContent)).toEqual([
-      expect.stringMatching(/ready$/),
-      expect.stringMatching(/claimed$/),
-      expect.not.stringMatching(/ready|claimed/),
+      "Row House · 1 Safety+1 qualityready",
+      "Row House · 1 Rental Space+1 satisfactionclaimed",
+      "Fire Station · 1 Suburban Housing+1 quality",
     ]);
   });
 });
@@ -69,7 +69,15 @@ describe("your stats", () => {
       .map((row) => row.textContent);
     expect(projects[0]).toContain("Clean up the streets");
     expect(projects[0]).toContain("nobody yet, the first gets +2 funds");
-    expect(projects[2]).toContain("you completed ✓");
+    expect(projects[2]).toBe("Help the homeless · you completed ✓");
+  });
+
+  it("shows a project completed this turn as completed, without the first-completion note", () => {
+    showGame({ ...READY, projects: ["quality"] });
+    const projects = within(screen.getByRole("list", { name: "Your projects" }))
+      .getAllByRole("listitem")
+      .map((row) => row.textContent);
+    expect(projects[0]).toBe("Clean up the streets · you completed ✓");
   });
 });
 
@@ -79,7 +87,7 @@ describe("claim all", () => {
     fireEvent.click(screen.getByRole("button", { name: "Claim all (1)" }));
     const dialog = within(screen.getByRole("dialog", { name: "Claim all combos" }));
     expect(dialog.getByText("This combo is ready:")).toBeDefined();
-    expect(dialog.getByText(/^\+0 workforce · \+\d quality · \+\d satisfaction$/)).toBeDefined();
+    expect(dialog.getByText("+0 workforce · +1 quality · +0 satisfaction")).toBeDefined();
     fireEvent.click(dialog.getByRole("button", { name: "Claim all" }));
     expect(onAction).toHaveBeenCalledWith({ type: "claim_all" });
     expect(screen.queryByRole("dialog")).toBeNull();
@@ -104,6 +112,36 @@ describe("projects", () => {
     expect(homeless.getByRole("button", { name: "Completed ✓" })).toHaveProperty("disabled", true);
     fireEvent.click(streets.getByRole("button", { name: "Complete" }));
     expect(onAction).toHaveBeenCalledWith({ type: "complete_project", project: "quality" });
+  });
+
+  it("says why a project with enough of its stat cannot be completed", () => {
+    showGame({
+      ...READY,
+      stats: {
+        funds: 7,
+        income: 3,
+        influence: 0,
+        workforce: -1,
+        quality: 9,
+        satisfaction: 4,
+        product: 0,
+        distribution: 0,
+        bonus: 0,
+      },
+      projectRejections: {
+        quality: "project_needs_not_met",
+        satisfaction: "project_needs_not_met",
+        workforce: "project_already_completed",
+      },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Projects" }));
+    const streets = within(screen.getByRole("listitem", { name: "Clean up the streets" }));
+    expect(streets.getByRole("button", { name: "Complete" })).toHaveProperty("disabled", true);
+    expect(
+      streets.getByText(
+        "You need 8 of the stat, and no negative workforce, quality or satisfaction.",
+      ),
+    ).toBeDefined();
   });
 
   it("says when the next project would be the third", () => {

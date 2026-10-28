@@ -25,9 +25,11 @@ test("claim combos with the totals, complete a project, and get the first-comple
   await ann.getByRole("button", { name: "Claim all (1)" }).click();
   const claim = ann.getByRole("dialog", { name: "Claim all combos" });
   await expect(claim).toContainText("You will get in total");
+  await expect(claim.getByText("+0 workforce · +1 quality · +0 satisfaction")).toBeVisible();
   await expectScreenFits(ann, "claim-all", testInfo);
   await claim.getByRole("button", { name: "Claim all" }).click();
   await expect(ann.getByRole("region", { name: "Combos · 0 ready" })).toBeVisible();
+  await expect(ann.getByRole("img", { name: "Quality 9" })).toBeVisible();
 
   await ann.getByRole("button", { name: "Projects" }).click();
   const projects = ann.getByRole("dialog", { name: "Projects" });
@@ -36,6 +38,7 @@ test("claim combos with the totals, complete a project, and get the first-comple
   await expectScreenFits(ann, "projects", testInfo);
   await streets.getByRole("button", { name: "Complete" }).click();
   await expect(ann.getByRole("img", { name: "Funds 9" })).toBeVisible();
+  await expect(ann.getByRole("img", { name: "Quality 1" })).toBeVisible();
 
   await ann.getByRole("button", { name: "End turn" }).click();
   await bea.getByRole("button", { name: "End turn" }).click();

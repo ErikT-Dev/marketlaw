@@ -1,11 +1,14 @@
 import type { OwnSeatView } from "../../../shared/OwnSeatView";
 import type { PlayerView } from "../../../shared/PlayerView";
+import { PROJECT_NAMES } from "../../../shared/PROJECT_NAMES";
+import { PROJECT_NEED } from "../../../shared/PROJECT_NEED";
 import type { ProjectName } from "../../../shared/ProjectName";
 import { Button } from "../../components/Button";
 import { Modal } from "../../components/Modal";
 import styles from "./GameDialogs.module.css";
 import { playerNameOf } from "./playerNameOf";
 import { PROJECT_TITLES } from "./PROJECT_TITLES";
+import { REJECTION_MESSAGES } from "./REJECTION_MESSAGES";
 
 type Props = {
   readonly seat: OwnSeatView;
@@ -14,9 +17,6 @@ type Props = {
   readonly onComplete: (project: ProjectName) => void;
   readonly onClose: () => void;
 };
-
-const PROJECTS: ReadonlyArray<ProjectName> = ["quality", "satisfaction", "workforce"];
-const NEED = 8;
 
 function firstCompletionText(project: ProjectName, view: PlayerView, names: ReadonlyArray<string>) {
   const others = view.seats
@@ -34,12 +34,20 @@ function buttonLabel(seat: OwnSeatView, project: ProjectName): string {
   if (seat.projects.includes(project)) {
     return "Completed ✓";
   }
-  const missing = NEED - seat.stats[project];
+  const missing = PROJECT_NEED - seat.stats[project];
   return missing > 0 ? `Need ${String(missing)} more` : "Complete";
 }
 
+function whyNotCompletable(seat: OwnSeatView, project: ProjectName): string | null {
+  const rejection = seat.projectRejections[project];
+  const isOnlyMissingTheStat = seat.stats[project] < PROJECT_NEED;
+  return rejection === null || seat.projects.includes(project) || isOnlyMissingTheStat
+    ? null
+    : REJECTION_MESSAGES[rejection];
+}
+
 export function ProjectsDialog({ seat, view, playerNames, onComplete, onClose }: Props) {
-  const isThirdNext = seat.projects.length === PROJECTS.length - 1;
+  const isThirdNext = seat.projects.length === PROJECT_NAMES.length - 1;
   return (
     <Modal title="Projects" size="large" onClose={onClose}>
       <p className={styles["text"]}>
@@ -47,7 +55,7 @@ export function ProjectsDialog({ seat, view, playerNames, onComplete, onClose }:
         card. Workforce, quality and satisfaction must all be 0 or more.
       </p>
       <ul className={styles["rows"]}>
-        {PROJECTS.map((project) => (
+        {PROJECT_NAMES.map((project) => (
           <li key={project} className={styles["project"]} aria-label={PROJECT_TITLES[project]}>
             <div>
               <strong>{PROJECT_TITLES[project]}</strong>
@@ -58,6 +66,9 @@ export function ProjectsDialog({ seat, view, playerNames, onComplete, onClose }:
                 <span className={styles["note"]}>
                   {firstCompletionText(project, view, playerNames)}
                 </span>
+              )}
+              {whyNotCompletable(seat, project) === null ? null : (
+                <span className={styles["note"]}>{whyNotCompletable(seat, project)}</span>
               )}
             </div>
             <Button
