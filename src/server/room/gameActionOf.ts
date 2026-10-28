@@ -16,5 +16,11 @@ export function gameActionOf(seat: SeatNumber, intent: ActionIntent): GameAction
       return { type: "claim_all", seat };
     case "complete_project":
       return { type: "complete_project", seat, project: intent.project };
+    case "influence":
+      return { type: "influence", seat, trade: intent.trade };
+    case "draw_action":
+      return { type: "draw_action", seat, kind: intent.kind, tier: intent.tier };
+    case "undo":
+      return { type: "undo", seat };
   }
 }

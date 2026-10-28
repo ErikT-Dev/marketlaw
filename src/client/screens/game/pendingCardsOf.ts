@@ -13,6 +13,9 @@ export function pendingCardsOf(
       case "end_turn":
       case "claim_all":
       case "complete_project":
+      case "influence":
+      case "draw_action":
+      case "undo":
         return [];
     }
   });

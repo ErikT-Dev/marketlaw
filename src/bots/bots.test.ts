@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
+import { Kind } from "../shared/catalogue/Kind";
+import { Tier } from "../shared/catalogue/Tier";
 import type { OwnSeatView } from "../shared/OwnSeatView";
 import type { PlayerView } from "../shared/PlayerView";
+import { TradeName } from "../shared/TradeName";
 import type { BotChooser } from "./BotChooser";
 import { chaosBot } from "./chaosBot";
 import { legalBot } from "./legalBot";
@@ -48,6 +51,13 @@ function viewWith(own: Partial<OwnSeatView>): PlayerView {
     },
     hasPlayedThisTurn: false,
     hasSkippedBuild: false,
+    influenceUses: {},
+    trades: TradeName.options.map((trade) => ({ trade, rejection: "cannot_afford_trade" })),
+    buildPassPrice: 2,
+    drawActions: Kind.options.flatMap((kind) =>
+      Tier.options.map((tier) => ({ kind, tier, rejection: "cannot_afford_trade" })),
+    ),
+    undoRejection: "nothing_to_undo",
     actionsThisTurn: 0,
     ...own,
   };

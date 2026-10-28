@@ -6,6 +6,9 @@ import type { GameState } from "./GameState";
 import { handDetailsOf } from "./handDetailsOf";
 import { turnRejectionOf } from "./turnRejectionOf";
 import { comboStatusesOf } from "./comboStatusesOf";
+import { drawActionStatusesOf } from "./drawActionStatusesOf";
+import { tradeCostsOf } from "./tradeCostsOf";
+import { tradeStatusesOf } from "./tradeStatusesOf";
 import { pilesShownTo } from "./pilesShownTo";
 import { projectRejectionsOf } from "./projectRejectionsOf";
 import { rejectionOf } from "./rejectionOf";
@@ -31,6 +34,11 @@ function ownSeatView(state: GameState, seat: SeatState): OwnSeatView {
     buildPasses: seat.buildPasses,
     hasPlayedThisTurn: seat.hasPlayedThisTurn,
     hasSkippedBuild: seat.hasSkippedBuild,
+    influenceUses: seat.influenceUses,
+    trades: tradeStatusesOf(state, seat.seat),
+    buildPassPrice: tradeCostsOf(seat, "buy_build_pass").funds ?? 0,
+    drawActions: drawActionStatusesOf(state, seat.seat),
+    undoRejection: rejectionOf(state, { type: "undo", seat: seat.seat }) ?? null,
     actionsThisTurn: seat.actionsThisTurn,
     isDone: seat.isDone,
     hasLeft: seat.hasLeft,

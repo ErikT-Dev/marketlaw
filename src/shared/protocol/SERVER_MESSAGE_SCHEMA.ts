@@ -1,10 +1,13 @@
 import * as v from "valibot";
 import { CardName } from "../catalogue/CardName";
+import { Kind } from "../catalogue/Kind";
 import { QuestName } from "../catalogue/QuestName";
+import { Tier } from "../catalogue/Tier";
 import { TypeName } from "../catalogue/TypeName";
 import { ProjectName } from "../ProjectName";
 import { ReasonCode } from "../ReasonCode";
 import { RoomCode } from "../RoomCode";
+import { TradeName } from "../TradeName";
 import { DRAW_LOG_ENTRY_SCHEMA } from "./DRAW_LOG_ENTRY_SCHEMA";
 import { MARKETPLACE_SLOT_SCHEMA } from "./MARKETPLACE_SLOT_SCHEMA";
 import { SEAT_NUMBER_SCHEMA } from "./SEAT_NUMBER_SCHEMA";
@@ -53,6 +56,11 @@ const SEAT_VIEW = v.variant("kind", [
     }),
     hasPlayedThisTurn: v.boolean(),
     hasSkippedBuild: v.boolean(),
+    influenceUses: v.record(TradeName, COUNT),
+    trades: v.array(v.object({ trade: TradeName, rejection: v.nullable(ReasonCode) })),
+    buildPassPrice: COUNT,
+    drawActions: v.array(v.object({ kind: Kind, tier: Tier, rejection: v.nullable(ReasonCode) })),
+    undoRejection: v.nullable(ReasonCode),
     actionsThisTurn: COUNT,
   }),
   v.object({
