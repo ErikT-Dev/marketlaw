@@ -47,6 +47,12 @@ Phase 04.
 ## Known gaps after this phase
 
 - The hand and actions still use phase 04's bare controls inside the new layout (phase 06).
+- The opponents panel shows phase 04's bare text for each opponent (phase 09).
+- The Marketplace (phase 12), Quests (phase 13), Combos (phase 10) and Draw log (phase 07)
+  panels are empty, and Your city lists card names as text (phase 06).
+- Your stats has no type counts yet (S6.2; phase 10 puts them in the view).
+- Top-bar badges never show "away" (phase 18), and there is no "Game: loading" screen yet:
+  the waiting page shows until the first game update arrives.
 
 ## What you can see when it's done
 
@@ -75,8 +81,8 @@ None. This phase adds no scenarios to `harness/required.yaml`.
   and Stat chip; Button loading labels are Button's `loadingLabel`. Differences: hand cards also
   get an accessible description (number, real cost, "new", "cannot be played"), because the
   design marks these only by colour; the Tab's unread count is now part of its name; Hand card
-  and Played card share `CardTileFace`. Client tests unmount by hand (`proposed-rules.md`,
-  "Client tests clean up only when told to").
+  and Played card share `CardTileFace`. Client tests clean up after each test through
+  `vitest.config.ts` `setupFiles` (owner change, see below).
 - [x] 4. Game screen layout (S1.2): top bar, three columns, scrolling panels. Each column is its
   own grid with the design's height ratios; the side columns keep a minimum width (280 and 400
   px) and the middle one takes the rest. Differences: the engine now puts the turn's player order
