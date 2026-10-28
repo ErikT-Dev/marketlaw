@@ -47,3 +47,22 @@ browser tests, check that nothing listens on 8787, and stop the `wrangler ... de
 first, then `workerd`.
 **Why:** found in phase 04; the browser tests failed against a stale server.
 **Enforced by:** judgment.
+
+## For `rules/frontend.md`
+
+### Text colours are checked on solid backgrounds
+Stat colours from the design (funds red, workforce green and others) are too dark for text on the
+dark panels; stat numbers use a light tint of their colour, and the icon carries the full colour.
+Axe cannot measure text over the semi-transparent panels on the background photo and passes it,
+so contrast problems show up only where a background is solid.
+**Why:** found in phase 09, when the opponent cards' solid background revealed 3.5:1 contrast.
+**Enforced by:** axe in the browser tests · judgment for text over the photo.
+
+## For `rules/workflow.md`
+
+### Restart the dev server after client changes
+`npm run dev` builds the client once and then serves that build. After changing client code,
+stop the server (see "Stop `wrangler dev` by its process") before the browser tests, or they test
+the old build.
+**Why:** found in phase 09; a fixed contrast problem kept failing against the stale build.
+**Enforced by:** judgment.
