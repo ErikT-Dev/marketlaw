@@ -111,5 +111,6 @@ These 52 scenarios are added to `harness/required.yaml` in this phase, by file a
 - [x] 3. Draw actions: 5 kinds × 3 tiers, available by the deck and discard as the player sees them.
   Draw actions take R17.4's last step (the top card), kind places of the marketplace do not
   (R17.5). The start of the main phase keeps the deck instead of its count.
-- [ ] 4. Undo: the actions R7.2 lists, latest first, never past an action that drew a card.
+- [x] 4. Undo: the actions R7.2 lists, latest first, never past an action that drew a card.
+  Income blocks undo too (Q33). Undo #5 and #11 need quests and stay for phase 13.
 - [ ] 5. Screens: the use influence pop-up (S8.3) and the Undo button (S6.6).
