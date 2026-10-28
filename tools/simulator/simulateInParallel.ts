@@ -1,29 +1,11 @@
-import { availableParallelism, tmpdir } from "node:os";
-import { join } from "node:path";
+import { availableParallelism } from "node:os";
 import { fileURLToPath } from "node:url";
 import { Worker } from "node:worker_threads";
-import { build } from "vite";
+import { bundleForNode } from "../bundleForNode.ts";
 import { mergeSummaries } from "./mergeSummaries.ts";
 import type { SimulationSummary } from "./SimulationSummary.ts";
 
 const WORKER_ENTRY = fileURLToPath(new URL("./simulationWorker.ts", import.meta.url));
-
-async function bundledWorker(): Promise<string> {
-  const outDir = join(tmpdir(), `marketlaw-simulator-${String(process.pid)}`);
-  await build({
-    configFile: false,
-    logLevel: "silent",
-    ssr: { noExternal: true },
-    build: {
-      ssr: WORKER_ENTRY,
-      outDir,
-      emptyOutDir: true,
-      minify: false,
-      rollupOptions: { output: { entryFileNames: "simulationWorker.mjs" } },
-    },
-  });
-  return join(outDir, "simulationWorker.mjs");
-}
 
 function runWorker(
   file: string,
@@ -41,7 +23,7 @@ function runWorker(
 }
 
 export async function simulateInParallel(games: number, lastTurn: number) {
-  const file = await bundledWorker();
+  const file = await bundleForNode(WORKER_ENTRY, "simulationWorker");
   const workers = Math.max(1, Math.min(availableParallelism(), games));
   const perWorker = Math.ceil(games / workers);
   const slices = Array.from({ length: workers }, (unused, index) => ({
