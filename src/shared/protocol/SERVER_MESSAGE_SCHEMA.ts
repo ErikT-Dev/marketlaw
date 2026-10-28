@@ -65,6 +65,7 @@ const PLAYER_VIEW = v.object({
   quests: v.array(v.object({ quest: QuestName, turnsOnTable: COUNT })),
   bonusTypes: v.array(TypeName),
   doneOrder: v.array(SEAT),
+  playerOrder: v.array(SEAT),
 });
 
 export const SERVER_MESSAGE_SCHEMA = v.variant("type", [

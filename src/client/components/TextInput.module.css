@@ -1,0 +1,28 @@
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+.label {
+  font-weight: var(--font-weight-bold);
+}
+.input {
+  min-height: 40px;
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid var(--color-panel-border);
+  border-radius: var(--radius-md);
+  background: var(--color-panel-base);
+  color: var(--color-text-primary);
+  font: inherit;
+}
+.input:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+}
+.hint {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+.error {
+  color: var(--color-toast-error);
+  font-size: var(--font-size-sm);
+}

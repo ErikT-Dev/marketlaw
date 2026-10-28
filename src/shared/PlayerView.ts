@@ -18,4 +18,5 @@ export type PlayerView = {
   readonly quests: ReadonlyArray<QuestOnTable>;
   readonly bonusTypes: ReadonlyArray<TypeName>;
   readonly doneOrder: ReadonlyArray<SeatNumber>;
+  readonly playerOrder: ReadonlyArray<SeatNumber>;
 };

@@ -1,9 +1,12 @@
 import type { ActionIntent } from "../../shared/protocol/ActionIntent";
 import type { RoomUpdate } from "../../shared/protocol/RoomUpdate";
+import { Button } from "../components/Button";
+import { Panel } from "../components/Panel";
+import styles from "./game/GamePage.module.css";
+import { GameTopBar } from "./game/GameTopBar";
+import { YourStatsPanel } from "./game/YourStatsPanel";
 import { HandList } from "./HandList";
 import { OtherSeatPanel } from "./OtherSeatPanel";
-import styles from "./Screens.module.css";
-import { StatsList } from "./StatsList";
 
 type Props = {
   readonly update: RoomUpdate;
@@ -16,38 +19,53 @@ export function GamePage({ update, onAction }: Props) {
   if (view === undefined || mine?.kind !== "own") {
     return null;
   }
+  const playerNames = update.room.playerNames;
   return (
-    <main className={styles["page"]}>
-      <h1>Turn {view.turn}</h1>
-      <section className={styles["panel"]} aria-label="Your city">
-        <h2>
-          You (seat {mine.seat}){mine.isDone ? ", done" : ""}
-        </h2>
-        <StatsList label="Your stats" stats={mine.stats} />
-        <p>City: {mine.city.length === 0 ? "empty" : mine.city.join(", ")}</p>
-        <HandList hand={mine.hand} isDone={mine.isDone} onAction={onAction} />
-        <div className={styles["row"]}>
-          <button
-            className={styles["button"]}
-            type="button"
-            disabled={mine.isDone}
-            onClick={() => {
-              onAction({ type: "end_turn" });
-            }}
-          >
-            End turn
-          </button>
+    <div className={styles["page"]}>
+      <GameTopBar view={view} playerNames={playerNames} />
+      <main className={styles["table"]}>
+        <div className={styles["left"]}>
+          <Panel title="Opponents">
+            {view.seats.map((seat) =>
+              seat.kind === "other" ? (
+                <OtherSeatPanel
+                  key={seat.seat}
+                  seat={seat}
+                  name={playerNames[seat.seat - 1] ?? `Seat ${String(seat.seat)}`}
+                />
+              ) : null,
+            )}
+          </Panel>
+          <Panel title="Draw log" />
         </div>
-      </section>
-      {view.seats.map((seat) =>
-        seat.kind === "other" ? (
-          <OtherSeatPanel
-            key={seat.seat}
-            seat={seat}
-            name={update.room.playerNames[seat.seat - 1] ?? `Seat ${String(seat.seat)}`}
-          />
-        ) : null,
-      )}
-    </main>
+        <div className={styles["middle"]}>
+          <Panel title="Marketplace" />
+          <Panel title="Quests" />
+          <div className={styles["cityRow"]}>
+            <Panel title={`Your city · ${String(mine.city.length)} cards`}>
+              <p>{mine.city.length === 0 ? "Empty" : mine.city.join(", ")}</p>
+            </Panel>
+            <Panel title="Combos" />
+          </div>
+        </div>
+        <div className={styles["right"]}>
+          <YourStatsPanel seat={mine} />
+          <Panel title={`Your hand · ${String(mine.hand.length)} cards`}>
+            <HandList hand={mine.hand} isDone={mine.isDone} onAction={onAction} />
+          </Panel>
+          <Panel title="Actions">
+            <Button
+              look="success"
+              isDisabled={mine.isDone}
+              onClick={() => {
+                onAction({ type: "end_turn" });
+              }}
+            >
+              End turn
+            </Button>
+          </Panel>
+        </div>
+      </main>
+    </div>
   );
 }

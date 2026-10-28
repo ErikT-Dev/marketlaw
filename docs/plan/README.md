@@ -200,7 +200,7 @@ The 425 scenarios cover all of version 1, but each phase implements only part of
 | 02 | [Scenario runner and card data](phase-02-scenario-runner-and-card-data.md) | 1 Foundations | 01 | done |
 | 03 | [Engine core: setup and the first turn](phase-03-engine-core.md) | 1 Foundations | 02 | done |
 | 04 | [Thin slice: one turn on the live server](phase-04-thin-slice.md) | 2 Slice | 03 | done |
-| 05 | [Game screen: layout and components](phase-05-game-screen-layout.md) | 3 Playthrough | 04 | approved |
+| 05 | [Game screen: layout and components](phase-05-game-screen-layout.md) | 3 Playthrough | 04 | done |
 | 06 | [Game screen: hand, actions and moves](phase-06-game-screen-hand-and-actions.md) | 3 Playthrough | 05 | approved |
 | 07 | [Drawing and income](phase-07-drawing-and-income.md) | 3 Playthrough | 06 | approved |
 | 08 | [Bots, simulator, replays and test rooms](phase-08-bots-simulator-and-test-rooms.md) | 3 Playthrough | 07 | approved |
@@ -272,7 +272,6 @@ Listed in full in `decisions.md`:
 
 | Decision | Needed before phase |
 |---|---|
-| O2 Screen sizes in version 1 | decided during 05 |
 | O4 Password hashing within the free plan | measured in 04, decided before 23 |
 | O5 Game length, after simulation | reviewed after 15, decided before 20 |
 | O6 Lobby, presence and global counters | 16 |

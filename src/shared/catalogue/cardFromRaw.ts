@@ -61,6 +61,7 @@ export function cardFromRaw(
   return {
     isOk: true,
     value: {
+      number: card.cardId,
       name: card.cardName,
       sector: card.sector,
       tier: card.tier,

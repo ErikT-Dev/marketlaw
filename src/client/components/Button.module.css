@@ -1,0 +1,65 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  min-height: 32px;
+  padding: 10px 20px;
+  border: 2px solid transparent;
+  border-radius: var(--radius-md);
+  color: var(--color-button-text);
+  font: inherit;
+  font-weight: var(--font-weight-bold);
+  cursor: pointer;
+}
+
+.button:focus-visible {
+  outline: none;
+  border-color: var(--color-focus-ring);
+}
+
+.button:disabled {
+  background: var(--color-button-disabled-base);
+  cursor: default;
+}
+
+.primary {
+  background: var(--color-button-primary-base);
+}
+.primary:hover:enabled {
+  background: var(--color-button-primary-hover);
+}
+.secondary {
+  background: var(--color-button-secondary-base);
+}
+.secondary:hover:enabled {
+  background: var(--color-button-secondary-hover);
+}
+.danger {
+  background: var(--color-button-danger-hover);
+}
+.danger:hover:enabled {
+  background: color-mix(in srgb, var(--color-button-danger-hover) 85%, black);
+}
+.warning {
+  background: var(--color-button-warning-base);
+  color: var(--color-background-game-window);
+}
+.warning:hover:enabled {
+  background: var(--color-button-warning-hover);
+}
+.success {
+  background: var(--color-button-success-hover);
+}
+.success:hover:enabled {
+  background: color-mix(in srgb, var(--color-button-success-hover) 85%, black);
+}
+.menu {
+  background: linear-gradient(180deg, var(--color-button-menu-from), var(--color-button-menu-to));
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .button {
+    transition: background-color 120ms ease;
+  }
+}

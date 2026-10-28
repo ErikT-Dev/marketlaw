@@ -1,0 +1,49 @@
+.toast {
+  display: flex;
+  gap: var(--space-sm);
+  width: 340px;
+  padding: var(--space-md);
+  border-left: 4px solid;
+  border-radius: var(--radius-lg);
+  box-sizing: border-box;
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+.title {
+  font-weight: var(--font-weight-bold);
+}
+.body {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.close {
+  min-width: 24px;
+  min-height: 24px;
+  border: none;
+  background: transparent;
+  color: var(--color-text-primary);
+  cursor: pointer;
+}
+
+.success {
+  background: var(--color-board-toast-success);
+  border-color: var(--color-toast-success);
+}
+.error {
+  background: var(--color-board-toast-error);
+  border-color: var(--color-toast-error);
+}
+.info {
+  background: var(--color-board-toast-info);
+  border-color: var(--color-toast-info);
+}
+.warning {
+  background: var(--color-board-toast-warning);
+  border-color: var(--color-toast-warning);
+}

@@ -26,7 +26,9 @@
     "db:migrate:remote": "wrangler d1 migrations apply marketlaw --remote",
     "deploy": "npm run check && npm run db:migrate:remote && wrangler deploy",
     "design:export": "node tools/design-export/exportDesign.ts",
-    "design:images": "node tools/design-export/receiveBoardImages.ts"
+    "design:images": "node tools/design-export/receiveBoardImages.ts",
+    "design:tokens": "node tools/design-export/writeTokensCss.ts",
+    "design:assets": "node tools/design-export/convertAssets.ts"
   },
   "dependencies": {
     "react": "19.3.0",

@@ -1,30 +1,7 @@
 import AxeBuilder from "@axe-core/playwright";
-import { expect, test, type Browser, type Page } from "@playwright/test";
-
-type Player = { readonly page: Page; readonly frames: string[] };
-
-async function newPlayer(browser: Browser, name: string): Promise<Player> {
-  const context = await browser.newContext();
-  const page = await context.newPage();
-  const frames: string[] = [];
-  page.on("websocket", (socket) => {
-    socket.on("framereceived", (frame) => {
-      frames.push(String(frame.payload));
-    });
-  });
-  await page.goto("/");
-  await page.getByLabel("Your name").fill(name);
-  await page.getByRole("button", { name: "Continue" }).click();
-  await expect(page.getByRole("heading", { name: `Hello, ${name}` })).toBeVisible();
-  return { page, frames };
-}
-
-async function handOf(page: Page): Promise<ReadonlyArray<string>> {
-  const items = page.getByRole("list", { name: "Your hand" }).getByRole("listitem");
-  return items.evaluateAll((elements) =>
-    elements.map((element) => element.querySelector("span")?.textContent ?? ""),
-  );
-}
+import { expect, test, type Page } from "@playwright/test";
+import { handOf } from "./handOf";
+import { signedInPlayer } from "./signedInPlayer";
 
 async function sellFirstCardAndEndTurn(page: Page): Promise<void> {
   const [card] = await handOf(page);
@@ -34,8 +11,8 @@ async function sellFirstCardAndEndTurn(page: Page): Promise<void> {
 }
 
 test("two players play turn 1 together and never see each other's hands", async ({ browser }) => {
-  const ann = await newPlayer(browser, "Ann");
-  const bea = await newPlayer(browser, "Bea");
+  const ann = await signedInPlayer(browser, "Ann");
+  const bea = await signedInPlayer(browser, "Bea");
   await ann.page.getByRole("button", { name: "Create room" }).click();
   await expect(ann.page.getByRole("heading", { name: "Waiting for players" })).toBeVisible();
   const code = await ann.page.getByLabel("Room code").textContent();

@@ -1,0 +1,70 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 6px 12px 6px 10px;
+  border-radius: var(--radius-md);
+  background: var(--color-panel-raised);
+  font-weight: var(--font-weight-bold);
+  white-space: nowrap;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+.rating {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-regular);
+}
+.status {
+  font-size: var(--font-size-xs);
+}
+.left {
+  color: var(--color-text-muted);
+}
+.firstPlayer {
+  padding: 0 6px;
+  border-radius: var(--radius-lg);
+  background: var(--color-palette-yellow);
+  color: var(--color-panel-base);
+  font-size: var(--font-size-xs);
+}
+
+.timer {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: var(--space-xs) 10px;
+  border-radius: var(--radius-md);
+  background: var(--color-panel-raised);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.time {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-timer-normal);
+}
+.low {
+  background: var(--color-board-timer-low);
+}
+.low .time {
+  color: var(--color-timer-low);
+}
+.paused .time {
+  color: var(--color-timer-paused);
+}
+
+.pending {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px var(--space-sm);
+  border-radius: 10px;
+  background: var(--color-board-pending);
+  font-size: var(--font-size-xs);
+}

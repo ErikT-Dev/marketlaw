@@ -23,7 +23,8 @@ None yet.
 ## S1. Screen size and layout
 
 - **S1.1** Every screen is designed for a page area of **1920×940**: a 1920×1080 monitor with the
-  browser window maximized. Other screen sizes are designed later.
+  browser window maximized. Every screen stretches to work from 1280×720 to 2560×1440
+  (`rules/frontend.md`, decision D21).
 - **S1.2** The game screen shows everything on one table, without tabs or toggles: a top bar
   across the full width, then three columns.
   - Left: the opponents overview (S3), and under it the draw log and chat (S7).
@@ -39,8 +40,9 @@ None yet.
 - **S2.1** The top bar shows: the **Menu** button (game menu, S14), the **turn number** "Turn 21 of
   40", the **phase** (market phase, main phase or game over), and the **player order** as player
   badges from the first player of the turn, with the first player marked "first player".
-- **S2.2** Each badge in the player order shows the player's username and, during the main phase,
-  whether they are **done**, **away** or have **left** (R5.4).
+- **S2.2** Each badge in the top bar shows the player's username, your own too, and, during the
+  main phase, whether they are **done**, **away** or have **left** (R5.4). Players who left are not
+  in the player order (R4.5); their badges come after it, by seat number.
 - **S2.3** On the right: the **user box** with your username, which opens the user menu (S12.7),
   then your own clock, and **Leave game**. In the main phase the clock shows your
   main-phase time left and your time bank; in the market phase it shows whose go it is and how
@@ -92,7 +94,8 @@ None yet.
   with the ready ones highlighted, and the panel title says how many are ready.
 - **S6.2** **Your stats** shows funds, income, workforce, quality, satisfaction, product,
   distribution, bonus, build passes and influence, each with its icon and name, and your type
-  counts with the bonus types first.
+  counts with the bonus types first. Names appear as a tooltip when the pointer is over the icon,
+  and are the icon's accessible name for screen readers.
 - **S6.3** Under the stats, each project shows your progress or "completed", who has completed it,
   and when nobody has, that the first to complete it gets +2 funds (R16.6).
 - **S6.4** **Your hand** shows your cards in 2 columns. Each card shows its number, name and its

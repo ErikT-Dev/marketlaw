@@ -1,0 +1,33 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-background-modal-backdrop);
+  z-index: 100;
+}
+
+.modal {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  max-height: calc(100vh - 2 * var(--space-xxl));
+  overflow-y: auto;
+  padding: var(--space-xl);
+  border-radius: var(--radius-lg);
+  background: var(--color-background-modal);
+  box-sizing: border-box;
+}
+
+.large {
+  width: 512px;
+}
+.extraLarge {
+  width: 1024px;
+}
+
+.title {
+  margin: 0;
+  font-size: var(--font-size-xl);
+}

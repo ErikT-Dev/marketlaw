@@ -1,0 +1,44 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background:
+    linear-gradient(var(--color-board-page-dim), var(--color-board-page-dim)),
+    url("../../assets/backgrounds/game.webp") center / cover,
+    var(--color-background-game-window);
+}
+
+.table {
+  display: grid;
+  flex: 1;
+  min-height: 0;
+  gap: var(--space-lg);
+  padding: var(--space-lg);
+  grid-template-columns: minmax(280px, 360fr) minmax(0, 1048fr) minmax(400px, 448fr);
+}
+
+.left,
+.middle,
+.right,
+.cityRow {
+  display: grid;
+  gap: var(--space-md);
+  min-width: 0;
+  min-height: 0;
+}
+
+.left {
+  grid-template-rows: minmax(0, 548fr) minmax(0, 292fr);
+}
+
+.middle {
+  grid-template-rows: minmax(0, 170fr) minmax(0, 348fr) minmax(0, 310fr);
+}
+
+.cityRow {
+  grid-template-columns: minmax(0, 700fr) minmax(0, 336fr);
+}
+
+.right {
+  grid-template-rows: minmax(0, 300fr) minmax(0, 416fr) auto;
+}

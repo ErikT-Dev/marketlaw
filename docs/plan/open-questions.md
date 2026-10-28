@@ -246,3 +246,47 @@ file.
   The reconnect delay grows until the first update arrives, not merely until the socket opens.
 - **Implemented:** `src/hosts/RemoteGameHost.ts`, `src/client/store/ClientStore.ts`,
   `src/server/GameRoom.ts` (phase 04).
+
+## Q18. Where do players who left go in the top bar's player order?
+
+- **Phase:** 05, item 4.
+- **Question:** S2.2 says each badge in the player order shows whether the player has left, but
+  R4.5 skips players who left, so they have no place in the order.
+- **Options:** leave them out of the top bar; keep them at their seat's place in the rotation;
+  show them after the order.
+- **Solution:** the engine's player order (in every `PlayerView`) holds only players still in the
+  game, as R4.5 says; the top bar shows players who left after it, by seat number, marked "left".
+  Written into S2.2.
+- **Why:** the order stays the one the market phase uses (phase 12), and everyone still sees who
+  left, as S2.2 asks.
+- **Implemented:** `harness/spec/screens.md` S2.2, `src/rules/playerOrderOf.ts`, the game top bar
+  (phase 05).
+
+## Q19. Which screen sizes does version 1 support? (O2)
+
+- **Phase:** 05, item 5.
+- **Question:** `rules/frontend.md` asks for 1280×720 to 2560×1440, while S1.1 and the design cover
+  only 1920×940. O2 left the choice to the owner after the size test.
+- **Options:** keep 1280×720 to 2560×1440 and recheck when quests exist; keep it with no recheck;
+  support only 1920×1080 and up; decide after phase 13.
+- **Solution:** answered by the owner, 2026-10-28: keep 1280×720 to 2560×1440 and recheck in
+  phase 13 with 5 quests and 4 players.
+- **Why:** the size test passed at all three sizes; the densest content does not exist yet.
+- **Implemented:** `harness/spec/screens.md` S1.1, `decisions.md` D21, phase 13's Open points.
+
+## Q20. Your own badge, statuses after the main phase, and stat names as tooltips
+
+- **Phase:** 05, phase review findings 3, 7 and 10.
+- **Question:** the design shows your own top-bar badge as "You", but S2.2 asks for usernames. S2.2
+  limits statuses to the main phase, but the code showed "left" in every phase. S6.2 asks for
+  each stat's "icon and name", and the design shows names only on hover.
+- **Options:** for the badge, "You" or the username; for the names, visible text, a hover tooltip,
+  or a tooltip that keyboard focus also opens.
+- **Solution:** your badge shows your username, as S2.2 says (the size test now measures the
+  longest name). Statuses show only in the main phase. Stat names are hover tooltips placed under
+  the icon and the icon's accessible name, as in the design;
+  written into S2.2 and S6.2. A focusable chip was left out: the icons are not controls, and
+  `jsx-a11y` keeps non-interactive elements out of the tab order.
+- **Why:** the spec wins over the design; a tooltip keeps the design's dense stats row.
+- **Implemented:** `harness/spec/screens.md` S2.2 and S6.2, `orderBadgesOf.ts`,
+  `Chip.module.css` (phase 05).
