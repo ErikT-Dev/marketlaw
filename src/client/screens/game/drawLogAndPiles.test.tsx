@@ -31,8 +31,8 @@ describe("draw log", () => {
       .getAllByRole("listitem")
       .map((row) => row.textContent);
     expect(rows).toEqual([
-      "T3Di drew 1 card: Public, tier 2 (income)",
-      "T2Ann drew 1 card: Service, tier 1 (income)",
+      "T3Turn 3: Di drew 1 card: Public, tier 2 (income)",
+      "T2Turn 2: Ann drew 1 card: Service, tier 1 (income)",
     ]);
   });
 
@@ -54,5 +54,15 @@ describe("deck and discard pile", () => {
     expect(within(dialog).getByText(/Pub · Service, tier 1/)).toBeDefined();
     fireEvent.click(within(dialog).getByRole("button", { name: "Close" }));
     expect(screen.queryByRole("dialog")).toBeNull();
+  });
+
+  it("closes the discard pile with Escape and returns focus to its button", () => {
+    render(<GamePage {...gamePageProps(roomUpdateWith({ discard: ["Pub"] }))} />);
+    const opener = screen.getByRole("button", { name: "Discard 1 · view ›" });
+    fireEvent.click(opener);
+    expect(screen.getByRole("dialog", { name: "Discard pile · 1 card" })).toBeDefined();
+    fireEvent.keyDown(document, { key: "Escape" });
+    expect(screen.queryByRole("dialog")).toBeNull();
+    expect(opener.matches(":focus")).toBe(true);
   });
 });

@@ -3,6 +3,7 @@ import type { CardName } from "../../../shared/catalogue/CardName";
 import { cardOf } from "../../../shared/catalogue/cardOf";
 import { Button } from "../../components/Button";
 import { Modal } from "../../components/Modal";
+import { counted } from "./counted";
 import styles from "./DeckAndDiscard.module.css";
 
 type Props = {
@@ -16,7 +17,11 @@ export function DiscardPileDialog({ discard, onClose }: Props) {
     closeArea.current?.querySelector("button")?.focus();
   }, []);
   return (
-    <Modal title={`Discard pile · ${String(discard.length)} cards`} size="large">
+    <Modal
+      title={`Discard pile · ${counted(discard.length, "card")}`}
+      size="large"
+      onClose={onClose}
+    >
       {discard.length === 0 ? (
         <p>The discard pile is empty.</p>
       ) : (

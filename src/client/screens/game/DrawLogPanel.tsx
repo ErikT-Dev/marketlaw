@@ -21,8 +21,9 @@ export function DrawLogPanel({ drawLog, playerNames }: Props) {
               key={String(drawLog.length - index)}
               className={`${styles["row"] ?? ""} ${entry.kind === "shuffle" ? (styles["shuffle"] ?? "") : ""}`}
             >
-              <span className={styles["turn"]} aria-label={`Turn ${String(entry.turn)}`}>
-                T{entry.turn}
+              <span className={styles["turn"]}>
+                <span aria-hidden="true">T{entry.turn}</span>
+                <span className={styles["visuallyHidden"]}>Turn {entry.turn}: </span>
               </span>
               <span>{drawLogText(entry, playerNames)}</span>
             </li>

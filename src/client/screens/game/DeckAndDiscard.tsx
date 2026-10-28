@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import type { CardName } from "../../../shared/catalogue/CardName";
 import styles from "./DeckAndDiscard.module.css";
 import { DiscardPileDialog } from "./DiscardPileDialog";
@@ -10,10 +10,12 @@ type Props = {
 
 export function DeckAndDiscard({ deckCount, discard }: Props) {
   const [isDiscardOpen, setIsDiscardOpen] = useState(false);
+  const discardButton = useRef<HTMLButtonElement>(null);
   return (
     <div className={styles["piles"]}>
       <span>Deck {deckCount}</span>
       <button
+        ref={discardButton}
         className={styles["discardLink"]}
         type="button"
         onClick={() => {
@@ -27,6 +29,7 @@ export function DeckAndDiscard({ deckCount, discard }: Props) {
           discard={discard}
           onClose={() => {
             setIsDiscardOpen(false);
+            discardButton.current?.focus();
           }}
         />
       ) : null}
