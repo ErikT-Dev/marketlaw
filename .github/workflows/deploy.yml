@@ -39,6 +39,9 @@ jobs:
       - name: Prepare the local database
         run: npm run db:migrate:local
 
+      - name: Make a test room secret for the local server
+        run: echo "TEST_ROOM_SECRET=$(openssl rand -hex 24)" > .dev.vars
+
       - name: Browser tests
         run: npm run e2e
 
