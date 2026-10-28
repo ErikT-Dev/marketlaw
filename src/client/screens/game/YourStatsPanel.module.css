@@ -6,3 +6,23 @@
   padding: 0;
   list-style: none;
 }
+
+.types {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  margin: var(--space-md) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.projects {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: var(--space-md) 0 0;
+  padding: 0;
+  list-style: none;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+}

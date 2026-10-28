@@ -1,0 +1,19 @@
+.sectors {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-md) var(--space-lg);
+  align-items: flex-start;
+}
+
+.sector {
+  display: grid;
+  grid-template-columns: repeat(2, 140px);
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.empty {
+  margin: 0;
+}
