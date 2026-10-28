@@ -23,5 +23,7 @@ export function newSeat(seat: SeatNumber): SeatState {
     isDone: false,
     hasLeft: false,
     timeBankMs: TIME_BANK_MS,
+    undoPoints: [],
+    isUndoBlocked: false,
   };
 }

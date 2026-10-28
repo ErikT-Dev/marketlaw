@@ -26,6 +26,8 @@ export function endMainPhase(state: GameState, random: Random): GameState {
         stats: { ...afterSteps.stats, funds: afterSteps.stats.funds + firstFunds },
         drawnThisPhase: [],
         projectsThisTurn: [],
+        undoPoints: [],
+        isUndoBlocked: false,
       };
       return seat.hasLeft ? started : { ...started, isDone: false, actionsThisTurn: 0 };
     }),

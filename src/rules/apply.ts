@@ -10,9 +10,11 @@ import type { Random } from "./Random";
 import { rejectionOf } from "./rejectionOf";
 import { sellCards } from "./sellCards";
 import { takeIncome } from "./takeIncome";
+import { undoLatest } from "./undoLatest";
 import { updateSeat } from "./updateSeat";
 import { useDrawAction } from "./useDrawAction";
 import { useTrade } from "./useTrade";
+import { withUndoHistory } from "./withUndoHistory";
 
 function accepted(state: GameState, action: GameAction, random: Random): GameState {
   switch (action.type) {
@@ -42,6 +44,8 @@ function accepted(state: GameState, action: GameAction, random: Random): GameSta
       );
     case "draw_action":
       return takeIncome(useDrawAction(state, action, random), action.seat, random);
+    case "undo":
+      return updateSeat(state, action.seat, undoLatest);
   }
 }
 
@@ -52,6 +56,6 @@ export function apply(
 ): Result<GameState, Rejection> {
   const code = rejectionOf(state, action);
   return code === undefined
-    ? { isOk: true, value: accepted(state, action, random) }
+    ? { isOk: true, value: withUndoHistory(state, action, accepted(state, action, random)) }
     : { isOk: false, error: { code } };
 }

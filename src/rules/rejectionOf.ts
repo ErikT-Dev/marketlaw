@@ -15,6 +15,13 @@ import { turnRejectionOf } from "./turnRejectionOf";
 
 type PlayCard = Extract<GameAction, { readonly type: "play_card" }>;
 
+function undoRejection(seat: SeatState): ReasonCode | undefined {
+  if (seat.undoPoints.length > 0) {
+    return undefined;
+  }
+  return seat.isUndoBlocked ? "cannot_undo" : "nothing_to_undo";
+}
+
 function playRejection(state: GameState, seat: SeatState, action: PlayCard): ReasonCode | undefined {
   if (!seat.hand.includes(action.card)) {
     return "card_not_in_hand";
@@ -53,5 +60,7 @@ export function rejectionOf(state: GameState, action: GameAction): ReasonCode | 
       return tradeRejection(seat, action.trade);
     case "draw_action":
       return drawActionRejection(state, seat, action.kind, action.tier);
+    case "undo":
+      return undoRejection(seat);
   }
 }

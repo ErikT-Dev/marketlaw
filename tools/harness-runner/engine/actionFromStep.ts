@@ -18,6 +18,7 @@ const STEP_SCHEMA = v.variant("action", [
   }),
   v.strictObject({ seat: SEAT, action: v.literal("end_turn") }),
   v.strictObject({ seat: SEAT, action: v.literal("claim_all") }),
+  v.strictObject({ seat: SEAT, action: v.literal("undo") }),
   v.strictObject({ seat: SEAT, action: v.literal("complete_project"), project: ProjectName }),
   v.strictObject({
     seat: SEAT,
@@ -60,6 +61,8 @@ export function actionFromStep(step: Readonly<Record<string, unknown>>): GameAct
       return { type: "end_turn", seat: parsed.seat };
     case "claim_all":
       return { type: "claim_all", seat: parsed.seat };
+    case "undo":
+      return { type: "undo", seat: parsed.seat };
     case "complete_project":
       return { type: "complete_project", seat: parsed.seat, project: parsed.project };
     case "influence":

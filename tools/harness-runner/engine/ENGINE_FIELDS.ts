@@ -42,6 +42,7 @@ export const ENGINE_FIELDS = {
     "claim_all",
     "complete_project",
     "influence",
+    "undo",
   ]),
   thenFields: new Set([
     "rejected",
@@ -85,6 +86,7 @@ export const ENGINE_FIELDS = {
         "contains",
         "hides",
         "log_contains",
+        "log_excludes",
       ]),
     ],
   ]),

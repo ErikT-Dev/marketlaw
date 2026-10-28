@@ -58,5 +58,7 @@ export function seatFromGiven(seat: SeatNumber, given: GivenSeat | undefined): S
     isDone: given.done ?? start.isDone,
     hasLeft: given.left ?? start.hasLeft,
     timeBankMs: given.time_bank_ms ?? start.timeBankMs,
+    undoPoints: start.undoPoints,
+    isUndoBlocked: start.isUndoBlocked,
   };
 }

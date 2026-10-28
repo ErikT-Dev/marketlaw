@@ -29,6 +29,8 @@ const SEAT_STATE = v.object({
   isDone: v.boolean(),
   hasLeft: v.boolean(),
   timeBankMs: v.number(),
+  undoPoints: v.tuple([]),
+  isUndoBlocked: v.boolean(),
 });
 
 export const GAME_STATE_SCHEMA = v.object({

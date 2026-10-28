@@ -25,4 +25,5 @@ export type GameAction =
       readonly seat: SeatNumber;
       readonly kind: Kind;
       readonly tier: Tier;
-    };
+    }
+  | { readonly type: "undo"; readonly seat: SeatNumber };
