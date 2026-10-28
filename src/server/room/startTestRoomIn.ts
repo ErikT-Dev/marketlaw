@@ -36,6 +36,7 @@ export function startTestRoomIn(
         schemaVersion: SAVE_SCHEMA_VERSION,
         seed: room.seed,
         setup: { players: playerCount },
+        startingState: state,
         actionLog: [],
         state,
       },

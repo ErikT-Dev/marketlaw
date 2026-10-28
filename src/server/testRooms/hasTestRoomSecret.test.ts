@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { hasTestRoomSecret, TEST_ROOM_SECRET_HEADER } from "./hasTestRoomSecret";
+import { TEST_ROOM_SECRET_HEADER } from "../../shared/api/TEST_ROOM_SECRET_HEADER";
+import { hasTestRoomSecret } from "./hasTestRoomSecret";
 
 const SECRET = "a-test-room-secret-of-enough-length";
 

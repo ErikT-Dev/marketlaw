@@ -16,7 +16,9 @@ export async function createTestRoom(request: Request, env: Env): Promise<Respon
   if (body === null || body.playerNames.length !== body.state.seats.length) {
     return json({ isOk: false, reason: "malformed_message" }, 400);
   }
-  const guests = await Promise.all(body.playerNames.map(async (name) => insertGuest(env, name)));
+  const guests = await Promise.all(
+    body.playerNames.map(async (name) => insertGuest(env, name, true)),
+  );
   const seed = crypto.getRandomValues(new Uint32Array(1))[0] ?? 0;
   const code = await withFreeRoomCode(env, async (room, candidate) =>
     room.startTestRoom(

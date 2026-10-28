@@ -6,6 +6,7 @@ import type { ActionIntent } from "../../shared/protocol/ActionIntent";
 import type { RoomCode } from "../../shared/RoomCode";
 import { requestGuest } from "../api/requestGuest";
 import { requestRoom } from "../api/requestRoom";
+import { requestTestSeat } from "../api/requestTestSeat";
 import type { ClientState } from "./ClientState";
 import { CODES_THAT_RELOAD_THE_GAME } from "./CODES_THAT_RELOAD_THE_GAME";
 import type { PendingAction } from "./PendingAction";
@@ -55,6 +56,24 @@ export class ClientStore {
     const session = { token: guest.token, name: guest.name, roomCode: null };
     writeSession(session);
     this.change({ session, notice: null });
+  };
+
+  readonly startFromSeatLink = async (
+    linked: StoredSession,
+    askToSwitch: () => boolean,
+  ): Promise<void> => {
+    if (!(await requestTestSeat(linked.token))) {
+      this.change({ notice: "That link is not a test room seat, so it was ignored." });
+      return;
+    }
+    const current = this.state.session;
+    if (current !== null && current.token !== linked.token && !askToSwitch()) {
+      return;
+    }
+    if (linked.roomCode === null) {
+      return;
+    }
+    this.enterRoom(linked, linked.roomCode);
   };
 
   readonly createRoom = async (size: 2 | 3 | 4): Promise<void> => {

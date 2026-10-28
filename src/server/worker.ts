@@ -9,6 +9,7 @@ import { findPlayerByTokenHash } from "./findPlayerByTokenHash";
 import { insertGuest } from "./insertGuest";
 import type { Identity } from "./room/Identity";
 import { sha256Hex } from "./sha256Hex";
+import { confirmTestSeat } from "./testRooms/confirmTestSeat";
 import { createTestRoom } from "./testRooms/createTestRoom";
 import { withFreeRoomCode } from "./withFreeRoomCode";
 
@@ -95,6 +96,9 @@ async function route(request: Request, env: Env): Promise<Response> {
   }
   if (request.method === "POST" && pathname === "/api/test-rooms") {
     return createTestRoom(request, env);
+  }
+  if (request.method === "POST" && pathname === "/api/test-room-seats") {
+    return confirmTestSeat(request, env);
   }
   return new Response("Not found", { status: 404 });
 }

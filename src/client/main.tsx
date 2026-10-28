@@ -4,13 +4,19 @@ import { App } from "./App";
 import { openRoomHost } from "./openRoomHost";
 import { ClientStore } from "./store/ClientStore";
 import { sessionFromLink } from "./store/sessionFromLink";
-import { writeSession } from "./store/writeSession";
 import "./tokens.css";
 
 const linkedSession = sessionFromLink(window.location.hash);
 if (linkedSession !== null) {
-  writeSession(linkedSession);
   window.history.replaceState(null, "", window.location.pathname);
+}
+const store = new ClientStore(openRoomHost);
+if (linkedSession !== null) {
+  void store.startFromSeatLink(linkedSession, () =>
+    window.confirm(
+      "Switch to this test room seat? Your current guest account cannot be logged back into.",
+    ),
+  );
 }
 
 const rootElement = document.getElementById("root");
@@ -20,6 +26,6 @@ if (rootElement === null) {
 
 createRoot(rootElement).render(
   <StrictMode>
-    <App store={new ClientStore(openRoomHost)} />
+    <App store={store} />
   </StrictMode>,
 );

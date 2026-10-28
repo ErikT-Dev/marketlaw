@@ -1,5 +1,5 @@
 import * as v from "valibot";
-import { beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { GameHost } from "../../shared/GameHost";
 import type { HostEvent } from "../../shared/HostEvent";
 import type { ReasonCode } from "../../shared/ReasonCode";
@@ -40,6 +40,15 @@ function storeInRoom(): FakeHost {
   };
 }
 
+function fakeHost(): GameHost {
+  return {
+    sendAction: () => null,
+    requestResync: () => undefined,
+    subscribe: () => () => undefined,
+    close: () => undefined,
+  };
+}
+
 function rejectFirstAction(fake: FakeHost, code: ReasonCode): void {
   fake.store.sendAction({ type: "play_card", card: "Loft" });
   fake.emit({ type: "rejected", code, actionId: "action-1" });
@@ -48,6 +57,16 @@ function rejectFirstAction(fake: FakeHost, code: ReasonCode): void {
 beforeEach(() => {
   localStorage.clear();
 });
+
+afterEach(() => {
+  vi.unstubAllGlobals();
+});
+
+const SEAT_LINK = { token: "seat-token", name: "Seat 1", roomCode: v.parse(RoomCode, "K7QR2P") };
+
+function serverSaysTestSeat(isTestRoomSeat: boolean): void {
+  vi.stubGlobal("fetch", () => Promise.resolve(Response.json({ isTestRoomSeat })));
+}
 
 describe("client store moves", () => {
   it("keeps a sent move as pending until the update that accepts it", () => {
@@ -93,5 +112,33 @@ describe("client store moves", () => {
     expect(fake.resyncs()).toBe(1);
     rejectFirstAction(fake, "card_not_in_hand");
     expect(fake.resyncs()).toBe(1);
+  });
+});
+
+describe("seat links", () => {
+  it("ignores a link the server does not confirm as a test room seat", async () => {
+    serverSaysTestSeat(false);
+    const store = new ClientStore(() => fakeHost());
+    await store.startFromSeatLink(SEAT_LINK, () => true);
+    expect(store.getSnapshot().session).toBeNull();
+    expect(store.getSnapshot().notice).toBe(
+      "That link is not a test room seat, so it was ignored.",
+    );
+  });
+
+  it("signs in to a confirmed seat when the browser has no account", async () => {
+    serverSaysTestSeat(true);
+    const store = new ClientStore(() => fakeHost());
+    await store.startFromSeatLink(SEAT_LINK, () => false);
+    expect(store.getSnapshot().session).toEqual(SEAT_LINK);
+  });
+
+  it("keeps a different account when the player says no, and switches when they say yes", async () => {
+    serverSaysTestSeat(true);
+    const { store } = storeInRoom();
+    await store.startFromSeatLink(SEAT_LINK, () => false);
+    expect(store.getSnapshot().session?.token).toBe("token");
+    await store.startFromSeatLink(SEAT_LINK, () => true);
+    expect(store.getSnapshot().session).toEqual(SEAT_LINK);
   });
 });
