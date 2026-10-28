@@ -339,3 +339,56 @@ file.
 - **Why:** no place empties and nothing is refilled before phase 12, so no refill shuffle can
   happen yet.
 - **Implemented:** `src/rules/takeIncome.ts`, `src/shared/DrawLogEntry.ts`; open for phase 12.
+
+## Q24. The phase 08 invariants on the required list
+
+- **Phase:** 08, item 2.
+- **Question:** the phase file lists the invariants the simulator checks, and its exit criterion is
+  that they hold over 10,000 games, but it adds nothing to `harness/required.yaml`, so a broken
+  invariant would show in the report without failing the harness.
+- **Options:** leave the list as it is; add the 12 invariants.
+- **Solution:** add I1, I2, I5, I6, I7, I8, I9, I10, I17, I18, I26 and I27 to the required list.
+  The harness then fails when any simulated game breaks one, or when fewer than 10,000 games
+  ran, and names the shortest failing game.
+- **Why:** the exit criterion only means something if the check can fail.
+- **Implemented:** `harness/required.yaml`, `tools/harness-runner/simulationProblems.ts`
+  (phase 08).
+
+## Q25. The test-room tool is a command, not a page
+
+- **Phase:** 08, item 5 (D8).
+- **Question:** D8 and the phase file ask for an owner-only page that starts a live room from any
+  scenario's `given`. A scenario's `given` is turned into a game by the harness's engine driver,
+  which the Worker must not import, and the browser must never build game states.
+- **Options:** a page that holds the scenario files and a second copy of the converter in the
+  Worker; a command on the owner's computer that converts the `given` and sends the finished state
+  to a secret-protected endpoint.
+- **Solution:** a command, `npm run test-room -- <scenario file> <number> [site]`. It turns the
+  `given` into a state with the harness's own converter and sends it to `POST /api/test-rooms`,
+  which answers only with the secret (`TEST_ROOM_SECRET`, set with `wrangler secret`; locally in
+  `.dev.vars`) and otherwise says "Not found". The Worker checks the state against a schema,
+  creates one guest per seat and prints a sign-in link per seat (`/#session=…`).
+- **Why:** one converter, the one the scenarios already prove; nothing about test rooms is
+  visible on the public site; the browser tests use the same endpoint.
+- **Implemented:** `src/server/testRooms/`, `tools/test-room/`, `docs/test-rooms.md`,
+  `e2e/testRooms.spec.ts` (phase 08).
+
+## Q26. Seat links must not replace a visitor's account, and test rooms must replay
+
+- **Phase:** 08, phase review findings 1 and 6.
+- **Question:** the first seat links (`/#session=…`) wrote any token over the stored session, so
+  anyone could send a link that silently replaced a visitor's guest account (lost for good, A1.14)
+  with one whose token the sender knows. Also, a test room's game could not be replayed from its
+  seed and setup, which `rules/multiplayer.md` "Replays" asks of every room.
+- **Options:** a one-time code exchanged for a token; links only for guests the server marks as
+  test-room seats, with a question before replacing an account; for replays, a test-room marker,
+  or the starting state kept in the save.
+- **Solution:** guests made for a test room are marked in `players`; the browser asks the server
+  whether a linked token is a test-room seat and ignores it otherwise, and asks before replacing a
+  different account (written as C5). Only the holder of the test-room secret can make such a seat,
+  so nobody else can make a working link. Saves keep `startingState` (null for normal games);
+  replays start from it. The save version went to 3.
+- **Why:** links stay as easy for the owner, and a stranger's link does nothing.
+- **Implemented:** `harness/spec/client.md` C5 (checked by tests listed in
+  `harness/coverage-exceptions.yaml`), `migrations/0004_test_room_seats.sql`,
+  `src/server/testRooms/`, `src/client/store/`, `src/rules/replayStartOf.ts` (phase 08).

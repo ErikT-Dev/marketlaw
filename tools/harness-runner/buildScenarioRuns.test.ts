@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { NO_GAMES } from "../simulator/NO_GAMES.ts";
 import type { HarnessRun } from "./HarnessRun.ts";
 import type { RequiredList } from "./RequiredList.ts";
 import type { ScenarioDriver } from "./ScenarioDriver.ts";
@@ -41,6 +42,8 @@ function judge(required: RequiredList): ReadonlyArray<string> {
     budgetIds: [],
     cardDataProblems: [],
     tierShareProblems: [],
+    simulation: NO_GAMES,
+    simulatedInvariants: [],
   };
   return judgeHarness(run);
 }

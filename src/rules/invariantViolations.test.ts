@@ -93,4 +93,26 @@ describe("invariantViolations", () => {
     expect(invariantViolations(checked)).toEqual(["I27: a rejected action changed the game state"]);
     expect(invariantViolations({ ...checked, beforeAsText: JSON.stringify(START) })).toEqual([]);
   });
+
+  it("reports a holding pile kept after the main phase and income that went down", () => {
+    const before = withSeat1(START, { stats: { ...STARTING_STATS, income: 5 } });
+    const after = withSeat1(
+      { ...START, turn: 2, holdingPile: [START.deck[0] ?? "Pub"], deck: START.deck.slice(1) },
+      { stats: { ...STARTING_STATS, income: 4 } },
+    );
+    expect(invariantViolations(transition(before, { type: "end_turn", seat: 1 }, after))).toEqual([
+      "I2: the holding pile holds 1 cards outside the main phase",
+      "I8: seat 1 income went from 5 to 4",
+    ]);
+  });
+
+  it("reports income that could have been taken and income below 3", () => {
+    const after = withSeat1(START, {
+      stats: { ...STARTING_STATS, income: 2, product: 1, distribution: 1 },
+    });
+    expect(invariantViolations(transition(START, { type: "end_turn", seat: 1 }, after))).toEqual([
+      "I8: seat 1 income went from 3 to 2",
+      "I9: seat 1 could still take income",
+    ]);
+  });
 });

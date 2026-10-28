@@ -310,6 +310,9 @@ it by hand.
 | C4.8 | client (1) | Covered |
 | C4.9 | client (1) | Covered |
 | C4.10 | client (1) | Covered |
+| C5.1 | – | Checked another way: Server tests of the secret check, and a browser test that the test-room address answers 404 without the right secret. *(approved by the owner, 2026-10-28)* |
+| C5.2 | – | Checked another way: Client tests of reading a seat link and of the server's confirmation, and browser tests that open seat links in test rooms. *(approved by the owner, 2026-10-28)* |
+| C5.3 | – | Checked another way: Client tests that a seat link asks before replacing a different account and does nothing when the answer is no. *(approved by the owner, 2026-10-28)* |
 
 ## Tutorial (T)
 
@@ -343,7 +346,7 @@ it by hand.
 
 ## Summary
 
-- Rules: 307
+- Rules: 310
 - Scenarios: 425
 - Gaps: 0
-- Checked another way or also checked another way: R3.2, R3.5, R17.10, R19.2, M3.1, M3.6, M4.2, A6.4, A10.6
+- Checked another way or also checked another way: R3.2, R3.5, R17.10, R19.2, M3.1, M3.6, M4.2, A6.4, A10.6, C5.1, C5.2, C5.3

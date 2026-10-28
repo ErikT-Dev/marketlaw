@@ -1,5 +1,6 @@
 import { DurableObject } from "cloudflare:workers";
 import * as v from "valibot";
+import type { GameState } from "../rules/GameState";
 import { randomForNextAction } from "../rules/randomForNextAction";
 import { EpochMs } from "../shared/EpochMs";
 import { PROTOCOL_VERSION } from "../shared/PROTOCOL_VERSION";
@@ -15,6 +16,7 @@ import type { Identity } from "./room/Identity";
 import { joinRoomIn } from "./room/joinRoomIn";
 import { loadRoom } from "./room/loadRoom";
 import { receiveMessage } from "./room/receiveMessage";
+import { startTestRoomIn } from "./room/startTestRoomIn";
 import type { RoomRecord } from "./room/RoomRecord";
 import type { RoomStorage } from "./room/RoomStorage";
 import { updateFor } from "./room/updateFor";
@@ -46,6 +48,15 @@ export class GameRoom extends DurableObject<Env> {
 
   createRoom(code: RoomCode, size: 2 | 3 | 4, owner: Identity): boolean {
     return createRoomIn(this.storage, { code, size }, owner);
+  }
+
+  startTestRoom(
+    code: RoomCode,
+    seed: number,
+    players: ReadonlyArray<Identity>,
+    state: GameState,
+  ): boolean {
+    return startTestRoomIn(this.storage, { code, seed }, players, state);
   }
 
   joinRoom(joining: Identity): ReasonCode | null {

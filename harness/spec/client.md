@@ -65,3 +65,14 @@ None yet.
   beginning at any time. Leaving deletes the tutorial room.
 - **C4.9** Starting the tutorial counts as being in a game for M2 (one thing at a time).
 - **C4.10** A tutorial room whose player has not been connected for 30 minutes is deleted.
+
+## C5. Test rooms
+
+- **C5.1** The owner can start a **test room** from a scenario's starting situation (plan decision
+  D8). Starting one needs the site's test-room secret; without it, the site answers as if the
+  address did not exist.
+- **C5.2** A test room gives each seat a new guest user and a **seat link**. Opening a seat link
+  signs that browser in as the seat's guest, but only after the server confirms the link belongs
+  to a test-room seat; any other link is ignored with a message.
+- **C5.3** If the browser already has a different account, opening a seat link first asks whether
+  to switch, and warns that a guest user who is switched away from cannot log back in (A1.14).

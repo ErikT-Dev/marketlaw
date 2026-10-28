@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { applyToSavedGame } from "./applyToSavedGame";
 import type { GameAction } from "./GameAction";
 import { randomForNextAction } from "./randomForNextAction";
+import { replayStartOf } from "./replayStartOf";
 import { SAVE_SCHEMA_VERSION } from "./SAVE_SCHEMA_VERSION";
 import type { SavedGame } from "./SavedGame";
 import { startSavedGame } from "./startSavedGame";
@@ -13,7 +14,7 @@ function replay(saved: SavedGame): SavedGame {
       throw new Error(`replay rejected ${action.type}: ${result.error.code}`);
     }
     return result.value;
-  }, startSavedGame(saved.setup, saved.seed));
+  }, replayStartOf(saved));
 }
 
 function playThreeTurns(saved: SavedGame): SavedGame {
@@ -54,5 +55,14 @@ describe("saved games", () => {
     const saved = startSavedGame({ players: 2 }, 5);
     const result = applyToSavedGame(saved, { type: "end_turn", seat: 3 }, randomForNextAction(saved));
     expect(result).toEqual({ isOk: false, error: { code: "not_in_game" } });
+  });
+
+  it("replays a game that started from a given state from that state", () => {
+    const fresh = startSavedGame({ players: 2 }, 11);
+    const given = { ...fresh.state, turn: 6 };
+    const started = { ...fresh, startingState: given, state: given };
+    const played = playThreeTurns(started);
+    expect(played.actionLog.length).toBeGreaterThan(0);
+    expect(replay(played).state).toEqual(played.state);
   });
 });

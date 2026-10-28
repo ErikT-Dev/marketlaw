@@ -42,3 +42,18 @@
   kind: also
   how: "A total ending in exactly .5 is checked by a calculation test of the rating formula."
   approved: 2026-10-25
+
+- rule: C5.1
+  kind: instead
+  how: "Server tests of the secret check, and a browser test that the test-room address answers 404 without the right secret."
+  approved: 2026-10-28
+
+- rule: C5.2
+  kind: instead
+  how: "Client tests of reading a seat link and of the server's confirmation, and browser tests that open seat links in test rooms."
+  approved: 2026-10-28
+
+- rule: C5.3
+  kind: instead
+  how: "Client tests that a seat link asks before replacing a different account and does nothing when the answer is no."
+  approved: 2026-10-28

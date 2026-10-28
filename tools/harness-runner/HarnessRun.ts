@@ -1,3 +1,4 @@
+import type { SimulationSummary } from "../simulator/SimulationSummary.ts";
 import type { RequiredList } from "./RequiredList.ts";
 import type { ScenarioRun } from "./ScenarioRun.ts";
 
@@ -8,4 +9,6 @@ export type HarnessRun = {
   readonly budgetIds: ReadonlyArray<string>;
   readonly cardDataProblems: ReadonlyArray<string>;
   readonly tierShareProblems: ReadonlyArray<string>;
+  readonly simulation: SimulationSummary;
+  readonly simulatedInvariants: ReadonlyArray<string>;
 };

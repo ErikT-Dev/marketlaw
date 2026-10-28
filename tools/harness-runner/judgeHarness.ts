@@ -1,6 +1,7 @@
 import type { HarnessRun } from "./HarnessRun.ts";
 import { highestMeasured } from "./highestMeasured.ts";
 import { MEASURED_BUDGET_LIMITS } from "./MEASURED_BUDGET_LIMITS.ts";
+import { simulationProblems } from "./simulationProblems.ts";
 import type { ScenarioRun } from "./ScenarioRun.ts";
 
 function unknownNames(run: HarnessRun): ReadonlyArray<string> {
@@ -37,7 +38,7 @@ function requiredScenarioProblem({ scenario, result }: ScenarioRun): ReadonlyArr
 
 function budgetProblem(run: HarnessRun, budget: string): ReadonlyArray<string> {
   const limit = MEASURED_BUDGET_LIMITS[budget];
-  const measured = highestMeasured(run.runs, budget);
+  const measured = highestMeasured(run, budget);
   if (limit === undefined || measured === undefined) {
     return [`required ${budget} has no check yet`];
   }
@@ -49,8 +50,12 @@ function budgetProblem(run: HarnessRun, budget: string): ReadonlyArray<string> {
 export function judgeHarness(run: HarnessRun): ReadonlyArray<string> {
   const unchecked = [
     ...run.required.invariants
-      .filter((id) => run.invariantIds.includes(id))
+      .filter((id) => run.invariantIds.includes(id) && !run.simulatedInvariants.includes(id))
       .map((id) => `required ${id} has no check yet`),
+    ...simulationProblems(
+      run.simulation,
+      run.required.invariants.filter((id) => run.simulatedInvariants.includes(id)),
+    ),
     ...run.required.budgets
       .filter((id) => run.budgetIds.includes(id))
       .flatMap((id) => budgetProblem(run, id)),

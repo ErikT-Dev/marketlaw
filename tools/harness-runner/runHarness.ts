@@ -7,7 +7,10 @@ import { readCoverageExceptions } from "../harness-check/readCoverageExceptions.
 import { buildReport } from "./buildReport.ts";
 import { buildScenarioRuns } from "./buildScenarioRuns.ts";
 import { checkCardData } from "./checkCardData.ts";
+import { simulateInParallel } from "../simulator/simulateInParallel.ts";
 import { checkTierShares } from "./checkTierShares.ts";
+import { LAST_SIMULATED_TURN } from "./LAST_SIMULATED_TURN.ts";
+import { SIMULATED_INVARIANTS } from "./SIMULATED_INVARIANTS.ts";
 import type { HarnessOutcome } from "./HarnessOutcome.ts";
 import type { HarnessRun } from "./HarnessRun.ts";
 import { judgeHarness } from "./judgeHarness.ts";
@@ -19,7 +22,10 @@ import type { ScenarioDriver } from "./ScenarioDriver.ts";
 const DRAWS_PER_TURN = 100_000;
 const NOTHING_REQUIRED: RequiredList = { scenarios: [], invariants: [], budgets: [] };
 
-export function runHarness(drivers: ReadonlyArray<ScenarioDriver>): HarnessOutcome {
+export async function runHarness(
+  drivers: ReadonlyArray<ScenarioDriver>,
+  simulatedGames: number,
+): Promise<HarnessOutcome> {
   const { files, problems: loadProblems } = loadHarnessFiles();
   const readingProblems = [...loadProblems, ...checkScenarioFormat(files)].map(
     ({ file, where, message }) => `${file} | ${where} | ${message}`,
@@ -35,6 +41,8 @@ export function runHarness(drivers: ReadonlyArray<ScenarioDriver>): HarnessOutco
     budgetIds: budgets.map(({ id }) => id),
     cardDataProblems: checkCardData(files.cards),
     tierShareProblems: checkTierShares(DRAWS_PER_TURN),
+    simulation: await simulateInParallel(simulatedGames, LAST_SIMULATED_TURN),
+    simulatedInvariants: SIMULATED_INVARIANTS,
   };
   const problems = [
     ...readingProblems,

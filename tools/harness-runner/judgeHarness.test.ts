@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { NO_GAMES } from "../simulator/NO_GAMES.ts";
 import type { HarnessRun } from "./HarnessRun.ts";
 import type { RequiredList } from "./RequiredList.ts";
 import type { ScenarioResult } from "./ScenarioResult.ts";
@@ -33,6 +34,8 @@ function harnessRun(parts: Partial<HarnessRun>): HarnessRun {
     budgetIds: ["B1"],
     cardDataProblems: [],
     tierShareProblems: [],
+    simulation: NO_GAMES,
+    simulatedInvariants: [],
     ...parts,
   };
 }

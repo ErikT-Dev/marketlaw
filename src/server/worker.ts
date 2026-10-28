@@ -4,18 +4,18 @@ import { GuestRequest } from "../shared/api/GuestRequest";
 import { JoinRoomRequest } from "../shared/api/JoinRoomRequest";
 import type { GuestResponse } from "../shared/api/GuestResponse";
 import type { RoomResponse } from "../shared/api/RoomResponse";
-import { PlayerId } from "../shared/PlayerId";
 import { RoomCode } from "../shared/RoomCode";
 import { findPlayerByTokenHash } from "./findPlayerByTokenHash";
-import { newRoomCode } from "./newRoomCode";
-import { newSessionToken } from "./newSessionToken";
+import { insertGuest } from "./insertGuest";
 import type { Identity } from "./room/Identity";
 import { sha256Hex } from "./sha256Hex";
+import { confirmTestSeat } from "./testRooms/confirmTestSeat";
+import { createTestRoom } from "./testRooms/createTestRoom";
+import { withFreeRoomCode } from "./withFreeRoomCode";
 
 export { GameRoom } from "./GameRoom";
 
 const ROOM_PATH = /^\/api\/rooms\/([A-Z0-9]{6})\/(join|socket)$/;
-const CODE_ATTEMPTS = 5;
 
 function json(body: GuestResponse | RoomResponse, status = 200): Response {
   return Response.json(body, { status });
@@ -38,12 +38,8 @@ async function createGuest(request: Request, env: Env): Promise<Response> {
   if (body === null) {
     return json({ isOk: false, reason: "malformed_message" }, 400);
   }
-  const token = newSessionToken();
-  const playerId = v.parse(PlayerId, crypto.randomUUID());
-  await env.DB.prepare("INSERT INTO players (id, name, token_hash, created_ms) VALUES (?, ?, ?, ?)")
-    .bind(playerId, body.name, await sha256Hex(token), Date.now())
-    .run();
-  return json({ token, playerId, name: body.name });
+  const { token, identity } = await insertGuest(env, body.name);
+  return json({ token, playerId: identity.playerId, name: identity.name });
 }
 
 async function createRoom(request: Request, env: Env): Promise<Response> {
@@ -55,14 +51,12 @@ async function createRoom(request: Request, env: Env): Promise<Response> {
   if (identity === null) {
     return json({ isOk: false, reason: "invalid_token" }, 401);
   }
-  for (let attempt = 0; attempt < CODE_ATTEMPTS; attempt += 1) {
-    const code = newRoomCode();
-    const room = env.ROOM.get(env.ROOM.idFromName(code));
-    if (await room.createRoom(code, body.size, identity)) {
-      return json({ isOk: true, code });
-    }
-  }
-  return json({ isOk: false, reason: "no_free_room_code" }, 503);
+  const code = await withFreeRoomCode(env, async (room, candidate) =>
+    room.createRoom(candidate, body.size, identity),
+  );
+  return code === null
+    ? json({ isOk: false, reason: "no_free_room_code" }, 503)
+    : json({ isOk: true, code });
 }
 
 async function routeRoom(request: Request, env: Env, path: RegExpExecArray): Promise<Response> {
@@ -99,6 +93,12 @@ async function route(request: Request, env: Env): Promise<Response> {
   }
   if (request.method === "POST" && pathname === "/api/rooms") {
     return createRoom(request, env);
+  }
+  if (request.method === "POST" && pathname === "/api/test-rooms") {
+    return createTestRoom(request, env);
+  }
+  if (request.method === "POST" && pathname === "/api/test-room-seats") {
+    return confirmTestSeat(request, env);
   }
   return new Response("Not found", { status: 404 });
 }

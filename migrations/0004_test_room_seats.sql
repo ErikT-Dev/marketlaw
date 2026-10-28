@@ -1,0 +1,1 @@
+ALTER TABLE players ADD COLUMN is_test_room_seat INTEGER NOT NULL DEFAULT 0;
