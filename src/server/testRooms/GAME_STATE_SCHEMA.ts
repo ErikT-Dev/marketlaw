@@ -25,6 +25,12 @@ const SEAT_STATE = v.object({
 });
 
 export const GAME_STATE_SCHEMA = v.object({
+  mainPhaseStart: v.object({
+    seats: v.array(SEAT_STATE),
+    deckCount: v.number(),
+    discard: CARDS,
+    drawLogLength: v.number(),
+  }),
   turn: v.number(),
   phase: v.picklist(["main", "ended"]),
   seats: v.pipe(v.array(SEAT_STATE), v.minLength(1), v.maxLength(4)),

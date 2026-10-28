@@ -42,7 +42,7 @@ function drawLogAfterPlaying(state: GameState) {
   if (!result.isOk) {
     throw new Error(`play rejected: ${result.error.code}`);
   }
-  return viewFor(result.value, 2).drawLog;
+  return viewFor(result.value, 1).drawLog;
 }
 
 describe("draw log after income", () => {

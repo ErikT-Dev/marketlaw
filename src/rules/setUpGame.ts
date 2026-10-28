@@ -11,6 +11,7 @@ import { pickStartingQuests } from "./pickStartingQuests";
 import type { Piles } from "./Piles";
 import type { Random } from "./Random";
 import { SEAT_NUMBERS } from "./SEAT_NUMBERS";
+import { withMainPhaseStart } from "./withMainPhaseStart";
 import type { SeatsDealt } from "./SeatsDealt";
 
 const FIRST_TURN = 1;
@@ -34,7 +35,7 @@ export function setUpGame(setup: GameSetup, random: Random): GameState {
   }));
   const filled = fillMarketplace(emptyMarketplace, dealt.piles, FIRST_TURN, random);
   const quests = pickStartingQuests(random);
-  return {
+  return withMainPhaseStart({
     turn: FIRST_TURN,
     phase: "main",
     seats: dealt.seats,
@@ -47,5 +48,5 @@ export function setUpGame(setup: GameSetup, random: Random): GameState {
     questList: QUESTS.map(({ name }) => name).filter((name) => !quests.includes(name)),
     bonusTypes: pickBonusTypes(random),
     doneOrder: [],
-  };
+  });
 }
