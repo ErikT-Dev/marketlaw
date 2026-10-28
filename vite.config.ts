@@ -8,5 +8,6 @@ export default defineConfig({
     outDir: "../../dist/client",
     emptyOutDir: true,
     manifest: true,
+    assetsInlineLimit: 0,
   },
 });
