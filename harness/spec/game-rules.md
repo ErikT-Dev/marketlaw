@@ -173,6 +173,9 @@ chat are in `accounts.md` (rules `A…`). The card data is `cards.json`.
   - claim all
   - influence actions that do not draw a card (trades, build passes, skip build)
   - completing a quest whose reward does not draw a card
+
+  An action after which income is taken (R13) counts as drawing a card, even when no card is
+  left to draw.
 - **R7.3** All other actions cannot be undone: selling, completing a project, draw actions and
   ending your turn.
 - **R7.4** Once an action that cannot be undone has happened, nothing before it can be undone

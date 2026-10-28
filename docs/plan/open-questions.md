@@ -477,3 +477,25 @@ file.
   unreachable. Claim all stays disabled when nothing is ready, since its pop-up only confirms the
   claim (S8.1).
 - **Implemented:** `harness/spec/screens.md` S6.6; `ProjectsDialog`, `ProgressButtons` (phase 10).
+
+## Q33. Can an action be undone when it caused income but no card was left to draw?
+
+- **Phase:** 11, item 4.
+- **Question:** R7.2 allows undo only when the action and what it causes draw no card. Income
+  (R13.1) draws a card, but when the deck and discard pile are empty nothing is drawn.
+- **Options:** undoable when no card was actually drawn; never undoable once income was taken.
+- **Solution:** never undoable once income was taken. Written into R7.2.
+- **Why:** income is a draw by its rule whether or not a card is left, and undoing it would lower
+  income, which I8 says never happens.
+- **Implemented:** `harness/spec/game-rules.md` R7.2; the engine's undo (phase 11).
+
+## Q34. Which code wins when an influence action breaks two of its rules?
+
+- **Phase:** 11, item 1.
+- **Question:** `trade_limit_reached`, `skip_build_after_play` and `no_card_of_kind` are all in
+  group 9 of the reason code order, with no order among them.
+- **Options:** the limit first; the situation (played a card, no card left) first.
+- **Solution:** `trade_limit_reached` first, then `skip_build_after_play` or `no_card_of_kind`;
+  `cannot_afford_trade` stays last (group 10). Written into `HARNESS.md`.
+- **Why:** a used-up action is the most lasting reason, and the S8.3 tiles show "used" for it.
+- **Implemented:** `harness/HARNESS.md` reason code order; the engine (phase 11).
