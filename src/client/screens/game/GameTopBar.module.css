@@ -5,7 +5,7 @@
   gap: var(--space-md);
   height: 56px;
   padding: var(--space-sm) var(--space-lg);
-  background: #0f1320;
+  background: var(--color-board-top-bar);
   box-sizing: border-box;
 }
 
@@ -25,9 +25,9 @@
 .phase {
   padding: 3px 10px;
   border-radius: var(--radius-lg);
-  background: #3b2a6b;
-  color: #ddd6fe;
-  font-size: 13px;
+  background: var(--color-board-phase-chip);
+  color: var(--color-board-phase-chip-text);
+  font-size: var(--font-size-panel-title);
   font-weight: var(--font-weight-bold);
 }
 

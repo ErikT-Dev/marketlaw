@@ -1,5 +1,6 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { isRecord } from "../harness-check/isRecord.ts";
+import { BOARD_VALUES } from "./BOARD_VALUES.ts";
 import { DESIGN_EXPORT_PATHS } from "./DESIGN_EXPORT_PATHS.ts";
 
 const TOKENS_CSS = "src/client/tokens.css";
@@ -64,9 +65,10 @@ export function writeTokensCss(): void {
     collectTokens(group, []).map((token) => ({ ...token, name: cssName(collection, token.path) })),
   );
   const names = new Map(tokens.map((token) => [token.path.join("."), token.name]));
-  const lines = tokens
-    .map((token) => `  ${token.name}: ${cssValue(token, names)};`)
-    .sort((a, b) => a.localeCompare(b));
+  const lines = [
+    ...tokens.map((token) => `  ${token.name}: ${cssValue(token, names)};`),
+    ...Object.entries(BOARD_VALUES).map(([name, value]) => `  ${name}: ${value};`),
+  ].sort((a, b) => a.localeCompare(b));
   writeFileSync(TOKENS_CSS, `${FONT_FACE}\n\n:root {\n${lines.join("\n")}\n}\n\n${BODY}\n`);
 }
 

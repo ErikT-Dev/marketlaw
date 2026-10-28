@@ -32,18 +32,18 @@
 }
 
 .success {
-  background: #14532d;
+  background: var(--color-board-toast-success);
   border-color: var(--color-toast-success);
 }
 .error {
-  background: #4c1414;
+  background: var(--color-board-toast-error);
   border-color: var(--color-toast-error);
 }
 .info {
-  background: #172554;
+  background: var(--color-board-toast-info);
   border-color: var(--color-toast-info);
 }
 .warning {
-  background: #451a03;
+  background: var(--color-board-toast-warning);
   border-color: var(--color-toast-warning);
 }

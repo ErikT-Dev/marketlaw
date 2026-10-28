@@ -47,4 +47,3 @@ browser tests, check that nothing listens on 8787, and stop the `wrangler ... de
 first, then `workerd`.
 **Why:** found in phase 04; the browser tests failed against a stale server.
 **Enforced by:** judgment.
-

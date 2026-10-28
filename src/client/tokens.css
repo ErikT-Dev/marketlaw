@@ -18,6 +18,16 @@
   --color-background-modal-backdrop: rgba(75, 85, 99, 0.75);
   --color-background-modal: #392a4a;
   --color-background-stats-board: rgba(19, 11, 19, 0.8);
+  --color-board-page-dim: rgba(11, 15, 26, 0.78);
+  --color-board-pending: rgba(0, 0, 0, 0.6);
+  --color-board-phase-chip-text: #ddd6fe;
+  --color-board-phase-chip: #3b2a6b;
+  --color-board-timer-low: #3f1d24;
+  --color-board-toast-error: #4c1414;
+  --color-board-toast-info: #172554;
+  --color-board-toast-success: #14532d;
+  --color-board-toast-warning: #451a03;
+  --color-board-top-bar: #0f1320;
   --color-button-danger-base: #ef4444;
   --color-button-danger-hover: #dc2626;
   --color-button-disabled-base: #9ca3af;
@@ -130,6 +140,7 @@
   --font-family-base: "Source Sans 3", "Source Sans Pro", system-ui, sans-serif;
   --font-size-lg: 20px;
   --font-size-md: 16px;
+  --font-size-panel-title: 13px;
   --font-size-sm: 14px;
   --font-size-xl: 24px;
   --font-size-xs: 12px;

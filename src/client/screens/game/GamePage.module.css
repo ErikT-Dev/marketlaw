@@ -3,7 +3,7 @@
   flex-direction: column;
   height: 100vh;
   background:
-    linear-gradient(rgba(11, 15, 26, 0.78), rgba(11, 15, 26, 0.78)),
+    linear-gradient(var(--color-board-page-dim), var(--color-board-page-dim)),
     url("../../assets/backgrounds/game.webp") center / cover,
     var(--color-background-game-window);
 }
@@ -41,13 +41,4 @@
 
 .right {
   grid-template-rows: minmax(0, 300fr) minmax(0, 416fr) auto;
-}
-
-.statGrid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px 16px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
 }

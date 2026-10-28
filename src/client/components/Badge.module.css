@@ -50,7 +50,7 @@
   color: var(--color-timer-normal);
 }
 .low {
-  background: #3f1d24;
+  background: var(--color-board-timer-low);
 }
 .low .time {
   color: var(--color-timer-low);
@@ -65,6 +65,6 @@
   gap: 6px;
   padding: 3px var(--space-sm);
   border-radius: 10px;
-  background: rgb(0 0 0 / 60%);
+  background: var(--color-board-pending);
   font-size: var(--font-size-xs);
 }
