@@ -1,5 +1,6 @@
 import { expect, test, type Browser, type Page, type ViewportSize } from "@playwright/test";
 import { expectScreenFits } from "./expectScreenFits";
+import { cardsHeldOnce } from "./cardsHeldOnce";
 import { handOf } from "./handOf";
 import { hiddenCardsSentToOthers } from "./hiddenCardsSentToOthers";
 import type { Player } from "./Player";
@@ -42,7 +43,7 @@ async function startTwoPlayerGame(
 
 async function firstPlayableCard(page: Page): Promise<string> {
   const hand = page.getByRole("list", { name: "Your hand" });
-  for (const card of await handOf(page)) {
+  for (const card of await cardsHeldOnce(page)) {
     const button = hand.getByRole("button", { name: card, exact: true });
     const description = await button.getAttribute("aria-describedby");
     const isPlayable = !(await page.locator(`[id="${description ?? ""}"]`).textContent())?.includes(
@@ -57,7 +58,10 @@ async function firstPlayableCard(page: Page): Promise<string> {
 
 async function playFirstPlayableCard(page: Page): Promise<string> {
   const card = await firstPlayableCard(page);
-  await page.getByRole("list", { name: "Your hand" }).getByRole("button", { name: card }).click();
+  await page
+    .getByRole("list", { name: "Your hand" })
+    .getByRole("button", { name: card, exact: true })
+    .click();
   await page
     .getByRole("region", { name: `Selected card: ${card}` })
     .getByRole("button", { name: "Play card" })
@@ -96,7 +100,9 @@ test("a move waiting for the server is faded and blocks other moves", async ({
     throw new Error("no players");
   }
   const card = await playFirstPlayableCard(ann);
-  const pending = ann.getByRole("list", { name: "Your hand" }).getByRole("button", { name: card });
+  const pending = ann
+    .getByRole("list", { name: "Your hand" })
+    .getByRole("button", { name: card, exact: true });
   await expect(pending).toBeDisabled();
   await expect(pending.getByRole("status")).toHaveText("Waiting for the server…");
   await expect(ann.getByRole("button", { name: "End turn" })).toBeDisabled();

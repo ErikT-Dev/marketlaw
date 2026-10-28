@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { expectScreenFits } from "./expectScreenFits";
-import { handOf } from "./handOf";
+import { cardsHeldOnce } from "./cardsHeldOnce";
 import { hiddenCardsSentToOthers } from "./hiddenCardsSentToOthers";
 import { LONGEST_NAMES } from "./LONGEST_NAMES";
 import { startFourPlayerGame } from "./startFourPlayerGame";
@@ -15,7 +15,7 @@ test("the hand, the big card, sell mode and the done state fit and are found by 
     throw new Error("no host");
   }
   const hand = host.getByRole("list", { name: "Your hand" });
-  const [card = ""] = await handOf(host);
+  const [card = ""] = await cardsHeldOnce(host);
 
   await hand.getByRole("button", { name: card, exact: true }).click();
   const selected = host.getByRole("region", { name: `Selected card: ${card}` });

@@ -1,6 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import { expectScreenFits } from "./expectScreenFits";
-import { handOf } from "./handOf";
+import { cardsHeldOnce } from "./cardsHeldOnce";
 import { hiddenCardsSentToOthers } from "./hiddenCardsSentToOthers";
 import { LONGEST_NAMES } from "./LONGEST_NAMES";
 import { startFourPlayerGame } from "./startFourPlayerGame";
@@ -12,7 +12,7 @@ function hostCardSeenBy(page: Page) {
 }
 
 async function sellOneCard(page: Page): Promise<void> {
-  const [card = ""] = await handOf(page);
+  const [card = ""] = await cardsHeldOnce(page);
   await page.getByRole("button", { name: "Sell cards" }).click();
   await page
     .getByRole("list", { name: "Your hand" })
