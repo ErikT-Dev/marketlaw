@@ -18,6 +18,8 @@
   --color-background-modal-backdrop: rgba(75, 85, 99, 0.75);
   --color-background-modal: #392a4a;
   --color-background-stats-board: rgba(19, 11, 19, 0.8);
+  --color-board-draw-kind: #2e2442;
+  --color-board-draw: #6d28d9;
   --color-board-page-dim: rgba(11, 15, 26, 0.78);
   --color-board-pending: rgba(0, 0, 0, 0.6);
   --color-board-phase-chip-text: #ddd6fe;
@@ -29,6 +31,10 @@
   --color-board-toast-success: #14532d;
   --color-board-toast-warning: #451a03;
   --color-board-top-bar: #0f1320;
+  --color-board-trade-missing: #fca5a5;
+  --color-board-trade-off: #2b2840;
+  --color-board-trade-status: #ddd6fe;
+  --color-board-trade: #4c1d95;
   --color-button-danger-base: #ef4444;
   --color-button-danger-hover: #dc2626;
   --color-button-disabled-base: #9ca3af;

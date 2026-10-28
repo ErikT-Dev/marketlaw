@@ -2,6 +2,7 @@ import type { OwnSeatView } from "../../../shared/OwnSeatView";
 import type { PlayerView } from "../../../shared/PlayerView";
 import type { ActionIntent } from "../../../shared/protocol/ActionIntent";
 import { ClaimAllDialog } from "./ClaimAllDialog";
+import { InfluenceDialog } from "./InfluenceDialog";
 import type { OpenDialog } from "./OpenDialog";
 import { ProjectsDialog } from "./ProjectsDialog";
 
@@ -10,11 +11,13 @@ type Props = {
   readonly seat: OwnSeatView;
   readonly view: PlayerView;
   readonly playerNames: ReadonlyArray<string>;
+  readonly isBusy: boolean;
   readonly onAction: (action: ActionIntent) => void;
   readonly onClose: () => void;
 };
 
-export function ProgressDialogs({ dialog, seat, view, playerNames, onAction, onClose }: Props) {
+export function ProgressDialogs(props: Props) {
+  const { dialog, seat, view, playerNames, isBusy, onAction, onClose } = props;
   switch (dialog) {
     case "none":
       return null;
@@ -25,6 +28,20 @@ export function ProgressDialogs({ dialog, seat, view, playerNames, onAction, onC
           onClaim={() => {
             onAction({ type: "claim_all" });
             onClose();
+          }}
+          onClose={onClose}
+        />
+      );
+    case "influence":
+      return (
+        <InfluenceDialog
+          seat={seat}
+          isBusy={isBusy}
+          onTrade={(trade) => {
+            onAction({ type: "influence", trade });
+          }}
+          onDraw={(kind, tier) => {
+            onAction({ type: "draw_action", kind, tier });
           }}
           onClose={onClose}
         />

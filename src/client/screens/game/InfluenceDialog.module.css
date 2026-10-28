@@ -1,0 +1,106 @@
+.section {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+}
+
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-sm);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tile {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+  height: 100%;
+  min-height: 50px;
+  padding: var(--space-sm) 10px;
+  border: none;
+  border-radius: var(--radius-md);
+  background: var(--color-board-trade);
+  color: var(--color-text-primary);
+  font: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  text-align: left;
+  cursor: pointer;
+}
+
+.tile:disabled {
+  background: var(--color-board-trade-off);
+  color: var(--color-text-muted);
+  cursor: default;
+}
+
+.status {
+  color: var(--color-board-trade-status);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-regular);
+}
+
+.tile:disabled .status {
+  color: var(--color-text-muted);
+}
+
+.tile:disabled .missing {
+  color: var(--color-board-trade-missing);
+}
+
+.note {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+}
+
+.table {
+  width: 100%;
+  border-spacing: 6px;
+  margin: -6px;
+  font-size: var(--font-size-sm);
+}
+
+.table th {
+  color: var(--color-text-muted);
+  font-weight: var(--font-weight-bold);
+}
+
+.table th.kind {
+  padding: 7px 10px;
+  border-radius: var(--radius-md);
+  background: var(--color-board-draw-kind);
+  color: var(--color-text-primary);
+}
+
+.draw {
+  width: 100%;
+  min-height: 30px;
+  border: none;
+  border-radius: var(--radius-md);
+  background: var(--color-board-draw);
+  color: var(--color-text-primary);
+  font: inherit;
+  font-weight: var(--font-weight-bold);
+  cursor: pointer;
+}
+
+.draw:disabled {
+  background: var(--color-board-trade-off);
+  color: var(--color-text-muted);
+  cursor: default;
+}
+
+.noneLeft {
+  padding: 7px 10px;
+  border-radius: var(--radius-md);
+  background: var(--color-board-trade-off);
+  color: var(--color-text-muted);
+  font-weight: var(--font-weight-bold);
+  text-align: center;
+}

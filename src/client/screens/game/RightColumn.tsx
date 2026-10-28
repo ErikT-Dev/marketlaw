@@ -53,6 +53,9 @@ export function RightColumn({ view, seat, playerNames, pendingActions, onAction 
         isBusy={isBusy}
         onPlaySelected={playSelected}
         onSell={sell}
+        onUndo={() => {
+          onAction({ type: "undo" });
+        }}
         onEndTurn={() => {
           onAction({ type: "end_turn" });
         }}
@@ -63,6 +66,7 @@ export function RightColumn({ view, seat, playerNames, pendingActions, onAction 
         seat={seat}
         view={view}
         playerNames={playerNames}
+        isBusy={isBusy}
         onAction={onAction}
         onClose={() => {
           setDialog("none");
