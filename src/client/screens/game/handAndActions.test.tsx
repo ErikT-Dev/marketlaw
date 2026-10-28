@@ -87,6 +87,15 @@ describe("actions", () => {
     expect(onAction).toHaveBeenCalledWith({ type: "sell", cards: ["Farm House", "Loft"] });
   });
 
+  it("always lets the player leave sell mode", () => {
+    showGame();
+    fireEvent.click(screen.getByRole("button", { name: "Sell cards" }));
+    expect(screen.getByRole("button", { name: "Cancel selling" })).toHaveProperty(
+      "disabled",
+      false,
+    );
+  });
+
   it("leaves sell mode without selling when nothing is marked", () => {
     const { onAction } = showGame();
     fireEvent.click(screen.getByRole("button", { name: "Sell cards" }));
@@ -102,9 +111,27 @@ describe("actions", () => {
   });
 
   it("disables everything but End turn at the action limit and says why", () => {
-    showGame({ sellRejection: "action_limit_reached" });
+    showGame({
+      sellRejection: "action_limit_reached",
+      handDetails: [
+        {
+          card: "Farm House",
+          realCost: 4,
+          sameSectorAndTierInCity: 0,
+          playRejection: "action_limit_reached",
+        },
+      ],
+    });
+    fireEvent.click(handCard("Farm House"));
+    const selected = screen.getByRole("region", { name: "Selected card: Farm House" });
+    expect(within(selected).getByRole("button", { name: "Play card" })).toHaveProperty(
+      "disabled",
+      true,
+    );
     expect(
-      screen.getByText("You have used all 50 actions this turn. You can still end your turn."),
+      within(screen.getByRole("region", { name: "Actions" })).getByText(
+        "You have used all 50 actions this turn. You can still end your turn.",
+      ),
     ).toBeDefined();
     expect(screen.getByRole("button", { name: "Sell cards" })).toHaveProperty("disabled", true);
     expect(screen.getByRole("button", { name: "End turn" })).toHaveProperty("disabled", false);

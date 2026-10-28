@@ -6,6 +6,7 @@ import { ActionsPanel } from "./ActionsPanel";
 import styles from "./GamePage.module.css";
 import { HandPanel } from "./HandPanel";
 import { pendingCardsOf } from "./pendingCardsOf";
+import { playerNameOf } from "./playerNameOf";
 import { SelectedCardPanel } from "./SelectedCardPanel";
 import { useHandChoice } from "./useHandChoice";
 import { YourStatsPanel } from "./YourStatsPanel";
@@ -21,7 +22,7 @@ type Props = {
 function namesStillPlaying(view: PlayerView, playerNames: ReadonlyArray<string>) {
   return view.seats
     .filter((seat) => seat.kind === "other" && !seat.isDone && !seat.hasLeft)
-    .map((seat) => playerNames[seat.seat - 1] ?? `Seat ${String(seat.seat)}`);
+    .map((seat) => playerNameOf(playerNames, seat.seat));
 }
 
 export function RightColumn({ view, seat, playerNames, pendingActions, onAction }: Props) {

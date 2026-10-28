@@ -67,7 +67,10 @@ describe("hand card details in the own view", () => {
   it("says whether selling and ending the turn would be accepted", () => {
     const playing = ownViewOf(gameWithSeatOne(1, {}));
     expect([playing.sellRejection, playing.endTurnRejection]).toEqual([null, null]);
-    const atLimit = ownViewOf(gameWithSeatOne(1, { actionsThisTurn: 50 }));
+    const atLimit = ownViewOf(gameWithSeatOne(1, { hand: ["Farm House"], actionsThisTurn: 50 }));
+    expect(atLimit.handDetails.map(({ playRejection }) => playRejection)).toEqual([
+      "action_limit_reached",
+    ]);
     expect([atLimit.sellRejection, atLimit.endTurnRejection]).toEqual(["action_limit_reached", null]);
     const done = ownViewOf(gameWithSeatOne(1, { isDone: true }));
     expect([done.sellRejection, done.endTurnRejection]).toEqual(["already_done", "already_done"]);

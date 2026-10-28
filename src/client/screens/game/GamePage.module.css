@@ -40,11 +40,8 @@
 }
 
 .right {
-  grid-template-rows: minmax(0, 300fr) minmax(0, 416fr) auto;
-}
-
-.right {
   position: relative;
+  grid-template-rows: minmax(0, 300fr) minmax(0, 416fr) auto;
 }
 
 .toasts {

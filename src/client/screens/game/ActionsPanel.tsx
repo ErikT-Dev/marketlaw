@@ -60,7 +60,9 @@ export function ActionsPanel(props: Props) {
         </Button>
         <Button
           look="warning"
-          isDisabled={isBusy || seat.sellRejection !== null}
+          isDisabled={
+            !(choice.mode === "selling" && marked === 0) && (isBusy || seat.sellRejection !== null)
+          }
           onClick={props.onSell}
         >
           {sellLabel(choice)}

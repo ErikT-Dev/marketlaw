@@ -15,10 +15,7 @@ export function DoneBanner({ waitingFor }: Props) {
   return (
     <div className={styles["done"]} role="status">
       <strong>You are done for this turn</strong>
-      <span>
-        {waitingFor.length === 0 ? "" : `Waiting for ${listed(waitingFor)}. `}
-        The turn ends when everyone is done or out of time.
-      </span>
+      {waitingFor.length === 0 ? null : <span>{`Waiting for ${listed(waitingFor)}.`}</span>}
     </div>
   );
 }

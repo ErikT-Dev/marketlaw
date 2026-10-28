@@ -6,6 +6,7 @@ import type { PendingAction } from "../store/PendingAction";
 import type { RejectedMove } from "../store/RejectedMove";
 import styles from "./game/GamePage.module.css";
 import { GameTopBar } from "./game/GameTopBar";
+import { playerNameOf } from "./game/playerNameOf";
 import { rejectionMessage } from "./game/rejectionMessage";
 import { RightColumn } from "./game/RightColumn";
 import { OtherSeatPanel } from "./OtherSeatPanel";
@@ -37,7 +38,7 @@ export function GamePage(props: Props) {
                 <OtherSeatPanel
                   key={seat.seat}
                   seat={seat}
-                  name={playerNames[seat.seat - 1] ?? `Seat ${String(seat.seat)}`}
+                  name={playerNameOf(playerNames, seat.seat)}
                 />
               ) : null,
             )}

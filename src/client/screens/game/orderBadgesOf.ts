@@ -2,6 +2,7 @@ import type { PlayerView } from "../../../shared/PlayerView";
 import type { SeatNumber } from "../../../shared/SeatNumber";
 import type { PlayerStatus } from "../../components/PlayerStatus";
 import type { OrderBadge } from "./OrderBadge";
+import { playerNameOf } from "./playerNameOf";
 
 function statusOf(view: PlayerView, seat: SeatNumber): PlayerStatus {
   const seatView = view.seats.find((candidate) => candidate.seat === seat);
@@ -21,7 +22,7 @@ export function orderBadgesOf(
   const seatsThatLeft = view.seats.filter((seat) => seat.hasLeft).map((seat) => seat.seat);
   return [...view.playerOrder, ...seatsThatLeft].map((seat) => ({
     seat,
-    name: playerNames[seat - 1] ?? `Seat ${String(seat)}`,
+    name: playerNameOf(playerNames, seat),
     status: statusOf(view, seat),
     isFirstPlayer: seat === view.playerOrder[0],
   }));
