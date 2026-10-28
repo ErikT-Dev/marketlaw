@@ -31,7 +31,7 @@
 
 .stats {
   display: grid;
-  grid-template-columns: repeat(9, auto);
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
   gap: var(--space-sm) var(--space-lg);
   margin: 0;
 }

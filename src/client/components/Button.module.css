@@ -36,22 +36,23 @@
   background: var(--color-button-secondary-hover);
 }
 .danger {
-  background: var(--color-button-danger-base);
+  background: var(--color-button-danger-hover);
 }
 .danger:hover:enabled {
-  background: var(--color-button-danger-hover);
+  background: color-mix(in srgb, var(--color-button-danger-hover) 85%, black);
 }
 .warning {
   background: var(--color-button-warning-base);
+  color: var(--color-background-game-window);
 }
 .warning:hover:enabled {
   background: var(--color-button-warning-hover);
 }
 .success {
-  background: var(--color-button-success-base);
+  background: var(--color-button-success-hover);
 }
 .success:hover:enabled {
-  background: var(--color-button-success-hover);
+  background: color-mix(in srgb, var(--color-button-success-hover) 85%, black);
 }
 .menu {
   background: linear-gradient(180deg, var(--color-button-menu-from), var(--color-button-menu-to));

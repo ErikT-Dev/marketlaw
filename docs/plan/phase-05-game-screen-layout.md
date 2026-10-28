@@ -77,8 +77,35 @@ None. This phase adds no scenarios to `harness/required.yaml`.
   design marks these only by colour; the Tab's unread count is now part of its name; Hand card
   and Played card share `CardTileFace`. Client tests unmount by hand (`proposed-rules.md`,
   "Client tests clean up only when told to").
-- [ ] 4. Game screen layout (S1.2): top bar, three columns, scrolling panels
+- [x] 4. Game screen layout (S1.2): top bar, three columns, scrolling panels. Each column is its
+  own grid with the design's height ratios; the side columns keep a minimum width (280 and 400
+  px) and the middle one takes the rest. Differences: the engine now puts the turn's player order
+  in every view (R4.4, R4.5, pulled forward from phase 12 so the client never works it out);
+  players who left come after the order (Q18). Your stats show the ten S6.2 stats as icons with
+  their names as tooltips; type counts wait for phase 10, which puts them in the view. Success
+  and danger buttons use the darker shade from the tokens and warning buttons dark text, because
+  the design's white-on-colour text fails the 4.5:1 contrast the axe check needs. No user box or
+  Leave game yet (S2.3 is not in this phase). The browser test at 1280×720 still fails, see
+  **Waiting for the owner**.
 - [ ] 5. Size test for O2 at 1280×720, 1920×1080 and 2560×1440
 - [ ] 6. Bundle check (`.size-limit.js`, protected: owner)
 - [ ] 7. Accessibility check on every screenshot (`knip.json`, protected: owner)
 
+
+## Waiting for the owner
+
+1. **Keyboard access to scrolling panels: a change to `eslint.config.ts` (protected).** S1.3's
+   panels scroll. When a scrolling panel holds only text (today the opponents panel at 1280×720;
+   later the draw log and chat), axe's `scrollable-region-focusable` rule fails the browser test,
+   because a keyboard user cannot reach it. The standard fix is `tabIndex={0}` on the panel's
+   scroll area with the panel title as its label, but `jsx-a11y/no-noninteractive-tabindex`
+   forbids that as configured. Proposed change, in the `jsxA11y` block:
+   `"jsx-a11y/no-noninteractive-tabindex": ["error", { tags: [], roles: ["tabpanel", "group"] }]`,
+   so a labelled `group` (the scroll area) may be focusable; nothing else changes. Until then the
+   e2e test fails at 1280×720 only (it passes at 1920×1080 and 2560×1440).
+2. **Items 6 and 7 edit protected files** (`.size-limit.js`, `knip.json`), approved with this
+   phase but blocked for Claude by the protected-path hook. Proposed contents follow in the
+   phase when item 5 is done.
+3. **Client test cleanup (optional): `vitest.config.ts` (protected).** A client `setupFiles`
+   entry that calls `cleanup` after each test would let client tests drop their manual
+   `view.unmount()` (`proposed-rules.md`, "Client tests clean up only when told to").
