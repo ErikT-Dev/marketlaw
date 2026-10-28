@@ -353,3 +353,22 @@ file.
 - **Why:** the exit criterion only means something if the check can fail.
 - **Implemented:** `harness/required.yaml`, `tools/harness-runner/simulationProblems.ts`
   (phase 08).
+
+## Q25. The test-room tool is a command, not a page
+
+- **Phase:** 08, item 5 (D8).
+- **Question:** D8 and the phase file ask for an owner-only page that starts a live room from any
+  scenario's `given`. A scenario's `given` is turned into a game by the harness's engine driver,
+  which the Worker must not import, and the browser must never build game states.
+- **Options:** a page that holds the scenario files and a second copy of the converter in the
+  Worker; a command on the owner's computer that converts the `given` and sends the finished state
+  to a secret-protected endpoint.
+- **Solution:** a command, `npm run test-room -- <scenario file> <number> [site]`. It turns the
+  `given` into a state with the harness's own converter and sends it to `POST /api/test-rooms`,
+  which answers only with the secret (`TEST_ROOM_SECRET`, set with `wrangler secret`; locally in
+  `.dev.vars`) and otherwise says "Not found". The Worker checks the state against a schema,
+  creates one guest per seat and prints a sign-in link per seat (`/#session=…`).
+- **Why:** one converter, the one the scenarios already prove; nothing about test rooms is
+  visible on the public site; the browser tests use the same endpoint.
+- **Implemented:** `src/server/testRooms/`, `tools/test-room/`, `docs/test-rooms.md`,
+  `e2e/testRooms.spec.ts` (phase 08).
