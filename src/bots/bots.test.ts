@@ -185,6 +185,31 @@ describe("legal bot", () => {
     );
   });
 
+  it("sometimes undoes, trades or takes a draw action, only ones its view allows", () => {
+    const view = viewWith({
+      undoRejection: null,
+      trades: TradeName.options.map((trade) => ({
+        trade,
+        rejection: trade === "fund_to_influence" ? null : "cannot_afford_trade",
+      })),
+      drawActions: Kind.options.flatMap((kind) =>
+        Tier.options.map((tier) => ({
+          kind,
+          tier,
+          rejection: kind === "Industry" && tier === 1 ? null : "no_card_of_kind",
+        })),
+      ),
+    });
+    const moves = SEEDS.map((seed) => legalBot(view, chooserFrom(seed)));
+    expect(moves).toContainEqual({ type: "undo" });
+    const traded = moves.filter((move) => move?.type === "influence");
+    const drawn = moves.filter((move) => move?.type === "draw_action");
+    expect(traded.length).toBeGreaterThan(0);
+    expect(drawn.length).toBeGreaterThan(0);
+    expect(traded.every((move) => move.trade === "fund_to_influence")).toBe(true);
+    expect(drawn.every((move) => move.kind === "Industry" && move.tier === 1)).toBe(true);
+  });
+
   it("does not sell when selling would be rejected and makes no move when done", () => {
     const cannotSell = viewWith({ sellRejection: "action_limit_reached", handDetails: [] });
     expect(SEEDS.map((seed) => legalBot(cannotSell, chooserFrom(seed))?.type)).not.toContain(

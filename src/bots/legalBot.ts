@@ -6,17 +6,15 @@ import { PROJECT_NAMES } from "../shared/PROJECT_NAMES";
 import type { ActionIntent } from "../shared/protocol/ActionIntent";
 import type { BotChooser } from "./BotChooser";
 import { ownSeatOf } from "./ownSeatOf";
+import { influenceOrUndoMove } from "./influenceOrUndoMove";
 import { kindWanted } from "./kindWanted";
+import { oneOf } from "./oneOf";
 import { projectKindWanted } from "./projectKindWanted";
 
 const OTHER_CARD_CHANCE_IN_TEN = 2;
 const PROJECT_AIM_CHANCE_IN_TEN = 5;
 const SELL_CHANCE_IN_TEN = 3;
 const HAND_KEPT_WHEN_SELLING = 3;
-
-function oneOf<T>(items: ReadonlyArray<T>, chooser: BotChooser): T | undefined {
-  return items[chooser.pickIndex(items.length)];
-}
 
 function cardsToSell(hand: ReadonlyArray<CardName>, chooser: BotChooser): ActionIntent | null {
   const first = oneOf(hand, chooser);
@@ -43,6 +41,10 @@ export function legalBot(view: PlayerView, chooser: BotChooser): ActionIntent | 
   const project = PROJECT_NAMES.find((name) => seat.projectRejections[name] === null);
   if (project !== undefined) {
     return { type: "complete_project", project };
+  }
+  const influenceOrUndo = influenceOrUndoMove(seat, chooser);
+  if (influenceOrUndo !== null) {
+    return influenceOrUndo;
   }
   const playable = seat.handDetails.filter((details) => details.playRejection === null);
   const isAimingAtProject = chooser.pickIndex(10) < PROJECT_AIM_CHANCE_IN_TEN;
