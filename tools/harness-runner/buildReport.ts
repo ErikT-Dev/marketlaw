@@ -9,11 +9,7 @@ import { reportStatusOf } from "./reportStatusOf.ts";
 import { statusBadge } from "./statusBadge.ts";
 
 const SCENARIO_STATUSES = ["passes", "fails", "passes, not yet required", "not yet"] as const;
-const CHECKS_NOT_BUILT = [
-  "Statistical check: tier shares over 100,000 simulated draws per turn (R17.10)",
-  "Rating calculation check (A10)",
-  "Replay export check (M4.2)",
-];
+const CHECKS_NOT_BUILT = ["Rating calculation check (A10)", "Replay export check (M4.2)"];
 
 function verdict({ problems }: ReportInput): string {
   const status = problems.length === 0 ? "passes" : "fails";
@@ -29,13 +25,24 @@ function summary({ run }: ReportInput): string {
   return `<h2>Scenarios</h2><p>${run.runs.length} scenarios.</p><ul>${rows}</ul>`;
 }
 
-function checks({ run }: ReportInput): string {
-  const cardStatus = run.cardDataProblems.length === 0 ? "passes" : "fails";
-  const cardProblems = run.cardDataProblems
+function checkItem(title: string, problems: ReadonlyArray<string>): string {
+  const status = problems.length === 0 ? "passes" : "fails";
+  const details = problems
     .map((problem) => `<span class="detail">${escapeHtml(problem)}</span>`)
     .join("");
+  return `<li>${statusBadge(status)}${title}${details}</li>`;
+}
+
+function checks({ run }: ReportInput): string {
   const notBuilt = CHECKS_NOT_BUILT.map((check) => `<li>${statusBadge("not yet")}${check}</li>`);
-  return `<h2>Checks</h2><ul><li>${statusBadge(cardStatus)}Card-data check (R3.1, R3.2, R3.5)${cardProblems}</li>${notBuilt.join("")}</ul>`;
+  const built = [
+    checkItem("Card-data check (R3.1, R3.2, R3.5)", run.cardDataProblems),
+    checkItem(
+      "Statistical check: tier shares over 100,000 simulated draws per turn (R17.10)",
+      run.tierShareProblems,
+    ),
+  ];
+  return `<h2>Checks</h2><ul>${[...built, ...notBuilt].join("")}</ul>`;
 }
 
 function identifiedList(

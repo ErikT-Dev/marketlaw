@@ -40,6 +40,7 @@ function judge(required: RequiredList): ReadonlyArray<string> {
     invariantIds: [],
     budgetIds: [],
     cardDataProblems: [],
+    tierShareProblems: [],
   };
   return judgeHarness(run);
 }

@@ -7,4 +7,5 @@ export type HarnessRun = {
   readonly invariantIds: ReadonlyArray<string>;
   readonly budgetIds: ReadonlyArray<string>;
   readonly cardDataProblems: ReadonlyArray<string>;
+  readonly tierShareProblems: ReadonlyArray<string>;
 };

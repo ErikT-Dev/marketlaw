@@ -71,6 +71,7 @@ export const ENGINE_FIELDS = {
         "discard",
         "contains",
         "hides",
+        "log_contains",
       ]),
     ],
   ]),
