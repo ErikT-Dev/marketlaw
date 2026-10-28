@@ -27,7 +27,7 @@ export function rejectMessage(
       actionId: rejection.actionId,
       code: rejection.code,
     },
-    shouldUpdateEveryone: false,
+    playersToUpdate: [],
     shouldClose: rejectionTimes.length >= REJECTIONS_BEFORE_CLOSING,
   };
 }

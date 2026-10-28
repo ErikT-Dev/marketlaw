@@ -10,6 +10,7 @@ import type { MessageInput } from "./MessageInput";
 import type { MessageOutcome } from "./MessageOutcome";
 import type { RoomRecord } from "./RoomRecord";
 import { rejectMessage } from "./rejectMessage";
+import { playersWhoseUpdateChanged } from "./playersWhoseUpdateChanged";
 import { updateFor } from "./updateFor";
 
 type ActionMessage = Extract<ClientMessage, { readonly type: "action" }>;
@@ -30,7 +31,7 @@ function updated(
       acceptedActionId,
       update: updateFor(record, playerId),
     },
-    shouldUpdateEveryone: false,
+    playersToUpdate: [],
     shouldClose: false,
   };
 }
@@ -74,7 +75,7 @@ function handleAction(
   return {
     ...updated(next, connection, playerId, message.actionId),
     shouldSave: true,
-    shouldUpdateEveryone: true,
+    playersToUpdate: playersWhoseUpdateChanged(record, next),
   };
 }
 
