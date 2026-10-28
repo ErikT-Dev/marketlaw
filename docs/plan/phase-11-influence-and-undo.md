@@ -116,3 +116,8 @@ These 52 scenarios are added to `harness/required.yaml` in this phase, by file a
 - [x] 5. Screens: the use influence pop-up (S8.3) and the Undo button (S6.6).
   Use influence always opens, like Projects (Q32). The action buttons got narrower side padding so
   the seven fit two rows, as in the design. Browser test in a test room, with a screenshot.
+
+**Where the phase stands (2026-10-29).** All five items are built; the 52 scenarios and I11 are
+required and pass; the browser tests pass (39). Next: `npm run check` is green but took about 8
+minutes, over the 5-minute limit; the harness alone took 300 s against 187 s on master after the
+speed-ups so far. Bring it under 5 minutes, then the phase review, report, merge and deploy.
