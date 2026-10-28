@@ -1,7 +1,5 @@
-export const ACTION_TYPES = [
-  "play_card",
-  "sell",
-  "end_turn",
-  "claim_all",
-  "complete_project",
-] as const;
+import { ActionIntent } from "./ActionIntent";
+
+export const ACTION_TYPES: ReadonlyArray<ActionIntent["type"]> = ActionIntent.options.map(
+  (option) => option.entries.type.literal,
+);
