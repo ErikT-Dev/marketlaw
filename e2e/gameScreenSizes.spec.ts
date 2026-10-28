@@ -1,7 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import { expectScreenFits } from "./expectScreenFits";
-import { handOf } from "./handOf";
-import type { Player } from "./Player";
+import { hiddenCardsSentToOthers } from "./hiddenCardsSentToOthers";
 import { LONGEST_NAMES } from "./LONGEST_NAMES";
 import { startFourPlayerGame } from "./startFourPlayerGame";
 
@@ -42,18 +41,6 @@ async function expectTableElements(page: Page): Promise<void> {
   for (const stat of STAT_NAMES) {
     await expect(stats.getByRole("img", { name: new RegExp(`^${stat} -?\\d+$`) })).toBeVisible();
   }
-}
-
-async function hiddenCardsSentToOthers(
-  players: ReadonlyArray<Player>,
-): Promise<ReadonlyArray<string>> {
-  const hands = await Promise.all(players.map(async (player) => handOf(player.page)));
-  return players.flatMap((receiver, receiverIndex) =>
-    hands
-      .filter((ownerHand, ownerIndex) => ownerHand.length > 0 && ownerIndex !== receiverIndex)
-      .flat()
-      .filter((card) => receiver.frames.some((frame) => frame.includes(`"${card}"`))),
-  );
 }
 
 test("the game screen fits the window with large enough targets and no accessibility problems", async ({

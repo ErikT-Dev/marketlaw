@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { expectScreenFits } from "./expectScreenFits";
 import { handOf } from "./handOf";
+import { hiddenCardsSentToOthers } from "./hiddenCardsSentToOthers";
 import { LONGEST_NAMES } from "./LONGEST_NAMES";
 import { startFourPlayerGame } from "./startFourPlayerGame";
 
@@ -37,5 +38,6 @@ test("the hand, the big card, sell mode and the done state fit and are found by 
     await expect(done).toContainText(name);
   }
   await expectScreenFits(host, "you-are-done", testInfo);
+  expect(await hiddenCardsSentToOthers(players)).toEqual([]);
   await Promise.all(players.map(async (player) => player.page.context().close()));
 });
