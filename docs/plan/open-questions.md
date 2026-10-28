@@ -477,6 +477,8 @@ file.
   unreachable. Claim all stays disabled when nothing is ready, since its pop-up only confirms the
   claim (S8.1).
 - **Implemented:** `harness/spec/screens.md` S6.6; `ProjectsDialog`, `ProgressButtons` (phase 10).
+  Phase 11 gives Use influence the same reading: its trades and draw actions are the actions, and
+  S8.3's tiles and table are shown whether or not any can be taken.
 
 ## Q33. Can an action be undone when it caused income but no card was left to draw?
 
