@@ -6,11 +6,5 @@
     "tools/hooks/checkBeforeStop.ts"
   ],
   "project": ["src/**/*.{ts,tsx}", "tools/**/*.ts", "eslint-rules/**/*.ts"],
-  "ignoreDependencies": [
-    "cloudflare",
-    "@secretlint/secretlint-rule-preset-recommend",
-    "@axe-core/playwright",
-    "@testing-library/react",
-    "valibot"
-  ]
+  "ignoreDependencies": ["cloudflare", "@secretlint/secretlint-rule-preset-recommend", "valibot"]
 }
