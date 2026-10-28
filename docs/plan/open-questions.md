@@ -372,3 +372,23 @@ file.
   visible on the public site; the browser tests use the same endpoint.
 - **Implemented:** `src/server/testRooms/`, `tools/test-room/`, `docs/test-rooms.md`,
   `e2e/testRooms.spec.ts` (phase 08).
+
+## Q26. Seat links must not replace a visitor's account, and test rooms must replay
+
+- **Phase:** 08, phase review findings 1 and 6.
+- **Question:** the first seat links (`/#session=…`) wrote any token over the stored session, so
+  anyone could send a link that silently replaced a visitor's guest account (lost for good, A1.14)
+  with one whose token the sender knows. Also, a test room's game could not be replayed from its
+  seed and setup, which `rules/multiplayer.md` "Replays" asks of every room.
+- **Options:** a one-time code exchanged for a token; links only for guests the server marks as
+  test-room seats, with a question before replacing an account; for replays, a test-room marker,
+  or the starting state kept in the save.
+- **Solution:** guests made for a test room are marked in `players`; the browser asks the server
+  whether a linked token is a test-room seat and ignores it otherwise, and asks before replacing a
+  different account (written as C5). Only the holder of the test-room secret can make such a seat,
+  so nobody else can make a working link. Saves keep `startingState` (null for normal games);
+  replays start from it. The save version went to 3.
+- **Why:** links stay as easy for the owner, and a stranger's link does nothing.
+- **Implemented:** `harness/spec/client.md` C5 (checked by tests listed in
+  `harness/coverage-exceptions.yaml`), `migrations/0004_test_room_seats.sql`,
+  `src/server/testRooms/`, `src/client/store/`, `src/rules/replayStartOf.ts` (phase 08).
