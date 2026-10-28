@@ -1,6 +1,6 @@
 # Phase 06: Game screen: hand, actions and moves
 
-Status: approved
+Status: in progress
 Milestone: 3 Playthrough
 
 ## Goal
@@ -53,3 +53,15 @@ explained, play it, sell cards, end the turn; a move that fails rolls back with 
 ## Required scenarios
 
 None. This phase adds no scenarios to `harness/required.yaml`.
+
+## Progress
+
+- [ ] 1. Hand in 2 columns: real cost, "new" marks, unplayable marks from data in the view (next:
+  the engine puts each hand card's real cost, its cost explanation and whether it can be played,
+  with the reason, into the own seat's view)
+- [ ] 2. Big card with what it costs and why, Play card and Close
+- [ ] 3. Actions: Play card, Sell mode, End turn
+- [ ] 4. Done state: which players the turn is waiting for
+- [ ] 5. Pending and rejected moves, with the S16.3 messages; `stale_state` reloads quietly; an
+  e2e test for a rejected move
+- [ ] 6. Component tests (`@testing-library/react` already left knip's ignore list in phase 05)
