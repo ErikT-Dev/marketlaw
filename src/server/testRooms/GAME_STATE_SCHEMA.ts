@@ -3,6 +3,7 @@ import { CardName } from "../../shared/catalogue/CardName";
 import { QuestName } from "../../shared/catalogue/QuestName";
 import { TypeName } from "../../shared/catalogue/TypeName";
 import { ProjectName } from "../../shared/ProjectName";
+import { TradeName } from "../../shared/TradeName";
 import { DRAW_LOG_ENTRY_SCHEMA } from "../../shared/protocol/DRAW_LOG_ENTRY_SCHEMA";
 import { MARKETPLACE_SLOT_SCHEMA } from "../../shared/protocol/MARKETPLACE_SLOT_SCHEMA";
 import { SEAT_NUMBER_SCHEMA } from "../../shared/protocol/SEAT_NUMBER_SCHEMA";
@@ -23,6 +24,7 @@ const SEAT_STATE = v.object({
   buildPassesBought: v.number(),
   hasPlayedThisTurn: v.boolean(),
   hasSkippedBuild: v.boolean(),
+  influenceUses: v.record(TradeName, v.number()),
   actionsThisTurn: v.number(),
   isDone: v.boolean(),
   hasLeft: v.boolean(),

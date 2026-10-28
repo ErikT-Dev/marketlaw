@@ -1,5 +1,6 @@
 import type { CardName } from "../shared/catalogue/CardName";
 import type { ClaimedCombo } from "../shared/ClaimedCombo";
+import type { InfluenceUses } from "../shared/InfluenceUses";
 import type { ProjectName } from "../shared/ProjectName";
 import type { SeatNumber } from "../shared/SeatNumber";
 import type { Stats } from "../shared/Stats";
@@ -19,6 +20,7 @@ export type SeatState = {
   readonly buildPassesBought: number;
   readonly hasPlayedThisTurn: boolean;
   readonly hasSkippedBuild: boolean;
+  readonly influenceUses: InfluenceUses;
   readonly actionsThisTurn: number;
   readonly isDone: boolean;
   readonly hasLeft: boolean;

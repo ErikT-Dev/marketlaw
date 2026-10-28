@@ -19,6 +19,12 @@ export const REJECTION_MESSAGES: Readonly<Record<ReasonCode, string>> = {
   project_already_completed: "You already completed this project.",
   project_needs_not_met:
     "You need 8 of the stat, and no negative workforce, quality or satisfaction.",
+  trade_limit_reached: "You have used this influence action as often as allowed.",
+  cannot_afford_trade: "You do not have enough for this trade.",
+  skip_build_after_play: "You can only skip build before playing a card.",
+  no_card_of_kind: "No card of that kind and tier is left in the deck or discard pile.",
+  nothing_to_undo: "There is nothing to undo.",
+  cannot_undo: "That action cannot be undone, because it drew a card or came after one that did.",
   out_of_market: "You already had your market go this turn.",
   not_this_step: "Not this step.",
   wrong_protocol_version: "A new version is available: reload.",

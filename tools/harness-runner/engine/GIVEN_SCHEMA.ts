@@ -4,6 +4,7 @@ import { CardName } from "../../../src/shared/catalogue/CardName.ts";
 import { QuestName } from "../../../src/shared/catalogue/QuestName.ts";
 import { TypeName } from "../../../src/shared/catalogue/TypeName.ts";
 import { ProjectName } from "../../../src/shared/ProjectName.ts";
+import { TradeName } from "../../../src/shared/TradeName.ts";
 
 const COUNT = v.pipe(v.number(), v.integer());
 const CARDS = v.array(CardName);
@@ -36,6 +37,7 @@ const SEAT = v.strictObject({
   build_passes_bought: v.optional(COUNT),
   played_this_turn: v.optional(v.boolean()),
   skipped_build: v.optional(v.boolean()),
+  influence_uses: v.optional(v.record(TradeName, COUNT)),
   actions_this_turn: v.optional(COUNT),
   done: v.optional(v.boolean()),
   left: v.optional(v.boolean()),

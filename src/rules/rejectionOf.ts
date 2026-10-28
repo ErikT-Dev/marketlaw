@@ -7,6 +7,7 @@ import { realCostOf } from "./realCostOf";
 import { projectRejection } from "./projectRejection";
 import { readyCombosOf } from "./readyCombosOf";
 import { removeCards } from "./removeCards";
+import { tradeRejection } from "./tradeRejection";
 import { seatOf } from "./seatOf";
 import type { SeatState } from "./SeatState";
 import { turnRejectionOf } from "./turnRejectionOf";
@@ -47,5 +48,7 @@ export function rejectionOf(state: GameState, action: GameAction): ReasonCode | 
       return readyCombosOf(seat).length === 0 ? "nothing_to_claim" : undefined;
     case "complete_project":
       return projectRejection(seat, action.project);
+    case "influence":
+      return tradeRejection(seat, action.trade);
   }
 }

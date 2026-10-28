@@ -130,4 +130,11 @@ describe("invariantViolations", () => {
       "I14: seat 1 claimed Row House combo 1 2 times",
     ]);
   });
+
+  it("reports an influence action used more often than its limit per game", () => {
+    const after = withSeat1(START, { influenceUses: { skip_build: 4, influence_to_funds: 1 } });
+    expect(invariantViolations(transition(START, { type: "end_turn", seat: 1 }, after))).toEqual([
+      "I11: seat 1 used skip_build 4 times",
+    ]);
+  });
 });

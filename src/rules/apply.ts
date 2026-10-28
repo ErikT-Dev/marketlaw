@@ -11,6 +11,7 @@ import { rejectionOf } from "./rejectionOf";
 import { sellCards } from "./sellCards";
 import { takeIncome } from "./takeIncome";
 import { updateSeat } from "./updateSeat";
+import { useTrade } from "./useTrade";
 
 function accepted(state: GameState, action: GameAction, random: Random): GameState {
   switch (action.type) {
@@ -29,6 +30,12 @@ function accepted(state: GameState, action: GameAction, random: Random): GameSta
     case "complete_project":
       return takeIncome(
         completeProject(state, action.seat, action.project, random),
+        action.seat,
+        random,
+      );
+    case "influence":
+      return takeIncome(
+        updateSeat(state, action.seat, (seat) => useTrade(seat, action.trade)),
         action.seat,
         random,
       );
