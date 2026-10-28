@@ -1,6 +1,6 @@
 # Phase 10: Types, combos and projects
 
-Status: in progress
+Status: done
 Milestone: 3 Playthrough
 
 ## Goal
