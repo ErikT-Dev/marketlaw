@@ -29,7 +29,11 @@ function seatViolations(state: GameState): ReadonlyArray<string> {
       seat.actionsThisTurn > ACTION_LIMIT
         ? [`I17: seat ${seat.seat} took ${seat.actionsThisTurn} actions this turn`]
         : [];
-    return [...negative, ...passes, ...actions];
+    const { workforce, quality, satisfaction } = seat.stats;
+    const canTakeIncome =
+      product >= 1 && distribution >= 1 && workforce >= 0 && quality >= 0 && satisfaction >= 0;
+    const income = canTakeIncome ? [`I9: seat ${String(seat.seat)} could still take income`] : [];
+    return [...negative, ...passes, ...actions, ...income];
   });
 }
 

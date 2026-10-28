@@ -6,6 +6,24 @@ import { seatOf } from "./seatOf";
 import { stateInvariantViolations } from "./stateInvariantViolations";
 import type { Transition } from "./Transition";
 
+function holdingPileViolations(before: GameState, after: GameState): ReadonlyArray<string> {
+  const isOutsideMainPhase = after.turn > before.turn || after.phase !== "main";
+  return isOutsideMainPhase && after.holdingPile.length > 0
+    ? [`I2: the holding pile holds ${String(after.holdingPile.length)} cards outside the main phase`]
+    : [];
+}
+
+function incomeViolations(before: GameState, after: GameState): ReadonlyArray<string> {
+  return after.seats.flatMap((afterSeat) => {
+    const income = afterSeat.stats.income;
+    const incomeBefore = seatOf(before, afterSeat.seat)?.stats.income ?? income;
+    if (income < incomeBefore) {
+      return [`I8: seat ${String(afterSeat.seat)} income went from ${String(incomeBefore)} to ${String(income)}`];
+    }
+    return income < 3 ? [`I8: seat ${String(afterSeat.seat)} income is below 3`] : [];
+  });
+}
+
 function acceptedViolations(transition: Transition, after: GameState): ReadonlyArray<string> {
   const { before, action } = transition;
   const seat = seatOf(before, action.seat);
@@ -30,7 +48,14 @@ function acceptedViolations(transition: Transition, after: GameState): ReadonlyA
           .filter((afterSeat) => afterSeat.stats.bonus >= BONUS_PER_FUND)
           .map((afterSeat) => `I10: seat ${afterSeat.seat} kept a bonus of 10 or more`)
       : [];
-  return [...actor, ...play, ...bonus, ...stateInvariantViolations(after)];
+  return [
+    ...actor,
+    ...play,
+    ...bonus,
+    ...holdingPileViolations(before, after),
+    ...incomeViolations(before, after),
+    ...stateInvariantViolations(after),
+  ];
 }
 
 export function invariantViolations(transition: Transition): ReadonlyArray<string> {
