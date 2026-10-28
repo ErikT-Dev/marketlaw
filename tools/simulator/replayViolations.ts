@@ -1,13 +1,13 @@
 import { applyToSavedGame } from "../../src/rules/applyToSavedGame.ts";
 import { randomForNextAction } from "../../src/rules/randomForNextAction.ts";
 import type { SavedGame } from "../../src/rules/SavedGame.ts";
-import { startSavedGame } from "../../src/rules/startSavedGame.ts";
+import { replayStartOf } from "../../src/rules/replayStartOf.ts";
 
 export function replayViolations(
   saved: SavedGame,
   statesAfterEachAction: ReadonlyArray<string>,
 ): ReadonlyArray<string> {
-  let replayed = startSavedGame(saved.setup, saved.seed);
+  let replayed = replayStartOf(saved);
   for (const [index, action] of saved.actionLog.entries()) {
     const result = applyToSavedGame(replayed, action, randomForNextAction(replayed));
     if (!result.isOk) {

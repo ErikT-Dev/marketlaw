@@ -11,6 +11,7 @@ export function startSavedGame(setup: GameSetup, seed: number): SavedGame {
     schemaVersion: SAVE_SCHEMA_VERSION,
     seed,
     setup,
+    startingState: null,
     actionLog: [],
     state: setUpGame(setup, seededRandom(seed, SETUP_STREAM)),
   };
