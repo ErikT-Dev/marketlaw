@@ -1,5 +1,7 @@
+import { useId } from "react";
 import type { Card } from "../../shared/catalogue/Card";
 import styles from "./Card.module.css";
+import { CardTileFace } from "./CardTileFace";
 import type { HandCardState } from "./HandCardState";
 import { sectorColor } from "./sectorColor";
 
@@ -18,7 +20,17 @@ const STATE_CLASS: Readonly<Record<HandCardState, string>> = {
   markedToSell: "markedToSell",
 };
 
+function handCardDescription(card: Card, realCost: number, isPlayable: boolean, isNew: boolean) {
+  return [
+    `Number ${String(card.number)}`,
+    `real cost $${String(realCost)}`,
+    ...(isNew ? ["new"] : []),
+    ...(isPlayable ? [] : ["cannot be played"]),
+  ].join(", ");
+}
+
 export function HandCard({ card, realCost, isPlayable, state, onSelect }: Props) {
+  const descriptionId = useId();
   const classes = [
     styles["handCard"],
     styles[isPlayable ? "playable" : "unplayable"],
@@ -29,18 +41,17 @@ export function HandCard({ card, realCost, isPlayable, state, onSelect }: Props)
       className={classes}
       type="button"
       aria-label={card.name}
+      aria-describedby={descriptionId}
       aria-pressed={state === "selected" || state === "markedToSell"}
       style={{ background: sectorColor(card.sector, card.tier) }}
       onClick={onSelect}
     >
-      <span className={styles["number"]} aria-hidden="true">
-        #{card.number}
-      </span>
-      <span className={styles["name"]} aria-hidden="true">
-        {card.name}
-      </span>
+      <CardTileFace card={card} />
       <span className={styles["cost"]} aria-hidden="true">
         ${realCost}
+      </span>
+      <span id={descriptionId} className={styles["visuallyHidden"]}>
+        {handCardDescription(card, realCost, isPlayable, state === "new")}
       </span>
     </button>
   );

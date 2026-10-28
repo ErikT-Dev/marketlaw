@@ -8,20 +8,22 @@ type Props = {
 };
 
 export function Tab({ label, isSelected, onSelect, count }: Props) {
+  const hasCount = count !== undefined && count > 0;
   return (
     <button
       className={styles["tab"]}
       type="button"
       role="tab"
       aria-selected={isSelected}
+      aria-label={hasCount ? `${label}, ${String(count)} new` : undefined}
       onClick={onSelect}
     >
       {label}
-      {count === undefined || count === 0 ? null : (
-        <span className={styles["count"]} aria-label={`${String(count)} new`}>
+      {hasCount ? (
+        <span className={styles["count"]} aria-hidden="true">
           {count}
         </span>
-      )}
+      ) : null}
     </button>
   );
 }

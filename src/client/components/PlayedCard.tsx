@@ -1,5 +1,6 @@
 import type { Card } from "../../shared/catalogue/Card";
 import styles from "./Card.module.css";
+import { CardTileFace } from "./CardTileFace";
 import { sectorColor } from "./sectorColor";
 
 type Props = {
@@ -18,12 +19,7 @@ export function PlayedCard({ card, isSelected, onSelect }: Props) {
       style={{ background: sectorColor(card.sector, card.tier) }}
       onClick={onSelect}
     >
-      <span className={styles["number"]} aria-hidden="true">
-        #{card.number}
-      </span>
-      <span className={styles["name"]} aria-hidden="true">
-        {card.name}
-      </span>
+      <CardTileFace card={card} />
     </button>
   );
 }

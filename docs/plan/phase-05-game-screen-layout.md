@@ -71,11 +71,12 @@ None. This phase adds no scenarios to `harness/required.yaml`.
 - [x] 1. Design tokens: `npm run design:tokens` writes `src/client/tokens.css` from the export
 - [x] 2. Assets: `npm run design:assets` (52 tinted icons from the Penpot library; 240 photos
   at 554x478 and 2 backgrounds as WebP through Playwright's Chromium, so no new dependency)
-- [ ] 3. (in progress: Button, Modal, Modal backdrop, Toast, Stat chip, Type chip with tooltip,
-  Hand card, Played card, Big card, Player badge, Timer chip, Pending marker, Tab, Text input are
-  written but not yet tested or used; next: component tests, then item 4) Components: Button, Button loading labels, Modal, Modal backdrop, Toast, Stat chip,
-  Hand card, Big card, Played card, Player badge, Type chip, Type tooltip, Pending marker, Tab,
-  Text input, Timer chip
+- [x] 3. Components, one per file, with tests by role and name. Type tooltip is part of Type chip
+  and Stat chip; Button loading labels are Button's `loadingLabel`. Differences: hand cards also
+  get an accessible description (number, real cost, "new", "cannot be played"), because the
+  design marks these only by colour; the Tab's unread count is now part of its name; Hand card
+  and Played card share `CardTileFace`. Client tests unmount by hand (`proposed-rules.md`,
+  "Client tests clean up only when told to").
 - [ ] 4. Game screen layout (S1.2): top bar, three columns, scrolling panels
 - [ ] 5. Size test for O2 at 1280×720, 1920×1080 and 2560×1440
 - [ ] 6. Bundle check (`.size-limit.js`, protected: owner)
