@@ -94,15 +94,12 @@ None. This phase adds no scenarios to `harness/required.yaml`.
 
 ## Waiting for the owner
 
-1. **Formatting of `eslint.config.js` (protected).** The owner applied the three config changes
-   below on 2026-10-28, but the script put the new jsx-a11y rule on four lines and Prettier
-   wants one, so `npm run check` stops at `prettier --check`. Fix: `npx prettier --write
-   eslint.config.js`.
-2. **Items 6 and 7 edit protected files** (`.size-limit.js`, `knip.json`), approved with this
+1. **Items 6 and 7 edit protected files** (`.size-limit.js`, `knip.json`), approved with this
    phase but blocked for Claude by the protected-path hook. Proposed contents follow in the
    phase when item 5 is done.
 
 Done by the owner, 2026-10-28: `tsconfig.tools.json` loads `vite/client` types, so client
 tests that import CSS modules type-check; `eslint.config.js` lets a labelled `group` take
 `tabIndex`, so a scrolling panel is reachable by keyboard (axe `scrollable-region-focusable`);
-`vitest.config.ts` runs `src/client/testing/cleanUpAfterEachTest.ts` before client tests.
+`vitest.config.ts` runs `src/client/testing/cleanUpAfterEachTest.ts` before client tests; the
+owner also formatted `eslint.config.js` with Prettier.
