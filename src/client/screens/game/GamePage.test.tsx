@@ -33,6 +33,9 @@ const MINE: OwnSeatView = {
   kind: "own",
   seat: 2,
   hand: ["Loft"],
+  handDetails: [
+    { card: "Loft", realCost: 8, sameSectorAndTierInCity: 0, playRejection: "tier_not_allowed" },
+  ],
   hasPlayedThisTurn: false,
   hasSkippedBuild: false,
   actionsThisTurn: 0,
