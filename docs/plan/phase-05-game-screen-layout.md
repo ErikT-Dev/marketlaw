@@ -1,6 +1,6 @@
 # Phase 05: Game screen: layout and components
 
-Status: in progress
+Status: done
 Milestone: 3 Playthrough
 
 ## Goal
