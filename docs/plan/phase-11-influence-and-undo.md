@@ -1,6 +1,6 @@
 # Phase 11: Influence and undo
 
-Status: approved
+Status: in progress
 Milestone: 3 Playthrough
 
 ## Goal
@@ -102,3 +102,11 @@ These 52 scenarios are added to `harness/required.yaml` in this phase, by file a
 - `visibility` #6: undone actions are never shown to other players
 - `visibility` #7: the deck count shown during the main phase leaves out other players' draws
 - `visibility` #8: a player's own draws are shown in their deck count straight away
+
+## Progress
+
+- [ ] 1. Influence actions: the stat trades and 1 fund → 1 influence, with their limits per game.
+- [ ] 2. Build passes: bought at a rising price, with influence, or by skip build.
+- [ ] 3. Draw actions: 5 kinds × 3 tiers, available by the deck and discard as the player sees them.
+- [ ] 4. Undo: the actions R7.2 lists, latest first, never past an action that drew a card.
+- [ ] 5. Screens: the use influence pop-up (S8.3) and the Undo button (S6.6).
