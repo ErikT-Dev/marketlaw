@@ -71,6 +71,7 @@ export class RoomSession {
           schemaVersion: SAVE_SCHEMA_VERSION,
           seed: 1,
           setup: { players: v.parse(PLAYER_COUNT, state.seats.length) },
+          startingState: state,
           actionLog: [],
           state,
         },

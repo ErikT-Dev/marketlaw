@@ -1,6 +1,7 @@
 import { expect, test, type Browser, type ViewportSize } from "@playwright/test";
 import { expectScreenFits } from "./expectScreenFits";
-import { startTestRoom, TEST_ROOM_SECRET_HEADER } from "./startTestRoom";
+import { TEST_ROOM_SECRET_HEADER } from "../src/shared/api/TEST_ROOM_SECRET_HEADER";
+import { startTestRoom } from "./startTestRoom";
 
 async function openSeat(browser: Browser, viewport: ViewportSize | null, link: string) {
   const context = await browser.newContext({ viewport: viewport ?? { width: 1920, height: 1080 } });

@@ -1,18 +1,10 @@
-import { readFileSync } from "node:fs";
 import type { APIRequestContext } from "@playwright/test";
 import * as v from "valibot";
+import { TEST_ROOM_SECRET_HEADER } from "../src/shared/api/TEST_ROOM_SECRET_HEADER";
 import { TestRoomResponse } from "../src/shared/api/TestRoomResponse";
 import { GIVEN_SCHEMA } from "../tools/harness-runner/engine/GIVEN_SCHEMA";
 import { stateFromGiven } from "../tools/harness-runner/engine/stateFromGiven";
-
-export const TEST_ROOM_SECRET_HEADER = "x-test-room-secret";
-
-function localSecret(): string {
-  const line = readFileSync(".dev.vars", "utf8")
-    .split(/\r?\n/)
-    .find((entry) => entry.startsWith("TEST_ROOM_SECRET="));
-  return line?.slice("TEST_ROOM_SECRET=".length) ?? "";
-}
+import { readLocalTestRoomSecret } from "../tools/test-room/readLocalTestRoomSecret";
 
 export async function startTestRoom(
   request: APIRequestContext,
@@ -20,7 +12,7 @@ export async function startTestRoom(
 ): Promise<ReadonlyArray<string>> {
   const state = stateFromGiven(v.parse(GIVEN_SCHEMA, given));
   const response = await request.post("/api/test-rooms", {
-    headers: { [TEST_ROOM_SECRET_HEADER]: localSecret() },
+    headers: { [TEST_ROOM_SECRET_HEADER]: readLocalTestRoomSecret() },
     data: { state, playerNames: state.seats.map((seat) => `Seat ${String(seat.seat)}`) },
   });
   const room = v.parse(TestRoomResponse, await response.json());

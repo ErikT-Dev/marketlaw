@@ -1,4 +1,3 @@
-import { randomUUID } from "node:crypto";
 import * as v from "valibot";
 import type { BotChooser } from "../../src/bots/BotChooser.ts";
 import { chaosBot } from "../../src/bots/chaosBot.ts";
@@ -23,6 +22,11 @@ import type { SimulatedSeat } from "./SimulatedSeat.ts";
 
 const MESSAGE_GAP_MS = 1_000;
 
+function playerIdFor(seed: number, seat: number): PlayerId {
+  const seedHex = (seed >>> 0).toString(16).padStart(8, "0");
+  return v.parse(PlayerId, `${seedHex}-0000-4000-8000-${seat.toString(16).padStart(12, "0")}`);
+}
+
 export class GameSimulation {
   record: RoomRecord;
   readonly seats: SimulatedSeat[];
@@ -31,12 +35,13 @@ export class GameSimulation {
   readonly rowsPerAcceptedAction: number[] = [];
   readonly rowsPerOtherMessage: number[] = [];
   readonly statesAfterEachAction: string[] = [];
+  firstViolationAt: number | null = null;
   private rowsWritten = 0;
   private nowMs = 0;
   private readonly storage: RoomStorage = {
     read: () => this.record,
     write: (record) => {
-      this.record = record;
+      this.record = this.stored(record);
       this.rowsWritten += 1;
     },
     remove: () => {
@@ -47,20 +52,32 @@ export class GameSimulation {
   readonly bot: BotKind;
   private readonly chooser: BotChooser;
 
-  constructor(seed: number, players: 2 | 3 | 4, bot: BotKind, chooser: BotChooser) {
-    this.bot = bot;
-    this.chooser = chooser;
+  private readonly stored: (record: RoomRecord) => RoomRecord;
+
+  constructor(
+    seed: number,
+    players: 2 | 3 | 4,
+    options: {
+      readonly bot: BotKind;
+      readonly chooser: BotChooser;
+      readonly stored: (record: RoomRecord) => RoomRecord;
+    },
+  ) {
+    this.bot = options.bot;
+    this.chooser = options.chooser;
+    this.stored = options.stored;
     const saved = startSavedGame({ players }, seed);
     const identities: ReadonlyArray<Identity> = saved.state.seats.map((seat) => ({
-      playerId: v.parse(PlayerId, randomUUID()),
+      playerId: playerIdFor(seed, seat.seat),
       name: `Bot ${String(seat.seat)}`,
     }));
     this.seats = saved.state.seats.map((seat, index) => ({
       seat: seat.seat,
-      identity: identities[index] ?? { playerId: v.parse(PlayerId, randomUUID()), name: "Bot" },
+      identity: identities[index] ?? { playerId: playerIdFor(seed, seat.seat), name: "Bot" },
       connection: { identity: null, rejectionTimes: [] },
       view: null,
       stateVersion: 0,
+      lastActionText: null,
     }));
     this.record = {
       schemaVersion: ROOM_SCHEMA_VERSION,
@@ -100,13 +117,18 @@ export class GameSimulation {
     if (move.kind === "raw") {
       return move.text;
     }
+    if (move.kind === "repeat") {
+      return seat.lastActionText ?? this.envelope(seat, { type: "resync" });
+    }
     const stateVersion = move.kind === "stale" ? seat.stateVersion + 1 : seat.stateVersion;
-    return this.envelope(seat, {
+    const text = this.envelope(seat, {
       type: "action",
       actionId: `a${String(this.messages.length + 1)}`,
       stateVersion,
       action: move.intent,
     });
+    seat.lastActionText = text;
+    return text;
   }
 
   private envelope(seat: SimulatedSeat, body: Readonly<Record<string, unknown>>): string {
@@ -135,7 +157,8 @@ export class GameSimulation {
     if (outcome.isRoomGone) {
       throw new Error("the simulated room is gone");
     }
-    const isAccepted = outcome.reply.type === "update" && outcome.reply.acceptedActionId !== null;
+    const isAccepted =
+      (this.record.game?.saved.actionLog.length ?? 0) > (before.game?.saved.actionLog.length ?? 0);
     (isAccepted ? this.rowsPerAcceptedAction : this.rowsPerOtherMessage).push(
       this.rowsWritten - rowsBefore,
     );
@@ -172,6 +195,9 @@ export class GameSimulation {
   }
 
   private addViolations(found: ReadonlyArray<string>): void {
+    if (found.length > 0 && this.firstViolationAt === null) {
+      this.firstViolationAt = this.messages.length;
+    }
     this.violations.push(...found);
   }
 

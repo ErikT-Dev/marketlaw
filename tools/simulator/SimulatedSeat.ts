@@ -9,4 +9,5 @@ export type SimulatedSeat = {
   connection: ConnectionState;
   view: PlayerView | null;
   stateVersion: number;
+  lastActionText: string | null;
 };

@@ -45,6 +45,26 @@ describe("simulator", () => {
     expect(summary.violationCounts).toEqual({});
   });
 
+  it("catches a stored game that lost a card and stops the message list at the first failure", () => {
+    const game = simulateGame(7, 2, "legal", 3, (record) =>
+      record.game === null
+        ? record
+        : {
+            ...record,
+            game: {
+              ...record.game,
+              saved: {
+                ...record.game.saved,
+                state: { ...record.game.saved.state, deck: record.game.saved.state.deck.slice(1) },
+              },
+            },
+          },
+    );
+    expect(game.violations.some((found) => found.startsWith("I1: "))).toBe(true);
+    expect(game.firstViolationAt).not.toBeNull();
+    expect(game.firstViolationAt).toBeLessThan(game.messages.length + 1);
+  });
+
   it("reports a game whose replay differs", () => {
     const saved = startSavedGame({ players: 2 }, 3);
     const played = { ...saved, actionLog: [{ type: "end_turn" as const, seat: 1 as const }] };

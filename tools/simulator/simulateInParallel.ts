@@ -19,6 +19,9 @@ function runWorker(
       resolve(summary);
     });
     worker.once("error", reject);
+    worker.once("exit", (code) => {
+      reject(new Error(`a simulator worker stopped with code ${String(code)} before reporting`));
+    });
   });
 }
 

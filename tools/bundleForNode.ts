@@ -3,7 +3,7 @@ import { join } from "node:path";
 import { build } from "vite";
 
 export async function bundleForNode(entry: string, name: string): Promise<string> {
-  const outDir = join(tmpdir(), `marketlaw-${name}-${String(process.pid)}`);
+  const outDir = join(tmpdir(), `marketlaw-${name}`);
   await build({
     configFile: false,
     logLevel: "silent",
