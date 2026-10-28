@@ -44,7 +44,8 @@ it leave the table at the end of the turn.
 
 ## Open points
 
-- None.
+- D21: rerun `e2e/gameScreenSizes.spec.ts` at 1280×720 with 5 quests and 4 players; if the
+  screen cannot fit with 24 px targets, raise the screen sizes with the owner again.
 
 ## Required scenarios
 

@@ -129,17 +129,16 @@ nothing. With the Hibernation API, a room costs only while it handles messages, 
 game should stay far below B12's 600 s, and 50 games a day far below the Free plan's 13,000 GB-s.
 *Effect:* B12 stays as it is; the simulator measures it per game from phase 08.
 
+**D21. Screen sizes in version 1 (was O2).** (2026-10-28, owner, phase 05)
+Every screen supports sizes from 1280×720 to 2560×1440, as `rules/frontend.md` says. Phase 05's
+size test passed at all three test sizes with a 4-player table. Phase 13 reruns it at 1280×720
+with 5 quests and 4 players and raises the question again if the screen cannot fit there.
+*Effect:* `harness/spec/screens.md` S1.1, `open-questions.md` Q19, phase 13's Open points.
+
 ## Open
 
 From D19 on, Claude solves these itself when the phase that needs them starts, records the
 solution in `open-questions.md`, and moves the point to Decided.
-
-**O2. Screen sizes in version 1.** Decided during phase 05.
-`rules/frontend.md` requires 1280×720 to 2560×1440; `screens.md` S1.1 and the design cover only
-1920×940. Phase 05 builds the game screen to stretch, tests it at 1280×720, 1920×1080 and
-2560×1440, and the owner then chooses. The design's density (5 quests with 4 players, a 2-column
-hand) may not fit 1280×720 with 24 px click targets. The decision updates `rules/frontend.md` or
-S1.1, with approval.
 
 **O3. Email provider.** Needed before phase 24. (`accounts.md` open question 1)
 *Recommendation:* compare free tiers against A1.9 at the start of phase 24.

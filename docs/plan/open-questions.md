@@ -261,3 +261,15 @@ file.
   left, as S2.2 asks.
 - **Implemented:** `harness/spec/screens.md` S2.2, `src/rules/playerOrderOf.ts`, the game top bar
   (phase 05).
+
+## Q19. Which screen sizes does version 1 support? (O2)
+
+- **Phase:** 05, item 5.
+- **Question:** `rules/frontend.md` asks for 1280×720 to 2560×1440, while S1.1 and the design cover
+  only 1920×940. O2 left the choice to the owner after the size test.
+- **Options:** keep 1280×720 to 2560×1440 and recheck when quests exist; keep it with no recheck;
+  support only 1920×1080 and up; decide after phase 13.
+- **Solution:** answered by the owner, 2026-10-28: keep 1280×720 to 2560×1440 and recheck in
+  phase 13 with 5 quests and 4 players.
+- **Why:** the size test passed at all three sizes; the densest content does not exist yet.
+- **Implemented:** `harness/spec/screens.md` S1.1, `decisions.md` D21, phase 13's Open points.
