@@ -5,6 +5,7 @@ import { MEASURED_BUDGET_LIMITS } from "./MEASURED_BUDGET_LIMITS.ts";
 import { REPORT_STYLE } from "./REPORT_STYLE.ts";
 import type { ReportInput } from "./ReportInput.ts";
 import { reportRules } from "./reportRules.ts";
+import { reportSimulation } from "./reportSimulation.ts";
 import { reportStatusOf } from "./reportStatusOf.ts";
 import { statusBadge } from "./statusBadge.ts";
 
@@ -63,7 +64,7 @@ function identifiedList(
 
 function budgetList(input: ReportInput): string {
   const measured = input.budgets.map(({ id, name }) => {
-    const value = highestMeasured(input.run.runs, id);
+    const value = highestMeasured(input.run, id);
     const limit = MEASURED_BUDGET_LIMITS[id];
     return value === undefined || limit === undefined
       ? { id, name }
@@ -82,6 +83,7 @@ export function buildReport(input: ReportInput): string {
     verdict(input),
     summary(input),
     checks(input),
+    reportSimulation(input.run.simulation, input.run.simulatedInvariants),
     "<h2>Rules</h2>",
     reportRules(input.ruleSpecs, input.run.runs, input.exceptions),
     identifiedList("Invariants", input.invariants, input.run.required.invariants, input.problems),
