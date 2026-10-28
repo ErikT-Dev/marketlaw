@@ -392,3 +392,17 @@ file.
 - **Implemented:** `harness/spec/client.md` C5 (checked by tests listed in
   `harness/coverage-exceptions.yaml`), `migrations/0004_test_room_seats.sql`,
   `src/server/testRooms/`, `src/client/store/`, `src/rules/replayStartOf.ts` (phase 08).
+
+## Q27. `visibility` #11 needs features of later phases
+
+- **Phase:** 09, start.
+- **Question:** phase 09 lists `visibility` #11 ("everything about another player except the
+  hand is public") as required, but the scenario also checks type counts in the view (phase 10),
+  influence uses (phase 11), completed projects (phase 10), completed quests (phase 13) and
+  whether a player is away (phase 18). It cannot pass before all of them exist.
+- **Options:** build stand-ins now; leave it out of the required list until the last of them.
+- **Solution:** phase 09 shows everything public that exists so far, and the scenario becomes
+  required in phase 18, which adds "away", the last missing part. Phases 10 to 13 add their parts
+  to the view as they are built.
+- **Why:** a required scenario must pass; stand-ins would be behaviour nobody asked for.
+- **Implemented:** the Required scenarios of phases 09 and 18.

@@ -49,8 +49,10 @@ tab; close every window and come back to a paused game.
 
 ## Required scenarios
 
-These 8 scenarios are added to `harness/required.yaml` in this phase, by file and number:
+These 9 scenarios are added to `harness/required.yaml` in this phase, by file and number:
 
+- `visibility` #11: everything about another player except the hand is public (moved here from
+  phase 09, Q27)
 - `connections-and-leaving` #1: opening the game in a second tab moves it there
 - `connections-and-leaving` #2: a disconnected player is shown as away to everyone
 - `connections-and-leaving` #3: an away player keeps their seat and their time runs as normal

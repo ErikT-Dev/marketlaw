@@ -51,12 +51,12 @@ live done marks, and their actions appear when the phase ends.
 
 ## Required scenarios
 
-These 7 scenarios are added to `harness/required.yaml` in this phase, by file and number:
+These 6 scenarios are added to `harness/required.yaml` in this phase, by file and number
+(`visibility` #11 moved to phase 18, Q27):
 
 - `drawing` #8: other players see only the sector and tier asked for when a fallback is used
 - `hostile-client` #14: another player's hidden action does not change my state version
 - `visibility` #3: another player's main-phase actions stay hidden until the phase ends
 - `visibility` #4: whether another player is done is shown during the main phase
 - `visibility` #5: main-phase actions are revealed when the main phase ends
-- `visibility` #11: everything about another player except the hand is public
 - `visibility` #12: no player receives the random seed or the deck order
