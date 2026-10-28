@@ -14,6 +14,9 @@ export function tradeRejection(seat: SeatState, trade: TradeName): ReasonCode | 
     return "skip_build_after_play";
   }
   const costs = tradeCostsOf(seat, trade);
-  const canAfford = STAT_KEYS.every((stat) => seat.stats[stat] >= (costs[stat] ?? 0));
+  const canAfford = STAT_KEYS.every((stat) => {
+    const cost = costs[stat];
+    return cost === undefined || seat.stats[stat] >= cost;
+  });
   return canAfford ? undefined : "cannot_afford_trade";
 }

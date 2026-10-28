@@ -14,7 +14,7 @@ const RANDOM_CARD_CHANCES = [
 ] as const;
 
 function dealOne(deal: HandDeal, sector: Sector, tier: Tier, random: Random): HandDeal {
-  const drawn = drawCard(deal.piles, { by: "sector", sector }, tier, random);
+  const drawn = drawCard(deal.piles, { by: "sector", sector }, tier, random, "top_card");
   return {
     hand: [...deal.hand, ...drawn.cards],
     piles: drawn.piles,

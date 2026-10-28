@@ -1,5 +1,6 @@
 import { cardOf } from "../shared/catalogue/cardOf";
 import type { ReasonCode } from "../shared/ReasonCode";
+import { drawActionRejection } from "./drawActionRejection";
 import { FIRST_TURN_FOR_HIGHER_TIERS } from "./FIRST_TURN_FOR_HIGHER_TIERS";
 import type { GameAction } from "./GameAction";
 import type { GameState } from "./GameState";
@@ -50,5 +51,7 @@ export function rejectionOf(state: GameState, action: GameAction): ReasonCode | 
       return projectRejection(seat, action.project);
     case "influence":
       return tradeRejection(seat, action.trade);
+    case "draw_action":
+      return drawActionRejection(state, seat, action.kind, action.tier);
   }
 }

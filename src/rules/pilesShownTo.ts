@@ -34,7 +34,7 @@ export function pilesShownTo(state: GameState, viewer: SeatNumber): PilesShown {
   const drawnFromShownDiscard = drawn.filter((card) => discardAfterShuffles.includes(card));
   return {
     deckCount:
-      own.reduce((count, entry) => count + deckChange(entry), start.deckCount) +
+      own.reduce((count, entry) => count + deckChange(entry), start.deck.length) +
       drawnFromShownDiscard.length,
     discard: discardAfterShuffles.filter((card) => !drawnFromShownDiscard.includes(card)),
     drawLog: [...earlier, ...own],

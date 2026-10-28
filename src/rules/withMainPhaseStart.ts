@@ -5,7 +5,7 @@ export function withMainPhaseStart(state: Omit<GameState, "mainPhaseStart">): Ga
     ...state,
     mainPhaseStart: {
       seats: state.seats,
-      deckCount: state.deck.length,
+      deck: state.deck,
       discard: state.discard,
       drawLogLength: state.drawLog.length,
     },

@@ -2,6 +2,7 @@ import type { CardName } from "../shared/catalogue/CardName";
 import type { Tier } from "../shared/catalogue/Tier";
 import type { DrawAsked } from "../shared/DrawAsked";
 import type { Drawn } from "./Drawn";
+import type { LastDrawStep } from "./LastDrawStep";
 import { isAskedCard } from "./isAskedCard";
 import type { DrawTarget } from "./DrawTarget";
 import type { Piles } from "./Piles";
@@ -64,12 +65,18 @@ function takeTopCard(piles: Piles, random: Random): Drawn {
   };
 }
 
-export function drawCard(piles: Piles, target: DrawTarget, tier: Tier, random: Random): Drawn {
+export function drawCard(
+  piles: Piles,
+  target: DrawTarget,
+  tier: Tier,
+  random: Random,
+  lastStep: LastDrawStep,
+): Drawn {
   for (const nearestTier of NEAREST_TIERS[tier]) {
     const drawn = takeMatching(piles, target, nearestTier, random);
     if (drawn !== undefined) {
       return drawn;
     }
   }
-  return target.by === "kind" ? { piles, cards: [], shuffles: [] } : takeTopCard(piles, random);
+  return lastStep === "top_card" ? takeTopCard(piles, random) : { piles, cards: [], shuffles: [] };
 }

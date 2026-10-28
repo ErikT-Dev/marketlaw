@@ -13,9 +13,9 @@ function drawForPlace(slot: MarketplaceSlot, piles: Piles, turn: number, random:
   const chances = tierChancesByTurn(turn);
   if (kind === "open") {
     const sector = random.pickSector();
-    return drawCard(piles, { by: "sector", sector }, pickTier(chances, random), random);
+    return drawCard(piles, { by: "sector", sector }, pickTier(chances, random), random, "top_card");
   }
-  return drawCard(piles, { by: "kind", kind }, pickTier(chances, random), random);
+  return drawCard(piles, { by: "kind", kind }, pickTier(chances, random), random, "nothing");
 }
 
 export function fillMarketplace(

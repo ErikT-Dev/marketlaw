@@ -1,1 +1,1 @@
-export type DrawCause = "income" | "project";
+export type DrawCause = "income" | "project" | "draw_action";

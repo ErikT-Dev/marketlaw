@@ -11,6 +11,7 @@ import { rejectionOf } from "./rejectionOf";
 import { sellCards } from "./sellCards";
 import { takeIncome } from "./takeIncome";
 import { updateSeat } from "./updateSeat";
+import { useDrawAction } from "./useDrawAction";
 import { useTrade } from "./useTrade";
 
 function accepted(state: GameState, action: GameAction, random: Random): GameState {
@@ -39,6 +40,8 @@ function accepted(state: GameState, action: GameAction, random: Random): GameSta
         action.seat,
         random,
       );
+    case "draw_action":
+      return takeIncome(useDrawAction(state, action, random), action.seat, random);
   }
 }
 
