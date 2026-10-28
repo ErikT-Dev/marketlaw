@@ -50,6 +50,7 @@ export const ENGINE_FIELDS = {
     "quest_list",
     "bonus_types",
     "done_order",
+    "first_completions",
   ]),
   nestedFields: new Map<string, ReadonlySet<string>>([
     ["given.seats", new Set(SEAT_FIELDS)],
