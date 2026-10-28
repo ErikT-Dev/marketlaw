@@ -11,6 +11,10 @@ playing dozens of turns (plan decision D8, Q25).
 3. The command prints one link per seat. Open each link in its own browser window (one normal and
    one private window, or two browsers); each window plays that seat.
 
+A seat link works only for a test-room seat: the site checks it first and ignores any other link.
+If the browser already has a different account, it asks before switching, because a guest account
+that is switched away from cannot be got back (C5).
+
 The local secret is in `.dev.vars` (never committed).
 
 ## On the live site
