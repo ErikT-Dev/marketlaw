@@ -37,6 +37,10 @@ async function expectTableElements(page: Page): Promise<void> {
   for (const panel of TABLE_PANELS) {
     await expect(page.getByRole("region", { name: panel })).toBeVisible();
   }
+  await expect(page.getByRole("region", { name: "Draw log" })).toContainText("No cards drawn yet.");
+  await expect(
+    page.getByRole("region", { name: "Marketplace" }).getByText(/^Deck \d+$/),
+  ).toBeVisible();
   const stats = page.getByRole("region", { name: "Your stats" });
   for (const stat of STAT_NAMES) {
     await expect(stats.getByRole("img", { name: new RegExp(`^${stat} -?\\d+$`) })).toBeVisible();
