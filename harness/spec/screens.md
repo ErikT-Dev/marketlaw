@@ -40,7 +40,8 @@ None yet.
   40", the **phase** (market phase, main phase or game over), and the **player order** as player
   badges from the first player of the turn, with the first player marked "first player".
 - **S2.2** Each badge in the player order shows the player's username and, during the main phase,
-  whether they are **done**, **away** or have **left** (R5.4).
+  whether they are **done**, **away** or have **left** (R5.4). Players who left are not in the
+  player order (R4.5); their badges come after it, by seat number.
 - **S2.3** On the right: the **user box** with your username, which opens the user menu (S12.7),
   then your own clock, and **Leave game**. In the main phase the clock shows your
   main-phase time left and your time bank; in the market phase it shows whose go it is and how

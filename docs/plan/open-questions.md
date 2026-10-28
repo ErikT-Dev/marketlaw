@@ -246,3 +246,18 @@ file.
   The reconnect delay grows until the first update arrives, not merely until the socket opens.
 - **Implemented:** `src/hosts/RemoteGameHost.ts`, `src/client/store/ClientStore.ts`,
   `src/server/GameRoom.ts` (phase 04).
+
+## Q18. Where do players who left go in the top bar's player order?
+
+- **Phase:** 05, item 4.
+- **Question:** S2.2 says each badge in the player order shows whether the player has left, but
+  R4.5 skips players who left, so they have no place in the order.
+- **Options:** leave them out of the top bar; keep them at their seat's place in the rotation;
+  show them after the order.
+- **Solution:** the engine's player order (in every `PlayerView`) holds only players still in the
+  game, as R4.5 says; the top bar shows players who left after it, by seat number, marked "left".
+  Written into S2.2.
+- **Why:** the order stays the one the market phase uses (phase 12), and everyone still sees who
+  left, as S2.2 asks.
+- **Implemented:** `harness/spec/screens.md` S2.2, `src/rules/playerOrderOf.ts`, the game top bar
+  (phase 05).
