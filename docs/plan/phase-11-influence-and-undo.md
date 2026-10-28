@@ -113,4 +113,6 @@ These 52 scenarios are added to `harness/required.yaml` in this phase, by file a
   (R17.5). The start of the main phase keeps the deck instead of its count.
 - [x] 4. Undo: the actions R7.2 lists, latest first, never past an action that drew a card.
   Income blocks undo too (Q33). Undo #5 and #11 need quests and stay for phase 13.
-- [ ] 5. Screens: the use influence pop-up (S8.3) and the Undo button (S6.6).
+- [x] 5. Screens: the use influence pop-up (S8.3) and the Undo button (S6.6).
+  Use influence always opens, like Projects (Q32). The action buttons got narrower side padding so
+  the seven fit two rows, as in the design. Browser test in a test room, with a screenshot.
