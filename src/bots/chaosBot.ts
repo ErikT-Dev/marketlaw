@@ -42,7 +42,10 @@ export function chaosBot(view: PlayerView, chooser: BotChooser): ChaosMove {
     return { kind: "raw", text: MALFORMED_TEXTS[chooser.pickIndex(MALFORMED_TEXTS.length)] ?? "{" };
   }
   if (roll < 4) {
-    return { kind: "stale", intent: illegalIntent(view, chooser) };
+    return { kind: "stale", intent: legalBot(view, chooser) ?? { type: "end_turn" } };
+  }
+  if (roll < 5) {
+    return { kind: "repeat" };
   }
   const legal = roll < 14 ? legalBot(view, chooser) : null;
   return { kind: "intent", intent: legal ?? illegalIntent(view, chooser) };

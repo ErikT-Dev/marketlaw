@@ -126,12 +126,30 @@ describe("legal bot", () => {
 });
 
 describe("chaos bot", () => {
-  it("sends legal moves, illegal moves, stale moves and malformed text", () => {
+  it("sends stale versions only with moves that would otherwise be legal", () => {
+    const view = viewWith({});
+    const stale = SEEDS.map((seed) => chaosBot(view, chooserFrom(seed))).flatMap((move) =>
+      move.kind === "stale" ? [move.intent] : [],
+    );
+    expect(stale.length).toBeGreaterThan(0);
+    expect(
+      stale.every(
+        (intent) =>
+          intent.type !== "play_card" || ["Farm House", "Pub", "Cottage"].includes(intent.card),
+      ),
+    ).toBe(true);
+  });
+
+  it("sends legal moves, illegal moves, stale moves, repeats and malformed text", () => {
     const view = viewWith({});
     const moves = SEEDS.map((seed) => chaosBot(view, chooserFrom(seed)));
-    expect(new Set(moves.map((move) => move.kind))).toEqual(new Set(["intent", "stale", "raw"]));
+    expect(new Set(moves.map((move) => move.kind))).toEqual(
+      new Set(["intent", "stale", "repeat", "raw"]),
+    );
     const plays = moves.flatMap((move) =>
-      move.kind !== "raw" && move.intent.type === "play_card" ? [move.intent.card] : [],
+      (move.kind === "intent" || move.kind === "stale") && move.intent.type === "play_card"
+        ? [move.intent.card]
+        : [],
     );
     expect(plays).toContain("Dorm");
     expect(
