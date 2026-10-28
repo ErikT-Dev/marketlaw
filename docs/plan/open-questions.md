@@ -339,3 +339,17 @@ file.
 - **Why:** no place empties and nothing is refilled before phase 12, so no refill shuffle can
   happen yet.
 - **Implemented:** `src/rules/takeIncome.ts`, `src/shared/DrawLogEntry.ts`; open for phase 12.
+
+## Q24. The phase 08 invariants on the required list
+
+- **Phase:** 08, item 2.
+- **Question:** the phase file lists the invariants the simulator checks, and its exit criterion is
+  that they hold over 10,000 games, but it adds nothing to `harness/required.yaml`, so a broken
+  invariant would show in the report without failing the harness.
+- **Options:** leave the list as it is; add the 12 invariants.
+- **Solution:** add I1, I2, I5, I6, I7, I8, I9, I10, I17, I18, I26 and I27 to the required list.
+  The harness then fails when any simulated game breaks one, or when fewer than 10,000 games
+  ran, and names the shortest failing game.
+- **Why:** the exit criterion only means something if the check can fail.
+- **Implemented:** `harness/required.yaml`, `tools/harness-runner/simulationProblems.ts`
+  (phase 08).
