@@ -392,3 +392,46 @@ file.
 - **Implemented:** `harness/spec/client.md` C5 (checked by tests listed in
   `harness/coverage-exceptions.yaml`), `migrations/0004_test_room_seats.sql`,
   `src/server/testRooms/`, `src/client/store/`, `src/rules/replayStartOf.ts` (phase 08).
+
+## Q27. `visibility` #11 needs features of later phases
+
+- **Phase:** 09, start.
+- **Question:** phase 09 lists `visibility` #11 ("everything about another player except the
+  hand is public") as required, but the scenario also checks type counts in the view (phase 10),
+  influence uses (phase 11), completed projects (phase 10), completed quests (phase 13) and
+  whether a player is away (phase 18). It cannot pass before all of them exist.
+- **Options:** build stand-ins now; leave it out of the required list until the last of them.
+- **Solution:** phase 09 shows everything public that exists so far, and the scenario becomes
+  required in phase 18, which adds "away", the last missing part. Phases 10 to 13 add their parts
+  to the view as they are built.
+- **Why:** a required scenario must pass; stand-ins would be behaviour nobody asked for.
+- **Implemented:** the Required scenarios of phases 09 and 18.
+
+## Q28. Your own draw of a card that another player shuffled out of the discard
+
+- **Phase:** 09, phase review finding 2.
+- **Question:** R5.5 shows you the deck and discard as at the start of the main phase, minus your
+  own draws, plus your own shuffles. If another player shuffles discard cards into the deck and
+  you then draw one of them, the literal rule shows a deck count one too low (it can go below 0)
+  and the card both in your hand and in the discard.
+- **Options:** take the card off the deck count, as the rule's words say; take it off the discard
+  shown to you.
+- **Solution:** take it off the discard shown to you; the deck count drops only for cards that
+  are not shown in the discard. Each player's state remembers the cards they drew in the current
+  main phase, so the view knows which ones. Written into R5.5.
+- **Why:** you already hold the card, so nothing is revealed; the shown piles stay possible.
+- **Implemented:** `harness/spec/game-rules.md` R5.5, `src/rules/pilesShownTo.ts`, the
+  simulator's I24 check (phase 09).
+
+## Q29. Which tier a fallback's discard shuffle shows
+
+- **Phase:** 09, phase review finding 7.
+- **Question:** R17.6 says other players see only the tier asked for when a fallback (R17.4 step
+  3) is used, but M3.3 makes discard shuffles public with their sector or kind and tier. A shuffle
+  of tier 2 cards before a tier 1 draw is asked for shows tier 2.
+- **Options:** show the shuffle with the tier asked for; show it with the tier shuffled.
+- **Solution:** show the tier shuffled. The discard pile is public, so the cards leaving it are
+  seen anyway when the main phase ends; the draw entry keeps the tier asked for. Written into
+  R17.6.
+- **Why:** a shuffle entry that named the wrong tier would contradict the public discard pile.
+- **Implemented:** `harness/spec/game-rules.md` R17.6 (phase 09; the code already did this).

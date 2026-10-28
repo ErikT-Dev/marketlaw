@@ -3,6 +3,7 @@ import * as v from "valibot";
 import type { GameState } from "../rules/GameState";
 import { randomForNextAction } from "../rules/randomForNextAction";
 import { EpochMs } from "../shared/EpochMs";
+import type { PlayerId } from "../shared/PlayerId";
 import { PROTOCOL_VERSION } from "../shared/PROTOCOL_VERSION";
 import { parseClientMessage } from "../shared/protocol/parseClientMessage";
 import type { ServerMessage } from "../shared/protocol/ServerMessage";
@@ -107,9 +108,7 @@ export class GameRoom extends DurableObject<Env> {
       rejectionTimes: outcome.connection.rejectionTimes,
     });
     socket.send(JSON.stringify(outcome.reply));
-    if (outcome.shouldUpdateEveryone) {
-      this.updateEveryone(socket);
-    }
+    this.updatePlayers(outcome.playersToUpdate, socket);
     if (outcome.shouldClose) {
       socket.close(1008, "Too many rejected messages");
     }
@@ -126,12 +125,22 @@ export class GameRoom extends DurableObject<Env> {
 
   private updateEveryone(except: WebSocket | null): void {
     const record = loadRoom(this.storage);
-    if (record === null) {
+    if (record !== null) {
+      this.updatePlayers(
+        record.players.map(({ playerId }) => playerId),
+        except,
+      );
+    }
+  }
+
+  private updatePlayers(playerIds: ReadonlyArray<PlayerId>, except: WebSocket | null): void {
+    const record = loadRoom(this.storage);
+    if (record === null || playerIds.length === 0) {
       return;
     }
     for (const socket of this.ctx.getWebSockets()) {
       const { identity } = attachmentOf(socket);
-      if (socket !== except && identity !== null) {
+      if (socket !== except && identity !== null && playerIds.includes(identity.playerId)) {
         const update: ServerMessage = {
           type: "update",
           protocolVersion: PROTOCOL_VERSION,

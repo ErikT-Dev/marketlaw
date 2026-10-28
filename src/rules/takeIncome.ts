@@ -60,6 +60,7 @@ export function takeIncome(state: GameState, seatNumber: SeatNumber, random: Ran
       income: current.stats.income + 1,
     },
     hand: [...current.hand, ...drawn.cards],
+    drawnThisPhase: [...current.drawnThisPhase, ...drawn.cards],
   }));
   const next = {
     ...paid,

@@ -5,6 +5,7 @@ import type { SeatNumber } from "../shared/SeatNumber";
 import type { GameState } from "./GameState";
 import { handDetailsOf } from "./handDetailsOf";
 import { turnRejectionOf } from "./turnRejectionOf";
+import { pilesShownTo } from "./pilesShownTo";
 import { playerOrderOf } from "./playerOrderOf";
 import type { SeatState } from "./SeatState";
 
@@ -28,14 +29,18 @@ function ownSeatView(state: GameState, seat: SeatState): OwnSeatView {
   };
 }
 
-function otherSeatView(seat: SeatState): OtherSeatView {
+function otherSeatView(state: GameState, seat: SeatState): OtherSeatView {
+  const shown =
+    state.phase === "main"
+      ? (state.mainPhaseStart.seats.find((start) => start.seat === seat.seat) ?? seat)
+      : seat;
   return {
     kind: "other",
     seat: seat.seat,
-    stats: seat.stats,
-    handCount: seat.hand.length,
-    city: seat.city,
-    buildPasses: seat.buildPasses,
+    stats: shown.stats,
+    handCount: shown.hand.length,
+    city: shown.city,
+    buildPasses: shown.buildPasses,
     isDone: seat.isDone,
     hasLeft: seat.hasLeft,
     timeBankMs: seat.timeBankMs,
@@ -43,20 +48,21 @@ function otherSeatView(seat: SeatState): OtherSeatView {
 }
 
 export function viewFor(state: GameState, viewer: SeatNumber): PlayerView {
+  const piles = pilesShownTo(state, viewer);
   return {
     seat: viewer,
     turn: state.turn,
     phase: state.phase,
     seats: state.seats.map((seat) =>
-      seat.seat === viewer ? ownSeatView(state, seat) : otherSeatView(seat),
+      seat.seat === viewer ? ownSeatView(state, seat) : otherSeatView(state, seat),
     ),
-    deckCount: state.deck.length,
-    discard: state.discard,
+    deckCount: piles.deckCount,
+    discard: piles.discard,
     marketplace: state.marketplace,
     quests: state.quests,
     bonusTypes: state.bonusTypes,
     doneOrder: state.doneOrder,
     playerOrder: playerOrderOf(state),
-    drawLog: state.drawLog,
+    drawLog: piles.drawLog,
   };
 }

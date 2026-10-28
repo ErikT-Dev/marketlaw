@@ -29,27 +29,6 @@
   gap: var(--space-sm);
 }
 
-.stats {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
-  gap: var(--space-sm) var(--space-lg);
-  margin: 0;
-}
-
-.stats div {
-  display: flex;
-  flex-direction: column;
-}
-
-.stats dt {
-  color: var(--color-text-secondary);
-}
-
-.stats dd {
-  margin: 0;
-  font-weight: var(--font-weight-bold);
-}
-
 .notice {
   color: var(--color-toast-error);
 }

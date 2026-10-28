@@ -17,8 +17,14 @@ import { PlayerId } from "../../src/shared/PlayerId.ts";
 import { PROTOCOL_VERSION } from "../../src/shared/PROTOCOL_VERSION.ts";
 import { parseClientMessage } from "../../src/shared/protocol/parseClientMessage.ts";
 import { RoomCode } from "../../src/shared/RoomCode.ts";
+import type { SeatNumber } from "../../src/shared/SeatNumber.ts";
+import type { ServerMessage } from "../../src/shared/protocol/ServerMessage.ts";
 import type { BotKind } from "./BotKind.ts";
+import type { SeatUpdates } from "./SeatUpdates.ts";
+import { scanTextOf } from "./scanTextOf.ts";
+import type { SentToSeat } from "./SentToSeat.ts";
 import type { SimulatedSeat } from "./SimulatedSeat.ts";
+import { whatSeatsSeeViolations } from "./whatSeatsSeeViolations.ts";
 
 const MESSAGE_GAP_MS = 1_000;
 
@@ -36,6 +42,7 @@ export class GameSimulation {
   readonly rowsPerOtherMessage: number[] = [];
   readonly statesAfterEachAction: string[] = [];
   firstViolationAt: number | null = null;
+  private lastUpdates: SeatUpdates | null = null;
   private rowsWritten = 0;
   private nowMs = 0;
   private readonly storage: RoomStorage = {
@@ -145,7 +152,7 @@ export class GameSimulation {
     const parsed = parseClientMessage(text);
     const sender = parsed.isOk ? this.identityByToken(parsed.value.token) : null;
     const before = this.record;
-    const viewsBefore = this.viewsText(before);
+    const updatesBefore = this.lastUpdates ?? this.updatesNow();
     const rowsBefore = this.rowsWritten;
     const outcome = receiveMessage(this.storage, {
       connection: seat.connection,
@@ -162,14 +169,55 @@ export class GameSimulation {
     (isAccepted ? this.rowsPerAcceptedAction : this.rowsPerOtherMessage).push(
       this.rowsWritten - rowsBefore,
     );
-    this.check(before, viewsBefore, isAccepted);
+    const after = this.updatesNow();
+    this.check(before, updatesBefore.allText === after.allText, isAccepted);
+    this.addViolations(
+      whatSeatsSeeViolations(
+        before,
+        this.record,
+        { seat: seat.seat, isAccepted },
+        this.sentTo(seat, outcome, { before: updatesBefore, after }),
+      ),
+    );
     seat.connection = outcome.shouldClose
       ? { identity: null, rejectionTimes: [] }
       : outcome.connection;
-    this.refreshViews();
+    this.refreshViews(after);
+    this.lastUpdates = after;
   }
 
-  private check(before: RoomRecord, viewsBefore: string, isAccepted: boolean): void {
+  private updatesNow(): SeatUpdates {
+    const updates = this.seats.map((seat) => updateFor(this.record, seat.identity.playerId));
+    const texts = updates.map((update) => JSON.stringify(update));
+    return { updates, texts, allText: `[${texts.join(",")}]` };
+  }
+
+  private sentTo(
+    sender: SimulatedSeat,
+    outcome: { readonly reply: ServerMessage; readonly playersToUpdate: ReadonlyArray<PlayerId> },
+    updates: { readonly before: SeatUpdates; readonly after: SeatUpdates },
+  ): ReadonlyMap<SeatNumber, SentToSeat> {
+    const reply = outcome.reply;
+    const replyText = reply.type === "update" ? scanTextOf(reply.update) : JSON.stringify(reply);
+    return new Map(
+      this.seats.map((seat, index) => {
+        const update = updates.after.updates[index];
+        const scanned = update === undefined ? "" : scanTextOf(update);
+        return [
+          seat.seat,
+          {
+            text: seat === sender ? `${scanned}${replyText}` : scanned,
+            view: update?.game?.view,
+            isFrameSent:
+              seat !== sender && outcome.playersToUpdate.includes(seat.identity.playerId),
+            isUnchanged: updates.before.texts[index] === updates.after.texts[index],
+          },
+        ];
+      }),
+    );
+  }
+
+  private check(before: RoomRecord, isViewUnchanged: boolean, isAccepted: boolean): void {
     const beforeGame = before.game;
     const afterGame = this.record.game;
     if (beforeGame === null || afterGame === null) {
@@ -189,7 +237,7 @@ export class GameSimulation {
       );
       return;
     }
-    if (this.viewsText(this.record) !== viewsBefore) {
+    if (!isViewUnchanged) {
       this.addViolations(["I27: a rejected or repeated message changed a view or a state version"]);
     }
   }
@@ -201,15 +249,11 @@ export class GameSimulation {
     this.violations.push(...found);
   }
 
-  private viewsText(record: RoomRecord): string {
-    return JSON.stringify(this.seats.map((seat) => updateFor(record, seat.identity.playerId)));
-  }
-
-  private refreshViews(): void {
-    for (const seat of this.seats) {
-      const update = updateFor(this.record, seat.identity.playerId);
-      seat.view = update.game?.view ?? null;
-      seat.stateVersion = update.game?.stateVersion ?? 0;
+  private refreshViews(after: SeatUpdates): void {
+    for (const [index, seat] of this.seats.entries()) {
+      const update = after.updates[index];
+      seat.view = update?.game?.view ?? null;
+      seat.stateVersion = update?.game?.stateVersion ?? 0;
     }
   }
 

@@ -8,10 +8,9 @@ import styles from "./game/GamePage.module.css";
 import { DeckAndDiscard } from "./game/DeckAndDiscard";
 import { DrawLogPanel } from "./game/DrawLogPanel";
 import { GameTopBar } from "./game/GameTopBar";
-import { playerNameOf } from "./game/playerNameOf";
 import { rejectionMessage } from "./game/rejectionMessage";
 import { RightColumn } from "./game/RightColumn";
-import { OtherSeatPanel } from "./OtherSeatPanel";
+import { OpponentsPanel } from "./game/OpponentsPanel";
 
 type Props = {
   readonly update: RoomUpdate;
@@ -34,17 +33,7 @@ export function GamePage(props: Props) {
       <GameTopBar view={view} playerNames={playerNames} />
       <main className={styles["table"]}>
         <div className={styles["left"]}>
-          <Panel title="Opponents">
-            {view.seats.map((seat) =>
-              seat.kind === "other" ? (
-                <OtherSeatPanel
-                  key={seat.seat}
-                  seat={seat}
-                  name={playerNameOf(playerNames, seat.seat)}
-                />
-              ) : null,
-            )}
-          </Panel>
+          <OpponentsPanel view={view} playerNames={playerNames} />
           <DrawLogPanel drawLog={view.drawLog} playerNames={playerNames} />
         </div>
         <div className={styles["middle"]}>

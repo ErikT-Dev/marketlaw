@@ -1,9 +1,8 @@
 import type { CardName } from "../shared/catalogue/CardName";
-import { cardOf } from "../shared/catalogue/cardOf";
-import { kindOf } from "../shared/catalogue/kindOf";
 import type { Tier } from "../shared/catalogue/Tier";
 import type { DrawAsked } from "../shared/DrawAsked";
 import type { Drawn } from "./Drawn";
+import { isAskedCard } from "./isAskedCard";
 import type { DrawTarget } from "./DrawTarget";
 import type { Piles } from "./Piles";
 import type { Random } from "./Random";
@@ -17,10 +16,7 @@ function askedFor(target: DrawTarget, tier: Tier): DrawAsked {
 }
 
 function isMatch(name: CardName, target: DrawTarget, tier: Tier): boolean {
-  const card = cardOf(name);
-  const isSameTarget =
-    target.by === "sector" ? card.sector === target.sector : kindOf(card) === target.kind;
-  return isSameTarget && card.tier === tier;
+  return isAskedCard(name, askedFor(target, tier));
 }
 
 function takeAt(piles: Piles, index: number): Pick<Drawn, "piles" | "cards"> {

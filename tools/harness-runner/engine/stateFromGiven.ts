@@ -1,6 +1,7 @@
 import type { GameState } from "../../../src/rules/GameState.ts";
 import { MARKETPLACE_PLACE_ORDER } from "../../../src/rules/MARKETPLACE_PLACE_ORDER.ts";
 import { SEAT_NUMBERS } from "../../../src/rules/SEAT_NUMBERS.ts";
+import { withMainPhaseStart } from "../../../src/rules/withMainPhaseStart.ts";
 import { CARD_NAMES } from "../../../src/shared/catalogue/CARD_NAMES.ts";
 import { QUESTS } from "../../../src/shared/catalogue/QUESTS.ts";
 import { TYPE_NAMES } from "../../../src/shared/catalogue/TYPE_NAMES.ts";
@@ -35,7 +36,7 @@ export function stateFromGiven(given: Given): GameState {
     ...marketplace.flatMap(({ card }) => (card === null ? [] : [card])),
     ...discard,
   ];
-  return {
+  return withMainPhaseStart({
     turn: given.turn ?? 1,
     phase: given.phase === "ended" ? "ended" : "main",
     seats,
@@ -50,5 +51,5 @@ export function stateFromGiven(given: Given): GameState {
       QUESTS.map(({ name }) => name).filter((name) => !quests.some(({ quest }) => quest === name)),
     bonusTypes: given.bonus_types ?? TYPE_NAMES.slice(0, 2),
     doneOrder: seats.filter((seat) => seat.isDone).map((seat) => seat.seat),
-  };
+  });
 }

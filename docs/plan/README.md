@@ -18,8 +18,8 @@ Build version 1 as defined by `harness/spec/`, until the game passes the harness
 2. **Every phase deploys on its own.** Each phase is built on its own branch and merged to
    master, which deploys, only when the phase is done and its checks and review pass (D7, D19). At that
    point `npm run check` and the browser tests are green on GitHub, the deploy succeeds, and every
-   reachable screen works for what it shows. Unfinished features are reachable only by the owner
-   and invited testers (D6), and each phase file lists its known gaps.
+   reachable screen works for what it shows. The site is open to anyone with the link (D22, which
+   replaced the lock of D6), and each phase file lists its known gaps.
 3. **Every phase is testable on its own.** Each phase file lists, by file and number, the exact
    scenarios that become required in it, and says what the owner can see or try. Where a phase
    adds nothing visible, the owner sees the harness report.
@@ -204,7 +204,7 @@ The 425 scenarios cover all of version 1, but each phase implements only part of
 | 06 | [Game screen: hand, actions and moves](phase-06-game-screen-hand-and-actions.md) | 3 Playthrough | 05 | done |
 | 07 | [Drawing and income](phase-07-drawing-and-income.md) | 3 Playthrough | 06 | done |
 | 08 | [Bots, simulator, replays and test rooms](phase-08-bots-simulator-and-test-rooms.md) | 3 Playthrough | 07 | done |
-| 09 | [Hidden information and opponents](phase-09-hidden-information-and-opponents.md) | 3 Playthrough | 08 | approved |
+| 09 | [Hidden information and opponents](phase-09-hidden-information-and-opponents.md) | 3 Playthrough | 08 | done |
 | 10 | [Types, combos and projects](phase-10-types-combos-and-projects.md) | 3 Playthrough | 09 | approved |
 | 11 | [Influence and undo](phase-11-influence-and-undo.md) | 3 Playthrough | 10 | approved |
 | 12 | [The market phase](phase-12-market-phase.md) | 3 Playthrough | 09 | approved |

@@ -65,8 +65,15 @@ function startSession(
   );
   return {
     runStep(step) {
-      if (step === "start_game" || !isRecord(step["raw"])) {
-        throw new Error("the room driver runs only raw messages");
+      if (step === "start_game") {
+        throw new Error("the room driver cannot start a game");
+      }
+      if (typeof step["action"] === "string") {
+        session.sendRaw({ seat: step["seat"], message: step });
+        return;
+      }
+      if (!isRecord(step["raw"])) {
+        throw new Error("the room driver runs game steps and raw messages only");
       }
       session.sendRaw(step["raw"]);
     },
@@ -99,7 +106,7 @@ const SEAT_FIELDS = ENGINE_FIELDS.nestedFields.get("given.seats") ?? new Set<str
 export const ROOM_DRIVER: ScenarioDriver = {
   name: "room",
   givenFields: new Set([...ENGINE_FIELDS.givenFields, "room", "accounts"]),
-  steps: new Set(["raw"]),
+  steps: new Set(["raw", "play_card", "sell", "end_turn"]),
   thenFields: ENGINE_FIELDS.thenFields,
   nestedFields: new Map([
     ...ENGINE_FIELDS.nestedFields,

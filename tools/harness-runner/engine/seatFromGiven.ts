@@ -16,6 +16,7 @@ export function seatFromGiven(seat: SeatNumber, given: GivenSeat | undefined): S
     hand: given.hand ?? start.hand,
     city: given.city ?? start.city,
     gainedTypes: given.gained_types ?? start.gainedTypes,
+    drawnThisPhase: start.drawnThisPhase,
     buildPasses: given.build_passes ?? start.buildPasses,
     buildPassesBought: given.build_passes_bought ?? start.buildPassesBought,
     hasPlayedThisTurn: given.played_this_turn ?? start.hasPlayedThisTurn,

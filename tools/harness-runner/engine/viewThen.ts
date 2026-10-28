@@ -18,6 +18,17 @@ function namesOf(value: unknown): ReadonlyArray<string> {
   return Array.isArray(value) ? value.map(String) : [];
 }
 
+function isHidden(name: string, text: string, state: GameState): boolean {
+  switch (name) {
+    case "deck_order":
+      return !state.deck.some((card) => text.includes(JSON.stringify(card)));
+    case "seed":
+      return !text.includes('"seed":');
+    default:
+      return !text.includes(JSON.stringify(name));
+  }
+}
+
 export function viewThen(state: GameState, expected: unknown): Readonly<Record<string, unknown>> {
   const asked = isRecord(expected) ? expected : {};
   const view = viewFor(state, seatNumberOf(asked["seat"]));
@@ -41,7 +52,7 @@ export function viewThen(state: GameState, expected: unknown): Readonly<Record<s
     deck_count: view.deckCount,
     discard: view.discard,
     contains: namesOf(asked["contains"]).filter((name) => text.includes(JSON.stringify(name))),
-    hides: namesOf(asked["hides"]).filter((name) => !text.includes(JSON.stringify(name))),
+    hides: namesOf(asked["hides"]).filter((name) => isHidden(name, text, state)),
     log_contains: matchingLogEntries(view.drawLog, asked["log_contains"]),
     ...seatFields,
   };

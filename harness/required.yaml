@@ -12,6 +12,7 @@ scenarios:
     - a connection that sends 30 rejected messages within a minute is closed
     - rejects selling a card another player holds
     - rejects selling the same card twice in one message
+    - another player's hidden action does not change my state version
   combos-and-income:
     - income happens by itself when product and distribution are both there and no stat is negative
     - no income while a stat is negative
@@ -25,6 +26,7 @@ scenarios:
     - main-phase draws do not use cards sold in the same main phase
     - a random draw in turn 13 asks for a sector and then a tier
     - from turn 27 every tier-by-turn draw is tier 3 and no tier is asked for
+    - other players see only the sector and tier asked for when a fallback is used
   playing-cards:
     - playing a Residential card pays its cost and applies its stats and types
     - playing an Industry card gives product and uses workforce quality and satisfaction
@@ -62,6 +64,10 @@ scenarios:
   visibility:
     - other players' hands are shown only as a number of cards
     - a player sees their own hand
+    - another player's main-phase actions stay hidden until the phase ends
+    - whether another player is done is shown during the main phase
+    - main-phase actions are revealed when the main phase ends
+    - no player receives the random seed or the deck order
 invariants:
   - I1
   - I2
@@ -73,6 +79,9 @@ invariants:
   - I10
   - I17
   - I18
+  - I23
+  - I24
+  - I25
   - I26
   - I27
 budgets:

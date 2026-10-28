@@ -185,8 +185,9 @@
     During a main phase, everything a player is shown about another player equals that player's
     state at the start of the phase, except whether they are done, away or have left, and their
     time bank. The deck
-    and discard pile shown equal their state at the start of the phase, minus the viewer's own
-    draws, plus the discard shuffles the viewer caused.
+    and discard pile shown equal their state at the start of the phase, changed only by the
+    viewer's own draws and the discard shuffles the viewer caused, as R5.5 says; the deck count
+    shown is never below 0 and no card is shown both in the viewer's hand and in the discard pile.
 
 - id: I25
   name: a player's state version only moves with what they may see

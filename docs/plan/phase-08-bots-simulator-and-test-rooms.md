@@ -86,7 +86,9 @@ None. This phase adds no scenarios to `harness/required.yaml`.
 
 ## Waiting for the owner
 
-1. **The live test-room secret.** Run `npx wrangler secret put TEST_ROOM_SECRET` and enter a long
+Done by the owner, 2026-10-28: the live test-room secret is set.
+
+1. **The live test-room secret (done).** Run `npx wrangler secret put TEST_ROOM_SECRET` and enter a long
    random value. Until then the live site answers "Not found" to every test-room request, so
    nothing is exposed; only starting a test room on the live site waits for it. Test rooms work
    locally and in the browser tests without it.

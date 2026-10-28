@@ -29,7 +29,7 @@ All earlier phases.
 3. **Browser tests:** 2–4 players through full games, refreshes, disconnects, a second tab and a
    forced restart, at every size.
 4. **Launch preparation:** final data wipe; the save format fixed at a version from which
-   migrations are kept (D1); the site lock removed (D6) only when the owner decides; the test-room
+   migrations are kept (D1); the site lock already removed (D22); the test-room
    tool stays owner-only (D8), with its test passing on the public site; deploy; the owner's final
    playthrough.
 

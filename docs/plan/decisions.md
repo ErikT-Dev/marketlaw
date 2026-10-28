@@ -135,6 +135,16 @@ size test passed at all three test sizes with a 4-player table. Phase 13 reruns 
 with 5 quests and 4 players and raises the question again if the screen cannot fit there.
 *Effect:* `harness/spec/screens.md` S1.1, `open-questions.md` Q19, phase 13's Open points.
 
+**D22. The site lock is removed now (replaces D6).** (2026-10-28, owner, during phase 09)
+The owner turns off Cloudflare Access on the workers.dev address, so anyone with the link can
+play; the link has not been shared. Known risks until later phases close them: until phase 09
+ends, other players' main-phase actions reach the browser before the phase ends; until phase 20,
+nothing limits how much one visitor can use, so the Free plan's daily limits could be used up;
+until phase 19, abandoned rooms and guests are not cleaned up. The test-room tool stays behind
+its secret (D8, C5).
+*Effect:* `README.md` principle 2, phase 30 item 4; Claude checks after each deploy that the
+live site loads without a login.
+
 ## Open
 
 From D19 on, Claude solves these itself when the phase that needs them starts, records the

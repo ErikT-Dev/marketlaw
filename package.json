@@ -18,7 +18,7 @@
     "harness": "npm run harness:check && vitest run --project engine tools/harness-runner/harness.test.ts",
     "harness:check": "node tools/harness-check/checkHarness.ts",
     "size": "vite build && size-limit",
-    "check": "npm run typecheck && npm run lint && npm run arch && npm run unused && npm run dupes && npm run secrets && npm run test && npm run harness && npm run size",
+    "check": "npm run typecheck && npm run lint && npm run arch && npm run unused && npm run dupes && npm run secrets && npm run harness:check && npm run test && npm run size",
     "e2e": "playwright test --pass-with-no-tests",
     "build": "vite build",
     "dev": "vite build && wrangler dev",

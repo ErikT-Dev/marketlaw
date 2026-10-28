@@ -13,6 +13,7 @@ const SEAT_STATE = v.object({
   stats: STATS_SCHEMA,
   hand: CARDS,
   city: CARDS,
+  drawnThisPhase: CARDS,
   gainedTypes: v.record(TypeName, v.number()),
   buildPasses: v.number(),
   buildPassesBought: v.number(),

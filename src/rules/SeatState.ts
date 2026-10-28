@@ -8,6 +8,7 @@ export type SeatState = {
   readonly stats: Stats;
   readonly hand: ReadonlyArray<CardName>;
   readonly city: ReadonlyArray<CardName>;
+  readonly drawnThisPhase: ReadonlyArray<CardName>;
   readonly gainedTypes: TypeCounts;
   readonly buildPasses: number;
   readonly buildPassesBought: number;
