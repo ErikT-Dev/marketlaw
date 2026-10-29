@@ -525,3 +525,17 @@ file.
 - **Solution:** drop it from the table; the trade name gives the tier. Written into `HARNESS.md`.
 - **Why:** the scenarios already agree with each other and with the spec; only the table was off.
 - **Implemented:** `harness/HARNESS.md` action table (phase 11).
+
+## Q37. Can undo points push a saved room over B13 (100 KB)?
+
+- **Phase:** 11, phase review; decided for phase 15, where B13 becomes required.
+- **Question:** each undo point is a full copy of the seat (about 1 KB late in a game). A player can
+  take up to 49 undoable actions in a turn, so four such seats could carry about 190 KB of undo
+  points. In the simulated games the largest saved room is 27 KB and its undo points 5 KB.
+- **Options:** keep full copies and accept the risk; store in each undo point only what the action
+  changed (stats, hand, city, passes, uses, combos).
+- **Solution:** keep full copies for now. Phase 15 measures B13 with a bot that takes the most
+  undoable actions it can; if a room goes over, undo points store only what the action changed.
+- **Why:** full copies make undo restore everything with no rule to get wrong, and ordinary play
+  stays far below the limit.
+- **Implemented:** nothing yet; phase 15 (B13).
