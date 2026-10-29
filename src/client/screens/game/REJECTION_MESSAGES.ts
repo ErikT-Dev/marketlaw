@@ -26,6 +26,8 @@ export const REJECTION_MESSAGES: Readonly<Record<ReasonCode, string>> = {
   nothing_to_undo: "There is nothing to undo.",
   cannot_undo: "That action cannot be undone, because it drew a card or came after one that did.",
   out_of_market: "You already had your market go this turn.",
+  card_not_in_marketplace: "That card was just taken.",
+  marketplace_empty: "The marketplace is empty: choose a sector.",
   not_this_step: "Not this step.",
   wrong_protocol_version: "A new version is available: reload.",
   stale_state: "",

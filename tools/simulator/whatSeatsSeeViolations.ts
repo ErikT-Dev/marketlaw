@@ -1,4 +1,5 @@
 import type { GameState } from "../../src/rules/GameState.ts";
+import type { SeatState } from "../../src/rules/SeatState.ts";
 import type { RoomRecord } from "../../src/server/room/RoomRecord.ts";
 import type { CardName } from "../../src/shared/catalogue/CardName.ts";
 import type { PlayerView } from "../../src/shared/PlayerView.ts";
@@ -7,8 +8,14 @@ import type { SentToSeat } from "./SentToSeat.ts";
 import { shownPilesViolations } from "./shownPilesViolations.ts";
 import { typeCountViolations } from "./typeCountViolations.ts";
 
+function knownInHandOf(state: GameState, seat: SeatState): ReadonlyArray<CardName> {
+  const start = state.mainPhaseStart.seats.find((candidate) => candidate.seat === seat.seat);
+  return state.phase === "main" ? (start?.knownInHand ?? []) : seat.knownInHand;
+}
+
 function hiddenFrom(state: GameState, viewer: SeatNumber): ReadonlyArray<CardName> {
   const others = state.seats.filter((seat) => seat.seat !== viewer);
+  const known = others.flatMap((seat) => knownInHandOf(state, seat));
   const playedThisPhase = others.flatMap((seat) => {
     const start = state.mainPhaseStart.seats.find((candidate) => candidate.seat === seat.seat);
     return seat.city.filter((card) => !(start?.city ?? []).includes(card));
@@ -19,7 +26,7 @@ function hiddenFrom(state: GameState, viewer: SeatNumber): ReadonlyArray<CardNam
     ...state.holdingPile,
     ...(state.phase === "main" ? playedThisPhase : []),
   ];
-  return hidden;
+  return hidden.filter((card) => !known.includes(card));
 }
 
 function quotedAmong(sent: string, wanted: ReadonlySet<string>): ReadonlySet<string> {
@@ -86,14 +93,16 @@ function versionViolations(
 ): ReadonlyArray<string> {
   const beforeState = before.game?.saved.state;
   const afterState = after.game?.saved.state;
-  const isPhaseChange =
-    beforeState?.turn !== afterState?.turn || beforeState?.phase !== afterState?.phase;
+  const isSeenByEveryone =
+    beforeState?.turn !== afterState?.turn ||
+    beforeState?.phase !== afterState?.phase ||
+    beforeState?.phase === "market";
   return (after.game?.seats ?? []).flatMap((seat) => {
     const versionBefore = before.game?.seats.find(
       (candidate) => candidate.seat === seat.seat,
     )?.stateVersion;
     const isOwnAcceptedAction = seat.seat === sender.seat && sender.isAccepted;
-    return versionBefore === seat.stateVersion || isOwnAcceptedAction || isPhaseChange
+    return versionBefore === seat.stateVersion || isOwnAcceptedAction || isSeenByEveryone
       ? []
       : [
           `I25: seat ${String(seat.seat)}'s state version moved with another player's hidden action`,

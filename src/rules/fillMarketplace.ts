@@ -27,15 +27,16 @@ export function fillMarketplace(
   return marketplace.reduce<MarketplaceFill>(
     (filled, slot) => {
       if (slot.card !== null) {
-        return { marketplace: [...filled.marketplace, slot], piles: filled.piles };
+        return { ...filled, marketplace: [...filled.marketplace, slot] };
       }
       const drawn = drawForPlace(slot, filled.piles, turn, random);
       const card = drawn.cards[0] ?? null;
       return {
         marketplace: [...filled.marketplace, { ...slot, card, phasesShown: 0 }],
         piles: drawn.piles,
+        shuffles: [...filled.shuffles, ...drawn.shuffles],
       };
     },
-    { marketplace: [], piles },
+    { marketplace: [], piles, shuffles: [] },
   );
 }

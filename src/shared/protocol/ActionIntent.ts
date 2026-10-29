@@ -4,6 +4,7 @@ import { Kind } from "../catalogue/Kind";
 import { Tier } from "../catalogue/Tier";
 import { ProjectName } from "../ProjectName";
 import { TradeName } from "../TradeName";
+import { TURN_DRAW_CHOICE_SCHEMA } from "./TURN_DRAW_CHOICE_SCHEMA";
 
 export const ActionIntent = v.variant("type", [
   v.strictObject({ type: v.literal("play_card"), card: CardName }),
@@ -17,6 +18,7 @@ export const ActionIntent = v.variant("type", [
   v.strictObject({ type: v.literal("influence"), trade: TradeName }),
   v.strictObject({ type: v.literal("draw_action"), kind: Kind, tier: Tier }),
   v.strictObject({ type: v.literal("undo") }),
+  v.strictObject({ type: v.literal("turn_draw"), choice: TURN_DRAW_CHOICE_SCHEMA }),
 ]);
 
 export type ActionIntent = v.InferOutput<typeof ActionIntent>;

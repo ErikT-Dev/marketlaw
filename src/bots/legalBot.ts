@@ -10,6 +10,7 @@ import { influenceOrUndoMove } from "./influenceOrUndoMove";
 import { kindWanted } from "./kindWanted";
 import { oneOf } from "./oneOf";
 import { projectKindWanted } from "./projectKindWanted";
+import { turnDrawMove } from "./turnDrawMove";
 
 const OTHER_CARD_CHANCE_IN_TEN = 2;
 const PROJECT_AIM_CHANCE_IN_TEN = 5;
@@ -30,7 +31,7 @@ function cardsToSell(hand: ReadonlyArray<CardName>, chooser: BotChooser): Action
     : { type: "sell", cards: [first, second] };
 }
 
-export function legalBot(view: PlayerView, chooser: BotChooser): ActionIntent | null {
+function mainPhaseMove(view: PlayerView, chooser: BotChooser): ActionIntent | null {
   const seat = ownSeatOf(view);
   if (seat.endTurnRejection !== null) {
     return null;
@@ -59,4 +60,8 @@ export function legalBot(view: PlayerView, chooser: BotChooser): ActionIntent | 
   const sale =
     canSell && chooser.pickIndex(10) < SELL_CHANCE_IN_TEN ? cardsToSell(seat.hand, chooser) : null;
   return sale ?? { type: "end_turn" };
+}
+
+export function legalBot(view: PlayerView, chooser: BotChooser): ActionIntent | null {
+  return view.phase === "market" ? turnDrawMove(view, chooser) : mainPhaseMove(view, chooser);
 }

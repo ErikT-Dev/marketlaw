@@ -22,7 +22,9 @@ function isUndoable(before: GameState, action: GameAction, after: GameState): bo
 
 export function withUndoHistory(before: GameState, action: GameAction, after: GameState): GameState {
   const seatBefore = seatOf(before, action.seat);
-  if (action.type === "undo" || action.type === "end_turn" || seatBefore === undefined) {
+  if (action.type === "undo" ||
+    action.type === "end_turn" ||
+    action.type === "turn_draw" || seatBefore === undefined) {
     return after;
   }
   return updateSeat(after, action.seat, (seat) =>

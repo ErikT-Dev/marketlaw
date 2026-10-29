@@ -13,6 +13,7 @@ import type { SeatState } from "./SeatState";
 export type GameState = {
   readonly turn: number;
   readonly phase: GamePhase;
+  readonly firstPlayer: SeatNumber;
   readonly seats: ReadonlyArray<SeatState>;
   readonly deck: ReadonlyArray<CardName>;
   readonly discard: ReadonlyArray<CardName>;

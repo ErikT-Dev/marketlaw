@@ -16,6 +16,7 @@ export type OwnSeatView = {
   readonly seat: SeatNumber;
   readonly stats: Stats;
   readonly hand: ReadonlyArray<CardName>;
+  readonly newCards: ReadonlyArray<CardName>;
   readonly handDetails: ReadonlyArray<HandCardDetails>;
   readonly sellRejection: ReasonCode | null;
   readonly endTurnRejection: ReasonCode | null;
@@ -33,6 +34,9 @@ export type OwnSeatView = {
   readonly buildPassPrice: number;
   readonly drawActions: ReadonlyArray<DrawActionStatus>;
   readonly undoRejection: ReasonCode | null;
+  readonly hasHadMarketGo: boolean;
+  readonly turnDrawRejection: ReasonCode | null;
+  readonly marketCardRejection: ReasonCode | null;
   readonly actionsThisTurn: number;
   readonly isDone: boolean;
   readonly hasLeft: boolean;

@@ -1,15 +1,16 @@
 import { describe, expect, it } from "vitest";
+import { firstPlayerOf } from "./firstPlayerOf";
 import type { GameState } from "./GameState";
 import { startSavedGame } from "./startSavedGame";
 import { viewFor } from "./viewFor";
 
 function gameAt(players: 2 | 3 | 4, turn: number, seatsThatLeft: ReadonlyArray<number>): GameState {
   const state = startSavedGame({ players }, 5).state;
-  return {
-    ...state,
-    turn,
-    seats: state.seats.map((seat) => ({ ...seat, hasLeft: seatsThatLeft.includes(seat.seat) })),
-  };
+  const seats = state.seats.map((seat) => ({
+    ...seat,
+    hasLeft: seatsThatLeft.includes(seat.seat),
+  }));
+  return { ...state, turn, firstPlayer: firstPlayerOf(turn, seats), seats };
 }
 
 describe("player order in the view", () => {

@@ -1,6 +1,7 @@
 import { BONUS_PER_FUND } from "./BONUS_PER_FUND";
 import { cardOf } from "../shared/catalogue/cardOf";
 import { FIRST_TURN_FOR_HIGHER_TIERS } from "./FIRST_TURN_FOR_HIGHER_TIERS";
+import { firstPlayerOf } from "./firstPlayerOf";
 import type { GameState } from "./GameState";
 import { seatOf } from "./seatOf";
 import { stateInvariantViolations } from "./stateInvariantViolations";
@@ -48,10 +49,15 @@ function acceptedViolations(transition: Transition, after: GameState): ReadonlyA
           .filter((afterSeat) => afterSeat.stats.bonus >= BONUS_PER_FUND)
           .map((afterSeat) => `I10: seat ${afterSeat.seat} kept a bonus of 10 or more`)
       : [];
+  const firstPlayer =
+    after.turn > before.turn && after.firstPlayer !== firstPlayerOf(after.turn, after.seats)
+      ? [`I20: turn ${String(after.turn)} starts with seat ${String(after.firstPlayer)} first`]
+      : [];
   return [
     ...actor,
     ...play,
     ...bonus,
+    ...firstPlayer,
     ...holdingPileViolations(before, after),
     ...incomeViolations(before, after),
     ...stateInvariantViolations(after),

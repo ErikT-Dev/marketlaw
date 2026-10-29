@@ -11,6 +11,8 @@ export function playCard(seat: SeatState, name: CardName): SeatState {
     ...seat,
     stats: statsAfterPlaying(seat.stats, card, realCostOf(card, seat)),
     hand: withoutCard(seat.hand, name),
+    newCards: seat.newCards.filter((card) => card !== name),
+    knownInHand: seat.knownInHand.filter((card) => card !== name),
     city: [...seat.city, name],
     buildPasses: seat.hasPlayedThisTurn ? seat.buildPasses - 1 : seat.buildPasses,
     hasPlayedThisTurn: true,

@@ -17,11 +17,24 @@ function replay(saved: SavedGame): SavedGame {
   }, replayStartOf(saved));
 }
 
+function marketGo(seat: 1 | 2): GameAction {
+  return { type: "turn_draw", seat, choice: { option: "B", sector: "Service" } };
+}
+
 function playThreeTurns(saved: SavedGame): SavedGame {
-  const actions: ReadonlyArray<GameAction> = [1, 2, 3].flatMap(() => [
+  const endTurns: ReadonlyArray<GameAction> = [
     { type: "end_turn", seat: 1 },
     { type: "end_turn", seat: 2 },
-  ]);
+  ];
+  const actions = [
+    ...endTurns,
+    marketGo(2),
+    marketGo(1),
+    ...endTurns,
+    marketGo(1),
+    marketGo(2),
+    ...endTurns,
+  ];
   return actions.reduce((game, action) => {
     const result = applyToSavedGame(game, action, randomForNextAction(game));
     return result.isOk ? result.value : game;
@@ -47,7 +60,7 @@ describe("saved games", () => {
   it("records accepted actions and replays them to the same state", () => {
     const saved = playThreeTurns(startSavedGame({ players: 2 }, 11));
     expect(saved.state.turn).toBe(4);
-    expect(saved.actionLog).toHaveLength(6);
+    expect(saved.actionLog).toHaveLength(10);
     expect(replay(saved).state).toEqual(saved.state);
   });
 

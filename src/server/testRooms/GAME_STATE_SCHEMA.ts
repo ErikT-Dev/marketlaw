@@ -16,6 +16,9 @@ const SEAT_STATE = v.object({
   hand: CARDS,
   city: CARDS,
   drawnThisPhase: CARDS,
+  newCards: CARDS,
+  knownInHand: CARDS,
+  hasHadMarketGo: v.boolean(),
   gainedTypes: v.record(TypeName, v.number()),
   combosClaimed: v.array(v.object({ card: CardName, combo: v.number(), times: v.number() })),
   projects: v.array(ProjectName),
@@ -35,7 +38,8 @@ const SEAT_STATE = v.object({
 
 export const GAME_STATE_SCHEMA = v.object({
   turn: v.number(),
-  phase: v.picklist(["main", "ended"]),
+  phase: v.picklist(["market", "main", "ended"]),
+  firstPlayer: SEAT_NUMBER_SCHEMA,
   seats: v.pipe(v.array(SEAT_STATE), v.minLength(1), v.maxLength(4)),
   deck: CARDS,
   discard: CARDS,

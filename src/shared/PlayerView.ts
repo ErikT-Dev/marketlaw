@@ -13,6 +13,8 @@ export type PlayerView = {
   readonly seat: SeatNumber;
   readonly turn: number;
   readonly phase: GamePhase;
+  readonly firstPlayer: SeatNumber;
+  readonly marketGo: SeatNumber | null;
   readonly seats: ReadonlyArray<OwnSeatView | OtherSeatView>;
   readonly deckCount: number;
   readonly discard: ReadonlyArray<CardName>;

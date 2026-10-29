@@ -4,6 +4,7 @@ import type { Tier } from "../shared/catalogue/Tier";
 import type { ProjectName } from "../shared/ProjectName";
 import type { SeatNumber } from "../shared/SeatNumber";
 import type { TradeName } from "../shared/TradeName";
+import type { TurnDrawChoice } from "../shared/TurnDrawChoice";
 
 export type GameAction =
   | { readonly type: "play_card"; readonly seat: SeatNumber; readonly card: CardName }
@@ -26,4 +27,5 @@ export type GameAction =
       readonly kind: Kind;
       readonly tier: Tier;
     }
-  | { readonly type: "undo"; readonly seat: SeatNumber };
+  | { readonly type: "undo"; readonly seat: SeatNumber }
+  | { readonly type: "turn_draw"; readonly seat: SeatNumber; readonly choice: TurnDrawChoice };

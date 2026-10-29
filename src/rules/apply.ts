@@ -10,6 +10,7 @@ import type { Random } from "./Random";
 import { rejectionOf } from "./rejectionOf";
 import { sellCards } from "./sellCards";
 import { takeIncome } from "./takeIncome";
+import { takeTurnDraw } from "./takeTurnDraw";
 import { undoLatest } from "./undoLatest";
 import { updateSeat } from "./updateSeat";
 import { useDrawAction } from "./useDrawAction";
@@ -46,6 +47,8 @@ function accepted(state: GameState, action: GameAction, random: Random): GameSta
       return takeIncome(useDrawAction(state, action, random), action.seat, random);
     case "undo":
       return updateSeat(state, action.seat, undoLatest);
+    case "turn_draw":
+      return takeTurnDraw(state, action, random);
   }
 }
 

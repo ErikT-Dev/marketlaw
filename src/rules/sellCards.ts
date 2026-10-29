@@ -14,6 +14,8 @@ export function sellCards(
     ...current,
     stats: { ...current.stats, funds: current.stats.funds + cards.length * FUNDS_PER_SOLD_CARD },
     hand: cards.reduce(withoutCard, current.hand),
+    newCards: current.newCards.filter((card) => !cards.includes(card)),
+    knownInHand: current.knownInHand.filter((card) => !cards.includes(card)),
     actionsThisTurn: current.actionsThisTurn + 1,
   }));
   return { ...sold, holdingPile: [...sold.holdingPile, ...cards] };

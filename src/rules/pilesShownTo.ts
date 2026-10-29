@@ -19,7 +19,7 @@ function afterShuffle(discard: ReadonlyArray<CardName>, entry: DrawLogEntry) {
 }
 
 function deckChange(entry: DrawLogEntry): number {
-  return entry.kind === "draw" ? -entry.count : entry.count;
+  return entry.kind === "shuffle" ? entry.count : -entry.count;
 }
 
 export function pilesShownTo(state: GameState, viewer: SeatNumber): PilesShown {

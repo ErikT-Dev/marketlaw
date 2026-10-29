@@ -13,6 +13,7 @@ import { pilesShownTo } from "./pilesShownTo";
 import { projectRejectionsOf } from "./projectRejectionsOf";
 import { rejectionOf } from "./rejectionOf";
 import { typeCountsOf } from "./typeCountsOf";
+import { marketGoOf } from "./marketGoOf";
 import { playerOrderOf } from "./playerOrderOf";
 import type { SeatState } from "./SeatState";
 
@@ -22,6 +23,7 @@ function ownSeatView(state: GameState, seat: SeatState): OwnSeatView {
     seat: seat.seat,
     stats: seat.stats,
     hand: seat.hand,
+    newCards: seat.newCards,
     handDetails: handDetailsOf(state, seat),
     sellRejection: turnRejectionOf(state, seat.seat, "sell") ?? null,
     endTurnRejection: turnRejectionOf(state, seat.seat, "end_turn") ?? null,
@@ -39,6 +41,11 @@ function ownSeatView(state: GameState, seat: SeatState): OwnSeatView {
     buildPassPrice: tradeCostsOf(seat, "buy_build_pass").funds ?? 0,
     drawActions: drawActionStatusesOf(state, seat),
     undoRejection: rejectionOf(state, { type: "undo", seat: seat.seat }) ?? null,
+    hasHadMarketGo: seat.hasHadMarketGo,
+    turnDrawRejection: turnRejectionOf(state, seat.seat, "turn_draw") ?? null,
+    marketCardRejection:
+      turnRejectionOf(state, seat.seat, "turn_draw") ??
+      (state.marketplace.every(({ card }) => card === null) ? "marketplace_empty" : null),
     actionsThisTurn: seat.actionsThisTurn,
     isDone: seat.isDone,
     hasLeft: seat.hasLeft,
@@ -56,6 +63,8 @@ function otherSeatView(state: GameState, seat: SeatState): OtherSeatView {
     seat: seat.seat,
     stats: shown.stats,
     handCount: shown.hand.length,
+    knownInHand: shown.knownInHand,
+    hasHadMarketGo: seat.hasHadMarketGo,
     typeCounts: typeCountsOf(shown),
     combosClaimed: shown.combosClaimed,
     projects: shown.projects,
@@ -73,6 +82,8 @@ export function viewFor(state: GameState, viewer: SeatNumber): PlayerView {
     seat: viewer,
     turn: state.turn,
     phase: state.phase,
+    firstPlayer: state.firstPlayer,
+    marketGo: marketGoOf(state),
     seats: state.seats.map((seat) =>
       seat.seat === viewer ? ownSeatView(state, seat) : otherSeatView(state, seat),
     ),

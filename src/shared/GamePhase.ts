@@ -1,1 +1,1 @@
-export type GamePhase = "main" | "ended";
+export type GamePhase = "market" | "main" | "ended";

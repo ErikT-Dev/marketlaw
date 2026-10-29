@@ -37,10 +37,13 @@ describe("undo", () => {
   it("starts every main phase with nothing to undo", () => {
     const start = startSavedGame({ players: 2 }, 7).state;
     const traded = accepted(start, { type: "influence", seat: 1, trade: "fund_to_influence" });
-    const nextTurn = accepted(accepted(traded, { type: "end_turn", seat: 1 }), {
-      type: "end_turn",
-      seat: 2,
-    });
+    const nextTurnActions: ReadonlyArray<GameAction> = [
+      { type: "end_turn", seat: 1 },
+      { type: "end_turn", seat: 2 },
+      { type: "turn_draw", seat: 2, choice: { option: "B", sector: "Service" } },
+      { type: "turn_draw", seat: 1, choice: { option: "B", sector: "Service" } },
+    ];
+    const nextTurn = nextTurnActions.reduce(accepted, traded);
     const result = apply(nextTurn, { type: "undo", seat: 1 }, NO_RANDOM);
     expect(result.isOk ? null : result.error.code).toBe("nothing_to_undo");
   });

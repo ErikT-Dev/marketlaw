@@ -25,5 +25,7 @@ export function seatThen(seat: SeatState): Readonly<Record<string, unknown>> {
     done: seat.isDone,
     left: seat.hasLeft,
     time_bank_ms: seat.timeBankMs,
+    market: seat.hasHadMarketGo ? "out" : "in",
+    new_cards: seat.newCards,
   };
 }

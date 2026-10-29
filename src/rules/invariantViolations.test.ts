@@ -77,7 +77,10 @@ describe("invariantViolations", () => {
   });
 
   it("reports a bonus of 10 or more kept after the end of the turn", () => {
-    const after = withSeat1({ ...START, turn: 2 }, { stats: { ...STARTING_STATS, bonus: 12 } });
+    const after = withSeat1(
+      { ...START, turn: 2, firstPlayer: 2 },
+      { stats: { ...STARTING_STATS, bonus: 12 } },
+    );
     expect(invariantViolations(transition(START, { type: "end_turn", seat: 1 }, after))).toEqual([
       "I10: seat 1 kept a bonus of 10 or more",
     ]);
@@ -97,7 +100,13 @@ describe("invariantViolations", () => {
   it("reports a holding pile kept after the main phase and income that went down", () => {
     const before = withSeat1(START, { stats: { ...STARTING_STATS, income: 5 } });
     const after = withSeat1(
-      { ...START, turn: 2, holdingPile: [START.deck[0] ?? "Pub"], deck: START.deck.slice(1) },
+      {
+        ...START,
+        turn: 2,
+        firstPlayer: 2,
+        holdingPile: [START.deck[0] ?? "Pub"],
+        deck: START.deck.slice(1),
+      },
       { stats: { ...STARTING_STATS, income: 4 } },
     );
     expect(invariantViolations(transition(before, { type: "end_turn", seat: 1 }, after))).toEqual([
@@ -135,6 +144,30 @@ describe("invariantViolations", () => {
     const after = withSeat1(START, { influenceUses: { skip_build: 4, influence_to_funds: 1 } });
     expect(invariantViolations(transition(START, { type: "end_turn", seat: 1 }, after))).toEqual([
       "I11: seat 1 used skip_build 4 times",
+    ]);
+  });
+
+  it("reports a turn that starts with the wrong first player", () => {
+    const after = { ...START, turn: 2, firstPlayer: 1 as const };
+    expect(invariantViolations(transition(START, { type: "end_turn", seat: 1 }, after))).toEqual([
+      "I20: turn 2 starts with seat 1 first",
+    ]);
+  });
+
+  it("reports a kind place holding another kind and a card shown too long", () => {
+    const after = {
+      ...START,
+      marketplace: START.marketplace.map((slot) =>
+        slot.place === "residential" ? { ...slot, card: "Pub" as const, phasesShown: 3 } : slot,
+      ),
+      deck: START.deck.filter((card) => card !== "Pub"),
+    };
+    const found = invariantViolations(transition(START, { type: "end_turn", seat: 1 }, after)).filter(
+      (violation) => violation.startsWith("I3") || violation.startsWith("I4"),
+    );
+    expect(found).toEqual([
+      "I3: the residential place holds Pub",
+      "I4: Pub has been on display during 3 market phases",
     ]);
   });
 });

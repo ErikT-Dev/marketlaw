@@ -23,14 +23,18 @@ function nextActingSeat(
   lastTurn: number,
 ): SimulatedSeat | undefined {
   const state = simulation.record.game?.saved.state;
-  if (state === undefined || state.turn > lastTurn || state.phase !== "main") {
+  if (state === undefined || state.turn > lastTurn || state.phase === "ended") {
     return undefined;
   }
   const candidates =
     simulation.bot === "chaos"
       ? simulation.seats
       : simulation.seats.filter((seat) =>
-          seat.view?.seats.some((view) => view.kind === "own" && view.endTurnRejection === null),
+          seat.view?.seats.some(
+            (view) =>
+              view.kind === "own" &&
+              (view.endTurnRejection === null || view.turnDrawRejection === null),
+          ),
         );
   return candidates[chooser.pickIndex(candidates.length)];
 }

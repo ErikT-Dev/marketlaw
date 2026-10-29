@@ -28,7 +28,9 @@ function illegalIntent(view: PlayerView, chooser: BotChooser): ActionIntent {
     (details) => details.playRejection !== null,
   );
   const blocked = unplayable[chooser.pickIndex(unplayable.length)];
-  switch (chooser.pickIndex(8)) {
+  switch (chooser.pickIndex(9)) {
+    case 8:
+      return { type: "turn_draw", choice: { option: "A", card: cardNotHeld(view, chooser) } };
     case 5:
       return { type: "influence", trade: oneOf(TradeName.options, chooser) ?? "skip_build" };
     case 6:

@@ -2,6 +2,7 @@ import * as v from "valibot";
 import type { GameAction } from "../../../src/rules/GameAction.ts";
 import { CardName } from "../../../src/shared/catalogue/CardName.ts";
 import { Kind } from "../../../src/shared/catalogue/Kind.ts";
+import { Sector } from "../../../src/shared/catalogue/Sector.ts";
 import { ProjectName } from "../../../src/shared/ProjectName.ts";
 import { TradeName } from "../../../src/shared/TradeName.ts";
 
@@ -19,6 +20,13 @@ const STEP_SCHEMA = v.variant("action", [
   v.strictObject({ seat: SEAT, action: v.literal("end_turn") }),
   v.strictObject({ seat: SEAT, action: v.literal("claim_all") }),
   v.strictObject({ seat: SEAT, action: v.literal("undo") }),
+  v.strictObject({
+    seat: SEAT,
+    action: v.literal("turn_draw"),
+    option: v.picklist(["A", "B"]),
+    card: v.optional(CardName),
+    sector: v.optional(Sector),
+  }),
   v.strictObject({ seat: SEAT, action: v.literal("complete_project"), project: ProjectName }),
   v.strictObject({
     seat: SEAT,
@@ -45,6 +53,23 @@ function influenceAction(
   return { type: "influence", seat, trade };
 }
 
+function turnDrawAction(
+  seat: v.InferOutput<typeof SEAT>,
+  option: "A" | "B",
+  card: CardName | undefined,
+  sector: Sector | undefined,
+): GameAction {
+  if (option === "A" && card !== undefined && sector === undefined) {
+    return { type: "turn_draw", seat, choice: { option, card } };
+  }
+  if (option === "B" && sector !== undefined && card === undefined) {
+    return { type: "turn_draw", seat, choice: { option, sector } };
+  }
+  throw new Error(
+    `turn_draw option ${option} needs ${option === "A" ? "a card" : "a sector"} only`,
+  );
+}
+
 export function actionFromStep(step: Readonly<Record<string, unknown>>): GameAction {
   const parsed = v.parse(STEP_SCHEMA, step);
   switch (parsed.action) {
@@ -67,6 +92,8 @@ export function actionFromStep(step: Readonly<Record<string, unknown>>): GameAct
       return { type: "complete_project", seat: parsed.seat, project: parsed.project };
     case "influence":
       return influenceAction(parsed.seat, parsed.trade, parsed.kind);
+    case "turn_draw":
+      return turnDrawAction(parsed.seat, parsed.option, parsed.card, parsed.sector);
     default: {
       const unknownStep: never = parsed;
       throw new Error(`unknown step ${JSON.stringify(unknownStep)}`);

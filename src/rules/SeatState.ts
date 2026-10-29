@@ -12,6 +12,9 @@ export type SeatState = {
   readonly hand: ReadonlyArray<CardName>;
   readonly city: ReadonlyArray<CardName>;
   readonly drawnThisPhase: ReadonlyArray<CardName>;
+  readonly newCards: ReadonlyArray<CardName>;
+  readonly knownInHand: ReadonlyArray<CardName>;
+  readonly hasHadMarketGo: boolean;
   readonly gainedTypes: TypeCounts;
   readonly combosClaimed: ReadonlyArray<ClaimedCombo>;
   readonly projects: ReadonlyArray<ProjectName>;

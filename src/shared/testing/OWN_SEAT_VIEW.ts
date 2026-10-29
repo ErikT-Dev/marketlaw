@@ -1,0 +1,52 @@
+import { Kind } from "../catalogue/Kind";
+import { Tier } from "../catalogue/Tier";
+import type { OwnSeatView } from "../OwnSeatView";
+import { TradeName } from "../TradeName";
+
+export const OWN_SEAT_VIEW: OwnSeatView = {
+  kind: "own",
+  seat: 1,
+  stats: {
+    funds: 7,
+    income: 3,
+    influence: 0,
+    workforce: 0,
+    quality: 0,
+    satisfaction: 0,
+    product: 0,
+    distribution: 0,
+    bonus: 0,
+  },
+  hand: [],
+  newCards: [],
+  handDetails: [],
+  sellRejection: null,
+  endTurnRejection: null,
+  typeCounts: {},
+  combos: [],
+  claimAllRejection: "nothing_to_claim",
+  projects: [],
+  projectRejections: {
+    quality: "project_needs_not_met",
+    satisfaction: "project_needs_not_met",
+    workforce: "project_needs_not_met",
+  },
+  city: [],
+  buildPasses: 0,
+  hasPlayedThisTurn: false,
+  hasSkippedBuild: false,
+  influenceUses: {},
+  trades: TradeName.options.map((trade) => ({ trade, rejection: null })),
+  buildPassPrice: 2,
+  drawActions: Kind.options.flatMap((kind) =>
+    Tier.options.map((tier) => ({ kind, tier, isAnyLeft: true, rejection: null })),
+  ),
+  undoRejection: "nothing_to_undo",
+  hasHadMarketGo: false,
+  turnDrawRejection: "wrong_phase",
+  marketCardRejection: "wrong_phase",
+  actionsThisTurn: 0,
+  isDone: false,
+  hasLeft: false,
+  timeBankMs: 0,
+};

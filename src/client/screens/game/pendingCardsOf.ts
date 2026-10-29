@@ -16,6 +16,7 @@ export function pendingCardsOf(
       case "influence":
       case "draw_action":
       case "undo":
+      case "turn_draw":
         return [];
     }
   });

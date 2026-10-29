@@ -15,6 +15,20 @@ import type { SeatState } from "./SeatState";
 import { turnRejectionOf } from "./turnRejectionOf";
 
 type PlayCard = Extract<GameAction, { readonly type: "play_card" }>;
+type TurnDraw = Extract<GameAction, { readonly type: "turn_draw" }>;
+
+function turnDrawRejection(state: GameState, action: TurnDraw): ReasonCode | undefined {
+  const { choice } = action;
+  if (choice.option === "B") {
+    return undefined;
+  }
+  if (state.marketplace.every(({ card }) => card === null)) {
+    return "marketplace_empty";
+  }
+  return state.marketplace.some(({ card }) => card === choice.card)
+    ? undefined
+    : "card_not_in_marketplace";
+}
 
 function undoRejection(seat: SeatState): ReasonCode | undefined {
   if (seat.undoPoints.length > 0) {
@@ -68,5 +82,7 @@ export function rejectionOf(state: GameState, action: GameAction): ReasonCode | 
       );
     case "undo":
       return undoRejection(seat);
+    case "turn_draw":
+      return turnDrawRejection(state, action);
   }
 }
