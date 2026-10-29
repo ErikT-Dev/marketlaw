@@ -13,6 +13,7 @@ scenarios:
     - rejects selling a card another player holds
     - rejects selling the same card twice in one message
     - another player's hidden action does not change my state version
+    - rejects a main-phase action during the market phase
   combos-and-income:
     - a card-name combo is claimed when the named card is in the city
     - a card-name combo works whichever card was played first
@@ -27,6 +28,7 @@ scenarios:
     - no income while a stat is negative
     - no income with product but no distribution
     - income repeats as long as it is possible
+    - a card drawn in the main phase is marked new
   drawing:
     - if a tier is empty the nearest other tier is used and the lower one first
     - tier 3 falls back to tier 2 before tier 1
@@ -41,6 +43,7 @@ scenarios:
     - if the deck has none the discard pile cards of that sector and tier are shuffled in
     - a discard shuffle in the main phase is shown to others only when the phase ends
     - the player who caused a discard shuffle sees it straight away
+    - turn draws use the number of the turn that is starting
   playing-cards:
     - playing a Residential card pays its cost and applies its stats and types
     - playing an Industry card gives product and uses workforce quality and satisfaction
@@ -60,6 +63,7 @@ scenarios:
     - rejects any action after the 50th main-phase action but still allows ending the turn
     - a player at the action limit can end their turn
     - undo counts toward the action limit
+    - sold cards join the discard pile when the main phase ends
   projects:
     - completing a project uses up 8 of the stat and gives income funds influence and a card
     - rejects a project without enough of the stat
@@ -68,6 +72,7 @@ scenarios:
     - the third project gives an extra income and an extra card
     - everyone who completes a project in the first turn anyone does gets 2 extra funds at the end of the turn
     - a project completed in a later turn gives no first-completion funds
+    - rejects a project outside the main phase
   setup:
     - a new game gives every player the starting stats and time bank
     - starting hands are dealt from the top of the deck one player at a time in seat order
@@ -84,6 +89,12 @@ scenarios:
     - every full 10 bonus becomes 1 fund
     - players who left get no end-of-turn steps
     - skip build is reset at the end of the turn
+    - the first player moves one seat on each turn
+    - the first player in turn 3 of a 3-player game is seat 3
+    - if the first player has left the next seat still in the game goes first
+    - player order wraps from the highest seat to seat 1 and skips players who left
+    - at the start of a turn old marketplace cards are removed and places refilled in order
+    - the market phase follows the start-of-turn steps
   visibility:
     - other players' hands are shown only as a number of cards
     - a player sees their own hand
@@ -94,6 +105,8 @@ scenarios:
     - undone actions are never shown to other players
     - the deck count shown during the main phase leaves out other players' draws
     - a player's own draws are shown in their deck count straight away
+    - the draw log shows who drew how many and what was asked for but not the card
+    - a marketplace card taken is known to be in that player's hand
   influence:
     - 4 influence buys 2 funds once per game
     - 4 influence buys 1 quality
@@ -139,9 +152,24 @@ scenarios:
     - undo is only for the player's own actions
     - undoing a card played with a build pass gives the pass back
     - undoing a bought build pass makes the next one cost the same again
+  marketplace:
+    - option A takes a free market card and draws one card of the same sector from the deck
+    - option B draws 2 cards of a chosen sector from the deck
+    - a player whose market go comes with an empty marketplace must take option B
+    - rejects a market action when it is another player's go
+    - rejects a second market go in the same turn
+    - rejects taking a card that is not in the marketplace
+    - after the last marketplace card is taken the next player still gets their market go
+    - the market phase ends when every player has had their market go
+    - new marks last until the end of the turn
+    - a kind place with no card of its kind left stays empty
+    - a kind place falls back to another tier of its kind
+    - option A with no cards left of that sector draws the top card of the deck
 invariants:
   - I1
   - I2
+  - I3
+  - I4
   - I5
   - I6
   - I7
@@ -154,6 +182,7 @@ invariants:
   - I14
   - I17
   - I18
+  - I20
   - I23
   - I24
   - I25
