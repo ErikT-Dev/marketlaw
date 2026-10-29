@@ -514,3 +514,14 @@ file.
 - **Why:** the other tests take about 20 s; the game count was the whole cost.
 - **Implemented:** `harness/HARNESS.md` point 2, `rules/testing.md`; `SIMULATED_GAMES` and
   `runPhaseEndHarness` in `tools/harness-runner/` (phase 11).
+
+## Q36. Do draw actions in scenarios name their tier twice?
+
+- **Phase:** 11, phase review.
+- **Question:** `HARNESS.md`'s action table said draw actions take `kind` and `tier`, but the trade
+  names `draw_tier_1` to `draw_tier_3` already carry the tier, and every scenario gives only the
+  trade and `kind`.
+- **Options:** add `tier` to the scenarios; drop it from the table.
+- **Solution:** drop it from the table; the trade name gives the tier. Written into `HARNESS.md`.
+- **Why:** the scenarios already agree with each other and with the spec; only the table was off.
+- **Implemented:** `harness/HARNESS.md` action table (phase 11).

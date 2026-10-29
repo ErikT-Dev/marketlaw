@@ -168,7 +168,7 @@ is compared whole, in order and with its length; `seats` lists only the seats it
 | `play_card` | `card` | R6 |
 | `sell` | `cards` (one or more) | R5.1 |
 | `claim_all` | | R12.6 |
-| `influence` | `trade` (one of the names below), and for draw actions `kind` and `tier` | R15 |
+| `influence` | `trade` (one of the names below), and for the draw actions `draw_tier_1` to `draw_tier_3` also `kind` | R15 |
 | `complete_project` | `project`: `quality`, `satisfaction` or `workforce` | R16 |
 | `complete_quest` | `quest` | R19.5 |
 | `undo` | | R7 |
