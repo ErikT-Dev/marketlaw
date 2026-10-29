@@ -15,19 +15,6 @@ function scenarioFieldsOf(entry: DrawLogEntry): Readonly<Record<string, unknown>
   return { seat: entry.seat, turn: entry.turn, ...count, ...asked };
 }
 
-export function absentLogItems(
-  log: ReadonlyArray<DrawLogEntry>,
-  expected: unknown,
-): ReadonlyArray<unknown> {
-  const text = JSON.stringify(log);
-  const listed: ReadonlyArray<unknown> = Array.isArray(expected) ? expected : [];
-  return listed.filter((item) =>
-    typeof item === "string"
-      ? !text.includes(JSON.stringify(item))
-      : matchingLogEntries(log, [item]).length === 0,
-  );
-}
-
 export function matchingLogEntries(
   log: ReadonlyArray<DrawLogEntry>,
   expected: unknown,

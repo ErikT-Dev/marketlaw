@@ -2,7 +2,8 @@ import type { GameState } from "../../../src/rules/GameState.ts";
 import { viewFor } from "../../../src/rules/viewFor.ts";
 import type { SeatNumber } from "../../../src/shared/SeatNumber.ts";
 import { isRecord } from "../../harness-check/isRecord.ts";
-import { absentLogItems, matchingLogEntries } from "./matchingLogEntries.ts";
+import { absentLogItems } from "./absentLogItems.ts";
+import { matchingLogEntries } from "./matchingLogEntries.ts";
 
 const SEAT_NUMBERS: ReadonlyArray<SeatNumber> = [1, 2, 3, 4];
 

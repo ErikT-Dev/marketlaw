@@ -2,7 +2,7 @@ import type { OwnSeatView } from "../../../shared/OwnSeatView";
 import type { TradeStatus } from "../../../shared/TradeStatus";
 import { TRADES } from "../../../shared/TRADES";
 import { REJECTION_MESSAGES } from "./REJECTION_MESSAGES";
-import { amountsText } from "./tradeLabel";
+import { amountsText } from "./amountsText";
 
 function missingText(seat: OwnSeatView, status: TradeStatus): string {
   const costs =
