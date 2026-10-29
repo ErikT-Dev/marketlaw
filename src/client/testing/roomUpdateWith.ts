@@ -53,7 +53,7 @@ const OWN_SEAT: OwnSeatView = {
   trades: TradeName.options.map((trade) => ({ trade, rejection: null })),
   buildPassPrice: 2,
   drawActions: Kind.options.flatMap((kind) =>
-    Tier.options.map((tier) => ({ kind, tier, rejection: null })),
+    Tier.options.map((tier) => ({ kind, tier, isAnyLeft: true, rejection: null })),
   ),
   undoRejection: "nothing_to_undo",
   actionsThisTurn: 0,

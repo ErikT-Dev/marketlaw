@@ -59,7 +59,14 @@ const SEAT_VIEW = v.variant("kind", [
     influenceUses: v.record(TradeName, COUNT),
     trades: v.array(v.object({ trade: TradeName, rejection: v.nullable(ReasonCode) })),
     buildPassPrice: COUNT,
-    drawActions: v.array(v.object({ kind: Kind, tier: Tier, rejection: v.nullable(ReasonCode) })),
+    drawActions: v.array(
+      v.object({
+        kind: Kind,
+        tier: Tier,
+        isAnyLeft: v.boolean(),
+        rejection: v.nullable(ReasonCode),
+      }),
+    ),
     undoRejection: v.nullable(ReasonCode),
     actionsThisTurn: COUNT,
   }),

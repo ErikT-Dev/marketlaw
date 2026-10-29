@@ -10,7 +10,7 @@ type Props = {
 };
 
 export function DrawActionCell({ status, isBusy, onDraw }: Props) {
-  if (status === undefined || status.rejection === "no_card_of_kind") {
+  if (status === undefined || !status.isAnyLeft) {
     return <div className={styles["noneLeft"]}>None left</div>;
   }
   return (

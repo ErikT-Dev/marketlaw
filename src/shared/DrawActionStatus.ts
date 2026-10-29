@@ -5,5 +5,6 @@ import type { ReasonCode } from "./ReasonCode";
 export type DrawActionStatus = {
   readonly kind: Kind;
   readonly tier: Tier;
+  readonly isAnyLeft: boolean;
   readonly rejection: ReasonCode | null;
 };

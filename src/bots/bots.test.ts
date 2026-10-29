@@ -55,7 +55,12 @@ function viewWith(own: Partial<OwnSeatView>): PlayerView {
     trades: TradeName.options.map((trade) => ({ trade, rejection: "cannot_afford_trade" })),
     buildPassPrice: 2,
     drawActions: Kind.options.flatMap((kind) =>
-      Tier.options.map((tier) => ({ kind, tier, rejection: "cannot_afford_trade" })),
+      Tier.options.map((tier) => ({
+        kind,
+        tier,
+        isAnyLeft: true,
+        rejection: "cannot_afford_trade",
+      })),
     ),
     undoRejection: "nothing_to_undo",
     actionsThisTurn: 0,
@@ -196,6 +201,7 @@ describe("legal bot", () => {
         Tier.options.map((tier) => ({
           kind,
           tier,
+          isAnyLeft: kind === "Industry" && tier === 1,
           rejection: kind === "Industry" && tier === 1 ? null : "no_card_of_kind",
         })),
       ),

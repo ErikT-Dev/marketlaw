@@ -34,6 +34,7 @@ const SEAT: Partial<OwnSeatView> = {
     Tier.options.map((tier) => ({
       kind,
       tier,
+      isAnyLeft: !(kind === "Service" && tier === 2),
       rejection: kind === "Service" && tier === 2 ? "no_card_of_kind" : null,
     })),
   ),
@@ -113,6 +114,22 @@ describe("use influence", () => {
       kind: "Public quality card",
       tier: 2,
     });
+  });
+
+  it("shows None left for a kind and tier not left even when every action is disabled", () => {
+    showGame({
+      ...SEAT,
+      drawActions: (SEAT.drawActions ?? []).map((status) => ({
+        ...status,
+        rejection: "action_limit_reached",
+      })),
+    });
+    const table = within(within(openInfluence()).getByRole("table", { name: "Draw actions" }));
+    const service = within(table.getByRole("row", { name: /^Service/ }));
+    expect(service.getByText("None left")).toBeDefined();
+    expect(
+      service.getAllByRole("button").map((button) => button.getAttribute("disabled") !== null),
+    ).toEqual([true, true]);
   });
 });
 
