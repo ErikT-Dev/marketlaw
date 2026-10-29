@@ -2,6 +2,7 @@ import type { GameState } from "../../../src/rules/GameState.ts";
 import { viewFor } from "../../../src/rules/viewFor.ts";
 import type { SeatNumber } from "../../../src/shared/SeatNumber.ts";
 import { isRecord } from "../../harness-check/isRecord.ts";
+import { absentLogItems } from "./absentLogItems.ts";
 import { matchingLogEntries } from "./matchingLogEntries.ts";
 
 const SEAT_NUMBERS: ReadonlyArray<SeatNumber> = [1, 2, 3, 4];
@@ -54,6 +55,7 @@ export function viewThen(state: GameState, expected: unknown): Readonly<Record<s
     contains: namesOf(asked["contains"]).filter((name) => text.includes(JSON.stringify(name))),
     hides: namesOf(asked["hides"]).filter((name) => isHidden(name, text, state)),
     log_contains: matchingLogEntries(view.drawLog, asked["log_contains"]),
+    log_excludes: absentLogItems(view.drawLog, asked["log_excludes"]),
     ...seatFields,
   };
 }

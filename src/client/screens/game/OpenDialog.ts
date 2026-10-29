@@ -1,1 +1,1 @@
-export type OpenDialog = "none" | "claimAll" | "projects";
+export type OpenDialog = "none" | "claimAll" | "influence" | "projects";

@@ -4,6 +4,10 @@
   gap: var(--space-sm);
 }
 
+.buttons > button {
+  padding-inline: 8px;
+}
+
 .notice {
   margin: 0 0 var(--space-sm);
   color: var(--color-toast-warning);

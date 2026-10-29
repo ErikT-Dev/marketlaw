@@ -1,10 +1,13 @@
 import * as v from "valibot";
+import { Kind } from "../../shared/catalogue/Kind";
+import { Tier } from "../../shared/catalogue/Tier";
 import type { OtherSeatView } from "../../shared/OtherSeatView";
 import type { OwnSeatView } from "../../shared/OwnSeatView";
 import type { PlayerView } from "../../shared/PlayerView";
 import type { RoomUpdate } from "../../shared/protocol/RoomUpdate";
 import { RoomCode } from "../../shared/RoomCode";
 import type { SeatNumber } from "../../shared/SeatNumber";
+import { TradeName } from "../../shared/TradeName";
 
 const STATS = {
   funds: 7,
@@ -46,6 +49,13 @@ const OWN_SEAT: OwnSeatView = {
   },
   hasPlayedThisTurn: false,
   hasSkippedBuild: false,
+  influenceUses: {},
+  trades: TradeName.options.map((trade) => ({ trade, rejection: null })),
+  buildPassPrice: 2,
+  drawActions: Kind.options.flatMap((kind) =>
+    Tier.options.map((tier) => ({ kind, tier, isAnyLeft: true, rejection: null })),
+  ),
+  undoRejection: "nothing_to_undo",
   actionsThisTurn: 0,
 };
 

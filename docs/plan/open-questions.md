@@ -477,3 +477,65 @@ file.
   unreachable. Claim all stays disabled when nothing is ready, since its pop-up only confirms the
   claim (S8.1).
 - **Implemented:** `harness/spec/screens.md` S6.6; `ProjectsDialog`, `ProgressButtons` (phase 10).
+  Phase 11 gives Use influence the same reading: its trades and draw actions are the actions, and
+  S8.3's tiles and table are shown whether or not any can be taken.
+
+## Q33. Can an action be undone when it caused income but no card was left to draw?
+
+- **Phase:** 11, item 4.
+- **Question:** R7.2 allows undo only when the action and what it causes draw no card. Income
+  (R13.1) draws a card, but when the deck and discard pile are empty nothing is drawn.
+- **Options:** undoable when no card was actually drawn; never undoable once income was taken.
+- **Solution:** never undoable once income was taken. Written into R7.2.
+- **Why:** income is a draw by its rule whether or not a card is left, and undoing it would lower
+  income, which I8 says never happens.
+- **Implemented:** `harness/spec/game-rules.md` R7.2; the engine's undo (phase 11).
+
+## Q34. Which code wins when an influence action breaks two of its rules?
+
+- **Phase:** 11, item 1.
+- **Question:** `trade_limit_reached`, `skip_build_after_play` and `no_card_of_kind` are all in
+  group 9 of the reason code order, with no order among them.
+- **Options:** the limit first; the situation (played a card, no card left) first.
+- **Solution:** `trade_limit_reached` first, then `skip_build_after_play` or `no_card_of_kind`;
+  `cannot_afford_trade` stays last (group 10). Written into `HARNESS.md`.
+- **Why:** a used-up action is the most lasting reason, and the S8.3 tiles show "used" for it.
+- **Implemented:** `harness/HARNESS.md` reason code order; the engine (phase 11).
+
+## Q35. How many simulated games does the harness need?
+
+- **Phase:** 11, finish.
+- **Question:** `HARNESS.md` point 2 asked for at least 10,000 simulated games, and `npm run check`
+  ran them all; that alone took about 295 s, so the check could not stay under 5 minutes.
+- **Options:** keep 10,000 everywhere; a smaller set for the Stop hook only (D9); fewer games in
+  the check and more at the end of a phase.
+- **Solution:** the owner's decision D23: 500 games per `npm run check`, 5,000 per
+  `npm run harness` at the end of every phase. Written into `HARNESS.md` point 2.
+- **Why:** the other tests take about 20 s; the game count was the whole cost.
+- **Implemented:** `harness/HARNESS.md` point 2, `rules/testing.md`; `SIMULATED_GAMES` and
+  `runPhaseEndHarness` in `tools/harness-runner/` (phase 11).
+
+## Q36. Do draw actions in scenarios name their tier twice?
+
+- **Phase:** 11, phase review.
+- **Question:** `HARNESS.md`'s action table said draw actions take `kind` and `tier`, but the trade
+  names `draw_tier_1` to `draw_tier_3` already carry the tier, and every scenario gives only the
+  trade and `kind`.
+- **Options:** add `tier` to the scenarios; drop it from the table.
+- **Solution:** drop it from the table; the trade name gives the tier. Written into `HARNESS.md`.
+- **Why:** the scenarios already agree with each other and with the spec; only the table was off.
+- **Implemented:** `harness/HARNESS.md` action table (phase 11).
+
+## Q37. Can undo points push a saved room over B13 (100 KB)?
+
+- **Phase:** 11, phase review; decided for phase 15, where B13 becomes required.
+- **Question:** each undo point is a full copy of the seat (about 1 KB late in a game). A player can
+  take up to 49 undoable actions in a turn, so four such seats could carry about 190 KB of undo
+  points. In the simulated games the largest saved room is 27 KB and its undo points 5 KB.
+- **Options:** keep full copies and accept the risk; store in each undo point only what the action
+  changed (stats, hand, city, passes, uses, combos).
+- **Solution:** keep full copies for now. Phase 15 measures B13 with a bot that takes the most
+  undoable actions it can; if a room goes over, undo points store only what the action changed.
+- **Why:** full copies make undo restore everything with no rule to get wrong, and ordinary play
+  stays far below the limit.
+- **Implemented:** nothing yet; phase 15 (B13).

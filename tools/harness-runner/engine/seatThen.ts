@@ -20,6 +20,7 @@ export function seatThen(seat: SeatState): Readonly<Record<string, unknown>> {
     build_passes_bought: seat.buildPassesBought,
     played_this_turn: seat.hasPlayedThisTurn,
     skipped_build: seat.hasSkippedBuild,
+    influence_uses: seat.influenceUses,
     actions_this_turn: seat.actionsThisTurn,
     done: seat.isDone,
     left: seat.hasLeft,

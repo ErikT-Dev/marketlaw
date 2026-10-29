@@ -126,7 +126,8 @@ Every phase follows these steps (D17).
 **4. Finish**
 
 1. Add the phase's scenarios to `harness/required.yaml` in one edit.
-2. Run the full `npm run check`, the browser tests and the budget checks.
+2. Run the full `npm run check`, `npm run harness` (5,000 simulated games, D23), the browser
+   tests and the budget checks.
 3. Update `docs/enforcement.md` if a check now applies that did not before.
 4. Run the phase review (D16); fix or answer every finding; run the checks again.
 5. Write the phase report under **Report** at the end of the phase file: what was built, what to
@@ -206,7 +207,7 @@ The 425 scenarios cover all of version 1, but each phase implements only part of
 | 08 | [Bots, simulator, replays and test rooms](phase-08-bots-simulator-and-test-rooms.md) | 3 Playthrough | 07 | done |
 | 09 | [Hidden information and opponents](phase-09-hidden-information-and-opponents.md) | 3 Playthrough | 08 | done |
 | 10 | [Types, combos and projects](phase-10-types-combos-and-projects.md) | 3 Playthrough | 09 | done |
-| 11 | [Influence and undo](phase-11-influence-and-undo.md) | 3 Playthrough | 10 | approved |
+| 11 | [Influence and undo](phase-11-influence-and-undo.md) | 3 Playthrough | 10 | done |
 | 12 | [The market phase](phase-12-market-phase.md) | 3 Playthrough | 09 | approved |
 | 13 | [Quests](phase-13-quests.md) | 3 Playthrough | 11, 12 | approved |
 | 14 | [Clocks and the time bank](phase-14-clocks-and-time-bank.md) | 3 Playthrough | 12 | approved |

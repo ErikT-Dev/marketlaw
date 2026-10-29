@@ -1,17 +1,27 @@
 import { cardOf } from "../shared/catalogue/cardOf";
 import type { ReasonCode } from "../shared/ReasonCode";
+import { drawActionRejection } from "./drawActionRejection";
 import { FIRST_TURN_FOR_HIGHER_TIERS } from "./FIRST_TURN_FOR_HIGHER_TIERS";
+import { kindTiersLeftAsSeenBy } from "./kindTiersLeftAsSeenBy";
 import type { GameAction } from "./GameAction";
 import type { GameState } from "./GameState";
 import { realCostOf } from "./realCostOf";
 import { projectRejection } from "./projectRejection";
 import { readyCombosOf } from "./readyCombosOf";
 import { removeCards } from "./removeCards";
+import { tradeRejection } from "./tradeRejection";
 import { seatOf } from "./seatOf";
 import type { SeatState } from "./SeatState";
 import { turnRejectionOf } from "./turnRejectionOf";
 
 type PlayCard = Extract<GameAction, { readonly type: "play_card" }>;
+
+function undoRejection(seat: SeatState): ReasonCode | undefined {
+  if (seat.undoPoints.length > 0) {
+    return undefined;
+  }
+  return seat.isUndoBlocked ? "cannot_undo" : "nothing_to_undo";
+}
 
 function playRejection(state: GameState, seat: SeatState, action: PlayCard): ReasonCode | undefined {
   if (!seat.hand.includes(action.card)) {
@@ -47,5 +57,16 @@ export function rejectionOf(state: GameState, action: GameAction): ReasonCode | 
       return readyCombosOf(seat).length === 0 ? "nothing_to_claim" : undefined;
     case "complete_project":
       return projectRejection(seat, action.project);
+    case "influence":
+      return tradeRejection(seat, action.trade);
+    case "draw_action":
+      return drawActionRejection(
+        seat,
+        kindTiersLeftAsSeenBy(state, seat.seat),
+        action.kind,
+        action.tier,
+      );
+    case "undo":
+      return undoRejection(seat);
   }
 }

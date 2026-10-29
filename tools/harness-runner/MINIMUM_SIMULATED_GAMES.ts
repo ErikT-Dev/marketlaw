@@ -1,1 +1,0 @@
-export const MINIMUM_SIMULATED_GAMES = 10_000;

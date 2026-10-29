@@ -18,9 +18,12 @@ export function newSeat(seat: SeatNumber): SeatState {
     buildPassesBought: 0,
     hasPlayedThisTurn: false,
     hasSkippedBuild: false,
+    influenceUses: {},
     actionsThisTurn: 0,
     isDone: false,
     hasLeft: false,
     timeBankMs: TIME_BANK_MS,
+    undoPoints: [],
+    isUndoBlocked: false,
   };
 }

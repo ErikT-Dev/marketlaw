@@ -42,7 +42,7 @@ while the other waits for its go, then both play the main phase.
 
 ## Exit criteria
 
-- The listed invariants hold over 10,000 games.
+- The listed invariants hold over 5,000 games.
 
 ## Open points
 

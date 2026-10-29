@@ -18,6 +18,7 @@ type Props = {
   readonly isBusy: boolean;
   readonly onPlaySelected: () => void;
   readonly onSell: () => void;
+  readonly onUndo: () => void;
   readonly onEndTurn: () => void;
   readonly onOpenDialog: (dialog: OpenDialog) => void;
 };
@@ -60,6 +61,13 @@ export function ActionsPanel(props: Props) {
           onClick={props.onPlaySelected}
         >
           Play card
+        </Button>
+        <Button
+          look="menu"
+          isDisabled={isBusy || seat.undoRejection !== null}
+          onClick={props.onUndo}
+        >
+          Undo
         </Button>
         <Button
           look="warning"

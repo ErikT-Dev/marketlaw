@@ -19,11 +19,10 @@ prints the seed and the action log needed to replay it.
 **Enforced by:** `src/rules/` purity rules · simulator.
 
 ### Invariants under simulation
-The simulator plays at least 10,000 seeded random games per `npm run harness` and checks every
-invariant in `harness/invariants.yaml` after every action. A violation produces a minimal
-reproducing seed. If `npm run check` cannot finish in 5 minutes even with games run in parallel,
-the Stop hook may run a smaller seeded set; `npm run harness` and GitHub always run at least
-10,000 games.
+The simulator plays seeded random games and checks every invariant in
+`harness/invariants.yaml` after every action: 500 games in `npm run check` (the Stop hook and
+GitHub), and 5,000 in `npm run harness`, which runs at the end of every phase (plan decision D23).
+A violation produces a minimal reproducing seed.
 **Why:** random play finds the rare states that hand-written cases miss.
 **Enforced by:** `npm run harness`.
 

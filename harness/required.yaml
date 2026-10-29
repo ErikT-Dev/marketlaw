@@ -26,6 +26,7 @@ scenarios:
     - income happens by itself when product and distribution are both there and no stat is negative
     - no income while a stat is negative
     - no income with product but no distribution
+    - income repeats as long as it is possible
   drawing:
     - if a tier is empty the nearest other tier is used and the lower one first
     - tier 3 falls back to tier 2 before tier 1
@@ -36,6 +37,10 @@ scenarios:
     - a random draw in turn 13 asks for a sector and then a tier
     - from turn 27 every tier-by-turn draw is tier 3 and no tier is asked for
     - other players see only the sector and tier asked for when a fallback is used
+    - a draw takes the first card of that sector and tier from the top of the deck
+    - if the deck has none the discard pile cards of that sector and tier are shuffled in
+    - a discard shuffle in the main phase is shown to others only when the phase ends
+    - the player who caused a discard shuffle sees it straight away
   playing-cards:
     - playing a Residential card pays its cost and applies its stats and types
     - playing an Industry card gives product and uses workforce quality and satisfaction
@@ -54,6 +59,7 @@ scenarios:
     - selling several cards is one action and puts them in the holding pile
     - rejects any action after the 50th main-phase action but still allows ending the turn
     - a player at the action limit can end their turn
+    - undo counts toward the action limit
   projects:
     - completing a project uses up 8 of the stat and gives income funds influence and a card
     - rejects a project without enough of the stat
@@ -85,6 +91,54 @@ scenarios:
     - whether another player is done is shown during the main phase
     - main-phase actions are revealed when the main phase ends
     - no player receives the random seed or the deck order
+    - undone actions are never shown to other players
+    - the deck count shown during the main phase leaves out other players' draws
+    - a player's own draws are shown in their deck count straight away
+  influence:
+    - 4 influence buys 2 funds once per game
+    - 4 influence buys 1 quality
+    - 4 influence buys 1 satisfaction
+    - 6 influence buys 1 workforce
+    - 1 fund buys 1 influence any number of times
+    - a bought build pass costs 1 more fund each time
+    - 5 influence buys 1 build pass once per game
+    - skip build gives a build pass and blocks playing cards this turn
+    - skip build is rejected after playing a card this turn
+    - skip build can be used 3 times per game
+    - 1 influence and 1 quality buy 1 satisfaction
+    - 1 influence and 1 satisfaction buy 1 quality
+    - 2 influence and 1 product buy 1 distribution and 1 satisfaction
+    - 2 influence 1 distribution and 1 satisfaction buy 1 product
+    - 2 influence and 1 quality buy 1 workforce
+    - 2 influence and 1 satisfaction buy 1 workforce
+    - 1 workforce buys 1 satisfaction once per game
+    - 1 workforce buys 1 quality
+    - 2 quality buy 1 satisfaction any number of times
+    - 2 satisfaction buy 1 quality
+    - 4 quality buy 1 workforce
+    - 4 satisfaction buy 1 workforce
+    - rejects a trade the player cannot afford
+    - 3 influence draw a tier 1 card of a chosen kind
+    - 4 influence draw a tier 2 card of a chosen kind
+    - 5 influence draw a tier 3 card of a chosen kind
+    - a draw action for a Public kind draws only that kind
+    - rejects a draw action when no card of that kind and tier is left
+    - a draw action whose last card another player took this phase gives another tier
+  undo:
+    - undo takes back playing a card
+    - undo takes back claim all
+    - undo takes back a trade that draws no card
+    - undo takes back skip build and the build pass it gave
+    - undo takes back the latest action first
+    - selling cannot be undone
+    - completing a project cannot be undone
+    - a draw action cannot be undone
+    - playing a card that triggers income cannot be undone because income draws a card
+    - nothing before an action that cannot be undone can be undone
+    - rejects undo when there is nothing to undo
+    - undo is only for the player's own actions
+    - undoing a card played with a build pass gives the pass back
+    - undoing a bought build pass makes the next one cost the same again
 invariants:
   - I1
   - I2
@@ -94,6 +148,7 @@ invariants:
   - I8
   - I9
   - I10
+  - I11
   - I12
   - I13
   - I14

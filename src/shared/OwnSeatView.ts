@@ -1,5 +1,7 @@
 import type { CardName } from "./catalogue/CardName";
 import type { ComboStatus } from "./ComboStatus";
+import type { DrawActionStatus } from "./DrawActionStatus";
+import type { InfluenceUses } from "./InfluenceUses";
 import type { ProjectName } from "./ProjectName";
 import type { ProjectRejections } from "./ProjectRejections";
 import type { SeatTypeCounts } from "./SeatTypeCounts";
@@ -7,6 +9,7 @@ import type { HandCardDetails } from "./HandCardDetails";
 import type { ReasonCode } from "./ReasonCode";
 import type { SeatNumber } from "./SeatNumber";
 import type { Stats } from "./Stats";
+import type { TradeStatus } from "./TradeStatus";
 
 export type OwnSeatView = {
   readonly kind: "own";
@@ -25,6 +28,11 @@ export type OwnSeatView = {
   readonly buildPasses: number;
   readonly hasPlayedThisTurn: boolean;
   readonly hasSkippedBuild: boolean;
+  readonly influenceUses: InfluenceUses;
+  readonly trades: ReadonlyArray<TradeStatus>;
+  readonly buildPassPrice: number;
+  readonly drawActions: ReadonlyArray<DrawActionStatus>;
+  readonly undoRejection: ReasonCode | null;
   readonly actionsThisTurn: number;
   readonly isDone: boolean;
   readonly hasLeft: boolean;

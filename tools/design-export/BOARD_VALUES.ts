@@ -10,5 +10,11 @@ export const BOARD_VALUES: Readonly<Record<string, string>> = {
   "--color-board-timer-low": "#3f1d24",
   "--color-board-pending": "rgba(0, 0, 0, 0.6)",
   "--color-board-shuffle-text": "#fcd34d",
+  "--color-board-trade": "#4c1d95",
+  "--color-board-trade-off": "#2b2840",
+  "--color-board-trade-status": "#ddd6fe",
+  "--color-board-trade-missing": "#fca5a5",
+  "--color-board-draw": "#6d28d9",
+  "--color-board-draw-kind": "#2e2442",
   "--font-size-panel-title": "13px",
 };

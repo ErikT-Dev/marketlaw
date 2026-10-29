@@ -25,6 +25,15 @@ export function ProgressButtons({ seat, isBusy, onOpenDialog }: Props) {
         look="primary"
         isDisabled={isBusy}
         onClick={() => {
+          onOpenDialog("influence");
+        }}
+      >
+        Use influence
+      </Button>
+      <Button
+        look="primary"
+        isDisabled={isBusy}
+        onClick={() => {
           onOpenDialog("projects");
         }}
       >

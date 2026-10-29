@@ -168,7 +168,7 @@ is compared whole, in order and with its length; `seats` lists only the seats it
 | `play_card` | `card` | R6 |
 | `sell` | `cards` (one or more) | R5.1 |
 | `claim_all` | | R12.6 |
-| `influence` | `trade` (one of the names below), and for draw actions `kind` and `tier` | R15 |
+| `influence` | `trade` (one of the names below), and for the draw actions `draw_tier_1` to `draw_tier_3` also `kind` | R15 |
 | `complete_project` | `project`: `quality`, `satisfaction` or `workforce` | R16 |
 | `complete_quest` | `quest` | R19.5 |
 | `undo` | | R7 |
@@ -210,7 +210,8 @@ When several codes apply, the first one in this order wins:
    `card_not_in_marketplace`, `marketplace_empty`, `quest_not_on_table`, `room_not_found`,
    `room_full`, `room_not_waiting`, `no_vote_open`, `nothing_to_undo`, `nothing_to_claim`
 9. every other rule-specific code; for playing a card, in the order of R6.1: `tier_not_allowed`,
-   `no_build_pass`, `build_skipped`
+   `no_build_pass`, `build_skipped`; for influence actions, `trade_limit_reached` before
+   `skip_build_after_play` and `no_card_of_kind`
 10. `not_enough_funds`, `cannot_afford_trade`
 
 **Messages and identity**
@@ -352,8 +353,8 @@ The game passes the harness when all of these are true:
 
 1. Every scenario in `scenarios/` passes. Scenarios in `scenarios/proposed/` are run and reported
    but do not count until the owner accepts them.
-2. Every invariant in `invariants.yaml` holds after every action in at least 10,000 random
-   simulated games. A failure reports the shortest seed and action list that reproduces it.
+2. Every invariant in `invariants.yaml` holds after every action in 5,000 random simulated
+   games per `npm run harness`, and in 500 per `npm run check`. A failure reports the shortest seed and action list that reproduces it.
 3. No message to any player contains a card that is hidden from that player (the leak test).
 4. Every budget in `budgets.yaml` is met.
 5. Every rule in the spec files is covered by at least one scenario in `coverage.md`, or is

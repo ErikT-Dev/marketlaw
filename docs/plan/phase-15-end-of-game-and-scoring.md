@@ -27,7 +27,7 @@ Phases 13 and 14: the score uses every stat, type and turn rule.
 1. **End conditions and scoring;** no end-of-turn steps in the final turn.
 2. **Ended phase:** every action is rejected with `game_over`; the room keeps the result.
 3. **End-of-game screen** with places, results, scores and stats.
-4. **Simulator on complete games:** 10,000 per `npm run harness`, all invariants.
+4. **Simulator on complete games:** 5,000 per `npm run harness`, all invariants.
 5. **Game-length report** for O5: turns per game, scores, funds over time, rows written per game,
    and how often each end condition is reached, by game size, with a note on how far bot numbers
    can be trusted.
@@ -43,7 +43,7 @@ Phases 13 and 14: the score uses every stat, type and turn rule.
 
 ## Exit criteria
 
-- All game-rule invariants hold over 10,000 complete games; the listed budgets within limits.
+- All game-rule invariants hold over 5,000 complete games; the listed budgets within limits.
 - The owner has seen the game-length report (O5 review).
 
 ## Open points

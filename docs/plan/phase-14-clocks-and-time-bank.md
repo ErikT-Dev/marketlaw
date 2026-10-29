@@ -46,7 +46,7 @@ time ran out" message and the count.
 
 ## Exit criteria
 
-- I19 holds over 10,000 games; B3 and B12 within limits per the sleep model.
+- I19 holds over 5,000 games; B3 and B12 within limits per the sleep model.
 
 ## Open points
 

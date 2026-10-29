@@ -1,9 +1,13 @@
 import * as v from "valibot";
 import type { GameAction } from "../../../src/rules/GameAction.ts";
 import { CardName } from "../../../src/shared/catalogue/CardName.ts";
+import { Kind } from "../../../src/shared/catalogue/Kind.ts";
 import { ProjectName } from "../../../src/shared/ProjectName.ts";
+import { TradeName } from "../../../src/shared/TradeName.ts";
 
 const SEAT = v.picklist([1, 2, 3, 4]);
+const DRAW_TIERS = { draw_tier_1: 1, draw_tier_2: 2, draw_tier_3: 3 } as const;
+const DRAW_TRADE = v.picklist(["draw_tier_1", "draw_tier_2", "draw_tier_3"]);
 
 const STEP_SCHEMA = v.variant("action", [
   v.strictObject({ seat: SEAT, action: v.literal("play_card"), card: CardName }),
@@ -14,8 +18,32 @@ const STEP_SCHEMA = v.variant("action", [
   }),
   v.strictObject({ seat: SEAT, action: v.literal("end_turn") }),
   v.strictObject({ seat: SEAT, action: v.literal("claim_all") }),
+  v.strictObject({ seat: SEAT, action: v.literal("undo") }),
   v.strictObject({ seat: SEAT, action: v.literal("complete_project"), project: ProjectName }),
+  v.strictObject({
+    seat: SEAT,
+    action: v.literal("influence"),
+    trade: v.union([TradeName, DRAW_TRADE]),
+    kind: v.optional(Kind),
+  }),
 ]);
+
+function influenceAction(
+  seat: v.InferOutput<typeof SEAT>,
+  trade: v.InferOutput<typeof TradeName> | v.InferOutput<typeof DRAW_TRADE>,
+  kind: Kind | undefined,
+): GameAction {
+  if (trade === "draw_tier_1" || trade === "draw_tier_2" || trade === "draw_tier_3") {
+    if (kind === undefined) {
+      throw new Error(`${trade} names no kind`);
+    }
+    return { type: "draw_action", seat, kind, tier: DRAW_TIERS[trade] };
+  }
+  if (kind !== undefined) {
+    throw new Error(`${trade} takes no kind`);
+  }
+  return { type: "influence", seat, trade };
+}
 
 export function actionFromStep(step: Readonly<Record<string, unknown>>): GameAction {
   const parsed = v.parse(STEP_SCHEMA, step);
@@ -33,8 +61,12 @@ export function actionFromStep(step: Readonly<Record<string, unknown>>): GameAct
       return { type: "end_turn", seat: parsed.seat };
     case "claim_all":
       return { type: "claim_all", seat: parsed.seat };
+    case "undo":
+      return { type: "undo", seat: parsed.seat };
     case "complete_project":
       return { type: "complete_project", seat: parsed.seat, project: parsed.project };
+    case "influence":
+      return influenceAction(parsed.seat, parsed.trade, parsed.kind);
     default: {
       const unknownStep: never = parsed;
       throw new Error(`unknown step ${JSON.stringify(unknownStep)}`);

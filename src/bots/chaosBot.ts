@@ -1,9 +1,13 @@
 import { CARD_NAMES } from "../shared/catalogue/CARD_NAMES";
+import { Kind } from "../shared/catalogue/Kind";
+import { Tier } from "../shared/catalogue/Tier";
 import type { PlayerView } from "../shared/PlayerView";
 import type { ActionIntent } from "../shared/protocol/ActionIntent";
+import { TradeName } from "../shared/TradeName";
 import type { BotChooser } from "./BotChooser";
 import type { ChaosMove } from "./ChaosMove";
 import { legalBot } from "./legalBot";
+import { oneOf } from "./oneOf";
 import { ownSeatOf } from "./ownSeatOf";
 
 const MALFORMED_TEXTS = [
@@ -24,7 +28,17 @@ function illegalIntent(view: PlayerView, chooser: BotChooser): ActionIntent {
     (details) => details.playRejection !== null,
   );
   const blocked = unplayable[chooser.pickIndex(unplayable.length)];
-  switch (chooser.pickIndex(5)) {
+  switch (chooser.pickIndex(8)) {
+    case 5:
+      return { type: "influence", trade: oneOf(TradeName.options, chooser) ?? "skip_build" };
+    case 6:
+      return {
+        type: "draw_action",
+        kind: oneOf(Kind.options, chooser) ?? "Industry",
+        tier: oneOf(Tier.options, chooser) ?? 1,
+      };
+    case 7:
+      return { type: "undo" };
     case 3:
       return { type: "claim_all" };
     case 4:

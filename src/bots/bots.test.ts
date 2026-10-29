@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
+import { Kind } from "../shared/catalogue/Kind";
+import { Tier } from "../shared/catalogue/Tier";
 import type { OwnSeatView } from "../shared/OwnSeatView";
 import type { PlayerView } from "../shared/PlayerView";
+import { TradeName } from "../shared/TradeName";
 import type { BotChooser } from "./BotChooser";
 import { chaosBot } from "./chaosBot";
 import { legalBot } from "./legalBot";
@@ -48,6 +51,18 @@ function viewWith(own: Partial<OwnSeatView>): PlayerView {
     },
     hasPlayedThisTurn: false,
     hasSkippedBuild: false,
+    influenceUses: {},
+    trades: TradeName.options.map((trade) => ({ trade, rejection: "cannot_afford_trade" })),
+    buildPassPrice: 2,
+    drawActions: Kind.options.flatMap((kind) =>
+      Tier.options.map((tier) => ({
+        kind,
+        tier,
+        isAnyLeft: true,
+        rejection: "cannot_afford_trade",
+      })),
+    ),
+    undoRejection: "nothing_to_undo",
     actionsThisTurn: 0,
     ...own,
   };
@@ -173,6 +188,32 @@ describe("legal bot", () => {
     expect(towardQuality.filter((card) => card === "Fire Station").length).toBeGreaterThan(
       towardQuality.filter((card) => card === "Public Playground").length * 2,
     );
+  });
+
+  it("sometimes undoes, trades or takes a draw action, only ones its view allows", () => {
+    const view = viewWith({
+      undoRejection: null,
+      trades: TradeName.options.map((trade) => ({
+        trade,
+        rejection: trade === "fund_to_influence" ? null : "cannot_afford_trade",
+      })),
+      drawActions: Kind.options.flatMap((kind) =>
+        Tier.options.map((tier) => ({
+          kind,
+          tier,
+          isAnyLeft: kind === "Industry" && tier === 1,
+          rejection: kind === "Industry" && tier === 1 ? null : "no_card_of_kind",
+        })),
+      ),
+    });
+    const moves = SEEDS.map((seed) => legalBot(view, chooserFrom(seed)));
+    expect(moves).toContainEqual({ type: "undo" });
+    const traded = moves.filter((move) => move?.type === "influence");
+    const drawn = moves.filter((move) => move?.type === "draw_action");
+    expect(traded.length).toBeGreaterThan(0);
+    expect(drawn.length).toBeGreaterThan(0);
+    expect(traded.every((move) => move.trade === "fund_to_influence")).toBe(true);
+    expect(drawn.every((move) => move.kind === "Industry" && move.tier === 1)).toBe(true);
   });
 
   it("does not sell when selling would be rejected and makes no move when done", () => {

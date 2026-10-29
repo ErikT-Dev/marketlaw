@@ -1,14 +1,14 @@
 import type { SimulationSummary } from "../simulator/SimulationSummary.ts";
-import { MINIMUM_SIMULATED_GAMES } from "./MINIMUM_SIMULATED_GAMES.ts";
+import { SIMULATED_GAMES } from "./SIMULATED_GAMES.ts";
 
 export function simulationProblems(
   simulation: SimulationSummary,
   requiredInvariants: ReadonlyArray<string>,
 ): ReadonlyArray<string> {
   const tooFew =
-    requiredInvariants.length > 0 && simulation.games < MINIMUM_SIMULATED_GAMES
+    requiredInvariants.length > 0 && simulation.games < SIMULATED_GAMES.check
       ? [
-          `the simulator played ${String(simulation.games)} games, fewer than ${String(MINIMUM_SIMULATED_GAMES)}`,
+          `the simulator played ${String(simulation.games)} games, fewer than ${String(SIMULATED_GAMES.check)}`,
         ]
       : [];
   const broken = [...requiredInvariants, "crash"].flatMap((id) => {

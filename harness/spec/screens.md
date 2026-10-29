@@ -106,8 +106,8 @@ None yet.
   **Play card** and **Close**.
 - **S6.6** The action buttons are: Play card, Undo, Sell cards, Claim all (with the number ready),
   Use influence, Projects and End turn. Buttons for actions you cannot take are disabled.
-  Projects always opens its pop-up (S8.2), where each Complete button is disabled when you cannot
-  complete that project (Q32).
+  Projects and Use influence always open their pop-ups (S8.2, S8.3), where each action is disabled
+  when you cannot take it (Q32).
 - **S6.7** After **End turn**, the action area says you are done and which players the turn is
   waiting for.
 - **S6.8** A move waiting for the server is shown faded with "Waiting for the server…". If it is

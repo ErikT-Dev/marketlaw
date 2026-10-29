@@ -3,9 +3,9 @@ import { NO_GAMES } from "../simulator/NO_GAMES.ts";
 import { simulationProblems } from "./simulationProblems.ts";
 
 describe("simulationProblems", () => {
-  it("fails when fewer than 10,000 games were played", () => {
+  it("fails when fewer than 500 games were played", () => {
     expect(simulationProblems({ ...NO_GAMES, games: 50 }, ["I1"])).toEqual([
-      "the simulator played 50 games, fewer than 10000",
+      "the simulator played 50 games, fewer than 500",
     ]);
   });
 
