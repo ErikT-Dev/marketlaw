@@ -5,6 +5,7 @@ import { Panel } from "../../components/Panel";
 import styles from "./ActionsPanel.module.css";
 import { counted } from "./counted";
 import { DoneBanner } from "./DoneBanner";
+import { MarketPhaseNotice } from "./MarketPhaseNotice";
 import type { HandChoice } from "./HandChoice";
 import type { OpenDialog } from "./OpenDialog";
 import { ProgressButtons } from "./ProgressButtons";
@@ -12,6 +13,7 @@ import { REJECTION_MESSAGES } from "./REJECTION_MESSAGES";
 
 type Props = {
   readonly seat: OwnSeatView;
+  readonly isMarketPhase: boolean;
   readonly choice: HandChoice;
   readonly waitingFor: ReadonlyArray<string>;
   readonly isEndTurnPending: boolean;
@@ -40,6 +42,9 @@ function canPlaySelected(seat: OwnSeatView, choice: HandChoice): boolean {
 
 export function ActionsPanel(props: Props) {
   const { seat, choice, waitingFor, isEndTurnPending, isBusy } = props;
+  if (props.isMarketPhase) {
+    return <MarketPhaseNotice />;
+  }
   if (seat.isDone) {
     return <DoneBanner waitingFor={waitingFor} />;
   }

@@ -1,0 +1,73 @@
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  min-height: 0;
+  padding: var(--space-lg);
+  border: 1px solid var(--color-panel-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-panel-base);
+}
+
+.yourGo {
+  outline: 3px solid var(--color-status-in-game);
+}
+
+.title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: var(--font-weight-bold);
+}
+
+.text {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-md);
+}
+
+.option {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  padding: var(--space-lg);
+  border-radius: var(--radius-md);
+  background: var(--color-panel-raised);
+}
+
+.optionTitle {
+  margin: 0;
+  font-size: 16px;
+  font-weight: var(--font-weight-bold);
+}
+
+.sectors {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(88px, 1fr));
+  gap: var(--space-sm);
+}
+
+.sector {
+  min-height: 36px;
+  padding: 0 var(--space-sm);
+  border: none;
+  border-radius: var(--radius-md);
+  color: var(--color-text-primary);
+  font: inherit;
+  font-weight: var(--font-weight-bold);
+  cursor: pointer;
+}
+
+.sector:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
+.sector:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+}

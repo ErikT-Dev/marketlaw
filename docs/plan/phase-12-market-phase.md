@@ -92,4 +92,10 @@ These 25 scenarios are added to `harness/required.yaml` in this phase, by file a
   market phase; the leak test treats taken cards as known.
 - [x] 3. "New" marks on every card that came into a hand this turn, cleared when the main phase
   ends; I3, I4 and I20 are checked.
-- [ ] 4. Screens for the market phase.
+- [x] 4. Screens for the market phase: the marketplace with its 8 places, bonus types, deck and
+  discard (S4.1, S4.2); the market go panel in place of the city in all four states (S4.3); only the
+  S4.4 notice in the action area; "new" marks in the hand (S6.4); turn draws and refill shuffles in
+  the draw log (S7.2). The marketplace takes its own height and wraps to 2 rows of 4 below 760 px;
+  in the market phase the go panel takes its own height and the (still empty) Quests panel the rest,
+  so everything fits at 1280×720. Browser test in two windows and an empty-marketplace test room,
+  with screenshots of the four market boards.

@@ -37,4 +37,42 @@ describe("drawLogText", () => {
       "Discard shuffle: the whole discard pile, 12 cards, went into the deck",
     );
   });
+
+  it("says which marketplace card a turn draw took and what it drew from the deck", () => {
+    const asked = { by: "sector", sector: "Public", tier: 1 } as const;
+    expect(
+      drawLogText(
+        {
+          kind: "turn_draw",
+          turn: 4,
+          seat: 1,
+          choice: { option: "A", card: "Trauma Center" },
+          count: 1,
+          asked,
+        },
+        NAMES,
+      ),
+    ).toBe("Ann took Trauma Center from the marketplace and drew 1 card: Public, tier 1");
+    expect(
+      drawLogText(
+        {
+          kind: "turn_draw",
+          turn: 4,
+          seat: 2,
+          choice: { option: "B", sector: "Public" },
+          count: 2,
+          asked,
+        },
+        NAMES,
+      ),
+    ).toBe("Bea skipped the marketplace and drew 2 cards: Public, tier 1");
+  });
+
+  it("says when a marketplace refill shuffled the discard pile", () => {
+    expect(
+      drawLogText({ kind: "shuffle", turn: 5, seat: null, asked: null, count: 3 }, NAMES),
+    ).toBe(
+      "Discard shuffle for the marketplace: the whole discard pile, 3 cards, went into the deck",
+    );
+  });
 });

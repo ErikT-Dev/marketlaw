@@ -1,15 +1,12 @@
 import type { ActionIntent } from "../../shared/protocol/ActionIntent";
 import type { RoomUpdate } from "../../shared/protocol/RoomUpdate";
-import { Panel } from "../components/Panel";
 import { Toast } from "../components/Toast";
 import type { PendingAction } from "../store/PendingAction";
 import type { RejectedMove } from "../store/RejectedMove";
 import styles from "./game/GamePage.module.css";
-import { CityPanel } from "./game/CityPanel";
-import { CombosPanel } from "./game/CombosPanel";
-import { DeckAndDiscard } from "./game/DeckAndDiscard";
 import { DrawLogPanel } from "./game/DrawLogPanel";
 import { GameTopBar } from "./game/GameTopBar";
+import { MiddleColumn } from "./game/MiddleColumn";
 import { rejectionMessage } from "./game/rejectionMessage";
 import { RightColumn } from "./game/RightColumn";
 import { OpponentsPanel } from "./game/OpponentsPanel";
@@ -38,17 +35,13 @@ export function GamePage(props: Props) {
           <OpponentsPanel view={view} playerNames={playerNames} />
           <DrawLogPanel drawLog={view.drawLog} playerNames={playerNames} />
         </div>
-        <div className={styles["middle"]}>
-          <Panel
-            title="Marketplace"
-            aside={<DeckAndDiscard deckCount={view.deckCount} discard={view.discard} />}
-          />
-          <Panel title="Quests" />
-          <div className={styles["cityRow"]}>
-            <CityPanel city={mine.city} />
-            <CombosPanel combos={mine.combos} />
-          </div>
-        </div>
+        <MiddleColumn
+          view={view}
+          seat={mine}
+          playerNames={playerNames}
+          isBusy={props.pendingActions.length > 0}
+          onAction={props.onAction}
+        />
         <RightColumn
           view={view}
           seat={mine}
