@@ -501,3 +501,16 @@ file.
   `cannot_afford_trade` stays last (group 10). Written into `HARNESS.md`.
 - **Why:** a used-up action is the most lasting reason, and the S8.3 tiles show "used" for it.
 - **Implemented:** `harness/HARNESS.md` reason code order; the engine (phase 11).
+
+## Q35. How many simulated games does the harness need?
+
+- **Phase:** 11, finish.
+- **Question:** `HARNESS.md` point 2 asked for at least 10,000 simulated games, and `npm run check`
+  ran them all; that alone took about 295 s, so the check could not stay under 5 minutes.
+- **Options:** keep 10,000 everywhere; a smaller set for the Stop hook only (D9); fewer games in
+  the check and more at the end of a phase.
+- **Solution:** the owner's decision D23: 500 games per `npm run check`, 5,000 per
+  `npm run harness` at the end of every phase. Written into `HARNESS.md` point 2.
+- **Why:** the other tests take about 20 s; the game count was the whole cost.
+- **Implemented:** `harness/HARNESS.md` point 2, `rules/testing.md`; `SIMULATED_GAMES` and
+  `runPhaseEndHarness` in `tools/harness-runner/` (phase 11).

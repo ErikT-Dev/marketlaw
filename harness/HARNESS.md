@@ -353,8 +353,8 @@ The game passes the harness when all of these are true:
 
 1. Every scenario in `scenarios/` passes. Scenarios in `scenarios/proposed/` are run and reported
    but do not count until the owner accepts them.
-2. Every invariant in `invariants.yaml` holds after every action in at least 10,000 random
-   simulated games. A failure reports the shortest seed and action list that reproduces it.
+2. Every invariant in `invariants.yaml` holds after every action in 5,000 random simulated
+   games per `npm run harness`, and in 500 per `npm run check`. A failure reports the shortest seed and action list that reproduces it.
 3. No message to any player contains a card that is hidden from that player (the leak test).
 4. Every budget in `budgets.yaml` is met.
 5. Every rule in the spec files is covered by at least one scenario in `coverage.md`, or is
