@@ -1,6 +1,6 @@
 # Phase 12: The market phase
 
-Status: approved
+Status: in progress
 Milestone: 3 Playthrough
 
 ## Goal
@@ -78,3 +78,18 @@ These 25 scenarios are added to `harness/required.yaml` in this phase, by file a
 - `turns-and-time` #33: the market phase follows the start-of-turn steps
 - `visibility` #9: the draw log shows who drew how many and what was asked for but not the card
 - `visibility` #10: a marketplace card taken is known to be in that player's hand
+
+## Progress
+
+- [x] 1. Start of turn: cards shown in 2 market phases go to the discard pile after the sold cards,
+  then empty places refill in R18.5's order. The first player is set when the turn starts (R4.4)
+  and kept in the state, as `HARNESS.md` lets a scenario give it. A refill shuffle is logged with
+  no seat (Q38, closes Q23). Save version 8.
+- [x] 2. Market phase: one go per player still in the game, in player order; option A, option B,
+  and option B when the marketplace is empty (`marketplace_empty` first, Q39). A taken card is
+  known to be in that hand until played or sold (M3.3); every market go changes every player's
+  state version, since all of it is public. The bots take turn draws; the simulator plays the
+  market phase; the leak test treats taken cards as known.
+- [x] 3. "New" marks on every card that came into a hand this turn, cleared when the main phase
+  ends; I3, I4 and I20 are checked.
+- [ ] 4. Screens for the market phase.

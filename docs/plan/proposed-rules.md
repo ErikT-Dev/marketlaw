@@ -76,3 +76,22 @@ mode on some random deals.
 **Why:** found in phase 10; `rejectedMove.spec.ts` failed at one screen size on a deal with two
 Stone Houses.
 **Enforced by:** judgment.
+
+## For `rules/workflow.md`
+
+### No pause at the end of a phase either
+The phase review, report, merge and deploy follow the checks without asking the owner; only the
+"Waiting for the owner" cases stop a phase.
+**Why:** after phase 11's checks went green Claude asked whether to go on with the review; the
+owner had already said not to (2026-10-29).
+**Enforced by:** judgment.
+
+## For `rules/testing.md`
+
+### Vitest's `--mode` does not reach inline projects
+Projects defined inline in `vitest.config.ts` keep the mode `test` whatever `--mode` says. Pass
+run options to a test through an environment variable set by a Node launcher (as
+`tools/harness-runner/runPhaseEndHarness.ts` does), since npm scripts run in `cmd` on Windows and
+`sh` on GitHub.
+**Why:** found in phase 11 (D23): `npm run harness --mode harness` silently simulated 500 games.
+**Enforced by:** the harness test "simulates every game it was asked for".
