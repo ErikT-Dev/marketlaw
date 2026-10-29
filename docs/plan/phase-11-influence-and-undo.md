@@ -40,7 +40,7 @@ chosen kind and tier, and undo a played card.
 
 ## Exit criteria
 
-- The listed invariants hold over 10,000 games.
+- The listed invariants hold over 5,000 games.
 
 ## Open points
 
@@ -118,6 +118,7 @@ These 52 scenarios are added to `harness/required.yaml` in this phase, by file a
   the seven fit two rows, as in the design. Browser test in a test room, with a screenshot.
 
 **Where the phase stands (2026-10-29).** All five items are built; the 52 scenarios and I11 are
-required and pass; the browser tests pass (39). Next: `npm run check` is green but took about 8
-minutes, over the 5-minute limit; the harness alone took 300 s against 187 s on master after the
-speed-ups so far. Bring it under 5 minutes, then the phase review, report, merge and deploy.
+required and pass; the browser tests pass (39). The check was over 5 minutes, almost all of it the
+10,000 simulated games; by the owner's decision D23 it now simulates 500 games and takes about
+75 s, and `npm run harness` simulates 5,000 in about 155 s. Both pass. Next: the phase review,
+report, merge and deploy.

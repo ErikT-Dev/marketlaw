@@ -145,6 +145,17 @@ its secret (D8, C5).
 *Effect:* `README.md` principle 2, phase 30 item 4; Claude checks after each deploy that the
 live site loads without a login.
 
+**D23. 500 simulated games per check, 5,000 at the end of a phase (replaces D9).** (2026-10-29,
+owner, during phase 11)
+`npm run check`, and so the Stop hook and GitHub, simulates 500 games; `npm run harness` simulates
+5,000 and runs at the end of every phase, before the phase review. Measured on phase 11: the other
+223 tests take about 20 s, the 10,000 games about 295 s, so the game count alone decided whether
+the check stayed under 5 minutes. 500 games still find, 95% of the time, a broken invariant that
+shows in 1 game in 170; 5,000 games, one that shows in 1 game in 1,700.
+*Effect:* `rules/testing.md` "Invariants under simulation", `harness/HARNESS.md` point 2,
+`README.md` "How a phase is built" step 4.2, the "hold over 10,000 games" criteria of phases 11 to
+15 and 30.
+
 ## Open
 
 From D19 on, Claude solves these itself when the phase that needs them starts, records the

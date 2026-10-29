@@ -40,7 +40,7 @@ it leave the table at the end of the turn.
 
 ## Exit criteria
 
-- The listed invariants hold over 10,000 games.
+- The listed invariants hold over 5,000 games.
 
 ## Open points
 

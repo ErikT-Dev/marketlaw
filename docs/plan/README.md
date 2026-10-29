@@ -126,7 +126,8 @@ Every phase follows these steps (D17).
 **4. Finish**
 
 1. Add the phase's scenarios to `harness/required.yaml` in one edit.
-2. Run the full `npm run check`, the browser tests and the budget checks.
+2. Run the full `npm run check`, `npm run harness` (5,000 simulated games, D23), the browser
+   tests and the budget checks.
 3. Update `docs/enforcement.md` if a check now applies that did not before.
 4. Run the phase review (D16); fix or answer every finding; run the checks again.
 5. Write the phase report under **Report** at the end of the phase file: what was built, what to

@@ -17,7 +17,7 @@ All earlier phases.
 - Rules: every rule in `harness/spec/`.
 - Scenarios: all 425 on `harness/required.yaml`; the "not yet" allowance of `rules/testing.md`
   ends.
-- Invariants: all 27 over at least 10,000 games per run. Budgets: all 18.
+- Invariants: all 27 over 5,000 games per `npm run harness`. Budgets: all 18.
 - Checks: every point of "What passing means" in `HARNESS.md`, 0 to 7.
 - Screens: every screen at every size decided in O2, with screenshots in `harness/screens/`.
 
