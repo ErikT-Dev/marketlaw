@@ -34,4 +34,21 @@ describe("parseClientMessage", () => {
       error: "unknown_action",
     });
   });
+
+  it("rejects malformed influence, draw action and undo intents as malformed", () => {
+    const intents = [
+      { type: "influence", trade: "steal" },
+      { type: "influence" },
+      { type: "draw_action", kind: "Industry", tier: 4 },
+      { type: "draw_action", kind: "Dragons", tier: 1 },
+      { type: "draw_action", kind: "Industry", tier: 1, count: 3 },
+      { type: "undo", steps: 2 },
+    ];
+    for (const intent of intents) {
+      expect(parseClientMessage(actionMessage(intent))).toEqual({
+        isOk: false,
+        error: "malformed_message",
+      });
+    }
+  });
 });
