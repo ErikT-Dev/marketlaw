@@ -99,3 +99,20 @@ These 25 scenarios are added to `harness/required.yaml` in this phase, by file a
   in the market phase the go panel takes its own height and the (still empty) Quests panel the rest,
   so everything fits at 1280×720. Browser test in two windows and an empty-marketplace test room,
   with screenshots of the four market boards.
+
+**Where the phase stands (2026-10-30).** All four items are built; the 25 scenarios and I3, I4,
+I20 are required and pass; `npm run check` (242 tests, about 2 min), `npm run harness` (5,000
+games, about 9.5 min, up from 2.5 min on master) and the browser tests (45) pass. The phase review
+has run. Next: fix its findings, then the report, merge and deploy:
+1. Chaos bot option A can pick a marketplace card; its test passes only by seed. Pick from cards
+   neither held nor in the marketplace.
+2. I20 compares with `firstPlayerOf`, the engine's own function; compute the expected seat on its
+   own from the seat numbers.
+3. I3 does not catch a place listed twice, and its message counts cards instead of places.
+4. Draw log: an option B with two tiers shows as two lines, and a go that drew nothing says
+   "drew 0 cards". Show one line per go.
+5. A new card loses its "new" mark while selected or marked to sell; make "new" a separate prop.
+6. Q23 still says open; point it to Q38.
+Also for the report: the market-empty text differs from the board ("All 8 places were taken"), the
+action area always shows the S4.4 text, and the Quests panel is thin at 1280×720 in the market
+phase until phase 13.
