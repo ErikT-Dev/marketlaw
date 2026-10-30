@@ -52,6 +52,22 @@ function seatsThen(session: RoomSession, expected: unknown): ReadonlyArray<unkno
   });
 }
 
+function noticeTo(session: RoomSession, expected: unknown): unknown {
+  const asked = isRecord(expected) ? expected : {};
+  const seat = session.record.game?.seats.find((candidate) => candidate.seat === asked["seat"]);
+  const sent = session.notices.find(
+    ({ playerId, notice }) => playerId === seat?.playerId && notice.kind === asked["notice"],
+  );
+  return sent === undefined || seat === undefined
+    ? undefined
+    : {
+        seat: seat.seat,
+        notice: sent.notice.kind,
+        in_a_row: sent.notice.inARow,
+        of: sent.notice.of,
+      };
+}
+
 function startSession(
   rawGiven: Readonly<Record<string, unknown>>,
   scripted: ScriptedRandom,
@@ -93,6 +109,8 @@ function startSession(
           return session.isLastStepUnchanged;
         case "seats":
           return seatsThen(session, expected);
+        case "message_to":
+          return noticeTo(session, expected);
         default:
           return readEngineThen(game.saved.state, field, expected, session.now);
       }
@@ -111,7 +129,7 @@ export const ROOM_DRIVER: ScenarioDriver = {
   name: "room",
   givenFields: new Set([...ENGINE_FIELDS.givenFields, "room", "accounts"]),
   steps: new Set(["raw", "play_card", "sell", "end_turn", "wait_ms"]),
-  thenFields: ENGINE_FIELDS.thenFields,
+  thenFields: new Set([...ENGINE_FIELDS.thenFields, "message_to"]),
   nestedFields: new Map([
     ...ENGINE_FIELDS.nestedFields,
     ["given.seats", new Set([...SEAT_FIELDS, ...ROOM_SEAT_FIELDS])],

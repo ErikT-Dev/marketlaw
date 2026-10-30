@@ -125,4 +125,9 @@ export const SERVER_MESSAGE_SCHEMA = v.variant("type", [
     actionId: v.nullable(v.string()),
     code: ReasonCode,
   }),
+  v.object({
+    type: v.literal("notice"),
+    protocolVersion: COUNT,
+    notice: v.object({ kind: v.literal("timed_out"), inARow: COUNT, of: COUNT }),
+  }),
 ]);

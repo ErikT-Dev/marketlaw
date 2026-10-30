@@ -12,6 +12,7 @@ import type { RoomCode } from "../shared/RoomCode";
 import { ConnectionAttachment } from "./ConnectionAttachment";
 import { findPlayerByTokenHash } from "./findPlayerByTokenHash";
 import { ROOM_GONE_CLOSE_CODE } from "../shared/ROOM_GONE_CLOSE_CODE";
+import type { AddressedNotice } from "./room/AddressedNotice";
 import { alarmChangeFor } from "./room/alarmChangeFor";
 import { createRoomIn } from "./room/createRoomIn";
 import { fireAlarm } from "./room/fireAlarm";
@@ -20,6 +21,7 @@ import { joinRoomIn } from "./room/joinRoomIn";
 import { loadRoom } from "./room/loadRoom";
 import { receiveMessage } from "./room/receiveMessage";
 import { startTestRoomIn } from "./room/startTestRoomIn";
+import { timeOutNoticesBetween } from "./room/timeOutNoticesBetween";
 import type { RoomRecord } from "./room/RoomRecord";
 import type { RoomStorage } from "./room/RoomStorage";
 import { updateFor } from "./room/updateFor";
@@ -87,6 +89,7 @@ export class GameRoom extends DurableObject<Env> {
       if (fired !== record) {
         this.storage.write(fired);
         this.updateEveryone(null);
+        this.sendNotices(timeOutNoticesBetween(record, fired));
       }
     }
     await this.syncAlarm();
@@ -112,6 +115,7 @@ export class GameRoom extends DurableObject<Env> {
       ? await this.senderOf(parsed.value.token, attachmentOf(socket))
       : null;
     const attachment = attachmentOf(socket);
+    const recordBefore = loadRoom(this.storage);
     const outcome = receiveMessage(this.storage, {
       connection: { identity: attachment.identity, rejectionTimes: attachment.rejectionTimes },
       parsed,
@@ -131,10 +135,27 @@ export class GameRoom extends DurableObject<Env> {
     });
     socket.send(JSON.stringify(outcome.reply));
     this.updatePlayers(outcome.playersToUpdate, socket);
+    this.sendNotices(timeOutNoticesBetween(recordBefore, loadRoom(this.storage)));
     if (outcome.shouldClose) {
       socket.close(1008, "Too many rejected messages");
     }
     await this.syncAlarm();
+  }
+
+  private sendNotices(notices: ReadonlyArray<AddressedNotice>): void {
+    for (const socket of this.ctx.getWebSockets()) {
+      const { identity } = attachmentOf(socket);
+      for (const { playerId, notice } of notices) {
+        if (identity?.playerId === playerId) {
+          const message: ServerMessage = {
+            type: "notice",
+            protocolVersion: PROTOCOL_VERSION,
+            notice,
+          };
+          socket.send(JSON.stringify(message));
+        }
+      }
+    }
   }
 
   private async syncAlarm(): Promise<void> {

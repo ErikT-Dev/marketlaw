@@ -1,3 +1,4 @@
+import type { Notice } from "../Notice";
 import type { ReasonCode } from "../ReasonCode";
 import type { RoomUpdate } from "./RoomUpdate";
 
@@ -13,4 +14,5 @@ export type ServerMessage =
       readonly protocolVersion: number;
       readonly actionId: string | null;
       readonly code: ReasonCode;
-    };
+    }
+  | { readonly type: "notice"; readonly protocolVersion: number; readonly notice: Notice };
