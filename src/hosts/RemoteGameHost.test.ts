@@ -115,6 +115,22 @@ describe("RemoteGameHost", () => {
     ]);
   });
 
+  it("passes on a notice and the server time of an update", () => {
+    const network = connectedHost();
+    network.handlers().onMessage(ROOM_UPDATE_TEXT);
+    network.handlers().onMessage(
+      JSON.stringify({
+        type: "notice",
+        protocolVersion: 1,
+        notice: { kind: "timed_out", inARow: 2, of: 3 },
+      }),
+    );
+    expect(network.events).toMatchObject([
+      { type: "update", serverNow: 5000 },
+      { type: "notice", notice: { kind: "timed_out", inARow: 2, of: 3 } },
+    ]);
+  });
+
   it("ignores messages it cannot read", () => {
     const network = connectedHost();
     network.handlers().onMessage("{not json");

@@ -60,6 +60,12 @@ test("one player takes a marketplace card while the other waits, then both play 
     two.page.getByRole("heading", { name: "Your go: choose your turn draw" }),
   ).toBeVisible();
   await expect(two.page.getByRole("button", { name: "Play card" })).toHaveCount(0);
+  await expect(
+    two.page.getByRole("banner").getByRole("timer", { name: /^Your go 0:[0-4]\d$/ }),
+  ).toBeVisible();
+  await expect(
+    one.page.getByRole("banner").getByRole("timer", { name: /^Go: Seat 2 0:[0-4]\d$/ }),
+  ).toBeVisible();
   await expectScreenFits(two.page, "market-your-turn-draw", testInfo);
   await expect(one.page.getByRole("heading", { name: "Seat 2's go" })).toBeVisible();
   await expectScreenFits(one.page, "market-before-your-go", testInfo);
