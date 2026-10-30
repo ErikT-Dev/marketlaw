@@ -1,6 +1,6 @@
 # Phase 13: Quests
 
-Status: approved
+Status: in progress
 Milestone: 3 Playthrough
 
 ## Goal
@@ -118,3 +118,18 @@ These 67 scenarios are added to `harness/required.yaml` in this phase, by file a
 - `turns-and-time` #32: a 5th quest place is added and filled at the start of turn 20
 - `undo` #5: undo takes back completing a quest whose reward draws no card
 - `undo` #11: completing a quest whose reward draws a card cannot be undone
+
+## Progress
+
+- [ ] 1. Requirements as data (`QUEST_TERMS`): card counts by sector and lowest tier, tier 3 cards
+  in different sectors, type counts, stats, income, completed projects. The `complete_quest`
+  action with `quest_not_on_table`, `quest_already_completed` and `quest_needs_not_met`; a seat
+  keeps the quests it completed, so undo and the start-of-main-phase view of other players need
+  nothing extra.
+- [ ] 2. Rewards: stats, gained types and draws (R20.5, logged with the cause "quest"); undo
+  stops at a quest whose reward drew a card.
+- [ ] 3. Table life cycle: completed quests leave for good, quests at the end of their 5th turn go
+  back to the list, empty places refill in table order with R19.8's tier gates, the 5th place at
+  turn 20; I12 (quests), I15, I16; bots complete quests; save version 9.
+- [ ] 4. Quests panel (S5) with every player's progress, the Complete button, completed shading
+  and room for 5 quests with 4 players; the D21 size check at 1280×720.
