@@ -43,6 +43,7 @@ export function viewThen(state: GameState, expected: unknown): Readonly<Record<s
           stats: ofSeat.stats,
           hand: ofSeat.kind === "own" ? ofSeat.hand : undefined,
           hand_count: ofSeat.kind === "own" ? ofSeat.hand.length : ofSeat.handCount,
+          known_in_hand: ofSeat.kind === "own" ? undefined : ofSeat.knownInHand,
           city: ofSeat.city,
           build_passes: ofSeat.buildPasses,
           done: ofSeat.isDone,

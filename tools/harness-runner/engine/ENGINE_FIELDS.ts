@@ -15,6 +15,8 @@ const SEAT_FIELDS = [
   "time_bank_ms",
   "combos_claimed",
   "projects",
+  "market",
+  "new_cards",
 ];
 
 const SLOT_FIELDS = new Set(["place", "card", "phases_shown"]);
@@ -25,6 +27,8 @@ export const ENGINE_FIELDS = {
     "players",
     "turn",
     "phase",
+    "first_player",
+    "market_go",
     "seats",
     "deck",
     "discard",
@@ -43,6 +47,7 @@ export const ENGINE_FIELDS = {
     "complete_project",
     "influence",
     "undo",
+    "turn_draw",
   ]),
   thenFields: new Set([
     "rejected",
@@ -51,6 +56,8 @@ export const ENGINE_FIELDS = {
     "view",
     "turn",
     "phase",
+    "first_player",
+    "market_go",
     "deck",
     "deck_count",
     "discard",
@@ -77,6 +84,7 @@ export const ENGINE_FIELDS = {
         "stats",
         "hand",
         "hand_count",
+        "known_in_hand",
         "city",
         "build_passes",
         "done",

@@ -1,6 +1,14 @@
 import type { DrawLogEntry } from "../../../src/shared/DrawLogEntry.ts";
 import { isRecord } from "../../harness-check/isRecord.ts";
 
+function turnDrawFieldsOf(entry: DrawLogEntry): Readonly<Record<string, unknown>> {
+  if (entry.kind !== "turn_draw") {
+    return {};
+  }
+  const { choice } = entry;
+  return choice.option === "A" ? { turn_draw: "A", took: choice.card } : { turn_draw: "B" };
+}
+
 function scenarioFieldsOf(entry: DrawLogEntry): Readonly<Record<string, unknown>> {
   const asked =
     entry.asked === null
@@ -11,8 +19,8 @@ function scenarioFieldsOf(entry: DrawLogEntry): Readonly<Record<string, unknown>
             : { kind: entry.asked.kind }),
           tier: entry.asked.tier,
         };
-  const count = entry.kind === "draw" ? { drew: entry.count } : { shuffled: entry.count };
-  return { seat: entry.seat, turn: entry.turn, ...count, ...asked };
+  const count = entry.kind === "shuffle" ? { shuffled: entry.count } : { drew: entry.count };
+  return { seat: entry.seat, turn: entry.turn, ...count, ...asked, ...turnDrawFieldsOf(entry) };
 }
 
 export function matchingLogEntries(

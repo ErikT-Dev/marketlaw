@@ -9,6 +9,7 @@ import styles from "./HandPanel.module.css";
 
 type Props = {
   readonly handDetails: ReadonlyArray<HandCardDetails>;
+  readonly newCards: ReadonlyArray<CardName>;
   readonly choice: HandChoice;
   readonly pendingCards: ReadonlyArray<CardName>;
   readonly onPressCard: (card: CardName) => void;
@@ -21,7 +22,7 @@ function stateOf(choice: HandChoice, card: CardName): HandCardState {
   return choice.selected === card ? "selected" : "default";
 }
 
-export function HandPanel({ handDetails, choice, pendingCards, onPressCard }: Props) {
+export function HandPanel({ handDetails, newCards, choice, pendingCards, onPressCard }: Props) {
   return (
     <Panel title={`Your hand · ${String(handDetails.length)} cards`}>
       <ul className={styles["hand"]} aria-label="Your hand">
@@ -32,6 +33,7 @@ export function HandPanel({ handDetails, choice, pendingCards, onPressCard }: Pr
               realCost={details.realCost}
               isPlayable={details.playRejection === null}
               state={stateOf(choice, details.card)}
+              isNew={newCards.includes(details.card)}
               isPending={pendingCards.includes(details.card)}
               onSelect={() => {
                 onPressCard(details.card);

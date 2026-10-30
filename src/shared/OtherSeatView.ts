@@ -10,6 +10,8 @@ export type OtherSeatView = {
   readonly seat: SeatNumber;
   readonly stats: Stats;
   readonly handCount: number;
+  readonly knownInHand: ReadonlyArray<CardName>;
+  readonly hasHadMarketGo: boolean;
   readonly typeCounts: SeatTypeCounts;
   readonly combosClaimed: ReadonlyArray<ClaimedCombo>;
   readonly projects: ReadonlyArray<ProjectName>;

@@ -10,7 +10,9 @@ export function acceptAction(
   saved: SavedGame,
 ): RoomGame {
   const isVisibleToAll =
-    saved.state.turn !== game.saved.state.turn || saved.state.phase !== game.saved.state.phase;
+    saved.state.turn !== game.saved.state.turn ||
+    saved.state.phase !== game.saved.state.phase ||
+    game.saved.state.phase === "market";
   return {
     saved,
     seats: game.seats.map((seat) => {

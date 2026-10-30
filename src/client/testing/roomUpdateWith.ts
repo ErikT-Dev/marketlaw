@@ -1,13 +1,11 @@
 import * as v from "valibot";
-import { Kind } from "../../shared/catalogue/Kind";
-import { Tier } from "../../shared/catalogue/Tier";
 import type { OtherSeatView } from "../../shared/OtherSeatView";
 import type { OwnSeatView } from "../../shared/OwnSeatView";
 import type { PlayerView } from "../../shared/PlayerView";
 import type { RoomUpdate } from "../../shared/protocol/RoomUpdate";
 import { RoomCode } from "../../shared/RoomCode";
 import type { SeatNumber } from "../../shared/SeatNumber";
-import { TradeName } from "../../shared/TradeName";
+import { OWN_SEAT_VIEW } from "../../shared/testing/OWN_SEAT_VIEW";
 
 const STATS = {
   funds: 7,
@@ -27,36 +25,16 @@ const SEAT_COMMON = {
   isDone: false,
   hasLeft: false,
   timeBankMs: 0,
+  hasHadMarketGo: false,
 };
 const OWN_SEAT: OwnSeatView = {
+  ...OWN_SEAT_VIEW,
   ...SEAT_COMMON,
-  kind: "own",
   seat: 2,
   hand: ["Loft"],
   handDetails: [
     { card: "Loft", realCost: 8, sameSectorAndTierInCity: 0, playRejection: "tier_not_allowed" },
   ],
-  sellRejection: null,
-  endTurnRejection: null,
-  typeCounts: {},
-  combos: [],
-  claimAllRejection: "nothing_to_claim",
-  projects: [],
-  projectRejections: {
-    quality: "project_needs_not_met",
-    satisfaction: "project_needs_not_met",
-    workforce: "project_needs_not_met",
-  },
-  hasPlayedThisTurn: false,
-  hasSkippedBuild: false,
-  influenceUses: {},
-  trades: TradeName.options.map((trade) => ({ trade, rejection: null })),
-  buildPassPrice: 2,
-  drawActions: Kind.options.flatMap((kind) =>
-    Tier.options.map((tier) => ({ kind, tier, isAnyLeft: true, rejection: null })),
-  ),
-  undoRejection: "nothing_to_undo",
-  actionsThisTurn: 0,
 };
 
 function other(seat: SeatNumber, changes: Partial<OtherSeatView>): OtherSeatView {
@@ -65,6 +43,7 @@ function other(seat: SeatNumber, changes: Partial<OtherSeatView>): OtherSeatView
     kind: "other",
     seat,
     handCount: 7,
+    knownInHand: [],
     typeCounts: {},
     combosClaimed: [],
     projects: [],
@@ -80,6 +59,8 @@ export function roomUpdateWith(
     seat: 2,
     turn: 3,
     phase: "main",
+    firstPlayer: 3,
+    marketGo: null,
     seats: [
       other(1, { hasLeft: true }),
       { ...OWN_SEAT, ...ownChanges },

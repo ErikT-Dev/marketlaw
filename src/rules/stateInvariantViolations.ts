@@ -1,6 +1,7 @@
 import { CARD_NAMES } from "../shared/catalogue/CARD_NAMES";
 import { ACTION_LIMIT } from "./ACTION_LIMIT";
 import type { GameState } from "./GameState";
+import { marketplaceViolations } from "./marketplaceViolations";
 import { progressViolations } from "./progressViolations";
 
 function cardPlaceViolations(state: GameState): ReadonlyArray<string> {
@@ -39,5 +40,10 @@ function seatViolations(state: GameState): ReadonlyArray<string> {
 }
 
 export function stateInvariantViolations(state: GameState): ReadonlyArray<string> {
-  return [...cardPlaceViolations(state), ...seatViolations(state), ...progressViolations(state)];
+  return [
+    ...cardPlaceViolations(state),
+    ...seatViolations(state),
+    ...progressViolations(state),
+    ...marketplaceViolations(state),
+  ];
 }

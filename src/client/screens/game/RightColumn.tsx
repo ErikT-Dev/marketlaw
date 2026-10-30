@@ -41,12 +41,14 @@ export function RightColumn({ view, seat, playerNames, pendingActions, onAction 
       <YourStatsPanel seat={seat} view={view} playerNames={playerNames} />
       <HandPanel
         handDetails={seat.handDetails}
+        newCards={seat.newCards}
         choice={choice}
         pendingCards={pendingCardsOf(pendingActions)}
         onPressCard={pressCard}
       />
       <ActionsPanel
         seat={seat}
+        isMarketPhase={view.phase === "market"}
         choice={choice}
         waitingFor={namesStillPlaying(view, playerNames)}
         isEndTurnPending={pendingActions.some(({ action }) => action.type === "end_turn")}

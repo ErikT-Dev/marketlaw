@@ -1,4 +1,5 @@
 import { CARD_NAMES } from "../shared/catalogue/CARD_NAMES";
+import type { CardName } from "../shared/catalogue/CardName";
 import { Kind } from "../shared/catalogue/Kind";
 import { Tier } from "../shared/catalogue/Tier";
 import type { PlayerView } from "../shared/PlayerView";
@@ -17,10 +18,18 @@ const MALFORMED_TEXTS = [
   '{"type":"action","protocolVersion":1,"token":"x","actionId":"","stateVersion":-1}',
 ];
 
+function cardOutside(excluded: ReadonlyArray<CardName>, chooser: BotChooser) {
+  const outside = CARD_NAMES.filter((card) => !excluded.includes(card));
+  return outside[chooser.pickIndex(outside.length)] ?? "Pub";
+}
+
 function cardNotHeld(view: PlayerView, chooser: BotChooser) {
-  const hand = ownSeatOf(view).hand;
-  const notHeld = CARD_NAMES.filter((card) => !hand.includes(card));
-  return notHeld[chooser.pickIndex(notHeld.length)] ?? "Pub";
+  return cardOutside(ownSeatOf(view).hand, chooser);
+}
+
+function cardNotInMarketplace(view: PlayerView, chooser: BotChooser) {
+  const shown = view.marketplace.flatMap(({ card }) => (card === null ? [] : [card]));
+  return cardOutside([...ownSeatOf(view).hand, ...shown], chooser);
 }
 
 function illegalIntent(view: PlayerView, chooser: BotChooser): ActionIntent {
@@ -28,7 +37,12 @@ function illegalIntent(view: PlayerView, chooser: BotChooser): ActionIntent {
     (details) => details.playRejection !== null,
   );
   const blocked = unplayable[chooser.pickIndex(unplayable.length)];
-  switch (chooser.pickIndex(8)) {
+  switch (chooser.pickIndex(9)) {
+    case 8:
+      return {
+        type: "turn_draw",
+        choice: { option: "A", card: cardNotInMarketplace(view, chooser) },
+      };
     case 5:
       return { type: "influence", trade: oneOf(TradeName.options, chooser) ?? "skip_build" };
     case 6:

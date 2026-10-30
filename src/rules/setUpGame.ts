@@ -38,6 +38,7 @@ export function setUpGame(setup: GameSetup, random: Random): GameState {
   return withMainPhaseStart({
     turn: FIRST_TURN,
     phase: "main",
+    firstPlayer: 1,
     seats: dealt.seats,
     deck: filled.piles.deck,
     discard: filled.piles.discard,

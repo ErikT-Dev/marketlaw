@@ -25,6 +25,7 @@ const SEAT_COMMON = {
   isDone: v.boolean(),
   hasLeft: v.boolean(),
   timeBankMs: COUNT,
+  hasHadMarketGo: v.boolean(),
 };
 const TYPE_COUNTS = v.record(TypeName, COUNT);
 const PROJECTS = v.array(ProjectName);
@@ -33,6 +34,7 @@ const SEAT_VIEW = v.variant("kind", [
     ...SEAT_COMMON,
     kind: v.literal("own"),
     hand: CARDS,
+    newCards: CARDS,
     handDetails: v.array(
       v.object({
         card: CardName,
@@ -68,12 +70,15 @@ const SEAT_VIEW = v.variant("kind", [
       }),
     ),
     undoRejection: v.nullable(ReasonCode),
+    turnDrawRejection: v.nullable(ReasonCode),
+    marketCardRejection: v.nullable(ReasonCode),
     actionsThisTurn: COUNT,
   }),
   v.object({
     ...SEAT_COMMON,
     kind: v.literal("other"),
     handCount: COUNT,
+    knownInHand: CARDS,
     typeCounts: TYPE_COUNTS,
     combosClaimed: v.array(v.object({ card: CardName, combo: COUNT, times: COUNT })),
     projects: PROJECTS,
@@ -82,7 +87,9 @@ const SEAT_VIEW = v.variant("kind", [
 const PLAYER_VIEW = v.object({
   seat: SEAT,
   turn: COUNT,
-  phase: v.picklist(["main", "ended"]),
+  phase: v.picklist(["market", "main", "ended"]),
+  firstPlayer: SEAT,
+  marketGo: v.nullable(SEAT),
   seats: v.array(SEAT_VIEW),
   deckCount: COUNT,
   discard: CARDS,

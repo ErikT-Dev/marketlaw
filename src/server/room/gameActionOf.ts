@@ -22,5 +22,7 @@ export function gameActionOf(seat: SeatNumber, intent: ActionIntent): GameAction
       return { type: "draw_action", seat, kind: intent.kind, tier: intent.tier };
     case "undo":
       return { type: "undo", seat };
+    case "turn_draw":
+      return { type: "turn_draw", seat, choice: intent.choice };
   }
 }

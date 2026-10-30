@@ -25,14 +25,18 @@
 .unplayable {
   border-right-color: var(--color-card-tile-unplayable-edge);
 }
-.selected {
-  border-color: var(--color-card-tile-selected-ring);
-}
 .isNew {
   border-color: var(--color-card-tile-new-border);
 }
+.selected {
+  border-color: var(--color-card-tile-selected-ring);
+}
 .markedToSell {
   border-color: var(--color-card-tile-sell-border);
+}
+.isNew.selected,
+.isNew.markedToSell {
+  box-shadow: inset 0 0 0 2px var(--color-card-tile-new-border);
 }
 .handCard:focus-visible,
 .playedCard:focus-visible {

@@ -42,6 +42,8 @@ const SEAT = v.strictObject({
   done: v.optional(v.boolean()),
   left: v.optional(v.boolean()),
   time_bank_ms: v.optional(COUNT),
+  market: v.optional(v.picklist(["in", "out"])),
+  new_cards: v.optional(CARDS),
 });
 
 const MARKETPLACE_SLOT = v.strictObject({
@@ -62,7 +64,9 @@ const MARKETPLACE_SLOT = v.strictObject({
 export const GIVEN_SCHEMA = v.strictObject({
   players: v.optional(v.picklist([1, 2, 3, 4])),
   turn: v.optional(COUNT),
-  phase: v.optional(v.picklist(["new_game", "main", "ended"])),
+  phase: v.optional(v.picklist(["new_game", "market", "main", "ended"])),
+  first_player: v.optional(SEAT_NUMBER),
+  market_go: v.optional(v.strictObject({ seat: SEAT_NUMBER })),
   seats: v.optional(v.array(SEAT)),
   deck: v.optional(CARDS),
   discard: v.optional(CARDS),

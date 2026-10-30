@@ -1,4 +1,5 @@
 import type { GameState } from "../../../src/rules/GameState.ts";
+import { marketGoOf } from "../../../src/rules/marketGoOf.ts";
 import { isRecord } from "../../harness-check/isRecord.ts";
 import { seatThen } from "./seatThen.ts";
 import { viewThen } from "./viewThen.ts";
@@ -19,6 +20,11 @@ export function readEngineThen(state: GameState, field: string, expected: unknow
     view: () => viewThen(state, expected),
     turn: () => state.turn,
     phase: () => state.phase,
+    first_player: () => state.firstPlayer,
+    market_go: () => {
+      const seat = marketGoOf(state);
+      return seat === null ? null : { seat };
+    },
     deck: () => state.deck,
     deck_count: () => state.deck.length,
     discard: () => state.discard,

@@ -16,6 +16,8 @@ export const ReasonCode = v.picklist([
   "already_done",
   "action_limit_reached",
   "card_not_in_hand",
+  "card_not_in_marketplace",
+  "marketplace_empty",
   "not_enough_funds",
   "tier_not_allowed",
   "no_build_pass",

@@ -19,6 +19,7 @@
 
 .left,
 .middle,
+.middleInMarketPhase,
 .right,
 .cityRow {
   display: grid;
@@ -32,7 +33,11 @@
 }
 
 .middle {
-  grid-template-rows: minmax(0, 170fr) minmax(0, 348fr) minmax(0, 310fr);
+  grid-template-rows: auto minmax(0, 348fr) minmax(0, 310fr);
+}
+
+.middleInMarketPhase {
+  grid-template-rows: auto minmax(0, 1fr) auto;
 }
 
 .cityRow {

@@ -1,1 +1,1 @@
-export type HandCardState = "default" | "selected" | "new" | "markedToSell";
+export type HandCardState = "default" | "selected" | "markedToSell";

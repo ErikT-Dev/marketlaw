@@ -26,5 +26,5 @@ long random value (at least 16 characters). To start a room there:
 
 Without the secret, the site answers "Not found", exactly as for any address that does not exist.
 
-Scenarios whose `given` needs more than the engine knows yet (rooms, accounts, the market phase)
+Scenarios whose `given` needs more than the engine knows yet (rooms, accounts, quests, clocks)
 cannot start a test room until a later phase builds that part.

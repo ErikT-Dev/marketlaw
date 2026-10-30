@@ -15,6 +15,7 @@ describe("HandCard", () => {
         realCost={11}
         isPlayable
         state="default"
+        isNew={false}
         isPending={false}
         onSelect={vi.fn()}
       />,
@@ -33,7 +34,8 @@ describe("HandCard", () => {
         card={LOFT}
         realCost={8}
         isPlayable={false}
-        state="new"
+        state="default"
+        isNew
         isPending={false}
         onSelect={vi.fn()}
       />,
@@ -54,6 +56,7 @@ describe("HandCard", () => {
         realCost={8}
         isPlayable
         state="selected"
+        isNew={false}
         isPending={false}
         onSelect={onSelect}
       />,
@@ -66,6 +69,7 @@ describe("HandCard", () => {
         realCost={8}
         isPlayable
         state="markedToSell"
+        isNew={false}
         isPending={false}
         onSelect={onSelect}
       />,
@@ -73,6 +77,34 @@ describe("HandCard", () => {
     expect(card.getAttribute("aria-pressed")).toBe("true");
     fireEvent.click(card);
     expect(onSelect).toHaveBeenCalledTimes(1);
+  });
+
+  it("stays new while selected or marked to sell", () => {
+    const view = render(
+      <HandCard
+        card={LOFT}
+        realCost={8}
+        isPlayable
+        state="selected"
+        isNew
+        isPending={false}
+        onSelect={vi.fn()}
+      />,
+    );
+    const description = "Number 24, real cost $8, new";
+    expect(screen.getByRole("button", { name: "Loft", pressed: true, description })).toBeDefined();
+    view.rerender(
+      <HandCard
+        card={LOFT}
+        realCost={8}
+        isPlayable
+        state="markedToSell"
+        isNew
+        isPending={false}
+        onSelect={vi.fn()}
+      />,
+    );
+    expect(screen.getByRole("button", { name: "Loft", pressed: true, description })).toBeDefined();
   });
 });
 

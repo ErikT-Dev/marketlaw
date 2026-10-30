@@ -338,7 +338,8 @@ file.
   shown, and may make the seat of a shuffle optional.
 - **Why:** no place empties and nothing is refilled before phase 12, so no refill shuffle can
   happen yet.
-- **Implemented:** `src/rules/takeIncome.ts`, `src/shared/DrawLogEntry.ts`; open for phase 12.
+- **Implemented:** `src/rules/takeIncome.ts`, `src/shared/DrawLogEntry.ts`; closed by Q38 (phase 12),
+  which logs a refill shuffle with no seat.
 
 ## Q24. The phase 08 invariants on the required list
 
@@ -539,3 +540,28 @@ file.
 - **Why:** full copies make undo restore everything with no rule to get wrong, and ordinary play
   stays far below the limit.
 - **Implemented:** nothing yet; phase 15 (B13).
+
+## Q38. How is a discard shuffle during a marketplace refill shown (closes Q23)?
+
+- **Phase:** 12, item 1 (Q23's open point).
+- **Question:** a refill at the start of a turn can shuffle discard cards into the deck. M3.3 makes
+  every shuffle public, but no player caused this one, and a draw log entry names a seat.
+- **Options:** leave refill shuffles out of the log; log them with no seat.
+- **Solution:** log them with no seat (`seat: null`), in the turn that is starting; the draw log
+  shows them as the marketplace's. Refill draws themselves are not logged: the cards go face up into
+  the marketplace, not into a hand (M3.3 covers cards going into a hand). Turn draws are logged with
+  the option, the card taken (option A) or the sector (option B), and the tier asked for.
+- **Why:** the shuffle changes the deck and discard pile every player sees, so hiding it would make
+  the shown piles disagree with the log.
+- **Implemented:** `src/shared/DrawLogEntry.ts`, `src/rules/endMainPhase.ts`,
+  `src/rules/takeTurnDraw.ts` (phase 12).
+
+## Q39. Which code wins for option A when the marketplace is empty?
+
+- **Phase:** 12, item 2.
+- **Question:** taking a card from an empty marketplace is both `card_not_in_marketplace` and
+  `marketplace_empty`, both in group 8 of the reason code order, with no order between them.
+- **Options:** `card_not_in_marketplace` first; `marketplace_empty` first.
+- **Solution:** `marketplace_empty` first, as `marketplace` #3 expects. Written into `HARNESS.md`.
+- **Why:** it tells the player what to do instead (choose a sector, R18.9).
+- **Implemented:** `harness/HARNESS.md` reason code order; `src/rules/rejectionOf.ts` (phase 12).

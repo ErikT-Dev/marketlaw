@@ -11,6 +11,7 @@ type Props = {
   readonly realCost: number;
   readonly isPlayable: boolean;
   readonly state: HandCardState;
+  readonly isNew: boolean;
   readonly isPending: boolean;
   readonly onSelect: () => void;
 };
@@ -18,7 +19,6 @@ type Props = {
 const STATE_CLASS: Readonly<Record<HandCardState, string>> = {
   default: "",
   selected: "selected",
-  new: "isNew",
   markedToSell: "markedToSell",
 };
 
@@ -31,12 +31,13 @@ function handCardDescription(card: Card, realCost: number, isPlayable: boolean, 
   ].join(", ");
 }
 
-export function HandCard({ card, realCost, isPlayable, state, isPending, onSelect }: Props) {
+export function HandCard({ card, realCost, isPlayable, state, isNew, isPending, onSelect }: Props) {
   const descriptionId = useId();
   const classes = [
     styles["handCard"],
     styles[isPlayable ? "playable" : "unplayable"],
     styles[STATE_CLASS[state]],
+    isNew ? styles["isNew"] : "",
     isPending ? styles["pending"] : "",
   ].join(" ");
   return (
@@ -56,7 +57,7 @@ export function HandCard({ card, realCost, isPlayable, state, isPending, onSelec
       </span>
       {isPending ? <PendingMarker label="Waiting for the server…" /> : null}
       <span id={descriptionId} className={styles["visuallyHidden"]}>
-        {handCardDescription(card, realCost, isPlayable, state === "new")}
+        {handCardDescription(card, realCost, isPlayable, isNew)}
       </span>
     </button>
   );

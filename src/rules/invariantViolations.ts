@@ -6,6 +6,20 @@ import { seatOf } from "./seatOf";
 import { stateInvariantViolations } from "./stateInvariantViolations";
 import type { Transition } from "./Transition";
 
+function seatsAfter(fromSeat: number, toSeat: number, count: number): number {
+  return (toSeat - fromSeat + count) % count;
+}
+
+function expectedFirstSeat(state: GameState): number {
+  const count = state.seats.length;
+  const rotationSeat = ((state.turn - 1) % count) + 1;
+  const stillIn = state.seats.filter((seat) => !seat.hasLeft).map((seat) => seat.seat);
+  const byRotation = [...stillIn].sort(
+    (first, second) => seatsAfter(rotationSeat, first, count) - seatsAfter(rotationSeat, second, count),
+  );
+  return byRotation[0] ?? rotationSeat;
+}
+
 function holdingPileViolations(before: GameState, after: GameState): ReadonlyArray<string> {
   const isOutsideMainPhase = after.turn > before.turn || after.phase !== "main";
   return isOutsideMainPhase && after.holdingPile.length > 0
@@ -48,10 +62,15 @@ function acceptedViolations(transition: Transition, after: GameState): ReadonlyA
           .filter((afterSeat) => afterSeat.stats.bonus >= BONUS_PER_FUND)
           .map((afterSeat) => `I10: seat ${afterSeat.seat} kept a bonus of 10 or more`)
       : [];
+  const firstPlayer =
+    after.turn > before.turn && after.firstPlayer !== expectedFirstSeat(after)
+      ? [`I20: turn ${String(after.turn)} starts with seat ${String(after.firstPlayer)} first`]
+      : [];
   return [
     ...actor,
     ...play,
     ...bonus,
+    ...firstPlayer,
     ...holdingPileViolations(before, after),
     ...incomeViolations(before, after),
     ...stateInvariantViolations(after),

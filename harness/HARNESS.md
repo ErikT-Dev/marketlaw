@@ -208,7 +208,8 @@ When several codes apply, the first one in this order wins:
 7. `action_limit_reached`, the daily limits, `rejoin_too_soon`, `busy_elsewhere`, `human_check_failed`
 8. whether the thing exists or is free: `card_not_in_hand` (also for the same card named twice),
    `card_not_in_marketplace`, `marketplace_empty`, `quest_not_on_table`, `room_not_found`,
-   `room_full`, `room_not_waiting`, `no_vote_open`, `nothing_to_undo`, `nothing_to_claim`
+   `room_full`, `room_not_waiting`, `no_vote_open`, `nothing_to_undo`, `nothing_to_claim`; for
+   option A of a turn draw, `marketplace_empty` before `card_not_in_marketplace`
 9. every other rule-specific code; for playing a card, in the order of R6.1: `tier_not_allowed`,
    `no_build_pass`, `build_skipped`; for influence actions, `trade_limit_reached` before
    `skip_build_after_play` and `no_card_of_kind`
