@@ -71,4 +71,21 @@ describe("quests panel", () => {
     expect(within(card).getByText("Tier 1 · 1 turn left")).toBeDefined();
     expect(within(card).getByRole("img", { name: "3 Residential cards" })).toBeDefined();
   });
+
+  it("words a requirement of one card in the singular", () => {
+    showQuests([
+      {
+        quest: "Penthouses",
+        turnsLeft: 5,
+        completeRejection: "quest_needs_not_met",
+        progress: [{ seat: 2, isCompleted: false, have: [2, 0, 1] }],
+      },
+    ]);
+    const card = screen.getByRole("region", { name: "Penthouses" });
+    expect(
+      within(card).getByRole("img", { name: "3 tier 2 or 3 Residential cards" }),
+    ).toBeDefined();
+    expect(within(card).getByRole("img", { name: "1 tier 3 Residential card" })).toBeDefined();
+    expect(within(card).getByRole("img", { name: "tier 3 Residential card 0 of 1" })).toBeDefined();
+  });
 });

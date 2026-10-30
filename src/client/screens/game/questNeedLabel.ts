@@ -2,13 +2,14 @@ import type { QuestNeed } from "../../../shared/catalogue/QuestNeed";
 import { STAT_ICONS } from "../../icons/STAT_ICONS";
 
 function cardsLabel(need: Extract<QuestNeed, { readonly kind: "cards" }>): string {
+  const cards = need.count === 1 ? "card" : "cards";
   switch (need.lowestTier) {
     case 1:
-      return `${need.sector} cards`;
+      return `${need.sector} ${cards}`;
     case 2:
-      return `tier 2 or 3 ${need.sector} cards`;
+      return `tier 2 or 3 ${need.sector} ${cards}`;
     case 3:
-      return `tier 3 ${need.sector} cards`;
+      return `tier 3 ${need.sector} ${cards}`;
   }
 }
 
