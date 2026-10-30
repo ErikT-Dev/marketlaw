@@ -15,12 +15,11 @@ type Props = {
   readonly onPressCard: (card: CardName) => void;
 };
 
-function stateOf(choice: HandChoice, card: CardName, isNew: boolean): HandCardState {
-  const unmarked = isNew ? "new" : "default";
+function stateOf(choice: HandChoice, card: CardName): HandCardState {
   if (choice.mode === "selling") {
-    return choice.marked.includes(card) ? "markedToSell" : unmarked;
+    return choice.marked.includes(card) ? "markedToSell" : "default";
   }
-  return choice.selected === card ? "selected" : unmarked;
+  return choice.selected === card ? "selected" : "default";
 }
 
 export function HandPanel({ handDetails, newCards, choice, pendingCards, onPressCard }: Props) {
@@ -33,7 +32,8 @@ export function HandPanel({ handDetails, newCards, choice, pendingCards, onPress
               card={cardOf(details.card)}
               realCost={details.realCost}
               isPlayable={details.playRejection === null}
-              state={stateOf(choice, details.card, newCards.includes(details.card))}
+              state={stateOf(choice, details.card)}
+              isNew={newCards.includes(details.card)}
               isPending={pendingCards.includes(details.card)}
               onSelect={() => {
                 onPressCard(details.card);
