@@ -1,6 +1,6 @@
 # Phase 14: Clocks and the time bank
 
-Status: approved
+Status: in progress
 Milestone: 3 Playthrough
 
 ## Goal
@@ -72,3 +72,19 @@ These 16 scenarios are added to `harness/required.yaml` in this phase, by file a
 - `turns-and-time` #20: ending the turn in time resets the time-out count
 - `turns-and-time` #21: the first player's market go has 45 seconds
 - `turns-and-time` #22: other market goes have 30 seconds
+
+## Progress
+
+- [ ] 1. Deadlines in the engine. Every action carries the server's receive time; the action log
+  keeps `{ action, at }`. The state keeps when the main phase or the current market go started,
+  and each seat's time-outs in a row; deadlines are worked out from them. Before a message is
+  handled, every time-out already due is applied as a logged `time_out` action at that moment, in
+  player order (R8.4, R9.6); a message from a player among them is rejected `out_of_time`. Banks
+  are charged when a player ends their turn, makes their market choice or times out. Save
+  version 10.
+- [ ] 2. One alarm per room at the earliest deadline; the alarm applies due time-outs and updates
+  everyone; rows for alarm changes are counted (B3).
+- [ ] 3. Time-outs: done in the main phase (count in a row, "timed out" notice with "of 3"); option
+  B with a random sector on a market go. The simulator runs clocks.
+- [ ] 4. Clocks on screen (S2.3, S3.1, S9.4) from server times, rounded down to whole seconds.
+- [ ] 5. Sleep model note in `docs/` and B12 in the simulator.
