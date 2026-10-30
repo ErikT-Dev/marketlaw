@@ -1,6 +1,6 @@
 # Phase 12: The market phase
 
-Status: in progress
+Status: done
 Milestone: 3 Playthrough
 
 ## Goal
@@ -102,7 +102,7 @@ These 25 scenarios are added to `harness/required.yaml` in this phase, by file a
 
 **Where the phase stands (2026-10-30).** All four items are built and the six review findings
 are fixed. `npm run check` (246 tests), `npm run harness` (5,000 games, about 10 min, up from
-2.5 min on master) and the browser tests (45) pass. Next: merge and deploy.
+2.5 min on master) and the browser tests (45) pass. Merged and deployed.
 
 ## Report
 

@@ -208,7 +208,7 @@ The 425 scenarios cover all of version 1, but each phase implements only part of
 | 09 | [Hidden information and opponents](phase-09-hidden-information-and-opponents.md) | 3 Playthrough | 08 | done |
 | 10 | [Types, combos and projects](phase-10-types-combos-and-projects.md) | 3 Playthrough | 09 | done |
 | 11 | [Influence and undo](phase-11-influence-and-undo.md) | 3 Playthrough | 10 | done |
-| 12 | [The market phase](phase-12-market-phase.md) | 3 Playthrough | 09 | in progress |
+| 12 | [The market phase](phase-12-market-phase.md) | 3 Playthrough | 09 | done |
 | 13 | [Quests](phase-13-quests.md) | 3 Playthrough | 11, 12 | approved |
 | 14 | [Clocks and the time bank](phase-14-clocks-and-time-bank.md) | 3 Playthrough | 12 | approved |
 | 15 | [End of the game and scoring](phase-15-end-of-game-and-scoring.md) | 3 Playthrough | 13, 14 | approved |
