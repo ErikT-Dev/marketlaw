@@ -1,6 +1,7 @@
 import { CARD_NAMES } from "../shared/catalogue/CARD_NAMES";
 import type { CardName } from "../shared/catalogue/CardName";
 import { Kind } from "../shared/catalogue/Kind";
+import { QuestName } from "../shared/catalogue/QuestName";
 import { Tier } from "../shared/catalogue/Tier";
 import type { PlayerView } from "../shared/PlayerView";
 import type { ActionIntent } from "../shared/protocol/ActionIntent";
@@ -32,6 +33,12 @@ function cardNotInMarketplace(view: PlayerView, chooser: BotChooser) {
   return cardOutside([...ownSeatOf(view).hand, ...shown], chooser);
 }
 
+function projectOrQuestIntent(chooser: BotChooser): ActionIntent {
+  return chooser.pickIndex(2) === 0
+    ? { type: "complete_project", project: "quality" }
+    : { type: "complete_quest", quest: oneOf(QuestName.options, chooser) ?? "Farmland" };
+}
+
 function illegalIntent(view: PlayerView, chooser: BotChooser): ActionIntent {
   const unplayable = ownSeatOf(view).handDetails.filter(
     (details) => details.playRejection !== null,
@@ -56,7 +63,7 @@ function illegalIntent(view: PlayerView, chooser: BotChooser): ActionIntent {
     case 3:
       return { type: "claim_all" };
     case 4:
-      return { type: "complete_project", project: "quality" };
+      return projectOrQuestIntent(chooser);
     case 0:
       return { type: "play_card", card: cardNotHeld(view, chooser) };
     case 1:

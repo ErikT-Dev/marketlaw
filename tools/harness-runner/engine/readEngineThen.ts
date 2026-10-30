@@ -36,8 +36,16 @@ export function readEngineThen(state: GameState, field: string, expected: unknow
         phases_shown: phasesShown,
       })),
     quests: () =>
-      state.quests.map(({ quest, turnsOnTable }) => ({ quest, turns_on_table: turnsOnTable })),
+      state.quests.map((place) =>
+        place === null
+          ? { quest: null }
+          : { quest: place.quest, turns_on_table: place.turnsOnTable },
+      ),
     quest_list: () => state.questList,
+    quest_list_excludes: () => {
+      const listed: ReadonlyArray<unknown> = Array.isArray(expected) ? expected : [];
+      return listed.filter((quest) => !state.questList.some((name) => name === quest));
+    },
     bonus_types: () => state.bonusTypes,
     done_order: () => state.doneOrder,
     first_completions: () => state.firstCompletions,

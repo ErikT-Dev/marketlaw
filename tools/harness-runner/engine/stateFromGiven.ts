@@ -42,10 +42,9 @@ export function stateFromGiven(given: Given): GameState {
     const entry = given.marketplace?.find((slot) => slot.place === place);
     return { place, card: entry?.card ?? null, phasesShown: entry?.phases_shown ?? 0 };
   });
-  const quests = (given.quests ?? []).map((entry) => ({
-    quest: entry.quest,
-    turnsOnTable: entry.turns_on_table ?? 1,
-  }));
+  const quests = (given.quests ?? []).map(({ quest, turns_on_table: turnsOnTable }) =>
+    quest === null ? null : { quest, turnsOnTable: turnsOnTable ?? 1 },
+  );
   const discard = given.discard ?? [];
   const placed = [
     ...seats.flatMap((seat) => [...seat.hand, ...seat.city]),
@@ -66,7 +65,11 @@ export function stateFromGiven(given: Given): GameState {
     quests,
     questList:
       given.quest_list ??
-      QUESTS.map(({ name }) => name).filter((name) => !quests.some(({ quest }) => quest === name)),
+      QUESTS.map(({ name }) => name).filter(
+        (name) =>
+          !quests.some((place) => place?.quest === name) &&
+          !seats.some((seat) => seat.questsCompleted.includes(name)),
+      ),
     bonusTypes: given.bonus_types ?? TYPE_NAMES.slice(0, 2),
     doneOrder: seats.filter((seat) => seat.isDone).map((seat) => seat.seat),
     firstCompletions: given.first_completions ?? [],

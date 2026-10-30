@@ -473,6 +473,7 @@ At the start of every turn from turn 2 on, in this order:
   picked only while the list still has quests. Its tier is set by the tier by turn rule (R17.10), but tier 2 quests can only be placed
   from turn 5 and tier 3 quests only from turn 13. If the tier picked is not allowed yet or has
   no quests left, the nearest allowed tier that still has quests is used, the lower one first.
+  If no allowed tier has quests left, the place stays empty until the next turn.
 - **R19.9** When the list has no quests left, empty places stay empty until quests go back into
   it.
 

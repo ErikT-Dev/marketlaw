@@ -565,3 +565,35 @@ file.
 - **Solution:** `marketplace_empty` first, as `marketplace` #3 expects. Written into `HARNESS.md`.
 - **Why:** it tells the player what to do instead (choose a sector, R18.9).
 - **Implemented:** `harness/HARNESS.md` reason code order; `src/rules/rejectionOf.ts` (phase 12).
+
+## Q40. What fills a quest place when the list has quests, but none of an allowed tier?
+
+- **Phase:** 13, item 3.
+- **Question:** R19.8 uses "the nearest allowed tier that still has quests", and R19.9 covers an
+  empty list. Before turn 5 (or 13) the list can still hold quests, but only of tiers not allowed
+  yet, so neither rule says what happens.
+- **Options:** place a quest of a tier not allowed yet; leave the place empty until the next turn.
+- **Solution:** the place stays empty until the next turn, when it is refilled again. Written into
+  R19.8.
+- **Why:** the tier gates are the point of R19.8, and I16 says no tier 2 quest is placed before
+  turn 5; an empty place for a turn is what R19.9 already does when nothing can be placed.
+- **Implemented:** `harness/spec/game-rules.md` R19.8; `src/rules/questTierToPlace.ts`,
+  `src/rules/refillQuests.ts` (phase 13).
+
+## Q41. Five quests with four players at 1280×720 (D21, for the owner)
+
+- **Phase:** 13, item 4; D21 asks this phase to raise the screen-size question again if the screen
+  cannot fit there.
+- **Question:** at 1280×720 the quests panel shows about 2 of 5 quest cards; the rest, other
+  players' progress lines and a Complete button can be off-screen until the player scrolls inside
+  the panel. At 1920×1080 and 2560×1440 all 5 quests with 4 players fit without scrolling. Nothing
+  scrolls sideways, every target is at least 24 px, and axe finds nothing.
+- **Options:** keep scrolling inside the quests panel at 1280×720; raise the smallest supported
+  size; build a compact quest card for small screens (for example, other players' progress folded
+  into one line).
+- **Solution for now:** scrolling inside the panel at 1280×720. The browser test checks that every
+  quest card and the Complete button can be scrolled into view at every size, and that all 5 fit
+  without scrolling from 1920×1080 up. The owner decides whether that is good enough.
+- **Why:** the screen is usable at every size; whether a scrolled quests panel is acceptable at the
+  smallest size is the owner's call under D21.
+- **Implemented:** `src/client/screens/game/QuestsPanel.module.css`, `e2e/quests.spec.ts` (phase 13).

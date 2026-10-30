@@ -7,6 +7,7 @@ import type { GameAction } from "./GameAction";
 import type { GameState } from "./GameState";
 import { realCostOf } from "./realCostOf";
 import { projectRejection } from "./projectRejection";
+import { questRejection } from "./questRejection";
 import { readyCombosOf } from "./readyCombosOf";
 import { removeCards } from "./removeCards";
 import { tradeRejection } from "./tradeRejection";
@@ -16,6 +17,25 @@ import { turnRejectionOf } from "./turnRejectionOf";
 
 type PlayCard = Extract<GameAction, { readonly type: "play_card" }>;
 type TurnDraw = Extract<GameAction, { readonly type: "turn_draw" }>;
+type ProgressAction = Extract<
+  GameAction,
+  { readonly type: "claim_all" | "complete_project" | "complete_quest" }
+>;
+
+function progressRejection(
+  state: GameState,
+  seat: SeatState,
+  action: ProgressAction,
+): ReasonCode | undefined {
+  switch (action.type) {
+    case "claim_all":
+      return readyCombosOf(seat).length === 0 ? "nothing_to_claim" : undefined;
+    case "complete_project":
+      return projectRejection(seat, action.project);
+    case "complete_quest":
+      return questRejection(state, seat, action.quest);
+  }
+}
 
 function turnDrawRejection(state: GameState, action: TurnDraw): ReasonCode | undefined {
   const { choice } = action;
@@ -68,9 +88,9 @@ export function rejectionOf(state: GameState, action: GameAction): ReasonCode | 
     case "end_turn":
       return undefined;
     case "claim_all":
-      return readyCombosOf(seat).length === 0 ? "nothing_to_claim" : undefined;
     case "complete_project":
-      return projectRejection(seat, action.project);
+    case "complete_quest":
+      return progressRejection(state, seat, action);
     case "influence":
       return tradeRejection(seat, action.trade);
     case "draw_action":

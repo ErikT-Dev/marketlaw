@@ -1,7 +1,6 @@
 import * as v from "valibot";
 import { CardName } from "../catalogue/CardName";
 import { Kind } from "../catalogue/Kind";
-import { QuestName } from "../catalogue/QuestName";
 import { Tier } from "../catalogue/Tier";
 import { TypeName } from "../catalogue/TypeName";
 import { ProjectName } from "../ProjectName";
@@ -10,6 +9,7 @@ import { RoomCode } from "../RoomCode";
 import { TradeName } from "../TradeName";
 import { DRAW_LOG_ENTRY_SCHEMA } from "./DRAW_LOG_ENTRY_SCHEMA";
 import { MARKETPLACE_SLOT_SCHEMA } from "./MARKETPLACE_SLOT_SCHEMA";
+import { QUEST_PLACE_VIEW_SCHEMA } from "./QUEST_PLACE_VIEW_SCHEMA";
 import { SEAT_NUMBER_SCHEMA } from "./SEAT_NUMBER_SCHEMA";
 import { STATS_SCHEMA } from "./STATS_SCHEMA";
 
@@ -94,7 +94,7 @@ const PLAYER_VIEW = v.object({
   deckCount: COUNT,
   discard: CARDS,
   marketplace: v.array(MARKETPLACE_SLOT_SCHEMA),
-  quests: v.array(v.object({ quest: QuestName, turnsOnTable: COUNT })),
+  quests: v.array(QUEST_PLACE_VIEW_SCHEMA),
   bonusTypes: v.array(TypeName),
   doneOrder: v.array(SEAT),
   playerOrder: v.array(SEAT),

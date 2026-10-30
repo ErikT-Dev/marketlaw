@@ -95,6 +95,7 @@ scenarios:
     - player order wraps from the highest seat to seat 1 and skips players who left
     - at the start of a turn old marketplace cards are removed and places refilled in order
     - the market phase follows the start-of-turn steps
+    - a 5th quest place is added and filled at the start of turn 20
   visibility:
     - other players' hands are shown only as a number of cards
     - a player sees their own hand
@@ -152,6 +153,8 @@ scenarios:
     - undo is only for the player's own actions
     - undoing a card played with a build pass gives the pass back
     - undoing a bought build pass makes the next one cost the same again
+    - undo takes back completing a quest whose reward draws no card
+    - completing a quest whose reward draws a card cannot be undone
   marketplace:
     - option A takes a free market card and draws one card of the same sector from the deck
     - option B draws 2 cards of a chosen sector from the deck
@@ -165,6 +168,71 @@ scenarios:
     - a kind place with no card of its kind left stays empty
     - a kind place falls back to another tier of its kind
     - option A with no cards left of that sector draws the top card of the deck
+  quests:
+    - rejects a quest whose requirement is not met
+    - a requirement means at least that amount and nothing is used up
+    - rejects completing the same quest twice
+    - rejects a quest that is not on the table
+    - rejects completing a quest outside the main phase
+    - several players can complete the same quest in the same turn
+    - a completed quest leaves the table for good and the place is refilled next turn
+    - a quest nobody completed in 5 turns goes back into the quest list
+    - a tier 2 quest picked before turn 5 is replaced by a tier 1 quest
+    - a tier 3 quest picked before turn 13 is replaced by the nearest allowed tier
+    - a tier with no quests left falls back to the nearest tier with quests the lower one first
+    - with no quests left in the list empty places stay empty
+    - sector counts count only cards in the city
+    - a gained type is not a card and does not count for sector counts
+    - a type gained from one quest helps complete another
+    - completing Working district gives its reward
+    - completing Farming industry gives its reward
+    - completing Local services gives its reward
+    - completing Green city gives its reward
+    - completing Countryside gives its reward
+    - completing Farmland gives its reward
+    - completing Fishing village gives its reward
+    - completing Sports town gives its reward
+    - completing High street gives its reward
+    - completing Mining town gives its reward
+    - "completing Workers' housing gives its reward"
+    - completing Tidy streets gives its reward
+    - completing Healthy town gives its reward
+    - completing Trading post gives its reward
+    - completing Supply chain gives its reward
+    - completing Growing suburbs gives its reward
+    - completing Upmarket homes gives its reward
+    - completing Modern industry gives its reward
+    - completing Service economy gives its reward
+    - completing Culture hub gives its reward
+    - completing Factory town gives its reward
+    - completing Market town gives its reward
+    - completing Industrial zone gives its reward
+    - completing Shopping centre gives its reward
+    - completing Leisure park gives its reward
+    - completing Culture district gives its reward
+    - completing Safe streets gives its reward
+    - completing Happy residents gives its reward
+    - completing Civic pride gives its reward
+    - completing Service boom gives its reward
+    - completing Penthouses gives its reward
+    - completing Heavy industry gives its reward
+    - completing Office district gives its reward
+    - completing Public institutions gives its reward
+    - completing City living gives its reward
+    - completing Tech campus gives its reward
+    - completing Commuter city gives its reward
+    - completing Business district gives its reward
+    - completing Media city gives its reward
+    - completing Tech industry gives its reward
+    - completing Metropolis gives its reward
+    - completing Balanced city gives its reward
+    - completing Cultural capital gives its reward
+    - completing Civic leader gives its reward
+    - completing High-tech economy gives its reward
+    - tier 1 cards do not count for a tier 2 or 3 card requirement
+    - Penthouses needs a tier 3 card among its Residential cards
+    - Metropolis needs tier 3 cards in 3 different sectors
+    - empty quest places are filled in table order
 invariants:
   - I1
   - I2
@@ -180,6 +248,8 @@ invariants:
   - I12
   - I13
   - I14
+  - I15
+  - I16
   - I17
   - I18
   - I20

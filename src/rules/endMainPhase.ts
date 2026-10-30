@@ -3,6 +3,7 @@ import type { MarketplaceSlot } from "../shared/MarketplaceSlot";
 import type { ProjectName } from "../shared/ProjectName";
 import { endMarketPhase } from "./endMarketPhase";
 import { endOfTurnSteps } from "./endOfTurnSteps";
+import { endTurnForQuests } from "./endTurnForQuests";
 import { fillMarketplace } from "./fillMarketplace";
 import { FIRST_COMPLETION_FUNDS } from "./FIRST_COMPLETION_FUNDS";
 import { firstCompletionsOf } from "./firstCompletionsOf";
@@ -11,6 +12,7 @@ import type { GameState } from "./GameState";
 import { MARKET_PHASES_SHOWN } from "./MARKET_PHASES_SHOWN";
 import { marketGoOf } from "./marketGoOf";
 import type { Random } from "./Random";
+import { refillQuests } from "./refillQuests";
 import type { SeatState } from "./SeatState";
 import { withMainPhaseStart } from "./withMainPhaseStart";
 
@@ -50,6 +52,7 @@ export function endMainPhase(state: GameState, random: Random): GameState {
   const refillShuffles = refilled.shuffles.map(
     (shuffle): DrawLogEntry => ({ kind: "shuffle", turn, seat: null, ...shuffle }),
   );
+  const questTable = refillQuests(endTurnForQuests(state), turn, random);
   const firsts = firstCompletionsOf(state);
   const seats = state.seats.map((seat) => seatAtTurnStart(seat, firsts));
   const started = withMainPhaseStart({
@@ -62,6 +65,8 @@ export function endMainPhase(state: GameState, random: Random): GameState {
     discard: refilled.piles.discard,
     holdingPile: [],
     marketplace: refilled.marketplace,
+    quests: questTable.quests,
+    questList: questTable.questList,
     doneOrder: [],
     firstCompletions: [...state.firstCompletions, ...firsts],
     drawLog: [...state.drawLog, ...refillShuffles],

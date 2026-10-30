@@ -27,6 +27,7 @@ function progressFromGiven(given: GivenSeat) {
     })),
     projects: given.projects ?? [],
     projectsThisTurn: [],
+    questsCompleted: given.quests_completed ?? [],
   };
 }
 

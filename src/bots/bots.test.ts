@@ -75,6 +75,25 @@ describe("legal bot", () => {
     ).toBe(true);
   });
 
+  it("completes a quest its view says it can complete", () => {
+    const view = {
+      ...botViewWith({}),
+      quests: [
+        { quest: null },
+        {
+          quest: "Farmland",
+          turnsLeft: 5,
+          completeRejection: "quest_needs_not_met",
+          progress: [],
+        },
+        { quest: "Sports town", turnsLeft: 5, completeRejection: null, progress: [] },
+      ] as const,
+    };
+    expect(new Set(SEEDS.map((seed) => JSON.stringify(legalBot(view, chooserFrom(seed)))))).toEqual(
+      new Set([JSON.stringify({ type: "complete_quest", quest: "Sports town" })]),
+    );
+  });
+
   it("aims at the open project whose stat is closest to 8", () => {
     function playedWith(projects: OwnSeatView["projects"]) {
       const view = botViewWith({

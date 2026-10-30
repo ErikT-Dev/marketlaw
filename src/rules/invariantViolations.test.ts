@@ -187,6 +187,45 @@ describe("invariantViolations", () => {
     ]);
   });
 
+  it("reports a quest completed twice, in two places, or missing", () => {
+    const [first, second] = START.questList;
+    const after = {
+      ...withSeat1(START, { questsCompleted: ["Supply chain", "Supply chain"] }),
+      questList: START.questList.filter((quest) => quest !== first && quest !== "Supply chain"),
+      quests: [...START.quests, ...(second === undefined ? [] : [{ quest: second, turnsOnTable: 1 }])],
+    };
+    const found = invariantViolations(transition(START, { type: "end_turn", seat: 1 }, after)).filter(
+      (violation) => /^I1[25]/.test(violation),
+    );
+    expect(found).toEqual([
+      "I12: seat 1 completed Supply chain more than once",
+      `I15: ${String(first)} is in 0 places`,
+      `I15: ${String(second)} is in 2 places`,
+    ]);
+  });
+
+  it("reports a quest too long on the table, placed too early, or a fifth place too soon", () => {
+    const after = {
+      ...START,
+      turn: 4,
+      quests: [
+        ...START.quests.slice(0, 3),
+        { quest: "Safe streets" as const, turnsOnTable: 1 },
+        { quest: "Metropolis" as const, turnsOnTable: 6 },
+      ],
+      questList: START.questList.filter((quest) => quest !== "Safe streets" && quest !== "Metropolis"),
+    };
+    const found = invariantViolations(transition(START, { type: "end_turn", seat: 1 }, after)).filter(
+      (violation) => violation.startsWith("I16"),
+    );
+    expect(found).toEqual([
+      "I16: the quests table has 5 places in turn 4",
+      "I16: Safe streets of tier 2 was placed in turn 4",
+      "I16: Metropolis has been on the table for 6 turns",
+      "I16: Metropolis of tier 3 was placed in turn -1",
+    ]);
+  });
+
   it("reports a kind place holding another kind and a card shown too long", () => {
     const after = {
       ...START,

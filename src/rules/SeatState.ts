@@ -1,6 +1,7 @@
 import type { CardName } from "../shared/catalogue/CardName";
 import type { ClaimedCombo } from "../shared/ClaimedCombo";
 import type { InfluenceUses } from "../shared/InfluenceUses";
+import type { QuestName } from "../shared/catalogue/QuestName";
 import type { ProjectName } from "../shared/ProjectName";
 import type { SeatNumber } from "../shared/SeatNumber";
 import type { Stats } from "../shared/Stats";
@@ -19,6 +20,7 @@ export type SeatState = {
   readonly combosClaimed: ReadonlyArray<ClaimedCombo>;
   readonly projects: ReadonlyArray<ProjectName>;
   readonly projectsThisTurn: ReadonlyArray<ProjectName>;
+  readonly questsCompleted: ReadonlyArray<QuestName>;
   readonly buildPasses: number;
   readonly buildPassesBought: number;
   readonly hasPlayedThisTurn: boolean;

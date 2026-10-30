@@ -1,6 +1,6 @@
 # Phase 13: Quests
 
-Status: approved
+Status: done
 Milestone: 3 Playthrough
 
 ## Goal
@@ -118,3 +118,79 @@ These 67 scenarios are added to `harness/required.yaml` in this phase, by file a
 - `turns-and-time` #32: a 5th quest place is added and filled at the start of turn 20
 - `undo` #5: undo takes back completing a quest whose reward draws no card
 - `undo` #11: completing a quest whose reward draws a card cannot be undone
+
+## Progress
+
+- [x] 1. Requirements as data (`QUEST_TERMS`): card counts by sector and lowest tier, tier 3 cards
+  in different sectors, type counts, stats, income, completed projects. The `complete_quest`
+  action with `quest_not_on_table`, `quest_already_completed` and `quest_needs_not_met`; a seat
+  keeps the quests it completed, so undo and the start-of-main-phase view of other players need
+  nothing extra.
+- [x] 2. Rewards: stats, gained types and draws (R20.5, logged with the cause "quest"); undo
+  stops at a quest whose reward drew a card.
+- [x] 3. Table life cycle: completed quests leave for good, quests at the end of their 5th turn go
+  back to the list, empty places refill in table order with R19.8's tier gates, the 5th place at
+  turn 20; I12 (quests), I15, I16; bots complete quests; save version 9.
+- [x] 4. Quests panel (S5) with every player's progress, the Complete button, completed shading
+  and room for 5 quests with 4 players; the D21 size check at 1280×720.
+
+Note on item 4: at 1920×1080 and up all 5 quests with 4 players fit; at 1280×720 the quests panel
+shows about 2 cards and scrolls inside (Q41, for the owner under D21). The view sends "turns
+left", so the client does not need the 5-turn rule.
+
+Notes on items 1-3: a quest place with no quest is `null`, as `quests` #12 expects. When the
+list still has quests but none of a tier allowed yet, the place stays empty (Q40, written into
+R19.8). Quest progress in the view is a count per requirement part, in the order of
+`QUEST_TERMS`; the client words it. The chaos bot also tries quests that are not on the table.
+
+**Where the phase stands (2026-10-30).** All four items are built and the review findings are
+fixed or recorded. `npm run check` (255 tests), `npm run harness` (5,000 games, about 15 min, up
+from 10; bots completed 6,191 quests, every invariant held) and the browser tests (51) pass.
+Merged and deployed.
+
+## Report
+
+**What was built.**
+- **Requirements (R19.4, R20.1–R20.4):** all 45 quests of R20.7 as data, checked against each
+  player's city, type counts (gained types included), stats, income and completed projects.
+- **Completing a quest (R19.5):** a main-phase action, once per player per quest, any number of
+  players per quest and turn. Rejected with `quest_not_on_table`, `quest_already_completed` or
+  `quest_needs_not_met`.
+- **Rewards (R20.5, R20.6):** stats, gained types (they count for combos and other quests) and
+  card draws, which show in the draw log as "(quest)". Undo takes a quest back unless its reward
+  drew a card.
+- **The quests table (R10.2, R11.2, R19.6–R19.9):** completed quests leave for good at the end of
+  the turn. Quests nobody completed in 5 turns go back into the list. Empty places refill in table
+  order at the start of the next turn, with tier 2 from turn 5 and tier 3 from turn 13, and a 5th
+  place opens at turn 20.
+- **Screens (S5):** each quest shows its tier, turns left, requirement, reward and every player's
+  progress ("3/4" with an icon, or "completed"), a Complete button and green border when you can
+  complete it, and green shading once you have. Other players' progress shows as at the start of
+  the main phase (M3.2).
+- **Checks:** 67 scenarios and I15, I16 required (I12 now covers quests); save version 9. Bots
+  complete quests in the simulator.
+
+**What to try (after the merge).** Start a test room (`docs/test-rooms.md`) with
+`npm run test-room -- quests 6`: both seats can complete Trading post. Complete it in one window
+and see "You · completed" there, while the other window still shows that player without
+"completed" until the main phase ends. End the turn in both windows: Trading post is gone and a
+new quest fills its place.
+
+**Differences from the phase file.** None in what is built. The view sends "turns left" instead of
+"turns on the table", so the client does not need the 5-turn rule. Card-count requirements are
+written as text ("3 Residential cards"), as on the design board; stats and types are icons with
+their names in a tooltip. The harness now takes about 15 minutes.
+
+**Decisions:** Q40 (a place stays empty when no allowed tier has quests; written into R19.8).
+**For the owner:** Q41 (at 1280×720 the quests panel shows about 2 of 5 quests and scrolls inside;
+everything fits from 1920×1080 up). D21 asks for this to be raised again.
+
+**Phase review findings and what happened to each:**
+1. **D21 at 1280×720 was not recorded, and the size test could pass with cards off-screen.**
+   Recorded as Q41 for the owner. The test now checks that every card and the Complete button can
+   be scrolled into view at every size, and that all 5 cards are in view from 1920×1080 up.
+2. **Progress item 4 was not ticked.** Fixed.
+3. **"1 tier 3 Residential cards".** Fixed: a requirement of one card is singular; a test covers it.
+4. **I16 fell back to tier 1 for a quest not in the catalogue.** Fixed: it reports that quest.
+5. **A given quest list kept quests already completed.** Fixed in the scenario runner and test
+   rooms; no scenario was affected.

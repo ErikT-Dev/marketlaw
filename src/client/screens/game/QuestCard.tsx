@@ -1,0 +1,69 @@
+import { useId } from "react";
+import { QUEST_TERMS } from "../../../shared/catalogue/QUEST_TERMS";
+import { QUESTS } from "../../../shared/catalogue/QUESTS";
+import type { QuestPlaceView } from "../../../shared/QuestPlaceView";
+import type { SeatNumber } from "../../../shared/SeatNumber";
+import { Button } from "../../components/Button";
+import { counted } from "./counted";
+import { playerNameOf } from "./playerNameOf";
+import { QuestNeedsLine } from "./QuestNeedsLine";
+import { QuestProgressLine } from "./QuestProgressLine";
+import { QuestRewardParts } from "./QuestRewardParts";
+import styles from "./QuestsPanel.module.css";
+
+type Props = {
+  readonly place: Exclude<QuestPlaceView, { readonly quest: null }>;
+  readonly viewer: SeatNumber;
+  readonly playerNames: ReadonlyArray<string>;
+  readonly isBusy: boolean;
+  readonly onComplete: () => void;
+};
+
+export function QuestCard({ place, viewer, playerNames, isBusy, onComplete }: Props) {
+  const nameId = useId();
+  const { needs, reward } = QUEST_TERMS[place.quest];
+  const tier = QUESTS.find(({ name }) => name === place.quest)?.tier ?? 1;
+  const isReady = place.completeRejection === null;
+  const isCompleted = place.progress.some(
+    ({ seat, isCompleted }) => seat === viewer && isCompleted,
+  );
+  const progressInOrder = [
+    ...place.progress.filter(({ seat }) => seat === viewer),
+    ...place.progress.filter(({ seat }) => seat !== viewer),
+  ];
+  const classes = [
+    styles["card"],
+    isReady ? styles["ready"] : "",
+    isCompleted ? styles["completed"] : "",
+  ].join(" ");
+  return (
+    <section className={classes} aria-labelledby={nameId}>
+      <h3 id={nameId} className={styles["name"]}>
+        {place.quest}
+      </h3>
+      <p className={styles["subtitle"]}>
+        Tier {tier} · {counted(place.turnsLeft, "turn")} left
+      </p>
+      <QuestNeedsLine needs={needs} />
+      <p className={`${styles["line"] ?? ""} ${styles["reward"] ?? ""}`}>
+        Reward:
+        <QuestRewardParts reward={reward} />
+      </p>
+      <ul className={styles["progressList"]} aria-label={`Progress on ${place.quest}`}>
+        {progressInOrder.map((progress) => (
+          <QuestProgressLine
+            key={progress.seat}
+            name={progress.seat === viewer ? "You" : playerNameOf(playerNames, progress.seat)}
+            progress={progress}
+            needs={needs}
+          />
+        ))}
+      </ul>
+      {isReady ? (
+        <Button look="success" isDisabled={isBusy} onClick={onComplete}>
+          Complete
+        </Button>
+      ) : null}
+    </section>
+  );
+}

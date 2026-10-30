@@ -4,7 +4,12 @@ import { seatOf } from "./seatOf";
 import type { SeatState } from "./SeatState";
 import { updateSeat } from "./updateSeat";
 
-const UNDOABLE_ACTIONS: ReadonlyArray<GameAction["type"]> = ["play_card", "claim_all", "influence"];
+const UNDOABLE_ACTIONS: ReadonlyArray<GameAction["type"]> = [
+  "play_card",
+  "claim_all",
+  "complete_quest",
+  "influence",
+];
 
 function undoPointOf(seat: SeatState): SeatState {
   return { ...seat, undoPoints: [], isUndoBlocked: false };

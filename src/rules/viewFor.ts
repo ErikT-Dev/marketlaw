@@ -15,6 +15,8 @@ import { rejectionOf } from "./rejectionOf";
 import { typeCountsOf } from "./typeCountsOf";
 import { marketGoOf } from "./marketGoOf";
 import { playerOrderOf } from "./playerOrderOf";
+import { questPlacesShownTo } from "./questPlacesShownTo";
+import { seatShownTo } from "./seatShownTo";
 import type { SeatState } from "./SeatState";
 
 function ownSeatView(state: GameState, seat: SeatState): OwnSeatView {
@@ -53,11 +55,8 @@ function ownSeatView(state: GameState, seat: SeatState): OwnSeatView {
   };
 }
 
-function otherSeatView(state: GameState, seat: SeatState): OtherSeatView {
-  const shown =
-    state.phase === "main"
-      ? (state.mainPhaseStart.seats.find((start) => start.seat === seat.seat) ?? seat)
-      : seat;
+function otherSeatView(state: GameState, seat: SeatState, viewer: SeatNumber): OtherSeatView {
+  const shown = seatShownTo(state, seat, viewer);
   return {
     kind: "other",
     seat: seat.seat,
@@ -85,12 +84,12 @@ export function viewFor(state: GameState, viewer: SeatNumber): PlayerView {
     firstPlayer: state.firstPlayer,
     marketGo: marketGoOf(state),
     seats: state.seats.map((seat) =>
-      seat.seat === viewer ? ownSeatView(state, seat) : otherSeatView(state, seat),
+      seat.seat === viewer ? ownSeatView(state, seat) : otherSeatView(state, seat, viewer),
     ),
     deckCount: piles.deckCount,
     discard: piles.discard,
     marketplace: state.marketplace,
-    quests: state.quests,
+    quests: questPlacesShownTo(state, viewer),
     bonusTypes: state.bonusTypes,
     doneOrder: state.doneOrder,
     playerOrder: playerOrderOf(state),

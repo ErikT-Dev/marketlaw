@@ -16,6 +16,8 @@ export function gameActionOf(seat: SeatNumber, intent: ActionIntent): GameAction
       return { type: "claim_all", seat };
     case "complete_project":
       return { type: "complete_project", seat, project: intent.project };
+    case "complete_quest":
+      return { type: "complete_quest", seat, quest: intent.quest };
     case "influence":
       return { type: "influence", seat, trade: intent.trade };
     case "draw_action":
