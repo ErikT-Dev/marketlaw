@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { GAME_STARTED_AT } from "../../src/shared/testing/GAME_STARTED_AT.ts";
 import { apply } from "../../src/rules/apply.ts";
 import type { GameState } from "../../src/rules/GameState.ts";
 import type { Random } from "../../src/rules/Random.ts";
@@ -17,7 +18,7 @@ const PUBLIC_TIER_1: Random = {
 };
 
 function afterSeatTwoDrew(): GameState {
-  const fresh = startSavedGame({ players: 2 }, 17).state;
+  const fresh = startSavedGame({ players: 2, startedAt: GAME_STARTED_AT }, 17).state;
   const ready = withMainPhaseStart({
     ...fresh,
     deck: ["Landfill", "Pub"],
@@ -32,7 +33,12 @@ function afterSeatTwoDrew(): GameState {
         : { ...seat, hand: ["Cottage"] },
     ),
   });
-  const played = apply(ready, { type: "play_card", seat: 2, card: "Liquor Shop" }, PUBLIC_TIER_1);
+  const played = apply(
+    ready,
+    { type: "play_card", seat: 2, card: "Liquor Shop" },
+    PUBLIC_TIER_1,
+    GAME_STARTED_AT,
+  );
   if (!played.isOk) {
     throw new Error(played.error.code);
   }

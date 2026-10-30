@@ -1,4 +1,5 @@
-import { applyToSavedGame } from "../../rules/applyToSavedGame";
+import { receiveAction } from "../../rules/receiveAction";
+import type { EpochMs } from "../../shared/EpochMs";
 import type { PlayerId } from "../../shared/PlayerId";
 import { PROTOCOL_VERSION } from "../../shared/PROTOCOL_VERSION";
 import type { ClientMessage } from "../../shared/protocol/ClientMessage";
@@ -12,6 +13,7 @@ import type { RoomRecord } from "./RoomRecord";
 import { rejectMessage } from "./rejectMessage";
 import { playersWhoseUpdateChanged } from "./playersWhoseUpdateChanged";
 import { updateFor } from "./updateFor";
+import { withTimeOutsApplied } from "./withTimeOutsApplied";
 
 type ActionMessage = Extract<ClientMessage, { readonly type: "action" }>;
 
@@ -19,7 +21,7 @@ function updated(
   record: RoomRecord,
   connection: ConnectionState,
   playerId: PlayerId,
-  acceptedActionId: string | null,
+  reply: { readonly acceptedActionId: string | null; readonly now: EpochMs },
 ): MessageOutcome {
   return {
     record,
@@ -28,8 +30,9 @@ function updated(
     reply: {
       type: "update",
       protocolVersion: PROTOCOL_VERSION,
-      acceptedActionId,
+      acceptedActionId: reply.acceptedActionId,
       update: updateFor(record, playerId),
+      serverNow: reply.now,
     },
     playersToUpdate: [],
     shouldClose: false,
@@ -53,27 +56,36 @@ function handleAction(
     );
   }
   if (seat.acceptedActionIds.includes(message.actionId)) {
-    return updated(record, connection, playerId, message.actionId);
+    return updated(record, connection, playerId, { acceptedActionId: message.actionId, now });
   }
   if (message.stateVersion !== seat.stateVersion) {
     return reject("stale_state");
   }
   const action = gameActionOf(seat.seat, message.action);
-  const result =
-    action === undefined
-      ? undefined
-      : applyToSavedGame(record.game.saved, action, randomFor(record.game.saved));
-  if (result === undefined || !result.isOk) {
-    return reject(result?.error.code ?? "malformed_message");
+  if (action === undefined) {
+    return reject("malformed_message");
+  }
+  const received = receiveAction(record.game.saved, action, now, randomFor);
+  const caughtUp = { ...record, game: withTimeOutsApplied(record.game, received.caughtUp) };
+  if (received.rejection !== null) {
+    return {
+      ...rejectMessage(caughtUp, connection, {
+        code: received.rejection.code,
+        actionId: message.actionId,
+        now,
+      }),
+      shouldSave: caughtUp.game !== record.game,
+      playersToUpdate: playersWhoseUpdateChanged(record, caughtUp),
+    };
   }
   const game = acceptAction(
-    record.game,
+    caughtUp.game,
     { seat: seat.seat, actionId: message.actionId },
-    result.value,
+    received.saved,
   );
   const next = { ...record, game };
   return {
-    ...updated(next, connection, playerId, message.actionId),
+    ...updated(next, connection, playerId, { acceptedActionId: message.actionId, now }),
     shouldSave: true,
     playersToUpdate: playersWhoseUpdateChanged(record, next),
   };
@@ -96,6 +108,6 @@ export function handleMessage(input: MessageInput): MessageOutcome {
     return handleAction(input, bound, sender.playerId, message);
   }
   return record.players.some((player) => player.playerId === sender.playerId)
-    ? updated(record, bound, sender.playerId, null)
+    ? updated(record, bound, sender.playerId, { acceptedActionId: null, now })
     : rejectMessage(record, connection, { code: "not_in_game", actionId: null, now });
 }

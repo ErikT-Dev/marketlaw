@@ -13,6 +13,7 @@ const SEAT_FIELDS = [
   "done",
   "left",
   "time_bank_ms",
+  "timeouts_in_a_row",
   "combos_claimed",
   "projects",
   "quests_completed",
@@ -38,6 +39,7 @@ export const ENGINE_FIELDS = {
     "quest_list",
     "bonus_types",
     "first_completions",
+    "clock_ms",
   ]),
   steps: new Set([
     "start_game",
@@ -92,6 +94,7 @@ export const ENGINE_FIELDS = {
         "build_passes",
         "done",
         "time_bank_ms",
+        "time_bank_shown",
         "deck_count",
         "discard",
         "contains",

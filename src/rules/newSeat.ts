@@ -27,6 +27,7 @@ export function newSeat(seat: SeatNumber): SeatState {
     isDone: false,
     hasLeft: false,
     timeBankMs: TIME_BANK_MS,
+    timeoutsInARow: 0,
     undoPoints: [],
     isUndoBlocked: false,
   };

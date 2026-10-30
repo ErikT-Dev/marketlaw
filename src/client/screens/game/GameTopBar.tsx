@@ -1,13 +1,16 @@
 import { Fragment } from "react";
 import type { GamePhase } from "../../../shared/GamePhase";
+import type { OwnSeatView } from "../../../shared/OwnSeatView";
 import type { PlayerView } from "../../../shared/PlayerView";
 import { TURN_LIMIT } from "../../../shared/TURN_LIMIT";
 import { PlayerBadge } from "../../components/PlayerBadge";
 import styles from "./GameTopBar.module.css";
 import { orderBadgesOf } from "./orderBadgesOf";
+import { YourClock } from "./YourClock";
 
 type Props = {
   readonly view: PlayerView;
+  readonly seat: OwnSeatView;
   readonly playerNames: ReadonlyArray<string>;
 };
 
@@ -17,7 +20,7 @@ const PHASE_NAMES: Readonly<Record<GamePhase, string>> = {
   ended: "Game over",
 };
 
-export function GameTopBar({ view, playerNames }: Props) {
+export function GameTopBar({ view, seat, playerNames }: Props) {
   return (
     <header className={styles["topBar"]}>
       <div className={styles["turnInfo"]}>
@@ -44,6 +47,7 @@ export function GameTopBar({ view, playerNames }: Props) {
           </Fragment>
         ))}
       </ol>
+      <YourClock view={view} seat={seat} playerNames={playerNames} />
     </header>
   );
 }

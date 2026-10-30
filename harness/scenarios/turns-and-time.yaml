@@ -90,8 +90,6 @@
     players: 3
     turn: 3
     seats:
-      - seat: 1
-        done: true
       - seat: 2
         time_bank_ms: 0
       - seat: 3
@@ -99,7 +97,7 @@
   when:
     - wait_ms: 45000
   then:
-    done_order: [1, 3, 2]
+    done_order: [3, 2]
 
 - name: the main-phase time limit in turn 10 is 3 minutes 57 seconds
   covers: [R9.1, R9.5]
@@ -117,12 +115,13 @@
   covers: [R9.1, R9.10]
   given:
     turn: 10
+    marketplace: [{place: residential, card: Row House}, {place: industry, card: Metal Mining}, {place: service, card: Liquor Shop}, {place: public_quality, card: Fire Station}, {place: public_satisfaction, card: Public Playground}, {place: open_1, card: Dentist}, {place: open_2, card: Apparel Store}, {place: open_3, card: Forest Plantation}]
   when:
     - wait_ms: 237000
   then:
+    turn: 11
     seats:
       - seat: 1
-        done: true
         time_bank_ms: 708000
         timeouts_in_a_row: 1
 

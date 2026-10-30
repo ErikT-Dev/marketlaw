@@ -3,6 +3,8 @@ import { cardOf } from "../shared/catalogue/cardOf";
 import type { Sector } from "../shared/catalogue/Sector";
 import type { Tier } from "../shared/catalogue/Tier";
 import type { DrawLogEntry } from "../shared/DrawLogEntry";
+import { bankLeftAt } from "../shared/bankLeftAt";
+import { decisionClockOf } from "./decisionClockOf";
 import type { SeatNumber } from "../shared/SeatNumber";
 import type { TurnDrawChoice } from "../shared/TurnDrawChoice";
 import { cardsIntoHand } from "./cardsIntoHand";
@@ -79,12 +81,22 @@ function drawFromDeck(
   return { ...drawn.state, drawLog: [...drawn.state.drawLog, ...entries] };
 }
 
-export function takeTurnDraw(state: GameState, action: TurnDraw, random: Random): GameState {
+export function takeTurnDraw(
+  state: GameState,
+  action: TurnDraw,
+  random: Random,
+  at: number,
+): GameState {
   const { seat, choice } = action;
+  const clock = decisionClockOf(state, seat);
   const taken = choice.option === "A" ? withMarketCard(state, seat, choice.card) : state;
-  const drawn = updateSeat(drawFromDeck(taken, seat, choice, random), seat, (current) => ({
-    ...current,
-    hasHadMarketGo: true,
-  }));
-  return marketGoOf(drawn) === null ? endMarketPhase(drawn) : drawn;
+  const drawn = {
+    ...updateSeat(drawFromDeck(taken, seat, choice, random), seat, (current) => ({
+      ...current,
+      hasHadMarketGo: true,
+      timeBankMs: clock === null ? current.timeBankMs : bankLeftAt(clock, at),
+    })),
+    clockStartedAt: at,
+  };
+  return marketGoOf(drawn) === null ? endMarketPhase(drawn, at) : drawn;
 }

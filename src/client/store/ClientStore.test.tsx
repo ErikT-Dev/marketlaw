@@ -2,6 +2,7 @@ import * as v from "valibot";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { GameHost } from "../../shared/GameHost";
 import type { HostEvent } from "../../shared/HostEvent";
+import { EpochMs } from "../../shared/EpochMs";
 import type { ReasonCode } from "../../shared/ReasonCode";
 import { RoomCode } from "../../shared/RoomCode";
 import { roomUpdateWith } from "../testing/roomUpdateWith";
@@ -60,6 +61,7 @@ beforeEach(() => {
 
 afterEach(() => {
   vi.unstubAllGlobals();
+  vi.useRealTimers();
 });
 
 const SEAT_LINK = { token: "seat-token", name: "Seat 1", roomCode: v.parse(RoomCode, "K7QR2P") };
@@ -75,8 +77,30 @@ describe("client store moves", () => {
     expect(fake.store.getSnapshot().pendingActions).toEqual([
       { id: "action-1", action: { type: "end_turn" } },
     ]);
-    fake.emit({ type: "update", update: roomUpdateWith({}), acceptedActionId: "action-1" });
+    fake.emit({
+      type: "update",
+      update: roomUpdateWith({}),
+      acceptedActionId: "action-1",
+      serverNow: v.parse(EpochMs, 0),
+    });
     expect(fake.store.getSnapshot().pendingActions).toEqual([]);
+  });
+
+  it("keeps a time-out notice until it is closed, and the server clock offset", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(10_000);
+    const fake = storeInRoom();
+    fake.emit({
+      type: "update",
+      update: roomUpdateWith({}),
+      acceptedActionId: null,
+      serverNow: v.parse(EpochMs, 12_500),
+    });
+    fake.emit({ type: "notice", notice: { kind: "timed_out", inARow: 1, of: 3 } });
+    expect(fake.store.getSnapshot().serverClockOffsetMs).toBe(2_500);
+    expect(fake.store.getSnapshot().timeOutNotice).toEqual({ kind: "timed_out", inARow: 1, of: 3 });
+    fake.store.dismissTimeOutNotice();
+    expect(fake.store.getSnapshot().timeOutNotice).toBeNull();
   });
 
   it("rolls back a rejected move and keeps it with its code for the message", () => {

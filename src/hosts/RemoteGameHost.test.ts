@@ -67,6 +67,7 @@ const ROOM_UPDATE_TEXT = JSON.stringify({
   protocolVersion: 1,
   acceptedActionId: null,
   update: { room: { code: "K7QR2P", size: 2, playerNames: ["Ann"], mySeat: null }, game: null },
+  serverNow: 5000,
 });
 
 const SOCKET_URL = "ws://test/api/rooms/K7QR2P/socket";
@@ -111,6 +112,22 @@ describe("RemoteGameHost", () => {
     expect(network.events.map((event) => event.type)).toEqual(["update", "rejected"]);
     expect(network.sent).toEqual([
       { protocolVersion: 1, token: "secret-token", type: "resync", url: SOCKET_URL },
+    ]);
+  });
+
+  it("passes on a notice and the server time of an update", () => {
+    const network = connectedHost();
+    network.handlers().onMessage(ROOM_UPDATE_TEXT);
+    network.handlers().onMessage(
+      JSON.stringify({
+        type: "notice",
+        protocolVersion: 1,
+        notice: { kind: "timed_out", inARow: 2, of: 3 },
+      }),
+    );
+    expect(network.events).toMatchObject([
+      { type: "update", serverNow: 5000 },
+      { type: "notice", notice: { kind: "timed_out", inARow: 2, of: 3 } },
     ]);
   });
 

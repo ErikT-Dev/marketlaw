@@ -32,6 +32,8 @@ export class ClientStore {
       pendingActions: [],
       rejectedMove: null,
       notice: null,
+      timeOutNotice: null,
+      serverClockOffsetMs: 0,
     };
     if (session?.roomCode !== null && session !== null) {
       this.enterRoom(session, session.roomCode);
@@ -128,6 +130,10 @@ export class ClientStore {
     this.enterRoom(session, response.code);
   }
 
+  readonly dismissTimeOutNotice = (): void => {
+    this.change({ timeOutNotice: null });
+  };
+
   private enterRoom(session: StoredSession, code: RoomCode): void {
     const inRoom = { ...session, roomCode: code };
     writeSession(inRoom);
@@ -146,7 +152,11 @@ export class ClientStore {
         this.change({
           update: event.update,
           pendingActions: this.withoutPending(event.acceptedActionId),
+          serverClockOffsetMs: event.serverNow - Date.now(),
         });
+        return;
+      case "notice":
+        this.change({ timeOutNotice: event.notice });
         return;
       case "rejected":
         this.receiveRejection(event.code, event.actionId);

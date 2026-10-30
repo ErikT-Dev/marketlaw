@@ -89,7 +89,7 @@ function startViewViolations(
 function versionViolations(
   before: RoomRecord,
   after: RoomRecord,
-  sender: { readonly seat: SeatNumber; readonly isAccepted: boolean },
+  sender: { readonly seats: ReadonlyArray<SeatNumber>; readonly isAccepted: boolean },
 ): ReadonlyArray<string> {
   const beforeState = before.game?.saved.state;
   const afterState = after.game?.saved.state;
@@ -101,7 +101,7 @@ function versionViolations(
     const versionBefore = before.game?.seats.find(
       (candidate) => candidate.seat === seat.seat,
     )?.stateVersion;
-    const isOwnAcceptedAction = seat.seat === sender.seat && sender.isAccepted;
+    const isOwnAcceptedAction = sender.seats.includes(seat.seat) && sender.isAccepted;
     return versionBefore === seat.stateVersion || isOwnAcceptedAction || isSeenByEveryone
       ? []
       : [
@@ -113,7 +113,7 @@ function versionViolations(
 export function whatSeatsSeeViolations(
   before: RoomRecord,
   after: RoomRecord,
-  sender: { readonly seat: SeatNumber; readonly isAccepted: boolean },
+  sender: { readonly seats: ReadonlyArray<SeatNumber>; readonly isAccepted: boolean },
   sentTo: ReadonlyMap<SeatNumber, SentToSeat>,
 ): ReadonlyArray<string> {
   const state = after.game?.saved.state;

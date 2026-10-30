@@ -49,4 +49,5 @@ export const OWN_SEAT_VIEW: OwnSeatView = {
   isDone: false,
   hasLeft: false,
   timeBankMs: 0,
+  clock: null,
 };

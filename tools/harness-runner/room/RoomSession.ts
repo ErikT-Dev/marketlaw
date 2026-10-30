@@ -9,6 +9,10 @@ import type { RoomStorage } from "../../../src/server/room/RoomStorage.ts";
 import type { Identity } from "../../../src/server/room/Identity.ts";
 import { ROOM_SCHEMA_VERSION } from "../../../src/server/room/ROOM_SCHEMA_VERSION.ts";
 import type { RoomRecord } from "../../../src/server/room/RoomRecord.ts";
+import type { AddressedNotice } from "../../../src/server/room/AddressedNotice.ts";
+import { fireAlarm } from "../../../src/server/room/fireAlarm.ts";
+import { timeOutNoticesBetween } from "../../../src/server/room/timeOutNoticesBetween.ts";
+import { nextAlarmAt } from "../../../src/server/room/nextAlarmAt.ts";
 import { EpochMs } from "../../../src/shared/EpochMs.ts";
 import { PlayerId } from "../../../src/shared/PlayerId.ts";
 import { parseClientMessage } from "../../../src/shared/protocol/parseClientMessage.ts";
@@ -29,6 +33,7 @@ function tokenOf(name: string): string {
 
 export class RoomSession {
   record: RoomRecord;
+  now: EpochMs;
   rowsWritten = 0;
   private readonly storage: RoomStorage = {
     read: () => this.record,
@@ -48,11 +53,13 @@ export class RoomSession {
   rowsForAccepted: number[] = [];
   rowsForOther: number[] = [];
   handlingMs: number[] = [];
+  readonly notices: AddressedNotice[] = [];
   private nextActionNumber = 1;
   private readonly random: Random;
 
   constructor(state: GameState, given: RoomGiven, random: Random) {
     this.random = random;
+    this.now = v.parse(EpochMs, state.clockStartedAt);
     this.seatNames = state.seats.map(
       (seat) => given.room?.players?.[seat.seat - 1] ?? `Seat ${seat.seat}`,
     );
@@ -70,7 +77,10 @@ export class RoomSession {
         saved: {
           schemaVersion: SAVE_SCHEMA_VERSION,
           seed: 1,
-          setup: { players: v.parse(PLAYER_COUNT, state.seats.length) },
+          setup: {
+            players: v.parse(PLAYER_COUNT, state.seats.length),
+            startedAt: state.clockStartedAt,
+          },
           startingState: state,
           actionLog: [],
           state,
@@ -95,6 +105,23 @@ export class RoomSession {
     return identity;
   }
 
+  wait(ms: number, doesAlarmFire: boolean): void {
+    const until = v.parse(EpochMs, this.now + ms);
+    for (
+      let alarm = nextAlarmAt(this.record);
+      doesAlarmFire && alarm !== null && alarm <= until;
+      alarm = nextAlarmAt(this.record)
+    ) {
+      this.now = v.parse(EpochMs, alarm);
+      const fired = fireAlarm(this.record, this.now, () => this.random);
+      if (fired !== this.record) {
+        this.notices.push(...timeOutNoticesBetween(this.record, fired));
+        this.storage.write(fired);
+      }
+    }
+    this.now = until;
+  }
+
   sendRaw(raw: Readonly<Record<string, unknown>>): void {
     const name = this.senderName(raw);
     const connection = this.connections.get(name) ?? {
@@ -113,6 +140,7 @@ export class RoomSession {
     });
     const parsed = parseClientMessage(text);
     const sender = parsed.isOk ? this.identityByToken(parsed.value.token) : null;
+    const recordBefore = this.record;
     const before = JSON.stringify(this.record);
     const rowsBefore = this.rowsWritten;
     const startedMs = performance.now();
@@ -120,10 +148,11 @@ export class RoomSession {
       connection: connection.state,
       parsed,
       sender,
-      now: v.parse(EpochMs, 0),
+      now: this.now,
       randomFor: () => this.random,
     });
     this.handlingMs.push(performance.now() - startedMs);
+    this.notices.push(...timeOutNoticesBetween(recordBefore, this.record));
     if (outcome.isRoomGone) {
       throw new Error("the room is gone");
     }

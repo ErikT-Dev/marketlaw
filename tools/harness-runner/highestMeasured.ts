@@ -1,3 +1,4 @@
+import { awakeSecondsPerGame } from "./awakeSecondsPerGame.ts";
 import type { HarnessRun } from "./HarnessRun.ts";
 
 function simulated(run: HarnessRun, budget: string): ReadonlyArray<number> {
@@ -9,6 +10,10 @@ function simulated(run: HarnessRun, budget: string): ReadonlyArray<number> {
       return [run.simulation.mostRowsPerAcceptedAction];
     case "B2":
       return [run.simulation.mostRowsPerOtherMessage];
+    case "B3":
+      return [run.simulation.mostAlarmChangesOverAllowance];
+    case "B12":
+      return [awakeSecondsPerGame(run.simulation)];
     default:
       return [];
   }

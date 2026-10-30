@@ -3,10 +3,11 @@ import type { BotChooser } from "../../src/bots/BotChooser.ts";
 import { chaosBot } from "../../src/bots/chaosBot.ts";
 import type { ChaosMove } from "../../src/bots/ChaosMove.ts";
 import { legalBot } from "../../src/bots/legalBot.ts";
-import { invariantViolations } from "../../src/rules/invariantViolations.ts";
 import { randomForNextAction } from "../../src/rules/randomForNextAction.ts";
 import { startSavedGame } from "../../src/rules/startSavedGame.ts";
 import type { Identity } from "../../src/server/room/Identity.ts";
+import { fireAlarm } from "../../src/server/room/fireAlarm.ts";
+import { playersWhoseUpdateChanged } from "../../src/server/room/playersWhoseUpdateChanged.ts";
 import { receiveMessage } from "../../src/server/room/receiveMessage.ts";
 import { ROOM_SCHEMA_VERSION } from "../../src/server/room/ROOM_SCHEMA_VERSION.ts";
 import type { RoomRecord } from "../../src/server/room/RoomRecord.ts";
@@ -24,6 +25,9 @@ import type { SeatUpdates } from "./SeatUpdates.ts";
 import { scanTextOf } from "./scanTextOf.ts";
 import type { SentToSeat } from "./SentToSeat.ts";
 import type { SimulatedSeat } from "./SimulatedSeat.ts";
+import { AwakeTally } from "./AwakeTally.ts";
+import { newActionChecks } from "./newActionChecks.ts";
+import { SimulatedAlarm } from "./SimulatedAlarm.ts";
 import { whatSeatsSeeViolations } from "./whatSeatsSeeViolations.ts";
 
 const MESSAGE_GAP_MS = 1_000;
@@ -42,6 +46,8 @@ export class GameSimulation {
   readonly rowsPerOtherMessage: number[] = [];
   readonly statesAfterEachAction: string[] = [];
   firstViolationAt: number | null = null;
+  readonly alarm = new SimulatedAlarm();
+  readonly awake = new AwakeTally();
   private lastUpdates: SeatUpdates | null = null;
   private rowsWritten = 0;
   private nowMs = 0;
@@ -73,7 +79,7 @@ export class GameSimulation {
     this.bot = options.bot;
     this.chooser = options.chooser;
     this.stored = options.stored;
-    const saved = startSavedGame({ players }, seed);
+    const saved = startSavedGame({ players, startedAt: v.parse(EpochMs, 0) }, seed);
     const identities: ReadonlyArray<Identity> = saved.state.seats.map((seat) => ({
       playerId: playerIdFor(seed, seat.seat),
       name: `Bot ${String(seat.seat)}`,
@@ -146,9 +152,46 @@ export class GameSimulation {
     });
   }
 
+  private fireDueAlarms(): void {
+    for (let at = this.alarm.at; at !== null && at <= this.nowMs; at = this.alarm.at) {
+      this.alarm.fired();
+      this.awake.event();
+      const before = this.record;
+      const updatesBefore = this.lastUpdates ?? this.updatesNow();
+      const fired = fireAlarm(before, v.parse(EpochMs, at), randomForNextAction);
+      if (fired !== before) {
+        const rowsBefore = this.rowsWritten;
+        this.storage.write(fired);
+        this.rowsPerAcceptedAction.push(this.rowsWritten - rowsBefore);
+        const after = this.updatesNow();
+        this.check(before, updatesBefore.allText === after.allText, true);
+        const timedOut = (fired.game?.saved.actionLog ?? [])
+          .slice(before.game?.saved.actionLog.length ?? 0)
+          .map(({ action }) => action.seat);
+        this.addViolations(
+          whatSeatsSeeViolations(
+            before,
+            fired,
+            { seats: timedOut, isAccepted: true },
+            this.sentTo(
+              null,
+              { reply: null, playersToUpdate: playersWhoseUpdateChanged(before, fired) },
+              { before: updatesBefore, after },
+            ),
+          ),
+        );
+        this.refreshViews(after);
+        this.lastUpdates = after;
+      }
+      this.alarm.sync(this.record);
+    }
+  }
+
   private send(seat: SimulatedSeat, text: string): void {
     this.messages.push(text);
     this.nowMs += MESSAGE_GAP_MS;
+    this.fireDueAlarms();
+    this.awake.event();
     const parsed = parseClientMessage(text);
     const sender = parsed.isOk ? this.identityByToken(parsed.value.token) : null;
     const before = this.record;
@@ -175,7 +218,7 @@ export class GameSimulation {
       whatSeatsSeeViolations(
         before,
         this.record,
-        { seat: seat.seat, isAccepted },
+        { seats: [seat.seat], isAccepted },
         this.sentTo(seat, outcome, { before: updatesBefore, after }),
       ),
     );
@@ -184,6 +227,7 @@ export class GameSimulation {
       : outcome.connection;
     this.refreshViews(after);
     this.lastUpdates = after;
+    this.alarm.sync(this.record);
   }
 
   private updatesNow(): SeatUpdates {
@@ -193,12 +237,16 @@ export class GameSimulation {
   }
 
   private sentTo(
-    sender: SimulatedSeat,
-    outcome: { readonly reply: ServerMessage; readonly playersToUpdate: ReadonlyArray<PlayerId> },
+    sender: SimulatedSeat | null,
+    outcome: {
+      readonly reply: ServerMessage | null;
+      readonly playersToUpdate: ReadonlyArray<PlayerId>;
+    },
     updates: { readonly before: SeatUpdates; readonly after: SeatUpdates },
   ): ReadonlyMap<SeatNumber, SentToSeat> {
     const reply = outcome.reply;
-    const replyText = reply.type === "update" ? scanTextOf(reply.update) : JSON.stringify(reply);
+    const replyText = reply?.type === "update" ? scanTextOf(reply.update) : JSON.stringify(reply);
+    const isSenderUpdated = reply?.type === "rejected";
     return new Map(
       this.seats.map((seat, index) => {
         const update = updates.after.updates[index];
@@ -209,7 +257,8 @@ export class GameSimulation {
             text: seat === sender ? `${scanned}${replyText}` : scanned,
             view: update?.game?.view,
             isFrameSent:
-              seat !== sender && outcome.playersToUpdate.includes(seat.identity.playerId),
+              (seat !== sender || isSenderUpdated) &&
+              outcome.playersToUpdate.includes(seat.identity.playerId),
             isUnchanged: updates.before.texts[index] === updates.after.texts[index],
           },
         ];
@@ -223,18 +272,10 @@ export class GameSimulation {
     if (beforeGame === null || afterGame === null) {
       return;
     }
-    const beforeState = beforeGame.saved.state;
-    const lastAction = afterGame.saved.actionLog.at(-1);
-    if (isAccepted && lastAction !== undefined && afterGame !== beforeGame) {
-      this.statesAfterEachAction.push(JSON.stringify(afterGame.saved.state));
-      this.addViolations(
-        invariantViolations({
-          before: beforeState,
-          beforeAsText: JSON.stringify(beforeState),
-          action: lastAction,
-          outcome: { isOk: true, value: afterGame.saved.state },
-        }),
-      );
+    if (isAccepted && afterGame !== beforeGame) {
+      const checked = newActionChecks(beforeGame.saved, afterGame.saved);
+      this.statesAfterEachAction.push(...checked.states);
+      this.addViolations(checked.violations);
       return;
     }
     if (!isViewUnchanged) {

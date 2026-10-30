@@ -12,12 +12,17 @@ import type { RoomCode } from "../shared/RoomCode";
 import { ConnectionAttachment } from "./ConnectionAttachment";
 import { findPlayerByTokenHash } from "./findPlayerByTokenHash";
 import { ROOM_GONE_CLOSE_CODE } from "../shared/ROOM_GONE_CLOSE_CODE";
+import type { AddressedNotice } from "./room/AddressedNotice";
+import { alarmChangeFor } from "./room/alarmChangeFor";
 import { createRoomIn } from "./room/createRoomIn";
+import { fireAlarm } from "./room/fireAlarm";
 import type { Identity } from "./room/Identity";
 import { joinRoomIn } from "./room/joinRoomIn";
 import { loadRoom } from "./room/loadRoom";
+import { playersWhoseUpdateChanged } from "./room/playersWhoseUpdateChanged";
 import { receiveMessage } from "./room/receiveMessage";
 import { startTestRoomIn } from "./room/startTestRoomIn";
+import { timeOutNoticesBetween } from "./room/timeOutNoticesBetween";
 import type { RoomRecord } from "./room/RoomRecord";
 import type { RoomStorage } from "./room/RoomStorage";
 import { updateFor } from "./room/updateFor";
@@ -51,23 +56,44 @@ export class GameRoom extends DurableObject<Env> {
     return createRoomIn(this.storage, { code, size }, owner);
   }
 
-  startTestRoom(
+  async startTestRoom(
     code: RoomCode,
     seed: number,
     players: ReadonlyArray<Identity>,
     state: GameState,
-  ): boolean {
-    return startTestRoomIn(this.storage, { code, seed }, players, state);
+  ): Promise<boolean> {
+    const isStarted = startTestRoomIn(
+      this.storage,
+      { code, seed, now: v.parse(EpochMs, Date.now()) },
+      players,
+      state,
+    );
+    await this.syncAlarm();
+    return isStarted;
   }
 
-  joinRoom(joining: Identity): ReasonCode | null {
+  async joinRoom(joining: Identity): Promise<ReasonCode | null> {
     const seed = crypto.getRandomValues(new Uint32Array(1))[0] ?? 0;
     const before = this.storage.read();
-    const reason = joinRoomIn(this.storage, joining, seed);
+    const reason = joinRoomIn(this.storage, joining, { seed, now: v.parse(EpochMs, Date.now()) });
     if (reason === null && this.storage.read() !== before) {
       this.updateEveryone(null);
     }
+    await this.syncAlarm();
     return reason;
+  }
+
+  override async alarm(): Promise<void> {
+    const record = loadRoom(this.storage);
+    if (record !== null) {
+      const fired = fireAlarm(record, v.parse(EpochMs, Date.now()), randomForNextAction);
+      if (fired !== record) {
+        this.storage.write(fired);
+        this.updatePlayers(playersWhoseUpdateChanged(record, fired), null);
+        this.sendNotices(timeOutNoticesBetween(record, fired));
+      }
+    }
+    await this.syncAlarm(true);
   }
 
   override fetch(request: Request): Response {
@@ -90,6 +116,7 @@ export class GameRoom extends DurableObject<Env> {
       ? await this.senderOf(parsed.value.token, attachmentOf(socket))
       : null;
     const attachment = attachmentOf(socket);
+    const recordBefore = loadRoom(this.storage);
     const outcome = receiveMessage(this.storage, {
       connection: { identity: attachment.identity, rejectionTimes: attachment.rejectionTimes },
       parsed,
@@ -108,9 +135,41 @@ export class GameRoom extends DurableObject<Env> {
       rejectionTimes: outcome.connection.rejectionTimes,
     });
     socket.send(JSON.stringify(outcome.reply));
-    this.updatePlayers(outcome.playersToUpdate, socket);
+    this.updatePlayers(outcome.playersToUpdate, outcome.reply.type === "rejected" ? null : socket);
+    this.sendNotices(timeOutNoticesBetween(recordBefore, loadRoom(this.storage)));
     if (outcome.shouldClose) {
       socket.close(1008, "Too many rejected messages");
+    }
+    await this.syncAlarm();
+  }
+
+  private sendNotices(notices: ReadonlyArray<AddressedNotice>): void {
+    for (const socket of this.ctx.getWebSockets()) {
+      const { identity } = attachmentOf(socket);
+      for (const { playerId, notice } of notices) {
+        if (identity?.playerId === playerId) {
+          const message: ServerMessage = {
+            type: "notice",
+            protocolVersion: PROTOCOL_VERSION,
+            notice,
+          };
+          socket.send(JSON.stringify(message));
+        }
+      }
+    }
+  }
+
+  private async syncAlarm(isFiring = false): Promise<void> {
+    const current = isFiring ? null : await this.ctx.storage.getAlarm();
+    const change = alarmChangeFor(current, loadRoom(this.storage));
+    switch (change.kind) {
+      case "keep":
+        return;
+      case "set":
+        await this.ctx.storage.setAlarm(change.at);
+        return;
+      case "delete":
+        await this.ctx.storage.deleteAlarm();
     }
   }
 
@@ -146,6 +205,7 @@ export class GameRoom extends DurableObject<Env> {
           protocolVersion: PROTOCOL_VERSION,
           acceptedActionId: null,
           update: updateFor(record, identity.playerId),
+          serverNow: v.parse(EpochMs, Date.now()),
         };
         socket.send(JSON.stringify(update));
       }

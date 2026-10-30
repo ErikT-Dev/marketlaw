@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { GAME_STARTED_AT } from "../shared/testing/GAME_STARTED_AT";
 import { apply } from "./apply";
 import type { GameAction } from "./GameAction";
 import type { GameState } from "./GameState";
@@ -17,7 +18,7 @@ const FIRST_CHOICES: Random = {
 
 function played(state: GameState, actions: ReadonlyArray<GameAction>): GameState {
   return actions.reduce((current, action) => {
-    const result = apply(current, action, FIRST_CHOICES);
+    const result = apply(current, action, FIRST_CHOICES, GAME_STARTED_AT);
     if (!result.isOk) {
       throw new Error(`${action.type} rejected: ${result.error.code}`);
     }
@@ -27,7 +28,7 @@ function played(state: GameState, actions: ReadonlyArray<GameAction>): GameState
 
 describe("the quests table at the start of a turn", () => {
   it("leaves a place empty when the list holds only quests of tiers not allowed yet", () => {
-    const start = setUpGame({ players: 2 }, seededRandom(5, 0));
+    const start = setUpGame({ players: 2, startedAt: GAME_STARTED_AT }, seededRandom(5, 0));
     const state = withMainPhaseStart({
       ...start,
       turn: 3,

@@ -1,29 +1,44 @@
 import type { GameState } from "../../../src/rules/GameState.ts";
+import { decisionClockOf } from "../../../src/rules/decisionClockOf.ts";
 import { marketGoOf } from "../../../src/rules/marketGoOf.ts";
+import type { EpochMs } from "../../../src/shared/EpochMs.ts";
 import { isRecord } from "../../harness-check/isRecord.ts";
 import { seatThen } from "./seatThen.ts";
 import { viewThen } from "./viewThen.ts";
 
-function seatsThen(state: GameState, expected: unknown): ReadonlyArray<unknown> {
+function seatsThen(state: GameState, expected: unknown, now: number): ReadonlyArray<unknown> {
   const asked: ReadonlyArray<unknown> = Array.isArray(expected) ? expected : [];
   return asked.map((entry) => {
     const seat = state.seats.find(
       (candidate) => isRecord(entry) && candidate.seat === entry["seat"],
     );
-    return seat === undefined ? undefined : seatThen(seat);
+    return seat === undefined ? undefined : seatThen(state, seat, now);
   });
 }
 
-export function readEngineThen(state: GameState, field: string, expected: unknown): unknown {
+export function readEngineThen(
+  state: GameState,
+  field: string,
+  expected: unknown,
+  now: EpochMs,
+): unknown {
   const fields: Readonly<Record<string, () => unknown>> = {
-    seats: () => seatsThen(state, expected),
-    view: () => viewThen(state, expected),
+    seats: () => seatsThen(state, expected, now),
+    view: () => viewThen(state, expected, now),
     turn: () => state.turn,
     phase: () => state.phase,
     first_player: () => state.firstPlayer,
     market_go: () => {
       const seat = marketGoOf(state);
-      return seat === null ? null : { seat };
+      const deadline = seat === null ? null : decisionClockOf(state, seat)?.deadline;
+      return seat === null
+        ? null
+        : {
+            seat,
+            ...(deadline === undefined || deadline === null
+              ? {}
+              : { time_left_ms: deadline - now }),
+          };
     },
     deck: () => state.deck,
     deck_count: () => state.deck.length,

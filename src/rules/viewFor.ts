@@ -6,6 +6,7 @@ import type { GameState } from "./GameState";
 import { handDetailsOf } from "./handDetailsOf";
 import { turnRejectionOf } from "./turnRejectionOf";
 import { comboStatusesOf } from "./comboStatusesOf";
+import { decisionClockOf } from "./decisionClockOf";
 import { drawActionStatusesOf } from "./drawActionStatusesOf";
 import { tradeCostsOf } from "./tradeCostsOf";
 import { tradeStatusesOf } from "./tradeStatusesOf";
@@ -52,6 +53,7 @@ function ownSeatView(state: GameState, seat: SeatState): OwnSeatView {
     isDone: seat.isDone,
     hasLeft: seat.hasLeft,
     timeBankMs: seat.timeBankMs,
+    clock: decisionClockOf(state, seat.seat),
   };
 }
 
@@ -72,6 +74,7 @@ function otherSeatView(state: GameState, seat: SeatState, viewer: SeatNumber): O
     isDone: seat.isDone,
     hasLeft: seat.hasLeft,
     timeBankMs: seat.timeBankMs,
+    clock: decisionClockOf(state, seat.seat),
   };
 }
 

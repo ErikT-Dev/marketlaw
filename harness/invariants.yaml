@@ -212,4 +212,5 @@
   holds: >
     A rejected action leaves the game state, every player's view and every player's state version
     exactly as they were. The one exception is a rejection as out of time, which also applies
-    that player's time-out (R9.6).
+    that player's time-out and any other time-out due at that moment, in player order (R9.6,
+    R8.4).

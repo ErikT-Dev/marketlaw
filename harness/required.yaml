@@ -96,6 +96,20 @@ scenarios:
     - at the start of a turn old marketplace cards are removed and places refilled in order
     - the market phase follows the start-of-turn steps
     - a 5th quest place is added and filled at the start of turn 20
+    - players made done at the same moment become done in player order
+    - the main-phase time limit in turn 10 is 3 minutes 57 seconds
+    - reaching the main-phase limit makes the player done
+    - the first 45 seconds of a main phase do not use the time bank
+    - the time bank runs after the free time until the player ends their turn
+    - with an empty bank a player only has the free time
+    - a message received at the deadline is rejected and the time-out is applied
+    - a message received just before the deadline is accepted
+    - banks are shown rounded down to whole seconds
+    - "every player sees every other player's bank counting down during the main phase"
+    - a player whose time runs out is told how many time-outs in a row out of 3
+    - ending the turn in time resets the time-out count
+    - "the first player's market go has 45 seconds"
+    - other market goes have 30 seconds
   visibility:
     - other players' hands are shown only as a number of cards
     - a player sees their own hand
@@ -168,6 +182,8 @@ scenarios:
     - a kind place with no card of its kind left stays empty
     - a kind place falls back to another tier of its kind
     - option A with no cards left of that sector draws the top card of the deck
+    - a time-out on the market go takes option B with a random sector
+    - the market time beyond the first 5 seconds of a go comes from the bank
   quests:
     - rejects a quest whose requirement is not met
     - a requirement means at least that amount and nothing is used up
@@ -252,6 +268,7 @@ invariants:
   - I16
   - I17
   - I18
+  - I19
   - I20
   - I23
   - I24
@@ -261,3 +278,5 @@ invariants:
 budgets:
   - B1
   - B2
+  - B3
+  - B12

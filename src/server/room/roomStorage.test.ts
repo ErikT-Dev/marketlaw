@@ -12,6 +12,8 @@ import { receiveMessage } from "./receiveMessage";
 import type { RoomRecord } from "./RoomRecord";
 import type { RoomStorage } from "./RoomStorage";
 
+const GAME_START = v.parse(EpochMs, 1_000_000);
+
 type CountingStorage = RoomStorage & {
   readonly writes: () => number;
   readonly stored: () => RoomRecord | undefined;
@@ -46,7 +48,7 @@ const CAT = player("Cat");
 function fullRoom(): CountingStorage {
   const storage = countingStorage();
   createRoomIn(storage, { code: CODE, size: 2 }, ANN);
-  joinRoomIn(storage, BEA, 7);
+  joinRoomIn(storage, BEA, { seed: 7, now: GAME_START });
   return storage;
 }
 
@@ -81,11 +83,11 @@ describe("rooms in storage", () => {
   it("rejects joining a full room or a room whose game started, and allows joining twice", () => {
     const storage = countingStorage();
     createRoomIn(storage, { code: CODE, size: 2 }, ANN);
-    expect(joinRoomIn(storage, ANN, 1)).toBeNull();
+    expect(joinRoomIn(storage, ANN, { seed: 1, now: GAME_START })).toBeNull();
     expect(storage.writes()).toBe(1);
-    joinRoomIn(storage, BEA, 1);
-    expect(joinRoomIn(storage, CAT, 1)).toBe("room_not_waiting");
-    expect(joinRoomIn(countingStorage(), CAT, 1)).toBe("room_not_found");
+    joinRoomIn(storage, BEA, { seed: 1, now: GAME_START });
+    expect(joinRoomIn(storage, CAT, { seed: 1, now: GAME_START })).toBe("room_not_waiting");
+    expect(joinRoomIn(countingStorage(), CAT, { seed: 1, now: GAME_START })).toBe("room_not_found");
   });
 
   it("writes one row for an accepted action and none for a rejected one or a resync", () => {

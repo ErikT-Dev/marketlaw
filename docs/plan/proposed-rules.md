@@ -95,3 +95,12 @@ run options to a test through an environment variable set by a Node launcher (as
 `sh` on GitHub.
 **Why:** found in phase 11 (D23): `npm run harness --mode harness` silently simulated 500 games.
 **Enforced by:** the harness test "simulates every game it was asked for".
+
+## For `rules/typescript.md`
+
+### Times in the engine are plain numbers
+"Time": inside `src/rules/`, timestamps are plain UTC epoch milliseconds (`number`); they are
+branded `EpochMs` everywhere else, and seat clocks leave the engine branded.
+**Why:** `prefer-readonly-parameter-types` reports branded numbers as writable, like branded
+strings (Q7, Q42, phase 14).
+**Enforced by:** `@typescript-eslint/prefer-readonly-parameter-types` · types.

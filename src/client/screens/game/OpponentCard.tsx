@@ -1,10 +1,10 @@
 import type { OtherSeatView } from "../../../shared/OtherSeatView";
 import { PlayerBadge } from "../../components/PlayerBadge";
 import { StatChip } from "../../components/StatChip";
-import { TimerChip } from "../../components/TimerChip";
 import { cardsBySector } from "./cardsBySector";
 import styles from "./OpponentCard.module.css";
 import { sectorColor } from "../../components/sectorColor";
+import { LiveBankChip } from "./LiveBankChip";
 
 type Props = {
   readonly seat: OtherSeatView;
@@ -25,7 +25,7 @@ export function OpponentCard({ seat, name, onOpen }: Props) {
       <article className={styles["card"]} aria-label={name}>
         <div className={styles["header"]}>
           <PlayerBadge name={name} status={statusOf(seat)} />
-          <TimerChip label="Bank" ms={seat.timeBankMs} state="normal" />
+          <LiveBankChip timeBankMs={seat.timeBankMs} clock={seat.clock} label="Bank" />
         </div>
         <div className={styles["stats"]}>
           <StatChip stat="funds" value={seat.stats.funds} />

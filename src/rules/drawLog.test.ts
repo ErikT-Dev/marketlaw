@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { GAME_STARTED_AT } from "../shared/testing/GAME_STARTED_AT";
 import type { CardName } from "../shared/catalogue/CardName";
 import { apply } from "./apply";
 import type { GameState } from "./GameState";
@@ -20,7 +21,7 @@ function readyForIncome(
   discard: ReadonlyArray<CardName>,
   product: number,
 ): GameState {
-  const state = startSavedGame({ players: 2 }, 9).state;
+  const state = startSavedGame({ players: 2, startedAt: GAME_STARTED_AT }, 9).state;
   return {
     ...state,
     deck,
@@ -38,7 +39,7 @@ function readyForIncome(
 }
 
 function drawLogAfterPlaying(state: GameState) {
-  const result = apply(state, { type: "play_card", seat: 1, card: "Liquor Shop" }, PUBLIC_TIER_1);
+  const result = apply(state, { type: "play_card", seat: 1, card: "Liquor Shop" }, PUBLIC_TIER_1, GAME_STARTED_AT);
   if (!result.isOk) {
     throw new Error(`play rejected: ${result.error.code}`);
   }

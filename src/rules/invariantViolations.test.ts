@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { GAME_STARTED_AT } from "../shared/testing/GAME_STARTED_AT";
 import { apply } from "./apply";
 import type { GameAction } from "./GameAction";
 import type { GameState } from "./GameState";
@@ -7,7 +8,7 @@ import { seededRandom } from "./seededRandom";
 import { setUpGame } from "./setUpGame";
 import { STARTING_STATS } from "./STARTING_STATS";
 
-const START = setUpGame({ players: 2 }, seededRandom(21, 0));
+const START = setUpGame({ players: 2, startedAt: GAME_STARTED_AT }, seededRandom(21, 0));
 
 function transition(before: GameState, action: GameAction, after: GameState) {
   return {
@@ -37,7 +38,7 @@ describe("invariantViolations", () => {
     ]);
     const violations = actions.reduce<{ state: GameState; found: ReadonlyArray<string> }>(
       ({ state, found }, action) => {
-        const outcome = apply(state, action, random);
+        const outcome = apply(state, action, random, GAME_STARTED_AT);
         const checked = { before: state, beforeAsText: JSON.stringify(state), action, outcome };
         const next = outcome.isOk ? outcome.value : state;
         return { state: next, found: [...found, ...invariantViolations(checked)] };
@@ -144,6 +145,19 @@ describe("invariantViolations", () => {
     const after = withSeat1(START, { influenceUses: { skip_build: 4, influence_to_funds: 1 } });
     expect(invariantViolations(transition(START, { type: "end_turn", seat: 1 }, after))).toEqual([
       "I11: seat 1 used skip_build 4 times",
+    ]);
+  });
+
+  it("reports a time bank that grows or leaves 0 to 15 minutes", () => {
+    const grown = withSeat1(START, { timeBankMs: 900_001 });
+    const spent = withSeat1(START, { timeBankMs: 1_000 });
+    const found = [
+      ...invariantViolations(transition(START, { type: "end_turn", seat: 1 }, grown)),
+      ...invariantViolations(transition(spent, { type: "end_turn", seat: 1 }, START)),
+    ].filter((violation) => violation.startsWith("I19"));
+    expect(found).toEqual([
+      "I19: seat 1 time bank went from 900000 to 900001",
+      "I19: seat 1 time bank went from 1000 to 900000",
     ]);
   });
 

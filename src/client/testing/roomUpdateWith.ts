@@ -25,6 +25,7 @@ const SEAT_COMMON = {
   isDone: false,
   hasLeft: false,
   timeBankMs: 0,
+  clock: null,
   hasHadMarketGo: false,
 };
 const OWN_SEAT: OwnSeatView = {

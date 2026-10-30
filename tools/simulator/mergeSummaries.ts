@@ -38,6 +38,12 @@ export function mergeSummaries(summaries: ReadonlyArray<SimulationSummary>): Sim
         merged.mostRowsPerOtherMessage,
         summary.mostRowsPerOtherMessage,
       ),
+      mostAlarmChangesOverAllowance: Math.max(
+        merged.mostAlarmChangesOverAllowance,
+        summary.mostAlarmChangesOverAllowance,
+      ),
+      threePlayerAwakeMs: merged.threePlayerAwakeMs + summary.threePlayerAwakeMs,
+      threePlayerTurns: merged.threePlayerTurns + summary.threePlayerTurns,
       violationCounts: addCounts(merged.violationCounts, summary.violationCounts),
       shortestViolations: shortestPerInvariant([
         ...merged.shortestViolations,

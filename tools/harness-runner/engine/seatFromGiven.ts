@@ -59,6 +59,7 @@ export function seatFromGiven(seat: SeatNumber, given: GivenSeat | undefined): S
     ...progressFromGiven(given),
     ...buildFromGiven(given, start),
     actionsThisTurn: given.actions_this_turn ?? start.actionsThisTurn,
+    timeoutsInARow: given.timeouts_in_a_row ?? start.timeoutsInARow,
     isDone: given.done ?? start.isDone,
     hasLeft: given.left ?? start.hasLeft,
     timeBankMs: given.time_bank_ms ?? start.timeBankMs,

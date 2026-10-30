@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { GAME_STARTED_AT } from "../shared/testing/GAME_STARTED_AT";
 import type { CardName } from "../shared/catalogue/CardName";
 import type { GameState } from "./GameState";
 import type { SeatState } from "./SeatState";
@@ -7,7 +8,7 @@ import { startSavedGame } from "./startSavedGame";
 import { viewFor } from "./viewFor";
 
 function gameWithSeatOne(turn: number, changes: Partial<SeatState>): GameState {
-  const state = startSavedGame({ players: 2 }, 3).state;
+  const state = startSavedGame({ players: 2, startedAt: GAME_STARTED_AT }, 3).state;
   return {
     ...state,
     turn,

@@ -1,3 +1,4 @@
+import type { SeatClock } from "./SeatClock";
 import type { CardName } from "./catalogue/CardName";
 import type { ComboStatus } from "./ComboStatus";
 import type { DrawActionStatus } from "./DrawActionStatus";
@@ -41,4 +42,5 @@ export type OwnSeatView = {
   readonly isDone: boolean;
   readonly hasLeft: boolean;
   readonly timeBankMs: number;
+  readonly clock: SeatClock | null;
 };

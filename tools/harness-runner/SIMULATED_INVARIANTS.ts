@@ -17,6 +17,7 @@ export const SIMULATED_INVARIANTS: ReadonlyArray<string> = [
   "I16",
   "I17",
   "I18",
+  "I19",
   "I20",
   "I23",
   "I24",

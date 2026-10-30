@@ -5,11 +5,11 @@ import { Button } from "../../components/Button";
 import { CityCard } from "../../components/CityCard";
 import { Modal } from "../../components/Modal";
 import { StatChip } from "../../components/StatChip";
-import { TimerChip } from "../../components/TimerChip";
 import type { StatName } from "../../icons/StatName";
 import { cardsBySector } from "./cardsBySector";
 import { counted } from "./counted";
 import styles from "./OpponentBoardDialog.module.css";
+import { LiveBankChip } from "./LiveBankChip";
 
 type Props = {
   readonly seat: OtherSeatView;
@@ -62,7 +62,7 @@ export function OpponentBoardDialog({ seat, name, phase, onClose }: Props) {
               <StatChip stat="buildPasses" value={seat.buildPasses} />
             </li>
           </ul>
-          <TimerChip label="Bank" ms={seat.timeBankMs} state="normal" />
+          <LiveBankChip timeBankMs={seat.timeBankMs} clock={seat.clock} label="Bank" />
           <p className={styles["status"]}>This turn: {turnStatus(seat)}</p>
         </section>
         {cardsBySector(seat.city).map(({ sector, cards }) => (

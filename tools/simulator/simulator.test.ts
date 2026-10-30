@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { GAME_STARTED_AT } from "../../src/shared/testing/GAME_STARTED_AT.ts";
 import { startSavedGame } from "../../src/rules/startSavedGame.ts";
 import { mergeSummaries } from "./mergeSummaries.ts";
 import { NO_GAMES } from "./NO_GAMES.ts";
@@ -66,8 +67,11 @@ describe("simulator", () => {
   });
 
   it("reports a game whose replay differs", () => {
-    const saved = startSavedGame({ players: 2 }, 3);
-    const played = { ...saved, actionLog: [{ type: "end_turn" as const, seat: 1 as const }] };
+    const saved = startSavedGame({ players: 2, startedAt: GAME_STARTED_AT }, 3);
+    const played = {
+      ...saved,
+      actionLog: [{ action: { type: "end_turn" as const, seat: 1 as const }, at: GAME_STARTED_AT }],
+    };
     expect(replayViolations(played, ["not the state"])).toEqual([
       "I26: the state after action 1 differs on replay",
     ]);

@@ -14,5 +14,8 @@ export function gamePageProps(
     rejectedMove,
     onAction: vi.fn(),
     onDismissRejection: vi.fn(),
+    serverClockOffsetMs: 0,
+    timeOutNotice: null,
+    onDismissTimeOutNotice: vi.fn(),
   };
 }

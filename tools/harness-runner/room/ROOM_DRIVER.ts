@@ -42,14 +42,30 @@ function seatsThen(session: RoomSession, expected: unknown): ReadonlyArray<unkno
     const seat = game?.saved.state.seats.find((candidate) => candidate.seat === seatNumber);
     const seatPlayer = game?.seats.find((candidate) => candidate.seat === seatNumber);
     const name = session.seatNames[(seat?.seat ?? 0) - 1] ?? "";
-    return seat === undefined
+    return seat === undefined || game === null
       ? undefined
       : {
-          ...seatThen(seat),
+          ...seatThen(game.saved.state, seat, session.now),
           state_version: seatPlayer?.stateVersion,
           connected: session.connections.get(name)?.isClosed !== true,
         };
   });
+}
+
+function noticeTo(session: RoomSession, expected: unknown): unknown {
+  const asked = isRecord(expected) ? expected : {};
+  const seat = session.record.game?.seats.find((candidate) => candidate.seat === asked["seat"]);
+  const sent = session.notices.find(
+    ({ playerId, notice }) => playerId === seat?.playerId && notice.kind === asked["notice"],
+  );
+  return sent === undefined || seat === undefined
+    ? undefined
+    : {
+        seat: seat.seat,
+        notice: sent.notice.kind,
+        in_a_row: sent.notice.inARow,
+        of: sent.notice.of,
+      };
 }
 
 function startSession(
@@ -72,6 +88,10 @@ function startSession(
         session.sendRaw({ seat: step["seat"], message: step });
         return;
       }
+      if (typeof step["wait_ms"] === "number") {
+        session.wait(step["wait_ms"], step["alarm_fires"] !== false);
+        return;
+      }
       if (!isRecord(step["raw"])) {
         throw new Error("the room driver runs game steps and raw messages only");
       }
@@ -89,8 +109,10 @@ function startSession(
           return session.isLastStepUnchanged;
         case "seats":
           return seatsThen(session, expected);
+        case "message_to":
+          return noticeTo(session, expected);
         default:
-          return readEngineThen(game.saved.state, field, expected);
+          return readEngineThen(game.saved.state, field, expected, session.now);
       }
     },
     measurements: () => [
@@ -106,8 +128,8 @@ const SEAT_FIELDS = ENGINE_FIELDS.nestedFields.get("given.seats") ?? new Set<str
 export const ROOM_DRIVER: ScenarioDriver = {
   name: "room",
   givenFields: new Set([...ENGINE_FIELDS.givenFields, "room", "accounts"]),
-  steps: new Set(["raw", "play_card", "sell", "end_turn"]),
-  thenFields: ENGINE_FIELDS.thenFields,
+  steps: new Set(["raw", "play_card", "sell", "end_turn", "wait_ms"]),
+  thenFields: new Set([...ENGINE_FIELDS.thenFields, "message_to"]),
   nestedFields: new Map([
     ...ENGINE_FIELDS.nestedFields,
     ["given.seats", new Set([...SEAT_FIELDS, ...ROOM_SEAT_FIELDS])],

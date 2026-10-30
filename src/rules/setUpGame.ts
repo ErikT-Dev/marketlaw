@@ -50,5 +50,6 @@ export function setUpGame(setup: GameSetup, random: Random): GameState {
     bonusTypes: pickBonusTypes(random),
     doneOrder: [],
     firstCompletions: [],
+    clockStartedAt: setup.startedAt,
   });
 }

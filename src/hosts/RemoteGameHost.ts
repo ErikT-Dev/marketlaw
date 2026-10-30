@@ -77,10 +77,13 @@ export class RemoteGameHost implements GameHost {
         type: "update",
         update: message.update,
         acceptedActionId: message.acceptedActionId,
+        serverNow: message.serverNow,
       });
       if (hasGap) {
         this.requestResync();
       }
+    } else if (message?.type === "notice") {
+      this.emit({ type: "notice", notice: message.notice });
     } else if (message?.type === "rejected") {
       this.emit({ type: "rejected", code: message.code, actionId: message.actionId });
       if (message.code === "stale_state") {
