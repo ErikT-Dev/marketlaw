@@ -211,7 +211,7 @@ The 425 scenarios cover all of version 1, but each phase implements only part of
 | 12 | [The market phase](phase-12-market-phase.md) | 3 Playthrough | 09 | done |
 | 13 | [Quests](phase-13-quests.md) | 3 Playthrough | 11, 12 | done |
 | 14 | [Clocks and the time bank](phase-14-clocks-and-time-bank.md) | 3 Playthrough | 12 | done |
-| 15 | [End of the game and scoring](phase-15-end-of-game-and-scoring.md) | 3 Playthrough | 13, 14 | approved |
+| 15 | [End of the game and scoring](phase-15-end-of-game-and-scoring.md) | 3 Playthrough | 13, 14 | in progress |
 | 16 | [Rooms and guests](phase-16-rooms-and-guests.md) | 3 Playthrough | 15 | approved |
 | 17 | [Lobby and one thing at a time](phase-17-lobby-and-one-thing-at-a-time.md) | 3 Playthrough | 16 | approved |
 | 18 | [Connections and pausing](phase-18-connections-and-pausing.md) | 3 Playthrough | 17 | approved |

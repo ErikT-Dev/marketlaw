@@ -1,6 +1,6 @@
 # Phase 15: End of the game and scoring
 
-Status: approved
+Status: in progress
 Milestone: 3 Playthrough
 
 ## Goal
@@ -63,3 +63,15 @@ These 9 scenarios are added to `harness/required.yaml` in this phase, by file an
 - `end-of-game` #8: players made done at the same moment in the final turn are placed in player order
 - `end-of-game` #9: players who left come after every player still in the game
 - `hostile-client` #13: rejects any action after the game has ended
+
+## Progress
+
+- [ ] 1. End conditions and scoring: after the main phase in which a player still in the game has
+  income 22 and all 3 projects, or after turn 40, the game ends without end-of-turn steps
+  (first-completion rewards still given); scores in hundredths, rounded down; places by score,
+  then done order, then player order, players who left last. The state keeps the result.
+- [ ] 2. Ended phase: every action rejected with `game_over`; no clocks; views carry the result.
+- [ ] 3. End-of-game screen (S9.5) for "end goal reached" and "turn limit".
+- [ ] 4. Simulator on complete games: 5,000 per `npm run harness`; I21, I22; B4, B5, B9, B13, B16,
+  B17 measured.
+- [ ] 5. Game-length report for O5.
