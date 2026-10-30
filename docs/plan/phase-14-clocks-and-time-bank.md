@@ -1,6 +1,6 @@
 # Phase 14: Clocks and the time bank
 
-Status: in progress
+Status: done
 Milestone: 3 Playthrough
 
 ## Goal
@@ -95,3 +95,66 @@ they now check what is left to see (Q43). A time-out is told to the player by a 
 update messages carry the server's time so the client counts down from the seat clocks in the
 view. The simulator fires the room's alarm as its clock passes, counts alarm changes per turn (B3)
 and estimates awake time with the sleep model (`docs/sleep-model.md`, B12). I19 is checked.
+
+**Where the phase stands (2026-10-30).** All five items are built and the review findings are
+fixed or recorded. `npm run check` (266 tests), `npm run harness` (5,000 games, about 16.5 min;
+922 time-outs, every invariant held; B1 1 row, B2 0, B3 0 over, B12 about 59 s) and the browser
+tests pass. Merged and deployed.
+
+## Report
+
+**What was built.**
+- **Time limits (R9.1–R9.5, R18.11):** a main-phase limit from 3:00 in turn 1 to 5:00 from turn 20;
+  30 seconds per market go, 45 for the turn's first player; 45 seconds (main phase) and 5 seconds
+  (market go) of free time, then the 15-minute time bank. All time is the server's.
+- **Time-outs (R9.6, R9.10, R8.4, R18.11):** a player whose time runs out in the main phase is made
+  done; on a market go they take option B with a random sector. Players made done at the same
+  moment become done in player order. Every time-out is in the action log. A late message is
+  rejected "out of time".
+- **One alarm per room:** set to the earliest deadline, moved only when that changes; when it
+  fires it applies the time-outs and updates the players whose view changed.
+- **Screens (S2.3, S3.1, S9.4):** your time left and bank in the top bar; in the market phase whose
+  go it is and how long they have; every opponent's bank counting down live; "Your time ran out"
+  with "This was 1 of 3".
+- **Checks:** 16 scenarios, I19, B3 and B12 required; save version 10. The simulator plays with
+  clocks: it fires the room's alarm as its clock passes, checks every time-out, counts alarm
+  changes per turn and estimates awake time with the sleep model (`docs/sleep-model.md`).
+
+**What to try (after the merge).** In a two-window game, watch the clock in the top right count
+down; after 45 seconds the bank starts running. Start a test room with an empty bank
+(`npm run test-room -- turns-and-time 13`) and leave seat 1 alone: after 45 seconds it is made done
+and told "Your time ran out … This was 1 of 3".
+
+**Differences from the phase file.** None in what is built. Inside the engine, times are plain
+millisecond numbers (Q42). Two scenarios were changed because they contradicted R8.2 (Q43). A
+time-out notice reaches only players connected at that moment; one who is away when their time
+runs out is not told later (connections and pausing come in phase 18).
+
+**Decisions:** Q42, Q43, Q44.
+
+**For the owner:** `.prettierignore` lists `rules/`, which also matches `src/rules/`, so the engine
+is never format-checked (the review found a stray blank line there). Changing it to `/rules/`
+would fix this; it is a protected file. `knip` also hints that `valibot` can be removed from
+`ignoreDependencies` in `knip.json` (protected).
+
+**Phase review findings and what happened to each:**
+1. **After a rejection that applied time-outs, the sender got no update.** Fixed: the sender is
+   updated too; a server test covers it.
+2. **Any message caught up other players' time-outs, so unrelated rejections changed the game
+   (I27).** Fixed: only a message from a player past their deadline applies time-outs (all due at
+   that moment, in player order); I27 says so (Q44).
+3. **Updates after an alarm skipped the leak test.** Fixed: the simulator runs the leak and version
+   checks on them; the room now updates only players whose view changed after an alarm.
+4. **The late-message path was never tested on the server.** Fixed: server tests for a message at
+   the deadline before the alarm, and after it.
+5. **A late message after the alarm got "already done" instead of "out of time".** Fixed: a message
+   after the player's time-out in the same decision is rejected `out_of_time` (Q44).
+6. **Every seat's version moved on any time-out.** Fixed: as for accepted actions, the timed-out
+   seat, and everyone when the phase or turn changes or in the market phase.
+7. **The alarm could be lost if it fired early.** Fixed: the alarm handler always sets the next one.
+8. **The time-out notice is not kept for a player who is away.** Recorded under Differences, for
+   phase 18.
+9. **Thin client tests for the notice and no browser test of the market clock.** Fixed: host and
+   store tests, and the market clock in the market browser test.
+10. **`src/rules/` is not format-checked (`.prettierignore`).** The stray blank line is removed; the
+    protected file is raised with the owner above.
