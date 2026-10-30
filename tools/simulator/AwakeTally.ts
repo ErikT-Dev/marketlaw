@@ -1,4 +1,4 @@
-export const AWAKE_MS_PER_EVENT = 50;
+const AWAKE_MS_PER_EVENT = 50;
 
 export class AwakeTally {
   awakeMs = 0;
