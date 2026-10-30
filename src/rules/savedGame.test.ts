@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { GAME_STARTED_AT } from "../shared/testing/GAME_STARTED_AT";
 import { applyToSavedGame } from "./applyToSavedGame";
 import type { GameAction } from "./GameAction";
 import { randomForNextAction } from "./randomForNextAction";
@@ -8,8 +9,8 @@ import type { SavedGame } from "./SavedGame";
 import { startSavedGame } from "./startSavedGame";
 
 function replay(saved: SavedGame): SavedGame {
-  return saved.actionLog.reduce((game, action) => {
-    const result = applyToSavedGame(game, action, randomForNextAction(game));
+  return saved.actionLog.reduce((game, { action, at }) => {
+    const result = applyToSavedGame(game, action, at, randomForNextAction(game));
     if (!result.isOk) {
       throw new Error(`replay rejected ${action.type}: ${result.error.code}`);
     }
@@ -36,14 +37,14 @@ function playThreeTurns(saved: SavedGame): SavedGame {
     ...endTurns,
   ];
   return actions.reduce((game, action) => {
-    const result = applyToSavedGame(game, action, randomForNextAction(game));
+    const result = applyToSavedGame(game, action, GAME_STARTED_AT, randomForNextAction(game));
     return result.isOk ? result.value : game;
   }, saved);
 }
 
 describe("saved games", () => {
   it("starts a game with the setup, the seed and an empty action log", () => {
-    const saved = startSavedGame({ players: 3 }, 42);
+    const saved = startSavedGame({ players: 3, startedAt: GAME_STARTED_AT }, 42);
     expect(saved.schemaVersion).toBe(SAVE_SCHEMA_VERSION);
     expect(saved.actionLog).toEqual([]);
     expect(saved.state.seats.map((seat) => seat.hand.length)).toEqual([7, 7, 7]);
@@ -51,27 +52,27 @@ describe("saved games", () => {
   });
 
   it("deals the same game from the same seed and a different game from another seed", () => {
-    expect(startSavedGame({ players: 2 }, 7).state).toEqual(startSavedGame({ players: 2 }, 7).state);
-    expect(startSavedGame({ players: 2 }, 7).state.deck).not.toEqual(
-      startSavedGame({ players: 2 }, 8).state.deck,
+    expect(startSavedGame({ players: 2, startedAt: GAME_STARTED_AT }, 7).state).toEqual(startSavedGame({ players: 2, startedAt: GAME_STARTED_AT }, 7).state);
+    expect(startSavedGame({ players: 2, startedAt: GAME_STARTED_AT }, 7).state.deck).not.toEqual(
+      startSavedGame({ players: 2, startedAt: GAME_STARTED_AT }, 8).state.deck,
     );
   });
 
   it("records accepted actions and replays them to the same state", () => {
-    const saved = playThreeTurns(startSavedGame({ players: 2 }, 11));
+    const saved = playThreeTurns(startSavedGame({ players: 2, startedAt: GAME_STARTED_AT }, 11));
     expect(saved.state.turn).toBe(4);
     expect(saved.actionLog).toHaveLength(10);
     expect(replay(saved).state).toEqual(saved.state);
   });
 
   it("does not record a rejected action", () => {
-    const saved = startSavedGame({ players: 2 }, 5);
-    const result = applyToSavedGame(saved, { type: "end_turn", seat: 3 }, randomForNextAction(saved));
+    const saved = startSavedGame({ players: 2, startedAt: GAME_STARTED_AT }, 5);
+    const result = applyToSavedGame(saved, { type: "end_turn", seat: 3 }, GAME_STARTED_AT, randomForNextAction(saved));
     expect(result).toEqual({ isOk: false, error: { code: "not_in_game" } });
   });
 
   it("replays a game that started from a given state from that state", () => {
-    const fresh = startSavedGame({ players: 2 }, 11);
+    const fresh = startSavedGame({ players: 2, startedAt: GAME_STARTED_AT }, 11);
     const given = { ...fresh.state, turn: 6 };
     const started = { ...fresh, startingState: given, state: given };
     const played = playThreeTurns(started);

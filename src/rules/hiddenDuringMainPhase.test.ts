@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { GAME_STARTED_AT } from "../shared/testing/GAME_STARTED_AT";
 import type { CardName } from "../shared/catalogue/CardName";
 import type { OtherSeatView } from "../shared/OtherSeatView";
 import { apply } from "./apply";
@@ -19,7 +20,7 @@ const PUBLIC_TIER_1: Random = {
 };
 
 function gameWith(deck: ReadonlyArray<CardName>, discard: ReadonlyArray<CardName>): GameState {
-  const state = startSavedGame({ players: 2 }, 13).state;
+  const state = startSavedGame({ players: 2, startedAt: GAME_STARTED_AT }, 13).state;
   return withMainPhaseStart({
     ...state,
     deck,
@@ -38,7 +39,7 @@ function gameWith(deck: ReadonlyArray<CardName>, discard: ReadonlyArray<CardName
 
 function played(state: GameState, actions: ReadonlyArray<GameAction>): GameState {
   return actions.reduce((current, action) => {
-    const result = apply(current, action, PUBLIC_TIER_1);
+    const result = apply(current, action, PUBLIC_TIER_1, GAME_STARTED_AT);
     if (!result.isOk) {
       throw new Error(`${action.type} rejected: ${result.error.code}`);
     }

@@ -26,4 +26,5 @@ export type GameState = {
   readonly firstCompletions: ReadonlyArray<ProjectName>;
   readonly drawLog: ReadonlyArray<DrawLogEntry>;
   readonly mainPhaseStart: MainPhaseStart;
+  readonly clockStartedAt: number;
 };

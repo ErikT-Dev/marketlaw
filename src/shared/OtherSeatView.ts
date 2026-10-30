@@ -1,3 +1,4 @@
+import type { SeatClock } from "./SeatClock";
 import type { CardName } from "./catalogue/CardName";
 import type { ClaimedCombo } from "./ClaimedCombo";
 import type { ProjectName } from "./ProjectName";
@@ -20,4 +21,5 @@ export type OtherSeatView = {
   readonly isDone: boolean;
   readonly hasLeft: boolean;
   readonly timeBankMs: number;
+  readonly clock: SeatClock | null;
 };

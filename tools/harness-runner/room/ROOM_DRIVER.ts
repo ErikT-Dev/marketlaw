@@ -42,10 +42,10 @@ function seatsThen(session: RoomSession, expected: unknown): ReadonlyArray<unkno
     const seat = game?.saved.state.seats.find((candidate) => candidate.seat === seatNumber);
     const seatPlayer = game?.seats.find((candidate) => candidate.seat === seatNumber);
     const name = session.seatNames[(seat?.seat ?? 0) - 1] ?? "";
-    return seat === undefined
+    return seat === undefined || game === null
       ? undefined
       : {
-          ...seatThen(seat),
+          ...seatThen(game.saved.state, seat, session.now),
           state_version: seatPlayer?.stateVersion,
           connected: session.connections.get(name)?.isClosed !== true,
         };
@@ -90,7 +90,7 @@ function startSession(
         case "seats":
           return seatsThen(session, expected);
         default:
-          return readEngineThen(game.saved.state, field, expected);
+          return readEngineThen(game.saved.state, field, expected, session.now);
       }
     },
     measurements: () => [

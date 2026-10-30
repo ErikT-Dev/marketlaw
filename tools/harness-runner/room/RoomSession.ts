@@ -29,6 +29,7 @@ function tokenOf(name: string): string {
 
 export class RoomSession {
   record: RoomRecord;
+  now: EpochMs;
   rowsWritten = 0;
   private readonly storage: RoomStorage = {
     read: () => this.record,
@@ -53,6 +54,7 @@ export class RoomSession {
 
   constructor(state: GameState, given: RoomGiven, random: Random) {
     this.random = random;
+    this.now = v.parse(EpochMs, state.clockStartedAt);
     this.seatNames = state.seats.map(
       (seat) => given.room?.players?.[seat.seat - 1] ?? `Seat ${seat.seat}`,
     );
@@ -70,7 +72,10 @@ export class RoomSession {
         saved: {
           schemaVersion: SAVE_SCHEMA_VERSION,
           seed: 1,
-          setup: { players: v.parse(PLAYER_COUNT, state.seats.length) },
+          setup: {
+            players: v.parse(PLAYER_COUNT, state.seats.length),
+            startedAt: state.clockStartedAt,
+          },
           startingState: state,
           actionLog: [],
           state,
@@ -120,7 +125,7 @@ export class RoomSession {
       connection: connection.state,
       parsed,
       sender,
-      now: v.parse(EpochMs, 0),
+      now: this.now,
       randomFor: () => this.random,
     });
     this.handlingMs.push(performance.now() - startedMs);

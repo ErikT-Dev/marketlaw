@@ -39,7 +39,7 @@ function seatAtTurnStart(seat: SeatState, firsts: ReadonlyArray<ProjectName>): S
   return seat.hasLeft ? started : { ...started, isDone: false, actionsThisTurn: 0 };
 }
 
-export function endMainPhase(state: GameState, random: Random): GameState {
+export function endMainPhase(state: GameState, random: Random, at: number): GameState {
   const turn = state.turn + 1;
   const removed = state.marketplace.flatMap((slot) =>
     isShownLongEnough(slot) && slot.card !== null ? [slot.card] : [],
@@ -70,6 +70,7 @@ export function endMainPhase(state: GameState, random: Random): GameState {
     doneOrder: [],
     firstCompletions: [...state.firstCompletions, ...firsts],
     drawLog: [...state.drawLog, ...refillShuffles],
+    clockStartedAt: at,
   });
-  return marketGoOf(started) === null ? endMarketPhase(started) : started;
+  return marketGoOf(started) === null ? endMarketPhase(started, at) : started;
 }

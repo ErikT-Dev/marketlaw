@@ -1,3 +1,4 @@
+import type { CardName } from "../shared/catalogue/CardName";
 import { cardOf } from "../shared/catalogue/cardOf";
 import type { ReasonCode } from "../shared/ReasonCode";
 import { drawActionRejection } from "./drawActionRejection";
@@ -74,6 +75,13 @@ function playRejection(state: GameState, seat: SeatState, action: PlayCard): Rea
   return seat.stats.funds < realCostOf(card, seat) ? "not_enough_funds" : undefined;
 }
 
+function sellRejection(
+  seat: SeatState,
+  cards: ReadonlyArray<CardName>,
+): ReasonCode | undefined {
+  return removeCards(seat.hand, cards) === undefined ? "card_not_in_hand" : undefined;
+}
+
 export function rejectionOf(state: GameState, action: GameAction): ReasonCode | undefined {
   const turnCode = turnRejectionOf(state, action.seat, action.type);
   const seat = seatOf(state, action.seat);
@@ -84,8 +92,9 @@ export function rejectionOf(state: GameState, action: GameAction): ReasonCode | 
     case "play_card":
       return playRejection(state, seat, action);
     case "sell":
-      return removeCards(seat.hand, action.cards) === undefined ? "card_not_in_hand" : undefined;
+      return sellRejection(seat, action.cards);
     case "end_turn":
+    case "time_out":
       return undefined;
     case "claim_all":
     case "complete_project":

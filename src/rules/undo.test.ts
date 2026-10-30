@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { GAME_STARTED_AT } from "../shared/testing/GAME_STARTED_AT";
 import { apply } from "./apply";
 import type { GameAction } from "./GameAction";
 import type { GameState } from "./GameState";
@@ -16,7 +17,7 @@ const NO_RANDOM: Random = {
 };
 
 function accepted(state: GameState, action: GameAction): GameState {
-  const result = apply(state, action, NO_RANDOM);
+  const result = apply(state, action, NO_RANDOM, GAME_STARTED_AT);
   if (!result.isOk) {
     throw new Error(`${action.type} rejected: ${result.error.code}`);
   }
@@ -25,7 +26,7 @@ function accepted(state: GameState, action: GameAction): GameState {
 
 describe("undo", () => {
   it("keeps the time bank as it is now and counts itself as an action", () => {
-    const start = startSavedGame({ players: 2 }, 7).state;
+    const start = startSavedGame({ players: 2, startedAt: GAME_STARTED_AT }, 7).state;
     const traded = accepted(start, { type: "influence", seat: 1, trade: "fund_to_influence" });
     const timeUsed = updateSeat(traded, 1, (seat) => ({ ...seat, timeBankMs: 1_000 }));
     const undone = seatOf(accepted(timeUsed, { type: "undo", seat: 1 }), 1);
@@ -35,7 +36,7 @@ describe("undo", () => {
   });
 
   it("starts every main phase with nothing to undo", () => {
-    const start = startSavedGame({ players: 2 }, 7).state;
+    const start = startSavedGame({ players: 2, startedAt: GAME_STARTED_AT }, 7).state;
     const traded = accepted(start, { type: "influence", seat: 1, trade: "fund_to_influence" });
     const nextTurnActions: ReadonlyArray<GameAction> = [
       { type: "end_turn", seat: 1 },
@@ -44,7 +45,7 @@ describe("undo", () => {
       { type: "turn_draw", seat: 1, choice: { option: "B", sector: "Service" } },
     ];
     const nextTurn = nextTurnActions.reduce(accepted, traded);
-    const result = apply(nextTurn, { type: "undo", seat: 1 }, NO_RANDOM);
+    const result = apply(nextTurn, { type: "undo", seat: 1 }, NO_RANDOM, GAME_STARTED_AT);
     expect(result.isOk ? null : result.error.code).toBe("nothing_to_undo");
   });
 });

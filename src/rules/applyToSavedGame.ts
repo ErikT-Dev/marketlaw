@@ -8,13 +8,14 @@ import type { SavedGame } from "./SavedGame";
 export function applyToSavedGame(
   saved: SavedGame,
   action: GameAction,
+  at: number,
   random: Random,
 ): Result<SavedGame, Rejection> {
-  const result = apply(saved.state, action, random);
+  const result = apply(saved.state, action, random, at);
   return result.isOk
     ? {
         isOk: true,
-        value: { ...saved, actionLog: [...saved.actionLog, action], state: result.value },
+        value: { ...saved, actionLog: [...saved.actionLog, { action, at }], state: result.value },
       }
     : result;
 }

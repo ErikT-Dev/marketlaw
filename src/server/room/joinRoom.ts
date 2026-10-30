@@ -2,16 +2,17 @@ import { startSavedGame } from "../../rules/startSavedGame";
 import type { ReasonCode } from "../../shared/ReasonCode";
 import type { Result } from "../../shared/Result";
 import type { SeatNumber } from "../../shared/SeatNumber";
+import type { GameStart } from "./GameStart";
 import type { Identity } from "./Identity";
 import type { RoomRecord } from "./RoomRecord";
 
 const SEAT_NUMBERS: ReadonlyArray<SeatNumber> = [1, 2, 3, 4];
 
-function startGame(record: RoomRecord, seed: number): RoomRecord {
+function startGame(record: RoomRecord, start: GameStart): RoomRecord {
   return {
     ...record,
     game: {
-      saved: startSavedGame({ players: record.size }, seed),
+      saved: startSavedGame({ players: record.size, startedAt: start.now }, start.seed),
       seats: record.players.map((player, index) => ({
         seat: SEAT_NUMBERS[index] ?? 1,
         playerId: player.playerId,
@@ -25,7 +26,7 @@ function startGame(record: RoomRecord, seed: number): RoomRecord {
 export function joinRoom(
   record: RoomRecord,
   joining: Identity,
-  seed: number,
+  start: GameStart,
 ): Result<RoomRecord, ReasonCode> {
   if (record.players.some((player) => player.playerId === joining.playerId)) {
     return { isOk: true, value: record };
@@ -39,6 +40,6 @@ export function joinRoom(
   const joined = { ...record, players: [...record.players, joining] };
   return {
     isOk: true,
-    value: joined.players.length === record.size ? startGame(joined, seed) : joined,
+    value: joined.players.length === record.size ? startGame(joined, start) : joined,
   };
 }

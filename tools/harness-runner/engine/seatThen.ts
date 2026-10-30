@@ -1,8 +1,16 @@
+import { decisionClockOf } from "../../../src/rules/decisionClockOf.ts";
+import type { GameState } from "../../../src/rules/GameState.ts";
 import type { SeatState } from "../../../src/rules/SeatState.ts";
+import { bankLeftAt } from "../../../src/shared/bankLeftAt.ts";
 import { typeCountsOf } from "../../../src/rules/typeCountsOf.ts";
 import { comboLabel } from "./comboLabel.ts";
 
-export function seatThen(seat: SeatState): Readonly<Record<string, unknown>> {
+export function seatThen(
+  state: GameState,
+  seat: SeatState,
+  now: number,
+): Readonly<Record<string, unknown>> {
+  const clock = decisionClockOf(state, seat.seat);
   return {
     seat: seat.seat,
     stats: seat.stats,
@@ -25,7 +33,8 @@ export function seatThen(seat: SeatState): Readonly<Record<string, unknown>> {
     actions_this_turn: seat.actionsThisTurn,
     done: seat.isDone,
     left: seat.hasLeft,
-    time_bank_ms: seat.timeBankMs,
+    time_bank_ms: clock === null ? seat.timeBankMs : bankLeftAt(clock, now),
+    timeouts_in_a_row: seat.timeoutsInARow,
     market: seat.hasHadMarketGo ? "out" : "in",
     new_cards: seat.newCards,
   };

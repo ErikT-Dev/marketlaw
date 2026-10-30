@@ -1,5 +1,6 @@
 import * as v from "valibot";
 import { CardName } from "../../shared/catalogue/CardName";
+import { EpochMs } from "../../shared/EpochMs";
 import { QuestName } from "../../shared/catalogue/QuestName";
 import { TypeName } from "../../shared/catalogue/TypeName";
 import { ProjectName } from "../../shared/ProjectName";
@@ -33,6 +34,7 @@ const SEAT_STATE = v.object({
   isDone: v.boolean(),
   hasLeft: v.boolean(),
   timeBankMs: v.number(),
+  timeoutsInARow: v.number(),
   undoPoints: v.tuple([]),
   isUndoBlocked: v.boolean(),
 });
@@ -52,4 +54,5 @@ export const GAME_STATE_SCHEMA = v.object({
   doneOrder: v.array(SEAT_NUMBER_SCHEMA),
   drawLog: v.array(DRAW_LOG_ENTRY_SCHEMA),
   firstCompletions: v.array(ProjectName),
+  clockStartedAt: EpochMs,
 });

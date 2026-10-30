@@ -597,3 +597,38 @@ file.
 - **Why:** the screen is usable at every size; whether a scrolled quests panel is acceptable at the
   smallest size is the owner's call under D21.
 - **Implemented:** `src/client/screens/game/QuestsPanel.module.css`, `e2e/quests.spec.ts` (phase 13).
+
+## Q42. Times inside the rules engine
+
+- **Phase:** 14, item 1.
+- **Question:** `rules/typescript.md` asks for timestamps as branded `EpochMs`, but ESLint's
+  `prefer-readonly-parameter-types` in `src/rules/` reports any parameter holding a branded value
+  as writable (the problem of Q7), so a `GameState` holding an `EpochMs` could not be passed to any
+  engine function.
+- **Options:** ask the owner to change the protected ESLint config; wrap times in objects; keep
+  times as plain millisecond numbers inside `src/rules/` and branded everywhere else.
+- **Solution:** inside `src/rules/` times are plain UTC epoch milliseconds (`clockStartedAt`, the
+  `at` of each logged action). Everything that leaves the engine is branded again: seat clocks in
+  views (`SeatClock`), the server and the schemas use `EpochMs`.
+- **Why:** as Q7, it keeps both rules without a config change; the engine only adds and compares
+  times.
+- **Implemented:** `src/rules/` (phase 14, item 1). A clarification of the time rule is proposed in
+  `proposed-rules.md`.
+
+## Q43. Two time-out scenarios expected "done" after the main phase had ended
+
+- **Phase:** 14, item 1.
+- **Question:** `turns-and-time` #10 waits until the main-phase limit with the default 2 players and
+  expects seat 1 `done`; #8 has seat 1 already done and the other two seats time out together, and
+  expects `done_order` [1, 3, 2]. In both, every player is then done, so the main phase ends (R8.2)
+  and the next turn starts, where nobody is done yet and the done order starts again. Both
+  contradict R8.2.
+- **Options:** keep "done" and the done order through the market phase (a rules change); change the
+  two scenarios so they check what R8.2 leaves to see.
+- **Solution:** change the scenarios. #8 leaves seat 1 still deciding (its deadline is later), so
+  seats 3 and 2 are made done at the same moment and stay done: `done_order` [3, 2] in player
+  order (R8.4). #10 checks that the turn moved on to 11, with the bank charged up to the limit and
+  one time-out in a row; it is given a full marketplace, as other scenarios that end a turn are,
+  so the start of turn 11 draws nothing.
+- **Why:** a scenario is changed when it contradicts the spec; both still test R8.4, R9.1 and R9.10.
+- **Implemented:** `harness/scenarios/turns-and-time.yaml` #8 and #10 (phase 14).

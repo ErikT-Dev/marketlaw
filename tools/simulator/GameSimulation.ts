@@ -4,6 +4,8 @@ import { chaosBot } from "../../src/bots/chaosBot.ts";
 import type { ChaosMove } from "../../src/bots/ChaosMove.ts";
 import { legalBot } from "../../src/bots/legalBot.ts";
 import { invariantViolations } from "../../src/rules/invariantViolations.ts";
+import { applyToSavedGame } from "../../src/rules/applyToSavedGame.ts";
+import type { SavedGame } from "../../src/rules/SavedGame.ts";
 import { randomForNextAction } from "../../src/rules/randomForNextAction.ts";
 import { startSavedGame } from "../../src/rules/startSavedGame.ts";
 import type { Identity } from "../../src/server/room/Identity.ts";
@@ -73,7 +75,7 @@ export class GameSimulation {
     this.bot = options.bot;
     this.chooser = options.chooser;
     this.stored = options.stored;
-    const saved = startSavedGame({ players }, seed);
+    const saved = startSavedGame({ players, startedAt: v.parse(EpochMs, 0) }, seed);
     const identities: ReadonlyArray<Identity> = saved.state.seats.map((seat) => ({
       playerId: playerIdFor(seed, seat.seat),
       name: `Bot ${String(seat.seat)}`,
@@ -223,22 +225,36 @@ export class GameSimulation {
     if (beforeGame === null || afterGame === null) {
       return;
     }
-    const beforeState = beforeGame.saved.state;
-    const lastAction = afterGame.saved.actionLog.at(-1);
-    if (isAccepted && lastAction !== undefined && afterGame !== beforeGame) {
-      this.statesAfterEachAction.push(JSON.stringify(afterGame.saved.state));
-      this.addViolations(
-        invariantViolations({
-          before: beforeState,
-          beforeAsText: JSON.stringify(beforeState),
-          action: lastAction,
-          outcome: { isOk: true, value: afterGame.saved.state },
-        }),
-      );
+    if (isAccepted && afterGame !== beforeGame) {
+      this.checkEachNewAction(beforeGame.saved, afterGame.saved);
       return;
     }
     if (!isViewUnchanged) {
       this.addViolations(["I27: a rejected or repeated message changed a view or a state version"]);
+    }
+  }
+
+  private checkEachNewAction(before: SavedGame, after: SavedGame): void {
+    let current = before;
+    for (const { action, at } of after.actionLog.slice(before.actionLog.length)) {
+      const result = applyToSavedGame(current, action, at, randomForNextAction(current));
+      if (!result.isOk) {
+        this.addViolations([`I26: a logged ${action.type} is rejected when applied again`]);
+        return;
+      }
+      this.statesAfterEachAction.push(JSON.stringify(result.value.state));
+      this.addViolations(
+        invariantViolations({
+          before: current.state,
+          beforeAsText: JSON.stringify(current.state),
+          action,
+          outcome: { isOk: true, value: result.value.state },
+        }),
+      );
+      current = result.value;
+    }
+    if (JSON.stringify(current.state) !== JSON.stringify(after.state)) {
+      this.addViolations(["I26: the logged actions do not lead to the saved state"]);
     }
   }
 

@@ -57,13 +57,18 @@ export class GameRoom extends DurableObject<Env> {
     players: ReadonlyArray<Identity>,
     state: GameState,
   ): boolean {
-    return startTestRoomIn(this.storage, { code, seed }, players, state);
+    return startTestRoomIn(
+      this.storage,
+      { code, seed, now: v.parse(EpochMs, Date.now()) },
+      players,
+      state,
+    );
   }
 
   joinRoom(joining: Identity): ReasonCode | null {
     const seed = crypto.getRandomValues(new Uint32Array(1))[0] ?? 0;
     const before = this.storage.read();
-    const reason = joinRoomIn(this.storage, joining, seed);
+    const reason = joinRoomIn(this.storage, joining, { seed, now: v.parse(EpochMs, Date.now()) });
     if (reason === null && this.storage.read() !== before) {
       this.updateEveryone(null);
     }

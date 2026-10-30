@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { GAME_STARTED_AT } from "../shared/testing/GAME_STARTED_AT";
 import { apply } from "./apply";
 import type { GameAction } from "./GameAction";
 import type { GameState } from "./GameState";
@@ -7,7 +8,7 @@ import { seededRandom } from "./seededRandom";
 import { setUpGame } from "./setUpGame";
 import { STARTING_STATS } from "./STARTING_STATS";
 
-const START = setUpGame({ players: 2 }, seededRandom(21, 0));
+const START = setUpGame({ players: 2, startedAt: GAME_STARTED_AT }, seededRandom(21, 0));
 
 function transition(before: GameState, action: GameAction, after: GameState) {
   return {
@@ -37,7 +38,7 @@ describe("invariantViolations", () => {
     ]);
     const violations = actions.reduce<{ state: GameState; found: ReadonlyArray<string> }>(
       ({ state, found }, action) => {
-        const outcome = apply(state, action, random);
+        const outcome = apply(state, action, random, GAME_STARTED_AT);
         const checked = { before: state, beforeAsText: JSON.stringify(state), action, outcome };
         const next = outcome.isOk ? outcome.value : state;
         return { state: next, found: [...found, ...invariantViolations(checked)] };

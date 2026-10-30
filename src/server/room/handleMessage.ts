@@ -1,4 +1,4 @@
-import { applyToSavedGame } from "../../rules/applyToSavedGame";
+import { receiveAction } from "../../rules/receiveAction";
 import type { PlayerId } from "../../shared/PlayerId";
 import { PROTOCOL_VERSION } from "../../shared/PROTOCOL_VERSION";
 import type { ClientMessage } from "../../shared/protocol/ClientMessage";
@@ -12,6 +12,7 @@ import type { RoomRecord } from "./RoomRecord";
 import { rejectMessage } from "./rejectMessage";
 import { playersWhoseUpdateChanged } from "./playersWhoseUpdateChanged";
 import { updateFor } from "./updateFor";
+import { withTimeOutsApplied } from "./withTimeOutsApplied";
 
 type ActionMessage = Extract<ClientMessage, { readonly type: "action" }>;
 
@@ -59,17 +60,26 @@ function handleAction(
     return reject("stale_state");
   }
   const action = gameActionOf(seat.seat, message.action);
-  const result =
-    action === undefined
-      ? undefined
-      : applyToSavedGame(record.game.saved, action, randomFor(record.game.saved));
-  if (result === undefined || !result.isOk) {
-    return reject(result?.error.code ?? "malformed_message");
+  if (action === undefined) {
+    return reject("malformed_message");
+  }
+  const received = receiveAction(record.game.saved, action, now, randomFor);
+  const caughtUp = { ...record, game: withTimeOutsApplied(record.game, received.caughtUp) };
+  if (received.rejection !== null) {
+    return {
+      ...rejectMessage(caughtUp, connection, {
+        code: received.rejection.code,
+        actionId: message.actionId,
+        now,
+      }),
+      shouldSave: caughtUp.game !== record.game,
+      playersToUpdate: playersWhoseUpdateChanged(record, caughtUp),
+    };
   }
   const game = acceptAction(
-    record.game,
+    caughtUp.game,
     { seat: seat.seat, actionId: message.actionId },
-    result.value,
+    received.saved,
   );
   const next = { ...record, game };
   return {

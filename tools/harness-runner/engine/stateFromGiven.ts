@@ -1,3 +1,4 @@
+import * as v from "valibot";
 import { firstPlayerOf } from "../../../src/rules/firstPlayerOf.ts";
 import type { GameState } from "../../../src/rules/GameState.ts";
 import { marketGoOf } from "../../../src/rules/marketGoOf.ts";
@@ -7,6 +8,7 @@ import { withMainPhaseStart } from "../../../src/rules/withMainPhaseStart.ts";
 import { CARD_NAMES } from "../../../src/shared/catalogue/CARD_NAMES.ts";
 import { QUESTS } from "../../../src/shared/catalogue/QUESTS.ts";
 import { TYPE_NAMES } from "../../../src/shared/catalogue/TYPE_NAMES.ts";
+import { EpochMs } from "../../../src/shared/EpochMs.ts";
 import type { Given } from "./Given.ts";
 import { seatFromGiven } from "./seatFromGiven.ts";
 
@@ -73,6 +75,7 @@ export function stateFromGiven(given: Given): GameState {
     bonusTypes: given.bonus_types ?? TYPE_NAMES.slice(0, 2),
     doneOrder: seats.filter((seat) => seat.isDone).map((seat) => seat.seat),
     firstCompletions: given.first_completions ?? [],
+    clockStartedAt: v.parse(EpochMs, given.clock_ms ?? 0),
   });
   return withCheckedMarketGo(started, given);
 }

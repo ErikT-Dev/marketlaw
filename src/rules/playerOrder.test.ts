@@ -1,11 +1,12 @@
 import { describe, expect, it } from "vitest";
+import { GAME_STARTED_AT } from "../shared/testing/GAME_STARTED_AT";
 import { firstPlayerOf } from "./firstPlayerOf";
 import type { GameState } from "./GameState";
 import { startSavedGame } from "./startSavedGame";
 import { viewFor } from "./viewFor";
 
 function gameAt(players: 2 | 3 | 4, turn: number, seatsThatLeft: ReadonlyArray<number>): GameState {
-  const state = startSavedGame({ players }, 5).state;
+  const state = startSavedGame({ players, startedAt: GAME_STARTED_AT }, 5).state;
   const seats = state.seats.map((seat) => ({
     ...seat,
     hasLeft: seatsThatLeft.includes(seat.seat),

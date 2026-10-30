@@ -1,5 +1,8 @@
 import type { GameState } from "../../../src/rules/GameState.ts";
 import { viewFor } from "../../../src/rules/viewFor.ts";
+import { bankLeftAt } from "../../../src/shared/bankLeftAt.ts";
+import type { EpochMs } from "../../../src/shared/EpochMs.ts";
+import type { SeatClock } from "../../../src/shared/SeatClock.ts";
 import type { SeatNumber } from "../../../src/shared/SeatNumber.ts";
 import { isRecord } from "../../harness-check/isRecord.ts";
 import { absentLogItems } from "./absentLogItems.ts";
@@ -30,7 +33,18 @@ function isHidden(name: string, text: string, state: GameState): boolean {
   }
 }
 
-export function viewThen(state: GameState, expected: unknown): Readonly<Record<string, unknown>> {
+function bankShownAt(
+  seat: { readonly timeBankMs: number; readonly clock: SeatClock | null },
+  now: EpochMs,
+): number {
+  return seat.clock === null ? seat.timeBankMs : bankLeftAt(seat.clock, now);
+}
+
+export function viewThen(
+  state: GameState,
+  expected: unknown,
+  now: EpochMs,
+): Readonly<Record<string, unknown>> {
   const asked = isRecord(expected) ? expected : {};
   const view = viewFor(state, seatNumberOf(asked["seat"]));
   const text = JSON.stringify(view);
@@ -47,7 +61,8 @@ export function viewThen(state: GameState, expected: unknown): Readonly<Record<s
           city: ofSeat.city,
           build_passes: ofSeat.buildPasses,
           done: ofSeat.isDone,
-          time_bank_ms: ofSeat.timeBankMs,
+          time_bank_ms: bankShownAt(ofSeat, now),
+          time_bank_shown: Math.floor(bankShownAt(ofSeat, now) / 1000),
         };
   return {
     seat: view.seat,

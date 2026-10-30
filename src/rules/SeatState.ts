@@ -30,6 +30,7 @@ export type SeatState = {
   readonly isDone: boolean;
   readonly hasLeft: boolean;
   readonly timeBankMs: number;
+  readonly timeoutsInARow: number;
   readonly undoPoints: ReadonlyArray<SeatState>;
   readonly isUndoBlocked: boolean;
 };

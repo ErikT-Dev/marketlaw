@@ -43,6 +43,7 @@ const SEAT = v.strictObject({
   done: v.optional(v.boolean()),
   left: v.optional(v.boolean()),
   time_bank_ms: v.optional(COUNT),
+  timeouts_in_a_row: v.optional(COUNT),
   market: v.optional(v.picklist(["in", "out"])),
   new_cards: v.optional(CARDS),
 });
@@ -78,4 +79,5 @@ export const GIVEN_SCHEMA = v.strictObject({
   quest_list: v.optional(v.array(QUEST_NAME)),
   bonus_types: v.optional(v.array(TypeName)),
   first_completions: v.optional(v.array(ProjectName)),
+  clock_ms: v.optional(COUNT),
 });

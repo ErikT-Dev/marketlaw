@@ -71,6 +71,6 @@ export function simulateGame(
     rowsPerOtherMessage: simulation.rowsPerOtherMessage,
     turnsPlayed: (saved?.state.turn ?? 1) - 1,
     acceptedActions: saved?.actionLog.length ?? 0,
-    acceptedByType: countsByType(saved?.actionLog ?? []),
+    acceptedByType: countsByType((saved?.actionLog ?? []).map(({ action }) => action)),
   };
 }

@@ -1,4 +1,5 @@
 import * as v from "valibot";
+import { EpochMs } from "../EpochMs";
 import { CardName } from "../catalogue/CardName";
 import { Kind } from "../catalogue/Kind";
 import { Tier } from "../catalogue/Tier";
@@ -25,6 +26,7 @@ const SEAT_COMMON = {
   isDone: v.boolean(),
   hasLeft: v.boolean(),
   timeBankMs: COUNT,
+  clock: v.nullable(v.object({ bankMs: COUNT, freeUntil: EpochMs, deadline: EpochMs })),
   hasHadMarketGo: v.boolean(),
 };
 const TYPE_COUNTS = v.record(TypeName, COUNT);

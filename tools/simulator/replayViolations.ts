@@ -8,8 +8,8 @@ export function replayViolations(
   statesAfterEachAction: ReadonlyArray<string>,
 ): ReadonlyArray<string> {
   let replayed = replayStartOf(saved);
-  for (const [index, action] of saved.actionLog.entries()) {
-    const result = applyToSavedGame(replayed, action, randomForNextAction(replayed));
+  for (const [index, { action, at }] of saved.actionLog.entries()) {
+    const result = applyToSavedGame(replayed, action, at, randomForNextAction(replayed));
     if (!result.isOk) {
       return [`I26: action ${String(index + 1)} was rejected on replay with ${result.error.code}`];
     }
