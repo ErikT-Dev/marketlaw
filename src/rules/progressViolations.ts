@@ -28,6 +28,12 @@ function projectViolations(seat: SeatState): ReadonlyArray<string> {
     );
 }
 
+function questViolations(seat: SeatState): ReadonlyArray<string> {
+  return seat.questsCompleted
+    .filter((quest, index) => seat.questsCompleted.indexOf(quest) !== index)
+    .map((quest) => `I12: seat ${String(seat.seat)} completed ${quest} more than once`);
+}
+
 function influenceViolations(seat: SeatState): ReadonlyArray<string> {
   return TradeName.options.flatMap((trade) => {
     const limit = TRADES[trade].limitPerGame;
@@ -42,6 +48,7 @@ export function progressViolations(state: GameState): ReadonlyArray<string> {
   return state.seats.flatMap((seat) => [
     ...influenceViolations(seat),
     ...projectViolations(seat),
+    ...questViolations(seat),
     ...comboViolations(seat),
   ]);
 }

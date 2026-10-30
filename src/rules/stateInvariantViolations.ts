@@ -3,6 +3,7 @@ import { ACTION_LIMIT } from "./ACTION_LIMIT";
 import type { GameState } from "./GameState";
 import { marketplaceViolations } from "./marketplaceViolations";
 import { progressViolations } from "./progressViolations";
+import { questTableViolations } from "./questTableViolations";
 
 function cardPlaceViolations(state: GameState): ReadonlyArray<string> {
   const placed = [
@@ -45,5 +46,6 @@ export function stateInvariantViolations(state: GameState): ReadonlyArray<string
     ...seatViolations(state),
     ...progressViolations(state),
     ...marketplaceViolations(state),
+    ...questTableViolations(state),
   ];
 }

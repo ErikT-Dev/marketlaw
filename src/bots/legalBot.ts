@@ -31,17 +31,32 @@ function cardsToSell(hand: ReadonlyArray<CardName>, chooser: BotChooser): Action
     : { type: "sell", cards: [first, second] };
 }
 
+function questToComplete(view: PlayerView): ActionIntent | null {
+  const place = view.quests.find(
+    (candidate) => candidate.quest !== null && candidate.completeRejection === null,
+  );
+  return place?.quest === undefined || place.quest === null
+    ? null
+    : { type: "complete_quest", quest: place.quest };
+}
+
+function progressMove(view: PlayerView): ActionIntent | null {
+  const seat = ownSeatOf(view);
+  if (seat.claimAllRejection === null) {
+    return { type: "claim_all" };
+  }
+  const project = PROJECT_NAMES.find((name) => seat.projectRejections[name] === null);
+  return project === undefined ? questToComplete(view) : { type: "complete_project", project };
+}
+
 function mainPhaseMove(view: PlayerView, chooser: BotChooser): ActionIntent | null {
   const seat = ownSeatOf(view);
   if (seat.endTurnRejection !== null) {
     return null;
   }
-  if (seat.claimAllRejection === null) {
-    return { type: "claim_all" };
-  }
-  const project = PROJECT_NAMES.find((name) => seat.projectRejections[name] === null);
-  if (project !== undefined) {
-    return { type: "complete_project", project };
+  const progress = progressMove(view);
+  if (progress !== null) {
+    return progress;
   }
   const influenceOrUndo = influenceOrUndoMove(seat, chooser);
   if (influenceOrUndo !== null) {

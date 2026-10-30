@@ -6,7 +6,7 @@ import type { GamePhase } from "./GamePhase";
 import type { MarketplaceSlot } from "./MarketplaceSlot";
 import type { OtherSeatView } from "./OtherSeatView";
 import type { OwnSeatView } from "./OwnSeatView";
-import type { QuestOnTable } from "./QuestOnTable";
+import type { QuestPlaceView } from "./QuestPlaceView";
 import type { SeatNumber } from "./SeatNumber";
 
 export type PlayerView = {
@@ -19,7 +19,7 @@ export type PlayerView = {
   readonly deckCount: number;
   readonly discard: ReadonlyArray<CardName>;
   readonly marketplace: ReadonlyArray<MarketplaceSlot>;
-  readonly quests: ReadonlyArray<QuestOnTable>;
+  readonly quests: ReadonlyArray<QuestPlaceView>;
   readonly bonusTypes: ReadonlyArray<TypeName>;
   readonly doneOrder: ReadonlyArray<SeatNumber>;
   readonly playerOrder: ReadonlyArray<SeatNumber>;

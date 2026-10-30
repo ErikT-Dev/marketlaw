@@ -1,0 +1,12 @@
+import type { QuestName } from "./catalogue/QuestName";
+import type { QuestProgress } from "./QuestProgress";
+import type { ReasonCode } from "./ReasonCode";
+
+export type QuestPlaceView =
+  | { readonly quest: null }
+  | {
+      readonly quest: QuestName;
+      readonly turnsOnTable: number;
+      readonly completeRejection: ReasonCode | null;
+      readonly progress: ReadonlyArray<QuestProgress>;
+    };

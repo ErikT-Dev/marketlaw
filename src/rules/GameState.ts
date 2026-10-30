@@ -19,7 +19,7 @@ export type GameState = {
   readonly discard: ReadonlyArray<CardName>;
   readonly holdingPile: ReadonlyArray<CardName>;
   readonly marketplace: ReadonlyArray<MarketplaceSlot>;
-  readonly quests: ReadonlyArray<QuestOnTable>;
+  readonly quests: ReadonlyArray<QuestOnTable | null>;
   readonly questList: ReadonlyArray<QuestName>;
   readonly bonusTypes: ReadonlyArray<TypeName>;
   readonly doneOrder: ReadonlyArray<SeatNumber>;

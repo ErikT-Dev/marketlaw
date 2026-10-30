@@ -46,7 +46,7 @@ export const GAME_STATE_SCHEMA = v.object({
   discard: CARDS,
   holdingPile: CARDS,
   marketplace: v.array(MARKETPLACE_SLOT_SCHEMA),
-  quests: v.array(v.object({ quest: QuestName, turnsOnTable: v.number() })),
+  quests: v.array(v.nullable(v.object({ quest: QuestName, turnsOnTable: v.number() }))),
   questList: v.array(QuestName),
   bonusTypes: v.array(TypeName),
   doneOrder: v.array(SEAT_NUMBER_SCHEMA),

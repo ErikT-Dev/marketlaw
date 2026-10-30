@@ -51,6 +51,11 @@ function seatOneSeenBySeatTwo(state: GameState): OtherSeatView | undefined {
   return seen?.kind === "other" ? seen : undefined;
 }
 
+function progressOfSeat1(state: GameState, viewer: 1 | 2) {
+  const [place] = viewFor(state, viewer).quests;
+  return place?.quest === null ? undefined : place?.progress.find(({ seat }) => seat === 1);
+}
+
 describe("what other players see during the main phase", () => {
   it("shows another player as at the start of the main phase, with whether they are done", () => {
     const start = gameWith(["Landfill"], []);
@@ -63,6 +68,23 @@ describe("what other players see during the main phase", () => {
     expect(seen?.handCount).toBe(2);
     expect(seen?.stats).toEqual(start.seats[0]?.stats);
     expect(seen?.isDone).toBe(true);
+  });
+
+  it("shows another player's quest progress as at the start of the main phase", () => {
+    const base = gameWith(["Landfill"], []);
+    const start = withMainPhaseStart({
+      ...base,
+      quests: [{ quest: "Trading post", turnsOnTable: 1 }],
+      seats: base.seats.map((seat) =>
+        seat.seat === 1
+          ? { ...seat, city: ["Apparel Store"], stats: { ...seat.stats, income: 4 } }
+          : seat,
+      ),
+    });
+    const after = played(start, [{ type: "complete_quest", seat: 1, quest: "Trading post" }]);
+    expect(progressOfSeat1(after, 1)).toEqual({ seat: 1, isCompleted: true, have: [4, 1] });
+    expect(progressOfSeat1(after, 2)).toEqual({ seat: 1, isCompleted: false, have: [4, 1] });
+    expect(viewFor(after, 1).quests[0]).toHaveProperty("completeRejection", "quest_already_completed");
   });
 
   it("hides another player's draws, and the deck change they cause, until the phase ends", () => {

@@ -67,6 +67,7 @@ export const ENGINE_FIELDS = {
     "marketplace",
     "quests",
     "quest_list",
+    "quest_list_excludes",
     "bonus_types",
     "done_order",
     "first_completions",

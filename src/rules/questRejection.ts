@@ -10,7 +10,7 @@ export function questRejection(
   seat: SeatState,
   quest: QuestName,
 ): ReasonCode | undefined {
-  if (!state.quests.some((place) => place.quest === quest)) {
+  if (!state.quests.some((place) => place?.quest === quest)) {
     return "quest_not_on_table";
   }
   if (seat.questsCompleted.includes(quest)) {
