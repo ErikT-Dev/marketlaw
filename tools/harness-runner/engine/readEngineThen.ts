@@ -16,6 +16,20 @@ function seatsThen(state: GameState, expected: unknown, now: number): ReadonlyAr
   });
 }
 
+function endedThen(state: GameState): unknown {
+  const places = state.result?.places;
+  return places === undefined
+    ? undefined
+    : {
+        winner: places[0]?.seat,
+        places: places.map(({ seat }) => seat),
+        scores: Object.fromEntries(places.map(({ seat, score }) => [seat, score])),
+        bonus_type_points: Object.fromEntries(
+          places.map(({ seat, bonusTypePoints }) => [seat, bonusTypePoints]),
+        ),
+      };
+}
+
 export function readEngineThen(
   state: GameState,
   field: string,
@@ -64,17 +78,7 @@ export function readEngineThen(
     bonus_types: () => state.bonusTypes,
     done_order: () => state.doneOrder,
     first_completions: () => state.firstCompletions,
-    ended: () =>
-      state.result === null
-        ? undefined
-        : {
-            winner: state.result.places[0]?.seat,
-            places: state.result.places.map(({ seat }) => seat),
-            scores: Object.fromEntries(state.result.places.map(({ seat, score }) => [seat, score])),
-            bonus_type_points: Object.fromEntries(
-              state.result.places.map(({ seat, bonusTypePoints }) => [seat, bonusTypePoints]),
-            ),
-          },
+    ended: () => endedThen(state),
   };
   const read = fields[field];
   if (read === undefined) {
