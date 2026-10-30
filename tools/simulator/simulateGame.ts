@@ -71,6 +71,7 @@ export function simulateGame(
     rowsPerAcceptedAction: simulation.rowsPerAcceptedAction,
     rowsPerOtherMessage: simulation.rowsPerOtherMessage,
     mostAlarmChangesOverAllowance: simulation.alarm.mostChangesOverAllowance,
+    awakeMs: simulation.awake.awakeMs,
     turnsPlayed: (saved?.state.turn ?? 1) - 1,
     acceptedActions: saved?.actionLog.length ?? 0,
     acceptedByType: countsByType((saved?.actionLog ?? []).map(({ action }) => action)),

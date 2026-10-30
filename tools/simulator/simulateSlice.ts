@@ -27,6 +27,7 @@ function playedOrCrashed(
       rowsPerAcceptedAction: [],
       rowsPerOtherMessage: [],
       mostAlarmChangesOverAllowance: 0,
+      awakeMs: 0,
       turnsPlayed: 0,
       acceptedActions: 0,
       acceptedByType: {},
@@ -51,6 +52,8 @@ function summaryOf(game: SimulatedGame): SimulationSummary {
     mostRowsPerAcceptedAction: Math.max(0, ...game.rowsPerAcceptedAction),
     mostRowsPerOtherMessage: Math.max(0, ...game.rowsPerOtherMessage),
     mostAlarmChangesOverAllowance: game.mostAlarmChangesOverAllowance,
+    threePlayerAwakeMs: game.players === 3 ? game.awakeMs : 0,
+    threePlayerTurns: game.players === 3 ? game.turnsPlayed : 0,
     violationCounts: Object.fromEntries(
       [...new Set(violations.map(({ invariant }) => invariant))].map((invariant) => [invariant, 1]),
     ),

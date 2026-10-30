@@ -24,6 +24,7 @@ import type { SeatUpdates } from "./SeatUpdates.ts";
 import { scanTextOf } from "./scanTextOf.ts";
 import type { SentToSeat } from "./SentToSeat.ts";
 import type { SimulatedSeat } from "./SimulatedSeat.ts";
+import { AwakeTally } from "./AwakeTally.ts";
 import { newActionChecks } from "./newActionChecks.ts";
 import { SimulatedAlarm } from "./SimulatedAlarm.ts";
 import { whatSeatsSeeViolations } from "./whatSeatsSeeViolations.ts";
@@ -45,6 +46,7 @@ export class GameSimulation {
   readonly statesAfterEachAction: string[] = [];
   firstViolationAt: number | null = null;
   readonly alarm = new SimulatedAlarm();
+  readonly awake = new AwakeTally();
   private lastUpdates: SeatUpdates | null = null;
   private rowsWritten = 0;
   private nowMs = 0;
@@ -152,6 +154,7 @@ export class GameSimulation {
   private fireDueAlarms(): void {
     for (let at = this.alarm.at; at !== null && at <= this.nowMs; at = this.alarm.at) {
       this.alarm.fired();
+      this.awake.event();
       const before = this.record;
       const updatesBefore = this.lastUpdates ?? this.updatesNow();
       const fired = fireAlarm(before, v.parse(EpochMs, at), randomForNextAction);
@@ -172,6 +175,7 @@ export class GameSimulation {
     this.messages.push(text);
     this.nowMs += MESSAGE_GAP_MS;
     this.fireDueAlarms();
+    this.awake.event();
     const parsed = parseClientMessage(text);
     const sender = parsed.isOk ? this.identityByToken(parsed.value.token) : null;
     const before = this.record;

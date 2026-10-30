@@ -8,6 +8,8 @@ export type SimulationSummary = {
   readonly mostRowsPerAcceptedAction: number;
   readonly mostRowsPerOtherMessage: number;
   readonly mostAlarmChangesOverAllowance: number;
+  readonly threePlayerAwakeMs: number;
+  readonly threePlayerTurns: number;
   readonly violationCounts: Readonly<Record<string, number>>;
   readonly shortestViolations: ReadonlyArray<FoundViolation>;
 };

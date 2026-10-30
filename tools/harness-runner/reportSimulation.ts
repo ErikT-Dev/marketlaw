@@ -1,4 +1,5 @@
 import type { SimulationSummary } from "../simulator/SimulationSummary.ts";
+import { awakeSecondsPerGame } from "./awakeSecondsPerGame.ts";
 import { escapeHtml } from "./escapeHtml.ts";
 import { LAST_SIMULATED_TURN } from "./LAST_SIMULATED_TURN.ts";
 import { statusBadge } from "./statusBadge.ts";
@@ -30,6 +31,7 @@ export function reportSimulation(
     `invariants checked after every message: ${checkedInvariants.join(", ")}; every game replayed from its seed and action log (I26)`,
     `rows written: at most ${String(simulation.mostRowsPerAcceptedAction)} per accepted action (B1), ${String(simulation.mostRowsPerOtherMessage)} for any other message (B2)`,
     `alarm changes: the busiest turn made ${String(simulation.mostAlarmChangesOverAllowance)} more than its allowance of market goes + players + 2 (B3, measured as the amount over, limit 0)`,
+    `awake time (sleep model in docs/sleep-model.md): about ${String(awakeSecondsPerGame(simulation))} s for a 40-turn 3-player game, from the simulated turns (B12, limit 600)`,
   ];
   const list = facts.map((fact) => `<li>${escapeHtml(fact)}</li>`).join("");
   return `<h2>Simulation</h2><p>${statusBadge(status)}</p><ul>${list}${shortestFailures(simulation)}</ul>`;
