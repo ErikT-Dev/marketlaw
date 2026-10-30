@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
+import { CARD_NAMES } from "../shared/catalogue/CARD_NAMES";
 import type { MarketplaceSlot } from "../shared/MarketplaceSlot";
 import { chaosBot } from "./chaosBot";
 import { legalBot } from "./legalBot";
+import { ownSeatOf } from "./ownSeatOf";
 import { botViewWith } from "./testing/botViewWith";
 import { chooserFrom } from "./testing/chooserFrom";
 
@@ -56,8 +58,14 @@ describe("legal bot in the market phase", () => {
 });
 
 describe("chaos bot in the market phase", () => {
-  it("sometimes asks for a card that is not in the marketplace", () => {
-    const view = marketView({ turnDraw: "not_your_go", marketCard: "not_your_go" });
+  it("asks only for cards that are neither held nor in the marketplace", () => {
+    const base = marketView({ turnDraw: "not_your_go", marketCard: "not_your_go" });
+    const hand = ownSeatOf(base).hand;
+    const shown = CARD_NAMES.filter((card) => card !== "Dentist" && !hand.includes(card));
+    const view = {
+      ...base,
+      marketplace: shown.map((card) => ({ place: "open_1" as const, card, phasesShown: 0 })),
+    };
     const cards = SEEDS.flatMap((seed) => {
       const move = chaosBot(view, chooserFrom(seed));
       return move.kind === "intent" &&
@@ -67,6 +75,6 @@ describe("chaos bot in the market phase", () => {
         : [];
     });
     expect(cards.length).toBeGreaterThan(0);
-    expect(cards.some((card) => card === "Row House" || card === "Dentist")).toBe(false);
+    expect(new Set(cards)).toEqual(new Set(["Dentist"]));
   });
 });
