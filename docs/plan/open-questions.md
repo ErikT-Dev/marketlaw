@@ -565,3 +565,17 @@ file.
 - **Solution:** `marketplace_empty` first, as `marketplace` #3 expects. Written into `HARNESS.md`.
 - **Why:** it tells the player what to do instead (choose a sector, R18.9).
 - **Implemented:** `harness/HARNESS.md` reason code order; `src/rules/rejectionOf.ts` (phase 12).
+
+## Q40. What fills a quest place when the list has quests, but none of an allowed tier?
+
+- **Phase:** 13, item 3.
+- **Question:** R19.8 uses "the nearest allowed tier that still has quests", and R19.9 covers an
+  empty list. Before turn 5 (or 13) the list can still hold quests, but only of tiers not allowed
+  yet, so neither rule says what happens.
+- **Options:** place a quest of a tier not allowed yet; leave the place empty until the next turn.
+- **Solution:** the place stays empty until the next turn, when it is refilled again. Written into
+  R19.8.
+- **Why:** the tier gates are the point of R19.8, and I16 says no tier 2 quest is placed before
+  turn 5; an empty place for a turn is what R19.9 already does when nothing can be placed.
+- **Implemented:** `harness/spec/game-rules.md` R19.8; `src/rules/questTierToPlace.ts`,
+  `src/rules/refillQuests.ts` (phase 13).
