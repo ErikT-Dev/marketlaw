@@ -66,7 +66,9 @@ export function stateFromGiven(given: Given): GameState {
     questList:
       given.quest_list ??
       QUESTS.map(({ name }) => name).filter(
-        (name) => !quests.some((place) => place?.quest === name),
+        (name) =>
+          !quests.some((place) => place?.quest === name) &&
+          !seats.some((seat) => seat.questsCompleted.includes(name)),
       ),
     bonusTypes: given.bonus_types ?? TYPE_NAMES.slice(0, 2),
     doneOrder: seats.filter((seat) => seat.isDone).map((seat) => seat.seat),

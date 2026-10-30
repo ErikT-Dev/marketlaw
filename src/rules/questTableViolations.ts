@@ -31,7 +31,10 @@ function questAgeViolations(state: GameState): ReadonlyArray<string> {
       if (place === null) {
         return [];
       }
-      const tier = QUESTS.find(({ name }) => name === place.quest)?.tier ?? 1;
+      const tier = QUESTS.find(({ name }) => name === place.quest)?.tier;
+      if (tier === undefined) {
+        return [`I16: ${place.quest} is not in the quest catalogue`];
+      }
       const placedTurn = state.turn - place.turnsOnTable + 1;
       return [
         ...(place.turnsOnTable > QUEST_TABLE_RULES.turnsOnTable
