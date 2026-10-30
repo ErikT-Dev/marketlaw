@@ -6,7 +6,7 @@ export type QuestPlaceView =
   | { readonly quest: null }
   | {
       readonly quest: QuestName;
-      readonly turnsOnTable: number;
+      readonly turnsLeft: number;
       readonly completeRejection: ReasonCode | null;
       readonly progress: ReadonlyArray<QuestProgress>;
     };

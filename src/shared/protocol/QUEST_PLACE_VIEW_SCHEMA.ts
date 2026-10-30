@@ -9,7 +9,7 @@ export const QUEST_PLACE_VIEW_SCHEMA = v.union([
   v.object({ quest: v.null() }),
   v.object({
     quest: QuestName,
-    turnsOnTable: COUNT,
+    turnsLeft: COUNT,
     completeRejection: v.nullable(ReasonCode),
     progress: v.array(
       v.object({ seat: SEAT_NUMBER_SCHEMA, isCompleted: v.boolean(), have: v.array(COUNT) }),
