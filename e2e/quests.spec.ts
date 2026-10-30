@@ -15,9 +15,10 @@ function questCard(page: Page, quest: string) {
   return page.getByRole("list", { name: "Quests table" }).getByRole("region", { name: quest });
 }
 
-test("five quests with three-part requirements and four players fit the screen", async ({
+test("five quests with three-part requirements and four players can all be reached", async ({
   browser,
   request,
+  viewport,
 }, testInfo) => {
   const [seatOne = ""] = await startTestRoom(request, {
     players: 4,
@@ -42,6 +43,19 @@ test("five quests with three-part requirements and four players fit the screen",
       .getByRole("listitem"),
   ).toHaveCount(4);
   await expectScreenFits(page, "quests-table", testInfo);
+  const cards = page.getByRole("list", { name: "Quests table" }).getByRole("region");
+  if ((viewport?.width ?? 0) >= 1920) {
+    for (const index of [0, 1, 2, 3, 4]) {
+      await expect(cards.nth(index)).toBeInViewport();
+    }
+  }
+  for (const index of [0, 1, 2, 3, 4]) {
+    await cards.nth(index).scrollIntoViewIfNeeded();
+    await expect(cards.nth(index)).toBeInViewport();
+  }
+  const complete = questCard(page, "Trading post").getByRole("button", { name: "Complete" });
+  await complete.scrollIntoViewIfNeeded();
+  await expect(complete).toBeInViewport();
 });
 
 test("a completed quest shows as completed, stays hidden from others until the main phase ends, then leaves", async ({
