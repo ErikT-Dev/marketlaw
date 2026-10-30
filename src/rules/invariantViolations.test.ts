@@ -154,6 +154,39 @@ describe("invariantViolations", () => {
     ]);
   });
 
+  it("expects the next seat still in the game when the rotation seat has left", () => {
+    const leftSeat2 = {
+      ...START,
+      turn: 2,
+      seats: START.seats.map((seat) => (seat.seat === 2 ? { ...seat, hasLeft: true } : seat)),
+    };
+    const [seat1First, seat2First] = ([1, 2] as const).map((firstPlayer) =>
+      invariantViolations(
+        transition(START, { type: "end_turn", seat: 1 }, { ...leftSeat2, firstPlayer }),
+      ).filter((violation) => violation.startsWith("I20")),
+    );
+    expect(seat1First).toEqual([]);
+    expect(seat2First).toEqual(["I20: turn 2 starts with seat 2 first"]);
+  });
+
+  it("reports a marketplace place listed twice", () => {
+    const residential = START.marketplace.find((slot) => slot.place === "residential");
+    const after = {
+      ...START,
+      marketplace: [
+        ...START.marketplace,
+        ...(residential === undefined ? [] : [{ ...residential, card: null }]),
+      ],
+    };
+    const found = invariantViolations(transition(START, { type: "end_turn", seat: 1 }, after)).filter(
+      (violation) => violation.startsWith("I3"),
+    );
+    expect(found).toEqual([
+      "I3: the marketplace has 9 places",
+      "I3: the residential place is listed more than once",
+    ]);
+  });
+
   it("reports a kind place holding another kind and a card shown too long", () => {
     const after = {
       ...START,

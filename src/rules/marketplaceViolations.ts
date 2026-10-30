@@ -6,14 +6,19 @@ import { MARKETPLACE_PLACES } from "./MARKETPLACE_PLACES";
 
 const MARKETPLACE_SIZE = 8;
 
-export function marketplaceViolations(state: GameState): ReadonlyArray<string> {
-  const cards = state.marketplace.flatMap(({ card }) => (card === null ? [] : [card]));
+function placeCountViolations(state: GameState): ReadonlyArray<string> {
+  const places = state.marketplace.map(({ place }) => place);
   const tooMany =
-    state.marketplace.length > MARKETPLACE_SIZE
-      ? [`I3: the marketplace has ${String(cards.length)} cards in ${String(state.marketplace.length)} places`]
+    places.length > MARKETPLACE_SIZE
+      ? [`I3: the marketplace has ${String(places.length)} places`]
       : [];
+  const twice = places.filter((place, index) => places.indexOf(place) === index && places.lastIndexOf(place) !== index);
+  return [...tooMany, ...twice.map((place) => `I3: the ${place} place is listed more than once`)];
+}
+
+export function marketplaceViolations(state: GameState): ReadonlyArray<string> {
   return [
-    ...tooMany,
+    ...placeCountViolations(state),
     ...state.marketplace.flatMap(({ place, card, phasesShown }) => {
       const kind = MARKETPLACE_PLACES[place];
       const wrongKind =

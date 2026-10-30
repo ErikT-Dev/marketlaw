@@ -1,11 +1,24 @@
 import { BONUS_PER_FUND } from "./BONUS_PER_FUND";
 import { cardOf } from "../shared/catalogue/cardOf";
 import { FIRST_TURN_FOR_HIGHER_TIERS } from "./FIRST_TURN_FOR_HIGHER_TIERS";
-import { firstPlayerOf } from "./firstPlayerOf";
 import type { GameState } from "./GameState";
 import { seatOf } from "./seatOf";
 import { stateInvariantViolations } from "./stateInvariantViolations";
 import type { Transition } from "./Transition";
+
+function seatsAfter(fromSeat: number, toSeat: number, count: number): number {
+  return (toSeat - fromSeat + count) % count;
+}
+
+function expectedFirstSeat(state: GameState): number {
+  const count = state.seats.length;
+  const rotationSeat = ((state.turn - 1) % count) + 1;
+  const stillIn = state.seats.filter((seat) => !seat.hasLeft).map((seat) => seat.seat);
+  const byRotation = [...stillIn].sort(
+    (first, second) => seatsAfter(rotationSeat, first, count) - seatsAfter(rotationSeat, second, count),
+  );
+  return byRotation[0] ?? rotationSeat;
+}
 
 function holdingPileViolations(before: GameState, after: GameState): ReadonlyArray<string> {
   const isOutsideMainPhase = after.turn > before.turn || after.phase !== "main";
@@ -50,7 +63,7 @@ function acceptedViolations(transition: Transition, after: GameState): ReadonlyA
           .map((afterSeat) => `I10: seat ${afterSeat.seat} kept a bonus of 10 or more`)
       : [];
   const firstPlayer =
-    after.turn > before.turn && after.firstPlayer !== firstPlayerOf(after.turn, after.seats)
+    after.turn > before.turn && after.firstPlayer !== expectedFirstSeat(after)
       ? [`I20: turn ${String(after.turn)} starts with seat ${String(after.firstPlayer)} first`]
       : [];
   return [
