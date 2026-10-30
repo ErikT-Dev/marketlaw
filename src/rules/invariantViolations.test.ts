@@ -148,6 +148,19 @@ describe("invariantViolations", () => {
     ]);
   });
 
+  it("reports a time bank that grows or leaves 0 to 15 minutes", () => {
+    const grown = withSeat1(START, { timeBankMs: 900_001 });
+    const spent = withSeat1(START, { timeBankMs: 1_000 });
+    const found = [
+      ...invariantViolations(transition(START, { type: "end_turn", seat: 1 }, grown)),
+      ...invariantViolations(transition(spent, { type: "end_turn", seat: 1 }, START)),
+    ].filter((violation) => violation.startsWith("I19"));
+    expect(found).toEqual([
+      "I19: seat 1 time bank went from 900000 to 900001",
+      "I19: seat 1 time bank went from 1000 to 900000",
+    ]);
+  });
+
   it("reports a turn that starts with the wrong first player", () => {
     const after = { ...START, turn: 2, firstPlayer: 1 as const };
     expect(invariantViolations(transition(START, { type: "end_turn", seat: 1 }, after))).toEqual([

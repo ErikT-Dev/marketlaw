@@ -4,6 +4,7 @@ import { FIRST_TURN_FOR_HIGHER_TIERS } from "./FIRST_TURN_FOR_HIGHER_TIERS";
 import type { GameState } from "./GameState";
 import { seatOf } from "./seatOf";
 import { stateInvariantViolations } from "./stateInvariantViolations";
+import { TIME_BANK_MS } from "./TIME_BANK_MS";
 import type { Transition } from "./Transition";
 
 function seatsAfter(fromSeat: number, toSeat: number, count: number): number {
@@ -25,6 +26,17 @@ function holdingPileViolations(before: GameState, after: GameState): ReadonlyArr
   return isOutsideMainPhase && after.holdingPile.length > 0
     ? [`I2: the holding pile holds ${String(after.holdingPile.length)} cards outside the main phase`]
     : [];
+}
+
+function timeBankViolations(before: GameState, after: GameState): ReadonlyArray<string> {
+  return after.seats.flatMap((afterSeat) => {
+    const bank = afterSeat.timeBankMs;
+    const bankBefore = seatOf(before, afterSeat.seat)?.timeBankMs ?? bank;
+    const isOutOfRange = bank < 0 || bank > TIME_BANK_MS;
+    return isOutOfRange || bank > bankBefore
+      ? [`I19: seat ${String(afterSeat.seat)} time bank went from ${String(bankBefore)} to ${String(bank)}`]
+      : [];
+  });
 }
 
 function incomeViolations(before: GameState, after: GameState): ReadonlyArray<string> {
@@ -73,6 +85,7 @@ function acceptedViolations(transition: Transition, after: GameState): ReadonlyA
     ...firstPlayer,
     ...holdingPileViolations(before, after),
     ...incomeViolations(before, after),
+    ...timeBankViolations(before, after),
     ...stateInvariantViolations(after),
   ];
 }
