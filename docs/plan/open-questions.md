@@ -651,3 +651,20 @@ file.
   same moment keep the done order of R8.4; and `out_of_time` tells the player what happened.
 - **Implemented:** `harness/invariants.yaml` I27; `src/rules/receiveAction.ts`,
   `src/rules/hasTimedOutThisDecision.ts` (phase 14).
+
+## Q45. How much does a player's own discard shuffle add to the deck shown to them?
+
+- **Phase:** 15, item 4 (found by the simulator on complete games).
+- **Question:** R5.5 shows the deck "plus any discard shuffles you caused". The engine added the
+  shuffle's real count, but other players' hidden shuffles may already have taken some of those
+  discard cards, so the real count can be smaller than the discard pile shown to you. A player
+  could then draw more cards than their shown deck held and see a negative deck count (I24).
+- **Options:** add the real count; add the cards the shuffle takes from the discard pile shown to
+  the player.
+- **Solution:** a shuffle you caused moves the cards it takes from the discard pile shown to you
+  into the deck shown to you, so the two shown piles always add up and the deck never shows below
+  zero. Written into R5.5. The draw log still shows the real count.
+- **Why:** it keeps each player's view consistent with itself without revealing other players'
+  hidden shuffles.
+- **Implemented:** `harness/spec/game-rules.md` R5.5; `src/rules/pilesShownTo.ts`,
+  `tools/simulator/shownPilesViolations.ts` (phase 15).

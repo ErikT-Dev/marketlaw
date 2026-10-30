@@ -12,6 +12,8 @@ export function endGame(state: GameState, at: number): GameState {
       stats: { ...seat.stats, funds: seat.stats.funds + firstCompletionFundsOf(seat, firsts) },
     })),
     firstCompletions: [...state.firstCompletions, ...firsts],
+    discard: [...state.discard, ...state.holdingPile],
+    holdingPile: [],
   };
   return { ...rewarded, phase: "ended", result: gameResultOf(rewarded), clockStartedAt: at };
 }
