@@ -1,4 +1,5 @@
 import { receiveAction } from "../../rules/receiveAction";
+import type { EpochMs } from "../../shared/EpochMs";
 import type { PlayerId } from "../../shared/PlayerId";
 import { PROTOCOL_VERSION } from "../../shared/PROTOCOL_VERSION";
 import type { ClientMessage } from "../../shared/protocol/ClientMessage";
@@ -20,7 +21,7 @@ function updated(
   record: RoomRecord,
   connection: ConnectionState,
   playerId: PlayerId,
-  acceptedActionId: string | null,
+  reply: { readonly acceptedActionId: string | null; readonly now: EpochMs },
 ): MessageOutcome {
   return {
     record,
@@ -29,8 +30,9 @@ function updated(
     reply: {
       type: "update",
       protocolVersion: PROTOCOL_VERSION,
-      acceptedActionId,
+      acceptedActionId: reply.acceptedActionId,
       update: updateFor(record, playerId),
+      serverNow: reply.now,
     },
     playersToUpdate: [],
     shouldClose: false,
@@ -54,7 +56,7 @@ function handleAction(
     );
   }
   if (seat.acceptedActionIds.includes(message.actionId)) {
-    return updated(record, connection, playerId, message.actionId);
+    return updated(record, connection, playerId, { acceptedActionId: message.actionId, now });
   }
   if (message.stateVersion !== seat.stateVersion) {
     return reject("stale_state");
@@ -83,7 +85,7 @@ function handleAction(
   );
   const next = { ...record, game };
   return {
-    ...updated(next, connection, playerId, message.actionId),
+    ...updated(next, connection, playerId, { acceptedActionId: message.actionId, now }),
     shouldSave: true,
     playersToUpdate: playersWhoseUpdateChanged(record, next),
   };
@@ -106,6 +108,6 @@ export function handleMessage(input: MessageInput): MessageOutcome {
     return handleAction(input, bound, sender.playerId, message);
   }
   return record.players.some((player) => player.playerId === sender.playerId)
-    ? updated(record, bound, sender.playerId, null)
+    ? updated(record, bound, sender.playerId, { acceptedActionId: null, now })
     : rejectMessage(record, connection, { code: "not_in_game", actionId: null, now });
 }

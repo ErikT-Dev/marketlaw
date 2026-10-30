@@ -2,6 +2,7 @@ import * as v from "valibot";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { GameHost } from "../../shared/GameHost";
 import type { HostEvent } from "../../shared/HostEvent";
+import { EpochMs } from "../../shared/EpochMs";
 import type { ReasonCode } from "../../shared/ReasonCode";
 import { RoomCode } from "../../shared/RoomCode";
 import { roomUpdateWith } from "../testing/roomUpdateWith";
@@ -75,7 +76,12 @@ describe("client store moves", () => {
     expect(fake.store.getSnapshot().pendingActions).toEqual([
       { id: "action-1", action: { type: "end_turn" } },
     ]);
-    fake.emit({ type: "update", update: roomUpdateWith({}), acceptedActionId: "action-1" });
+    fake.emit({
+      type: "update",
+      update: roomUpdateWith({}),
+      acceptedActionId: "action-1",
+      serverNow: v.parse(EpochMs, 0),
+    });
     expect(fake.store.getSnapshot().pendingActions).toEqual([]);
   });
 

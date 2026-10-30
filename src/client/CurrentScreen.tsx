@@ -33,6 +33,9 @@ export function CurrentScreen({ store }: Props) {
       rejectedMove={state.rejectedMove}
       onAction={store.sendAction}
       onDismissRejection={store.dismissRejection}
+      serverClockOffsetMs={state.serverClockOffsetMs}
+      timeOutNotice={state.timeOutNotice}
+      onDismissTimeOutNotice={store.dismissTimeOutNotice}
     />
   );
 }

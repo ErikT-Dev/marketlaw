@@ -1,3 +1,4 @@
+import type { EpochMs } from "../EpochMs";
 import type { Notice } from "../Notice";
 import type { ReasonCode } from "../ReasonCode";
 import type { RoomUpdate } from "./RoomUpdate";
@@ -8,6 +9,7 @@ export type ServerMessage =
       readonly protocolVersion: number;
       readonly acceptedActionId: string | null;
       readonly update: RoomUpdate;
+      readonly serverNow: EpochMs;
     }
   | {
       readonly type: "rejected";

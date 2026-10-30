@@ -118,6 +118,7 @@ export const SERVER_MESSAGE_SCHEMA = v.variant("type", [
       }),
       game: v.nullable(v.object({ stateVersion: COUNT, view: PLAYER_VIEW })),
     }),
+    serverNow: EpochMs,
   }),
   v.object({
     type: v.literal("rejected"),

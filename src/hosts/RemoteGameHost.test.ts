@@ -67,6 +67,7 @@ const ROOM_UPDATE_TEXT = JSON.stringify({
   protocolVersion: 1,
   acceptedActionId: null,
   update: { room: { code: "K7QR2P", size: 2, playerNames: ["Ann"], mySeat: null }, game: null },
+  serverNow: 5000,
 });
 
 const SOCKET_URL = "ws://test/api/rooms/K7QR2P/socket";

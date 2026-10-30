@@ -203,6 +203,7 @@ export class GameRoom extends DurableObject<Env> {
           protocolVersion: PROTOCOL_VERSION,
           acceptedActionId: null,
           update: updateFor(record, identity.playerId),
+          serverNow: v.parse(EpochMs, Date.now()),
         };
         socket.send(JSON.stringify(update));
       }
