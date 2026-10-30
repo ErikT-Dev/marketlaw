@@ -338,7 +338,8 @@ file.
   shown, and may make the seat of a shuffle optional.
 - **Why:** no place empties and nothing is refilled before phase 12, so no refill shuffle can
   happen yet.
-- **Implemented:** `src/rules/takeIncome.ts`, `src/shared/DrawLogEntry.ts`; open for phase 12.
+- **Implemented:** `src/rules/takeIncome.ts`, `src/shared/DrawLogEntry.ts`; closed by Q38 (phase 12),
+  which logs a refill shuffle with no seat.
 
 ## Q24. The phase 08 invariants on the required list
 

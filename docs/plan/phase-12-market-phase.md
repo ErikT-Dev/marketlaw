@@ -100,19 +100,59 @@ These 25 scenarios are added to `harness/required.yaml` in this phase, by file a
   so everything fits at 1280×720. Browser test in two windows and an empty-marketplace test room,
   with screenshots of the four market boards.
 
-**Where the phase stands (2026-10-30).** All four items are built; the 25 scenarios and I3, I4,
-I20 are required and pass; `npm run check` (242 tests, about 2 min), `npm run harness` (5,000
-games, about 9.5 min, up from 2.5 min on master) and the browser tests (45) pass. The phase review
-has run. Next: fix its findings, then the report, merge and deploy:
-1. Chaos bot option A can pick a marketplace card; its test passes only by seed. Pick from cards
-   neither held nor in the marketplace.
-2. I20 compares with `firstPlayerOf`, the engine's own function; compute the expected seat on its
-   own from the seat numbers.
-3. I3 does not catch a place listed twice, and its message counts cards instead of places.
-4. Draw log: an option B with two tiers shows as two lines, and a go that drew nothing says
-   "drew 0 cards". Show one line per go.
-5. A new card loses its "new" mark while selected or marked to sell; make "new" a separate prop.
-6. Q23 still says open; point it to Q38.
-Also for the report: the market-empty text differs from the board ("All 8 places were taken"), the
-action area always shows the S4.4 text, and the Quests panel is thin at 1280×720 in the market
-phase until phase 13.
+**Where the phase stands (2026-10-30).** All four items are built and the six review findings
+are fixed. `npm run check` (246 tests), `npm run harness` (5,000 games, about 10 min, up from
+2.5 min on master) and the browser tests (45) pass. Next: merge and deploy.
+
+## Report
+
+**What was built.**
+- **Start of turn (R4.1, R18.4, R18.5):** from turn 2, cards shown in 2 market phases go to the
+  discard pile after the sold cards, then the empty places refill in R18.5's order, a kind place
+  falling back to another tier of its kind and staying empty when none is left. A refill that
+  shuffles the discard pile into the deck shows in the draw log as the marketplace's (Q38).
+- **First player and player order (R4.4, R4.5):** the first player moves one seat each turn and
+  skips players who left; the top bar shows the order with "first player".
+- **Market phase (R18.8, R18.9):** one go per player still in the game, in player order. Option A
+  takes a marketplace card and draws 1 card of its sector; option B draws 2 cards of a chosen
+  sector; with an empty marketplace only option B is offered. A taken card is known to everyone to
+  be in that hand until it is played or sold (M3.3).
+- **"New" marks (R18.10, S6.4):** every card that came into a hand this turn is marked new until
+  the main phase ends.
+- **Screens (S4, S7.2):** the marketplace with its 8 places, bonus types, deck and discard; the
+  market go panel in place of the city in its four states; turn draws and refill shuffles in the
+  draw log, one line per go.
+- **Checks:** 25 scenarios and I3, I4, I20 required; save version 8. Bots take market goes, and the
+  simulator and leak test play the market phase.
+
+**What to try (after the merge).** Play a two-window game into turn 2: the turn opens with the
+market phase, the first player has moved to seat 2, and one window takes a marketplace card (it
+shows as new in the hand) while the other waits for its go. Or start a test room
+(`docs/test-rooms.md`) with `npm run test-room -- marketplace 1` or, for an empty marketplace,
+`marketplace 3`.
+
+**Differences from the phase file.** None in what is built. Differences from the design boards,
+all following the spec: the "Market: marketplace empty" board says "All 8 places were taken", the
+app says the marketplace is empty, as S4.3 does; the action area always shows S4.4's notice in the
+market phase; marketplace cards show no price (S17). At 1280×720 the (still empty) Quests panel is
+thin in the market phase, because the go panel takes its own height; quests arrive in phase 13.
+The harness now takes about 10 minutes for 5,000 games, up from 2.5: games are longer with the
+market phase.
+
+**Decisions:** Q38 (refill shuffles are logged with no seat, closes Q23), Q39 (`marketplace_empty`
+before `card_not_in_marketplace`).
+
+**Phase review findings and what happened to each:**
+1. **The chaos bot's option A could pick a marketplace card, and its test passed only by seed.**
+   Fixed: it picks from cards neither held nor shown; the test fills the marketplace with every
+   other card, so only one answer is right.
+2. **I20 compared with the engine's own `firstPlayerOf`.** Fixed: the check computes the expected
+   seat from the seat numbers itself; a test covers a rotation seat that has left.
+3. **I3 missed a place listed twice, and its message counted cards instead of places.** Fixed, with
+   a test.
+4. **The draw log showed an option B over two tiers as two lines and could say "drew 0 cards".**
+   Fixed in the client: a go's entries become one line ("drew 2 cards: Public, 1 of tier 1 and 1 of
+   tier 2", or "drew no cards"). The log entries and the scenarios that read them are unchanged.
+5. **A new card lost its "new" mark while selected or marked to sell.** Fixed: "new" is its own
+   property of a hand card; a selected or marked new card shows an inner ring in the new colour.
+6. **Q23 still said open.** Fixed: it points to Q38.
