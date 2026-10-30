@@ -9,6 +9,9 @@ export const GAME_RESULT_SCHEMA = v.object({
       score: v.number(),
       bonusTypePoints: v.number(),
       hasLeft: v.boolean(),
+      hasReachedEndGoal: v.boolean(),
+      income: v.number(),
+      fundsAndHand: v.number(),
     }),
   ),
 });

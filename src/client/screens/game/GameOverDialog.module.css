@@ -1,0 +1,43 @@
+.why,
+.note {
+  margin: 0 0 var(--space-md);
+  color: var(--color-text-secondary);
+}
+
+.note {
+  margin-top: var(--space-md);
+  font-size: var(--font-size-xs);
+}
+
+.table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 var(--space-sm);
+  color: var(--color-text-primary);
+  text-align: left;
+}
+
+.table th,
+.table td {
+  padding: var(--space-sm) var(--space-md);
+}
+
+.table thead th {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+}
+
+.table tbody tr {
+  background: var(--color-panel-raised);
+}
+
+.table tbody tr.winner {
+  background: color-mix(in srgb, var(--color-toast-success) 25%, var(--color-panel-raised));
+}
+
+.buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-sm);
+  margin-top: var(--space-md);
+}

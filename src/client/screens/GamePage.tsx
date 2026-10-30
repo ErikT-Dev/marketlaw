@@ -1,18 +1,17 @@
+import { useState } from "react";
 import type { Notice } from "../../shared/Notice";
 import type { ActionIntent } from "../../shared/protocol/ActionIntent";
 import type { RoomUpdate } from "../../shared/protocol/RoomUpdate";
-import { Toast } from "../components/Toast";
 import type { PendingAction } from "../store/PendingAction";
 import type { RejectedMove } from "../store/RejectedMove";
 import styles from "./game/GamePage.module.css";
-import { DrawLogPanel } from "./game/DrawLogPanel";
+import { GameOverDialog } from "./game/GameOverDialog";
+import { GameToasts } from "./game/GameToasts";
 import { GameTopBar } from "./game/GameTopBar";
+import { LeftColumn } from "./game/LeftColumn";
 import { MiddleColumn } from "./game/MiddleColumn";
-import { rejectionMessage } from "./game/rejectionMessage";
 import { RightColumn } from "./game/RightColumn";
 import { ServerClockOffset } from "./game/ServerClockOffset";
-import { timeOutText } from "./game/timeOutText";
-import { OpponentsPanel } from "./game/OpponentsPanel";
 
 type Props = {
   readonly update: RoomUpdate;
@@ -23,10 +22,12 @@ type Props = {
   readonly serverClockOffsetMs: number;
   readonly timeOutNotice: Notice | null;
   readonly onDismissTimeOutNotice: () => void;
+  readonly onExitToLobby: () => void;
 };
 
 export function GamePage(props: Props) {
   const { update, rejectedMove } = props;
+  const [isResultClosed, setIsResultClosed] = useState(false);
   const view = update.game?.view;
   const mine = view?.seats.find((seat) => seat.kind === "own");
   if (view === undefined || mine?.kind !== "own") {
@@ -38,10 +39,7 @@ export function GamePage(props: Props) {
       <div className={styles["page"]}>
         <GameTopBar view={view} seat={mine} playerNames={playerNames} />
         <main className={styles["table"]}>
-          <div className={styles["left"]}>
-            <OpponentsPanel view={view} playerNames={playerNames} />
-            <DrawLogPanel drawLog={view.drawLog} playerNames={playerNames} />
-          </div>
+          <LeftColumn view={view} playerNames={playerNames} />
           <MiddleColumn
             view={view}
             seat={mine}
@@ -55,26 +53,34 @@ export function GamePage(props: Props) {
             playerNames={playerNames}
             pendingActions={props.pendingActions}
             onAction={props.onAction}
+            onShowResult={
+              view.result === null
+                ? null
+                : () => {
+                    setIsResultClosed(false);
+                  }
+            }
           />
         </main>
-        <div className={styles["toasts"]}>
-          {props.timeOutNotice === null ? null : (
-            <Toast
-              kind="warning"
-              title="Your time ran out"
-              text={timeOutText(props.timeOutNotice)}
-              onClose={props.onDismissTimeOutNotice}
-            />
-          )}
-          {rejectedMove === null ? null : (
-            <Toast
-              kind="error"
-              title="Move rejected"
-              text={rejectionMessage(rejectedMove, mine)}
-              onClose={props.onDismissRejection}
-            />
-          )}
-        </div>
+        {view.result === null || isResultClosed ? null : (
+          <GameOverDialog
+            result={view.result}
+            turn={view.turn}
+            viewer={view.seat}
+            playerNames={playerNames}
+            onExitToLobby={props.onExitToLobby}
+            onClose={() => {
+              setIsResultClosed(true);
+            }}
+          />
+        )}
+        <GameToasts
+          seat={mine}
+          timeOutNotice={props.timeOutNotice}
+          rejectedMove={rejectedMove}
+          onDismissTimeOutNotice={props.onDismissTimeOutNotice}
+          onDismissRejection={props.onDismissRejection}
+        />
       </div>
     </ServerClockOffset.Provider>
   );

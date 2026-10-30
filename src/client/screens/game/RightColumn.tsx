@@ -20,6 +20,7 @@ type Props = {
   readonly playerNames: ReadonlyArray<string>;
   readonly pendingActions: ReadonlyArray<PendingAction>;
   readonly onAction: (action: ActionIntent) => void;
+  readonly onShowResult: (() => void) | null;
 };
 
 function namesStillPlaying(view: PlayerView, playerNames: ReadonlyArray<string>) {
@@ -28,7 +29,8 @@ function namesStillPlaying(view: PlayerView, playerNames: ReadonlyArray<string>)
     .map((seat) => playerNameOf(playerNames, seat.seat));
 }
 
-export function RightColumn({ view, seat, playerNames, pendingActions, onAction }: Props) {
+export function RightColumn(props: Props) {
+  const { view, seat, playerNames, pendingActions, onAction } = props;
   const { choice, selected, pressCard, clear, playSelected, sell } = useHandMoves(
     seat.hand,
     onAction,
@@ -49,6 +51,7 @@ export function RightColumn({ view, seat, playerNames, pendingActions, onAction 
       <ActionsPanel
         seat={seat}
         isMarketPhase={view.phase === "market"}
+        onShowResult={props.onShowResult}
         choice={choice}
         waitingFor={namesStillPlaying(view, playerNames)}
         isEndTurnPending={pendingActions.some(({ action }) => action.type === "end_turn")}

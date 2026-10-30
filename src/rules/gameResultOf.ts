@@ -31,6 +31,9 @@ export function gameResultOf(state: GameState): GameResult {
       score: scoreOf(seat, state.turn, bonusTypePoints),
       bonusTypePoints,
       hasLeft: seat.hasLeft,
+      hasReachedEndGoal: hasReachedEndGoal(seat),
+      income: seat.stats.income,
+      fundsAndHand: seat.stats.funds + seat.hand.length,
     };
   });
   return {
