@@ -23,6 +23,7 @@ const SEAT_STATE = v.object({
   combosClaimed: v.array(v.object({ card: CardName, combo: v.number(), times: v.number() })),
   projects: v.array(ProjectName),
   projectsThisTurn: v.array(ProjectName),
+  questsCompleted: v.array(QuestName),
   buildPasses: v.number(),
   buildPassesBought: v.number(),
   hasPlayedThisTurn: v.boolean(),

@@ -2,6 +2,7 @@ import type { Rejection } from "../shared/Rejection";
 import type { Result } from "../shared/Result";
 import { claimAll } from "./claimAll";
 import { completeProject } from "./completeProject";
+import { completeQuest } from "./completeQuest";
 import { endTurn } from "./endTurn";
 import type { GameAction } from "./GameAction";
 import type { GameState } from "./GameState";
@@ -34,6 +35,12 @@ function accepted(state: GameState, action: GameAction, random: Random): GameSta
     case "complete_project":
       return takeIncome(
         completeProject(state, action.seat, action.project, random),
+        action.seat,
+        random,
+      );
+    case "complete_quest":
+      return takeIncome(
+        completeQuest(state, action.seat, action.quest, random),
         action.seat,
         random,
       );

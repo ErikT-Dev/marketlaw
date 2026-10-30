@@ -33,6 +33,7 @@ const SEAT = v.strictObject({
     v.array(v.strictObject({ card: CardName, combo: v.string(), times: COUNT })),
   ),
   projects: v.optional(v.array(ProjectName)),
+  quests_completed: v.optional(v.array(QUEST_NAME)),
   build_passes: v.optional(COUNT),
   build_passes_bought: v.optional(COUNT),
   played_this_turn: v.optional(v.boolean()),

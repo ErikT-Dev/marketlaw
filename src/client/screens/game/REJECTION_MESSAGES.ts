@@ -16,6 +16,9 @@ export const REJECTION_MESSAGES: Readonly<Record<ReasonCode, string>> = {
   no_build_pass: "You already played a card this turn. A build pass lets you play another.",
   build_skipped: "You skipped build this turn, so you cannot play a card.",
   nothing_to_claim: "No combo is ready to claim.",
+  quest_not_on_table: "That quest is no longer on the table.",
+  quest_already_completed: "You already completed this quest.",
+  quest_needs_not_met: "You do not meet this quest's requirement yet.",
   project_already_completed: "You already completed this project.",
   project_needs_not_met:
     "You need 8 of the stat, and no negative workforce, quality or satisfaction.",

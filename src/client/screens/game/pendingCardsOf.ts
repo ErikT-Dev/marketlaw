@@ -13,6 +13,7 @@ export function pendingCardsOf(
       case "end_turn":
       case "claim_all":
       case "complete_project":
+      case "complete_quest":
       case "influence":
       case "draw_action":
       case "undo":

@@ -15,6 +15,7 @@ const SEAT_FIELDS = [
   "time_bank_ms",
   "combos_claimed",
   "projects",
+  "quests_completed",
   "market",
   "new_cards",
 ];
@@ -45,6 +46,7 @@ export const ENGINE_FIELDS = {
     "end_turn",
     "claim_all",
     "complete_project",
+    "complete_quest",
     "influence",
     "undo",
     "turn_draw",

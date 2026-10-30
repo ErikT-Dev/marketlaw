@@ -16,6 +16,7 @@ export function seatThen(seat: SeatState): Readonly<Record<string, unknown>> {
       times,
     })),
     projects: seat.projects,
+    quests_completed: seat.questsCompleted,
     build_passes: seat.buildPasses,
     build_passes_bought: seat.buildPassesBought,
     played_this_turn: seat.hasPlayedThisTurn,

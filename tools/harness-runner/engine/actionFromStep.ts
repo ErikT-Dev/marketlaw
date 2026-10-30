@@ -2,6 +2,7 @@ import * as v from "valibot";
 import type { GameAction } from "../../../src/rules/GameAction.ts";
 import { CardName } from "../../../src/shared/catalogue/CardName.ts";
 import { Kind } from "../../../src/shared/catalogue/Kind.ts";
+import { QuestName } from "../../../src/shared/catalogue/QuestName.ts";
 import { Sector } from "../../../src/shared/catalogue/Sector.ts";
 import { ProjectName } from "../../../src/shared/ProjectName.ts";
 import { TradeName } from "../../../src/shared/TradeName.ts";
@@ -28,6 +29,7 @@ const STEP_SCHEMA = v.variant("action", [
     sector: v.optional(Sector),
   }),
   v.strictObject({ seat: SEAT, action: v.literal("complete_project"), project: ProjectName }),
+  v.strictObject({ seat: SEAT, action: v.literal("complete_quest"), quest: QuestName }),
   v.strictObject({
     seat: SEAT,
     action: v.literal("influence"),
@@ -90,6 +92,8 @@ export function actionFromStep(step: Readonly<Record<string, unknown>>): GameAct
       return { type: "undo", seat: parsed.seat };
     case "complete_project":
       return { type: "complete_project", seat: parsed.seat, project: parsed.project };
+    case "complete_quest":
+      return { type: "complete_quest", seat: parsed.seat, quest: parsed.quest };
     case "influence":
       return influenceAction(parsed.seat, parsed.trade, parsed.kind);
     case "turn_draw":

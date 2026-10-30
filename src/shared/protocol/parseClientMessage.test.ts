@@ -14,9 +14,10 @@ function actionMessage(action: Readonly<Record<string, unknown>>): string {
 }
 
 describe("parseClientMessage", () => {
-  it("reads influence, draw action and undo intents", () => {
+  it("reads influence, quest, draw action and undo intents", () => {
     const intents = [
       { type: "influence", trade: "skip_build" },
+      { type: "complete_quest", quest: "Trading post" },
       { type: "draw_action", kind: "Industry", tier: 2 },
       { type: "undo" },
     ];
@@ -35,10 +36,13 @@ describe("parseClientMessage", () => {
     });
   });
 
-  it("rejects malformed influence, draw action and undo intents as malformed", () => {
+  it("rejects malformed influence, quest, draw action and undo intents as malformed", () => {
     const intents = [
       { type: "influence", trade: "steal" },
       { type: "influence" },
+      { type: "complete_quest", quest: "Atlantis" },
+      { type: "complete_quest" },
+      { type: "complete_quest", quest: "Trading post", seat: 2 },
       { type: "draw_action", kind: "Industry", tier: 4 },
       { type: "draw_action", kind: "Dragons", tier: 1 },
       { type: "draw_action", kind: "Industry", tier: 1, count: 3 },
