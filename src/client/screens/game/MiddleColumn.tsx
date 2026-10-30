@@ -1,13 +1,13 @@
 import type { OwnSeatView } from "../../../shared/OwnSeatView";
 import type { PlayerView } from "../../../shared/PlayerView";
 import type { ActionIntent } from "../../../shared/protocol/ActionIntent";
-import { Panel } from "../../components/Panel";
 import { CityPanel } from "./CityPanel";
 import { CombosPanel } from "./CombosPanel";
 import styles from "./GamePage.module.css";
 import { MarketGoPanel } from "./MarketGoPanel";
 import { marketGoStateOf } from "./marketGoStateOf";
 import { MarketplacePanel } from "./MarketplacePanel";
+import { QuestsPanel } from "./QuestsPanel";
 
 type Props = {
   readonly view: PlayerView;
@@ -32,7 +32,15 @@ export function MiddleColumn({ view, seat, playerNames, isBusy, onAction }: Prop
             : null
         }
       />
-      <Panel title="Quests" />
+      <QuestsPanel
+        quests={view.quests}
+        viewer={view.seat}
+        playerNames={playerNames}
+        isBusy={isBusy}
+        onComplete={(quest) => {
+          onAction({ type: "complete_quest", quest });
+        }}
+      />
       {view.phase === "market" ? (
         <MarketGoPanel
           state={marketGoStateOf(view, seat, playerNames)}
