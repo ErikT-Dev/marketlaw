@@ -12,7 +12,9 @@ import type { RoomCode } from "../shared/RoomCode";
 import { ConnectionAttachment } from "./ConnectionAttachment";
 import { findPlayerByTokenHash } from "./findPlayerByTokenHash";
 import { ROOM_GONE_CLOSE_CODE } from "../shared/ROOM_GONE_CLOSE_CODE";
+import { alarmChangeFor } from "./room/alarmChangeFor";
 import { createRoomIn } from "./room/createRoomIn";
+import { fireAlarm } from "./room/fireAlarm";
 import type { Identity } from "./room/Identity";
 import { joinRoomIn } from "./room/joinRoomIn";
 import { loadRoom } from "./room/loadRoom";
@@ -51,28 +53,43 @@ export class GameRoom extends DurableObject<Env> {
     return createRoomIn(this.storage, { code, size }, owner);
   }
 
-  startTestRoom(
+  async startTestRoom(
     code: RoomCode,
     seed: number,
     players: ReadonlyArray<Identity>,
     state: GameState,
-  ): boolean {
-    return startTestRoomIn(
+  ): Promise<boolean> {
+    const isStarted = startTestRoomIn(
       this.storage,
       { code, seed, now: v.parse(EpochMs, Date.now()) },
       players,
       state,
     );
+    await this.syncAlarm();
+    return isStarted;
   }
 
-  joinRoom(joining: Identity): ReasonCode | null {
+  async joinRoom(joining: Identity): Promise<ReasonCode | null> {
     const seed = crypto.getRandomValues(new Uint32Array(1))[0] ?? 0;
     const before = this.storage.read();
     const reason = joinRoomIn(this.storage, joining, { seed, now: v.parse(EpochMs, Date.now()) });
     if (reason === null && this.storage.read() !== before) {
       this.updateEveryone(null);
     }
+    await this.syncAlarm();
     return reason;
+  }
+
+  override async alarm(): Promise<void> {
+    const record = loadRoom(this.storage);
+    if (record !== null) {
+      const fired = fireAlarm(record, v.parse(EpochMs, Date.now()), randomForNextAction);
+      if (fired !== record) {
+        this.storage.write(fired);
+        this.updateEveryone(null);
+      }
+    }
+    await this.syncAlarm();
   }
 
   override fetch(request: Request): Response {
@@ -116,6 +133,20 @@ export class GameRoom extends DurableObject<Env> {
     this.updatePlayers(outcome.playersToUpdate, socket);
     if (outcome.shouldClose) {
       socket.close(1008, "Too many rejected messages");
+    }
+    await this.syncAlarm();
+  }
+
+  private async syncAlarm(): Promise<void> {
+    const change = alarmChangeFor(await this.ctx.storage.getAlarm(), loadRoom(this.storage));
+    switch (change.kind) {
+      case "keep":
+        return;
+      case "set":
+        await this.ctx.storage.setAlarm(change.at);
+        return;
+      case "delete":
+        await this.ctx.storage.deleteAlarm();
     }
   }
 

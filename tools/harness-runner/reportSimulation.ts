@@ -29,6 +29,7 @@ export function reportSimulation(
     `${String(simulation.acceptedActions)} accepted actions over ${String(simulation.turnsPlayed)} turns: ${acceptedByTypeText(simulation)}`,
     `invariants checked after every message: ${checkedInvariants.join(", ")}; every game replayed from its seed and action log (I26)`,
     `rows written: at most ${String(simulation.mostRowsPerAcceptedAction)} per accepted action (B1), ${String(simulation.mostRowsPerOtherMessage)} for any other message (B2)`,
+    `alarm changes: the busiest turn made ${String(simulation.mostAlarmChangesOverAllowance)} more than its allowance of market goes + players + 2 (B3, measured as the amount over, limit 0)`,
   ];
   const list = facts.map((fact) => `<li>${escapeHtml(fact)}</li>`).join("");
   return `<h2>Simulation</h2><p>${statusBadge(status)}</p><ul>${list}${shortestFailures(simulation)}</ul>`;

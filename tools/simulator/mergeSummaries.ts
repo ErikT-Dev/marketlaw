@@ -38,6 +38,10 @@ export function mergeSummaries(summaries: ReadonlyArray<SimulationSummary>): Sim
         merged.mostRowsPerOtherMessage,
         summary.mostRowsPerOtherMessage,
       ),
+      mostAlarmChangesOverAllowance: Math.max(
+        merged.mostAlarmChangesOverAllowance,
+        summary.mostAlarmChangesOverAllowance,
+      ),
       violationCounts: addCounts(merged.violationCounts, summary.violationCounts),
       shortestViolations: shortestPerInvariant([
         ...merged.shortestViolations,

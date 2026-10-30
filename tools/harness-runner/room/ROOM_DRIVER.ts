@@ -72,6 +72,10 @@ function startSession(
         session.sendRaw({ seat: step["seat"], message: step });
         return;
       }
+      if (typeof step["wait_ms"] === "number") {
+        session.wait(step["wait_ms"], step["alarm_fires"] !== false);
+        return;
+      }
       if (!isRecord(step["raw"])) {
         throw new Error("the room driver runs game steps and raw messages only");
       }
@@ -106,7 +110,7 @@ const SEAT_FIELDS = ENGINE_FIELDS.nestedFields.get("given.seats") ?? new Set<str
 export const ROOM_DRIVER: ScenarioDriver = {
   name: "room",
   givenFields: new Set([...ENGINE_FIELDS.givenFields, "room", "accounts"]),
-  steps: new Set(["raw", "play_card", "sell", "end_turn"]),
+  steps: new Set(["raw", "play_card", "sell", "end_turn", "wait_ms"]),
   thenFields: ENGINE_FIELDS.thenFields,
   nestedFields: new Map([
     ...ENGINE_FIELDS.nestedFields,

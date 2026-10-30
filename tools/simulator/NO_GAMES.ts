@@ -7,6 +7,7 @@ export const NO_GAMES: SimulationSummary = {
   turnsPlayed: 0,
   mostRowsPerAcceptedAction: 0,
   mostRowsPerOtherMessage: 0,
+  mostAlarmChangesOverAllowance: 0,
   violationCounts: {},
   shortestViolations: [],
 };

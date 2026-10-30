@@ -9,6 +9,7 @@ export type SimulatedGame = {
   readonly violations: ReadonlyArray<string>;
   readonly rowsPerAcceptedAction: ReadonlyArray<number>;
   readonly rowsPerOtherMessage: ReadonlyArray<number>;
+  readonly mostAlarmChangesOverAllowance: number;
   readonly turnsPlayed: number;
   readonly acceptedActions: number;
   readonly acceptedByType: Readonly<Record<string, number>>;

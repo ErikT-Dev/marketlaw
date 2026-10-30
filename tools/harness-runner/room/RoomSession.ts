@@ -9,6 +9,8 @@ import type { RoomStorage } from "../../../src/server/room/RoomStorage.ts";
 import type { Identity } from "../../../src/server/room/Identity.ts";
 import { ROOM_SCHEMA_VERSION } from "../../../src/server/room/ROOM_SCHEMA_VERSION.ts";
 import type { RoomRecord } from "../../../src/server/room/RoomRecord.ts";
+import { fireAlarm } from "../../../src/server/room/fireAlarm.ts";
+import { nextAlarmAt } from "../../../src/server/room/nextAlarmAt.ts";
 import { EpochMs } from "../../../src/shared/EpochMs.ts";
 import { PlayerId } from "../../../src/shared/PlayerId.ts";
 import { parseClientMessage } from "../../../src/shared/protocol/parseClientMessage.ts";
@@ -98,6 +100,22 @@ export class RoomSession {
     const identity = { playerId: v.parse(PlayerId, randomUUID()), name };
     this.accounts.set(name, identity);
     return identity;
+  }
+
+  wait(ms: number, doesAlarmFire: boolean): void {
+    const until = v.parse(EpochMs, this.now + ms);
+    for (
+      let alarm = nextAlarmAt(this.record);
+      doesAlarmFire && alarm !== null && alarm <= until;
+      alarm = nextAlarmAt(this.record)
+    ) {
+      this.now = v.parse(EpochMs, alarm);
+      const fired = fireAlarm(this.record, this.now, () => this.random);
+      if (fired !== this.record) {
+        this.storage.write(fired);
+      }
+    }
+    this.now = until;
   }
 
   sendRaw(raw: Readonly<Record<string, unknown>>): void {
