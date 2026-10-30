@@ -5,6 +5,7 @@ import { QuestName } from "../../shared/catalogue/QuestName";
 import { TypeName } from "../../shared/catalogue/TypeName";
 import { ProjectName } from "../../shared/ProjectName";
 import { TradeName } from "../../shared/TradeName";
+import { GAME_RESULT_SCHEMA } from "../../shared/protocol/GAME_RESULT_SCHEMA";
 import { DRAW_LOG_ENTRY_SCHEMA } from "../../shared/protocol/DRAW_LOG_ENTRY_SCHEMA";
 import { MARKETPLACE_SLOT_SCHEMA } from "../../shared/protocol/MARKETPLACE_SLOT_SCHEMA";
 import { SEAT_NUMBER_SCHEMA } from "../../shared/protocol/SEAT_NUMBER_SCHEMA";
@@ -55,4 +56,5 @@ export const GAME_STATE_SCHEMA = v.object({
   drawLog: v.array(DRAW_LOG_ENTRY_SCHEMA),
   firstCompletions: v.array(ProjectName),
   clockStartedAt: EpochMs,
+  result: v.nullable(GAME_RESULT_SCHEMA),
 });

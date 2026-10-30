@@ -98,5 +98,6 @@ export function viewFor(state: GameState, viewer: SeatNumber): PlayerView {
     playerOrder: playerOrderOf(state),
     drawLog: piles.drawLog,
     firstCompletions: state.firstCompletions,
+    result: state.result,
   };
 }

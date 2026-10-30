@@ -3,6 +3,7 @@ import type { TypeName } from "./catalogue/TypeName";
 import type { DrawLogEntry } from "./DrawLogEntry";
 import type { ProjectName } from "./ProjectName";
 import type { GamePhase } from "./GamePhase";
+import type { GameResult } from "./GameResult";
 import type { MarketplaceSlot } from "./MarketplaceSlot";
 import type { OtherSeatView } from "./OtherSeatView";
 import type { OwnSeatView } from "./OwnSeatView";
@@ -25,4 +26,5 @@ export type PlayerView = {
   readonly playerOrder: ReadonlyArray<SeatNumber>;
   readonly drawLog: ReadonlyArray<DrawLogEntry>;
   readonly firstCompletions: ReadonlyArray<ProjectName>;
+  readonly result: GameResult | null;
 };

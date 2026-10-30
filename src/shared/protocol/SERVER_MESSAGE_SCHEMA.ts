@@ -10,6 +10,7 @@ import { RoomCode } from "../RoomCode";
 import { TradeName } from "../TradeName";
 import { DRAW_LOG_ENTRY_SCHEMA } from "./DRAW_LOG_ENTRY_SCHEMA";
 import { MARKETPLACE_SLOT_SCHEMA } from "./MARKETPLACE_SLOT_SCHEMA";
+import { GAME_RESULT_SCHEMA } from "./GAME_RESULT_SCHEMA";
 import { QUEST_PLACE_VIEW_SCHEMA } from "./QUEST_PLACE_VIEW_SCHEMA";
 import { SEAT_NUMBER_SCHEMA } from "./SEAT_NUMBER_SCHEMA";
 import { STATS_SCHEMA } from "./STATS_SCHEMA";
@@ -102,6 +103,7 @@ const PLAYER_VIEW = v.object({
   playerOrder: v.array(SEAT),
   drawLog: v.array(DRAW_LOG_ENTRY_SCHEMA),
   firstCompletions: PROJECTS,
+  result: v.nullable(GAME_RESULT_SCHEMA),
 });
 
 export const SERVER_MESSAGE_SCHEMA = v.variant("type", [

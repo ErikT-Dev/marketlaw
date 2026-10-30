@@ -1,6 +1,7 @@
 import { BONUS_PER_FUND } from "./BONUS_PER_FUND";
 import { cardOf } from "../shared/catalogue/cardOf";
 import { FIRST_TURN_FOR_HIGHER_TIERS } from "./FIRST_TURN_FOR_HIGHER_TIERS";
+import { gameEndViolations } from "./gameEndViolations";
 import type { GameState } from "./GameState";
 import { seatOf } from "./seatOf";
 import { stateInvariantViolations } from "./stateInvariantViolations";
@@ -86,6 +87,7 @@ function acceptedViolations(transition: Transition, after: GameState): ReadonlyA
     ...holdingPileViolations(before, after),
     ...incomeViolations(before, after),
     ...timeBankViolations(before, after),
+    ...gameEndViolations(before, after),
     ...stateInvariantViolations(after),
   ];
 }
