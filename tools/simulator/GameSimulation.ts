@@ -7,6 +7,7 @@ import { randomForNextAction } from "../../src/rules/randomForNextAction.ts";
 import { startSavedGame } from "../../src/rules/startSavedGame.ts";
 import type { Identity } from "../../src/server/room/Identity.ts";
 import { fireAlarm } from "../../src/server/room/fireAlarm.ts";
+import { playersWhoseUpdateChanged } from "../../src/server/room/playersWhoseUpdateChanged.ts";
 import { receiveMessage } from "../../src/server/room/receiveMessage.ts";
 import { ROOM_SCHEMA_VERSION } from "../../src/server/room/ROOM_SCHEMA_VERSION.ts";
 import type { RoomRecord } from "../../src/server/room/RoomRecord.ts";
@@ -164,6 +165,21 @@ export class GameSimulation {
         this.rowsPerAcceptedAction.push(this.rowsWritten - rowsBefore);
         const after = this.updatesNow();
         this.check(before, updatesBefore.allText === after.allText, true);
+        const timedOut = (fired.game?.saved.actionLog ?? [])
+          .slice(before.game?.saved.actionLog.length ?? 0)
+          .map(({ action }) => action.seat);
+        this.addViolations(
+          whatSeatsSeeViolations(
+            before,
+            fired,
+            { seats: timedOut, isAccepted: true },
+            this.sentTo(
+              null,
+              { reply: null, playersToUpdate: playersWhoseUpdateChanged(before, fired) },
+              { before: updatesBefore, after },
+            ),
+          ),
+        );
         this.refreshViews(after);
         this.lastUpdates = after;
       }
@@ -202,7 +218,7 @@ export class GameSimulation {
       whatSeatsSeeViolations(
         before,
         this.record,
-        { seat: seat.seat, isAccepted },
+        { seats: [seat.seat], isAccepted },
         this.sentTo(seat, outcome, { before: updatesBefore, after }),
       ),
     );
@@ -221,12 +237,16 @@ export class GameSimulation {
   }
 
   private sentTo(
-    sender: SimulatedSeat,
-    outcome: { readonly reply: ServerMessage; readonly playersToUpdate: ReadonlyArray<PlayerId> },
+    sender: SimulatedSeat | null,
+    outcome: {
+      readonly reply: ServerMessage | null;
+      readonly playersToUpdate: ReadonlyArray<PlayerId>;
+    },
     updates: { readonly before: SeatUpdates; readonly after: SeatUpdates },
   ): ReadonlyMap<SeatNumber, SentToSeat> {
     const reply = outcome.reply;
-    const replyText = reply.type === "update" ? scanTextOf(reply.update) : JSON.stringify(reply);
+    const replyText = reply?.type === "update" ? scanTextOf(reply.update) : JSON.stringify(reply);
+    const isSenderUpdated = reply?.type === "rejected";
     return new Map(
       this.seats.map((seat, index) => {
         const update = updates.after.updates[index];
@@ -237,7 +257,8 @@ export class GameSimulation {
             text: seat === sender ? `${scanned}${replyText}` : scanned,
             view: update?.game?.view,
             isFrameSent:
-              seat !== sender && outcome.playersToUpdate.includes(seat.identity.playerId),
+              (seat !== sender || isSenderUpdated) &&
+              outcome.playersToUpdate.includes(seat.identity.playerId),
             isUnchanged: updates.before.texts[index] === updates.after.texts[index],
           },
         ];
