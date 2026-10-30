@@ -19,6 +19,7 @@ import { fireAlarm } from "./room/fireAlarm";
 import type { Identity } from "./room/Identity";
 import { joinRoomIn } from "./room/joinRoomIn";
 import { loadRoom } from "./room/loadRoom";
+import { playersWhoseUpdateChanged } from "./room/playersWhoseUpdateChanged";
 import { receiveMessage } from "./room/receiveMessage";
 import { startTestRoomIn } from "./room/startTestRoomIn";
 import { timeOutNoticesBetween } from "./room/timeOutNoticesBetween";
@@ -88,11 +89,11 @@ export class GameRoom extends DurableObject<Env> {
       const fired = fireAlarm(record, v.parse(EpochMs, Date.now()), randomForNextAction);
       if (fired !== record) {
         this.storage.write(fired);
-        this.updateEveryone(null);
+        this.updatePlayers(playersWhoseUpdateChanged(record, fired), null);
         this.sendNotices(timeOutNoticesBetween(record, fired));
       }
     }
-    await this.syncAlarm();
+    await this.syncAlarm(true);
   }
 
   override fetch(request: Request): Response {
@@ -134,7 +135,7 @@ export class GameRoom extends DurableObject<Env> {
       rejectionTimes: outcome.connection.rejectionTimes,
     });
     socket.send(JSON.stringify(outcome.reply));
-    this.updatePlayers(outcome.playersToUpdate, socket);
+    this.updatePlayers(outcome.playersToUpdate, outcome.reply.type === "rejected" ? null : socket);
     this.sendNotices(timeOutNoticesBetween(recordBefore, loadRoom(this.storage)));
     if (outcome.shouldClose) {
       socket.close(1008, "Too many rejected messages");
@@ -158,8 +159,9 @@ export class GameRoom extends DurableObject<Env> {
     }
   }
 
-  private async syncAlarm(): Promise<void> {
-    const change = alarmChangeFor(await this.ctx.storage.getAlarm(), loadRoom(this.storage));
+  private async syncAlarm(isFiring = false): Promise<void> {
+    const current = isFiring ? null : await this.ctx.storage.getAlarm();
+    const change = alarmChangeFor(current, loadRoom(this.storage));
     switch (change.kind) {
       case "keep":
         return;

@@ -632,3 +632,22 @@ file.
   so the start of turn 11 draws nothing.
 - **Why:** a scenario is changed when it contradicts the spec; both still test R8.4, R9.1 and R9.10.
 - **Implemented:** `harness/scenarios/turns-and-time.yaml` #8 and #10 (phase 14).
+
+## Q44. Which time-outs does a late message apply, and what does a message after a time-out get?
+
+- **Phase:** 14, phase review findings 2 and 5.
+- **Question:** R9.6 says a message received at or after the player's deadline is rejected as out of
+  time and the time-out is applied then. Two cases are open. Other players can be past their
+  deadline at the same moment (the alarm is late); and usually the alarm has already applied the
+  time-out, so the player is done (main phase) or past their go (market) when the late message
+  comes, which would give `already_done` or `out_of_market`.
+- **Options:** apply every due time-out before any message; apply them only when the sender is
+  among them; give a late message after its time-out the code its state gives, or `out_of_time`.
+- **Solution:** a message from a player past their deadline applies every time-out due at that
+  moment, in player order (R8.4), and is rejected `out_of_time`; any other message applies none,
+  so its rejection changes nothing (I27). A message from a player whose time-out ended the decision
+  they are still in is rejected `out_of_time` too. I27 names the other time-outs.
+- **Why:** R9.6 ties the time-out to the player's own late message; due time-outs of others at the
+  same moment keep the done order of R8.4; and `out_of_time` tells the player what happened.
+- **Implemented:** `harness/invariants.yaml` I27; `src/rules/receiveAction.ts`,
+  `src/rules/hasTimedOutThisDecision.ts` (phase 14).
