@@ -115,10 +115,8 @@ export function whatSeatsSeeViolations(
   }
   const seen = [...sentTo.entries()].flatMap(([viewer, sent]) => [
     ...leakViolations(state, viewer, sent.text),
-    ...(sent.isUnchanged ? [] : startViewViolations(state, viewer, sent.view)),
-    ...(sent.view === undefined || sent.isUnchanged
-      ? []
-      : typeCountViolations(state, viewer, sent.view)),
+    ...startViewViolations(state, viewer, sent.view),
+    ...(sent.view === undefined ? [] : typeCountViolations(state, viewer, sent.view)),
     ...(sent.isFrameSent && sent.isUnchanged
       ? [`I24: seat ${String(viewer)} was sent an update although nothing it may see changed`]
       : []),
