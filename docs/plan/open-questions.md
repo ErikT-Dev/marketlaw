@@ -737,3 +737,17 @@ file.
   left, so nothing reachable differs from the spec. I22 checks the R21.9 tie-breaks from phase 15.
 - **Implemented:** known gap in the phase 15 file; open point in the phase 19 file;
   `src/rules/gameEndViolations.ts` (tie-breaks, phase 15).
+
+## Q50. Scenarios for the R5.5 change (Q45) and the final-turn holding pile
+
+- **Phase:** 15, from the phase review: both changes of commit c8c677d were covered only by the
+  simulator invariants.
+- **Solution:** two new scenarios: `visibility` #15 (a card I drew that another player's hidden
+  shuffle left in the discard pile shown to me is taken off that pile, and the deck shown to me
+  stays at its start count) and `end-of-game` #10 (cards sold in the final turn join the discard
+  pile when the game ends). Both are added to `harness/required.yaml` with the phase. The review
+  also asked for my own shuffle after another player's hidden shuffle; that case cannot happen in
+  one main phase, because a hidden shuffle empties the real discard pile and sold cards wait in
+  the holding pile until the phase ends (R17.7), so no scenario is written for it.
+- **Implemented:** `harness/scenarios/visibility.yaml`, `harness/scenarios/end-of-game.yaml`,
+  `harness/required.yaml` (phase 15).

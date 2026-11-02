@@ -123,6 +123,7 @@ scenarios:
     - a player's own draws are shown in their deck count straight away
     - the draw log shows who drew how many and what was asked for but not the card
     - a marketplace card taken is known to be in that player's hand
+    - a card I drew that another player's hidden shuffle left in my discard pile is taken off that pile
   influence:
     - 4 influence buys 2 funds once per game
     - 4 influence buys 1 quality
@@ -259,6 +260,7 @@ scenarios:
     - equal scores are broken by who became done earlier in the final turn
     - players made done at the same moment in the final turn are placed in player order
     - players who left come after every player still in the game
+    - cards sold in the final turn join the discard pile when the game ends
 invariants:
   - I1
   - I2
