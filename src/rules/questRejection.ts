@@ -4,6 +4,7 @@ import type { ReasonCode } from "../shared/ReasonCode";
 import type { GameState } from "./GameState";
 import { questNeedHave } from "./questNeedHave";
 import type { SeatState } from "./SeatState";
+import { typeCountsOf } from "./typeCountsOf";
 
 export function questRejection(
   state: GameState,
@@ -16,6 +17,9 @@ export function questRejection(
   if (seat.questsCompleted.includes(quest)) {
     return "quest_already_completed";
   }
-  const isMet = QUEST_TERMS[quest].needs.every((need) => questNeedHave(seat, need) >= need.count);
+  const typeCounts = typeCountsOf(seat);
+  const isMet = QUEST_TERMS[quest].needs.every(
+    (need) => questNeedHave(seat, typeCounts, need) >= need.count,
+  );
   return isMet ? undefined : "quest_needs_not_met";
 }
