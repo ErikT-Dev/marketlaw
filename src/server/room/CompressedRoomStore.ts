@@ -1,14 +1,15 @@
-import { decodeRoomRecord } from "./room/decodeRoomRecord";
-import { encodeRoomRecord } from "./room/encodeRoomRecord";
-import type { RoomRecord } from "./room/RoomRecord";
-import type { RoomStorage } from "./room/RoomStorage";
+import { decodeRoomRecord } from "./decodeRoomRecord";
+import { encodeRoomRecord } from "./encodeRoomRecord";
+import type { RoomKv } from "./RoomKv";
+import type { RoomRecord } from "./RoomRecord";
+import type { RoomStorage } from "./RoomStorage";
 
 const ROOM_KEY = "room";
 
 export class CompressedRoomStore {
   private record: RoomRecord | undefined;
   private isChanged = false;
-  private readonly kv: SyncKvStorage;
+  private readonly kv: RoomKv;
   private readonly onRemove: () => void;
 
   readonly storage: RoomStorage = {
@@ -25,14 +26,18 @@ export class CompressedRoomStore {
     },
   };
 
-  constructor(kv: SyncKvStorage, onRemove: () => void) {
+  constructor(kv: RoomKv, onRemove: () => void) {
     this.kv = kv;
     this.onRemove = onRemove;
   }
 
   async load(): Promise<void> {
-    this.record = await decodeRoomRecord(this.kv.get(ROOM_KEY));
+    const stored = this.kv.get(ROOM_KEY);
+    this.record = await decodeRoomRecord(stored);
     this.isChanged = false;
+    if (stored !== undefined && this.record === undefined) {
+      this.storage.remove();
+    }
   }
 
   async save(): Promise<void> {

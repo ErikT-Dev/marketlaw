@@ -9,7 +9,7 @@ import { parseClientMessage } from "../shared/protocol/parseClientMessage";
 import type { ServerMessage } from "../shared/protocol/ServerMessage";
 import type { ReasonCode } from "../shared/ReasonCode";
 import type { RoomCode } from "../shared/RoomCode";
-import { CompressedRoomStore } from "./CompressedRoomStore";
+import { CompressedRoomStore } from "./room/CompressedRoomStore";
 import { ConnectionAttachment } from "./ConnectionAttachment";
 import { findPlayerByTokenHash } from "./findPlayerByTokenHash";
 import { ROOM_GONE_CLOSE_CODE } from "../shared/ROOM_GONE_CLOSE_CODE";
@@ -120,15 +120,19 @@ export class GameRoom extends DurableObject<Env> {
   }
 
   override async webSocketMessage(socket: WebSocket, message: string | ArrayBuffer): Promise<void> {
-    await this.inTurn(async () => this.receive(socket, message));
-  }
-
-  private async receive(socket: WebSocket, message: string | ArrayBuffer): Promise<void> {
     const text = typeof message === "string" ? message : new TextDecoder().decode(message);
     const parsed = parseClientMessage(text);
     const sender = parsed.isOk
       ? await this.senderOf(parsed.value.token, attachmentOf(socket))
       : null;
+    await this.inTurn(async () => this.receive(socket, parsed, sender));
+  }
+
+  private async receive(
+    socket: WebSocket,
+    parsed: ReturnType<typeof parseClientMessage>,
+    sender: Sender | null,
+  ): Promise<void> {
     const attachment = attachmentOf(socket);
     const recordBefore = loadRoom(this.storage);
     const outcome = receiveMessage(this.storage, {
