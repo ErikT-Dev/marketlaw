@@ -104,3 +104,14 @@ branded `EpochMs` everywhere else, and seat clocks leave the engine branded.
 **Why:** `prefer-readonly-parameter-types` reports branded numbers as writable, like branded
 strings (Q7, Q42, phase 14).
 **Enforced by:** `@typescript-eslint/prefer-readonly-parameter-types` · types.
+
+## For `rules/testing.md`
+
+### Run the browser tests locally with two workers
+On the 4-core development machine, `npm run e2e` with Playwright's default worker count makes the
+local `workerd` drop connections ("Network connection lost", "recovered on attempt 2 after a
+dropped connection to the UserWorker"), and several tests time out. `npx playwright test
+--workers=2` passes. GitHub runs the suite as configured and is the judge.
+**Why:** found in phase 15; the same failures appeared at the commit before the phase's server
+changes, so they came from load, not from the code.
+**Enforced by:** judgment.
