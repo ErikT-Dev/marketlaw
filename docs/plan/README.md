@@ -180,7 +180,7 @@ continues with any work that does not depend on the answer.
 
 ## How scenarios, invariants and budgets are tracked
 
-The 425 scenarios cover all of version 1, but each phase implements only part of it.
+The 427 scenarios cover all of version 1, but each phase implements only part of it.
 
 - `harness/required.yaml` (created in phase 02) lists the scenarios, invariants and budgets that
   must pass. It lives in `harness/`, so every addition asks for the owner's approval; names leave
@@ -191,7 +191,7 @@ The 425 scenarios cover all of version 1, but each phase implements only part of
   silently.
 - Scenarios not yet required are run and shown in `harness/report.html` as "not yet", or as
   "passes, not yet required"; they never fail the check. This is the only allowed form of
-  skipping, and it ends in phase 30, when all 425 are required.
+  skipping, and it ends in phase 30, when all 427 are required.
 
 ## Milestones and phases
 

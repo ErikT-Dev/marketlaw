@@ -15,7 +15,7 @@ All earlier phases.
 ## Covers
 
 - Rules: every rule in `harness/spec/`.
-- Scenarios: all 425 on `harness/required.yaml`; the "not yet" allowance of `rules/testing.md`
+- Scenarios: all 427 on `harness/required.yaml`; the "not yet" allowance of `rules/testing.md`
   ends.
 - Invariants: all 27 over 5,000 games per `npm run harness`. Budgets: all 18.
 - Checks: every point of "What passing means" in `HARNESS.md`, 0 to 7.
@@ -53,4 +53,4 @@ The complete harness report, every line passing, and screenshots of every screen
 
 ## Required scenarios
 
-None by name: phases 03 to 29 together make all 425 scenarios required. This phase checks that `harness/required.yaml` holds every scenario, every invariant and every budget.
+None by name: phases 03 to 29 together make all 427 scenarios required. This phase checks that `harness/required.yaml` holds every scenario, every invariant and every budget.
