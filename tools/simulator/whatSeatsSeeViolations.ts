@@ -30,14 +30,7 @@ function hiddenFrom(state: GameState, viewer: SeatNumber): ReadonlyArray<CardNam
 }
 
 function quotedAmong(sent: string, wanted: ReadonlySet<string>): ReadonlySet<string> {
-  const found = new Set<string>();
-  for (const match of sent.matchAll(/"([^"\\]*)"/g)) {
-    const text = match[1] ?? "";
-    if (wanted.has(text)) {
-      found.add(text);
-    }
-  }
-  return found;
+  return new Set(sent.split('"').filter((piece) => wanted.has(piece)));
 }
 
 function leakViolations(state: GameState, viewer: SeatNumber, sent: string): ReadonlyArray<string> {
@@ -122,8 +115,10 @@ export function whatSeatsSeeViolations(
   }
   const seen = [...sentTo.entries()].flatMap(([viewer, sent]) => [
     ...leakViolations(state, viewer, sent.text),
-    ...startViewViolations(state, viewer, sent.view),
-    ...(sent.view === undefined ? [] : typeCountViolations(state, viewer, sent.view)),
+    ...(sent.isUnchanged ? [] : startViewViolations(state, viewer, sent.view)),
+    ...(sent.view === undefined || sent.isUnchanged
+      ? []
+      : typeCountViolations(state, viewer, sent.view)),
     ...(sent.isFrameSent && sent.isUnchanged
       ? [`I24: seat ${String(viewer)} was sent an update although nothing it may see changed`]
       : []),

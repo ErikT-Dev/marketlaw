@@ -668,3 +668,38 @@ file.
   hidden shuffles.
 - **Implemented:** `harness/spec/game-rules.md` R5.5; `src/rules/pilesShownTo.ts`,
   `tools/simulator/shownPilesViolations.ts` (phase 15).
+
+## Q46. Which simulated games are played to the end?
+
+- **Phase:** 15, item 4.
+- **Question:** the phase asks for the simulator on complete games, 500 per `npm run check` and
+  5,000 per `npm run harness` (D23). Played to turn 40, chaos-bot games send thousands of mostly
+  rejected messages; 500 games took 17 minutes, so every check (the Stop hook) and the phase-end
+  harness (about 3 hours) would become impractical.
+- **Options:** fewer games (D23 is the owner's); play every game to the end; play legal-bot games
+  to the end and chaos-bot games until turn 10, as before.
+- **Solution:** legal-bot games are played to the end, chaos-bot games until turn 10. I21 is checked
+  on games played to the end. The budgets of this phase (B4, B5, B9, B13, B16, B17) are measured on
+  legal-bot games, as the phase file says. D23's game counts stay as they are.
+- **Why:** the chaos bot's job is hostile input, which it does as well in 10 turns; complete games
+  and the budgets are about real play.
+- **Implemented:** `tools/simulator/simulateGame.ts`, `tools/simulator/simulateSlice.ts`
+  (phase 15).
+
+## Q47. Is B13 the saved size before or after compression?
+
+- **Phase:** 15, item 4.
+- **Question:** B13 limits the saved size of one room to 100 KB. Played to the end, a 4-player
+  room holds the action log and the state, which as plain JSON comes close to or over 100 KB.
+  The budget does not say whether it means the bytes as stored.
+- **Options:** shorten what a room keeps (the action log is needed for replays, M-rules); raise
+  the budget (not allowed to get a check green); store the room compressed and measure what is
+  stored.
+- **Solution:** the room is stored as deflate-compressed JSON (`CompressionStream`, built into
+  Workers, no new dependency), and B13 is measured on the compressed bytes. The room is read once
+  when a message, alarm or call arrives and written once at the end, inside
+  `blockConcurrencyWhile`, so it is still one row per accepted action (B1).
+- **Why:** the budget is about storage cost and save speed, which depend on the bytes stored.
+  Measured over the legal-bot games: largest stored room 21 KB.
+- **Implemented:** `src/server/CompressedRoomStore.ts`, `src/server/room/encodeRoomRecord.ts`,
+  `src/server/room/decodeRoomRecord.ts`, `tools/simulator/simulateGame.ts` (phase 15).

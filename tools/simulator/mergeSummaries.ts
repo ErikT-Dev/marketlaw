@@ -23,6 +23,16 @@ function addCounts(
   return Object.fromEntries([...keys].map((key) => [key, (first[key] ?? 0) + (second[key] ?? 0)]));
 }
 
+function largestOf(
+  first: Readonly<Record<string, number>>,
+  second: Readonly<Record<string, number>>,
+): Readonly<Record<string, number>> {
+  const keys = new Set([...Object.keys(first), ...Object.keys(second)]);
+  return Object.fromEntries(
+    [...keys].map((key) => [key, Math.max(first[key] ?? 0, second[key] ?? 0)]),
+  );
+}
+
 export function mergeSummaries(summaries: ReadonlyArray<SimulationSummary>): SimulationSummary {
   return summaries.reduce(
     (merged, summary) => ({
@@ -44,6 +54,8 @@ export function mergeSummaries(summaries: ReadonlyArray<SimulationSummary>): Sim
       ),
       threePlayerAwakeMs: merged.threePlayerAwakeMs + summary.threePlayerAwakeMs,
       threePlayerTurns: merged.threePlayerTurns + summary.threePlayerTurns,
+      legalGameTotals: addCounts(merged.legalGameTotals, summary.legalGameTotals),
+      largestMeasures: largestOf(merged.largestMeasures, summary.largestMeasures),
       violationCounts: addCounts(merged.violationCounts, summary.violationCounts),
       shortestViolations: shortestPerInvariant([
         ...merged.shortestViolations,

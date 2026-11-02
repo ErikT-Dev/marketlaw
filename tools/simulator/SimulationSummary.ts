@@ -10,6 +10,8 @@ export type SimulationSummary = {
   readonly mostAlarmChangesOverAllowance: number;
   readonly threePlayerAwakeMs: number;
   readonly threePlayerTurns: number;
+  readonly legalGameTotals: Readonly<Record<string, number>>;
+  readonly largestMeasures: Readonly<Record<string, number>>;
   readonly violationCounts: Readonly<Record<string, number>>;
   readonly shortestViolations: ReadonlyArray<FoundViolation>;
 };

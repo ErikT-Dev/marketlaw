@@ -2,6 +2,12 @@ export const MEASURED_BUDGET_LIMITS: Readonly<Record<string, number>> = {
   B1: 1,
   B2: 0,
   B3: 0,
+  B4: 1600,
+  B5: 1600,
+  B9: 1000,
+  B13: 100,
+  B16: 50000,
+  B17: 100,
   B11: 10,
   B12: 600,
 };

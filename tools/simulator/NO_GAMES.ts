@@ -10,6 +10,8 @@ export const NO_GAMES: SimulationSummary = {
   mostAlarmChangesOverAllowance: 0,
   threePlayerAwakeMs: 0,
   threePlayerTurns: 0,
+  legalGameTotals: {},
+  largestMeasures: {},
   violationCounts: {},
   shortestViolations: [],
 };
