@@ -9,6 +9,7 @@ import { parseClientMessage } from "../shared/protocol/parseClientMessage";
 import type { ServerMessage } from "../shared/protocol/ServerMessage";
 import type { ReasonCode } from "../shared/ReasonCode";
 import type { RoomCode } from "../shared/RoomCode";
+import { CompressedRoomStore } from "./CompressedRoomStore";
 import { ConnectionAttachment } from "./ConnectionAttachment";
 import { findPlayerByTokenHash } from "./findPlayerByTokenHash";
 import { ROOM_GONE_CLOSE_CODE } from "../shared/ROOM_GONE_CLOSE_CODE";
@@ -23,12 +24,9 @@ import { playersWhoseUpdateChanged } from "./room/playersWhoseUpdateChanged";
 import { receiveMessage } from "./room/receiveMessage";
 import { startTestRoomIn } from "./room/startTestRoomIn";
 import { timeOutNoticesBetween } from "./room/timeOutNoticesBetween";
-import type { RoomRecord } from "./room/RoomRecord";
-import type { RoomStorage } from "./room/RoomStorage";
 import { updateFor } from "./room/updateFor";
 import { sha256Hex } from "./sha256Hex";
 
-const ROOM_KEY = "room";
 const NO_CONNECTION: ConnectionAttachment = { identity: null, tokenHash: null, rejectionTimes: [] };
 
 type Sender = { readonly identity: Identity; readonly tokenHash: string };
@@ -39,21 +37,20 @@ function attachmentOf(socket: WebSocket): ConnectionAttachment {
 }
 
 export class GameRoom extends DurableObject<Env> {
-  private readonly storage: RoomStorage = {
-    read: () => this.ctx.storage.kv.get<RoomRecord>(ROOM_KEY),
-    write: (record) => {
-      this.ctx.storage.kv.put(ROOM_KEY, record);
-    },
-    remove: () => {
-      this.ctx.storage.kv.delete(ROOM_KEY);
-      for (const socket of this.ctx.getWebSockets()) {
-        socket.close(ROOM_GONE_CLOSE_CODE, "This room no longer exists");
-      }
-    },
-  };
+  private readonly rooms = new CompressedRoomStore(this.ctx.storage.kv, () => {
+    for (const socket of this.ctx.getWebSockets()) {
+      socket.close(ROOM_GONE_CLOSE_CODE, "This room no longer exists");
+    }
+  });
 
-  createRoom(code: RoomCode, size: 2 | 3 | 4, owner: Identity): boolean {
-    return createRoomIn(this.storage, { code, size }, owner);
+  private readonly storage = this.rooms.storage;
+
+  async createRoom(code: RoomCode, size: 2 | 3 | 4, owner: Identity): Promise<boolean> {
+    return this.inTurn(async () => {
+      const isCreated = createRoomIn(this.storage, { code, size }, owner);
+      await this.rooms.save();
+      return isCreated;
+    });
   }
 
   async startTestRoom(
@@ -62,38 +59,51 @@ export class GameRoom extends DurableObject<Env> {
     players: ReadonlyArray<Identity>,
     state: GameState,
   ): Promise<boolean> {
-    const isStarted = startTestRoomIn(
-      this.storage,
-      { code, seed, now: v.parse(EpochMs, Date.now()) },
-      players,
-      state,
-    );
-    await this.syncAlarm();
-    return isStarted;
+    return this.inTurn(async () => {
+      const now = v.parse(EpochMs, Date.now());
+      const isStarted = startTestRoomIn(this.storage, { code, seed, now }, players, state);
+      await this.rooms.save();
+      await this.syncAlarm();
+      return isStarted;
+    });
   }
 
   async joinRoom(joining: Identity): Promise<ReasonCode | null> {
-    const seed = crypto.getRandomValues(new Uint32Array(1))[0] ?? 0;
-    const before = this.storage.read();
-    const reason = joinRoomIn(this.storage, joining, { seed, now: v.parse(EpochMs, Date.now()) });
-    if (reason === null && this.storage.read() !== before) {
-      this.updateEveryone(null);
-    }
-    await this.syncAlarm();
-    return reason;
+    return this.inTurn(async () => {
+      const seed = crypto.getRandomValues(new Uint32Array(1))[0] ?? 0;
+      const before = this.storage.read();
+      const now = v.parse(EpochMs, Date.now());
+      const reason = joinRoomIn(this.storage, joining, { seed, now });
+      await this.rooms.save();
+      if (reason === null && this.storage.read() !== before) {
+        this.updateEveryone(null);
+      }
+      await this.syncAlarm();
+      return reason;
+    });
   }
 
   override async alarm(): Promise<void> {
-    const record = loadRoom(this.storage);
-    if (record !== null) {
-      const fired = fireAlarm(record, v.parse(EpochMs, Date.now()), randomForNextAction);
-      if (fired !== record) {
-        this.storage.write(fired);
-        this.updatePlayers(playersWhoseUpdateChanged(record, fired), null);
-        this.sendNotices(timeOutNoticesBetween(record, fired));
+    await this.inTurn(async () => {
+      const record = loadRoom(this.storage);
+      if (record !== null) {
+        const fired = fireAlarm(record, v.parse(EpochMs, Date.now()), randomForNextAction);
+        if (fired !== record) {
+          this.storage.write(fired);
+          await this.rooms.save();
+          this.updatePlayers(playersWhoseUpdateChanged(record, fired), null);
+          this.sendNotices(timeOutNoticesBetween(record, fired));
+        }
       }
-    }
-    await this.syncAlarm(true);
+      await this.syncAlarm(true);
+    });
+  }
+
+  private async inTurn<T>(handle: () => Promise<T>): Promise<T> {
+    return this.ctx.blockConcurrencyWhile(async () => {
+      await this.rooms.load();
+      return handle();
+    });
   }
 
   override fetch(request: Request): Response {
@@ -110,6 +120,10 @@ export class GameRoom extends DurableObject<Env> {
   }
 
   override async webSocketMessage(socket: WebSocket, message: string | ArrayBuffer): Promise<void> {
+    await this.inTurn(async () => this.receive(socket, message));
+  }
+
+  private async receive(socket: WebSocket, message: string | ArrayBuffer): Promise<void> {
     const text = typeof message === "string" ? message : new TextDecoder().decode(message);
     const parsed = parseClientMessage(text);
     const sender = parsed.isOk
@@ -128,6 +142,7 @@ export class GameRoom extends DurableObject<Env> {
       socket.close(ROOM_GONE_CLOSE_CODE, "This room no longer exists");
       return;
     }
+    await this.rooms.save();
     socket.serializeAttachment({
       identity: outcome.connection.identity,
       tokenHash:
