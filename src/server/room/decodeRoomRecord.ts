@@ -6,7 +6,7 @@ export async function decodeRoomRecord(stored: unknown): Promise<RoomRecord | un
   if (!(stored instanceof Uint8Array) && !(stored instanceof ArrayBuffer)) {
     return undefined;
   }
-  const decompressed = new Blob([stored])
+  const decompressed = new Blob([new Uint8Array(stored)])
     .stream()
     .pipeThrough(new DecompressionStream("deflate-raw"));
   const parsed = v.safeParse(
