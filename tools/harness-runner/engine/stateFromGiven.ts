@@ -76,6 +76,7 @@ export function stateFromGiven(given: Given): GameState {
     doneOrder: seats.filter((seat) => seat.isDone).map((seat) => seat.seat),
     firstCompletions: given.first_completions ?? [],
     clockStartedAt: v.parse(EpochMs, given.clock_ms ?? 0),
+    result: null,
   });
   return withCheckedMarketGo(started, given);
 }

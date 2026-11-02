@@ -150,3 +150,20 @@
     - {seat: 3, action: end_turn}
   then:
     ended: {winner: 3, places: [3, 2, 1]}
+
+- name: cards sold in the final turn join the discard pile when the game ends
+  covers: [R17.7, R21.2]
+  given:
+    turn: 40
+    discard: []
+    seats:
+      - seat: 2
+        hand: [Cottage]
+  when:
+    - {seat: 2, action: sell, cards: [Cottage]}
+    - {seat: 1, action: end_turn}
+    - {seat: 2, action: end_turn}
+  then:
+    phase: ended
+    discard: [Cottage]
+    holding_pile: []

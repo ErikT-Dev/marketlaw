@@ -17,5 +17,6 @@ export function gamePageProps(
     serverClockOffsetMs: 0,
     timeOutNotice: null,
     onDismissTimeOutNotice: vi.fn(),
+    onExitToLobby: vi.fn(),
   };
 }

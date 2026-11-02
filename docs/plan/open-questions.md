@@ -651,3 +651,103 @@ file.
   same moment keep the done order of R8.4; and `out_of_time` tells the player what happened.
 - **Implemented:** `harness/invariants.yaml` I27; `src/rules/receiveAction.ts`,
   `src/rules/hasTimedOutThisDecision.ts` (phase 14).
+
+## Q45. How much does a player's own discard shuffle add to the deck shown to them?
+
+- **Phase:** 15, item 4 (found by the simulator on complete games).
+- **Question:** R5.5 shows the deck "plus any discard shuffles you caused". The engine added the
+  shuffle's real count, but other players' hidden shuffles may already have taken some of those
+  discard cards, so the real count can be smaller than the discard pile shown to you. A player
+  could then draw more cards than their shown deck held and see a negative deck count (I24).
+- **Options:** add the real count; add the cards the shuffle takes from the discard pile shown to
+  the player.
+- **Solution:** a shuffle you caused moves the cards it takes from the discard pile shown to you
+  into the deck shown to you, so the two shown piles always add up and the deck never shows below
+  zero. Written into R5.5. The draw log still shows the real count.
+- **Why:** it keeps each player's view consistent with itself without revealing other players'
+  hidden shuffles.
+- **Implemented:** `harness/spec/game-rules.md` R5.5; `src/rules/pilesShownTo.ts`,
+  `tools/simulator/shownPilesViolations.ts` (phase 15).
+
+## Q46. Which simulated games are played to the end?
+
+- **Phase:** 15, item 4.
+- **Question:** the phase asks for the simulator on complete games, 500 per `npm run check` and
+  5,000 per `npm run harness` (D23). Played to turn 40, chaos-bot games send thousands of mostly
+  rejected messages; 500 games took 17 minutes, so every check (the Stop hook) and the phase-end
+  harness (about 3 hours) would become impractical.
+- **Options:** fewer games (D23 is the owner's); play every game to the end; play legal-bot games
+  to the end and chaos-bot games until turn 10, as before.
+- **Solution:** legal-bot games are played to the end, chaos-bot games until turn 10. I21 is checked
+  on games played to the end. The budgets of this phase (B4, B5, B9, B13, B16, B17) are measured on
+  legal-bot games, as the phase file says. D23's game counts stay as they are.
+- **Why:** the chaos bot's job is hostile input, which it does as well in 10 turns; complete games
+  and the budgets are about real play.
+- **Implemented:** `tools/simulator/simulateGame.ts`, `tools/simulator/simulateSlice.ts`
+  (phase 15).
+
+## Q47. Is B13 the saved size before or after compression?
+
+- **Phase:** 15, item 4.
+- **Question:** B13 limits the saved size of one room to 100 KB. Played to the end, a 4-player
+  room holds the action log and the state, which as plain JSON comes close to or over 100 KB.
+  The budget does not say whether it means the bytes as stored.
+- **Options:** shorten what a room keeps (the action log is needed for replays, M-rules); raise
+  the budget (not allowed to get a check green); store the room compressed and measure what is
+  stored.
+- **Solution:** the room is stored as deflate-compressed JSON (`CompressionStream`, built into
+  Workers, no new dependency), and B13 is measured on the compressed bytes. The room is read once
+  when a message, alarm or call arrives and written once at the end, inside
+  `blockConcurrencyWhile`, so it is still one row per accepted action (B1).
+- **Why:** the budget is about storage cost and save speed, which depend on the bytes stored.
+  Measured over the legal-bot games: largest stored room 21 KB.
+- **Implemented:** `src/server/CompressedRoomStore.ts`, `src/server/room/encodeRoomRecord.ts`,
+  `src/server/room/decodeRoomRecord.ts`, `tools/simulator/simulateGame.ts` (phase 15).
+
+## Q48. Does the game length need a rule change (O5)?
+
+- **Phase:** 15, item 5 (the O5 review, decided by Claude under D19).
+- **Question:** `game-rules.md` open question 1 asks whether the end goal, the time bank or the
+  turn limit need changing, because a first simulation suggested the end goal takes more than
+  the 25 turns the time bank assumes.
+- **Data:** `npm run harness`, 5,000 games, of which 2,500 legal-bot games were played to the end:
+  about 39 turns per game at every size, the end goal reached in 64%, 64% and 60% of games with 2,
+  3 and 4 players, the rest ending at turn 40. Average funds: 7 at turn 1, about 12 at turn 20, 23 at
+  turn 30 and 67 to 91 at turn 40, so funds pile up late in long games. Rows written per game: 484, 712 and 928 (limit 1,600).
+- **Options:** shorten the game now (lower end goal, fewer turns, a larger time bank); change
+  nothing until real games can be measured.
+- **Solution:** change nothing now. The legal bot plays random legal moves and never aims for the
+  end goal, so its games are an upper bound; that most of them still reach the end goal before
+  turn 40 suggests that players who aim for it will finish well inside the limit. The budgets
+  hold even at the bot's length. Funds piling up late is a sign of the bot not spending, and is
+  rechecked with the same real games. The spec's open question stays open for a recheck with the
+  testers' games after phase 20, with the time bank in view.
+- **Implemented:** `decisions.md` D24; `harness/spec/game-rules.md` open question 1 (phase 15).
+
+## Q49. In what order are players who left placed?
+
+- **Phase:** 15, from the phase review.
+- **Question:** A3.4 places players who left after everyone else, "the one who left first last".
+  The game state does not record when a player left, so phase 15 ranks players who left by
+  score, then the done order and player order (R21.9).
+- **Options:** add a leave order to the state now, with nothing that can set it; record it when
+  leaving is built.
+- **Solution:** leave it to phase 19, which builds leaving (M6): it records the order players
+  leave in, the places follow A3.4, and I22 checks it. Until then no game can have a player who
+  left, so nothing reachable differs from the spec. I22 checks the R21.9 tie-breaks from phase 15.
+- **Implemented:** known gap in the phase 15 file; open point in the phase 19 file;
+  `src/rules/gameEndViolations.ts` (tie-breaks, phase 15).
+
+## Q50. Scenarios for the R5.5 change (Q45) and the final-turn holding pile
+
+- **Phase:** 15, from the phase review: both changes of commit c8c677d were covered only by the
+  simulator invariants.
+- **Solution:** two new scenarios: `visibility` #15 (a card I drew that another player's hidden
+  shuffle left in the discard pile shown to me is taken off that pile, and the deck shown to me
+  stays at its start count) and `end-of-game` #10 (cards sold in the final turn join the discard
+  pile when the game ends). Both are added to `harness/required.yaml` with the phase. The review
+  also asked for my own shuffle after another player's hidden shuffle; that case cannot happen in
+  one main phase, because a hidden shuffle empties the real discard pile and sold cards wait in
+  the holding pile until the phase ends (R17.7), so no scenario is written for it.
+- **Implemented:** `harness/scenarios/visibility.yaml`, `harness/scenarios/end-of-game.yaml`,
+  `harness/required.yaml` (phase 15).

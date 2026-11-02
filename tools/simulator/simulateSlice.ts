@@ -28,6 +28,7 @@ function playedOrCrashed(
       rowsPerOtherMessage: [],
       mostAlarmChangesOverAllowance: 0,
       awakeMs: 0,
+      measures: {},
       turnsPlayed: 0,
       acceptedActions: 0,
       acceptedByType: {},
@@ -54,6 +55,19 @@ function summaryOf(game: SimulatedGame): SimulationSummary {
     mostAlarmChangesOverAllowance: game.mostAlarmChangesOverAllowance,
     threePlayerAwakeMs: game.players === 3 ? game.awakeMs : 0,
     threePlayerTurns: game.players === 3 ? game.turnsPlayed : 0,
+    legalGameTotals:
+      game.bot === "legal"
+        ? {
+            ...Object.fromEntries(
+              Object.entries(game.measures).map(([measure, value]) => [
+                `${measure}:${String(game.players)}`,
+                value,
+              ]),
+            ),
+            [`games:${String(game.players)}`]: 1,
+          }
+        : {},
+    largestMeasures: game.bot === "legal" ? game.measures : {},
     violationCounts: Object.fromEntries(
       [...new Set(violations.map(({ invariant }) => invariant))].map((invariant) => [invariant, 1]),
     ),

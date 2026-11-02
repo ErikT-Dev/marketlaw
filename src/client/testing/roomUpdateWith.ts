@@ -77,6 +77,7 @@ export function roomUpdateWith(
     playerOrder: [3, 4, 2],
     drawLog: [],
     firstCompletions: [],
+    result: null,
     ...changes,
   };
   return {

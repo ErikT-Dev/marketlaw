@@ -36,6 +36,7 @@ export function CurrentScreen({ store }: Props) {
       serverClockOffsetMs={state.serverClockOffsetMs}
       timeOutNotice={state.timeOutNotice}
       onDismissTimeOutNotice={store.dismissTimeOutNotice}
+      onExitToLobby={store.exitToLobby}
     />
   );
 }

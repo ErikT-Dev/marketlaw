@@ -51,6 +51,8 @@ Leave a game and see the result arrive later; leave until one player is left; ex
 ## Open points
 
 - O8.
+- Q49: leaving records the order in which players left, and the places put the one who left first
+  last (A3.4); I22 checks it.
 
 ## Required scenarios
 

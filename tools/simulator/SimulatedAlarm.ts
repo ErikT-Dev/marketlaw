@@ -4,6 +4,7 @@ import type { RoomRecord } from "../../src/server/room/RoomRecord.ts";
 export class SimulatedAlarm {
   at: number | null = null;
   mostChangesOverAllowance = 0;
+  changes = 0;
   private turn = 1;
   private changesThisTurn = 0;
   private allowanceThisTurn = 0;
@@ -23,6 +24,7 @@ export class SimulatedAlarm {
     }
     this.at = change.kind === "set" ? change.at : null;
     this.changesThisTurn += 1;
+    this.changes += 1;
   }
 
   fired(): void {

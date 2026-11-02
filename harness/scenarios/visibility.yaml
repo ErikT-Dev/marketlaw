@@ -157,3 +157,25 @@
     - wait_ms: 2592000000
   then:
     replay_record: removed
+
+- name: a card I drew that another player's hidden shuffle left in my discard pile is taken off that pile
+  covers: [R5.5, R17.8]
+  given:
+    deck: [Pub]
+    discard: [Cottage, Log House]
+    seats:
+      - seat: 1
+        stats: {influence: 3}
+        hand: []
+      - seat: 2
+        stats: {influence: 3}
+        hand: []
+    random: [{shuffle: [Pub, Cottage, Log House]}]
+  when:
+    - {seat: 2, action: influence, trade: draw_tier_1, kind: Residential}
+    - {seat: 1, action: influence, trade: draw_tier_1, kind: Residential}
+  then:
+    view: {seat: 1, discard: [Cottage], deck_count: 1}
+    seats:
+      - seat: 1
+        hand: [Log House]

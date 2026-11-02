@@ -156,6 +156,15 @@ shows in 1 game in 170; 5,000 games, one that shows in 1 game in 1,700.
 `README.md` "How a phase is built" step 4.2, the "hold over 10,000 games" criteria of phases 11 to
 15 and 30.
 
+**D24. Game length stays as the spec has it (was O5).** (2026-11-02, Claude under D19, phase 15)
+The end goal, the turn limit of 40 and the time bank stay unchanged until games by real players
+can be measured. Over 2,500 complete legal-bot games, the bot reaches the end goal in about 62% of
+games at every size, in about turn 39 on average; rows written per game are 484, 712 and 928 for
+2, 3 and 4 players (B4 and B5 allow 1,600). The bot plays at random, so its games are an upper
+bound for game length.
+*Effect:* `open-questions.md` Q48; `game-rules.md` open question 1 keeps the recheck with real
+games (phase 20 testers).
+
 ## Open
 
 From D19 on, Claude solves these itself when the phase that needs them starts, records the
@@ -177,12 +186,6 @@ hash that strong is impossible in a Worker. Options for phase 23: PBKDF2 at 100,
 (about 6 times weaker than OWASP, and over B11 for each login), a hash in WebAssembly (still
 limited by the 10 ms CPU limit), or a login without passwords (an emailed sign-in link). The probe
 Worker was deleted after the measurement.
-
-**O5. Game length.** Reviewed after phase 15, decided before phase 20.
-(`game-rules.md` open question 1)
-*Recommendation:* the simulator reports turns per game, scores, funds over time, rows written per
-game (B4 and B5 allow 1,600; a 40-turn game may come close) and how often each end condition is
-reached, by game size. Rule changes go into the spec first.
 
 **O6. Lobby, presence and global counters.** Needed before phase 16.
 "One thing at a time" (M2) needs one authority across rooms, the queue and the tutorial; the

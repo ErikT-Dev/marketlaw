@@ -10,6 +10,7 @@ export function newActionChecks(
   const states: string[] = [];
   const violations: string[] = [];
   let current = before;
+  let currentAsText = JSON.stringify(before.state);
   for (const { action, at } of after.actionLog.slice(before.actionLog.length)) {
     const result = applyToSavedGame(current, action, at, randomForNextAction(current));
     if (!result.isOk) {
@@ -18,18 +19,20 @@ export function newActionChecks(
         violations: [...violations, `I26: a logged ${action.type} is rejected when applied again`],
       };
     }
-    states.push(JSON.stringify(result.value.state));
+    const resultAsText = JSON.stringify(result.value.state);
+    states.push(resultAsText);
     violations.push(
       ...invariantViolations({
         before: current.state,
-        beforeAsText: JSON.stringify(current.state),
+        beforeAsText: currentAsText,
         action,
         outcome: { isOk: true, value: result.value.state },
       }),
     );
     current = result.value;
+    currentAsText = resultAsText;
   }
-  const isSavedStateReached = JSON.stringify(current.state) === JSON.stringify(after.state);
+  const isSavedStateReached = currentAsText === JSON.stringify(after.state);
   return {
     states,
     violations: isSavedStateReached

@@ -14,6 +14,7 @@ scenarios:
     - rejects selling the same card twice in one message
     - another player's hidden action does not change my state version
     - rejects a main-phase action during the market phase
+    - rejects any action after the game has ended
   combos-and-income:
     - a card-name combo is claimed when the named card is in the city
     - a card-name combo works whichever card was played first
@@ -122,6 +123,7 @@ scenarios:
     - a player's own draws are shown in their deck count straight away
     - the draw log shows who drew how many and what was asked for but not the card
     - a marketplace card taken is known to be in that player's hand
+    - a card I drew that another player's hidden shuffle left in my discard pile is taken off that pile
   influence:
     - 4 influence buys 2 funds once per game
     - 4 influence buys 1 quality
@@ -249,6 +251,16 @@ scenarios:
     - Penthouses needs a tier 3 card among its Residential cards
     - Metropolis needs tier 3 cards in 3 different sectors
     - empty quest places are filled in table order
+  end-of-game:
+    - reaching the end goal ends the game after that main phase without end-of-turn steps
+    - the game goes on until the main phase ends after the end goal is reached
+    - the game ends after the main phase of turn 40 and is scored with the formula
+    - the score is computed exactly before rounding down
+    - bonus types score their point value for every count in the type counts including gained types
+    - equal scores are broken by who became done earlier in the final turn
+    - players made done at the same moment in the final turn are placed in player order
+    - players who left come after every player still in the game
+    - cards sold in the final turn join the discard pile when the game ends
 invariants:
   - I1
   - I2
@@ -270,6 +282,8 @@ invariants:
   - I18
   - I19
   - I20
+  - I21
+  - I22
   - I23
   - I24
   - I25
@@ -279,4 +293,10 @@ budgets:
   - B1
   - B2
   - B3
+  - B4
+  - B5
+  - B9
   - B12
+  - B13
+  - B16
+  - B17

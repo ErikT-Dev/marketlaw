@@ -25,6 +25,9 @@ chat are in `accounts.md` (rules `A…`). The card data is `cards.json`.
    Since marketplace cards are free (R18.8), funds are spent only on playing cards, build passes
    and influence; the simulation should also check whether funds pile up and whether the
    starting funds, income or real costs need adjusting.
+   Simulator, phase 15: random legal-bot games last about 39 turns and reach the end goal in
+   about 62% of games; average funds are about 12 at turn 20, 23 at turn 30 and 67 to 91 at
+   turn 40. No change until games by real players can be measured (Q48).
 
 ## R1. Goal
 
@@ -141,7 +144,8 @@ chat are in `accounts.md` (rules `A…`). The card data is `cards.json`.
   (M5.2) or has left (M6), and their time bank (R5.6).
 - **R5.5** During the main phase, the deck and the discard pile are shown to you as they were at
   the start of the main phase, minus the cards you drew yourself, plus any discard shuffles you
-  caused. A card you drew that is still shown in the discard pile (because another player shuffled
+  caused: such a shuffle moves the cards it takes from the discard pile shown to you into the deck
+  shown to you. A card you drew that is still shown in the discard pile (because another player shuffled
   it into the deck) is taken off the discard pile shown to you, not off the deck.
 - **R5.6** Every player's time bank is shown live during the main phase (R9.9).
 - **R5.7** Only the final result of each player's main phase is revealed; actions they undid are

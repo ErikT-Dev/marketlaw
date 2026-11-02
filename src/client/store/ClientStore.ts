@@ -103,7 +103,11 @@ export class ClientStore {
     this.change({ rejectedMove: null });
   };
 
-  private leaveRoom(notice: string, session: StoredSession | null): void {
+  readonly exitToLobby = (): void => {
+    this.leaveRoom(null, this.sessionOutsideRooms());
+  };
+
+  private leaveRoom(notice: string | null, session: StoredSession | null): void {
     this.host?.close();
     this.host = null;
     writeSession(session);

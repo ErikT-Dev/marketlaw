@@ -13,6 +13,7 @@ import { ROOM_SCHEMA_VERSION } from "../../src/server/room/ROOM_SCHEMA_VERSION.t
 import type { RoomRecord } from "../../src/server/room/RoomRecord.ts";
 import type { RoomStorage } from "../../src/server/room/RoomStorage.ts";
 import { updateFor } from "../../src/server/room/updateFor.ts";
+import { updateTextOf } from "../../src/server/room/updateTextOf.ts";
 import { EpochMs } from "../../src/shared/EpochMs.ts";
 import { PlayerId } from "../../src/shared/PlayerId.ts";
 import { PROTOCOL_VERSION } from "../../src/shared/PROTOCOL_VERSION.ts";
@@ -49,10 +50,14 @@ export class GameSimulation {
   readonly alarm = new SimulatedAlarm();
   readonly awake = new AwakeTally();
   private lastUpdates: SeatUpdates | null = null;
-  private rowsWritten = 0;
+  rowsWritten = 0;
+  rowsRead = 0;
   private nowMs = 0;
   private readonly storage: RoomStorage = {
-    read: () => this.record,
+    read: () => {
+      this.rowsRead += 1;
+      return this.record;
+    },
     write: (record) => {
       this.record = this.stored(record);
       this.rowsWritten += 1;
@@ -232,7 +237,7 @@ export class GameSimulation {
 
   private updatesNow(): SeatUpdates {
     const updates = this.seats.map((seat) => updateFor(this.record, seat.identity.playerId));
-    const texts = updates.map((update) => JSON.stringify(update));
+    const texts = updates.map(updateTextOf);
     return { updates, texts, allText: `[${texts.join(",")}]` };
   }
 
@@ -250,16 +255,17 @@ export class GameSimulation {
     return new Map(
       this.seats.map((seat, index) => {
         const update = updates.after.updates[index];
-        const scanned = update === undefined ? "" : scanTextOf(update);
+        const isUnchanged = updates.before.texts[index] === updates.after.texts[index];
+        const scanned = update === undefined || isUnchanged ? "" : scanTextOf(update);
         return [
           seat.seat,
           {
-            text: seat === sender ? `${scanned}${replyText}` : scanned,
+            text: `${isUnchanged ? "" : scanned}${seat === sender ? replyText : ""}`,
             view: update?.game?.view,
             isFrameSent:
               (seat !== sender || isSenderUpdated) &&
               outcome.playersToUpdate.includes(seat.identity.playerId),
-            isUnchanged: updates.before.texts[index] === updates.after.texts[index],
+            isUnchanged,
           },
         ];
       }),

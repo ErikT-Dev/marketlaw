@@ -38,7 +38,7 @@ it by hand.
 | R5.2 | playing-cards (1), turns-and-time (1) | Covered |
 | R5.3 | playing-cards (3) | Covered |
 | R5.4 | visibility (3) | Covered |
-| R5.5 | drawing (2), visibility (2) | Covered |
+| R5.5 | drawing (2), visibility (3) | Covered |
 | R5.6 | turns-and-time (1) | Covered |
 | R5.7 | visibility (1) | Covered |
 | R6.1 | influence (1), playing-cards (8), undo (1) | Covered |
@@ -98,8 +98,8 @@ it by hand.
 | R17.4 | drawing (7), influence (1), marketplace (2), setup (1) | Covered |
 | R17.5 | marketplace (1) | Covered |
 | R17.6 | drawing (1) | Covered |
-| R17.7 | connections-and-leaving (1), drawing (1), playing-cards (2) | Covered |
-| R17.8 | drawing (2) | Covered |
+| R17.7 | connections-and-leaving (1), drawing (1), end-of-game (1), playing-cards (2) | Covered |
+| R17.8 | drawing (2), visibility (1) | Covered |
 | R17.9 | setup (1) | Covered |
 | R17.10 | drawing (2) | Covered. Also: Scenarios check which tier is asked for and used; the percentages themselves are checked by a statistical test of 100,000 simulated draws per turn. *(approved by the owner, 2026-10-25)* |
 | R17.11 | drawing (1) | Covered |
@@ -134,7 +134,7 @@ it by hand.
 | R20.6 | combos-and-income (1), end-of-game (1), quests (3) | Covered |
 | R20.7 | quests (48) | Covered |
 | R21.1 | end-of-game (3), hostile-client (1) | Covered |
-| R21.2 | end-of-game (1) | Covered |
+| R21.2 | end-of-game (2) | Covered |
 | R21.3 | end-of-game (1) | Covered |
 | R21.4 | end-of-game (2) | Covered |
 | R21.5 | end-of-game (1) | Covered |
@@ -347,6 +347,6 @@ it by hand.
 ## Summary
 
 - Rules: 310
-- Scenarios: 425
+- Scenarios: 427
 - Gaps: 0
 - Checked another way or also checked another way: R3.2, R3.5, R17.10, R19.2, M3.1, M3.6, M4.2, A6.4, A10.6, C5.1, C5.2, C5.3

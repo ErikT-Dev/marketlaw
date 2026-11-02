@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { GAME_STARTED_AT } from "../shared/testing/GAME_STARTED_AT";
 import { apply } from "./apply";
+import { endGame } from "./endGame";
 import type { GameAction } from "./GameAction";
 import type { GameState } from "./GameState";
 import { invariantViolations } from "./invariantViolations";
@@ -24,6 +25,12 @@ function withSeat1(state: GameState, change: Partial<GameState["seats"][number]>
     ...state,
     seats: state.seats.map((seat) => (seat.seat === 1 ? { ...seat, ...change } : seat)),
   };
+}
+
+function endingViolations(after: GameState): ReadonlyArray<string> {
+  return invariantViolations(transition(START, { type: "end_turn", seat: 1 }, after)).filter(
+    (violation) => violation.startsWith("I22"),
+  );
 }
 
 describe("invariantViolations", () => {
@@ -159,6 +166,38 @@ describe("invariantViolations", () => {
       "I19: seat 1 time bank went from 900000 to 900001",
       "I19: seat 1 time bank went from 1000 to 900000",
     ]);
+  });
+
+  it("checks the score and places of a game that ends", () => {
+    const ended = endGame({ ...START, turn: 40 }, 0);
+    expect(endingViolations(ended)).toEqual([]);
+    const places = ended.result?.places ?? [];
+    const wrongScore = {
+      ...ended,
+      result: { endedBy: "turn_limit" as const, places: places.map((place) => ({ ...place, score: place.score + 1 })) },
+    };
+    expect(endingViolations(wrongScore)).toEqual([
+      "I22: seat 1's score does not follow the formula",
+      "I22: seat 2's score does not follow the formula",
+    ]);
+  });
+
+  it("checks that equal scores are placed by the done order of the final turn", () => {
+    const ended = endGame({ ...START, turn: 40, doneOrder: [2, 1] }, 0);
+    const places = (ended.result?.places ?? []).map((place) => ({ ...place, score: 100 }));
+    function placedAs(order: ReadonlyArray<number>) {
+      return       endingViolations({
+        ...ended,
+        result: {
+          endedBy: "turn_limit" as const,
+          places: order.flatMap((seat) => places.filter((place) => place.seat === seat)),
+        },
+      }).filter((violation) => violation.includes("equal scores"));
+    }
+    expect(placedAs([1, 2])).toEqual([
+      "I22: equal scores are not placed by the done order and then the player order",
+    ]);
+    expect(placedAs([2, 1])).toEqual([]);
   });
 
   it("reports a turn that starts with the wrong first player", () => {

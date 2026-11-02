@@ -3,6 +3,7 @@ import type { QuestName } from "../shared/catalogue/QuestName";
 import type { TypeName } from "../shared/catalogue/TypeName";
 import type { DrawLogEntry } from "../shared/DrawLogEntry";
 import type { GamePhase } from "../shared/GamePhase";
+import type { GameResult } from "../shared/GameResult";
 import type { ProjectName } from "../shared/ProjectName";
 import type { MarketplaceSlot } from "../shared/MarketplaceSlot";
 import type { QuestOnTable } from "../shared/QuestOnTable";
@@ -27,4 +28,5 @@ export type GameState = {
   readonly drawLog: ReadonlyArray<DrawLogEntry>;
   readonly mainPhaseStart: MainPhaseStart;
   readonly clockStartedAt: number;
+  readonly result: GameResult | null;
 };

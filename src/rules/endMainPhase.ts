@@ -5,7 +5,7 @@ import { endMarketPhase } from "./endMarketPhase";
 import { endOfTurnSteps } from "./endOfTurnSteps";
 import { endTurnForQuests } from "./endTurnForQuests";
 import { fillMarketplace } from "./fillMarketplace";
-import { FIRST_COMPLETION_FUNDS } from "./FIRST_COMPLETION_FUNDS";
+import { firstCompletionFundsOf } from "./firstCompletionFundsOf";
 import { firstCompletionsOf } from "./firstCompletionsOf";
 import { firstPlayerOf } from "./firstPlayerOf";
 import type { GameState } from "./GameState";
@@ -22,10 +22,7 @@ function isShownLongEnough(slot: MarketplaceSlot): boolean {
 
 function seatAtTurnStart(seat: SeatState, firsts: ReadonlyArray<ProjectName>): SeatState {
   const afterSteps = endOfTurnSteps(seat);
-  const firstFunds = seat.hasLeft
-    ? 0
-    : seat.projectsThisTurn.filter((project) => firsts.includes(project)).length *
-      FIRST_COMPLETION_FUNDS;
+  const firstFunds = firstCompletionFundsOf(seat, firsts);
   const started = {
     ...afterSteps,
     stats: { ...afterSteps.stats, funds: afterSteps.stats.funds + firstFunds },
