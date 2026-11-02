@@ -66,12 +66,15 @@ These 9 scenarios are added to `harness/required.yaml` in this phase, by file an
 
 ## Progress
 
-- [ ] 1. End conditions and scoring: after the main phase in which a player still in the game has
+- [x] 1. End conditions and scoring: after the main phase in which a player still in the game has
   income 22 and all 3 projects, or after turn 40, the game ends without end-of-turn steps
   (first-completion rewards still given); scores in hundredths, rounded down; places by score,
   then done order, then player order, players who left last. The state keeps the result.
-- [ ] 2. Ended phase: every action rejected with `game_over`; no clocks; views carry the result.
-- [ ] 3. End-of-game screen (S9.5) for "end goal reached" and "turn limit".
-- [ ] 4. Simulator on complete games: 5,000 per `npm run harness`; I21, I22; B4, B5, B9, B13, B16,
-  B17 measured.
-- [ ] 5. Game-length report for O5.
+- [x] 2. Ended phase: every action rejected with `game_over`; no clocks; views carry the result.
+  Built in the same commit as item 1.
+- [x] 3. End-of-game screen (S9.5) for "end goal reached" and "turn limit".
+- [x] 4. Simulator on complete games: 5,000 per `npm run harness`; I21, I22; B4, B5, B9, B13, B16,
+  B17 measured. Legal-bot games are played to the end, chaos-bot games until turn 10 (Q46). Rooms
+  are stored compressed so B13 is measured on the stored bytes (Q47). Views are built once per
+  room state, which keeps `npm run check` under 5 minutes.
+- [x] 5. Game-length report for O5: a "Game length (O5)" section in `harness/report.html`.
