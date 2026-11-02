@@ -8,6 +8,8 @@ import { GameSimulation } from "./GameSimulation.ts";
 import { replayViolations } from "./replayViolations.ts";
 import { TURN_LIMIT } from "../../src/shared/TURN_LIMIT.ts";
 import { CHAOS_LAST_TURN } from "./CHAOS_LAST_TURN.ts";
+import { averageFundsOf } from "./averageFundsOf.ts";
+import { gameLengthMeasuresOf } from "./gameLengthMeasuresOf.ts";
 import { seededChooser } from "./seededChooser.ts";
 import type { SimulatedSeat } from "./SimulatedSeat.ts";
 import type { SimulatedGame } from "./SimulatedGame.ts";
@@ -43,9 +45,20 @@ function nextActingSeat(
   return candidates[chooser.pickIndex(candidates.length)];
 }
 
+function noteFundsAtTurnStart(
+  simulation: GameSimulation,
+  fundsAtTurnStart: Record<number, number>,
+) {
+  const state = simulation.record.game?.saved.state;
+  if (state !== undefined && fundsAtTurnStart[state.turn] === undefined) {
+    fundsAtTurnStart[state.turn] = averageFundsOf(state);
+  }
+}
+
 function measuresOf(
   simulation: GameSimulation,
   saved: SavedGame | undefined,
+  fundsAtTurnStart: Readonly<Record<number, number>>,
 ): Readonly<Record<string, number>> {
   const replay =
     saved === undefined
@@ -57,6 +70,7 @@ function measuresOf(
     messages: simulation.messages.length,
     savedBytes: deflateRawSync(JSON.stringify(simulation.record)).length,
     replayBytes: replay.length,
+    ...(saved === undefined ? {} : gameLengthMeasuresOf(saved, fundsAtTurnStart)),
   };
 }
 
@@ -88,12 +102,15 @@ export function simulateGame(
   const turnsToPlay = bot === "chaos" ? Math.min(lastTurn, CHAOS_LAST_TURN) : lastTurn;
   const simulation = new GameSimulation(seed, players, { bot, chooser, stored });
   simulation.connectEveryone();
+  const fundsAtTurnStart: Record<number, number> = {};
+  noteFundsAtTurnStart(simulation, fundsAtTurnStart);
   for (
     let acting = nextActingSeat(simulation, chooser, turnsToPlay);
     acting !== undefined && simulation.messages.length < MESSAGES_PER_GAME;
     acting = nextActingSeat(simulation, chooser, turnsToPlay)
   ) {
     simulation.takeTurnFor(acting);
+    noteFundsAtTurnStart(simulation, fundsAtTurnStart);
   }
   simulation.alarm.finish();
   const saved = simulation.record.game?.saved;
@@ -111,7 +128,7 @@ export function simulateGame(
     rowsPerOtherMessage: simulation.rowsPerOtherMessage,
     mostAlarmChangesOverAllowance: simulation.alarm.mostChangesOverAllowance,
     awakeMs: simulation.awake.awakeMs,
-    measures: measuresOf(simulation, saved),
+    measures: measuresOf(simulation, saved, fundsAtTurnStart),
     turnsPlayed: (saved?.state.turn ?? 1) - 1,
     acceptedActions: saved?.actionLog.length ?? 0,
     acceptedByType: countsByType((saved?.actionLog ?? []).map(({ action }) => action)),
