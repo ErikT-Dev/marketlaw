@@ -703,3 +703,23 @@ file.
   Measured over the legal-bot games: largest stored room 21 KB.
 - **Implemented:** `src/server/CompressedRoomStore.ts`, `src/server/room/encodeRoomRecord.ts`,
   `src/server/room/decodeRoomRecord.ts`, `tools/simulator/simulateGame.ts` (phase 15).
+
+## Q48. Does the game length need a rule change (O5)?
+
+- **Phase:** 15, item 5 (the O5 review, decided by Claude under D19).
+- **Question:** `game-rules.md` open question 1 asks whether the end goal, the time bank or the
+  turn limit need changing, because a first simulation suggested the end goal takes more than
+  the 25 turns the time bank assumes.
+- **Data:** `npm run harness`, 5,000 games, of which 2,500 legal-bot games were played to the end:
+  about 39 turns per game at every size, the end goal reached in 64%, 64% and 60% of games with 2,
+  3 and 4 players, the rest ending at turn 40. Average funds: 7 at turn 1, about 12 at turn 20, 23 at
+  turn 30 and 67 to 91 at turn 40, so funds pile up late in long games. Rows written per game: 484, 712 and 928 (limit 1,600).
+- **Options:** shorten the game now (lower end goal, fewer turns, a larger time bank); change
+  nothing until real games can be measured.
+- **Solution:** change nothing now. The legal bot plays random legal moves and never aims for the
+  end goal, so its games are an upper bound; that most of them still reach the end goal before
+  turn 40 suggests that players who aim for it will finish well inside the limit. The budgets
+  hold even at the bot's length. Funds piling up late is a sign of the bot not spending, and is
+  rechecked with the same real games. The spec's open question stays open for a recheck with the
+  testers' games after phase 20, with the time bank in view.
+- **Implemented:** `decisions.md` D24; `harness/spec/game-rules.md` open question 1 (phase 15).
