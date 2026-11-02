@@ -25,6 +25,9 @@ chat are in `accounts.md` (rules `A…`). The card data is `cards.json`.
    Since marketplace cards are free (R18.8), funds are spent only on playing cards, build passes
    and influence; the simulation should also check whether funds pile up and whether the
    starting funds, income or real costs need adjusting.
+   Simulator, phase 15: random legal-bot games last about 39 turns and reach the end goal in
+   about 62% of games; average funds are about 12 at turn 20, 23 at turn 30 and 67 to 91 at
+   turn 40. No change until games by real players can be measured (Q48).
 
 ## R1. Goal
 
