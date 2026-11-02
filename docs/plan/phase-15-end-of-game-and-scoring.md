@@ -35,6 +35,9 @@ Phases 13 and 14: the score uses every stat, type and turn rule.
 ## Known gaps after this phase
 
 - Rooms and guests are still phase 04's minimal version (phases 16–17).
+- Players who left are placed after everyone still in the game, but among themselves by score,
+  not by the order they left (A3.4), since nothing records that order yet. Nobody can leave a
+  game until phase 19, which closes this (Q49).
 
 ## What you can see when it's done
 

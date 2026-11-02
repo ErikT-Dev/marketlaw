@@ -1,5 +1,7 @@
 import type { GameState } from "./GameState";
+import type { PlaceResult } from "../shared/PlaceResult";
 import { bonusTypePointsOf } from "./bonusTypePointsOf";
+import { playerOrderOf } from "./playerOrderOf";
 
 const FORMULA = [
   ["income", 6.5],
@@ -26,6 +28,23 @@ function expectedScore(state: GameState, seatNumber: number): number | undefined
   return Math.floor(hundredths / 100);
 }
 
+function tieBreakOf(state: GameState, place: PlaceResult): readonly [number, number] {
+  const doneIndex = state.doneOrder.indexOf(place.seat);
+  return [
+    doneIndex === -1 ? state.seats.length : doneIndex,
+    playerOrderOf(state).indexOf(place.seat),
+  ];
+}
+
+function isTieBrokenInOrder(state: GameState, place: PlaceResult, next: PlaceResult): boolean {
+  if (place.hasLeft || next.hasLeft || place.score !== next.score) {
+    return true;
+  }
+  const [placeDone, placeOrder] = tieBreakOf(state, place);
+  const [nextDone, nextOrder] = tieBreakOf(state, next);
+  return placeDone < nextDone || (placeDone === nextDone && placeOrder < nextOrder);
+}
+
 export function gameEndViolations(before: GameState, after: GameState): ReadonlyArray<string> {
   if (after.phase !== "ended" || before.phase === "ended") {
     return [];
@@ -41,10 +60,17 @@ export function gameEndViolations(before: GameState, after: GameState): Readonly
     const next = places[index + 1];
     return next === undefined || (place.hasLeft ? next.hasLeft : next.hasLeft || place.score >= next.score);
   });
+  const isTieBroken = places.every((place, index) => {
+    const next = places[index + 1];
+    return next === undefined || isTieBrokenInOrder(after, place, next);
+  });
   return [
     ...(isEverySeatOnce ? [] : ["I22: the places do not hold every seat exactly once"]),
     ...wrongScores,
     ...(isOrdered ? [] : ["I22: the places are not in score order with players who left last"]),
+    ...(isTieBroken
+      ? []
+      : ["I22: equal scores are not placed by the done order and then the player order"]),
     ...(places[0]?.hasLeft === false ? [] : ["I22: the winner has left or there is none"]),
   ];
 }

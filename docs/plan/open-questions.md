@@ -723,3 +723,17 @@ file.
   rechecked with the same real games. The spec's open question stays open for a recheck with the
   testers' games after phase 20, with the time bank in view.
 - **Implemented:** `decisions.md` D24; `harness/spec/game-rules.md` open question 1 (phase 15).
+
+## Q49. In what order are players who left placed?
+
+- **Phase:** 15, from the phase review.
+- **Question:** A3.4 places players who left after everyone else, "the one who left first last".
+  The game state does not record when a player left, so phase 15 ranks players who left by
+  score, then the done order and player order (R21.9).
+- **Options:** add a leave order to the state now, with nothing that can set it; record it when
+  leaving is built.
+- **Solution:** leave it to phase 19, which builds leaving (M6): it records the order players
+  leave in, the places follow A3.4, and I22 checks it. Until then no game can have a player who
+  left, so nothing reachable differs from the spec. I22 checks the R21.9 tie-breaks from phase 15.
+- **Implemented:** known gap in the phase 15 file; open point in the phase 19 file;
+  `src/rules/gameEndViolations.ts` (tie-breaks, phase 15).

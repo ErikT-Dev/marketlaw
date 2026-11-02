@@ -182,6 +182,24 @@ describe("invariantViolations", () => {
     ]);
   });
 
+  it("checks that equal scores are placed by the done order of the final turn", () => {
+    const ended = endGame({ ...START, turn: 40, doneOrder: [2, 1] }, 0);
+    const places = (ended.result?.places ?? []).map((place) => ({ ...place, score: 100 }));
+    function placedAs(order: ReadonlyArray<number>) {
+      return       endingViolations({
+        ...ended,
+        result: {
+          endedBy: "turn_limit" as const,
+          places: order.flatMap((seat) => places.filter((place) => place.seat === seat)),
+        },
+      }).filter((violation) => violation.includes("equal scores"));
+    }
+    expect(placedAs([1, 2])).toEqual([
+      "I22: equal scores are not placed by the done order and then the player order",
+    ]);
+    expect(placedAs([2, 1])).toEqual([]);
+  });
+
   it("reports a turn that starts with the wrong first player", () => {
     const after = { ...START, turn: 2, firstPlayer: 1 as const };
     expect(invariantViolations(transition(START, { type: "end_turn", seat: 1 }, after))).toEqual([
