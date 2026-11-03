@@ -80,14 +80,12 @@ function noticeTo(session: RoomSession, expected: unknown): unknown {
   const sent = session.notices.find(
     ({ playerId, notice }) => playerId === seat?.playerId && notice.kind === asked["notice"],
   );
-  return sent === undefined || seat === undefined
-    ? undefined
-    : {
-        seat: seat.seat,
-        notice: sent.notice.kind,
-        in_a_row: sent.notice.inARow,
-        of: sent.notice.of,
-      };
+  if (sent === undefined || seat === undefined) {
+    return undefined;
+  }
+  return sent.notice.kind === "timed_out"
+    ? { seat: seat.seat, notice: "timed_out", in_a_row: sent.notice.inARow, of: sent.notice.of }
+    : { seat: seat.seat, notice: sent.notice.kind };
 }
 
 function runRoomStep(session: RoomSession, step: ScenarioStep): void {
