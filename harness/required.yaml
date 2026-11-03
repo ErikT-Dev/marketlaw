@@ -115,6 +115,8 @@ scenarios:
     - a paused game goes on when a player reconnects and the timed-out player gets free time again
     - after the extra free time the paused player times out as normal
     - a market go can be paused and the player gets their free time again
+    - when two players' time would run out together while nobody is connected both get their free time again
+    - a paused player's bank used before the pause stays used
   visibility:
     - other players' hands are shown only as a number of cards
     - a player sees their own hand

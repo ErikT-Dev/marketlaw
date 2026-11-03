@@ -520,3 +520,45 @@
   then:
     paused: false
     market_go: {seat: 2}
+
+- name: when two players' time would run out together while nobody is connected both get their free time again
+  covers: [R9.12, R9.13]
+  given:
+    seats:
+      - seat: 1
+        time_bank_ms: 0
+        connected: false
+      - seat: 2
+        time_bank_ms: 0
+        connected: false
+  when:
+    - wait_ms: 45000
+    - reconnect: 1
+    - wait_ms: 44999
+  then:
+    paused: false
+    seats:
+      - seat: 1
+        done: false
+      - seat: 2
+        done: false
+
+- name: a paused player's bank used before the pause stays used
+  covers: [R9.8, R9.12, R9.13]
+  given:
+    seats:
+      - seat: 1
+        time_bank_ms: 30000
+        connected: false
+      - seat: 2
+        time_bank_ms: 30000
+        connected: false
+  when:
+    - wait_ms: 75000
+    - reconnect: 1
+    - {seat: 1, action: end_turn}
+  then:
+    seats:
+      - seat: 1
+        done: true
+        time_bank_ms: 0
