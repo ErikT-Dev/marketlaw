@@ -95,3 +95,31 @@ These 15 scenarios are added to `harness/required.yaml` in this phase, by file a
 - [x] 5. Screens for the above: Leave game in the top bar with its confirmation (S9.1), "You
   left the game" (S9.2), the last-player and abandoned end screens (S9.5) and "Room not found"
   (S16.2); Exit to lobby now also leaves the room. Abandoned endings say why (Q61).
+
+### Finish (in progress, 2026-11-04)
+
+- [x] Scenarios added to `harness/required.yaml`.
+- [x] `npm run check` and `npm run harness` (1,000 games) green locally.
+- [x] Browser tests: the full suite passed except 4 tests (rejected move, rooms and guests, test
+  room income, clocks) that timed out loading pages at 1280×720 and 1920×1080; all 4 passed on a
+  re-run. This is the known local load problem (two workers), not a code failure. GitHub judges.
+- [x] Phase review run. Its findings, to fix or answer next:
+  1. The D1 replay-record write in `GameRoom` (after save, before the reply) has no error
+     handling: a D1 failure loses the reply to the last move, the deletion alarm and the record.
+     Catch it, or write after reply and alarm.
+  2. "You left the game" shows no `ConnectionNotices` and no reason after 3 time-outs (R9.11,
+     S9.4); the time-out text says "made done" even for 3 of 3.
+  3. `visibility` #13/#14 copy the cutoff condition in the lobby driver instead of going through
+     the real save/read/remove code; `removeOldReplayRecords` has no test.
+  4. Scenario #15's driver reports `room_chat` and `exit_to_lobby` whenever the player is in the
+     room; list as a known gap or read a real field.
+  5. M2.2's second half (joining another room takes the player out of the finished room, deferred
+     to this phase by Q58) is not built: build it in `isReallyBusy`, or list it as a gap.
+  6. No tests for `leave_room` during a running game (accepted after leaving, `room_not_waiting`
+     while still in it) or for a leaver being free to join elsewhere.
+  7. Suggestion: B17 should measure `replayRecordOf(saved)`.
+  8. Suggestion: Leave game should be disabled while the connection is lost.
+  9. Minor: the badge's fixed inline colour should be a CSS class.
+- [ ] Fix or answer the findings, run the checks again.
+- [ ] Write the Report, merge, watch the deploy (new D1 migration 0006 and the Cron Trigger),
+  check the live site including `npm run replay-export`.
