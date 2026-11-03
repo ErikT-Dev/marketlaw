@@ -261,6 +261,33 @@ scenarios:
     - players made done at the same moment in the final turn are placed in player order
     - players who left come after every player still in the game
     - cards sold in the final turn join the discard pile when the game ends
+  accounts:
+    - joining without being logged in offers a free generated name and creates a guest user
+    - creating a guest user needs the human check
+    - generated names are unique not taken and at most 20 characters
+    - a login lasts until the site has not been used for 90 days
+    - rejects a username with letters outside A to Z
+    - rejects a username shorter than 3 characters
+    - usernames are unique ignoring capital letters
+    - Deleted player cannot be used as a username
+    - rejects a username with two spaces in a row
+  rooms:
+    - creating a room needs the human check
+    - rejects a room size other than 2 3 or 4
+    - rejects joining a full room
+    - rejects joining a room whose game has started
+    - rejects an unknown room code
+    - only the owner can change the size and not below the players in the room
+    - rejects a new size below the number of players in the room
+    - when the owner leaves the player who joined next becomes owner
+    - a room with no players left is closed
+    - a full room asks everyone to accept and starts when all accept
+    - every player in the room sees who has accepted so far
+    - a player who does not accept in time is removed and the others keep waiting
+    - a player who declined cannot rejoin the room for 2 minutes
+    - a player who declined can rejoin after 2 minutes
+    - a player disconnected from a waiting room for 10 seconds is removed
+    - a page refresh within 10 seconds keeps the place in a waiting room
 invariants:
   - I1
   - I2
