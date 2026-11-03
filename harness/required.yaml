@@ -117,6 +117,7 @@ scenarios:
     - a market go can be paused and the player gets their free time again
     - when two players' time would run out together while nobody is connected both get their free time again
     - a paused player's bank used before the pause stays used
+    - three main-phase time-outs in a row count as leaving the game
   visibility:
     - other players' hands are shown only as a number of cards
     - a player sees their own hand
@@ -131,6 +132,8 @@ scenarios:
     - a marketplace card taken is known to be in that player's hand
     - a card I drew that another player's hidden shuffle left in my discard pile is taken off that pile
     - everything about another player except the hand is public
+    - the replay record is kept for 30 days after the game ends
+    - the replay record is removed after 30 days
   influence:
     - 4 influence buys 2 funds once per game
     - 4 influence buys 1 quality
@@ -268,6 +271,7 @@ scenarios:
     - players made done at the same moment in the final turn are placed in player order
     - players who left come after every player still in the game
     - cards sold in the final turn join the discard pile when the game ends
+    - an end goal reached by a player who then leaves does not end the game
   accounts:
     - joining without being logged in offers a free generated name and creates a guest user
     - creating a guest user needs the human check
@@ -298,11 +302,22 @@ scenarios:
     - a player who declined can rejoin after 2 minutes
     - a player disconnected from a waiting room for 10 seconds is removed
     - a page refresh within 10 seconds keeps the place in a waiting room
+    - the room is deleted when the last player leaves it
   connections-and-leaving:
     - opening the game in a second tab moves it there
     - a disconnected player is shown as away to everyone
     - an away player keeps their seat and their time runs as normal
     - an away player's time runs out on a market go as for any player
+    - a player who leaves is done straight away and keeps their city
+    - a player who left cannot act again
+    - a leaver's main-phase actions this turn are kept and revealed at the end of the phase
+    - a leaver's hand waits in the holding pile during a main phase
+    - a leaver's hand goes straight to the discard pile outside the main phase
+    - a leaver takes no more market goes and is skipped in player order
+    - players who leave at the same moment leave in player order
+    - if every player leaves at the same moment the game is abandoned
+    - a leaver no longer sees the game but sees the result when it ends
+    - a player who leaves during their own market go is skipped and the next player goes
 invariants:
   - I1
   - I2
