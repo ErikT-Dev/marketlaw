@@ -42,7 +42,10 @@ export async function startTestRoom(file: string, number: number, site: string):
   const state = stateFromGiven(parsed.output);
   const response = await fetch(`${site}/api/test-rooms`, {
     method: "POST",
-    headers: { "content-type": "application/json", [TEST_ROOM_SECRET_HEADER]: testRoomSecretFor(site) },
+    headers: {
+      "content-type": "application/json",
+      [TEST_ROOM_SECRET_HEADER]: testRoomSecretFor(site),
+    },
     body: JSON.stringify({
       state,
       playerNames: state.seats.map((seat) => `Seat ${String(seat.seat)}`),
