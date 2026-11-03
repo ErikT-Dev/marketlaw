@@ -214,7 +214,7 @@ The 427 scenarios cover all of version 1, but each phase implements only part of
 | 15 | [End of the game and scoring](phase-15-end-of-game-and-scoring.md) | 3 Playthrough | 13, 14 | done |
 | 16 | [Rooms and guests](phase-16-rooms-and-guests.md) | 3 Playthrough | 15 | done |
 | 17 | [Lobby and one thing at a time](phase-17-lobby-and-one-thing-at-a-time.md) | 3 Playthrough | 16 | done |
-| 18 | [Connections and pausing](phase-18-connections-and-pausing.md) | 3 Playthrough | 17 | in progress |
+| 18 | [Connections and pausing](phase-18-connections-and-pausing.md) | 3 Playthrough | 17 | done |
 | 19 | [Leaving, cleanup and replay records](phase-19-leaving-cleanup-and-replays.md) | 3 Playthrough | 18 | approved |
 | 20 | [Cost protection and the playthrough version](phase-20-cost-protection-and-playthrough.md) | 3 Playthrough | 19 | approved |
 | 21 | [Room chat](phase-21-room-chat.md) | 4 Together | 20 | approved |
