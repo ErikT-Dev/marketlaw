@@ -920,3 +920,36 @@ file.
   Cron Trigger. Cron Triggers are on the Free plan (5 per account, 10 ms CPU per run); the delete
   is a single D1 statement. Recorded as D27.
 - **Implemented:** phase 19.
+
+## Q61. How is leaving built, and what does "at the same moment" mean?
+
+- **Phase:** 19, item 2.
+- **Question:** M6 says what leaving does, but not how players who leave "at the same moment"
+  (M6.9) are recognised, how a game that ends by leaving or by R9.14 is shown, or how
+  `connections-and-leaving` #15 can be checked before room chat exists (phase 21).
+- **Options:** for M6.9, treat only the time-outs of one alarm as one moment, or any due
+  time-outs at the time of a leave; for the endings, reuse "turn limit", or add endings.
+- **Solution:**
+  - Leaving is a logged engine action, `leave_game`, accepted from any player still in a game
+    that has not ended, also when done or out of actions. The player is made done, their hand
+    goes to the holding pile in a main phase and to the discard pile otherwise, and the order of
+    leaving is kept in the game state (Q49). It is not added to the done order, which only
+    breaks ties between players still in the game.
+  - "At the same moment" (M6.9) means the main-phase time-outs due at the same time that each
+    make a player leave (R9.11). While one of them is still to be applied, M6.8 waits for it, so
+    two last players who both time out abandon the game instead of one of them winning.
+  - A game result says how it ended: end goal, turn limit, last player left (M6.8) or abandoned
+    (M6.9, R9.14), for the four versions of the end screen (S9.5). An abandoned game has no
+    winner; I22 checks the winner only in games that are not abandoned.
+  - R9.14 is a logged system action, `abandon_game`, applied by the room's one alarm 24 hours
+    after the pause began.
+  - A player who left is no longer busy in the room (M2, M6.7): the lobby counts only players
+    still in the game.
+  - For `connections-and-leaving` #15, the room driver reads the elements from the update the
+    player would get: `left_game` when their own seat has left, `game_result` when the view has a
+    result, and `room_chat` and `exit_to_lobby` while they are still in the room, whose updates
+    will carry the chat from phase 21. The screen itself is checked by the browser tests.
+  - Leaving is visible to everyone, so it moves every player's state version, like a reveal
+    (I25), and the simulator's chaos bot leaves now and then, so the invariants see it.
+- **Implemented:** `src/rules/leaveGame.ts`, `seatsLeavingAt.ts`, `abandonPausedGame.ts`,
+  `src/shared/GameEnding.ts`, `src/server/room/busyPlayersOf.ts`; phase 19.

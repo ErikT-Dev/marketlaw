@@ -39,6 +39,8 @@ step.
 ## Known gaps after this phase
 
 - No daily limits yet (phase 20).
+- The game record that counts a leaver's hand before it is discarded (M6.5, A3) comes with game
+  records in phase 25.
 
 ## What you can see when it's done
 
@@ -77,8 +79,10 @@ These 15 scenarios are added to `harness/required.yaml` in this phase, by file a
 ## Progress
 
 - [x] 1. O8 decided as D27 (Q60): replay records in D1, removed by one daily Cron Trigger.
-- [ ] 2. Leaving: done at once, hand to the discard (holding pile during a main phase), skipped in
-  player order, the last player wins, everyone leaving abandons the game.
+- [x] 2. Leaving: done at once, hand to the discard (holding pile during a main phase), skipped in
+  player order, the last player wins, everyone leaving abandons the game. Also R9.14 (abandoned
+  after 24 hours paused) as a logged system action; results say how the game ended; the chaos
+  bot leaves now and then (Q61).
 - [ ] 3. Cleanup: rooms through their one alarm; replay records after 30 days through the
   scheduled job.
 - [ ] 4. Replay export for a running or ended room, protected by the owner's secret.
