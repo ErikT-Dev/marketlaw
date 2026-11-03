@@ -30,7 +30,8 @@ export function withUndoHistory(before: GameState, action: GameAction, after: Ga
   if (action.type === "undo" ||
     action.type === "end_turn" ||
     action.type === "turn_draw" ||
-    action.type === "time_out" || seatBefore === undefined) {
+    action.type === "time_out" ||
+    action.type === "leave_game" || seatBefore === undefined) {
     return after;
   }
   return updateSeat(after, action.seat, (seat) =>

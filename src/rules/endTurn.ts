@@ -1,9 +1,7 @@
 import type { SeatNumber } from "../shared/SeatNumber";
 import { bankLeftAt } from "../shared/bankLeftAt";
 import { decisionClockOf } from "./decisionClockOf";
-import { endGame } from "./endGame";
-import { endMainPhase } from "./endMainPhase";
-import { isFinalTurn } from "./isFinalTurn";
+import { endMainPhaseIfAllDone } from "./endMainPhaseIfAllDone";
 import type { GameState } from "./GameState";
 import type { Random } from "./Random";
 import { updateSeat } from "./updateSeat";
@@ -24,9 +22,5 @@ export function endTurn(
     })),
     doneOrder: [...state.doneOrder, seat],
   };
-  const isEveryoneDone = done.seats.every((current) => current.hasLeft || current.isDone);
-  if (!isEveryoneDone) {
-    return done;
-  }
-  return isFinalTurn(done) ? endGame(done, ending.at) : endMainPhase(done, random, ending.at);
+  return endMainPhaseIfAllDone(done, random, ending.at);
 }

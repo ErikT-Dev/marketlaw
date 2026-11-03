@@ -95,6 +95,7 @@ export function rejectionOf(state: GameState, action: PlayerAction): ReasonCode 
     case "sell":
       return sellRejection(seat, action.cards);
     case "end_turn":
+    case "leave_game":
       return undefined;
     case "claim_all":
     case "complete_project":

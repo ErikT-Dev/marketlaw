@@ -21,6 +21,7 @@ function endedThen(state: GameState): unknown {
   return places === undefined
     ? undefined
     : {
+        abandoned: state.result?.endedBy === "abandoned",
         winner: places[0]?.seat,
         places: places.map(({ seat }) => seat),
         scores: Object.fromEntries(places.map(({ seat, score }) => [seat, score])),

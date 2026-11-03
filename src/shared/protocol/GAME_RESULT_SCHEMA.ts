@@ -2,7 +2,7 @@ import * as v from "valibot";
 import { SEAT_NUMBER_SCHEMA } from "./SEAT_NUMBER_SCHEMA";
 
 export const GAME_RESULT_SCHEMA = v.object({
-  endedBy: v.picklist(["end_goal", "turn_limit"]),
+  endedBy: v.picklist(["end_goal", "turn_limit", "last_player", "abandoned"]),
   places: v.array(
     v.object({
       seat: SEAT_NUMBER_SCHEMA,
