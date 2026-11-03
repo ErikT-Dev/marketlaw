@@ -43,7 +43,9 @@ function room(changes: Partial<RoomView> = {}): RoomView {
 
 function waitingRoom(view: RoomView) {
   const handlers = { onChangeSize: vi.fn(), onAccept: vi.fn(), onDecline: vi.fn() };
-  render(<WaitingRoomPage room={view} myName="Ann" onLeave={vi.fn()} {...handlers} />);
+  render(
+    <WaitingRoomPage room={view} myName="Ann" onLeave={vi.fn()} rejection={null} {...handlers} />,
+  );
   return handlers;
 }
 

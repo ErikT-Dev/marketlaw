@@ -10,7 +10,7 @@ export function joinErrorText(error: JoinError, now: number): string {
     return "This room is full.";
   }
   if (error.reason === "room_not_waiting") {
-    return "This room is no longer waiting for players.";
+    return "The game in this room has already started.";
   }
   if (error.reason === "rejoin_too_soon") {
     return `You can join this room again in ${clockText((error.rejoinAt ?? now) - now)}.`;

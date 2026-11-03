@@ -1,13 +1,8 @@
-import { useEffect, useRef, useState, type RefObject } from "react";
+import { useEffect, useRef, useState } from "react";
+import type { HumanCheckState } from "./HumanCheckState";
 import { requestHumanCheckKey } from "../../api/requestHumanCheckKey";
 import { loadTurnstile } from "./loadTurnstile";
 import type { TurnstileApi } from "./TURNSTILE_API";
-
-export type HumanCheckState = {
-  readonly containerRef: RefObject<HTMLDivElement | null>;
-  readonly token: string;
-  readonly isUnavailable: boolean;
-};
 
 export function useHumanCheck(attempt: number): HumanCheckState {
   const containerRef = useRef<HTMLDivElement | null>(null);

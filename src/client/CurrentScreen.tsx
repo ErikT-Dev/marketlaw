@@ -1,5 +1,6 @@
 import { useSyncExternalStore } from "react";
 import { GamePage } from "./screens/GamePage";
+import { REJECTION_MESSAGES } from "./screens/game/REJECTION_MESSAGES";
 import { ServerClockOffset } from "./screens/game/ServerClockOffset";
 import { LobbyPage } from "./screens/lobby/LobbyPage";
 import { WaitingRoomPage } from "./screens/lobby/WaitingRoomPage";
@@ -39,6 +40,9 @@ export function CurrentScreen({ store }: Props) {
             store.sendRoomAction({ type: "change_size", size });
           }}
           onLeave={store.leaveWaitingRoom}
+          rejection={
+            state.rejectedMove === null ? null : REJECTION_MESSAGES[state.rejectedMove.code]
+          }
           onAccept={() => {
             store.sendRoomAction({ type: "accept_game" });
           }}

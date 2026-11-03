@@ -14,10 +14,11 @@ type Props = {
   readonly onLeave: () => void;
   readonly onAccept: () => void;
   readonly onDecline: () => void;
+  readonly rejection: string | null;
 };
 
 export function WaitingRoomPage(props: Props) {
-  const { room, myName, onChangeSize, onLeave, onAccept, onDecline } = props;
+  const { room, myName, onChangeSize, onLeave, onAccept, onDecline, rejection } = props;
   const now = useServerNow();
   const isOwner = room.ownerName === myName;
   return (
@@ -26,6 +27,11 @@ export function WaitingRoomPage(props: Props) {
       <main className={styles["columns"]}>
         <section className={styles["panel"]} aria-labelledby="room-heading">
           <WaitingRoomHeader room={room} isOwner={isOwner} onLeave={onLeave} />
+          {rejection === null ? null : (
+            <p role="alert" className={styles["error"]}>
+              {rejection}
+            </p>
+          )}
           <div className={styles["sizeRow"]}>
             <RoomSizeChoice
               label="Room size"

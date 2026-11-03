@@ -1,16 +1,8 @@
-import { useState, type RefObject } from "react";
+import { useState } from "react";
+import type { SubmitWithHumanCheck } from "./SubmitWithHumanCheck";
 import type { ReasonCode } from "../../../shared/ReasonCode";
 import { REJECTION_MESSAGES } from "../game/REJECTION_MESSAGES";
 import { useHumanCheck } from "./useHumanCheck";
-
-export type SubmitWithHumanCheck = {
-  readonly containerRef: RefObject<HTMLDivElement | null>;
-  readonly humanCheckToken: string;
-  readonly isUnavailable: boolean;
-  readonly error: string | null;
-  readonly isSending: boolean;
-  readonly submit: (send: (token: string) => Promise<ReasonCode | null>) => Promise<void>;
-};
 
 export function useSubmitWithHumanCheck(): SubmitWithHumanCheck {
   const [attempt, setAttempt] = useState(0);

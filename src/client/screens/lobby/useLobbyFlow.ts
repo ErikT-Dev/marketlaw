@@ -1,15 +1,7 @@
 import { useState } from "react";
 import { requestGeneratedName } from "../../api/requestGeneratedName";
-
-type LobbyIntent = { readonly kind: "join"; readonly code: string } | { readonly kind: "create" };
-
-export type LobbyFlow = {
-  readonly guestPrompt: { readonly generatedName: string; readonly then: LobbyIntent } | null;
-  readonly isCreateOpen: boolean;
-  readonly start: (intent: LobbyIntent) => Promise<void>;
-  readonly continueAfterGuest: () => void;
-  readonly closeDialogs: () => void;
-};
+import type { LobbyFlow } from "./LobbyFlow";
+import type { LobbyIntent } from "./LobbyIntent";
 
 export function useLobbyFlow(isLoggedIn: boolean, onJoin: (code: string) => void): LobbyFlow {
   const [guestPrompt, setGuestPrompt] = useState<LobbyFlow["guestPrompt"]>(null);
