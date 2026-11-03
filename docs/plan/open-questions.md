@@ -953,3 +953,28 @@ file.
     (I25), and the simulator's chaos bot leaves now and then, so the invariants see it.
 - **Implemented:** `src/rules/leaveGame.ts`, `seatsLeavingAt.ts`, `abandonPausedGame.ts`,
   `src/shared/GameEnding.ts`, `src/server/room/busyPlayersOf.ts`; phase 19.
+
+## Q62. How do rooms and replay records clean themselves up?
+
+- **Phase:** 19, item 3.
+- **Question:** M8.2 deletes a room when its last player leaves it or 24 hours after its game
+  ended; M4.3 keeps the replay record 30 days. The spec does not say who may leave a room while
+  its game runs, and a daily job cannot remove a record at the exact moment it turns 30 days old.
+- **Solution:**
+  - A player may leave the room (`leave_room`) once they are no longer in its game: after
+    leaving the game (M6.7), or after the game ended (M8.1). A player still in a running game
+    must leave the game first. Each seat keeps its player's name, so the other players still see
+    who sat there after that player left the room.
+  - The room's one alarm is set 24 hours after its game ended; when it fires, or when a message
+    arrives after that time, the room is deleted. This adds one alarm row per finished game.
+  - When a game ends, the room writes its replay record (seed, setup, starting state for test
+    rooms, and the action log) to D1 once: one row and its index entry (B8, B17).
+  - A Cron Trigger runs once a day at 03:17 UTC and deletes every record that ended 30 days ago
+    or more, with one D1 statement. Cron Triggers are on the Workers Free plan, up to 5 per
+    account (https://developers.cloudflare.com/workers/platform/limits/, "Cron Triggers").
+  - Until the job has run, a record older than 30 days still exists in D1, so whatever reads
+    records (the export, the scenario driver) treats records older than 30 days as removed. The
+    record is therefore gone at exactly 30 days for anyone who asks, and deleted from storage
+    within a day after.
+- **Implemented:** `src/server/room/endedRoomDeletionAt.ts`, `roomActionOutcome.ts`,
+  `src/server/replays/`, `migrations/0006_replay_records.sql`, `wrangler.jsonc`; phase 19.
