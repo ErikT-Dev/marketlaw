@@ -64,7 +64,9 @@ describe("end-of-game screen", () => {
         .getAllByRole("rowheader")
         .map((header) => header.textContent),
     ).toEqual(["Cy", "You", "Di", "Ann"]);
-    expect(dialog.textContent).toContain("Players who left are placed last.");
+    expect(dialog.textContent).toContain(
+      "Players who left are placed by when they left: the one who left first is last.",
+    );
   });
 
   it("says when the game ended at the turn limit", () => {

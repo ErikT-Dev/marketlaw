@@ -1,0 +1,40 @@
+.page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: var(--space-xxl);
+  background:
+    linear-gradient(var(--color-board-page-dim), var(--color-board-page-dim)),
+    url("../../assets/backgrounds/game.webp") center / cover,
+    var(--color-background-game-window);
+  box-sizing: border-box;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  width: min(760px, 100%);
+  padding: var(--space-xl);
+  border-radius: var(--radius-lg);
+  background: var(--color-background-modal);
+  color: var(--color-text-primary);
+}
+
+.title {
+  margin: 0;
+  font-size: var(--font-size-xl);
+}
+
+.text {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-sm);
+}

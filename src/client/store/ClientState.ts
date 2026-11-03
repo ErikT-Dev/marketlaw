@@ -19,6 +19,7 @@ export type ClientState = {
   readonly serverClockOffsetMs: number;
   readonly joinError: JoinError | null;
   readonly removal: RemovalNotice | null;
+  readonly goneRoomCode: string | null;
   readonly publicRooms: ReadonlyArray<PublicRoomView>;
   readonly isOutdated: boolean;
 };

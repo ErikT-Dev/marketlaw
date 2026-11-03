@@ -33,7 +33,10 @@ export function PlayerBadge({ name, status, rating, isFirstPlayer = false }: Pro
       <span>{name}</span>
       {rating === undefined ? null : <span className={styles["rating"]}>{rating}</span>}
       {status === "none" ? null : (
-        <span className={styles["status"]} style={{ color }}>
+        <span
+          className={styles["status"]}
+          style={{ color: status === "left" ? "var(--color-text-muted)" : color }}
+        >
           {STATUS_TEXT[status]}
         </span>
       )}

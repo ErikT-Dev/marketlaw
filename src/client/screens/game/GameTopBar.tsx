@@ -7,6 +7,7 @@ import { TURN_LIMIT } from "../../../shared/TURN_LIMIT";
 import { PlayerBadge } from "../../components/PlayerBadge";
 import { AwaySeats } from "./AwaySeats";
 import styles from "./GameTopBar.module.css";
+import { LeaveGameButton } from "./LeaveGameButton";
 import { orderBadgesOf } from "./orderBadgesOf";
 import { YourClock } from "./YourClock";
 
@@ -14,6 +15,7 @@ type Props = {
   readonly view: PlayerView;
   readonly seat: OwnSeatView;
   readonly playerNames: ReadonlyArray<string>;
+  readonly onLeaveGame: (() => void) | null;
 };
 
 const PHASE_NAMES: Readonly<Record<GamePhase, string>> = {
@@ -22,7 +24,7 @@ const PHASE_NAMES: Readonly<Record<GamePhase, string>> = {
   ended: "Game over",
 };
 
-export function GameTopBar({ view, seat, playerNames }: Props) {
+export function GameTopBar({ view, seat, playerNames, onLeaveGame }: Props) {
   const awaySeats = useContext(AwaySeats);
   return (
     <header className={styles["topBar"]}>
@@ -50,7 +52,10 @@ export function GameTopBar({ view, seat, playerNames }: Props) {
           </Fragment>
         ))}
       </ol>
-      <YourClock view={view} seat={seat} playerNames={playerNames} />
+      <div className={styles["right"]}>
+        <YourClock view={view} seat={seat} playerNames={playerNames} />
+        {onLeaveGame === null ? null : <LeaveGameButton onLeave={onLeaveGame} />}
+      </div>
     </header>
   );
 }
