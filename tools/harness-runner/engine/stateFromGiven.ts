@@ -1,4 +1,5 @@
 import * as v from "valibot";
+import { decisionClockOf } from "../../../src/rules/decisionClockOf.ts";
 import { firstPlayerOf } from "../../../src/rules/firstPlayerOf.ts";
 import type { GameState } from "../../../src/rules/GameState.ts";
 import { marketGoOf } from "../../../src/rules/marketGoOf.ts";
@@ -26,6 +27,17 @@ function withCheckedMarketGo(state: GameState, given: Given): GameState {
     );
   }
   return state;
+}
+
+function withGivenPause(state: GameState, isPaused: boolean): GameState {
+  const seatsByDeadline = state.seats
+    .map(({ seat }) => ({ seat, deadline: decisionClockOf(state, seat)?.deadline ?? null }))
+    .filter((entry) => entry.deadline !== null)
+    .sort((first, second) => (first.deadline ?? 0) - (second.deadline ?? 0));
+  const first = seatsByDeadline[0];
+  return isPaused && first !== undefined
+    ? { ...state, pause: { at: state.clockStartedAt, seat: first.seat } }
+    : state;
 }
 
 export function stateFromGiven(given: Given): GameState {
@@ -76,7 +88,9 @@ export function stateFromGiven(given: Given): GameState {
     doneOrder: seats.filter((seat) => seat.isDone).map((seat) => seat.seat),
     firstCompletions: given.first_completions ?? [],
     clockStartedAt: v.parse(EpochMs, given.clock_ms ?? 0),
+    pause: null,
+    grace: null,
     result: null,
   });
-  return withCheckedMarketGo(started, given);
+  return withGivenPause(withCheckedMarketGo(started, given), given.paused === true);
 }

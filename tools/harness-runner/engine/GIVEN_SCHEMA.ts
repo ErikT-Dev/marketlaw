@@ -80,4 +80,5 @@ export const GIVEN_SCHEMA = v.strictObject({
   bonus_types: v.optional(v.array(TypeName)),
   first_completions: v.optional(v.array(ProjectName)),
   clock_ms: v.optional(COUNT),
+  paused: v.optional(v.boolean()),
 });

@@ -17,6 +17,7 @@ export const ROOM_GIVEN_SCHEMA = v.looseObject({
         seat: v.number(),
         state_version: v.optional(v.number()),
         connected: v.optional(v.boolean()),
+        player: v.optional(v.string()),
       }),
     ),
   ),
