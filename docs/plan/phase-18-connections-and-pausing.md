@@ -1,6 +1,6 @@
 # Phase 18: Connections and pausing
 
-Status: approved
+Status: in progress
 Milestone: 3 Playthrough
 
 ## Goal
@@ -61,3 +61,13 @@ These 9 scenarios are added to `harness/required.yaml` in this phase, by file an
 - `turns-and-time` #24: a paused game goes on when a player reconnects and the timed-out player gets free time again
 - `turns-and-time` #25: after the extra free time the paused player times out as normal
 - `turns-and-time` #35: a market go can be paused and the player gets their free time again
+
+## Progress
+
+- [ ] 1. One tab per game, the old tab told.
+- [ ] 2. Away status for everyone; time runs as normal while away.
+- [ ] 3. Pause and resume when a deadline comes and nobody is connected, with free time again on
+  resume.
+- [ ] 4. Notices for the above.
+- [ ] 5. Browser tests: refresh mid-game, disconnect and rejoin, a second tab, and a forced room
+  restart mid-game.
