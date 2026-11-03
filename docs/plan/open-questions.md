@@ -751,3 +751,14 @@ file.
   the holding pile until the phase ends (R17.7), so no scenario is written for it.
 - **Implemented:** `harness/scenarios/visibility.yaml`, `harness/scenarios/end-of-game.yaml`,
   `harness/required.yaml` (phase 15).
+
+## Q51. How many simulated games do the check and the phase end play?
+
+- **Phase:** between 15 and 16, from the owner.
+- **Question:** the 500 simulated games of D23 take most of `npm run check` (about 170 s of 4
+  minutes locally, 10 to 12 minutes on GitHub).
+- **Solution:** the owner's decision D25: 50 games per `npm run check`, 1,000 per
+  `npm run harness`.
+- **Implemented:** the counts in `tools/harness-runner/SIMULATED_GAMES.ts` only; `harness/HARNESS.md` point 2
+  (HARNESS commit), `rules/testing.md`, `docs/plan/README.md`, `docs/enforcement.md` and the phase
+  30 file now refer to that file instead of repeating the numbers.

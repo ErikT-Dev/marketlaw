@@ -20,8 +20,9 @@ prints the seed and the action log needed to replay it.
 
 ### Invariants under simulation
 The simulator plays seeded random games and checks every invariant in
-`harness/invariants.yaml` after every action: 500 games in `npm run check` (the Stop hook and
-GitHub), and 5,000 in `npm run harness`, which runs at the end of every phase (plan decision D23).
+`harness/invariants.yaml` after every action, in `npm run check` (the Stop hook and GitHub) and in `npm run harness`,
+which runs at the end of every phase. The game counts live only in `tools/harness-runner/SIMULATED_GAMES.ts`
+(plan decision D25).
 A violation produces a minimal reproducing seed.
 **Why:** random play finds the rare states that hand-written cases miss.
 **Enforced by:** `npm run harness`.

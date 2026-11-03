@@ -1,11 +1,13 @@
 import { describe, expect, it } from "vitest";
 import { NO_GAMES } from "../simulator/NO_GAMES.ts";
+import { SIMULATED_GAMES } from "./SIMULATED_GAMES.ts";
 import { simulationProblems } from "./simulationProblems.ts";
 
 describe("simulationProblems", () => {
-  it("fails when fewer than 500 games were played", () => {
-    expect(simulationProblems({ ...NO_GAMES, games: 50 }, ["I1"])).toEqual([
-      "the simulator played 50 games, fewer than 500",
+  it("fails when fewer games were played than the check asks for", () => {
+    const games = SIMULATED_GAMES.check - 1;
+    expect(simulationProblems({ ...NO_GAMES, games }, ["I1"])).toEqual([
+      `the simulator played ${String(games)} games, fewer than ${String(SIMULATED_GAMES.check)}`,
     ]);
   });
 

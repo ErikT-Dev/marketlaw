@@ -145,7 +145,7 @@ its secret (D8, C5).
 *Effect:* `README.md` principle 2, phase 30 item 4; Claude checks after each deploy that the
 live site loads without a login.
 
-**D23. 500 simulated games per check, 5,000 at the end of a phase (replaces D9).** (2026-10-29,
+**D23 (replaced by D25). 500 simulated games per check, 5,000 at the end of a phase (replaces D9).** (2026-10-29,
 owner, during phase 11)
 `npm run check`, and so the Stop hook and GitHub, simulates 500 games; `npm run harness` simulates
 5,000 and runs at the end of every phase, before the phase review. Measured on phase 11: the other
@@ -164,6 +164,18 @@ games at every size, in about turn 39 on average; rows written per game are 484,
 bound for game length.
 *Effect:* `open-questions.md` Q48; `game-rules.md` open question 1 keeps the recheck with real
 games (phase 20 testers).
+
+**D25. 50 simulated games per check, 1,000 at the end of a phase (replaces D23).** (2026-11-03,
+owner, after phase 15)
+`npm run check`, and so the Stop hook and GitHub, simulates 50 games; `npm run harness` simulates
+1,000 and runs at the end of every phase, before the phase review. Measured after phase 15 on an
+8-core PC: the 500 games took about 170 s of the check's 4 minutes and the rest of the tests about
+20 s; on GitHub's 2-core runners the check took 10 to 12 minutes. 50 games still find, 95% of the
+time, a broken invariant that shows in 1 game in 17; 1,000 games, one that shows in 1 game in 334.
+*Effect:* the counts live only in `tools/harness-runner/SIMULATED_GAMES.ts`; `rules/testing.md`,
+`harness/HARNESS.md` point 2, `README.md` step 4.2, `docs/enforcement.md` and the phase 30 file
+refer to it instead of repeating the numbers, so the next change is one edit there plus a
+decision here. Phase files 11 to 15 keep their 5,000-game results.
 
 ## Open
 
