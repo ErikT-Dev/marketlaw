@@ -26,6 +26,7 @@ import { playersWhoseUpdateChanged } from "./room/playersWhoseUpdateChanged";
 import { receiveMessage } from "./room/receiveMessage";
 import type { RoomRecord } from "./room/RoomRecord";
 import { startTestRoomIn } from "./room/startTestRoomIn";
+import { resumeNoticesBetween } from "./room/resumeNoticesBetween";
 import { timeOutNoticesBetween } from "./room/timeOutNoticesBetween";
 import { withAwaySeats } from "./room/withAwaySeats";
 import { withConnection } from "./room/withConnection";
@@ -76,6 +77,10 @@ export class GameRoom extends DurableObject<Env> {
       await this.syncAlarm();
       return isStarted;
     });
+  }
+
+  restartForTest(): void {
+    this.ctx.abort("Restarted by a browser test");
   }
 
   async hasPlayer(playerId: PlayerId): Promise<boolean> {
@@ -236,7 +241,10 @@ export class GameRoom extends DurableObject<Env> {
         outcome.playersToUpdate,
         outcome.reply.type === "rejected" ? null : socket,
       );
-      this.sockets.sendNotices(timeOutNoticesBetween(recordBefore, recordAfter));
+      this.sockets.sendNotices([
+        ...timeOutNoticesBetween(recordBefore, recordAfter),
+        ...resumeNoticesBetween(recordBefore, recordAfter),
+      ]);
     }
     await this.syncAlarm();
     await this.reportToLobby(recordBefore);

@@ -19,6 +19,10 @@ export class RoomSockets {
     this.ctx = ctx;
   }
 
+  private openSockets(): ReadonlyArray<WebSocket> {
+    return this.ctx.getWebSockets().filter((socket) => socket.readyState === WebSocket.OPEN);
+  }
+
   closeAll(reason: string): void {
     for (const socket of this.ctx.getWebSockets()) {
       socket.close(ROOM_GONE_CLOSE_CODE, reason);
@@ -47,7 +51,7 @@ export class RoomSockets {
   }
 
   sendTo(playerIds: ReadonlyArray<PlayerId>, messageFor: (playerId: PlayerId) => ServerMessage) {
-    for (const socket of this.ctx.getWebSockets()) {
+    for (const socket of this.openSockets()) {
       const { identity } = attachmentOf(socket);
       if (identity !== null && playerIds.includes(identity.playerId)) {
         socket.send(JSON.stringify(messageFor(identity.playerId)));
@@ -60,7 +64,7 @@ export class RoomSockets {
       type: "opened_elsewhere",
       protocolVersion: PROTOCOL_VERSION,
     };
-    for (const other of this.ctx.getWebSockets()) {
+    for (const other of this.openSockets()) {
       if (other !== socket && attachmentOf(other).identity?.playerId === playerId) {
         other.send(JSON.stringify(elsewhere));
         other.close(OPENED_ELSEWHERE_CLOSE_CODE, "The game was opened in another tab");
@@ -80,7 +84,7 @@ export class RoomSockets {
   }
 
   sendRemovals(removals: ReadonlyArray<RoomRemoval>): void {
-    for (const socket of this.ctx.getWebSockets()) {
+    for (const socket of this.openSockets()) {
       const { identity } = attachmentOf(socket);
       const removal = removals.find(({ playerId }) => playerId === identity?.playerId);
       if (removal !== undefined) {
@@ -114,7 +118,7 @@ export class RoomSockets {
     if (record === null || playerIds.length === 0) {
       return;
     }
-    for (const socket of this.ctx.getWebSockets()) {
+    for (const socket of this.openSockets()) {
       const { identity } = attachmentOf(socket);
       if (socket !== except && identity !== null && playerIds.includes(identity.playerId)) {
         const update: ServerMessage = {

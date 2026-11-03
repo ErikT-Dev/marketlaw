@@ -10,6 +10,7 @@ import { sessionRoute } from "./api/sessionRoute";
 import { lobbyOf } from "./lobbyOf";
 import { confirmTestSeat } from "./testRooms/confirmTestSeat";
 import { createTestRoom } from "./testRooms/createTestRoom";
+import { restartTestRoom } from "./testRooms/restartTestRoom";
 
 export { GameRoom } from "./GameRoom";
 export { Lobby } from "./Lobby";
@@ -36,6 +37,7 @@ const POST_ROUTES: Readonly<Record<string, (request: Request, env: Env) => Promi
   "/api/session": sessionRoute,
   "/api/test-rooms": createTestRoom,
   "/api/test-room-seats": confirmTestSeat,
+  "/api/test-room-restarts": restartTestRoom,
 };
 
 async function route(request: Request, env: Env): Promise<Response> {
