@@ -1,6 +1,6 @@
 # Phase 16: Rooms and guests
 
-Status: approved
+Status: in progress
 Milestone: 3 Playthrough
 
 ## Goal
@@ -53,7 +53,12 @@ and play.
 
 ## Open points
 
-- O6. Turnstile keys from the owner.
+- O6: decided as D26 (Q52), a lobby Durable Object, built in phase 17.
+
+## Waiting for the owner
+
+- Turnstile site and secret keys for `marketlaw.mlawd.workers.dev` (Q53). Until then local runs
+  and the browser tests use Cloudflare's published test keys; the deploy waits for the real ones.
 
 ## Required scenarios
 
@@ -84,3 +89,15 @@ These 25 scenarios are added to `harness/required.yaml` in this phase, by file a
 - `rooms` #16: a player who declined can rejoin after 2 minutes
 - `rooms` #17: a player disconnected from a waiting room for 10 seconds is removed
 - `rooms` #18: a page refresh within 10 seconds keeps the place in a waiting room
+
+## Progress
+
+- [x] 1. O6 decided as D26 (Q52): one lobby Durable Object, built in phase 17 with M1.7 and M2;
+  phase 16 needs no new class. Start-of-phase questions Q53 to Q56.
+- [ ] 2. Rooms: public or private, size and changing it, owner hand-over, joining, leaving, the
+  20-second accept with who has accepted, seats in random order, the 2-minute rejoin wait,
+  removal after 10 seconds disconnected while waiting.
+- [ ] 3. Guests: username rules, generated names, staying logged in for 90 days of use.
+- [ ] 4. Human check: Turnstile on guest and room creation.
+- [ ] 5. Screens: guest name prompt, create room, join with code and its errors, waiting room,
+  accept dialog, the rejoin message.
