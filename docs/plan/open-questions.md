@@ -859,3 +859,23 @@ file.
   replays use the stored order.
 - **Implemented:** `src/server/room/caughtUpRoom.ts`, `withLivePlayers.ts`, `GameRoom.ts`;
   phase 16 review fixes.
+
+## Q58. Lobby details the spec leaves open
+
+- **Phase:** 17, from building it and from the phase review.
+- **Questions and solutions:**
+  - When is a game over for "one thing at a time" (M2.2)? When its phase is `ended` (R21): its
+    players are free at once; leaving the finished room comes in phase 19.
+  - Is a full room that is asking players to accept still listed (M1.7)? Yes, with 0 free places
+    and Join disabled, since it may open up again if someone declines.
+  - The list's heading shows the count, "Public rooms · N", as the design does.
+  - The "busy elsewhere" text (S10.6) is added to S10.9.
+  - A lobby that is out of date must not lock a player out: before refusing a busy player, the
+    server asks the room the lobby names, and forgets the entry if the player is not in it; a
+    listed room that no longer exists is dropped when someone tries to join it. A room's report
+    to the lobby that fails is not retried; these checks repair what it would have changed.
+  - The busy day (B18) counts D1 index writes: a new guest writes the row and its three indexes
+    (id, token hash, name key), 4 rows (https://developers.cloudflare.com/d1/platform/pricing/,
+    checked 2026-11-03). The day writes 1,844 rows of 5,000.
+- **Implemented:** `harness/spec/screens.md` S10.9 (HARNESS commit); `src/server/api/isReallyBusy.ts`,
+  `joinRoomRoute.ts`; `tools/simulator/busyDay/`; phase 17.

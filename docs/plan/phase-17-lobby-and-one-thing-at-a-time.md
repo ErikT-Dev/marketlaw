@@ -68,4 +68,6 @@ These 3 scenarios are added to `harness/required.yaml` in this phase, by file an
   queue and Log in / Sign up stay hidden until their phases.
 - [x] 4. Busy-day simulator for B18: 50 rooms of 2 to 4 players, each with a join that leaves
   again, a page refresh and everyone accepting, plus 100 new guests and 50 returning players.
-  It writes 1,196 rows (448 room, 100 alarm, 498 lobby, 150 database) against the limit of 5,000.
+  It writes 1,844 rows (498 room, 398 alarm changes, 498 lobby, 450 database, counting D1 index
+  writes) against the limit of 5,000. Players arrive 30 seconds apart, so the waiting-room
+  timers fire as they would live (Q58).
