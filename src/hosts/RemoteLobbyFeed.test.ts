@@ -48,4 +48,26 @@ describe("RemoteLobbyFeed", () => {
     feed.close();
     expect(opened).toHaveLength(2);
   });
+
+  it("does not reconnect when it was closed while a reconnect was waiting", () => {
+    const opened: SocketHandlers[] = [];
+    const waiting: Array<() => void> = [];
+    const feed = new RemoteLobbyFeed({
+      url: "ws://test/api/lobby/socket",
+      openSocket: (url, handlers) => {
+        opened.push(handlers);
+        return { send: () => true, close: () => undefined };
+      },
+      runLater: (delay, run) => {
+        waiting.push(run);
+      },
+      onRooms: () => undefined,
+    });
+    opened[0]?.onClose(1006);
+    feed.close();
+    waiting.forEach((run) => {
+      run();
+    });
+    expect(opened).toHaveLength(1);
+  });
 });

@@ -2,7 +2,7 @@ import * as v from "valibot";
 import type { LobbyFeed } from "../shared/LobbyFeed";
 import { LobbyMessage } from "../shared/protocol/LobbyMessage";
 import type { HostSocket } from "./HostSocket";
-import { reconnectDelayMs } from "./reconnectDelayMs";
+import { Reconnector } from "./Reconnector";
 import type { LobbyFeedOptions } from "./LobbyFeedOptions";
 
 function parsedRooms(text: string) {
@@ -17,23 +17,23 @@ function parsedRooms(text: string) {
 export class RemoteLobbyFeed implements LobbyFeed {
   private readonly options: LobbyFeedOptions;
   private socket: HostSocket | null = null;
-  private failedConnects = 0;
-  private isClosedByPlayer = false;
+  private readonly reconnector: Reconnector;
 
   constructor(options: LobbyFeedOptions) {
     this.options = options;
+    this.reconnector = new Reconnector(options.runLater);
     this.connect();
   }
 
   readonly close = (): void => {
-    this.isClosedByPlayer = true;
+    this.reconnector.close();
     this.socket?.close();
   };
 
   private connect(): void {
     this.socket = this.options.openSocket(this.options.url, {
       onOpen: () => {
-        this.failedConnects = 0;
+        this.reconnector.connected();
       },
       onMessage: (text) => {
         const rooms = parsedRooms(text);
@@ -43,13 +43,9 @@ export class RemoteLobbyFeed implements LobbyFeed {
       },
       onClose: () => {
         this.socket = null;
-        if (!this.isClosedByPlayer) {
-          const delay = reconnectDelayMs(this.failedConnects);
-          this.failedConnects += 1;
-          this.options.runLater(delay, () => {
-            this.connect();
-          });
-        }
+        this.reconnector.afterDrop(() => {
+          this.connect();
+        });
       },
     });
   }

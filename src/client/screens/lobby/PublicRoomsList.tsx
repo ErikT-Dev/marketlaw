@@ -29,7 +29,6 @@ export function PublicRoomsList({ rooms, onJoin }: Props) {
             <span className={styles["roomPlayers"]}>
               {room.playerNames.map((name) => (
                 <span key={name} className={styles["playerChip"]}>
-                  <span className={styles["online"]} aria-hidden="true" />
                   {name}
                 </span>
               ))}
