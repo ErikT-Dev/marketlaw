@@ -23,6 +23,16 @@ export class RoomSockets {
     }
   }
 
+  livePlayers(): ReadonlyArray<PlayerId> {
+    return this.ctx
+      .getWebSockets()
+      .filter((socket) => socket.readyState === WebSocket.OPEN)
+      .flatMap((socket) => {
+        const { identity } = attachmentOf(socket);
+        return identity === null ? [] : [identity.playerId];
+      });
+  }
+
   isConnectedElsewhere(playerId: PlayerId, closing: WebSocket): boolean {
     return this.ctx
       .getWebSockets()

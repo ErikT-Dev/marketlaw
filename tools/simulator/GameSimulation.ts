@@ -213,6 +213,7 @@ export class GameSimulation {
       now: v.parse(EpochMs, this.nowMs),
       randomFor: randomForNextAction,
       gameStart: { seed: 0, now: v.parse(EpochMs, this.nowMs), seatOrder: (ids) => ids },
+      livePlayers: [],
     });
     if (outcome.isRoomGone) {
       throw new Error("the simulated room is gone");

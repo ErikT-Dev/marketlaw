@@ -8,9 +8,10 @@ export function withConnection(
   connection:
     { readonly isConnected: true } | { readonly isConnected: false; readonly at: EpochMs },
 ): RoomRecord {
-  const isListed = record.waiting.disconnected.some((entry) => entry.playerId === playerId);
   const isMember = record.players.some((player) => player.playerId === playerId);
-  if (record.game !== null || !isMember || isListed !== connection.isConnected) {
+  const others = record.waiting.disconnected.filter((entry) => entry.playerId !== playerId);
+  const isListed = others.length !== record.waiting.disconnected.length;
+  if (record.game !== null || !isMember || (connection.isConnected && !isListed)) {
     return record;
   }
   return {
@@ -18,8 +19,8 @@ export function withConnection(
     waiting: {
       ...record.waiting,
       disconnected: connection.isConnected
-        ? record.waiting.disconnected.filter((entry) => entry.playerId !== playerId)
-        : [...record.waiting.disconnected, { playerId, since: connection.at }],
+        ? others
+        : [...others, { playerId, since: connection.at }],
     },
   };
 }

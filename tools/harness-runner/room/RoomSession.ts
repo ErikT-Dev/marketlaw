@@ -155,6 +155,7 @@ export class RoomSession {
       now: this.now,
       randomFor: () => this.random,
       gameStart: { seed: 1, now: this.now, seatOrder: (players) => players },
+      livePlayers: [],
     });
     this.handlingMs.push(performance.now() - startedMs);
     this.notices.push(...timeOutNoticesBetween(recordBefore, this.record));

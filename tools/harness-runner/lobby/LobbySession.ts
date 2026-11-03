@@ -8,11 +8,10 @@ import { nameKeyOf } from "../../../src/server/accounts/nameKeyOf.ts";
 import { createRoomDecision } from "../../../src/server/room/createRoomDecision.ts";
 import { fireRoomAlarm } from "../../../src/server/room/fireRoomAlarm.ts";
 import type { Identity } from "../../../src/server/room/Identity.ts";
-import { joinRoom } from "../../../src/server/room/joinRoom.ts";
-import { NO_WAITING } from "../../../src/server/room/NO_WAITING.ts";
+import { createRoomIn } from "../../../src/server/room/createRoomIn.ts";
+import { joinRoomIn } from "../../../src/server/room/joinRoomIn.ts";
 import { nextAlarmAt } from "../../../src/server/room/nextAlarmAt.ts";
 import { receiveMessage } from "../../../src/server/room/receiveMessage.ts";
-import { ROOM_SCHEMA_VERSION } from "../../../src/server/room/ROOM_SCHEMA_VERSION.ts";
 import type { RoomRecord } from "../../../src/server/room/RoomRecord.ts";
 import type { RoomStorage } from "../../../src/server/room/RoomStorage.ts";
 import { roomSizeOf } from "../../../src/server/room/roomSizeOf.ts";
@@ -32,6 +31,12 @@ import type { LobbyGiven } from "./LOBBY_GIVEN_SCHEMA.ts";
 import { lobbyRoomFromGiven } from "./lobbyRoomFromGiven.ts";
 
 const GENERATED_CANDIDATES = 10;
+const NAME_STEP = 7;
+const NO_ROOM: RoomStorage = {
+  read: () => undefined,
+  write: () => undefined,
+  remove: () => undefined,
+};
 
 export class LobbySession {
   record: RoomRecord | null;
@@ -42,6 +47,8 @@ export class LobbySession {
   generatedName: string | null = null;
   loggedInAs: string | null = null;
   private readonly pendingJoins = new Map<string, string>();
+  private live: ReadonlyArray<PlayerId> = [];
+  private namesAsked = 0;
   private readonly random: ScriptedRandom;
   private readonly storage: RoomStorage = {
     read: () => this.record ?? undefined,
@@ -62,6 +69,11 @@ export class LobbySession {
       given.room === undefined
         ? null
         : lobbyRoomFromGiven(given.room, (name) => this.identityNamed(name), this.now);
+    this.live = this.record?.players.map(({ playerId }) => playerId) ?? [];
+  }
+
+  livePlayers(): ReadonlyArray<PlayerId> {
+    return this.live;
   }
 
   identityNamed(name: string): Identity {
@@ -80,7 +92,7 @@ export class LobbySession {
       alarm = nextAlarmAt(this.record)
     ) {
       this.now = v.parse(EpochMs, alarm);
-      const fired = fireRoomAlarm(this.record, this.now, randomForNextAction).record;
+      const fired = fireRoomAlarm(this.record, this.now, randomForNextAction, this.live).record;
       if (fired === this.record) {
         break;
       }
@@ -90,13 +102,11 @@ export class LobbySession {
   }
 
   setConnected(name: string, isConnected: boolean): void {
-    if (this.record !== null) {
-      const { playerId } = this.identityNamed(name);
-      this.record = withConnection(
-        this.record,
-        playerId,
-        isConnected ? { isConnected } : { isConnected, at: this.now },
-      );
+    const { playerId } = this.identityNamed(name);
+    const others = this.live.filter((id) => id !== playerId);
+    this.live = isConnected ? [...others, playerId] : others;
+    if (!isConnected && this.record !== null) {
+      this.record = withConnection(this.record, playerId, { isConnected, at: this.now });
     }
   }
 
@@ -105,27 +115,17 @@ export class LobbySession {
     const roomSize = roomSizeOf(size);
     this.rejected = createRoomDecision(size, step["human_check"] === "passed");
     if (this.rejected === null && roomSize !== null) {
-      this.record = {
-        schemaVersion: ROOM_SCHEMA_VERSION,
-        code: newRoomCode(),
-        size: roomSize,
-        isPublic: step["public"] === true,
-        players: [this.identityNamed(name)],
-        waiting: NO_WAITING,
-        game: null,
-      };
+      const room = { code: newRoomCode(), size: roomSize, isPublic: step["public"] === true };
+      createRoomIn(this.storage, room, this.identityNamed(name), this.now);
+      this.setConnected(name, true);
     }
   }
 
   joinRoom(name: string, code: unknown): void {
-    if (this.record === null || this.record.code !== code) {
-      this.rejected = "room_not_found";
-      return;
-    }
-    const joined = joinRoom(this.record, this.identityNamed(name), this.now);
-    this.rejected = joined.isOk ? null : joined.error.reason;
-    if (joined.isOk) {
-      this.record = joined.value;
+    const storage = this.record?.code === code ? this.storage : NO_ROOM;
+    const { rejection } = joinRoomIn(storage, this.identityNamed(name), this.now, this.live);
+    this.rejected = rejection?.reason ?? null;
+    if (rejection === null) {
       this.setConnected(name, true);
     }
   }
@@ -140,7 +140,7 @@ export class LobbySession {
     const candidates =
       draw.kind === "listed" && typeof draw.value === "string"
         ? [draw.value]
-        : generatedNames((limit) => Math.floor(Math.random() * limit), GENERATED_CANDIDATES);
+        : generatedNames((limit) => this.nextNameIndex(limit), GENERATED_CANDIDATES);
     this.generatedName = firstFreeName(candidates, this.takenKeys());
   }
 
@@ -184,6 +184,7 @@ export class LobbySession {
       now: this.now,
       randomFor: randomForNextAction,
       gameStart: { seed: 1, now: this.now, seatOrder: (players) => this.seatOrder(players) },
+      livePlayers: this.live,
     });
     this.rejected = outcome.isRoomGone
       ? "room_not_found"
@@ -229,6 +230,11 @@ export class LobbySession {
     }
     const names: ReadonlyArray<unknown> = draw.value;
     return names.map((name) => this.identityNamed(String(name)).playerId);
+  }
+
+  private nextNameIndex(limit: number): number {
+    this.namesAsked += 1;
+    return (this.namesAsked * NAME_STEP) % limit;
   }
 
   private takenKeys(): ReadonlyArray<string> {

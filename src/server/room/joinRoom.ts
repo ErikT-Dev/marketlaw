@@ -1,14 +1,9 @@
 import type { EpochMs } from "../../shared/EpochMs";
-import type { ReasonCode } from "../../shared/ReasonCode";
 import type { Result } from "../../shared/Result";
 import type { Identity } from "./Identity";
+import type { JoinRejection } from "./JoinRejection";
 import type { RoomRecord } from "./RoomRecord";
 import { withAskingIfFull } from "./withAskingIfFull";
-
-export type JoinRejection = {
-  readonly reason: ReasonCode;
-  readonly rejoinAt: EpochMs | null;
-};
 
 export function joinRoom(
   record: RoomRecord,

@@ -1,3 +1,4 @@
+import type { EpochMs } from "../../shared/EpochMs";
 import type { RoomCode } from "../../shared/RoomCode";
 import type { Identity } from "./Identity";
 import { loadRoom } from "./loadRoom";
@@ -9,6 +10,7 @@ export function createRoomIn(
   storage: RoomStorage,
   room: { readonly code: RoomCode; readonly size: 2 | 3 | 4; readonly isPublic: boolean },
   owner: Identity,
+  now: EpochMs,
 ): boolean {
   if (loadRoom(storage) !== null) {
     return false;
@@ -17,7 +19,7 @@ export function createRoomIn(
     schemaVersion: ROOM_SCHEMA_VERSION,
     ...room,
     players: [owner],
-    waiting: NO_WAITING,
+    waiting: { ...NO_WAITING, disconnected: [{ playerId: owner.playerId, since: now }] },
     game: null,
   });
   return true;

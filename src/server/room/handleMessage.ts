@@ -12,7 +12,6 @@ import type { MessageOutcome } from "./MessageOutcome";
 import type { RoomRecord } from "./RoomRecord";
 import { handleRoomMessage } from "./handleRoomMessage";
 import { rejectMessage } from "./rejectMessage";
-import { withConnection } from "./withConnection";
 import { playersWhoseUpdateChanged } from "./playersWhoseUpdateChanged";
 import { updateFor } from "./updateFor";
 import { withTimeOutsApplied } from "./withTimeOutsApplied";
@@ -115,9 +114,5 @@ export function handleMessage(input: MessageInput): MessageOutcome {
   if (!record.players.some((player) => player.playerId === sender.playerId)) {
     return rejectMessage(record, connection, { code: "not_in_game", actionId: null, now });
   }
-  const connected = withConnection(record, sender.playerId, { isConnected: true });
-  return {
-    ...updated(connected, bound, sender.playerId, { acceptedActionId: null, now }),
-    shouldSave: connected !== record,
-  };
+  return updated(record, bound, sender.playerId, { acceptedActionId: null, now });
 }

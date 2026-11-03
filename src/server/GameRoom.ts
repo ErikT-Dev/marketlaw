@@ -16,7 +16,7 @@ import { CompressedRoomStore } from "./room/CompressedRoomStore";
 import { createRoomIn } from "./room/createRoomIn";
 import { fireRoomAlarm } from "./room/fireRoomAlarm";
 import type { Identity } from "./room/Identity";
-import type { JoinRejection } from "./room/joinRoom";
+import type { JoinRejection } from "./room/JoinRejection";
 import { joinRoomIn } from "./room/joinRoomIn";
 import { loadRoom } from "./room/loadRoom";
 import { playersWhoseUpdateChanged } from "./room/playersWhoseUpdateChanged";
@@ -48,8 +48,9 @@ export class GameRoom extends DurableObject<Env> {
     owner: Identity,
   ): Promise<boolean> {
     return this.inTurn(async () => {
-      const isCreated = createRoomIn(this.storage, room, owner);
+      const isCreated = createRoomIn(this.storage, room, owner, nowMs());
       await this.rooms.save();
+      await this.syncAlarm();
       return isCreated;
     });
   }
@@ -71,10 +72,16 @@ export class GameRoom extends DurableObject<Env> {
   async joinRoom(joining: Identity): Promise<JoinRejection | null> {
     return this.inTurn(async () => {
       const before = this.storage.read();
-      const rejection = joinRoomIn(this.storage, joining, nowMs());
+      const { rejection, removals } = joinRoomIn(
+        this.storage,
+        joining,
+        nowMs(),
+        this.sockets.livePlayers(),
+      );
       await this.rooms.save();
+      this.sockets.sendRemovals(removals);
       const record = loadRoom(this.storage);
-      if (rejection === null && record !== null && record !== before) {
+      if (record !== null && record !== before) {
         this.sockets.updatePlayers(
           record,
           record.players.map(({ playerId }) => playerId),
@@ -97,9 +104,14 @@ export class GameRoom extends DurableObject<Env> {
   }
 
   private async applyAlarm(record: RoomRecord): Promise<void> {
-    const { record: fired, removals } = fireRoomAlarm(record, nowMs(), randomForNextAction);
-    this.sockets.sendRemovals(removals);
+    const { record: fired, removals } = fireRoomAlarm(
+      record,
+      nowMs(),
+      randomForNextAction,
+      this.sockets.livePlayers(),
+    );
     if (fired === null) {
+      this.sockets.sendRemovals(removals);
       this.storage.remove();
       return;
     }
@@ -108,6 +120,7 @@ export class GameRoom extends DurableObject<Env> {
     }
     this.storage.write(fired);
     await this.rooms.save();
+    this.sockets.sendRemovals(removals);
     this.sockets.updatePlayers(
       fired,
       fired.game === null
@@ -181,6 +194,7 @@ export class GameRoom extends DurableObject<Env> {
       now,
       randomFor: randomForNextAction,
       gameStart: newGameStart(now),
+      livePlayers: this.sockets.livePlayers(),
     });
     if (outcome.isRoomGone) {
       socket.close(ROOM_GONE_CLOSE_CODE, "This room no longer exists");
@@ -189,6 +203,7 @@ export class GameRoom extends DurableObject<Env> {
     const recordAfter = loadRoom(this.storage);
     if (recordAfter !== null) {
       await this.rooms.save();
+      this.sockets.sendRemovals(outcome.removals);
       this.reply(socket, { attachment, outcome, sender });
       this.sockets.updatePlayers(
         recordAfter,

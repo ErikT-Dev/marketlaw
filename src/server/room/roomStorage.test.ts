@@ -47,34 +47,40 @@ const CODE = v.parse(RoomCode, "K7QR2P");
 const ANN = player("Ann");
 const BEA = player("Bea");
 const CAT = player("Cat");
+const LIVE = [ANN.playerId, BEA.playerId];
 
 function fullRoom(): CountingStorage {
   const storage = countingStorage();
-  createRoomIn(storage, { code: CODE, size: 2, isPublic: true }, ANN);
-  joinRoomIn(storage, BEA, GAME_START);
+  createRoomIn(storage, { code: CODE, size: 2, isPublic: true }, ANN, GAME_START);
+  joinRoomIn(storage, BEA, GAME_START, LIVE);
   send(storage, ANN, { type: "room", action: { type: "accept_game" } });
   send(storage, BEA, { type: "room", action: { type: "accept_game" } });
   return storage;
 }
 
-function send(storage: RoomStorage, sender: Identity, message: object) {
+function send(storage: RoomStorage, sender: Identity, message: object, now = GAME_START) {
   return receiveMessage(storage, {
     connection: { identity: null, rejectionTimes: [] },
     parsed: parseClientMessage(
       JSON.stringify({ protocolVersion: PROTOCOL_VERSION, token: "t", ...message }),
     ),
     sender,
-    now: v.parse(EpochMs, 0),
+    now,
     randomFor: randomForNextAction,
     gameStart: JOIN_ORDER,
+    livePlayers: LIVE,
   });
 }
 
 describe("rooms in storage", () => {
   it("refuses to create a room whose code is taken", () => {
     const storage = countingStorage();
-    expect(createRoomIn(storage, { code: CODE, size: 2, isPublic: true }, ANN)).toBe(true);
-    expect(createRoomIn(storage, { code: CODE, size: 3, isPublic: true }, BEA)).toBe(false);
+    expect(createRoomIn(storage, { code: CODE, size: 2, isPublic: true }, ANN, GAME_START)).toBe(
+      true,
+    );
+    expect(createRoomIn(storage, { code: CODE, size: 3, isPublic: true }, BEA, GAME_START)).toBe(
+      false,
+    );
     expect(storage.stored()?.size).toBe(2);
   });
 
@@ -90,18 +96,21 @@ describe("rooms in storage", () => {
 
   it("rejects joining a full room or a room whose game started, and allows joining twice", () => {
     const storage = countingStorage();
-    createRoomIn(storage, { code: CODE, size: 2, isPublic: true }, ANN);
-    expect(joinRoomIn(storage, ANN, GAME_START)).toBeNull();
+    createRoomIn(storage, { code: CODE, size: 2, isPublic: true }, ANN, GAME_START);
+    expect(joinRoomIn(storage, ANN, GAME_START, LIVE).rejection).toBeNull();
     expect(storage.writes()).toBe(1);
-    joinRoomIn(storage, BEA, GAME_START);
-    expect(joinRoomIn(storage, CAT, GAME_START)).toEqual({ reason: "room_full", rejoinAt: null });
+    joinRoomIn(storage, BEA, GAME_START, LIVE);
+    expect(joinRoomIn(storage, CAT, GAME_START, LIVE).rejection).toEqual({
+      reason: "room_full",
+      rejoinAt: null,
+    });
     send(storage, ANN, { type: "room", action: { type: "accept_game" } });
     send(storage, BEA, { type: "room", action: { type: "accept_game" } });
-    expect(joinRoomIn(storage, CAT, GAME_START)).toEqual({
+    expect(joinRoomIn(storage, CAT, GAME_START, LIVE).rejection).toEqual({
       reason: "room_not_waiting",
       rejoinAt: null,
     });
-    expect(joinRoomIn(countingStorage(), CAT, GAME_START)).toEqual({
+    expect(joinRoomIn(countingStorage(), CAT, GAME_START, LIVE).rejection).toEqual({
       reason: "room_not_found",
       rejoinAt: null,
     });

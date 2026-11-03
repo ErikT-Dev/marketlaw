@@ -101,6 +101,7 @@ function lateEndTurn(storage: RoomStorage, seatIndex: number, now: number) {
     sender: player,
     now: v.parse(EpochMs, now),
     randomFor: randomForNextAction,
+    livePlayers: [],
     gameStart: { seed: 1, now: v.parse(EpochMs, now), seatOrder: (ids) => ids },
   });
 }

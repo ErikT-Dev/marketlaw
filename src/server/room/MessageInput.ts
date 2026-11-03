@@ -1,6 +1,7 @@
 import type { Random } from "../../rules/Random";
 import type { SavedGame } from "../../rules/SavedGame";
 import type { EpochMs } from "../../shared/EpochMs";
+import type { PlayerId } from "../../shared/PlayerId";
 import type { ClientMessage } from "../../shared/protocol/ClientMessage";
 import type { ReasonCode } from "../../shared/ReasonCode";
 import type { Result } from "../../shared/Result";
@@ -17,4 +18,5 @@ export type MessageInput = {
   readonly now: EpochMs;
   readonly randomFor: (saved: SavedGame) => Random;
   readonly gameStart: GameStart;
+  readonly livePlayers: ReadonlyArray<PlayerId>;
 };

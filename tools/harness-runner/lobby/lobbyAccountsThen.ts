@@ -15,11 +15,13 @@ export function lobbyAccountsThen(session: LobbySession, field: string, expected
         (taken) => taken.toLowerCase() === name.toLowerCase(),
       );
       const longest = typeof asked["max_length"] === "number" ? asked["max_length"] : 0;
-      return {
-        taken: isTaken,
-        max_length: name.length <= longest ? longest : name.length,
-        not: name === asked["not"] ? name : asked["not"],
-      };
+      return name === ""
+        ? undefined
+        : {
+            taken: isTaken,
+            max_length: name.length <= longest ? longest : name.length,
+            not: name === asked["not"] ? `the same name, ${name}` : asked["not"],
+          };
     }
     default:
       return session.loggedInAs === null ? undefined : { as: session.loggedInAs };
