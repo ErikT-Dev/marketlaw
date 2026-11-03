@@ -1,6 +1,6 @@
 # Phase 19: Leaving, cleanup and replay records
 
-Status: approved
+Status: in progress
 Milestone: 3 Playthrough
 
 ## Goal
@@ -73,3 +73,13 @@ These 15 scenarios are added to `harness/required.yaml` in this phase, by file a
 - `turns-and-time` #18: three main-phase time-outs in a row count as leaving the game
 - `visibility` #13: the replay record is kept for 30 days after the game ends
 - `visibility` #14: the replay record is removed after 30 days
+
+## Progress
+
+- [x] 1. O8 decided as D27 (Q60): replay records in D1, removed by one daily Cron Trigger.
+- [ ] 2. Leaving: done at once, hand to the discard (holding pile during a main phase), skipped in
+  player order, the last player wins, everyone leaving abandons the game.
+- [ ] 3. Cleanup: rooms through their one alarm; replay records after 30 days through the
+  scheduled job.
+- [ ] 4. Replay export for a running or ended room, protected by the owner's secret.
+- [ ] 5. Screens for the above.

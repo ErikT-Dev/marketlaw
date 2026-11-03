@@ -907,3 +907,16 @@ file.
   - Away shows on the opponent cards in every phase (M5.2), and in the top bar's badges only in
     the main phase, as S2.2 says.
 - **Implemented:** phase 18.
+
+## Q60. Where do replay records live, and what removes them (O8)?
+
+- **Phase:** 19, item 1 (O8).
+- **Question:** a room's alarm ends with the room, which is deleted 24 hours after its game (M8),
+  but replay records are kept 30 days (M4.3).
+- **Options:** keep the room alive for 30 days (storage and an alarm per room); write the replay
+  record to D1 and remove old ones with a scheduled job; keep records in a single archive
+  Durable Object.
+- **Solution:** D1, written once when the game ends (1 row plus its index), removed by one daily
+  Cron Trigger. Cron Triggers are on the Free plan (5 per account, 10 ms CPU per run); the delete
+  is a single D1 statement. Recorded as D27.
+- **Implemented:** phase 19.

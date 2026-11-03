@@ -185,6 +185,16 @@ hibernating WebSockets. D1 keeps players and usernames, and later records and ra
 reserve chat quota in blocks so a chat message never costs a lobby row. Built in phase 17.
 *Effect:* `open-questions.md` Q52; `wrangler.jsonc` in phase 17.
 
+**D27. Replay records in D1, removed by one daily Cron Trigger (was O8).** (2026-11-03, Claude
+under D19, phase 19)
+When a game ends, its room writes the replay record (seed, setup, action log, result) to a D1
+table, so the record outlives the room, which is deleted 24 hours after the game. One Cron Trigger
+a day deletes replay records older than 30 days (M4.3) and, from phase 23 on, guests unused for 90
+days (A1.1). Cron Triggers are on the Free plan: 5 per account, 10 ms of CPU per run
+(https://developers.cloudflare.com/workers/platform/limits/, checked 2026-11-03); the deletes run
+in D1.
+*Effect:* `open-questions.md` Q60; `wrangler.jsonc` `triggers`.
+
 ## Open
 
 From D19 on, Claude solves these itself when the phase that needs them starts, records the
@@ -210,9 +220,3 @@ Worker was deleted after the measurement.
 **O7. Privacy notice.** Needed before phase 24.
 A short notice: what is stored (username, email, password hash, game records), why, how long,
 and how to delete it. Drafted into the spec (owner's approval) before phase 24 builds it.
-
-**O8. Scheduled jobs and replay records.** Needed before phase 19.
-A room's alarm ends with the room, so replay records kept 30 days (M4.3) and guests unused for
-90 days (A1.1) need something else to delete them, most likely a scheduled job (Cron Trigger).
-*Recommendation:* phase 19 confirms Cron Triggers are free, decides where replay records live,
-and adds the trigger to `wrangler.jsonc` (owner's approval).
