@@ -8,6 +8,7 @@ import { joinRoomRoute } from "./api/joinRoomRoute";
 import { roomJson } from "./api/roomJson";
 import { sessionRoute } from "./api/sessionRoute";
 import { lobbyOf } from "./lobbyOf";
+import { removeOldReplayRecords } from "./replays/removeOldReplayRecords";
 import { confirmTestSeat } from "./testRooms/confirmTestSeat";
 import { createTestRoom } from "./testRooms/createTestRoom";
 import { restartTestRoom } from "./testRooms/restartTestRoom";
@@ -63,4 +64,7 @@ async function route(request: Request, env: Env): Promise<Response> {
 
 export default {
   fetch: route,
+  async scheduled(controller, env) {
+    await removeOldReplayRecords(env.DB, controller.scheduledTime);
+  },
 } satisfies ExportedHandler<Env>;

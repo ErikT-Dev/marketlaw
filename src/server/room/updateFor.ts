@@ -17,7 +17,7 @@ function playerNamesOf(record: RoomRecord): ReadonlyArray<string> {
     ? record.players.map(({ name }) => name)
     : [...record.game.seats]
         .sort((first, second) => first.seat - second.seat)
-        .map(({ playerId }) => nameOf(record, playerId));
+        .map(({ name }) => name);
 }
 
 function buildUpdate(record: RoomRecord, playerId: PlayerId): RoomUpdate {

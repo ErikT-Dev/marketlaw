@@ -33,6 +33,7 @@ import { withAwaySeats } from "./room/withAwaySeats";
 import { withConnection } from "./room/withConnection";
 import { lobbyOf } from "./lobbyOf";
 import { roomSummaryOf } from "./room/roomSummaryOf";
+import { saveReplayRecordIfEnded } from "./replays/saveReplayRecordIfEnded";
 import { RoomSockets } from "./RoomSockets";
 import { sha256Hex } from "./sha256Hex";
 
@@ -152,6 +153,7 @@ export class GameRoom extends DurableObject<Env> {
     }
     this.storage.write(fired);
     await this.rooms.save();
+    await saveReplayRecordIfEnded(this.env.DB, record, fired);
     this.sockets.sendRemovals(removals);
     this.sockets.updatePlayers(
       fired,
@@ -233,6 +235,7 @@ export class GameRoom extends DurableObject<Env> {
     const recordAfter = loadRoom(this.storage);
     if (recordAfter !== null) {
       await this.rooms.save();
+      await saveReplayRecordIfEnded(this.env.DB, recordBefore, recordAfter);
       this.sockets.sendRemovals(outcome.removals);
       this.reply(socket, { attachment, outcome, sender });
       const isHello = parsed.isOk && parsed.value.type === "resync";

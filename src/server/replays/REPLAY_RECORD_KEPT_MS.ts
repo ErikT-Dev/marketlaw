@@ -1,0 +1,1 @@
+export const REPLAY_RECORD_KEPT_MS = 2_592_000_000;

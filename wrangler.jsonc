@@ -10,6 +10,9 @@
   "vars": {
     "TURNSTILE_SITE_KEY": "0x4AAAAAAFx3FNRK4PPfX9CB"
   },
+  "triggers": {
+    "crons": ["17 3 * * *"]
+  },
   "assets": {
     "directory": "./dist/client"
   },

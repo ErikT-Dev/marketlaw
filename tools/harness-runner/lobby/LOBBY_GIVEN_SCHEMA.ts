@@ -4,9 +4,10 @@ const GIVEN_ROOM = v.strictObject({
   code: v.string(),
   size: v.picklist([2, 3, 4]),
   public: v.boolean(),
-  owner: v.string(),
+  owner: v.optional(v.string()),
   players: v.array(v.string()),
-  state: v.picklist(["waiting", "accepting", "playing"]),
+  state: v.picklist(["waiting", "accepting", "playing", "ended"]),
+  ended_ms: v.optional(v.number()),
 });
 
 export const LOBBY_GIVEN_SCHEMA = v.strictObject({

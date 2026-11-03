@@ -1,5 +1,6 @@
 import type { EpochMs } from "../../shared/EpochMs";
 import type { PlayerId } from "../../shared/PlayerId";
+import { isEndedRoomDue } from "./isEndedRoomDue";
 import type { RoomChange } from "./RoomChange";
 import type { RoomRecord } from "./RoomRecord";
 import { waitingAlarm } from "./waitingAlarm";
@@ -10,6 +11,9 @@ export function caughtUpRoom(
   now: EpochMs,
   livePlayers: ReadonlyArray<PlayerId>,
 ): RoomChange {
+  if (isEndedRoomDue(record, now)) {
+    return { record: null, removals: [] };
+  }
   if (record.game !== null) {
     return { record, removals: [] };
   }

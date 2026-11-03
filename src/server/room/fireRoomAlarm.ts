@@ -3,6 +3,7 @@ import type { SavedGame } from "../../rules/SavedGame";
 import type { EpochMs } from "../../shared/EpochMs";
 import type { PlayerId } from "../../shared/PlayerId";
 import { fireGameAlarm } from "./fireGameAlarm";
+import { isEndedRoomDue } from "./isEndedRoomDue";
 import type { RoomChange } from "./RoomChange";
 import type { RoomRecord } from "./RoomRecord";
 import { waitingAlarm } from "./waitingAlarm";
@@ -14,6 +15,9 @@ export function fireRoomAlarm(
   randomFor: (saved: SavedGame) => Random,
   livePlayers: ReadonlyArray<PlayerId>,
 ): RoomChange {
+  if (isEndedRoomDue(record, now)) {
+    return { record: null, removals: [] };
+  }
   if (record.game !== null) {
     return { record: fireGameAlarm(record, now, randomFor, livePlayers), removals: [] };
   }

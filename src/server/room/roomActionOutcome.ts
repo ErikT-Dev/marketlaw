@@ -7,6 +7,7 @@ import type { GameStart } from "./GameStart";
 import type { RoomChange } from "./RoomChange";
 import type { RoomRecord } from "./RoomRecord";
 import { ROOM_TIMES } from "./ROOM_TIMES";
+import { busyPlayersOf } from "./busyPlayersOf";
 import { roomWithout } from "./roomWithout";
 import { startRoomGame } from "./startRoomGame";
 import { withAskingIfFull } from "./withAskingIfFull";
@@ -85,6 +86,12 @@ export function roomActionOutcome(
 ): Outcome {
   if (!record.players.some((player) => player.playerId === playerId)) {
     return { isOk: false, error: "not_in_room" };
+  }
+  if (
+    intent.type === "leave_room" &&
+    !busyPlayersOf(record).some((player) => player.playerId === playerId)
+  ) {
+    return changed(roomWithout(record, [playerId]));
   }
   if (record.game !== null) {
     return { isOk: false, error: "room_not_waiting" };

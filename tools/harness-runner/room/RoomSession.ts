@@ -139,6 +139,7 @@ export class RoomSession {
         seats: state.seats.map((seat, index) => ({
           seat: seat.seat,
           playerId: players[index]?.playerId ?? this.identityNamed("Seat 1").playerId,
+          name: players[index]?.name ?? "Seat 1",
           stateVersion: given.seats?.find((entry) => entry.seat === seat.seat)?.state_version ?? 0,
           acceptedActionIds: [],
         })),
