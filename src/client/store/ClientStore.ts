@@ -6,6 +6,11 @@ import type { ActionIntent } from "../../shared/protocol/ActionIntent";
 import type { RoomCode } from "../../shared/RoomCode";
 import { requestGuest } from "../api/requestGuest";
 import { requestRoom } from "../api/requestRoom";
+import { requestSession } from "../api/requestSession";
+import type { EpochMs } from "../../shared/EpochMs";
+import type { RemovalReason } from "../../shared/protocol/RemovalReason";
+import type { RoomIntent } from "../../shared/protocol/RoomIntent";
+import type { NewRoom } from "./NewRoom";
 import { requestTestSeat } from "../api/requestTestSeat";
 import type { ClientState } from "./ClientState";
 import { CODES_THAT_RELOAD_THE_GAME } from "./CODES_THAT_RELOAD_THE_GAME";
@@ -34,9 +39,21 @@ export class ClientStore {
       notice: null,
       timeOutNotice: null,
       serverClockOffsetMs: 0,
+      joinError: null,
+      removal: null,
     };
+    if (session !== null) {
+      void this.checkSession(session);
+    }
     if (session?.roomCode !== null && session !== null) {
       this.enterRoom(session, session.roomCode);
+    }
+  }
+
+  private async checkSession(session: StoredSession): Promise<void> {
+    const answer = await requestSession(session.token);
+    if (answer?.isLoggedIn === false && this.state.session?.token === session.token) {
+      this.leaveRoom("Your login has ended. Choose a username to play again.", null);
     }
   }
 
@@ -49,15 +66,15 @@ export class ClientStore {
 
   readonly getSnapshot = (): ClientState => this.state;
 
-  readonly startAsGuest = async (name: string): Promise<void> => {
-    const guest = await requestGuest(name);
-    if (guest === null) {
-      this.change({ notice: "That name cannot be used. Use 1 to 20 characters." });
-      return;
+  readonly startAsGuest = async (name: string, humanCheck: string): Promise<ReasonCode | null> => {
+    const guest = await requestGuest(name, humanCheck);
+    if (!guest.isOk) {
+      return guest.reason;
     }
     const session = { token: guest.token, name: guest.name, roomCode: null };
     writeSession(session);
     this.change({ session, notice: null });
+    return null;
   };
 
   readonly startFromSeatLink = async (
@@ -78,12 +95,47 @@ export class ClientStore {
     this.enterRoom(linked, linked.roomCode);
   };
 
-  readonly createRoom = async (size: 2 | 3 | 4): Promise<void> => {
-    await this.openRoom("/api/rooms", { size });
+  readonly createRoom = async (room: NewRoom): Promise<ReasonCode | null> => {
+    const session = this.state.session;
+    if (session === null) {
+      return "invalid_token";
+    }
+    const response = await requestRoom("/api/rooms", { ...room, token: session.token });
+    if (response.isOk) {
+      this.enterRoom(session, response.code);
+    }
+    return response.isOk ? null : response.reason;
   };
 
-  readonly joinRoom = async (code: string): Promise<void> => {
-    await this.openRoom(`/api/rooms/${code.trim().toUpperCase()}/join`, {});
+  readonly joinRoom = async (typed: string): Promise<void> => {
+    const session = this.state.session;
+    const code = typed.trim().toUpperCase();
+    if (session === null) {
+      return;
+    }
+    const response = /^[A-Z0-9]{6}$/.test(code)
+      ? await requestRoom(`/api/rooms/${code}/join`, { token: session.token })
+      : { isOk: false as const, reason: "room_not_found" as const, rejoinAt: null };
+    if (!response.isOk) {
+      this.change({ joinError: { code, reason: response.reason, rejoinAt: response.rejoinAt } });
+      return;
+    }
+    this.enterRoom(session, response.code);
+  };
+
+  readonly sendRoomAction = (action: RoomIntent): void => {
+    if (this.host?.sendRoomAction(action) !== true) {
+      this.change({ notice: "Not connected to the room. Try again in a moment." });
+    }
+  };
+
+  readonly leaveWaitingRoom = (): void => {
+    this.host?.sendRoomAction({ type: "leave_room" });
+    this.leaveRoom(null, this.sessionOutsideRooms());
+  };
+
+  readonly dismissRemoval = (): void => {
+    this.change({ removal: null });
   };
 
   readonly sendAction = (action: ActionIntent): void => {
@@ -121,19 +173,6 @@ export class ClientStore {
     });
   }
 
-  private async openRoom(path: string, body: Readonly<Record<string, unknown>>): Promise<void> {
-    const session = this.state.session;
-    if (session === null) {
-      return;
-    }
-    const response = await requestRoom(path, { ...body, token: session.token });
-    if (!response.isOk) {
-      this.change({ notice: `The room could not be opened (${response.reason}).` });
-      return;
-    }
-    this.enterRoom(session, response.code);
-  }
-
   readonly dismissTimeOutNotice = (): void => {
     this.change({ timeOutNotice: null });
   };
@@ -141,7 +180,7 @@ export class ClientStore {
   private enterRoom(session: StoredSession, code: RoomCode): void {
     const inRoom = { ...session, roomCode: code };
     writeSession(inRoom);
-    this.change({ session: inRoom, notice: null });
+    this.change({ session: inRoom, notice: null, joinError: null, removal: null });
     this.host?.close();
     this.host = this.openHost(code, session.token);
     this.host.subscribe(this.receive);
@@ -165,8 +204,17 @@ export class ClientStore {
       case "rejected":
         this.receiveRejection(event.code, event.actionId);
         return;
+      case "removed":
+        this.receiveRemoval(event.reason, event.rejoinAt);
+        return;
     }
   };
+
+  private receiveRemoval(reason: RemovalReason, rejoinAt: EpochMs | null): void {
+    const code = this.state.session?.roomCode ?? "";
+    this.leaveRoom(null, this.sessionOutsideRooms());
+    this.change({ removal: reason === "left" ? null : { code, reason, rejoinAt } });
+  }
 
   private receiveConnection(status: ConnectionStatus): void {
     if (status === "room_gone") {

@@ -22,6 +22,7 @@ function storeInRoom(): FakeHost {
   let nextId = 1;
   const host: GameHost = {
     sendAction: () => `action-${String(nextId++)}`,
+    sendRoomAction: () => true,
     requestResync: () => {
       resyncCount += 1;
     },
@@ -44,6 +45,7 @@ function storeInRoom(): FakeHost {
 function fakeHost(): GameHost {
   return {
     sendAction: () => null,
+    sendRoomAction: () => false,
     requestResync: () => undefined,
     subscribe: () => () => undefined,
     close: () => undefined,

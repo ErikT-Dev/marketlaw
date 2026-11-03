@@ -40,5 +40,17 @@ export const REJECTION_MESSAGES: Readonly<Record<ReasonCode, string>> = {
   room_not_found: SOMETHING_WENT_WRONG,
   room_full: SOMETHING_WENT_WRONG,
   room_not_waiting: SOMETHING_WENT_WRONG,
-  invalid_room_size: SOMETHING_WENT_WRONG,
+  invalid_room_size: "Choose a room size of 2, 3 or 4 players.",
+  not_in_room: "You are not in this room.",
+  not_room_owner: "Only the owner can change the room size.",
+  room_size_too_small: "The room cannot be smaller than the number of players in it.",
+  not_asking: "Nobody is being asked to accept the game right now.",
+  rejoin_too_soon: "You cannot join this room again yet.",
+  human_check_failed: "The human check did not pass. Try it again.",
+  username_invalid:
+    "Use 3 to 20 letters, digits, spaces, - or _, without spaces at the start or end or two spaces in a row.",
+  username_taken: "That username is taken. Choose another one.",
+  username_reserved: "That username cannot be used. Choose another one.",
+  no_free_room_code: "No room could be created right now. Try again.",
+  no_answer: "The server did not answer. Try again.",
 };

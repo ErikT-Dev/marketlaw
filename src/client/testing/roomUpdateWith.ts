@@ -84,8 +84,11 @@ export function roomUpdateWith(
     room: {
       code: v.parse(RoomCode, "ABCDEF"),
       size: 4,
+      isPublic: false,
+      ownerName: "Ann",
       playerNames: ["Ann", "Bea", "Cy", "Di"],
       mySeat: 2,
+      asking: null,
     },
     game: { stateVersion: 1, view },
   };
