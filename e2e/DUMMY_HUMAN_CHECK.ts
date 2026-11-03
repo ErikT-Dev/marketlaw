@@ -1,0 +1,1 @@
+export const DUMMY_HUMAN_CHECK = "XXXX.DUMMY.TOKEN.XXXX";
