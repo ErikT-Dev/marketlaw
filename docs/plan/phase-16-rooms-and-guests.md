@@ -41,6 +41,10 @@ Phase 15. Decision O6 (lobby, presence and global counters) is made in this phas
 ## Known gaps after this phase
 
 - No public room list or players online yet (phase 17, phase 27); rooms are joined by code.
+- The lobby and the waiting room show only their middle column: no ranked queue (phase 26), no
+  room chat (phase 21), and no Game menu, match history, ranking, Log in or Sign up in the top
+  bar (phases 23 to 28).
+- A guest cannot log out yet (phase 23).
 
 ## What you can see when it's done
 
@@ -94,10 +98,21 @@ These 25 scenarios are added to `harness/required.yaml` in this phase, by file a
 
 - [x] 1. O6 decided as D26 (Q52): one lobby Durable Object, built in phase 17 with M1.7 and M2;
   phase 16 needs no new class. Start-of-phase questions Q53 to Q56.
-- [ ] 2. Rooms: public or private, size and changing it, owner hand-over, joining, leaving, the
+- [x] 2. Rooms: public or private, size and changing it, owner hand-over, joining, leaving, the
   20-second accept with who has accepted, seats in random order, the 2-minute rejoin wait,
-  removal after 10 seconds disconnected while waiting.
-- [ ] 3. Guests: username rules, generated names, staying logged in for 90 days of use.
-- [ ] 4. Human check: Turnstile on guest and room creation.
-- [ ] 5. Screens: guest name prompt, create room, join with code and its errors, waiting room,
-  accept dialog, the rejoin message.
+  removal after 10 seconds disconnected while waiting. Room actions travel on the socket as a
+  new `room` message (protocol version 2). A joining player counts as disconnected until their
+  socket says hello, so a join that never connects is removed after 10 s. A new lobby scenario
+  driver runs the room and account scenarios. The phase 19 scenario "the room is deleted when the
+  last player leaves it" is now run by that driver and reported as failing instead of "not yet",
+  because its finished-room state comes in phase 19; it is not required yet.
+- [x] 3. Guests: username rules, generated names, staying logged in for 90 days of use. Stored
+  players were wiped by migration 0005 (allowed until version 1 is public, D1). Test-room seats
+  keep no name key, so their names do not reserve usernames.
+- [x] 4. Human check: Turnstile on guest and room creation, with the published test keys in local
+  runs and on GitHub. The live site needs the owner's keys (see Waiting for the owner).
+- [x] 5. Screens: guest name prompt, create room, join with code and its errors, waiting room,
+  accept dialog, the rejoin message. The lobby shows only its middle column for now: players
+  online, the public room list, the ranked queue and the room chat come in later phases. The
+  browser tests now sign every player in through the username prompt and the real Turnstile test
+  widget, with a unique name per test.
