@@ -1,6 +1,7 @@
 import type { EpochMs } from "../EpochMs";
 import type { Notice } from "../Notice";
 import type { ReasonCode } from "../ReasonCode";
+import type { RemovalReason } from "./RemovalReason";
 import type { RoomUpdate } from "./RoomUpdate";
 
 export type ServerMessage =
@@ -17,4 +18,10 @@ export type ServerMessage =
       readonly actionId: string | null;
       readonly code: ReasonCode;
     }
-  | { readonly type: "notice"; readonly protocolVersion: number; readonly notice: Notice };
+  | { readonly type: "notice"; readonly protocolVersion: number; readonly notice: Notice }
+  | {
+      readonly type: "removed";
+      readonly protocolVersion: number;
+      readonly reason: RemovalReason;
+      readonly rejoinAt: EpochMs | null;
+    };

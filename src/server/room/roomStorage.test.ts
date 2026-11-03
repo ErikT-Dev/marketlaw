@@ -5,7 +5,9 @@ import { EpochMs } from "../../shared/EpochMs";
 import { PlayerId } from "../../shared/PlayerId";
 import { parseClientMessage } from "../../shared/protocol/parseClientMessage";
 import { RoomCode } from "../../shared/RoomCode";
+import { PROTOCOL_VERSION } from "../../shared/PROTOCOL_VERSION";
 import { createRoomIn } from "./createRoomIn";
+import type { GameStart } from "./GameStart";
 import type { Identity } from "./Identity";
 import { joinRoomIn } from "./joinRoomIn";
 import { receiveMessage } from "./receiveMessage";
@@ -13,6 +15,7 @@ import type { RoomRecord } from "./RoomRecord";
 import type { RoomStorage } from "./RoomStorage";
 
 const GAME_START = v.parse(EpochMs, 1_000_000);
+const JOIN_ORDER: GameStart = { seed: 7, now: GAME_START, seatOrder: (players) => players };
 
 type CountingStorage = RoomStorage & {
   readonly writes: () => number;
@@ -47,30 +50,35 @@ const CAT = player("Cat");
 
 function fullRoom(): CountingStorage {
   const storage = countingStorage();
-  createRoomIn(storage, { code: CODE, size: 2 }, ANN);
-  joinRoomIn(storage, BEA, { seed: 7, now: GAME_START });
+  createRoomIn(storage, { code: CODE, size: 2, isPublic: true }, ANN);
+  joinRoomIn(storage, BEA, GAME_START);
+  send(storage, ANN, { type: "room", action: { type: "accept_game" } });
+  send(storage, BEA, { type: "room", action: { type: "accept_game" } });
   return storage;
 }
 
 function send(storage: RoomStorage, sender: Identity, message: object) {
   return receiveMessage(storage, {
     connection: { identity: null, rejectionTimes: [] },
-    parsed: parseClientMessage(JSON.stringify({ protocolVersion: 1, token: "t", ...message })),
+    parsed: parseClientMessage(
+      JSON.stringify({ protocolVersion: PROTOCOL_VERSION, token: "t", ...message }),
+    ),
     sender,
     now: v.parse(EpochMs, 0),
     randomFor: randomForNextAction,
+    gameStart: JOIN_ORDER,
   });
 }
 
 describe("rooms in storage", () => {
   it("refuses to create a room whose code is taken", () => {
     const storage = countingStorage();
-    expect(createRoomIn(storage, { code: CODE, size: 2 }, ANN)).toBe(true);
-    expect(createRoomIn(storage, { code: CODE, size: 3 }, BEA)).toBe(false);
+    expect(createRoomIn(storage, { code: CODE, size: 2, isPublic: true }, ANN)).toBe(true);
+    expect(createRoomIn(storage, { code: CODE, size: 3, isPublic: true }, BEA)).toBe(false);
     expect(storage.stored()?.size).toBe(2);
   });
 
-  it("starts the game when the room is full, with seats in the order players joined", () => {
+  it("starts the game when everyone in the full room accepts, with seats in the given order", () => {
     const storage = fullRoom();
     expect(storage.stored()?.game?.seats.map(({ seat, playerId }) => ({ seat, playerId }))).toEqual(
       [
@@ -82,12 +90,21 @@ describe("rooms in storage", () => {
 
   it("rejects joining a full room or a room whose game started, and allows joining twice", () => {
     const storage = countingStorage();
-    createRoomIn(storage, { code: CODE, size: 2 }, ANN);
-    expect(joinRoomIn(storage, ANN, { seed: 1, now: GAME_START })).toBeNull();
+    createRoomIn(storage, { code: CODE, size: 2, isPublic: true }, ANN);
+    expect(joinRoomIn(storage, ANN, GAME_START)).toBeNull();
     expect(storage.writes()).toBe(1);
-    joinRoomIn(storage, BEA, { seed: 1, now: GAME_START });
-    expect(joinRoomIn(storage, CAT, { seed: 1, now: GAME_START })).toBe("room_not_waiting");
-    expect(joinRoomIn(countingStorage(), CAT, { seed: 1, now: GAME_START })).toBe("room_not_found");
+    joinRoomIn(storage, BEA, GAME_START);
+    expect(joinRoomIn(storage, CAT, GAME_START)).toEqual({ reason: "room_full", rejoinAt: null });
+    send(storage, ANN, { type: "room", action: { type: "accept_game" } });
+    send(storage, BEA, { type: "room", action: { type: "accept_game" } });
+    expect(joinRoomIn(storage, CAT, GAME_START)).toEqual({
+      reason: "room_not_waiting",
+      rejoinAt: null,
+    });
+    expect(joinRoomIn(countingStorage(), CAT, GAME_START)).toEqual({
+      reason: "room_not_found",
+      rejoinAt: null,
+    });
   });
 
   it("writes one row for an accepted action and none for a rejected one or a resync", () => {

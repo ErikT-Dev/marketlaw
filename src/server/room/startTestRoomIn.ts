@@ -4,6 +4,7 @@ import type { EpochMs } from "../../shared/EpochMs";
 import type { RoomCode } from "../../shared/RoomCode";
 import type { Identity } from "./Identity";
 import { loadRoom } from "./loadRoom";
+import { NO_WAITING } from "./NO_WAITING";
 import { ROOM_SCHEMA_VERSION } from "./ROOM_SCHEMA_VERSION";
 import type { RoomStorage } from "./RoomStorage";
 
@@ -33,7 +34,10 @@ export function startTestRoomIn(
     code: room.code,
     size,
     players,
+    isPublic: false,
+    waiting: NO_WAITING,
     game: {
+      kind: "casual",
       saved: {
         schemaVersion: SAVE_SCHEMA_VERSION,
         seed: room.seed,

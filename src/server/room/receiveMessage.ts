@@ -10,7 +10,9 @@ export function receiveMessage(storage: RoomStorage, input: ReceiveInput): Recei
     return { isRoomGone: true };
   }
   const { record: next, shouldSave, ...outcome } = handleMessage({ ...input, record });
-  if (shouldSave) {
+  if (next === null) {
+    storage.remove();
+  } else if (shouldSave) {
     storage.write(next);
   }
   return { isRoomGone: false, ...outcome };

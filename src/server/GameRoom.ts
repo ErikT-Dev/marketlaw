@@ -3,51 +3,52 @@ import * as v from "valibot";
 import type { GameState } from "../rules/GameState";
 import { randomForNextAction } from "../rules/randomForNextAction";
 import { EpochMs } from "../shared/EpochMs";
-import type { PlayerId } from "../shared/PlayerId";
-import { PROTOCOL_VERSION } from "../shared/PROTOCOL_VERSION";
 import { parseClientMessage } from "../shared/protocol/parseClientMessage";
-import type { ServerMessage } from "../shared/protocol/ServerMessage";
-import type { ReasonCode } from "../shared/ReasonCode";
 import type { RoomCode } from "../shared/RoomCode";
-import { CompressedRoomStore } from "./room/CompressedRoomStore";
-import { ConnectionAttachment } from "./ConnectionAttachment";
-import { findPlayerByTokenHash } from "./findPlayerByTokenHash";
 import { ROOM_GONE_CLOSE_CODE } from "../shared/ROOM_GONE_CLOSE_CODE";
-import type { AddressedNotice } from "./room/AddressedNotice";
+import { attachmentOf } from "./attachmentOf";
+import type { ConnectionAttachment } from "./ConnectionAttachment";
+import { findPlayerByTokenHash } from "./findPlayerByTokenHash";
+import { newGameStart } from "./newGameStart";
+import { NO_CONNECTION } from "./NO_CONNECTION";
 import { alarmChangeFor } from "./room/alarmChangeFor";
+import { CompressedRoomStore } from "./room/CompressedRoomStore";
 import { createRoomIn } from "./room/createRoomIn";
-import { fireAlarm } from "./room/fireAlarm";
+import { fireRoomAlarm } from "./room/fireRoomAlarm";
 import type { Identity } from "./room/Identity";
+import type { JoinRejection } from "./room/joinRoom";
 import { joinRoomIn } from "./room/joinRoomIn";
 import { loadRoom } from "./room/loadRoom";
 import { playersWhoseUpdateChanged } from "./room/playersWhoseUpdateChanged";
 import { receiveMessage } from "./room/receiveMessage";
+import type { RoomRecord } from "./room/RoomRecord";
 import { startTestRoomIn } from "./room/startTestRoomIn";
 import { timeOutNoticesBetween } from "./room/timeOutNoticesBetween";
-import { updateFor } from "./room/updateFor";
+import { withConnection } from "./room/withConnection";
+import { RoomSockets } from "./RoomSockets";
 import { sha256Hex } from "./sha256Hex";
-
-const NO_CONNECTION: ConnectionAttachment = { identity: null, tokenHash: null, rejectionTimes: [] };
 
 type Sender = { readonly identity: Identity; readonly tokenHash: string };
 
-function attachmentOf(socket: WebSocket): ConnectionAttachment {
-  const parsed = v.safeParse(ConnectionAttachment, socket.deserializeAttachment());
-  return parsed.success ? parsed.output : NO_CONNECTION;
+function nowMs(): EpochMs {
+  return v.parse(EpochMs, Date.now());
 }
 
 export class GameRoom extends DurableObject<Env> {
+  private readonly sockets = new RoomSockets(this.ctx);
+
   private readonly rooms = new CompressedRoomStore(this.ctx.storage.kv, () => {
-    for (const socket of this.ctx.getWebSockets()) {
-      socket.close(ROOM_GONE_CLOSE_CODE, "This room no longer exists");
-    }
+    this.sockets.closeAll("This room no longer exists");
   });
 
   private readonly storage = this.rooms.storage;
 
-  async createRoom(code: RoomCode, size: 2 | 3 | 4, owner: Identity): Promise<boolean> {
+  async createRoom(
+    room: { readonly code: RoomCode; readonly size: 2 | 3 | 4; readonly isPublic: boolean },
+    owner: Identity,
+  ): Promise<boolean> {
     return this.inTurn(async () => {
-      const isCreated = createRoomIn(this.storage, { code, size }, owner);
+      const isCreated = createRoomIn(this.storage, room, owner);
       await this.rooms.save();
       return isCreated;
     });
@@ -60,26 +61,28 @@ export class GameRoom extends DurableObject<Env> {
     state: GameState,
   ): Promise<boolean> {
     return this.inTurn(async () => {
-      const now = v.parse(EpochMs, Date.now());
-      const isStarted = startTestRoomIn(this.storage, { code, seed, now }, players, state);
+      const isStarted = startTestRoomIn(this.storage, { code, seed, now: nowMs() }, players, state);
       await this.rooms.save();
       await this.syncAlarm();
       return isStarted;
     });
   }
 
-  async joinRoom(joining: Identity): Promise<ReasonCode | null> {
+  async joinRoom(joining: Identity): Promise<JoinRejection | null> {
     return this.inTurn(async () => {
-      const seed = crypto.getRandomValues(new Uint32Array(1))[0] ?? 0;
       const before = this.storage.read();
-      const now = v.parse(EpochMs, Date.now());
-      const reason = joinRoomIn(this.storage, joining, { seed, now });
+      const rejection = joinRoomIn(this.storage, joining, nowMs());
       await this.rooms.save();
-      if (reason === null && this.storage.read() !== before) {
-        this.updateEveryone(null);
+      const record = loadRoom(this.storage);
+      if (rejection === null && record !== null && record !== before) {
+        this.sockets.updatePlayers(
+          record,
+          record.players.map(({ playerId }) => playerId),
+          null,
+        );
       }
       await this.syncAlarm();
-      return reason;
+      return rejection;
     });
   }
 
@@ -87,15 +90,50 @@ export class GameRoom extends DurableObject<Env> {
     await this.inTurn(async () => {
       const record = loadRoom(this.storage);
       if (record !== null) {
-        const fired = fireAlarm(record, v.parse(EpochMs, Date.now()), randomForNextAction);
-        if (fired !== record) {
-          this.storage.write(fired);
-          await this.rooms.save();
-          this.updatePlayers(playersWhoseUpdateChanged(record, fired), null);
-          this.sendNotices(timeOutNoticesBetween(record, fired));
-        }
+        await this.applyAlarm(record);
       }
       await this.syncAlarm(true);
+    });
+  }
+
+  private async applyAlarm(record: RoomRecord): Promise<void> {
+    const { record: fired, removals } = fireRoomAlarm(record, nowMs(), randomForNextAction);
+    this.sockets.sendRemovals(removals);
+    if (fired === null) {
+      this.storage.remove();
+      return;
+    }
+    if (fired === record) {
+      return;
+    }
+    this.storage.write(fired);
+    await this.rooms.save();
+    this.sockets.updatePlayers(
+      fired,
+      fired.game === null
+        ? fired.players.map(({ playerId }) => playerId)
+        : playersWhoseUpdateChanged(record, fired),
+      null,
+    );
+    this.sockets.sendNotices(timeOutNoticesBetween(record, fired));
+  }
+
+  override async webSocketClose(socket: WebSocket): Promise<void> {
+    const { identity } = attachmentOf(socket);
+    if (identity === null || this.sockets.isConnectedElsewhere(identity.playerId, socket)) {
+      return;
+    }
+    await this.inTurn(async () => {
+      const record = loadRoom(this.storage);
+      const marked =
+        record === null
+          ? null
+          : withConnection(record, identity.playerId, { isConnected: false, at: nowMs() });
+      if (marked !== null && marked !== record) {
+        this.storage.write(marked);
+        await this.rooms.save();
+        await this.syncAlarm();
+      }
     });
   }
 
@@ -135,18 +173,42 @@ export class GameRoom extends DurableObject<Env> {
   ): Promise<void> {
     const attachment = attachmentOf(socket);
     const recordBefore = loadRoom(this.storage);
+    const now = nowMs();
     const outcome = receiveMessage(this.storage, {
       connection: { identity: attachment.identity, rejectionTimes: attachment.rejectionTimes },
       parsed,
       sender: sender?.identity ?? null,
-      now: v.parse(EpochMs, Date.now()),
+      now,
       randomFor: randomForNextAction,
+      gameStart: newGameStart(now),
     });
     if (outcome.isRoomGone) {
       socket.close(ROOM_GONE_CLOSE_CODE, "This room no longer exists");
       return;
     }
-    await this.rooms.save();
+    const recordAfter = loadRoom(this.storage);
+    if (recordAfter !== null) {
+      await this.rooms.save();
+      this.reply(socket, { attachment, outcome, sender });
+      this.sockets.updatePlayers(
+        recordAfter,
+        outcome.playersToUpdate,
+        outcome.reply.type === "rejected" ? null : socket,
+      );
+      this.sockets.sendNotices(timeOutNoticesBetween(recordBefore, recordAfter));
+    }
+    await this.syncAlarm();
+  }
+
+  private reply(
+    socket: WebSocket,
+    sent: {
+      readonly attachment: ConnectionAttachment;
+      readonly outcome: Extract<ReturnType<typeof receiveMessage>, { readonly isRoomGone: false }>;
+      readonly sender: Sender | null;
+    },
+  ): void {
+    const { attachment, outcome, sender } = sent;
     socket.serializeAttachment({
       identity: outcome.connection.identity,
       tokenHash:
@@ -154,27 +216,8 @@ export class GameRoom extends DurableObject<Env> {
       rejectionTimes: outcome.connection.rejectionTimes,
     });
     socket.send(JSON.stringify(outcome.reply));
-    this.updatePlayers(outcome.playersToUpdate, outcome.reply.type === "rejected" ? null : socket);
-    this.sendNotices(timeOutNoticesBetween(recordBefore, loadRoom(this.storage)));
     if (outcome.shouldClose) {
       socket.close(1008, "Too many rejected messages");
-    }
-    await this.syncAlarm();
-  }
-
-  private sendNotices(notices: ReadonlyArray<AddressedNotice>): void {
-    for (const socket of this.ctx.getWebSockets()) {
-      const { identity } = attachmentOf(socket);
-      for (const { playerId, notice } of notices) {
-        if (identity?.playerId === playerId) {
-          const message: ServerMessage = {
-            type: "notice",
-            protocolVersion: PROTOCOL_VERSION,
-            notice,
-          };
-          socket.send(JSON.stringify(message));
-        }
-      }
     }
   }
 
@@ -199,35 +242,5 @@ export class GameRoom extends DurableObject<Env> {
     }
     const identity = await findPlayerByTokenHash(this.env.DB, tokenHash);
     return identity === null ? null : { identity, tokenHash };
-  }
-
-  private updateEveryone(except: WebSocket | null): void {
-    const record = loadRoom(this.storage);
-    if (record !== null) {
-      this.updatePlayers(
-        record.players.map(({ playerId }) => playerId),
-        except,
-      );
-    }
-  }
-
-  private updatePlayers(playerIds: ReadonlyArray<PlayerId>, except: WebSocket | null): void {
-    const record = loadRoom(this.storage);
-    if (record === null || playerIds.length === 0) {
-      return;
-    }
-    for (const socket of this.ctx.getWebSockets()) {
-      const { identity } = attachmentOf(socket);
-      if (socket !== except && identity !== null && playerIds.includes(identity.playerId)) {
-        const update: ServerMessage = {
-          type: "update",
-          protocolVersion: PROTOCOL_VERSION,
-          acceptedActionId: null,
-          update: updateFor(record, identity.playerId),
-          serverNow: v.parse(EpochMs, Date.now()),
-        };
-        socket.send(JSON.stringify(update));
-      }
-    }
   }
 }
