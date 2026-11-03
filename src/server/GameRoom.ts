@@ -27,6 +27,7 @@ import { receiveMessage } from "./room/receiveMessage";
 import type { RoomRecord } from "./room/RoomRecord";
 import { startTestRoomIn } from "./room/startTestRoomIn";
 import { timeOutNoticesBetween } from "./room/timeOutNoticesBetween";
+import { withAwaySeats } from "./room/withAwaySeats";
 import { withConnection } from "./room/withConnection";
 import { lobbyOf } from "./lobbyOf";
 import { roomSummaryOf } from "./room/roomSummaryOf";
@@ -171,6 +172,9 @@ export class GameRoom extends DurableObject<Env> {
         await this.rooms.save();
         await this.syncAlarm();
       }
+      if (record !== null) {
+        this.sockets.updateOthers(record, socket);
+      }
     });
   }
 
@@ -224,6 +228,9 @@ export class GameRoom extends DurableObject<Env> {
       await this.rooms.save();
       this.sockets.sendRemovals(outcome.removals);
       this.reply(socket, { attachment, outcome, sender });
+      if (parsed.isOk && parsed.value.type === "resync" && sender !== null) {
+        this.sockets.welcome(recordAfter, sender.identity.playerId, socket);
+      }
       this.sockets.updatePlayers(
         recordAfter,
         outcome.playersToUpdate,
@@ -250,7 +257,11 @@ export class GameRoom extends DurableObject<Env> {
         outcome.connection.identity === null ? null : (sender?.tokenHash ?? attachment.tokenHash),
       rejectionTimes: outcome.connection.rejectionTimes,
     });
-    socket.send(JSON.stringify(outcome.reply));
+    socket.send(
+      JSON.stringify(
+        withAwaySeats(outcome.reply, loadRoom(this.storage), this.sockets.livePlayers()),
+      ),
+    );
     if (outcome.shouldClose) {
       socket.close(1008, "Too many rejected messages");
     }

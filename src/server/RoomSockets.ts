@@ -9,6 +9,8 @@ import type { AddressedNotice } from "./room/AddressedNotice";
 import type { RoomRecord } from "./room/RoomRecord";
 import type { RoomRemoval } from "./room/RoomRemoval";
 import { updateFor } from "./room/updateFor";
+import { withAwaySeats } from "./room/withAwaySeats";
+import { OPENED_ELSEWHERE_CLOSE_CODE } from "../shared/OPENED_ELSEWHERE_CLOSE_CODE";
 
 export class RoomSockets {
   private readonly ctx: DurableObjectState;
@@ -50,6 +52,30 @@ export class RoomSockets {
       if (identity !== null && playerIds.includes(identity.playerId)) {
         socket.send(JSON.stringify(messageFor(identity.playerId)));
       }
+    }
+  }
+
+  welcome(record: RoomRecord, playerId: PlayerId, socket: WebSocket): void {
+    const elsewhere: ServerMessage = {
+      type: "opened_elsewhere",
+      protocolVersion: PROTOCOL_VERSION,
+    };
+    for (const other of this.ctx.getWebSockets()) {
+      if (other !== socket && attachmentOf(other).identity?.playerId === playerId) {
+        other.send(JSON.stringify(elsewhere));
+        other.close(OPENED_ELSEWHERE_CLOSE_CODE, "The game was opened in another tab");
+      }
+    }
+    this.updateOthers(record, socket);
+  }
+
+  updateOthers(record: RoomRecord, socket: WebSocket): void {
+    if (record.game !== null) {
+      this.updatePlayers(
+        record,
+        record.players.map(({ playerId }) => playerId),
+        socket,
+      );
     }
   }
 
@@ -98,7 +124,7 @@ export class RoomSockets {
           update: updateFor(record, identity.playerId),
           serverNow: v.parse(EpochMs, Date.now()),
         };
-        socket.send(JSON.stringify(update));
+        socket.send(JSON.stringify(withAwaySeats(update, record, this.livePlayers())));
       }
     }
   }

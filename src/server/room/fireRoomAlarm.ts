@@ -2,7 +2,7 @@ import type { Random } from "../../rules/Random";
 import type { SavedGame } from "../../rules/SavedGame";
 import type { EpochMs } from "../../shared/EpochMs";
 import type { PlayerId } from "../../shared/PlayerId";
-import { fireAlarm } from "./fireAlarm";
+import { fireGameAlarm } from "./fireGameAlarm";
 import type { RoomChange } from "./RoomChange";
 import type { RoomRecord } from "./RoomRecord";
 import { waitingAlarm } from "./waitingAlarm";
@@ -15,7 +15,7 @@ export function fireRoomAlarm(
   livePlayers: ReadonlyArray<PlayerId>,
 ): RoomChange {
   if (record.game !== null) {
-    return { record: fireAlarm(record, now, randomFor), removals: [] };
+    return { record: fireGameAlarm(record, now, randomFor, livePlayers), removals: [] };
   }
   const live = withLivePlayers(record, livePlayers);
   const fired = waitingAlarm(live, now);
