@@ -1,6 +1,6 @@
 # Phase 16: Rooms and guests
 
-Status: in progress
+Status: done
 Milestone: 3 Playthrough
 
 ## Goal
