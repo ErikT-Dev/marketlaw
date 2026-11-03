@@ -64,10 +64,15 @@ These 9 scenarios are added to `harness/required.yaml` in this phase, by file an
 
 ## Progress
 
-- [ ] 1. One tab per game, the old tab told.
-- [ ] 2. Away status for everyone; time runs as normal while away.
-- [ ] 3. Pause and resume when a deadline comes and nobody is connected, with free time again on
-  resume.
-- [ ] 4. Notices for the above.
-- [ ] 5. Browser tests: refresh mid-game, disconnect and rejoin, a second tab, and a forced room
-  restart mid-game.
+- [x] 1. One tab per game, the old tab told: a hello on a new socket sends the player's older
+  sockets `opened_elsewhere` and closes them with their own code, so they do not reconnect.
+- [x] 2. Away status for everyone; time runs as normal while away. Away comes from the room's open
+  sockets, is added to every game update and pushed when it changes, with no write (Q59).
+- [x] 3. Pause and resume when a deadline comes and nobody is connected, with free time again on
+  resume: logged `pause_game` and `resume_game` actions (save format 12). Other players' influence
+  uses and completed quests are now in the view, which `visibility` #11 needed (Q27).
+- [x] 4. Notices for the above: away badges, "Game resumed", "This game is open in another tab"
+  with Play here instead, "Connection lost. Reconnecting…" with the game inert, and "A new version
+  is available" with Reload.
+- [x] 5. Browser tests: refresh mid-game, disconnect and rejoin, a second tab, and a forced room
+  restart mid-game (a test-only route, guarded by the test-room secret, resets the room's object).
