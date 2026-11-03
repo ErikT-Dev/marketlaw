@@ -10,7 +10,36 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  tested:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      actions: read
+    outputs:
+      already-tested: ${{ steps.find.outputs.already-tested }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 2
+
+      - name: Find a passed Check run of the same code
+        id: find
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          already_tested=false
+          if branch_head=$(git rev-parse --verify --quiet HEAD^2) &&
+            [ "$(git rev-parse HEAD^{tree})" = "$(git rev-parse "$branch_head^{tree}")" ] &&
+            [ "$(gh run list --workflow Check --commit "$branch_head" --json conclusion --jq "map(select(.conclusion == \"success\")) | length")" != "0" ]; then
+            already_tested=true
+          fi
+          echo "Merged code already passed Check: $already_tested"
+          echo "already-tested=$already_tested" >> "$GITHUB_OUTPUT"
+
   check:
+    needs: tested
+    if: needs.tested.outputs.already-tested != 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions:
@@ -32,6 +61,8 @@ jobs:
         run: npm run check
 
   browser-tests:
+    needs: tested
+    if: needs.tested.outputs.already-tested != 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions:
@@ -62,7 +93,11 @@ jobs:
         run: npm run e2e
 
   deploy:
-    needs: [check, browser-tests]
+    needs: [tested, check, browser-tests]
+    if: >-
+      !cancelled() && needs.tested.result == 'success' &&
+      (needs.tested.outputs.already-tested == 'true' ||
+      (needs.check.result == 'success' && needs.browser-tests.result == 'success'))
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
