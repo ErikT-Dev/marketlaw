@@ -2,10 +2,13 @@ import { CreateRoomRequest } from "../../shared/api/CreateRoomRequest";
 import { createRoomDecision } from "../room/createRoomDecision";
 import { roomSizeOf } from "../room/roomSizeOf";
 import { verifyHumanCheck } from "../verifyHumanCheck";
-import { withFreeRoomCode } from "../withFreeRoomCode";
 import { bodyOf } from "./bodyOf";
+import { createInFreeRoom } from "./createInFreeRoom";
 import { identityOf } from "./identityOf";
+import { isReallyBusy } from "./isReallyBusy";
 import { roomJson } from "./roomJson";
+
+const BUSY = { isOk: false, reason: "busy_elsewhere", rejoinAt: null } as const;
 
 export async function createRoomRoute(request: Request, env: Env): Promise<Response> {
   const body = await bodyOf(request, CreateRoomRequest);
@@ -22,9 +25,13 @@ export async function createRoomRoute(request: Request, env: Env): Promise<Respo
   if (problem !== null || size === null) {
     return roomJson({ isOk: false, reason: problem ?? "invalid_room_size", rejoinAt: null }, 400);
   }
-  const code = await withFreeRoomCode(env, async (room, candidate) =>
-    room.createRoom({ code: candidate, size, isPublic: body.isPublic }, identity),
-  );
+  if (await isReallyBusy(env, identity.playerId, null)) {
+    return roomJson(BUSY, 409);
+  }
+  const code = await createInFreeRoom(env, identity, { size, isPublic: body.isPublic });
+  if (code === "busy") {
+    return roomJson(BUSY, 409);
+  }
   return code === null
     ? roomJson({ isOk: false, reason: "no_free_room_code", rejoinAt: null }, 503)
     : roomJson({ isOk: true, code });

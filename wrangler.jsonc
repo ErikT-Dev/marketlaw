@@ -14,12 +14,16 @@
     "directory": "./dist/client"
   },
   "durable_objects": {
-    "bindings": [{ "name": "ROOM", "class_name": "GameRoom" }]
+    "bindings": [
+      { "name": "ROOM", "class_name": "GameRoom" },
+      { "name": "LOBBY", "class_name": "Lobby" }
+    ]
   },
   "migrations": [
     { "tag": "v1", "new_sqlite_classes": ["CounterRoom"] },
     { "tag": "v2", "deleted_classes": ["CounterRoom"] },
-    { "tag": "v3", "new_sqlite_classes": ["GameRoom"] }
+    { "tag": "v3", "new_sqlite_classes": ["GameRoom"] },
+    { "tag": "v4", "new_sqlite_classes": ["Lobby"] }
   ],
   "d1_databases": [
     {

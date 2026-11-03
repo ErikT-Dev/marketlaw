@@ -191,6 +191,7 @@ None yet.
   | `room_full` | This room is full. |
   | `room_not_waiting` | The game in this room has already started. |
   | `rejoin_too_soon` | You can join this room again in M:SS. |
+  | `busy_elsewhere` | You are already in a room, the ranked queue or a game. Leave it first. |
   | `invalid_room_size` | Choose a room size of 2, 3 or 4 players. |
   | `not_room_owner` | Only the owner can change the room size. |
   | `room_size_too_small` | The room cannot be smaller than the number of players in it. |

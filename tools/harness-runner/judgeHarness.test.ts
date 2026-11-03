@@ -35,6 +35,7 @@ function harnessRun(parts: Partial<HarnessRun>): HarnessRun {
     cardDataProblems: [],
     tierShareProblems: [],
     simulation: NO_GAMES,
+    busyDay: null,
     simulatedInvariants: [],
     ...parts,
   };

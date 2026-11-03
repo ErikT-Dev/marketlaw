@@ -24,6 +24,7 @@ export function CurrentScreen({ store }: Props) {
         onCreate={store.createRoom}
         onStartAsGuest={store.startAsGuest}
         onDismissRemoval={store.dismissRemoval}
+        publicRooms={state.publicRooms}
       />
     );
   }

@@ -272,6 +272,9 @@ scenarios:
     - Deleted player cannot be used as a username
     - rejects a username with two spaces in a row
   rooms:
+    - a player creates a public room with a chosen size and becomes its owner
+    - a private room is not listed in the lobby but can be joined with its code
+    - a player waiting in a room cannot join another room
     - creating a room needs the human check
     - rejects a room size other than 2 3 or 4
     - rejects joining a full room
@@ -327,3 +330,4 @@ budgets:
   - B13
   - B16
   - B17
+  - B18

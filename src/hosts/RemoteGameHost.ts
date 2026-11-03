@@ -7,21 +7,19 @@ import { parseServerMessage } from "../shared/protocol/parseServerMessage";
 import { PROTOCOL_VERSION } from "../shared/PROTOCOL_VERSION";
 import { ROOM_GONE_CLOSE_CODE } from "../shared/ROOM_GONE_CLOSE_CODE";
 import type { HostSocket } from "./HostSocket";
+import { Reconnector } from "./Reconnector";
 import type { RemoteHostOptions } from "./RemoteHostOptions";
-
-const FIRST_RECONNECT_DELAY_MS = 1000;
-const LONGEST_RECONNECT_DELAY_MS = 10_000;
 
 export class RemoteGameHost implements GameHost {
   private readonly options: RemoteHostOptions;
   private listeners: ReadonlyArray<(event: HostEvent) => void> = [];
   private socket: HostSocket | null = null;
   private stateVersion: number | null = null;
-  private failedConnects = 0;
-  private isClosedByPlayer = false;
+  private readonly reconnector: Reconnector;
 
   constructor(options: RemoteHostOptions) {
     this.options = options;
+    this.reconnector = new Reconnector(options.runLater);
     this.connect();
   }
 
@@ -68,7 +66,7 @@ export class RemoteGameHost implements GameHost {
   };
 
   readonly close = (): void => {
-    this.isClosedByPlayer = true;
+    this.reconnector.close();
     this.socket?.close();
   };
 
@@ -83,7 +81,7 @@ export class RemoteGameHost implements GameHost {
     if (message?.type === "update") {
       this.receiveUpdate(message);
     } else if (message?.type === "removed") {
-      this.isClosedByPlayer = true;
+      this.reconnector.close();
       this.emit({ type: "removed", reason: message.reason, rejoinAt: message.rejoinAt });
     } else if (message?.type === "notice") {
       this.emit({ type: "notice", notice: message.notice });
@@ -99,7 +97,7 @@ export class RemoteGameHost implements GameHost {
     const next = message.update.game?.stateVersion ?? null;
     const hasGap = next !== null && this.stateVersion !== null && next > this.stateVersion + 1;
     this.stateVersion = next;
-    this.failedConnects = 0;
+    this.reconnector.connected();
     this.emit({
       type: "update",
       update: message.update,
@@ -125,13 +123,8 @@ export class RemoteGameHost implements GameHost {
         this.socket = null;
         const isRoomGone = code === ROOM_GONE_CLOSE_CODE;
         this.emit({ type: "connection", status: isRoomGone ? "room_gone" : "closed" });
-        if (!this.isClosedByPlayer && !isRoomGone) {
-          const delay = Math.min(
-            FIRST_RECONNECT_DELAY_MS * 2 ** this.failedConnects,
-            LONGEST_RECONNECT_DELAY_MS,
-          );
-          this.failedConnects += 1;
-          this.options.runLater(delay, () => {
+        if (!isRoomGone) {
+          this.reconnector.afterDrop(() => {
             this.connect();
           });
         }

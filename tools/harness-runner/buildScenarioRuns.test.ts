@@ -43,6 +43,7 @@ function judge(required: RequiredList): ReadonlyArray<string> {
     cardDataProblems: [],
     tierShareProblems: [],
     simulation: NO_GAMES,
+    busyDay: null,
     simulatedInvariants: [],
   };
   return judgeHarness(run);

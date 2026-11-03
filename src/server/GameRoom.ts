@@ -1,8 +1,10 @@
 import { DurableObject } from "cloudflare:workers";
+import { acceptedSocketResponse } from "./acceptedSocketResponse";
 import * as v from "valibot";
 import type { GameState } from "../rules/GameState";
 import { randomForNextAction } from "../rules/randomForNextAction";
 import { EpochMs } from "../shared/EpochMs";
+import type { PlayerId } from "../shared/PlayerId";
 import { parseClientMessage } from "../shared/protocol/parseClientMessage";
 import type { RoomCode } from "../shared/RoomCode";
 import { ROOM_GONE_CLOSE_CODE } from "../shared/ROOM_GONE_CLOSE_CODE";
@@ -17,6 +19,7 @@ import { createRoomIn } from "./room/createRoomIn";
 import { fireRoomAlarm } from "./room/fireRoomAlarm";
 import type { Identity } from "./room/Identity";
 import type { JoinRejection } from "./room/JoinRejection";
+import { joinRejectionIn } from "./room/joinRejectionIn";
 import { joinRoomIn } from "./room/joinRoomIn";
 import { loadRoom } from "./room/loadRoom";
 import { playersWhoseUpdateChanged } from "./room/playersWhoseUpdateChanged";
@@ -25,6 +28,8 @@ import type { RoomRecord } from "./room/RoomRecord";
 import { startTestRoomIn } from "./room/startTestRoomIn";
 import { timeOutNoticesBetween } from "./room/timeOutNoticesBetween";
 import { withConnection } from "./room/withConnection";
+import { lobbyOf } from "./lobbyOf";
+import { roomSummaryOf } from "./room/roomSummaryOf";
 import { RoomSockets } from "./RoomSockets";
 import { sha256Hex } from "./sha256Hex";
 
@@ -51,6 +56,9 @@ export class GameRoom extends DurableObject<Env> {
       const isCreated = createRoomIn(this.storage, room, owner, nowMs());
       await this.rooms.save();
       await this.syncAlarm();
+      if (isCreated) {
+        await this.reportToLobby(null);
+      }
       return isCreated;
     });
   }
@@ -67,6 +75,20 @@ export class GameRoom extends DurableObject<Env> {
       await this.syncAlarm();
       return isStarted;
     });
+  }
+
+  async hasPlayer(playerId: PlayerId): Promise<boolean> {
+    return this.inTurn(async () =>
+      Promise.resolve(
+        loadRoom(this.storage)?.players.some((player) => player.playerId === playerId) === true,
+      ),
+    );
+  }
+
+  async joinRejection(joining: Identity): Promise<JoinRejection | null> {
+    return this.inTurn(async () =>
+      Promise.resolve(joinRejectionIn(this.storage, joining, nowMs(), this.sockets.livePlayers())),
+    );
   }
 
   async joinRoom(joining: Identity): Promise<JoinRejection | null> {
@@ -89,6 +111,7 @@ export class GameRoom extends DurableObject<Env> {
         );
       }
       await this.syncAlarm();
+      await this.reportToLobby(before ?? null);
       return rejection;
     });
   }
@@ -100,6 +123,7 @@ export class GameRoom extends DurableObject<Env> {
         await this.applyAlarm(record);
       }
       await this.syncAlarm(true);
+      await this.reportToLobby(record);
     });
   }
 
@@ -158,16 +182,10 @@ export class GameRoom extends DurableObject<Env> {
   }
 
   override fetch(request: Request): Response {
-    if (request.headers.get("Upgrade") !== "websocket") {
-      return new Response("Expected a WebSocket", { status: 426 });
-    }
-    const [client, server] = Object.values(new WebSocketPair());
-    if (client === undefined || server === undefined) {
-      return new Response("Could not open a WebSocket", { status: 500 });
-    }
-    this.ctx.acceptWebSocket(server);
-    server.serializeAttachment(NO_CONNECTION);
-    return new Response(null, { status: 101, webSocket: client });
+    return acceptedSocketResponse(request, (server) => {
+      this.ctx.acceptWebSocket(server);
+      server.serializeAttachment(NO_CONNECTION);
+    });
   }
 
   override async webSocketMessage(socket: WebSocket, message: string | ArrayBuffer): Promise<void> {
@@ -198,6 +216,7 @@ export class GameRoom extends DurableObject<Env> {
     });
     if (outcome.isRoomGone) {
       socket.close(ROOM_GONE_CLOSE_CODE, "This room no longer exists");
+      await this.reportToLobby(recordBefore);
       return;
     }
     const recordAfter = loadRoom(this.storage);
@@ -213,6 +232,7 @@ export class GameRoom extends DurableObject<Env> {
       this.sockets.sendNotices(timeOutNoticesBetween(recordBefore, recordAfter));
     }
     await this.syncAlarm();
+    await this.reportToLobby(recordBefore);
   }
 
   private reply(
@@ -233,6 +253,18 @@ export class GameRoom extends DurableObject<Env> {
     socket.send(JSON.stringify(outcome.reply));
     if (outcome.shouldClose) {
       socket.close(1008, "Too many rejected messages");
+    }
+  }
+
+  private async reportToLobby(before: RoomRecord | null): Promise<void> {
+    const after = loadRoom(this.storage);
+    const summaryBefore = before === null ? null : roomSummaryOf(before);
+    const summaryAfter = after === null ? null : roomSummaryOf(after);
+    const code = after?.code ?? before?.code;
+    if (code !== undefined && JSON.stringify(summaryBefore) !== JSON.stringify(summaryAfter)) {
+      await lobbyOf(this.env)
+        .roomChanged(code, summaryAfter)
+        .catch(() => undefined);
     }
   }
 

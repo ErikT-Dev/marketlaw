@@ -7,6 +7,7 @@ import { readCoverageExceptions } from "../harness-check/readCoverageExceptions.
 import { buildReport } from "./buildReport.ts";
 import { buildScenarioRuns } from "./buildScenarioRuns.ts";
 import { checkCardData } from "./checkCardData.ts";
+import { simulateBusyDay } from "../simulator/busyDay/simulateBusyDay.ts";
 import { simulateInParallel } from "../simulator/simulateInParallel.ts";
 import { checkTierShares } from "./checkTierShares.ts";
 import { LAST_SIMULATED_TURN } from "./LAST_SIMULATED_TURN.ts";
@@ -42,6 +43,7 @@ export async function runHarness(
     cardDataProblems: checkCardData(files.cards),
     tierShareProblems: checkTierShares(DRAWS_PER_TURN),
     simulation: await simulateInParallel(simulatedGames, LAST_SIMULATED_TURN),
+    busyDay: simulateBusyDay(),
     simulatedInvariants: SIMULATED_INVARIANTS,
   };
   const problems = [

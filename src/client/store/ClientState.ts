@@ -1,5 +1,6 @@
 import type { ConnectionStatus } from "../../shared/ConnectionStatus";
 import type { Notice } from "../../shared/Notice";
+import type { PublicRoomView } from "../../shared/protocol/PublicRoomView";
 import type { RoomUpdate } from "../../shared/protocol/RoomUpdate";
 import type { JoinError } from "./JoinError";
 import type { PendingAction } from "./PendingAction";
@@ -18,4 +19,5 @@ export type ClientState = {
   readonly serverClockOffsetMs: number;
   readonly joinError: JoinError | null;
   readonly removal: RemovalNotice | null;
+  readonly publicRooms: ReadonlyArray<PublicRoomView>;
 };
