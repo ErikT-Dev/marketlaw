@@ -1,9 +1,11 @@
+import { useContext } from "react";
 import { Fragment } from "react";
 import type { GamePhase } from "../../../shared/GamePhase";
 import type { OwnSeatView } from "../../../shared/OwnSeatView";
 import type { PlayerView } from "../../../shared/PlayerView";
 import { TURN_LIMIT } from "../../../shared/TURN_LIMIT";
 import { PlayerBadge } from "../../components/PlayerBadge";
+import { AwaySeats } from "./AwaySeats";
 import styles from "./GameTopBar.module.css";
 import { orderBadgesOf } from "./orderBadgesOf";
 import { YourClock } from "./YourClock";
@@ -21,6 +23,7 @@ const PHASE_NAMES: Readonly<Record<GamePhase, string>> = {
 };
 
 export function GameTopBar({ view, seat, playerNames }: Props) {
+  const awaySeats = useContext(AwaySeats);
   return (
     <header className={styles["topBar"]}>
       <div className={styles["turnInfo"]}>
@@ -30,7 +33,7 @@ export function GameTopBar({ view, seat, playerNames }: Props) {
         <span className={styles["phase"]}>{PHASE_NAMES[view.phase]}</span>
       </div>
       <ol className={styles["order"]} aria-label="Player order">
-        {orderBadgesOf(view, playerNames).map((badge, index) => (
+        {orderBadgesOf(view, playerNames, awaySeats).map((badge, index) => (
           <Fragment key={badge.seat}>
             {index === 0 ? null : (
               <li className={styles["arrow"]} aria-hidden="true">

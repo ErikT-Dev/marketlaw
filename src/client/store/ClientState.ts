@@ -20,4 +20,5 @@ export type ClientState = {
   readonly joinError: JoinError | null;
   readonly removal: RemovalNotice | null;
   readonly publicRooms: ReadonlyArray<PublicRoomView>;
+  readonly isOutdated: boolean;
 };
