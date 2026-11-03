@@ -126,3 +126,22 @@ the same commit as its first user, or before it.
 committed afterwards, so the commit in between did not type-check, which breaks bisecting and
 rolling back to it.
 **Enforced by:** judgment.
+
+## For `rules/cloudflare.md`
+
+### Nothing runs at a Worker module's top level
+Do not create a `Response`, `Request` or anything that does I/O, timers or randomness in a module
+constant in `src/server/`; build it inside a function. The Workers runtime refuses to start
+("Disallowed operation called within global scope"), and `wrangler dev` fails before any test.
+**Why:** found in phase 19, when a shared `new Response("Not found")` constant stopped the local
+server; type checks and unit tests did not notice.
+**Enforced by:** browser tests (the server does not start) · judgment.
+
+## For `rules/testing.md`
+
+### Reopening a link in a browser test needs a real navigation
+`page.goto` to a link that differs from the current address only after `#` does not reload the
+page, so the app never reads the link again. Go to `about:blank` first.
+**Why:** found in phase 19's room-not-found test, which reopened a seat link after the room was
+deleted.
+**Enforced by:** judgment.
