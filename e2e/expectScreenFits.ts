@@ -13,8 +13,15 @@ async function targetsSmallerThanMinimum(page: Page): Promise<ReadonlyArray<stri
   }, MINIMUM_TARGET_PX);
 }
 
-export async function expectScreenFits(page: Page, screen: string, testInfo: TestInfo) {
-  await page.waitForLoadState("networkidle");
+export async function expectScreenFits(
+  page: Page,
+  screen: string,
+  testInfo: TestInfo,
+  hasHumanCheck = false,
+) {
+  if (!hasHumanCheck) {
+    await page.waitForLoadState("networkidle");
+  }
   await page.waitForFunction(() => [...document.images].every((image) => image.complete));
   await page.screenshot({
     path: `harness/screens/${screen}/${screen}-${testInfo.project.name}.png`,

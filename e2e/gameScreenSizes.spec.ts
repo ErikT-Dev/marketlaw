@@ -1,7 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import { expectScreenFits } from "./expectScreenFits";
 import { hiddenCardsSentToOthers } from "./hiddenCardsSentToOthers";
-import { LONGEST_NAMES } from "./LONGEST_NAMES";
 import { startFourPlayerGame } from "./startFourPlayerGame";
 
 const TABLE_PANELS = [
@@ -28,9 +27,9 @@ const STAT_NAMES = [
   "Influence",
 ];
 
-async function expectTableElements(page: Page): Promise<void> {
+async function expectTableElements(page: Page, names: ReadonlyArray<string>): Promise<void> {
   const order = page.getByRole("list", { name: "Player order" });
-  for (const name of LONGEST_NAMES) {
+  for (const name of names) {
     await expect(order.getByRole("listitem").filter({ hasText: name })).toBeVisible();
   }
   await expect(order.getByText("first player")).toBeVisible();
@@ -56,7 +55,10 @@ test("the game screen fits the window with large enough targets and no accessibi
   if (host === undefined) {
     throw new Error("no host");
   }
-  await expectTableElements(host);
+  await expectTableElements(
+    host,
+    players.map(({ name }) => name),
+  );
   await expectScreenFits(host, "game-table", testInfo);
   expect(await hiddenCardsSentToOthers(players)).toEqual([]);
   await Promise.all(players.map(async (player) => player.page.context().close()));

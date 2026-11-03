@@ -63,8 +63,11 @@ jobs:
       - name: Prepare the local database
         run: npm run db:migrate:local
 
-      - name: Make a test room secret for the local server
-        run: echo "TEST_ROOM_SECRET=$(openssl rand -hex 24)" > .dev.vars
+      - name: Make a test room secret and Turnstile test keys for the local server
+        run: |
+          echo "TEST_ROOM_SECRET=$(openssl rand -hex 24)" > .dev.vars
+          echo "TURNSTILE_SITE_KEY=1x00000000000000000000AA" >> .dev.vars
+          echo "TURNSTILE_SECRET_KEY=1x0000000000000000000000000000000AA" >> .dev.vars
 
       - name: Browser tests
         run: npm run e2e

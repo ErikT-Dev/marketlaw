@@ -2,7 +2,6 @@ import { expect, test } from "@playwright/test";
 import { expectScreenFits } from "./expectScreenFits";
 import { cardsHeldOnce } from "./cardsHeldOnce";
 import { hiddenCardsSentToOthers } from "./hiddenCardsSentToOthers";
-import { LONGEST_NAMES } from "./LONGEST_NAMES";
 import { startFourPlayerGame } from "./startFourPlayerGame";
 
 test("the hand, the big card, sell mode and the done state fit and are found by name", async ({
@@ -34,7 +33,7 @@ test("the hand, the big card, sell mode and the done state fit and are found by 
 
   await host.getByRole("button", { name: "End turn" }).click();
   const done = host.getByRole("status").filter({ hasText: "You are done for this turn" });
-  for (const name of LONGEST_NAMES.slice(1)) {
+  for (const { name } of players.slice(1)) {
     await expect(done).toContainText(name);
   }
   await expectScreenFits(host, "you-are-done", testInfo);
