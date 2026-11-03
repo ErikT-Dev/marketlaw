@@ -3,6 +3,7 @@ import { becomeGuest } from "./becomeGuest";
 import { createRoomAs } from "./createRoomAs";
 import { DUMMY_HUMAN_CHECK } from "./DUMMY_HUMAN_CHECK";
 import { expectScreenFits } from "./expectScreenFits";
+import { PROTOCOL_VERSION } from "../src/shared/PROTOCOL_VERSION";
 import { openLobby } from "./openLobby";
 import { SIGNING_IN_TEST_MS } from "./SIGNING_IN_TEST_MS";
 import { uniqueName } from "./uniqueName";
@@ -60,4 +61,17 @@ test("a player waiting in a room cannot join or create another room", async ({ r
   expect(await joined.json()).toEqual({ isOk: false, reason: "busy_elsewhere", rejoinAt: null });
   expect(await newRoom(ann)).toEqual({ isOk: false, reason: "busy_elsewhere", rejoinAt: null });
   expect(first).toMatch(/^[A-Z0-9]{6}$/);
+});
+
+test("the lobby says when there are no public rooms", async ({ page }, testInfo) => {
+  await page.routeWebSocket(/\/api\/lobby\/socket$/, (socket) => {
+    socket.send(
+      JSON.stringify({ type: "lobby", protocolVersion: PROTOCOL_VERSION, publicRooms: [] }),
+    );
+  });
+  await page.goto("/");
+  await expect(page.getByRole("heading", { name: "Public rooms · 0" })).toBeVisible();
+  await expect(page.getByText("No public rooms right now")).toBeVisible();
+  await expect(page.getByText("Create one, or join a private room with its code.")).toBeVisible();
+  await expectScreenFits(page, "lobby-empty", testInfo);
 });
