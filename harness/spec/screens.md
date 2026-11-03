@@ -181,6 +181,27 @@ None yet.
 - **S10.7** **Match found** shows the game size and asks you to confirm within the time shown,
   without naming the other players (A8.7), and says what happens if you decline.
 - **S10.8** Empty lists say so: no public rooms, only you online.
+- **S10.9** A rejected lobby or room action shows the text for its reason code, in the place where
+  the player acted (under the room-code field, in the dialog, or as an alert in the waiting room).
+  Codes that only a broken or forged client can cause show "Something went wrong" as in S16.3.
+
+  | Reason code | Message |
+  |---|---|
+  | `room_not_found` | No room has the code CODE. Check the code and try again. |
+  | `room_full` | This room is full. |
+  | `room_not_waiting` | The game in this room has already started. |
+  | `rejoin_too_soon` | You can join this room again in M:SS. |
+  | `invalid_room_size` | Choose a room size of 2, 3 or 4 players. |
+  | `not_room_owner` | Only the owner can change the room size. |
+  | `room_size_too_small` | The room cannot be smaller than the number of players in it. |
+  | `not_in_room` | You are not in this room. |
+  | `not_asking` | Nobody is being asked to accept the game right now. |
+  | `human_check_failed` | The human check did not pass. Try it again. |
+  | `username_invalid` | Use 3 to 20 letters, digits, spaces, - or _, without spaces at the start or end or two spaces in a row. |
+  | `username_taken` | That username is taken. Choose another one. |
+  | `username_reserved` | That username cannot be used. Choose another one. |
+  | `no_free_room_code` | No room could be created right now. Try again. |
+  | `no_answer` | The server did not answer. Try again. |
 
 ## S11. Waiting room
 
