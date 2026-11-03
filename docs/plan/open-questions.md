@@ -838,3 +838,24 @@ file.
   every combination is a valid username of at most 20 characters, in the style of the example.
   The server picks at random and tries again while the name is taken (A2.2 ignores capitals).
 - **Implemented:** phase 16, item 3.
+
+## Q57. What does tracking connections in a waiting room cost, and where are seats decided?
+
+- **Phase:** 16, from the phase review.
+- **Question:** M1.12 needs to know who has been disconnected from a waiting room for 10 seconds,
+  even if the room's Durable Object is evicted in between. `rules/cloudflare.md` allows no writes
+  for connects. Also, R4.3 seats are random, but the engine only sees the seats it is given.
+- **Options:** write on every connect and close; write only on a close, and treat players with an
+  open socket as connected when the deadline comes; keep it all in memory (lost on eviction).
+- **Solution:** write only on a close: one row when a player's last socket to a waiting room
+  closes. Connecting writes nothing. Creating or joining a room records the player as "not yet
+  connected" in the same row as the join, so a player who never opens the socket is removed after
+  10 s. When a deadline comes, and before any message or join is handled, players with an open
+  socket count as connected. On a busy day (B18) this is about one row per page refresh or
+  dropped connection in a waiting room, plus one alarm change each, well inside the budget.
+  Overdue removals (20-second accept, 10-second disconnect) are applied before every message and
+  join, so a late alarm never lets a late accept start a game. Seat order (R4.3) is drawn by the
+  room with `crypto` when the game starts and stored in the room record, like the game's seed, so
+  replays use the stored order.
+- **Implemented:** `src/server/room/caughtUpRoom.ts`, `withLivePlayers.ts`, `GameRoom.ts`;
+  phase 16 review fixes.

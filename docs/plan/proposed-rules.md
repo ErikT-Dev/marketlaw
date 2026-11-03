@@ -115,3 +115,14 @@ dropped connection to the UserWorker"), and several tests time out. `npx playwri
 **Why:** found in phase 15; the same failures appeared at the commit before the phase's server
 changes, so they came from load, not from the code.
 **Enforced by:** judgment.
+
+## For `rules/workflow.md`
+
+### Every commit type-checks on its own
+Before committing part of the work, check that the staged files compile without the unstaged
+ones (`git stash --keep-index`, then the type check). A shared type or interface change goes in
+the same commit as its first user, or before it.
+**Why:** found in the phase 16 review: a CLIENT commit used a host interface change that was only
+committed afterwards, so the commit in between did not type-check, which breaks bisecting and
+rolling back to it.
+**Enforced by:** judgment.

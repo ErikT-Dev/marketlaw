@@ -103,8 +103,8 @@ These 25 scenarios are added to `harness/required.yaml` in this phase, by file a
   new `room` message (protocol version 2). A joining player counts as disconnected until their
   socket says hello, so a join that never connects is removed after 10 s. A new lobby scenario
   driver runs the room and account scenarios. The phase 19 scenario "the room is deleted when the
-  last player leaves it" is now run by that driver and reported as failing instead of "not yet",
-  because its finished-room state comes in phase 19; it is not required yet.
+  last player leaves it" is claimed by that driver but cannot pass until finished rooms exist
+  (phase 19); it is not required yet.
 - [x] 3. Guests: username rules, generated names, staying logged in for 90 days of use. Stored
   players were wiped by migration 0005 (allowed until version 1 is public, D1). Test-room seats
   keep no name key, so their names do not reserve usernames.
