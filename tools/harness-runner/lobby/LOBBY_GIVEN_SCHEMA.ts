@@ -1,5 +1,14 @@
 import * as v from "valibot";
 
+const GIVEN_ROOM = v.strictObject({
+  code: v.string(),
+  size: v.picklist([2, 3, 4]),
+  public: v.boolean(),
+  owner: v.string(),
+  players: v.array(v.string()),
+  state: v.picklist(["waiting", "accepting", "playing"]),
+});
+
 export const LOBBY_GIVEN_SCHEMA = v.strictObject({
   accounts: v.optional(
     v.array(
@@ -10,16 +19,8 @@ export const LOBBY_GIVEN_SCHEMA = v.strictObject({
       }),
     ),
   ),
-  room: v.optional(
-    v.strictObject({
-      code: v.string(),
-      size: v.picklist([2, 3, 4]),
-      public: v.boolean(),
-      owner: v.string(),
-      players: v.array(v.string()),
-      state: v.picklist(["waiting", "accepting", "playing"]),
-    }),
-  ),
+  room: v.optional(GIVEN_ROOM),
+  other_rooms: v.optional(v.array(GIVEN_ROOM)),
 });
 
 export type LobbyGiven = v.InferOutput<typeof LOBBY_GIVEN_SCHEMA>;

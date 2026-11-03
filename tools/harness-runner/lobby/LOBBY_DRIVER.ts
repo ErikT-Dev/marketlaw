@@ -8,6 +8,7 @@ import { LOBBY_GIVEN_SCHEMA } from "./LOBBY_GIVEN_SCHEMA.ts";
 import { lobbyMessageThen } from "./lobbyMessageThen.ts";
 import { lobbyGameThen, lobbyRoomThen } from "./lobbyRoomThen.ts";
 import { LobbySession } from "./LobbySession.ts";
+import { publicRoomsOf } from "../../../src/server/lobby/publicRoomsOf.ts";
 
 const ROOM_ACTIONS = ["change_size", "leave_room", "accept_game", "decline_game"];
 
@@ -93,6 +94,12 @@ function startSession(rawGiven: Readonly<Record<string, unknown>>, random: Scrip
           return lobbyRoomThen(session.record, expected);
         case "game":
           return lobbyGameThen(session.record);
+        case "lobby_rooms":
+          return publicRoomsOf(session.lobbyRecord()).map((room) => ({
+            owner: room.ownerName,
+            players: room.playerNames,
+            free_places: room.size - room.playerNames.length,
+          }));
         case "message_to":
           return lobbyMessageThen(session.messagesTo, expected);
         default:
@@ -105,7 +112,7 @@ function startSession(rawGiven: Readonly<Record<string, unknown>>, random: Scrip
 
 export const LOBBY_DRIVER: ScenarioDriver = {
   name: "lobby",
-  givenFields: new Set(["accounts", "room"]),
+  givenFields: new Set(["accounts", "room", "other_rooms"]),
   steps: new Set([
     "create_room",
     "join_room",
@@ -126,10 +133,13 @@ export const LOBBY_DRIVER: ScenarioDriver = {
     "accounts",
     "generated_name",
     "logged_in",
+    "lobby_rooms",
   ]),
   nestedFields: new Map([
     ["given.accounts", new Set(["name", "kind", "last_used_ms"])],
     ["given.room", new Set(["code", "size", "public", "owner", "players", "state"])],
+    ["given.other_rooms", new Set(["code", "size", "public", "owner", "players", "state"])],
+    ["then.lobby_rooms", new Set(["owner", "players", "free_places"])],
     [
       "then.room",
       new Set(["size", "public", "owner", "players", "state", "accepted", "code_format"]),
