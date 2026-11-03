@@ -16,7 +16,7 @@ function statusOf(
   if (view.phase === "main" && seatView.hasLeft) {
     return "left";
   }
-  if (awaySeats.includes(seat)) {
+  if (view.phase === "main" && awaySeats.includes(seat)) {
     return "away";
   }
   return view.phase === "main" && seatView.isDone ? "done" : "none";

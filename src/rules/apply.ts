@@ -65,7 +65,7 @@ function accepted(state: GameState, action: GameAction, random: Random, at: numb
     case "time_out":
       return timeOut(state, action.seat, random, at);
     case "pause_game":
-      return pauseGame(state, action.seat, at);
+      return pauseGame(state, at);
     case "resume_game":
       return resumeGame(state, at);
   }
@@ -80,9 +80,8 @@ function systemRejectionOf(state: GameState, action: SystemAction, at: number) {
 }
 
 function withGraceKept(before: GameState, after: GameState): GameState {
-  const isSameClock =
-    after.clockStartedAt === before.clockStartedAt || before.pause !== null;
-  return after.grace === null || isSameClock ? after : { ...after, grace: null };
+  const isSameClock = after.clockStartedAt === before.clockStartedAt || before.pause !== null;
+  return after.grace.length === 0 || isSameClock ? after : { ...after, grace: [] };
 }
 
 export function apply(
@@ -93,7 +92,9 @@ export function apply(
 ): Result<GameState, Rejection> {
   const code = isSystemAction(action)
     ? systemRejectionOf(state, action, at)
-    : rejectionOf(state, action);
+    : state.pause === null
+      ? rejectionOf(state, action)
+      : "not_this_step";
   if (code !== undefined) {
     return { isOk: false, error: { code } };
   }

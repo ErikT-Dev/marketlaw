@@ -22,7 +22,7 @@ describe("connections in a game", () => {
 
   it("says who gets free time again when the game goes on after a pause", () => {
     const props = gamePageProps(roomUpdateWith({}));
-    render(<GamePage {...props} timeOutNotice={{ kind: "resumed", seat: 3, freeMs: 45_000 }} />);
+    render(<GamePage {...props} timeOutNotice={{ kind: "resumed", seats: [3], freeMs: 45_000 }} />);
     expect(screen.getByRole("status").textContent).toContain(
       "Everyone was away, so the game was paused. Cy gets 45 seconds of free time before their time runs out.",
     );

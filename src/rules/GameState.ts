@@ -31,6 +31,6 @@ export type GameState = {
   readonly mainPhaseStart: MainPhaseStart;
   readonly clockStartedAt: number;
   readonly pause: PausedClock | null;
-  readonly grace: ClockGrace | null;
+  readonly grace: ReadonlyArray<ClockGrace>;
   readonly result: GameResult | null;
 };

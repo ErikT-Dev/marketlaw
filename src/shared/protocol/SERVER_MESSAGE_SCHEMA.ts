@@ -142,7 +142,7 @@ export const SERVER_MESSAGE_SCHEMA = v.variant("type", [
     protocolVersion: COUNT,
     notice: v.variant("kind", [
       v.object({ kind: v.literal("timed_out"), inARow: COUNT, of: COUNT }),
-      v.object({ kind: v.literal("resumed"), seat: SEAT, freeMs: COUNT }),
+      v.object({ kind: v.literal("resumed"), seats: v.array(SEAT), freeMs: COUNT }),
     ]),
   }),
   v.object({ type: v.literal("opened_elsewhere"), protocolVersion: COUNT }),

@@ -12,9 +12,19 @@ export function noticeToastOf(
     return { title: "Your time ran out", text: timeOutText(notice) };
   }
   const seconds = String(Math.round(notice.freeMs / 1000));
-  const who =
-    notice.seat === viewer
-      ? `You get ${seconds} seconds of free time before your time runs out.`
-      : `${playerNameOf(playerNames, notice.seat)} gets ${seconds} seconds of free time before their time runs out.`;
+  const others = notice.seats
+    .filter((seat) => seat !== viewer)
+    .map((seat) => playerNameOf(playerNames, seat));
+  const parts = [
+    ...(notice.seats.includes(viewer)
+      ? [`You get ${seconds} seconds of free time before your time runs out.`]
+      : []),
+    ...(others.length === 0
+      ? []
+      : [
+          `${others.join(" and ")} ${others.length === 1 ? "gets" : "get"} ${seconds} seconds of free time before their time runs out.`,
+        ]),
+  ];
+  const who = parts.join(" ");
   return { title: "Game resumed", text: `Everyone was away, so the game was paused. ${who}` };
 }

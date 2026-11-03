@@ -9,6 +9,7 @@ import type { AddressedNotice } from "./room/AddressedNotice";
 import type { RoomRecord } from "./room/RoomRecord";
 import type { RoomRemoval } from "./room/RoomRemoval";
 import { updateFor } from "./room/updateFor";
+import { otherTabsOf } from "./room/otherTabsOf";
 import { withAwaySeats } from "./room/withAwaySeats";
 import { OPENED_ELSEWHERE_CLOSE_CODE } from "../shared/OPENED_ELSEWHERE_CLOSE_CODE";
 
@@ -64,11 +65,13 @@ export class RoomSockets {
       type: "opened_elsewhere",
       protocolVersion: PROTOCOL_VERSION,
     };
-    for (const other of this.openSockets()) {
-      if (other !== socket && attachmentOf(other).identity?.playerId === playerId) {
-        other.send(JSON.stringify(elsewhere));
-        other.close(OPENED_ELSEWHERE_CLOSE_CODE, "The game was opened in another tab");
-      }
+    const tabs = this.openSockets().map((tab) => ({
+      tab,
+      playerId: attachmentOf(tab).identity?.playerId ?? null,
+    }));
+    for (const other of otherTabsOf(tabs, playerId, socket)) {
+      other.send(JSON.stringify(elsewhere));
+      other.close(OPENED_ELSEWHERE_CLOSE_CODE, "The game was opened in another tab");
     }
     this.updateOthers(record, socket);
   }

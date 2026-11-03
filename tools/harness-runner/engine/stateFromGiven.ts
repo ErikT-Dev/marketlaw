@@ -1,4 +1,5 @@
 import * as v from "valibot";
+import { pauseGame } from "../../../src/rules/pauseGame.ts";
 import { decisionClockOf } from "../../../src/rules/decisionClockOf.ts";
 import { firstPlayerOf } from "../../../src/rules/firstPlayerOf.ts";
 import type { GameState } from "../../../src/rules/GameState.ts";
@@ -35,9 +36,10 @@ function withGivenPause(state: GameState, isPaused: boolean): GameState {
     .filter((entry) => entry.deadline !== null)
     .sort((first, second) => (first.deadline ?? 0) - (second.deadline ?? 0));
   const first = seatsByDeadline[0];
-  return isPaused && first !== undefined
-    ? { ...state, pause: { at: state.clockStartedAt, seat: first.seat } }
-    : state;
+  if (!isPaused || first === undefined || first.deadline === null) {
+    return state;
+  }
+  return pauseGame(state, first.deadline);
 }
 
 export function stateFromGiven(given: Given): GameState {
@@ -89,7 +91,7 @@ export function stateFromGiven(given: Given): GameState {
     firstCompletions: given.first_completions ?? [],
     clockStartedAt: v.parse(EpochMs, given.clock_ms ?? 0),
     pause: null,
-    grace: null,
+    grace: [],
     result: null,
   });
   return withGivenPause(withCheckedMarketGo(started, given), given.paused === true);

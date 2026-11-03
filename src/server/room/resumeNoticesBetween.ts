@@ -14,6 +14,6 @@ export function resumeNoticesBetween(
   const freeMs = game.saved.state.phase === "main" ? TIME_RULES.mainFreeMs : TIME_RULES.goFreeMs;
   return game.seats.map(({ playerId }) => ({
     playerId,
-    notice: { kind: "resumed", seat: pause.seat, freeMs },
+    notice: { kind: "resumed", seats: pause.seats, freeMs },
   }));
 }

@@ -1,4 +1,7 @@
 import * as v from "valibot";
+import { updateFor } from "../../../src/server/room/updateFor.ts";
+import { withAwaySeats } from "../../../src/server/room/withAwaySeats.ts";
+import { PROTOCOL_VERSION } from "../../../src/shared/PROTOCOL_VERSION.ts";
 import { isRecord } from "../../harness-check/isRecord.ts";
 import type { DriverSession } from "../DriverSession.ts";
 import { ENGINE_FIELDS } from "../engine/ENGINE_FIELDS.ts";
@@ -67,11 +70,25 @@ function connectedTab(session: RoomSession, expected: unknown): unknown {
 }
 
 function viewWithAway(session: RoomSession, view: unknown): unknown {
-  if (!isRecord(view) || typeof view["of_seat"] !== "number") {
+  const viewer = session.record.game?.seats.find(
+    ({ seat }) => isRecord(view) && seat === view["seat"],
+  );
+  if (!isRecord(view) || typeof view["of_seat"] !== "number" || viewer === undefined) {
     return view;
   }
-  const name = session.seatNames[view["of_seat"] - 1] ?? "";
-  return { ...view, away: session.offline.has(name) };
+  const message = withAwaySeats(
+    {
+      type: "update",
+      protocolVersion: PROTOCOL_VERSION,
+      acceptedActionId: null,
+      update: updateFor(session.record, viewer.playerId),
+      serverNow: session.now,
+    },
+    session.record,
+    session.livePlayers(),
+  );
+  const awaySeats = message.type === "update" ? (message.update.game?.awaySeats ?? []) : [];
+  return { ...view, away: awaySeats.some((seat) => seat === view["of_seat"]) };
 }
 
 function noticeTo(session: RoomSession, expected: unknown): unknown {

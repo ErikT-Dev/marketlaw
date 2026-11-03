@@ -52,7 +52,7 @@ export function setUpGame(setup: GameSetup, random: Random): GameState {
     firstCompletions: [],
     clockStartedAt: setup.startedAt,
     pause: null,
-    grace: null,
+    grace: [],
     result: null,
   });
 }

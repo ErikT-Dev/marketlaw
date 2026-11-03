@@ -11,6 +11,7 @@ import { NO_WAITING } from "../../../src/server/room/NO_WAITING.ts";
 import { ROOM_SCHEMA_VERSION } from "../../../src/server/room/ROOM_SCHEMA_VERSION.ts";
 import type { RoomRecord } from "../../../src/server/room/RoomRecord.ts";
 import type { AddressedNotice } from "../../../src/server/room/AddressedNotice.ts";
+import { otherTabsOf } from "../../../src/server/room/otherTabsOf.ts";
 import { fireGameAlarm } from "../../../src/server/room/fireGameAlarm.ts";
 import { timeOutNoticesBetween } from "../../../src/server/room/timeOutNoticesBetween.ts";
 import { nextAlarmAt } from "../../../src/server/room/nextAlarmAt.ts";
@@ -70,9 +71,14 @@ export class RoomSession {
   }> = [];
 
   openGame(name: string, tab: number): void {
-    const previous = this.openTabs.get(name);
-    if (previous !== undefined && previous !== tab) {
-      this.tabMessages.push({ name, tab: previous, notice: "game_opened_elsewhere" });
+    const tabs = [...this.openTabs.entries()].map(([owner, open]) => ({
+      tab: `${owner}#${String(open)}`,
+      playerId: this.identityNamed(owner).playerId,
+    }));
+    const current = `${name}#${String(tab)}`;
+    for (const closed of otherTabsOf(tabs, this.identityNamed(name).playerId, current)) {
+      const closedTab = Number(closed.split("#")[1]);
+      this.tabMessages.push({ name, tab: closedTab, notice: "game_opened_elsewhere" });
     }
     this.openTabs.set(name, tab);
   }
@@ -88,7 +94,7 @@ export class RoomSession {
 
   constructor(state: GameState, given: RoomGiven, random: Random) {
     this.random = random;
-    this.now = v.parse(EpochMs, state.clockStartedAt);
+    this.now = v.parse(EpochMs, state.pause?.at ?? state.clockStartedAt);
     for (const seat of given.seats ?? []) {
       if (seat.connected === false) {
         this.offline.add(nameForSeat(given, seat.seat));

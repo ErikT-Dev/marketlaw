@@ -57,6 +57,6 @@ export const GAME_STATE_SCHEMA = v.object({
   firstCompletions: v.array(ProjectName),
   clockStartedAt: EpochMs,
   pause: v.optional(v.null(), null),
-  grace: v.optional(v.null(), null),
+  grace: v.optional(v.tuple([]), []),
   result: v.nullable(GAME_RESULT_SCHEMA),
 });

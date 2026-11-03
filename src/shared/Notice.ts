@@ -8,6 +8,6 @@ export type Notice =
     }
   | {
       readonly kind: "resumed";
-      readonly seat: SeatNumber;
+      readonly seats: ReadonlyArray<SeatNumber>;
       readonly freeMs: number;
     };

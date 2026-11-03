@@ -233,7 +233,8 @@ export class GameRoom extends DurableObject<Env> {
       await this.rooms.save();
       this.sockets.sendRemovals(outcome.removals);
       this.reply(socket, { attachment, outcome, sender });
-      if (parsed.isOk && parsed.value.type === "resync" && sender !== null) {
+      const isHello = parsed.isOk && parsed.value.type === "resync";
+      if (isHello && sender !== null && recordAfter.game !== null) {
         this.sockets.welcome(recordAfter, sender.identity.playerId, socket);
       }
       this.sockets.updatePlayers(
