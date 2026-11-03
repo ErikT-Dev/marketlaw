@@ -14,7 +14,9 @@ import { findPlayerByTokenHash } from "./findPlayerByTokenHash";
 import { newGameStart } from "./newGameStart";
 import { NO_CONNECTION } from "./NO_CONNECTION";
 import { alarmChangeFor } from "./room/alarmChangeFor";
-import { busyPlayersOf } from "./room/busyPlayersOf";
+import { isPlayerBusyIn } from "./room/isPlayerBusyIn";
+import type { ReplayRecord } from "./replays/ReplayRecord";
+import { replayRecordOfRoom } from "./replays/replayRecordOfRoom";
 import { CompressedRoomStore } from "./room/CompressedRoomStore";
 import { createRoomIn } from "./room/createRoomIn";
 import { fireRoomAlarm } from "./room/fireRoomAlarm";
@@ -86,12 +88,13 @@ export class GameRoom extends DurableObject<Env> {
   }
 
   async isPlayerBusy(playerId: PlayerId): Promise<boolean> {
-    return this.inTurn(async () => {
-      const record = loadRoom(this.storage);
-      return Promise.resolve(
-        record !== null && busyPlayersOf(record).some((player) => player.playerId === playerId),
-      );
-    });
+    return this.inTurn(async () =>
+      Promise.resolve(isPlayerBusyIn(loadRoom(this.storage), playerId)),
+    );
+  }
+
+  async replayRecord(): Promise<ReplayRecord | null> {
+    return this.inTurn(async () => Promise.resolve(replayRecordOfRoom(loadRoom(this.storage))));
   }
 
   async joinRejection(joining: Identity): Promise<JoinRejection | null> {

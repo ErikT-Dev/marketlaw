@@ -5,6 +5,7 @@ import { createRoomRoute } from "./api/createRoomRoute";
 import { generatedNameRoute } from "./api/generatedNameRoute";
 import { humanCheckRoute } from "./api/humanCheckRoute";
 import { joinRoomRoute } from "./api/joinRoomRoute";
+import { replayExportRoute } from "./api/replayExportRoute";
 import { roomJson } from "./api/roomJson";
 import { sessionRoute } from "./api/sessionRoute";
 import { lobbyOf } from "./lobbyOf";
@@ -16,7 +17,7 @@ import { restartTestRoom } from "./testRooms/restartTestRoom";
 export { GameRoom } from "./GameRoom";
 export { Lobby } from "./Lobby";
 
-const ROOM_PATH = /^\/api\/rooms\/([A-Z0-9]{6})\/(join|socket)$/;
+const ROOM_PATH = /^\/api\/rooms\/([A-Z0-9]{6})\/(join|socket|replay)$/;
 
 async function routeRoom(request: Request, env: Env, path: RegExpExecArray): Promise<Response> {
   const code = v.safeParse(RoomCode, path[1]);
@@ -25,6 +26,11 @@ async function routeRoom(request: Request, env: Env, path: RegExpExecArray): Pro
   }
   if (path[2] === "socket") {
     return env.ROOM.get(env.ROOM.idFromName(code.output)).fetch(request);
+  }
+  if (path[2] === "replay") {
+    return request.method === "GET"
+      ? replayExportRoute(request, env, code.output)
+      : new Response("Method not allowed", { status: 405 });
   }
   if (request.method !== "POST") {
     return new Response("Method not allowed", { status: 405 });

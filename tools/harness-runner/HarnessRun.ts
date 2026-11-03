@@ -10,6 +10,7 @@ export type HarnessRun = {
   readonly budgetIds: ReadonlyArray<string>;
   readonly cardDataProblems: ReadonlyArray<string>;
   readonly tierShareProblems: ReadonlyArray<string>;
+  readonly replayExportProblems: ReadonlyArray<string>;
   readonly simulation: SimulationSummary;
   readonly busyDay: BusyDayRows | null;
   readonly simulatedInvariants: ReadonlyArray<string>;

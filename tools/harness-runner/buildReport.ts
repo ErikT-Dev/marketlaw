@@ -11,7 +11,7 @@ import { reportStatusOf } from "./reportStatusOf.ts";
 import { statusBadge } from "./statusBadge.ts";
 
 const SCENARIO_STATUSES = ["passes", "fails", "passes, not yet required", "not yet"] as const;
-const CHECKS_NOT_BUILT = ["Rating calculation check (A10)", "Replay export check (M4.2)"];
+const CHECKS_NOT_BUILT = ["Rating calculation check (A10)"];
 
 function verdict({ problems }: ReportInput): string {
   const status = problems.length === 0 ? "passes" : "fails";
@@ -42,6 +42,10 @@ function checks({ run }: ReportInput): string {
     checkItem(
       "Statistical check: tier shares over 100,000 simulated draws per turn (R17.10)",
       run.tierShareProblems,
+    ),
+    checkItem(
+      "Replay export check: a running and an ended room are exported and replay exactly (M4.2)",
+      run.replayExportProblems,
     ),
   ];
   return `<h2>Checks</h2><ul>${[...built, ...notBuilt].join("")}</ul>`;

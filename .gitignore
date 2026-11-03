@@ -11,3 +11,4 @@ design/
 harness/report.html
 playwright-report/
 test-results/
+/replay-*.json

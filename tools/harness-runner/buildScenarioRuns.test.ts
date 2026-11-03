@@ -43,6 +43,7 @@ function judge(required: RequiredList): ReadonlyArray<string> {
     budgetIds: [],
     cardDataProblems: [],
     tierShareProblems: [],
+    replayExportProblems: [],
     simulation: NO_GAMES,
     busyDay: null,
     simulatedInvariants: [],
