@@ -8,7 +8,9 @@ import type { ProjectName } from "../shared/ProjectName";
 import type { MarketplaceSlot } from "../shared/MarketplaceSlot";
 import type { QuestOnTable } from "../shared/QuestOnTable";
 import type { SeatNumber } from "../shared/SeatNumber";
+import type { ClockGrace } from "./ClockGrace";
 import type { MainPhaseStart } from "./MainPhaseStart";
+import type { PausedClock } from "./PausedClock";
 import type { SeatState } from "./SeatState";
 
 export type GameState = {
@@ -28,5 +30,7 @@ export type GameState = {
   readonly drawLog: ReadonlyArray<DrawLogEntry>;
   readonly mainPhaseStart: MainPhaseStart;
   readonly clockStartedAt: number;
+  readonly pause: PausedClock | null;
+  readonly grace: ClockGrace | null;
   readonly result: GameResult | null;
 };

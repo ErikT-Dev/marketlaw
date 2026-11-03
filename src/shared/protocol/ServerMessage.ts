@@ -19,6 +19,7 @@ export type ServerMessage =
       readonly code: ReasonCode;
     }
   | { readonly type: "notice"; readonly protocolVersion: number; readonly notice: Notice }
+  | { readonly type: "opened_elsewhere"; readonly protocolVersion: number }
   | {
       readonly type: "removed";
       readonly protocolVersion: number;

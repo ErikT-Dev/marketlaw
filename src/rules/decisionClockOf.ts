@@ -33,8 +33,12 @@ function isDeciding(state: GameState, seatNumber: SeatNumber): boolean {
 
 export function decisionClockOf(state: GameState, seatNumber: SeatNumber): SeatClock | null {
   const bankMs = seatOf(state, seatNumber)?.timeBankMs ?? 0;
-  if (!isDeciding(state, seatNumber)) {
+  if (state.pause !== null || !isDeciding(state, seatNumber)) {
     return null;
+  }
+  if (state.grace?.seat === seatNumber) {
+    const until = epochMsAfter(state.grace.until, 0);
+    return { bankMs, freeUntil: until, deadline: until };
   }
   const { freeMs, limitMs } = limitsOf(state, seatNumber);
   return {

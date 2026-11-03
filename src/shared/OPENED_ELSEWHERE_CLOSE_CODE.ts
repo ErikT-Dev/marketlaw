@@ -1,0 +1,1 @@
+export const OPENED_ELSEWHERE_CLOSE_CODE = 4409;
