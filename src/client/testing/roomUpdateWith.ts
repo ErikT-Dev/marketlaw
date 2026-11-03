@@ -45,6 +45,8 @@ function other(seat: SeatNumber, changes: Partial<OtherSeatView>): OtherSeatView
     seat,
     handCount: 7,
     knownInHand: [],
+    questsCompleted: [],
+    influenceUses: {},
     typeCounts: {},
     combosClaimed: [],
     projects: [],
@@ -90,6 +92,6 @@ export function roomUpdateWith(
       mySeat: 2,
       asking: null,
     },
-    game: { stateVersion: 1, view },
+    game: { stateVersion: 1, view, awaySeats: [] },
   };
 }
