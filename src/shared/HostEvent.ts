@@ -1,6 +1,7 @@
 import type { ConnectionStatus } from "./ConnectionStatus";
 import type { EpochMs } from "./EpochMs";
 import type { Notice } from "./Notice";
+import type { RemovalReason } from "./protocol/RemovalReason";
 import type { RoomUpdate } from "./protocol/RoomUpdate";
 import type { ReasonCode } from "./ReasonCode";
 
@@ -13,4 +14,5 @@ export type HostEvent =
     }
   | { readonly type: "rejected"; readonly code: ReasonCode; readonly actionId: string | null }
   | { readonly type: "connection"; readonly status: ConnectionStatus }
-  | { readonly type: "notice"; readonly notice: Notice };
+  | { readonly type: "notice"; readonly notice: Notice }
+  | { readonly type: "removed"; readonly reason: RemovalReason; readonly rejoinAt: EpochMs | null };
