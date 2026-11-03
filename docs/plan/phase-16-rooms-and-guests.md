@@ -115,3 +115,65 @@ These 25 scenarios are added to `harness/required.yaml` in this phase, by file a
   online, the public room list, the ranked queue and the room chat come in later phases. The
   browser tests now sign every player in through the username prompt and the real Turnstile test
   widget, with a unique name per test.
+
+## Report
+
+**Built.** Rooms are public or private, size 2 to 4. Only the owner changes the size, never below
+the players present, and the next player to join becomes owner when the owner leaves. Room codes
+are unique. A full room asks everyone to accept within 20 seconds and shows who has accepted; the
+game starts when all accept, with seats in random order, and it is casual. A player who declines
+or runs out of time is removed and can rejoin after 2 minutes. A player disconnected from a
+waiting room for 10 seconds is removed, and a page refresh keeps the place. Guests choose a
+username prefilled with a free generated name, checked against A2.1 to A2.3. Guest and room
+creation need the Turnstile human check. A login lasts until 90 days without use (Q55).
+
+**What to try.** On the live site: Create room, keep or change the offered username, pass the
+human check, choose the size and create. From other browser windows, type the room code and Join
+with code, each choosing a username. When the room is full, everyone gets the accept dialog; when
+all accept, the game starts. Try a wrong code, a full room, declining (and rejoining at once,
+which shows the time left), changing the size as owner and as another player, and Leave room.
+
+**Checks.** `npm run check` green (298 tests). `npm run harness` green: 1,000 simulated games
+(D25), every required invariant, and all required scenarios including this phase's 25. Browser
+tests green on GitHub at all three screen sizes, including the exit criterion (guest name prompt
+to a started 3-player game) and a decline with its rejoin wait.
+
+**Differences from the phase file.**
+- The lobby and waiting room show only their middle column (known gaps).
+- Room actions travel on the room's socket as a new `room` message; the protocol version is now 2.
+- Stored players were wiped (migration 0005); old guest logins end and choose a username again.
+- The browser tests sign players in through the real Turnstile test widget, with a unique name per
+  test, since usernames are now unique.
+
+**Decisions.** D26 (Q52, O6): one lobby Durable Object, in phase 17. Q53: Turnstile is free; the
+owner's keys are set. Q54: the asking is part of waiting (`multiplayer.md` M1.11 sentence). Q55:
+the last use is noted at most once a day (`accounts.md` A1.14 sentence). Q56: generated names.
+Q57: waiting-room connections write only on a close; seat order is drawn by the room. Harness
+changes: M1.11 and A1.14 sentences, new rule S10.9 (lobby and room messages), the 25 scenarios on
+`required.yaml`.
+
+**Review findings and what happened to each.**
+1. Removals were sent before the room was saved on an alarm: fixed, saved first.
+2. An accept after 20 s or a reconnect after 10 s could still count before a late alarm: fixed,
+   overdue removals are applied before every message and join; unit tests added.
+3. The generated-name scenario check could never fail and used `Math.random`: fixed, it fails on a
+   missing or forbidden name and draws deterministically.
+4. The idle-client browser test installed the fake clock too late: fixed, installed before the page
+   loads, with the guest and room made through the API.
+5. The 91-day login was not in the spec and expiry was untested: A1.14 amended; unit test added.
+6. Waiting-room connects wrote rows: fixed, only a close writes (Q57).
+7. A creator who never connected was never removed: fixed, counted as not yet connected and the
+   alarm set on creation.
+8. The lobby messages were not in the spec: added as S10.9; S16.3 stays for game moves.
+9. The lobby driver bypassed some production paths: it now uses `createRoomIn` and `joinRoomIn`;
+   Turnstile failure paths have unit tests, and a browser test checks case-insensitive usernames
+   against the real database.
+10. Hook types shared files with their hooks: moved to their own files.
+11. Rejected room actions were silent: the waiting room shows them. Leaving while offline still
+    leaves at once; the room removes the player after 10 s.
+12. "Game already started" wording: now "The game in this room has already started."
+13. Seat order drawn outside the engine: recorded in Q57; it is stored in the room record.
+14. Two commits did not type-check on their own: they are pushed, so not rewritten; a proposed rule
+    in `proposed-rules.md` prevents it.
+15. The phase note on the phase 19 scenario was out of date: corrected.
+16. The production secret: confirmed set with `wrangler secret list` before the merge.
