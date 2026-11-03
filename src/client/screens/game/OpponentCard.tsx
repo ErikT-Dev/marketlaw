@@ -1,9 +1,11 @@
+import { useContext } from "react";
 import type { OtherSeatView } from "../../../shared/OtherSeatView";
 import { PlayerBadge } from "../../components/PlayerBadge";
 import { StatChip } from "../../components/StatChip";
 import { cardsBySector } from "./cardsBySector";
 import styles from "./OpponentCard.module.css";
 import { sectorColor } from "../../components/sectorColor";
+import { AwaySeats } from "./AwaySeats";
 import { LiveBankChip } from "./LiveBankChip";
 
 type Props = {
@@ -12,19 +14,23 @@ type Props = {
   readonly onOpen: () => void;
 };
 
-function statusOf(seat: OtherSeatView) {
+function statusOf(seat: OtherSeatView, isAway: boolean) {
   if (seat.hasLeft) {
     return "left";
+  }
+  if (isAway) {
+    return "away";
   }
   return seat.isDone ? "done" : "none";
 }
 
 export function OpponentCard({ seat, name, onOpen }: Props) {
+  const isAway = useContext(AwaySeats).includes(seat.seat);
   return (
     <li className={styles["item"]}>
       <article className={styles["card"]} aria-label={name}>
         <div className={styles["header"]}>
-          <PlayerBadge name={name} status={statusOf(seat)} />
+          <PlayerBadge name={name} status={statusOf(seat, isAway)} />
           <LiveBankChip timeBankMs={seat.timeBankMs} clock={seat.clock} label="Bank" />
         </div>
         <div className={styles["stats"]}>

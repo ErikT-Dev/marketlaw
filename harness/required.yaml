@@ -111,6 +111,12 @@ scenarios:
     - ending the turn in time resets the time-out count
     - "the first player's market go has 45 seconds"
     - other market goes have 30 seconds
+    - a deadline while nobody is connected pauses the game instead
+    - a paused game goes on when a player reconnects and the timed-out player gets free time again
+    - after the extra free time the paused player times out as normal
+    - a market go can be paused and the player gets their free time again
+    - when two players' time would run out together while nobody is connected both get their free time again
+    - a paused player's bank used before the pause stays used
   visibility:
     - other players' hands are shown only as a number of cards
     - a player sees their own hand
@@ -124,6 +130,7 @@ scenarios:
     - the draw log shows who drew how many and what was asked for but not the card
     - a marketplace card taken is known to be in that player's hand
     - a card I drew that another player's hidden shuffle left in my discard pile is taken off that pile
+    - everything about another player except the hand is public
   influence:
     - 4 influence buys 2 funds once per game
     - 4 influence buys 1 quality
@@ -291,6 +298,11 @@ scenarios:
     - a player who declined can rejoin after 2 minutes
     - a player disconnected from a waiting room for 10 seconds is removed
     - a page refresh within 10 seconds keeps the place in a waiting room
+  connections-and-leaving:
+    - opening the game in a second tab moves it there
+    - a disconnected player is shown as away to everyone
+    - an away player keeps their seat and their time runs as normal
+    - an away player's time runs out on a market go as for any player
 invariants:
   - I1
   - I2

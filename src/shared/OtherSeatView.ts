@@ -1,6 +1,8 @@
 import type { SeatClock } from "./SeatClock";
 import type { CardName } from "./catalogue/CardName";
+import type { QuestName } from "./catalogue/QuestName";
 import type { ClaimedCombo } from "./ClaimedCombo";
+import type { InfluenceUses } from "./InfluenceUses";
 import type { ProjectName } from "./ProjectName";
 import type { SeatTypeCounts } from "./SeatTypeCounts";
 import type { SeatNumber } from "./SeatNumber";
@@ -16,6 +18,8 @@ export type OtherSeatView = {
   readonly typeCounts: SeatTypeCounts;
   readonly combosClaimed: ReadonlyArray<ClaimedCombo>;
   readonly projects: ReadonlyArray<ProjectName>;
+  readonly questsCompleted: ReadonlyArray<QuestName>;
+  readonly influenceUses: InfluenceUses;
   readonly city: ReadonlyArray<CardName>;
   readonly buildPasses: number;
   readonly isDone: boolean;

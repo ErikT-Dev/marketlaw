@@ -11,13 +11,15 @@ import { NO_WAITING } from "../../../src/server/room/NO_WAITING.ts";
 import { ROOM_SCHEMA_VERSION } from "../../../src/server/room/ROOM_SCHEMA_VERSION.ts";
 import type { RoomRecord } from "../../../src/server/room/RoomRecord.ts";
 import type { AddressedNotice } from "../../../src/server/room/AddressedNotice.ts";
-import { fireAlarm } from "../../../src/server/room/fireAlarm.ts";
+import { otherTabsOf } from "../../../src/server/room/otherTabsOf.ts";
+import { fireGameAlarm } from "../../../src/server/room/fireGameAlarm.ts";
 import { timeOutNoticesBetween } from "../../../src/server/room/timeOutNoticesBetween.ts";
 import { nextAlarmAt } from "../../../src/server/room/nextAlarmAt.ts";
 import { EpochMs } from "../../../src/shared/EpochMs.ts";
 import { PlayerId } from "../../../src/shared/PlayerId.ts";
 import { parseClientMessage } from "../../../src/shared/protocol/parseClientMessage.ts";
 import type { ServerMessage } from "../../../src/shared/protocol/ServerMessage.ts";
+import { PROTOCOL_VERSION } from "../../../src/shared/PROTOCOL_VERSION.ts";
 import { RoomCode } from "../../../src/shared/RoomCode.ts";
 import { rawMessageText } from "./rawMessageText.ts";
 import type { RoomGiven } from "./RoomGiven.ts";
@@ -30,6 +32,18 @@ const PLAYER_COUNT = v.picklist([1, 2, 3, 4]);
 
 function tokenOf(name: string): string {
   return `token-of-${name.replace(/\W/g, "-")}`;
+}
+
+function logLengthOf(record: RoomRecord): number {
+  return record.game?.saved.actionLog.length ?? 0;
+}
+
+function nameForSeat(given: RoomGiven, seat: number): string {
+  return (
+    given.seats?.find((entry) => entry.seat === seat)?.player ??
+    given.room?.players?.[seat - 1] ??
+    `Seat ${String(seat)}`
+  );
 }
 
 export class RoomSession {
@@ -48,6 +62,26 @@ export class RoomSession {
   };
   readonly accounts: Map<string, Identity>;
   readonly connections = new Map<string, Connection>();
+  readonly offline = new Set<string>();
+  readonly openTabs = new Map<string, number>();
+  readonly tabMessages: Array<{
+    readonly name: string;
+    readonly tab: number;
+    readonly notice: string;
+  }> = [];
+
+  openGame(name: string, tab: number): void {
+    const tabs = [...this.openTabs.entries()].map(([owner, open]) => ({
+      tab: `${owner}#${String(open)}`,
+      playerId: this.identityNamed(owner).playerId,
+    }));
+    const current = `${name}#${String(tab)}`;
+    for (const closed of otherTabsOf(tabs, this.identityNamed(name).playerId, current)) {
+      const closedTab = Number(closed.split("#")[1]);
+      this.tabMessages.push({ name, tab: closedTab, notice: "game_opened_elsewhere" });
+    }
+    this.openTabs.set(name, tab);
+  }
   readonly seatNames: ReadonlyArray<string>;
   lastReply: ServerMessage | undefined;
   isLastStepUnchanged = false;
@@ -60,10 +94,16 @@ export class RoomSession {
 
   constructor(state: GameState, given: RoomGiven, random: Random) {
     this.random = random;
-    this.now = v.parse(EpochMs, state.clockStartedAt);
-    this.seatNames = state.seats.map(
-      (seat) => given.room?.players?.[seat.seat - 1] ?? `Seat ${seat.seat}`,
-    );
+    this.now = v.parse(EpochMs, state.pause?.at ?? state.clockStartedAt);
+    for (const seat of given.seats ?? []) {
+      if (seat.connected === false) {
+        this.offline.add(nameForSeat(given, seat.seat));
+      }
+    }
+    this.seatNames = state.seats.map((seat) => nameForSeat(given, seat.seat));
+    for (const name of this.seatNames.filter((seatName) => !this.offline.has(seatName))) {
+      this.openTabs.set(name, 1);
+    }
     const names = [...this.seatNames, ...(given.accounts ?? []).map(({ name }) => name)];
     this.accounts = new Map(
       names.map((name) => [name, { playerId: v.parse(PlayerId, randomUUID()), name }]),
@@ -109,6 +149,34 @@ export class RoomSession {
     return identity;
   }
 
+  livePlayers(): ReadonlyArray<PlayerId> {
+    return this.seatNames
+      .filter((name) => !this.offline.has(name))
+      .map((name) => this.identityNamed(name).playerId);
+  }
+
+  disconnect(seat: number): void {
+    const name = this.seatNames[seat - 1];
+    if (name !== undefined) {
+      this.offline.add(name);
+    }
+  }
+
+  reconnect(seat: number): void {
+    const name = this.seatNames[seat - 1];
+    if (name !== undefined) {
+      this.offline.delete(name);
+      this.sendRaw({
+        seat,
+        text: JSON.stringify({
+          protocolVersion: PROTOCOL_VERSION,
+          token: tokenOf(name),
+          type: "resync",
+        }),
+      });
+    }
+  }
+
   wait(ms: number, doesAlarmFire: boolean): void {
     const until = v.parse(EpochMs, this.now + ms);
     for (
@@ -117,7 +185,7 @@ export class RoomSession {
       alarm = nextAlarmAt(this.record)
     ) {
       this.now = v.parse(EpochMs, alarm);
-      const fired = fireAlarm(this.record, this.now, () => this.random);
+      const fired = fireGameAlarm(this.record, this.now, () => this.random, this.livePlayers());
       if (fired !== this.record) {
         this.notices.push(...timeOutNoticesBetween(this.record, fired));
         this.storage.write(fired);
@@ -155,18 +223,24 @@ export class RoomSession {
       now: this.now,
       randomFor: () => this.random,
       gameStart: { seed: 1, now: this.now, seatOrder: (players) => players },
-      livePlayers: [],
+      livePlayers: this.livePlayers(),
     });
     this.handlingMs.push(performance.now() - startedMs);
     this.notices.push(...timeOutNoticesBetween(recordBefore, this.record));
     if (outcome.isRoomGone) {
       throw new Error("the room is gone");
     }
-    const isAccepted = outcome.reply.type === "update" && outcome.reply.acceptedActionId !== null;
-    (isAccepted ? this.rowsForAccepted : this.rowsForOther).push(this.rowsWritten - rowsBefore);
+    this.countRows(recordBefore, rowsBefore, outcome.reply);
     this.connections.set(name, { state: outcome.connection, isClosed: outcome.shouldClose });
     this.lastReply = outcome.reply;
     this.isLastStepUnchanged = before === JSON.stringify(this.record);
+  }
+
+  private countRows(before: RoomRecord, rowsBefore: number, reply: ServerMessage): void {
+    const isAccepted =
+      logLengthOf(this.record) > logLengthOf(before) ||
+      (reply.type === "update" && reply.acceptedActionId !== null);
+    (isAccepted ? this.rowsForAccepted : this.rowsForOther).push(this.rowsWritten - rowsBefore);
   }
 
   private senderName(raw: Readonly<Record<string, unknown>>): string {

@@ -5,6 +5,7 @@ import { Kind } from "../catalogue/Kind";
 import { Tier } from "../catalogue/Tier";
 import { TypeName } from "../catalogue/TypeName";
 import { ProjectName } from "../ProjectName";
+import { QuestName } from "../catalogue/QuestName";
 import { ReasonCode } from "../ReasonCode";
 import { RoomCode } from "../RoomCode";
 import { TradeName } from "../TradeName";
@@ -86,6 +87,8 @@ const SEAT_VIEW = v.variant("kind", [
     typeCounts: TYPE_COUNTS,
     combosClaimed: v.array(v.object({ card: CardName, combo: COUNT, times: COUNT })),
     projects: PROJECTS,
+    questsCompleted: v.array(QuestName),
+    influenceUses: v.record(TradeName, COUNT),
   }),
 ]);
 const PLAYER_VIEW = v.object({
@@ -122,7 +125,9 @@ export const SERVER_MESSAGE_SCHEMA = v.variant("type", [
         mySeat: v.nullable(SEAT),
         asking: v.nullable(v.object({ deadline: EpochMs, acceptedNames: v.array(v.string()) })),
       }),
-      game: v.nullable(v.object({ stateVersion: COUNT, view: PLAYER_VIEW })),
+      game: v.nullable(
+        v.object({ stateVersion: COUNT, view: PLAYER_VIEW, awaySeats: v.array(SEAT) }),
+      ),
     }),
     serverNow: EpochMs,
   }),
@@ -135,8 +140,12 @@ export const SERVER_MESSAGE_SCHEMA = v.variant("type", [
   v.object({
     type: v.literal("notice"),
     protocolVersion: COUNT,
-    notice: v.object({ kind: v.literal("timed_out"), inARow: COUNT, of: COUNT }),
+    notice: v.variant("kind", [
+      v.object({ kind: v.literal("timed_out"), inARow: COUNT, of: COUNT }),
+      v.object({ kind: v.literal("resumed"), seats: v.array(SEAT), freeMs: COUNT }),
+    ]),
   }),
+  v.object({ type: v.literal("opened_elsewhere"), protocolVersion: COUNT }),
   v.object({
     type: v.literal("removed"),
     protocolVersion: COUNT,

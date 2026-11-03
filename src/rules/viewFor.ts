@@ -69,6 +69,8 @@ function otherSeatView(state: GameState, seat: SeatState, viewer: SeatNumber): O
     typeCounts: typeCountsOf(shown),
     combosClaimed: shown.combosClaimed,
     projects: shown.projects,
+    questsCompleted: shown.questsCompleted,
+    influenceUses: shown.influenceUses,
     city: shown.city,
     buildPasses: shown.buildPasses,
     isDone: seat.isDone,

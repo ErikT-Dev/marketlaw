@@ -63,6 +63,10 @@ export function viewThen(
           done: ofSeat.isDone,
           time_bank_ms: bankShownAt(ofSeat, now),
           time_bank_shown: Math.floor(bankShownAt(ofSeat, now) / 1000),
+          type_counts: ofSeat.typeCounts,
+          influence_uses: ofSeat.influenceUses,
+          projects: ofSeat.projects,
+          quests_completed: ofSeat.kind === "other" ? ofSeat.questsCompleted : undefined,
         };
   return {
     seat: view.seat,

@@ -6,6 +6,7 @@ import { FIRST_TURN_FOR_HIGHER_TIERS } from "./FIRST_TURN_FOR_HIGHER_TIERS";
 import { kindTiersLeftAsSeenBy } from "./kindTiersLeftAsSeenBy";
 import type { GameAction } from "./GameAction";
 import type { GameState } from "./GameState";
+import type { PlayerAction } from "./PlayerAction";
 import { realCostOf } from "./realCostOf";
 import { projectRejection } from "./projectRejection";
 import { questRejection } from "./questRejection";
@@ -82,7 +83,7 @@ function sellRejection(
   return removeCards(seat.hand, cards) === undefined ? "card_not_in_hand" : undefined;
 }
 
-export function rejectionOf(state: GameState, action: GameAction): ReasonCode | undefined {
+export function rejectionOf(state: GameState, action: PlayerAction): ReasonCode | undefined {
   const turnCode = turnRejectionOf(state, action.seat, action.type);
   const seat = seatOf(state, action.seat);
   if (turnCode !== undefined || seat === undefined) {
@@ -94,7 +95,6 @@ export function rejectionOf(state: GameState, action: GameAction): ReasonCode | 
     case "sell":
       return sellRejection(seat, action.cards);
     case "end_turn":
-    case "time_out":
       return undefined;
     case "claim_all":
     case "complete_project":

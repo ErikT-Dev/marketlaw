@@ -56,5 +56,7 @@ export const GAME_STATE_SCHEMA = v.object({
   drawLog: v.array(DRAW_LOG_ENTRY_SCHEMA),
   firstCompletions: v.array(ProjectName),
   clockStartedAt: EpochMs,
+  pause: v.optional(v.null(), null),
+  grace: v.optional(v.tuple([]), []),
   result: v.nullable(GAME_RESULT_SCHEMA),
 });

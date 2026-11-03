@@ -40,6 +40,7 @@ export const ENGINE_FIELDS = {
     "bonus_types",
     "first_completions",
     "clock_ms",
+    "paused",
   ]),
   steps: new Set([
     "start_game",
@@ -54,6 +55,7 @@ export const ENGINE_FIELDS = {
     "turn_draw",
   ]),
   thenFields: new Set([
+    "paused",
     "rejected",
     "unchanged",
     "seats",
@@ -96,6 +98,10 @@ export const ENGINE_FIELDS = {
         "done",
         "time_bank_ms",
         "time_bank_shown",
+        "type_counts",
+        "influence_uses",
+        "projects",
+        "quests_completed",
         "deck_count",
         "discard",
         "contains",

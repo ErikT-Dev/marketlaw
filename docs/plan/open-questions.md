@@ -879,3 +879,31 @@ file.
     checked 2026-11-03). The day writes 1,844 rows of 5,000.
 - **Implemented:** `harness/spec/screens.md` S10.9 (HARNESS commit); `src/server/api/isReallyBusy.ts`,
   `joinRoomRoute.ts`; `tools/simulator/busyDay/`; phase 17.
+
+## Q59. How are pausing and being away built?
+
+- **Phase:** 18, start.
+- **Question:** R9.12 and R9.13 change the game's clocks, but whether a player is connected is
+  known only to the room, and M5.2 asks for "away" to be shown to everyone.
+- **Options:** keep connections in the game state (a write for every connect, against
+  `rules/cloudflare.md`); keep pausing in the room only (the engine's clocks would not know);
+  have the room send the engine logged `pause_game` and `resume_game` actions.
+- **Solution:** logged engine actions, so replays stay exact. When a deadline comes and no player
+  still in the game has an open connection, the room applies `pause_game` instead of the
+  time-out; while paused, no clock runs. The first connection of a player still in the game
+  applies `resume_game`: every clock continues from where it stopped, and the player whose time
+  would have run out gets their free time again (45 s in the main phase, 5 s on a market go)
+  without using their bank. Away is not game state: the room adds the seats without an open
+  connection to each update, and sends an update when that changes, without a write. Opening the
+  game in a new tab tells the old tab `opened_elsewhere` and closes it (M5.1); this applies only
+  once the game has started, since M5.1 is about a game.
+- **Readings added after the phase review:**
+  - A pause covers every seat whose time would run out at that moment (in the main phase, all
+    players with a full bank share one deadline), and each of them gets free time again on resume.
+  - The bank a paused player used up to the pause stays used; only the extra free time is free
+    (R9.8, R9.13).
+  - A seat still in its free time from an earlier pause keeps the rest of it across a new pause.
+  - Player actions are refused while a game is paused; a player's message resumes it first.
+  - Away shows on the opponent cards in every phase (M5.2), and in the top bar's badges only in
+    the main phase, as S2.2 says.
+- **Implemented:** phase 18.

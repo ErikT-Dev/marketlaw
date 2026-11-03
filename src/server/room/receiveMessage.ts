@@ -1,5 +1,6 @@
 import { caughtUpRoom } from "./caughtUpRoom";
 import { handleMessage } from "./handleMessage";
+import { resumedFor } from "./resumedFor";
 import { loadRoom } from "./loadRoom";
 import type { ReceiveInput } from "./ReceiveInput";
 import type { ReceiveOutcome } from "./ReceiveOutcome";
@@ -10,7 +11,12 @@ export function receiveMessage(storage: RoomStorage, input: ReceiveInput): Recei
   if (stored === null) {
     return { isRoomGone: true };
   }
-  const { record, removals } = caughtUpRoom(stored, input.now, input.livePlayers);
+  const caught = caughtUpRoom(stored, input.now, input.livePlayers);
+  const { removals } = caught;
+  const record =
+    caught.record === null || input.sender === null
+      ? caught.record
+      : resumedFor(caught.record, input.sender.playerId, input.now, input.randomFor);
   if (record === null) {
     storage.remove();
     return { isRoomGone: true };

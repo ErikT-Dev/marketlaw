@@ -58,12 +58,12 @@ it by hand.
 | R9.5 | turns-and-time (3) | Covered |
 | R9.6 | turns-and-time (2) | Covered |
 | R9.7 | turns-and-time (1) | Covered |
-| R9.8 | turns-and-time (1) | Covered |
+| R9.8 | turns-and-time (2) | Covered |
 | R9.9 | turns-and-time (2) | Covered |
 | R9.10 | connections-and-leaving (1), marketplace (1), turns-and-time (4) | Covered |
 | R9.11 | turns-and-time (3) | Covered |
-| R9.12 | turns-and-time (2) | Covered |
-| R9.13 | turns-and-time (3) | Covered |
+| R9.12 | turns-and-time (4) | Covered |
+| R9.13 | turns-and-time (5) | Covered |
 | R9.14 | turns-and-time (1) | Covered |
 | R10.1 | projects (1), turns-and-time (3) | Covered |
 | R10.2 | quests (2) | Covered |
@@ -347,6 +347,6 @@ it by hand.
 ## Summary
 
 - Rules: 310
-- Scenarios: 427
+- Scenarios: 429
 - Gaps: 0
 - Checked another way or also checked another way: R3.2, R3.5, R17.10, R19.2, M3.1, M3.6, M4.2, A6.4, A10.6, C5.1, C5.2, C5.3

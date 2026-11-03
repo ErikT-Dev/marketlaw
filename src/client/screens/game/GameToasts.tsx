@@ -4,7 +4,7 @@ import { Toast } from "../../components/Toast";
 import type { RejectedMove } from "../../store/RejectedMove";
 import styles from "./GamePage.module.css";
 import { rejectionMessage } from "./rejectionMessage";
-import { timeOutText } from "./timeOutText";
+import { noticeToastOf } from "./noticeToastOf";
 
 type Props = {
   readonly seat: OwnSeatView;
@@ -12,16 +12,19 @@ type Props = {
   readonly rejectedMove: RejectedMove | null;
   readonly onDismissTimeOutNotice: () => void;
   readonly onDismissRejection: () => void;
+  readonly playerNames: ReadonlyArray<string>;
 };
 
-export function GameToasts({ seat, timeOutNotice, rejectedMove, ...dismiss }: Props) {
+export function GameToasts({ seat, timeOutNotice, rejectedMove, playerNames, ...dismiss }: Props) {
+  const toast =
+    timeOutNotice === null ? null : noticeToastOf(timeOutNotice, seat.seat, playerNames);
   return (
     <div className={styles["toasts"]}>
-      {timeOutNotice === null ? null : (
+      {toast === null ? null : (
         <Toast
-          kind="warning"
-          title="Your time ran out"
-          text={timeOutText(timeOutNotice)}
+          kind={timeOutNotice?.kind === "resumed" ? "info" : "warning"}
+          title={toast.title}
+          text={toast.text}
           onClose={dismiss.onDismissTimeOutNotice}
         />
       )}

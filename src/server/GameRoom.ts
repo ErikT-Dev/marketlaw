@@ -26,7 +26,9 @@ import { playersWhoseUpdateChanged } from "./room/playersWhoseUpdateChanged";
 import { receiveMessage } from "./room/receiveMessage";
 import type { RoomRecord } from "./room/RoomRecord";
 import { startTestRoomIn } from "./room/startTestRoomIn";
+import { resumeNoticesBetween } from "./room/resumeNoticesBetween";
 import { timeOutNoticesBetween } from "./room/timeOutNoticesBetween";
+import { withAwaySeats } from "./room/withAwaySeats";
 import { withConnection } from "./room/withConnection";
 import { lobbyOf } from "./lobbyOf";
 import { roomSummaryOf } from "./room/roomSummaryOf";
@@ -75,6 +77,10 @@ export class GameRoom extends DurableObject<Env> {
       await this.syncAlarm();
       return isStarted;
     });
+  }
+
+  restartForTest(): void {
+    this.ctx.abort("Restarted by a browser test");
   }
 
   async hasPlayer(playerId: PlayerId): Promise<boolean> {
@@ -171,6 +177,9 @@ export class GameRoom extends DurableObject<Env> {
         await this.rooms.save();
         await this.syncAlarm();
       }
+      if (record !== null) {
+        this.sockets.updateOthers(record, socket);
+      }
     });
   }
 
@@ -224,12 +233,19 @@ export class GameRoom extends DurableObject<Env> {
       await this.rooms.save();
       this.sockets.sendRemovals(outcome.removals);
       this.reply(socket, { attachment, outcome, sender });
+      const isHello = parsed.isOk && parsed.value.type === "resync";
+      if (isHello && sender !== null && recordAfter.game !== null) {
+        this.sockets.welcome(recordAfter, sender.identity.playerId, socket);
+      }
       this.sockets.updatePlayers(
         recordAfter,
         outcome.playersToUpdate,
         outcome.reply.type === "rejected" ? null : socket,
       );
-      this.sockets.sendNotices(timeOutNoticesBetween(recordBefore, recordAfter));
+      this.sockets.sendNotices([
+        ...timeOutNoticesBetween(recordBefore, recordAfter),
+        ...resumeNoticesBetween(recordBefore, recordAfter),
+      ]);
     }
     await this.syncAlarm();
     await this.reportToLobby(recordBefore);
@@ -250,7 +266,11 @@ export class GameRoom extends DurableObject<Env> {
         outcome.connection.identity === null ? null : (sender?.tokenHash ?? attachment.tokenHash),
       rejectionTimes: outcome.connection.rejectionTimes,
     });
-    socket.send(JSON.stringify(outcome.reply));
+    socket.send(
+      JSON.stringify(
+        withAwaySeats(outcome.reply, loadRoom(this.storage), this.sockets.livePlayers()),
+      ),
+    );
     if (outcome.shouldClose) {
       socket.close(1008, "Too many rejected messages");
     }

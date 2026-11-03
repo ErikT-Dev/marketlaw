@@ -51,6 +51,8 @@ export function setUpGame(setup: GameSetup, random: Random): GameState {
     doneOrder: [],
     firstCompletions: [],
     clockStartedAt: setup.startedAt,
+    pause: null,
+    grace: [],
     result: null,
   });
 }

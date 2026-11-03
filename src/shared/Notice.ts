@@ -1,5 +1,13 @@
-export type Notice = {
-  readonly kind: "timed_out";
-  readonly inARow: number;
-  readonly of: number;
-};
+import type { SeatNumber } from "./SeatNumber";
+
+export type Notice =
+  | {
+      readonly kind: "timed_out";
+      readonly inARow: number;
+      readonly of: number;
+    }
+  | {
+      readonly kind: "resumed";
+      readonly seats: ReadonlyArray<SeatNumber>;
+      readonly freeMs: number;
+    };

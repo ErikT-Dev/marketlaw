@@ -40,6 +40,7 @@ export function readEngineThen(
     seats: () => seatsThen(state, expected, now),
     view: () => viewThen(state, expected, now),
     turn: () => state.turn,
+    paused: () => state.pause !== null,
     phase: () => state.phase,
     first_player: () => state.firstPlayer,
     market_go: () => {

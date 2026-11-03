@@ -65,6 +65,9 @@ export function CurrentScreen({ store }: Props) {
       timeOutNotice={state.timeOutNotice}
       onDismissTimeOutNotice={store.dismissTimeOutNotice}
       onExitToLobby={store.exitToLobby}
+      connection={state.connection}
+      isOutdated={state.isOutdated}
+      onPlayHere={store.playHere}
     />
   );
 }

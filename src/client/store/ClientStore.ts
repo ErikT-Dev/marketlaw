@@ -47,6 +47,7 @@ export class ClientStore {
       joinError: null,
       removal: null,
       publicRooms: [],
+      isOutdated: false,
     };
     if (session !== null) {
       void this.checkSession(session);
@@ -244,7 +245,18 @@ export class ClientStore {
     });
   }
 
+  readonly playHere = (): void => {
+    const session = this.state.session;
+    if (session?.roomCode !== null && session !== null) {
+      this.enterRoom(session, session.roomCode);
+    }
+  };
+
   private receiveRejection(code: ReasonCode, actionId: string | null): void {
+    if (code === "wrong_protocol_version") {
+      this.change({ isOutdated: true });
+      return;
+    }
     if (code === "invalid_token") {
       this.leaveRoom("Your guest session has ended. Enter your name again.", null);
       return;

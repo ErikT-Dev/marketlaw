@@ -9,12 +9,19 @@ import type { AddressedNotice } from "./room/AddressedNotice";
 import type { RoomRecord } from "./room/RoomRecord";
 import type { RoomRemoval } from "./room/RoomRemoval";
 import { updateFor } from "./room/updateFor";
+import { otherTabsOf } from "./room/otherTabsOf";
+import { withAwaySeats } from "./room/withAwaySeats";
+import { OPENED_ELSEWHERE_CLOSE_CODE } from "../shared/OPENED_ELSEWHERE_CLOSE_CODE";
 
 export class RoomSockets {
   private readonly ctx: DurableObjectState;
 
   constructor(ctx: DurableObjectState) {
     this.ctx = ctx;
+  }
+
+  private openSockets(): ReadonlyArray<WebSocket> {
+    return this.ctx.getWebSockets().filter((socket) => socket.readyState === WebSocket.OPEN);
   }
 
   closeAll(reason: string): void {
@@ -45,7 +52,7 @@ export class RoomSockets {
   }
 
   sendTo(playerIds: ReadonlyArray<PlayerId>, messageFor: (playerId: PlayerId) => ServerMessage) {
-    for (const socket of this.ctx.getWebSockets()) {
+    for (const socket of this.openSockets()) {
       const { identity } = attachmentOf(socket);
       if (identity !== null && playerIds.includes(identity.playerId)) {
         socket.send(JSON.stringify(messageFor(identity.playerId)));
@@ -53,8 +60,34 @@ export class RoomSockets {
     }
   }
 
+  welcome(record: RoomRecord, playerId: PlayerId, socket: WebSocket): void {
+    const elsewhere: ServerMessage = {
+      type: "opened_elsewhere",
+      protocolVersion: PROTOCOL_VERSION,
+    };
+    const tabs = this.openSockets().map((tab) => ({
+      tab,
+      playerId: attachmentOf(tab).identity?.playerId ?? null,
+    }));
+    for (const other of otherTabsOf(tabs, playerId, socket)) {
+      other.send(JSON.stringify(elsewhere));
+      other.close(OPENED_ELSEWHERE_CLOSE_CODE, "The game was opened in another tab");
+    }
+    this.updateOthers(record, socket);
+  }
+
+  updateOthers(record: RoomRecord, socket: WebSocket): void {
+    if (record.game !== null) {
+      this.updatePlayers(
+        record,
+        record.players.map(({ playerId }) => playerId),
+        socket,
+      );
+    }
+  }
+
   sendRemovals(removals: ReadonlyArray<RoomRemoval>): void {
-    for (const socket of this.ctx.getWebSockets()) {
+    for (const socket of this.openSockets()) {
       const { identity } = attachmentOf(socket);
       const removal = removals.find(({ playerId }) => playerId === identity?.playerId);
       if (removal !== undefined) {
@@ -88,7 +121,7 @@ export class RoomSockets {
     if (record === null || playerIds.length === 0) {
       return;
     }
-    for (const socket of this.ctx.getWebSockets()) {
+    for (const socket of this.openSockets()) {
       const { identity } = attachmentOf(socket);
       if (socket !== except && identity !== null && playerIds.includes(identity.playerId)) {
         const update: ServerMessage = {
@@ -98,7 +131,7 @@ export class RoomSockets {
           update: updateFor(record, identity.playerId),
           serverNow: v.parse(EpochMs, Date.now()),
         };
-        socket.send(JSON.stringify(update));
+        socket.send(JSON.stringify(withAwaySeats(update, record, this.livePlayers())));
       }
     }
   }

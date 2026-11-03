@@ -42,7 +42,11 @@ function buildUpdate(record: RoomRecord, playerId: PlayerId): RoomUpdate {
     game:
       record.game === null || seat === undefined
         ? null
-        : { stateVersion: seat.stateVersion, view: viewFor(record.game.saved.state, seat.seat) },
+        : {
+            stateVersion: seat.stateVersion,
+            view: viewFor(record.game.saved.state, seat.seat),
+            awaySeats: [],
+          },
   };
 }
 

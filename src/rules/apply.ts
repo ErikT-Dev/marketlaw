@@ -7,9 +7,13 @@ import { dueTimeOuts } from "./dueTimeOuts";
 import { endTurn } from "./endTurn";
 import type { GameAction } from "./GameAction";
 import type { GameState } from "./GameState";
+import { pauseGame } from "./pauseGame";
 import { playCard } from "./playCard";
 import type { Random } from "./Random";
+import type { SystemAction } from "./SystemAction";
+import { isSystemAction } from "./isSystemAction";
 import { rejectionOf } from "./rejectionOf";
+import { resumeGame } from "./resumeGame";
 import { sellCards } from "./sellCards";
 import { takeIncome } from "./takeIncome";
 import { takeTurnDraw } from "./takeTurnDraw";
@@ -60,7 +64,24 @@ function accepted(state: GameState, action: GameAction, random: Random, at: numb
       return takeTurnDraw(state, action, random, at);
     case "time_out":
       return timeOut(state, action.seat, random, at);
+    case "pause_game":
+      return pauseGame(state, at);
+    case "resume_game":
+      return resumeGame(state, at);
   }
+}
+
+function systemRejectionOf(state: GameState, action: SystemAction, at: number) {
+  const isAllowed =
+    action.type === "resume_game"
+      ? state.pause !== null
+      : dueTimeOuts(state, at).includes(action.seat);
+  return isAllowed ? undefined : "not_this_step";
+}
+
+function withGraceKept(before: GameState, after: GameState): GameState {
+  const isSameClock = after.clockStartedAt === before.clockStartedAt || before.pause !== null;
+  return after.grace.length === 0 || isSameClock ? after : { ...after, grace: [] };
 }
 
 export function apply(
@@ -69,13 +90,14 @@ export function apply(
   random: Random,
   at: number,
 ): Result<GameState, Rejection> {
-  const code =
-    action.type === "time_out"
-      ? dueTimeOuts(state, at).includes(action.seat)
-        ? undefined
-        : "not_this_step"
-      : rejectionOf(state, action);
-  return code === undefined
-    ? { isOk: true, value: withUndoHistory(state, action, accepted(state, action, random, at)) }
-    : { isOk: false, error: { code } };
+  const code = isSystemAction(action)
+    ? systemRejectionOf(state, action, at)
+    : state.pause === null
+      ? rejectionOf(state, action)
+      : "not_this_step";
+  if (code !== undefined) {
+    return { isOk: false, error: { code } };
+  }
+  const next = withGraceKept(state, accepted(state, action, random, at));
+  return { isOk: true, value: withUndoHistory(state, action, next) };
 }
