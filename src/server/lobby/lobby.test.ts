@@ -4,6 +4,7 @@ import { PlayerId } from "../../shared/PlayerId";
 import { RoomCode } from "../../shared/RoomCode";
 import { claimPlayer } from "./claimPlayer";
 import { EMPTY_LOBBY } from "./EMPTY_LOBBY";
+import { forgetPlayer } from "./forgetPlayer";
 import { publicRoomsOf } from "./publicRoomsOf";
 import { releasePlayer } from "./releasePlayer";
 import type { RoomSummary } from "./RoomSummary";
@@ -44,6 +45,32 @@ describe("the lobby", () => {
     expect(releasePlayer(claimed.value, ANN, SECOND)).toEqual(EMPTY_LOBBY);
     const inRoom = withRoomSummary(EMPTY_LOBBY, FIRST, summary());
     expect(releasePlayer(inRoom, ANN, FIRST)).toBe(inRoom);
+  });
+
+  it("keeps a pending claim when its room reports without the claimed player yet", () => {
+    const claimed = claimPlayer(EMPTY_LOBBY, ANN, FIRST);
+    if (!claimed.isOk) {
+      throw new Error("claim failed");
+    }
+    const reported = withRoomSummary(
+      claimed.value,
+      FIRST,
+      summary({ players: [{ playerId: BEA, name: "Bea" }] }),
+    );
+    expect(claimPlayer(reported, ANN, SECOND)).toEqual({ isOk: false, error: "busy_elsewhere" });
+  });
+
+  it("frees a player who left the room and forgets a stale entry", () => {
+    const lobby = withRoomSummary(EMPTY_LOBBY, FIRST, summary());
+    const left = withRoomSummary(
+      lobby,
+      FIRST,
+      summary({ players: [{ playerId: BEA, name: "Bea" }] }),
+    );
+    expect(claimPlayer(left, ANN, SECOND).isOk).toBe(true);
+    const forgotten = forgetPlayer(lobby, ANN, FIRST);
+    expect(claimPlayer(forgotten, ANN, SECOND).isOk).toBe(true);
+    expect(publicRoomsOf(forgotten)[0]?.playerNames).toEqual(["Bea"]);
   });
 
   it("frees the players and drops the room when its game ends or it closes", () => {

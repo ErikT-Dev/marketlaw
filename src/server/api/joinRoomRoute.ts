@@ -3,7 +3,10 @@ import type { RoomCode } from "../../shared/RoomCode";
 import { lobbyOf } from "../lobbyOf";
 import { bodyOf } from "./bodyOf";
 import { identityOf } from "./identityOf";
+import { isReallyBusy } from "./isReallyBusy";
 import { roomJson } from "./roomJson";
+
+const BUSY = { isOk: false, reason: "busy_elsewhere", rejoinAt: null } as const;
 
 export async function joinRoomRoute(request: Request, env: Env, code: RoomCode) {
   const body = await bodyOf(request, JoinRoomRequest);
@@ -11,16 +14,28 @@ export async function joinRoomRoute(request: Request, env: Env, code: RoomCode) 
   if (identity === null) {
     return roomJson({ isOk: false, reason: "invalid_token", rejoinAt: null }, 401);
   }
-  const lobby = lobbyOf(env);
-  if (!(await lobby.claim(identity.playerId, code))) {
-    return roomJson({ isOk: false, reason: "busy_elsewhere", rejoinAt: null }, 409);
+  if (await isReallyBusy(env, identity.playerId, code)) {
+    return roomJson(BUSY, 409);
   }
+  const lobby = lobbyOf(env);
   const room = env.ROOM.get(env.ROOM.idFromName(code));
-  const rejection = await room.joinRoom(identity);
+  const expected = await room.joinRejection(identity);
+  if (expected !== null) {
+    if (expected.reason === "room_not_found") {
+      await lobby.roomChanged(code, null);
+    }
+    return roomJson({ isOk: false, ...expected }, 409);
+  }
+  if (!(await lobby.claim(identity.playerId, code))) {
+    return roomJson(BUSY, 409);
+  }
+  const rejection = await room.joinRoom(identity).catch(async (error: unknown) => {
+    await lobby.release(identity.playerId, code);
+    throw error;
+  });
   if (rejection !== null) {
     await lobby.release(identity.playerId, code);
+    return roomJson({ isOk: false, ...rejection }, 409);
   }
-  return rejection === null
-    ? roomJson({ isOk: true, code })
-    : roomJson({ isOk: false, reason: rejection.reason, rejoinAt: rejection.rejoinAt }, 409);
+  return roomJson({ isOk: true, code });
 }

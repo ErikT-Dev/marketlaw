@@ -2,21 +2,28 @@ import type { RoomCode } from "../../shared/RoomCode";
 import type { LobbyRecord } from "./LobbyRecord";
 import type { RoomSummary } from "./RoomSummary";
 
+function isIn(players: RoomSummary["players"], playerId: string): boolean {
+  return players.some((player) => player.playerId === playerId);
+}
+
 export function withRoomSummary(
   record: LobbyRecord,
   code: RoomCode,
   summary: RoomSummary | null,
 ): LobbyRecord {
   const busyHere = summary === null || summary.isOver ? [] : summary.players;
-  const others = record.busy.filter(
+  const wasHere = record.rooms.find((room) => room.code === code)?.players ?? [];
+  const left = wasHere.filter(({ playerId }) => !isIn(busyHere, playerId));
+  const kept = record.busy.filter(
     (entry) =>
-      entry.code !== code && !busyHere.some((player) => player.playerId === entry.playerId),
+      !isIn(busyHere, entry.playerId) &&
+      !(entry.code === code && left.some(({ playerId }) => playerId === entry.playerId)),
   );
   return {
     rooms: [
       ...record.rooms.filter((room) => room.code !== code),
       ...(summary === null || summary.isOver ? [] : [summary]),
     ],
-    busy: [...others, ...busyHere.map(({ playerId }) => ({ playerId, code }))],
+    busy: [...kept, ...busyHere.map(({ playerId }) => ({ playerId, code }))],
   };
 }

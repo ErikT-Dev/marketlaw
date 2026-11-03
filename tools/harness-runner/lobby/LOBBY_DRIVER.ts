@@ -82,6 +82,7 @@ function startSession(rawGiven: Readonly<Record<string, unknown>>, random: Scrip
     runStep(step) {
       before = session.snapshot();
       runStep(session, step);
+      session.reportRooms();
       isUnchanged = before === session.snapshot();
     },
     readThen(field, expected) {

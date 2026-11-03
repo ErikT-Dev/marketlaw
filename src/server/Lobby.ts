@@ -7,6 +7,7 @@ import type { LobbyMessage } from "../shared/protocol/LobbyMessage";
 import type { RoomCode } from "../shared/RoomCode";
 import { claimPlayer } from "./lobby/claimPlayer";
 import { EMPTY_LOBBY } from "./lobby/EMPTY_LOBBY";
+import { forgetPlayer } from "./lobby/forgetPlayer";
 import { LOBBY_RECORD_SCHEMA } from "./lobby/LOBBY_RECORD_SCHEMA";
 import type { LobbyRecord } from "./lobby/LobbyRecord";
 import { publicRoomsOf } from "./lobby/publicRoomsOf";
@@ -24,8 +25,12 @@ export class Lobby extends DurableObject<Env> {
     });
   }
 
-  isBusy(playerId: PlayerId): boolean {
-    return this.read().busy.some((entry) => entry.playerId === playerId);
+  busyRoomOf(playerId: PlayerId): RoomCode | null {
+    return this.read().busy.find((entry) => entry.playerId === playerId)?.code ?? null;
+  }
+
+  async forget(playerId: PlayerId, code: RoomCode): Promise<void> {
+    await this.change((record) => forgetPlayer(record, playerId, code));
   }
 
   async release(playerId: PlayerId, code: RoomCode): Promise<void> {

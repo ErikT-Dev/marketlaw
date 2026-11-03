@@ -4,6 +4,7 @@ import * as v from "valibot";
 import type { GameState } from "../rules/GameState";
 import { randomForNextAction } from "../rules/randomForNextAction";
 import { EpochMs } from "../shared/EpochMs";
+import type { PlayerId } from "../shared/PlayerId";
 import { parseClientMessage } from "../shared/protocol/parseClientMessage";
 import type { RoomCode } from "../shared/RoomCode";
 import { ROOM_GONE_CLOSE_CODE } from "../shared/ROOM_GONE_CLOSE_CODE";
@@ -18,6 +19,7 @@ import { createRoomIn } from "./room/createRoomIn";
 import { fireRoomAlarm } from "./room/fireRoomAlarm";
 import type { Identity } from "./room/Identity";
 import type { JoinRejection } from "./room/JoinRejection";
+import { joinRejectionIn } from "./room/joinRejectionIn";
 import { joinRoomIn } from "./room/joinRoomIn";
 import { loadRoom } from "./room/loadRoom";
 import { playersWhoseUpdateChanged } from "./room/playersWhoseUpdateChanged";
@@ -53,8 +55,10 @@ export class GameRoom extends DurableObject<Env> {
     return this.inTurn(async () => {
       const isCreated = createRoomIn(this.storage, room, owner, nowMs());
       await this.rooms.save();
-      await this.reportToLobby(null);
       await this.syncAlarm();
+      if (isCreated) {
+        await this.reportToLobby(null);
+      }
       return isCreated;
     });
   }
@@ -71,6 +75,20 @@ export class GameRoom extends DurableObject<Env> {
       await this.syncAlarm();
       return isStarted;
     });
+  }
+
+  async hasPlayer(playerId: PlayerId): Promise<boolean> {
+    return this.inTurn(async () =>
+      Promise.resolve(
+        loadRoom(this.storage)?.players.some((player) => player.playerId === playerId) === true,
+      ),
+    );
+  }
+
+  async joinRejection(joining: Identity): Promise<JoinRejection | null> {
+    return this.inTurn(async () =>
+      Promise.resolve(joinRejectionIn(this.storage, joining, nowMs(), this.sockets.livePlayers())),
+    );
   }
 
   async joinRoom(joining: Identity): Promise<JoinRejection | null> {
@@ -92,8 +110,8 @@ export class GameRoom extends DurableObject<Env> {
           null,
         );
       }
-      await this.reportToLobby(before ?? null);
       await this.syncAlarm();
+      await this.reportToLobby(before ?? null);
       return rejection;
     });
   }
@@ -103,9 +121,9 @@ export class GameRoom extends DurableObject<Env> {
       const record = loadRoom(this.storage);
       if (record !== null) {
         await this.applyAlarm(record);
-        await this.reportToLobby(record);
       }
       await this.syncAlarm(true);
+      await this.reportToLobby(record);
     });
   }
 
@@ -213,8 +231,8 @@ export class GameRoom extends DurableObject<Env> {
       );
       this.sockets.sendNotices(timeOutNoticesBetween(recordBefore, recordAfter));
     }
-    await this.reportToLobby(recordBefore);
     await this.syncAlarm();
+    await this.reportToLobby(recordBefore);
   }
 
   private reply(
@@ -244,7 +262,9 @@ export class GameRoom extends DurableObject<Env> {
     const summaryAfter = after === null ? null : roomSummaryOf(after);
     const code = after?.code ?? before?.code;
     if (code !== undefined && JSON.stringify(summaryBefore) !== JSON.stringify(summaryAfter)) {
-      await lobbyOf(this.env).roomChanged(code, summaryAfter);
+      await lobbyOf(this.env)
+        .roomChanged(code, summaryAfter)
+        .catch(() => undefined);
     }
   }
 
