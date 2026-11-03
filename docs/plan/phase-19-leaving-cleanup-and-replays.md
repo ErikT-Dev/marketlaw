@@ -41,6 +41,9 @@ step.
 - No daily limits yet (phase 20).
 - The game record that counts a leaver's hand before it is discarded (M6.5, A3) comes with game
   records in phase 25.
+- "You left the game" shows no room chat yet; chat comes in phase 21. "Room not found" has no
+  **My match history** button until match histories exist (phase 25), and the end screen offers
+  no rematch until phase 22.
 
 ## What you can see when it's done
 
@@ -89,4 +92,6 @@ These 15 scenarios are added to `harness/required.yaml` in this phase, by file a
 - [x] 4. Replay export for a running or ended room, protected by the owner's secret. The
   test-room secret, which the live site already has; `npm run replay-export`; the replay export
   check in the harness (Q63).
-- [ ] 5. Screens for the above.
+- [x] 5. Screens for the above: Leave game in the top bar with its confirmation (S9.1), "You
+  left the game" (S9.2), the last-player and abandoned end screens (S9.5) and "Room not found"
+  (S16.2); Exit to lobby now also leaves the room. Abandoned endings say why (Q61).

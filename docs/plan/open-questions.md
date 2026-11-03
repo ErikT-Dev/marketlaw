@@ -938,9 +938,10 @@ file.
   - "At the same moment" (M6.9) means the main-phase time-outs due at the same time that each
     make a player leave (R9.11). While one of them is still to be applied, M6.8 waits for it, so
     two last players who both time out abandon the game instead of one of them winning.
-  - A game result says how it ended: end goal, turn limit, last player left (M6.8) or abandoned
-    (M6.9, R9.14), for the four versions of the end screen (S9.5). An abandoned game has no
-    winner; I22 checks the winner only in games that are not abandoned.
+  - A game result says how it ended: end goal, turn limit, last player left (M6.8), or
+    abandoned because every player left at the same moment (M6.9) or because it stayed paused for
+    24 hours (R9.14), so the four versions of the end screen (S9.5) can say why. An abandoned game
+    has no winner; I22 checks the winner only in games that are not abandoned.
   - R9.14 is a logged system action, `abandon_game`, applied by the room's one alarm 24 hours
     after the pause began.
   - A player who left is no longer busy in the room (M2, M6.7): the lobby counts only players
