@@ -44,7 +44,8 @@ None yet.
   start and the asking ends at once. Players who declined or let their 20 seconds run out are
   removed from the room; they can join it again after 2 minutes, while there is a free place.
   Everyone else, whether they had accepted or not yet answered, stays in the room and keeps
-  waiting.
+  waiting. Asking is part of waiting: a player who leaves (M1.9), or whose place is freed by a
+  larger size (M1.4) or by M1.12, also ends the asking at once, without a rejoin wait.
 - **M1.12** A player whose connection to a waiting room has been closed for 10 seconds is removed
   from it. A page refresh within 10 seconds keeps their place.
 - **M1.13** Games started from a room are **casual**. Only ranked games (A8) change ELO ratings
