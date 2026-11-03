@@ -3,15 +3,27 @@ import { TEST_ROOM_SECRET_HEADER } from "../src/shared/api/TEST_ROOM_SECRET_HEAD
 import { readLocalTestRoomSecret } from "../tools/test-room/readLocalTestRoomSecret";
 import { expectScreenFits } from "./expectScreenFits";
 import { handOf } from "./handOf";
+import { hiddenCardsSentToOthers } from "./hiddenCardsSentToOthers";
+import type { Player } from "./Player";
 import { startTestRoom } from "./startTestRoom";
 
 const TURN_ONE = { name: "Turn 1 of 40" };
 
 async function openSeat(context: BrowserContext, link: string): Promise<Page> {
+  return (await openPlayer(context, link)).page;
+}
+
+async function openPlayer(context: BrowserContext, link: string): Promise<Player> {
   const page = await context.newPage();
+  const frames: string[] = [];
+  page.on("websocket", (socket) => {
+    socket.on("framereceived", (frame) => {
+      frames.push(String(frame.payload));
+    });
+  });
   await page.goto(link);
   await expect(page.getByRole("heading", TURN_ONE)).toBeVisible();
-  return page;
+  return { page, frames, name: "" };
 }
 
 function opponent(page: Page, name: string) {
@@ -67,8 +79,12 @@ test("opening the game in a second tab moves it there, and the first tab can tak
 
 test("the game goes on after its room restarts mid-game", async ({ browser, request }) => {
   const [seatOne = "", seatTwo = ""] = await startTestRoom(request, { players: 2 });
-  const one = await openSeat(await browser.newContext(), seatOne);
-  const two = await openSeat(await browser.newContext(), seatTwo);
+  const playerOne = await openPlayer(await browser.newContext(), seatOne);
+  const playerTwo = await openPlayer(await browser.newContext(), seatTwo);
+  const one = playerOne.page;
+  const two = playerTwo.page;
+  await two.getByRole("button", { name: "End turn" }).click();
+  await expect(opponent(one, "Seat 2")).toContainText("done");
   const hand = await handOf(one);
   const restart = await request.post("/api/test-room-restarts", {
     headers: { [TEST_ROOM_SECRET_HEADER]: readLocalTestRoomSecret() },
@@ -78,6 +94,8 @@ test("the game goes on after its room restarts mid-game", async ({ browser, requ
   await expect(one.getByRole("button", { name: "End turn" })).toBeEnabled();
   expect(await handOf(one)).toEqual(hand);
   await one.getByRole("button", { name: "End turn" }).click();
-  await expect(one.getByText("You are done for this turn", { exact: false })).toBeVisible();
-  await expect(opponent(two, "Seat 1")).toContainText("done");
+  for (const page of [one, two]) {
+    await expect(page.getByRole("heading", { name: "Turn 1 of 40" })).toBeHidden();
+  }
+  expect(await hiddenCardsSentToOthers([playerOne, playerTwo])).toEqual([]);
 });
