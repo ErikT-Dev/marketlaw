@@ -1,6 +1,8 @@
 import type { GameHost } from "../shared/GameHost";
 import type { HostEvent } from "../shared/HostEvent";
 import type { ActionIntent } from "../shared/protocol/ActionIntent";
+import type { RoomIntent } from "../shared/protocol/RoomIntent";
+import type { ServerMessage } from "../shared/protocol/ServerMessage";
 import { parseServerMessage } from "../shared/protocol/parseServerMessage";
 import { PROTOCOL_VERSION } from "../shared/PROTOCOL_VERSION";
 import { ROOM_GONE_CLOSE_CODE } from "../shared/ROOM_GONE_CLOSE_CODE";
@@ -38,6 +40,16 @@ export class RemoteGameHost implements GameHost {
     return isSent === true ? actionId : null;
   };
 
+  readonly sendRoomAction = (action: RoomIntent): boolean =>
+    this.socket?.send(
+      JSON.stringify({
+        protocolVersion: PROTOCOL_VERSION,
+        token: this.options.token,
+        type: "room",
+        action,
+      }),
+    ) === true;
+
   readonly requestResync = (): void => {
     this.socket?.send(
       JSON.stringify({
@@ -69,19 +81,10 @@ export class RemoteGameHost implements GameHost {
   private receive(text: string): void {
     const message = parseServerMessage(text);
     if (message?.type === "update") {
-      const next = message.update.game?.stateVersion ?? null;
-      const hasGap = next !== null && this.stateVersion !== null && next > this.stateVersion + 1;
-      this.stateVersion = next;
-      this.failedConnects = 0;
-      this.emit({
-        type: "update",
-        update: message.update,
-        acceptedActionId: message.acceptedActionId,
-        serverNow: message.serverNow,
-      });
-      if (hasGap) {
-        this.requestResync();
-      }
+      this.receiveUpdate(message);
+    } else if (message?.type === "removed") {
+      this.isClosedByPlayer = true;
+      this.emit({ type: "removed", reason: message.reason, rejoinAt: message.rejoinAt });
     } else if (message?.type === "notice") {
       this.emit({ type: "notice", notice: message.notice });
     } else if (message?.type === "rejected") {
@@ -89,6 +92,22 @@ export class RemoteGameHost implements GameHost {
       if (message.code === "stale_state") {
         this.requestResync();
       }
+    }
+  }
+
+  private receiveUpdate(message: Extract<ServerMessage, { readonly type: "update" }>): void {
+    const next = message.update.game?.stateVersion ?? null;
+    const hasGap = next !== null && this.stateVersion !== null && next > this.stateVersion + 1;
+    this.stateVersion = next;
+    this.failedConnects = 0;
+    this.emit({
+      type: "update",
+      update: message.update,
+      acceptedActionId: message.acceptedActionId,
+      serverNow: message.serverNow,
+    });
+    if (hasGap) {
+      this.requestResync();
     }
   }
 

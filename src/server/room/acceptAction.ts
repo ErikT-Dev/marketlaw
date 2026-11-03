@@ -14,6 +14,7 @@ export function acceptAction(
     saved.state.phase !== game.saved.state.phase ||
     game.saved.state.phase === "market";
   return {
+    ...game,
     saved,
     seats: game.seats.map((seat) => {
       if (seat.seat === actor.seat) {

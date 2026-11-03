@@ -1,8 +1,10 @@
 import type { ConnectionStatus } from "../../shared/ConnectionStatus";
 import type { Notice } from "../../shared/Notice";
 import type { RoomUpdate } from "../../shared/protocol/RoomUpdate";
+import type { JoinError } from "./JoinError";
 import type { PendingAction } from "./PendingAction";
 import type { RejectedMove } from "./RejectedMove";
+import type { RemovalNotice } from "./RemovalNotice";
 import type { StoredSession } from "./StoredSession";
 
 export type ClientState = {
@@ -14,4 +16,6 @@ export type ClientState = {
   readonly notice: string | null;
   readonly timeOutNotice: Notice | null;
   readonly serverClockOffsetMs: number;
+  readonly joinError: JoinError | null;
+  readonly removal: RemovalNotice | null;
 };

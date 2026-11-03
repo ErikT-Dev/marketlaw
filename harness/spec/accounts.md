@@ -76,7 +76,8 @@ ranked queue, daily limits and chat. How the game itself is played is in `game-r
   every further login attempt on that account in the next 15 minutes needs the human check. An
   account is never locked.
 - **A1.14** **Staying logged in:** a login lasts until the player has not used the site for
-  90 days in that browser, or until the player logs out. Every player can log out. A guest user
+  90 days in that browser, or until the player logs out. The last use is noted at most once a
+  day, so a login can last up to one day longer than 90 days without use, never shorter. Every player can log out. A guest user
   who logs out cannot log back in, and is warned of this first. A guest user who logs out during
   a game leaves that game (M6).
 - **A1.15** **Deleting an account:** a registered user can delete their account. Their email

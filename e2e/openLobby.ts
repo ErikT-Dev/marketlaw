@@ -1,9 +1,10 @@
 import { expect, type Browser, type ViewportSize } from "@playwright/test";
 import type { Player } from "./Player";
+import { uniqueName } from "./uniqueName";
 
-export async function signedInPlayer(
+export async function openLobby(
   browser: Browser,
-  name: string,
+  base: string,
   viewport?: ViewportSize,
 ): Promise<Player> {
   const context = await browser.newContext(viewport === undefined ? {} : { viewport });
@@ -15,8 +16,6 @@ export async function signedInPlayer(
     });
   });
   await page.goto("/");
-  await page.getByLabel("Your name").fill(name);
-  await page.getByRole("button", { name: "Continue" }).click();
-  await expect(page.getByRole("heading", { name: `Hello, ${name}` })).toBeVisible();
-  return { page, frames };
+  await expect(page.getByRole("button", { name: "Create room" })).toBeVisible();
+  return { page, frames, name: uniqueName(base) };
 }

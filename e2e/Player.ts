@@ -1,3 +1,3 @@
 import type { Page } from "@playwright/test";
 
-export type Player = { readonly page: Page; readonly frames: string[] };
+export type Player = { readonly page: Page; readonly frames: string[]; readonly name: string };

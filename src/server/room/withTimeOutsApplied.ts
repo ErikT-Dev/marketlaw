@@ -14,6 +14,7 @@ export function withTimeOutsApplied(game: RoomGame, caughtUp: SavedGame): RoomGa
     .slice(game.saved.actionLog.length)
     .map(({ action }) => action.seat);
   return {
+    ...game,
     saved: caughtUp,
     seats: game.seats.map((seat) =>
       isVisibleToAll || timedOut.includes(seat.seat)

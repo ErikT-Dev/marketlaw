@@ -38,6 +38,17 @@ export const ReasonCode = v.picklist([
   "room_full",
   "room_not_waiting",
   "invalid_room_size",
+  "not_in_room",
+  "not_room_owner",
+  "room_size_too_small",
+  "not_asking",
+  "rejoin_too_soon",
+  "human_check_failed",
+  "username_invalid",
+  "username_taken",
+  "username_reserved",
+  "no_free_room_code",
+  "no_answer",
 ]);
 
 export type ReasonCode = v.InferOutput<typeof ReasonCode>;

@@ -3,6 +3,8 @@ import { describe, expect, it } from "vitest";
 import { startSavedGame } from "../../rules/startSavedGame";
 import { EpochMs } from "../../shared/EpochMs";
 import { PlayerId } from "../../shared/PlayerId";
+import { NO_WAITING } from "./NO_WAITING";
+import { ROOM_SCHEMA_VERSION } from "./ROOM_SCHEMA_VERSION";
 import { RoomCode } from "../../shared/RoomCode";
 import { CompressedRoomStore } from "./CompressedRoomStore";
 import { decodeRoomRecord } from "./decodeRoomRecord";
@@ -17,11 +19,14 @@ function startedRoom(): RoomRecord {
     name,
   }));
   return {
-    schemaVersion: 1,
+    schemaVersion: ROOM_SCHEMA_VERSION,
     code: v.parse(RoomCode, "K7QR2P"),
     size: 2,
+    isPublic: false,
     players,
+    waiting: NO_WAITING,
     game: {
+      kind: "casual",
       saved,
       seats: saved.state.seats.map((seat, index) => ({
         seat: seat.seat,

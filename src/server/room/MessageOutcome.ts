@@ -4,7 +4,7 @@ import type { ConnectionState } from "./ConnectionState";
 import type { RoomRecord } from "./RoomRecord";
 
 export type MessageOutcome = {
-  readonly record: RoomRecord;
+  readonly record: RoomRecord | null;
   readonly connection: ConnectionState;
   readonly shouldSave: boolean;
   readonly reply: ServerMessage;

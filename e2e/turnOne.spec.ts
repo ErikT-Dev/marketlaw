@@ -3,7 +3,7 @@ import { expect, test, type Page } from "@playwright/test";
 import { expectScreenFits } from "./expectScreenFits";
 import { cardsHeldOnce } from "./cardsHeldOnce";
 import { handOf } from "./handOf";
-import { signedInPlayer } from "./signedInPlayer";
+import { startGame } from "./startGame";
 
 async function sellFirstCardAndEndTurn(page: Page): Promise<string> {
   const [card = ""] = await cardsHeldOnce(page);
@@ -21,15 +21,11 @@ test("two players play turn 1 together and never see each other's hands", async 
   viewport,
 }, testInfo) => {
   const size = viewport ?? { width: 1920, height: 1080 };
-  const ann = await signedInPlayer(browser, "Ann", size);
-  const bea = await signedInPlayer(browser, "Bea", size);
-  await ann.page.getByRole("button", { name: "Create room" }).click();
-  await expect(ann.page.getByRole("heading", { name: "Waiting for players" })).toBeVisible();
-  const code = await ann.page.getByLabel("Room code").textContent();
-  await bea.page.getByLabel("Room code").fill(code ?? "");
-  await bea.page.getByRole("button", { name: "Join room" }).click();
+  const [ann, bea] = await startGame(browser, size, ["Ann", "Bea"]);
+  if (ann === undefined || bea === undefined) {
+    throw new Error("no players");
+  }
   for (const player of [ann, bea]) {
-    await expect(player.page.getByRole("heading", { name: "Turn 1" })).toBeVisible();
     expect(await new AxeBuilder({ page: player.page }).analyze()).toHaveProperty("violations", []);
   }
   const annStartingHand = await handOf(ann.page);

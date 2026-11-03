@@ -3,7 +3,9 @@ import { SessionToken } from "./SessionToken";
 
 export const CreateRoomRequest = v.strictObject({
   token: SessionToken,
-  size: v.picklist([2, 3, 4]),
+  size: v.number(),
+  isPublic: v.boolean(),
+  humanCheck: v.pipe(v.string(), v.maxLength(4096)),
 });
 
 export type CreateRoomRequest = v.InferOutput<typeof CreateRoomRequest>;

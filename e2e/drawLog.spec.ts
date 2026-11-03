@@ -1,7 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 import { expectScreenFits } from "./expectScreenFits";
 import { hiddenCardsSentToOthers } from "./hiddenCardsSentToOthers";
-import { signedInPlayer } from "./signedInPlayer";
+import { startGame } from "./startGame";
 
 const DRAW_LOG = [
   {
@@ -29,6 +29,8 @@ const DRAW_LOG = [
   },
 ];
 
+const SEAT_NAMES = ["Ann", "Bea"];
+
 function fieldOf(value: unknown, field: string): unknown {
   return typeof value === "object" && value !== null && field in value
     ? Object.getOwnPropertyDescriptor(value, field)?.value
@@ -37,14 +39,20 @@ function fieldOf(value: unknown, field: string): unknown {
 
 function withDrawLog(text: string): string {
   const message: unknown = JSON.parse(text);
-  const view = fieldOf(fieldOf(fieldOf(message, "update"), "game"), "view");
-  if (typeof view === "object" && view !== null) {
+  const update = fieldOf(message, "update");
+  const view = fieldOf(fieldOf(update, "game"), "view");
+  const room = fieldOf(update, "room");
+  if (typeof view === "object" && view !== null && typeof room === "object" && room !== null) {
     Object.assign(view, { drawLog: DRAW_LOG });
+    Object.assign(room, { playerNames: SEAT_NAMES });
   }
   return JSON.stringify(message);
 }
 
-async function addDrawLogToUpdates(page: Page): Promise<void> {
+async function addDrawLogToUpdates(page: Page | undefined): Promise<void> {
+  if (page === undefined) {
+    return;
+  }
   await page.routeWebSocket(/\/api\/rooms\/[A-Z0-9]+\/socket$/, (socket) => {
     const server = socket.connectToServer();
     server.onMessage((message) => {
@@ -58,14 +66,12 @@ test("the draw log sent by the room is listed newest first and fits the screen",
   viewport,
 }, testInfo) => {
   const size = viewport ?? { width: 1920, height: 1080 };
-  const ann = await signedInPlayer(browser, "Ann", size);
-  const bea = await signedInPlayer(browser, "Bea", size);
-  await addDrawLogToUpdates(ann.page);
-  await ann.page.getByRole("button", { name: "Create room" }).click();
-  await expect(ann.page.getByRole("heading", { name: "Waiting for players" })).toBeVisible();
-  const code = (await ann.page.getByLabel("Room code").textContent()) ?? "";
-  await bea.page.getByLabel("Room code").fill(code);
-  await bea.page.getByRole("button", { name: "Join room" }).click();
+  const [ann, bea] = await startGame(browser, size, ["Ann", "Bea"], async ([first]) => {
+    await addDrawLogToUpdates(first?.page);
+  });
+  if (ann === undefined || bea === undefined) {
+    throw new Error("no players");
+  }
   const entries = ann.page
     .getByRole("region", { name: "Draw log" })
     .getByRole("list", { name: "Draw log entries" })

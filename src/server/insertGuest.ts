@@ -1,5 +1,6 @@
 import * as v from "valibot";
 import { PlayerId } from "../shared/PlayerId";
+import { nameKeyOf } from "./accounts/nameKeyOf";
 import { newSessionToken } from "./newSessionToken";
 import type { Identity } from "./room/Identity";
 import { sha256Hex } from "./sha256Hex";
@@ -8,13 +9,22 @@ export async function insertGuest(
   env: Env,
   name: string,
   isTestRoomSeat = false,
-): Promise<{ readonly token: string; readonly identity: Identity }> {
+): Promise<{ readonly token: string; readonly identity: Identity } | null> {
   const token = newSessionToken();
   const playerId = v.parse(PlayerId, crypto.randomUUID());
-  await env.DB.prepare(
-    "INSERT INTO players (id, name, token_hash, created_ms, is_test_room_seat) VALUES (?, ?, ?, ?, ?)",
+  const now = Date.now();
+  const result = await env.DB.prepare(
+    "INSERT INTO players (id, name, name_key, token_hash, created_ms, last_used_ms, is_test_room_seat) VALUES (?, ?, ?, ?, ?, ?, ?) ON CONFLICT DO NOTHING",
   )
-    .bind(playerId, name, await sha256Hex(token), Date.now(), isTestRoomSeat ? 1 : 0)
+    .bind(
+      playerId,
+      name,
+      isTestRoomSeat ? null : nameKeyOf(name),
+      await sha256Hex(token),
+      now,
+      now,
+      isTestRoomSeat ? 1 : 0,
+    )
     .run();
-  return { token, identity: { playerId, name } };
+  return result.meta.changes === 1 ? { token, identity: { playerId, name } } : null;
 }

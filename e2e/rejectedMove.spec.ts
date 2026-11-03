@@ -4,7 +4,7 @@ import { cardsHeldOnce } from "./cardsHeldOnce";
 import { handOf } from "./handOf";
 import { hiddenCardsSentToOthers } from "./hiddenCardsSentToOthers";
 import type { Player } from "./Player";
-import { signedInPlayer } from "./signedInPlayer";
+import { startGame } from "./startGame";
 
 const CARDS_TO_SWAP_IN = ["Naval Base", "City Hall"];
 
@@ -29,16 +29,9 @@ async function startTwoPlayerGame(
   change: PlayMessageChange,
 ): Promise<ReadonlyArray<Player>> {
   const size = viewport ?? { width: 1920, height: 1080 };
-  const ann = await signedInPlayer(browser, "Ann", size);
-  const bea = await signedInPlayer(browser, "Bea", size);
-  await changePlayMessages(ann.page, change);
-  await ann.page.getByRole("button", { name: "Create room" }).click();
-  await expect(ann.page.getByRole("heading", { name: "Waiting for players" })).toBeVisible();
-  const code = (await ann.page.getByLabel("Room code").textContent()) ?? "";
-  await bea.page.getByLabel("Room code").fill(code);
-  await bea.page.getByRole("button", { name: "Join room" }).click();
-  await expect(ann.page.getByRole("heading", { name: "Turn 1 of 40" })).toBeVisible();
-  return [ann, bea];
+  return startGame(browser, size, ["Ann", "Bea"], async (players) => {
+    await Promise.all(players.map(async (player) => changePlayMessages(player.page, change)));
+  });
 }
 
 async function firstPlayableCard(page: Page): Promise<string> {

@@ -10,6 +10,7 @@ import { gameActionOf } from "./gameActionOf";
 import type { MessageInput } from "./MessageInput";
 import type { MessageOutcome } from "./MessageOutcome";
 import type { RoomRecord } from "./RoomRecord";
+import { handleRoomMessage } from "./handleRoomMessage";
 import { rejectMessage } from "./rejectMessage";
 import { playersWhoseUpdateChanged } from "./playersWhoseUpdateChanged";
 import { updateFor } from "./updateFor";
@@ -107,7 +108,11 @@ export function handleMessage(input: MessageInput): MessageOutcome {
   if (message.type === "action") {
     return handleAction(input, bound, sender.playerId, message);
   }
-  return record.players.some((player) => player.playerId === sender.playerId)
-    ? updated(record, bound, sender.playerId, { acceptedActionId: null, now })
-    : rejectMessage(record, connection, { code: "not_in_game", actionId: null, now });
+  if (message.type === "room") {
+    return handleRoomMessage(input, bound, sender.playerId, message.action);
+  }
+  if (!record.players.some((player) => player.playerId === sender.playerId)) {
+    return rejectMessage(record, connection, { code: "not_in_game", actionId: null, now });
+  }
+  return updated(record, bound, sender.playerId, { acceptedActionId: null, now });
 }

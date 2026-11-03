@@ -25,7 +25,7 @@ async function playerAt(browser: Browser, link: string): Promise<Player> {
   });
   await page.goto(link);
   await expect(page.getByRole("heading", { name: "Turn 2 of 40" })).toBeVisible();
-  return { page, frames };
+  return { page, frames, name: "" };
 }
 
 async function expectMainPhase(page: Page) {

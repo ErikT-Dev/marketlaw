@@ -177,6 +177,14 @@ time, a broken invariant that shows in 1 game in 17; 1,000 games, one that shows
 refer to it instead of repeating the numbers, so the next change is one edit there plus a
 decision here. Phase files 11 to 15 keep their 5,000-game results.
 
+**D26. One lobby Durable Object for the lobby, presence and the site-wide counters (was O6).**
+(2026-11-03, Claude under D19, phase 16)
+A single SQLite-backed Durable Object class `Lobby` holds the public room list, players online,
+"one thing at a time" and the daily site counters, and pushes changes to lobby screens over
+hibernating WebSockets. D1 keeps players and usernames, and later records and ratings. Rooms
+reserve chat quota in blocks so a chat message never costs a lobby row. Built in phase 17.
+*Effect:* `open-questions.md` Q52; `wrangler.jsonc` in phase 17.
+
 ## Open
 
 From D19 on, Claude solves these itself when the phase that needs them starts, records the
@@ -198,13 +206,6 @@ hash that strong is impossible in a Worker. Options for phase 23: PBKDF2 at 100,
 (about 6 times weaker than OWASP, and over B11 for each login), a hash in WebAssembly (still
 limited by the 10 ms CPU limit), or a login without passwords (an emailed sign-in link). The probe
 Worker was deleted after the measurement.
-
-**O6. Lobby, presence and global counters.** Needed before phase 16.
-"One thing at a time" (M2) needs one authority across rooms, the queue and the tutorial; the
-lobby lists rooms and players online; the site-wide daily counters (A9.4, A9.6) must not cost a
-row per chat message (B7). *Recommendation:* a small experiment at the start of phase 16
-compares a single lobby Durable Object with D1, against B16, B18 and B7; the owner approves the
-choice and any new Durable Object class in `wrangler.jsonc`.
 
 **O7. Privacy notice.** Needed before phase 24.
 A short notice: what is stored (username, email, password hash, game records), why, how long,

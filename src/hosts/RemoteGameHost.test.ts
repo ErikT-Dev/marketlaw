@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { HostEvent } from "../shared/HostEvent";
+import { PROTOCOL_VERSION } from "../shared/PROTOCOL_VERSION";
 import { RemoteGameHost } from "./RemoteGameHost";
 import type { SocketHandlers } from "./SocketHandlers";
 
@@ -64,9 +65,20 @@ function connectedHost(): FakeNetwork {
 
 const ROOM_UPDATE_TEXT = JSON.stringify({
   type: "update",
-  protocolVersion: 1,
+  protocolVersion: PROTOCOL_VERSION,
   acceptedActionId: null,
-  update: { room: { code: "K7QR2P", size: 2, playerNames: ["Ann"], mySeat: null }, game: null },
+  update: {
+    room: {
+      code: "K7QR2P",
+      size: 2,
+      isPublic: true,
+      ownerName: "Ann",
+      playerNames: ["Ann"],
+      mySeat: null,
+      asking: null,
+    },
+    game: null,
+  },
   serverNow: 5000,
 });
 
@@ -77,7 +89,7 @@ describe("RemoteGameHost", () => {
     const network = connectedHost();
     network.handlers().onOpen();
     expect(network.sent).toEqual([
-      { protocolVersion: 1, token: "secret-token", type: "resync", url: SOCKET_URL },
+      { protocolVersion: PROTOCOL_VERSION, token: "secret-token", type: "resync", url: SOCKET_URL },
     ]);
     expect(network.events).toEqual([{ type: "connection", status: "open" }]);
   });
@@ -88,7 +100,7 @@ describe("RemoteGameHost", () => {
     const actionId = network.host.sendAction({ type: "end_turn" });
     expect(actionId).toBe("id-1");
     expect(network.sent.at(-1)).toEqual({
-      protocolVersion: 1,
+      protocolVersion: PROTOCOL_VERSION,
       token: "secret-token",
       type: "action",
       actionId: "id-1",
@@ -104,14 +116,14 @@ describe("RemoteGameHost", () => {
     network.handlers().onMessage(
       JSON.stringify({
         type: "rejected",
-        protocolVersion: 1,
+        protocolVersion: PROTOCOL_VERSION,
         actionId: "id-1",
         code: "stale_state",
       }),
     );
     expect(network.events.map((event) => event.type)).toEqual(["update", "rejected"]);
     expect(network.sent).toEqual([
-      { protocolVersion: 1, token: "secret-token", type: "resync", url: SOCKET_URL },
+      { protocolVersion: PROTOCOL_VERSION, token: "secret-token", type: "resync", url: SOCKET_URL },
     ]);
   });
 
@@ -121,7 +133,7 @@ describe("RemoteGameHost", () => {
     network.handlers().onMessage(
       JSON.stringify({
         type: "notice",
-        protocolVersion: 1,
+        protocolVersion: PROTOCOL_VERSION,
         notice: { kind: "timed_out", inARow: 2, of: 3 },
       }),
     );
@@ -166,5 +178,37 @@ describe("RemoteGameHost", () => {
     const network = connectedHost();
     network.goOffline();
     expect(network.host.sendAction({ type: "end_turn" })).toBeNull();
+  });
+
+  it("sends a room action with the token", () => {
+    const network = connectedHost();
+    expect(network.host.sendRoomAction({ type: "change_size", size: 3 })).toBe(true);
+    expect(network.sent).toEqual([
+      {
+        protocolVersion: PROTOCOL_VERSION,
+        token: "secret-token",
+        type: "room",
+        action: { type: "change_size", size: 3 },
+        url: SOCKET_URL,
+      },
+    ]);
+  });
+
+  it("passes on a removal and does not reconnect after it", () => {
+    const network = connectedHost();
+    network.handlers().onMessage(
+      JSON.stringify({
+        type: "removed",
+        protocolVersion: PROTOCOL_VERSION,
+        reason: "declined",
+        rejoinAt: 125_000,
+      }),
+    );
+    network.handlers().onClose(4404);
+    expect(network.events).toEqual([
+      { type: "removed", reason: "declined", rejoinAt: 125_000 },
+      { type: "connection", status: "room_gone" },
+    ]);
+    expect(network.connects()).toBe(1);
   });
 });

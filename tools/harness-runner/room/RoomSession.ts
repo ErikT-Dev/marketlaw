@@ -7,6 +7,7 @@ import type { ConnectionState } from "../../../src/server/room/ConnectionState.t
 import { receiveMessage } from "../../../src/server/room/receiveMessage.ts";
 import type { RoomStorage } from "../../../src/server/room/RoomStorage.ts";
 import type { Identity } from "../../../src/server/room/Identity.ts";
+import { NO_WAITING } from "../../../src/server/room/NO_WAITING.ts";
 import { ROOM_SCHEMA_VERSION } from "../../../src/server/room/ROOM_SCHEMA_VERSION.ts";
 import type { RoomRecord } from "../../../src/server/room/RoomRecord.ts";
 import type { AddressedNotice } from "../../../src/server/room/AddressedNotice.ts";
@@ -72,8 +73,11 @@ export class RoomSession {
       schemaVersion: ROOM_SCHEMA_VERSION,
       code: v.parse(RoomCode, given.room?.code ?? DEFAULT_ROOM_CODE),
       size: v.parse(ROOM_SIZE, given.room?.size ?? state.seats.length),
+      isPublic: given.room?.public ?? false,
       players,
+      waiting: NO_WAITING,
       game: {
+        kind: "casual",
         saved: {
           schemaVersion: SAVE_SCHEMA_VERSION,
           seed: 1,
@@ -150,6 +154,8 @@ export class RoomSession {
       sender,
       now: this.now,
       randomFor: () => this.random,
+      gameStart: { seed: 1, now: this.now, seatOrder: (players) => players },
+      livePlayers: [],
     });
     this.handlingMs.push(performance.now() - startedMs);
     this.notices.push(...timeOutNoticesBetween(recordBefore, this.record));

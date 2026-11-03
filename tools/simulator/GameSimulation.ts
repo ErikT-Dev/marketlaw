@@ -9,6 +9,7 @@ import type { Identity } from "../../src/server/room/Identity.ts";
 import { fireAlarm } from "../../src/server/room/fireAlarm.ts";
 import { playersWhoseUpdateChanged } from "../../src/server/room/playersWhoseUpdateChanged.ts";
 import { receiveMessage } from "../../src/server/room/receiveMessage.ts";
+import { NO_WAITING } from "../../src/server/room/NO_WAITING.ts";
 import { ROOM_SCHEMA_VERSION } from "../../src/server/room/ROOM_SCHEMA_VERSION.ts";
 import type { RoomRecord } from "../../src/server/room/RoomRecord.ts";
 import type { RoomStorage } from "../../src/server/room/RoomStorage.ts";
@@ -101,8 +102,11 @@ export class GameSimulation {
       schemaVersion: ROOM_SCHEMA_VERSION,
       code: v.parse(RoomCode, "SMQ2AB"),
       size: players,
+      isPublic: false,
       players: identities,
+      waiting: NO_WAITING,
       game: {
+        kind: "casual",
         saved,
         seats: this.seats.map((seat) => ({
           seat: seat.seat,
@@ -208,6 +212,8 @@ export class GameSimulation {
       sender,
       now: v.parse(EpochMs, this.nowMs),
       randomFor: randomForNextAction,
+      gameStart: { seed: 0, now: v.parse(EpochMs, this.nowMs), seatOrder: (ids) => ids },
+      livePlayers: [],
     });
     if (outcome.isRoomGone) {
       throw new Error("the simulated room is gone");

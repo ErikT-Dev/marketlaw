@@ -2,13 +2,10 @@ import { expect, test, type Page } from "@playwright/test";
 import { expectScreenFits } from "./expectScreenFits";
 import { cardsHeldOnce } from "./cardsHeldOnce";
 import { hiddenCardsSentToOthers } from "./hiddenCardsSentToOthers";
-import { LONGEST_NAMES } from "./LONGEST_NAMES";
 import { startFourPlayerGame } from "./startFourPlayerGame";
 
-const [HOST = ""] = LONGEST_NAMES;
-
-function hostCardSeenBy(page: Page) {
-  return page.getByRole("region", { name: "Opponents" }).getByRole("article", { name: HOST });
+function hostCardSeenBy(page: Page, host: string) {
+  return page.getByRole("region", { name: "Opponents" }).getByRole("article", { name: host });
 }
 
 async function sellOneCard(page: Page): Promise<void> {
@@ -33,12 +30,12 @@ test("others see a player as at the start of the main phase until it ends, with 
   }
   await sellOneCard(host.page);
   await host.page.getByRole("button", { name: "End turn" }).click();
-  const seen = hostCardSeenBy(watcher.page);
+  const seen = hostCardSeenBy(watcher.page, host.name);
   await expect(seen).toContainText("done");
   await expect(seen).toContainText("Hand 7");
 
-  await seen.getByRole("button", { name: `See ${HOST}'s board ›` }).click();
-  const board = watcher.page.getByRole("dialog", { name: `${HOST}'s board` });
+  await seen.getByRole("button", { name: `See ${host.name}'s board ›` }).click();
+  const board = watcher.page.getByRole("dialog", { name: `${host.name}'s board` });
   await expect(board).toContainText("Their hand: 7 cards.");
   await expect(board).toContainText("This turn: done this turn");
   await expectScreenFits(watcher.page, "opponent-board", testInfo);
@@ -48,7 +45,7 @@ test("others see a player as at the start of the main phase until it ends, with 
     await player.page.getByRole("button", { name: "End turn" }).click();
   }
   await expect(watcher.page.getByRole("heading", { name: "Turn 2 of 40" })).toBeVisible();
-  await expect(hostCardSeenBy(watcher.page)).toContainText("Hand 6");
+  await expect(hostCardSeenBy(watcher.page, host.name)).toContainText("Hand 6");
   expect(await hiddenCardsSentToOthers(players)).toEqual([]);
   await Promise.all(players.map(async (player) => player.page.context().close()));
 });

@@ -7,6 +7,9 @@
     "enabled": true,
     "head_sampling_rate": 1
   },
+  "vars": {
+    "TURNSTILE_SITE_KEY": "0x4AAAAAAFx3FNRK4PPfX9CB"
+  },
   "assets": {
     "directory": "./dist/client"
   },

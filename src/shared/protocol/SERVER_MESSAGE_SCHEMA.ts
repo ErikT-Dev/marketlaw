@@ -8,6 +8,7 @@ import { ProjectName } from "../ProjectName";
 import { ReasonCode } from "../ReasonCode";
 import { RoomCode } from "../RoomCode";
 import { TradeName } from "../TradeName";
+import { RemovalReason } from "./RemovalReason";
 import { DRAW_LOG_ENTRY_SCHEMA } from "./DRAW_LOG_ENTRY_SCHEMA";
 import { MARKETPLACE_SLOT_SCHEMA } from "./MARKETPLACE_SLOT_SCHEMA";
 import { GAME_RESULT_SCHEMA } from "./GAME_RESULT_SCHEMA";
@@ -115,8 +116,11 @@ export const SERVER_MESSAGE_SCHEMA = v.variant("type", [
       room: v.object({
         code: RoomCode,
         size: COUNT,
+        isPublic: v.boolean(),
+        ownerName: v.string(),
         playerNames: v.array(v.string()),
         mySeat: v.nullable(SEAT),
+        asking: v.nullable(v.object({ deadline: EpochMs, acceptedNames: v.array(v.string()) })),
       }),
       game: v.nullable(v.object({ stateVersion: COUNT, view: PLAYER_VIEW })),
     }),
@@ -132,5 +136,11 @@ export const SERVER_MESSAGE_SCHEMA = v.variant("type", [
     type: v.literal("notice"),
     protocolVersion: COUNT,
     notice: v.object({ kind: v.literal("timed_out"), inARow: COUNT, of: COUNT }),
+  }),
+  v.object({
+    type: v.literal("removed"),
+    protocolVersion: COUNT,
+    reason: RemovalReason,
+    rejoinAt: v.nullable(EpochMs),
   }),
 ]);

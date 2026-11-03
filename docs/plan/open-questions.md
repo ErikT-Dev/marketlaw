@@ -762,3 +762,100 @@ file.
 - **Implemented:** the counts in `tools/harness-runner/SIMULATED_GAMES.ts` only; `harness/HARNESS.md` point 2
   (HARNESS commit), `rules/testing.md`, `docs/plan/README.md`, `docs/enforcement.md` and the phase
   30 file now refer to that file instead of repeating the numbers.
+
+## Q52. Lobby, presence and global counters: a lobby Durable Object or D1 (O6)?
+
+- **Phase:** 16, item 1 (O6).
+- **Question:** "one thing at a time" (M2), the public room list (M1.7), players online (A7) and
+  the site-wide daily counters (A9.4, A9.6) need one place that knows about every room. Where?
+- **Options:** (a) one lobby Durable Object, SQLite-backed, with hibernating WebSockets for the
+  lobby screen; (b) D1 tables, read by every lobby screen; (c) both: D1 for the lists, a counter
+  object for the limits.
+- **Measured against the budgets (estimate for a busy day, B18 allows 5,000 rows):** a room tells
+  the lobby about each change that the list shows (created, joined, left, size, started, ended):
+  about 8 changes per game, 1 row each in either option, so 50 games cost about 400 rows. The
+  difference is reading. With D1, every lobby screen must ask again to see changes: one poll per
+  open screen every 10 s is 8,640 requests per screen per day, against 100,000 Worker requests a
+  day and the rule against client heartbeats (`rules/cloudflare.md`). A lobby object pushes each
+  change to the open screens over hibernating WebSockets: no polling, no rows read for presence
+  (who is online is the set of open sockets, kept in socket attachments, no rows), and the object
+  sleeps between changes. Counters: in either option a row per chat message would break B7, so
+  the room reserves chat quota from the lobby in blocks of 20 messages (1 row per 20, about 100
+  rows on a day at the 2,000 cap); game and tutorial starts cost 1 row each (at most 150 a day).
+- **Solution:** (a), one lobby Durable Object, a new SQLite class `Lobby` in `wrangler.jsonc`,
+  built in phase 17 where M1.7 and M2 are. D1 keeps players, usernames and, later, records and
+  ratings. Phase 16 needs neither: room codes stay unique because each code names its own room
+  object (`idFromName`), as since phase 04. No live experiment was run: the deciding factor,
+  polling versus pushing, follows from the platform limits above, and SQLite Durable Objects are
+  on the Free plan (checked in phase 04).
+- **Implemented:** `decisions.md` O6 moved to Decided as D26; the class comes in phase 17.
+
+## Q53. Turnstile on the Free plan, and its keys
+
+- **Phase:** 16, item 4.
+- **Question:** `rules/cloudflare.md` asks to confirm a new Cloudflare product is free.
+- **Solution:** Turnstile is free on the Free plan, with up to 20 widgets and unlimited checks
+  (https://developers.cloudflare.com/turnstile/plans/, checked 2026-11-03). The site key is
+  public and goes in `wrangler.jsonc` as `TURNSTILE_SITE_KEY`; the secret key is set by the owner
+  with `wrangler secret put TURNSTILE_SECRET_KEY`. Local runs and the browser tests use the
+  published test keys (https://developers.cloudflare.com/turnstile/troubleshooting/testing/):
+  site key `1x00000000000000000000AA`, secret `1x0000000000000000000000000000000AA` (always
+  passes).
+- **Implemented:** phase 16. The owner created the widget and set the secret on 2026-11-03; the
+  site key is in `wrangler.jsonc` `vars`, and `.dev.vars` overrides it with the test keys locally.
+
+## Q54. What may a player do in a room while it asks everyone to accept?
+
+- **Phase:** 16, from reading M1.4, M1.9 to M1.12.
+- **Question:** M1.4 lets the owner change the size and M1.9 lets anyone leave "while the room is
+  waiting". Is a room asking for acceptance (M1.10) still waiting, and what happens to the asking?
+- **Options:** forbid both until the asking ends; allow both, and end the asking when the room is
+  no longer full.
+- **Solution:** the asking is part of waiting, so both are allowed. Leaving ends the asking at
+  once, since the room is no longer full; the player who left is not blocked from rejoining,
+  because they did not decline. The owner can raise the size during the asking, which ends it the
+  same way; lowering is impossible while the room is full (M1.4). A player removed after 10 s
+  without a connection (M1.12) also ends the asking. Everyone else stays and keeps waiting, as in
+  M1.11. Removal for any reason passes ownership on as M1.3 says for leaving.
+- **Implemented:** `multiplayer.md` M1.11 (one added sentence); phase 16, item 2.
+
+## Q55. How is "90 days without use" tracked without a write on every visit?
+
+- **Phase:** 16, item 3 (A1.14).
+- **Question:** recording the last use on every request would cost a D1 row each time (B18).
+- **Solution:** the last use is recorded at most once a day per account (when the stored time is
+  more than a day old), and a login ends when the recorded last use is more than 91 days ago. A
+  login therefore never ends sooner than 90 days without use, and at most one day later. Guest
+  accounts unused for 90 days are deleted by the scheduled job of phase 19 (O8).
+- **Implemented:** phase 16, item 3.
+
+## Q56. Generated names
+
+- **Phase:** 16, item 3 (A1.2).
+- **Question:** the spec gives one example, "Busy Harbour Mayor", and asks for unique, free names
+  of at most 20 characters.
+- **Solution:** three words, an adjective, a place and a title, from fixed lists chosen so that
+  every combination is a valid username of at most 20 characters, in the style of the example.
+  The server picks at random and tries again while the name is taken (A2.2 ignores capitals).
+- **Implemented:** phase 16, item 3.
+
+## Q57. What does tracking connections in a waiting room cost, and where are seats decided?
+
+- **Phase:** 16, from the phase review.
+- **Question:** M1.12 needs to know who has been disconnected from a waiting room for 10 seconds,
+  even if the room's Durable Object is evicted in between. `rules/cloudflare.md` allows no writes
+  for connects. Also, R4.3 seats are random, but the engine only sees the seats it is given.
+- **Options:** write on every connect and close; write only on a close, and treat players with an
+  open socket as connected when the deadline comes; keep it all in memory (lost on eviction).
+- **Solution:** write only on a close: one row when a player's last socket to a waiting room
+  closes. Connecting writes nothing. Creating or joining a room records the player as "not yet
+  connected" in the same row as the join, so a player who never opens the socket is removed after
+  10 s. When a deadline comes, and before any message or join is handled, players with an open
+  socket count as connected. On a busy day (B18) this is about one row per page refresh or
+  dropped connection in a waiting room, plus one alarm change each, well inside the budget.
+  Overdue removals (20-second accept, 10-second disconnect) are applied before every message and
+  join, so a late alarm never lets a late accept start a game. Seat order (R4.3) is drawn by the
+  room with `crypto` when the game starts and stored in the room record, like the game's seed, so
+  replays use the stored order.
+- **Implemented:** `src/server/room/caughtUpRoom.ts`, `withLivePlayers.ts`, `GameRoom.ts`;
+  phase 16 review fixes.

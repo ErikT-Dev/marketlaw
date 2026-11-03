@@ -212,7 +212,7 @@ The 427 scenarios cover all of version 1, but each phase implements only part of
 | 13 | [Quests](phase-13-quests.md) | 3 Playthrough | 11, 12 | done |
 | 14 | [Clocks and the time bank](phase-14-clocks-and-time-bank.md) | 3 Playthrough | 12 | done |
 | 15 | [End of the game and scoring](phase-15-end-of-game-and-scoring.md) | 3 Playthrough | 13, 14 | done |
-| 16 | [Rooms and guests](phase-16-rooms-and-guests.md) | 3 Playthrough | 15 | approved |
+| 16 | [Rooms and guests](phase-16-rooms-and-guests.md) | 3 Playthrough | 15 | done |
 | 17 | [Lobby and one thing at a time](phase-17-lobby-and-one-thing-at-a-time.md) | 3 Playthrough | 16 | approved |
 | 18 | [Connections and pausing](phase-18-connections-and-pausing.md) | 3 Playthrough | 17 | approved |
 | 19 | [Leaving, cleanup and replay records](phase-19-leaving-cleanup-and-replays.md) | 3 Playthrough | 18 | approved |
@@ -275,7 +275,6 @@ Listed in full in `decisions.md`:
 |---|---|
 | O4 Password hashing within the free plan | measured in 04, decided before 23 |
 | O5 Game length, after simulation | reviewed after 15, decided before 20 |
-| O6 Lobby, presence and global counters | 16 |
 | O8 Scheduled jobs and where replay records live | 19 |
 | O3 Email provider | 24 |
 | O7 Privacy notice text in the spec | 24 |
