@@ -1,6 +1,6 @@
 # Phase 17: Lobby and one thing at a time
 
-Status: approved
+Status: in progress
 Milestone: 3 Playthrough
 
 ## Goal
@@ -53,3 +53,19 @@ These 3 scenarios are added to `harness/required.yaml` in this phase, by file an
 - `rooms` #1: a player creates a public room with a chosen size and becomes its owner
 - `rooms` #4: a private room is not listed in the lobby but can be joined with its code
 - `rooms` #27: a player waiting in a room cannot join another room
+
+## Progress
+
+- [x] 1. Public room list with players and free places, joined with one click. Rooms report a
+  summary to the lobby Durable Object (D26) whenever it changes; lobby screens get the list
+  pushed over a hibernating socket, which is open only while the player is in the lobby.
+- [x] 2. One thing at a time: creating or joining a room first claims the player in the lobby,
+  and is rejected with `busy_elsewhere` while they are in another room or a game that has not
+  ended. A failed join releases the claim; a game that ends frees its players (M2.2's first
+  half; leaving the finished room comes in phase 19).
+- [x] 3. Lobby screen: "Public rooms · N" with each room's players, free places and Join, and the
+  empty-list text (S10.8). The Game menu, match history, ranking, players online, the ranked
+  queue and Log in / Sign up stay hidden until their phases.
+- [x] 4. Busy-day simulator for B18: 50 rooms of 2 to 4 players, each with a join that leaves
+  again, a page refresh and everyone accepting, plus 100 new guests and 50 returning players.
+  It writes 1,196 rows (448 room, 100 alarm, 498 lobby, 150 database) against the limit of 5,000.
