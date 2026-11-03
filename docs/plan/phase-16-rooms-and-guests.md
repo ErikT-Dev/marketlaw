@@ -61,8 +61,7 @@ and play.
 
 ## Waiting for the owner
 
-- Turnstile site and secret keys for `marketlaw.mlawd.workers.dev` (Q53). Until then local runs
-  and the browser tests use Cloudflare's published test keys; the deploy waits for the real ones.
+- Nothing. The owner gave the Turnstile site key and set the secret key on 2026-11-03 (Q53).
 
 ## Required scenarios
 

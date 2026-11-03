@@ -801,8 +801,8 @@ file.
   published test keys (https://developers.cloudflare.com/turnstile/troubleshooting/testing/):
   site key `1x00000000000000000000AA`, secret `1x0000000000000000000000000000000AA` (always
   passes).
-- **Status:** waiting for the owner (the real keys).
-- **Implemented:** phase 16.
+- **Implemented:** phase 16. The owner created the widget and set the secret on 2026-11-03; the
+  site key is in `wrangler.jsonc` `vars`, and `.dev.vars` overrides it with the test keys locally.
 
 ## Q54. What may a player do in a room while it asks everyone to accept?
 
