@@ -895,5 +895,15 @@ file.
   would have run out gets their free time again (45 s in the main phase, 5 s on a market go)
   without using their bank. Away is not game state: the room adds the seats without an open
   connection to each update, and sends an update when that changes, without a write. Opening the
-  game in a new tab tells the old tab `game_opened_elsewhere` and closes it (M5.1).
+  game in a new tab tells the old tab `opened_elsewhere` and closes it (M5.1); this applies only
+  once the game has started, since M5.1 is about a game.
+- **Readings added after the phase review:**
+  - A pause covers every seat whose time would run out at that moment (in the main phase, all
+    players with a full bank share one deadline), and each of them gets free time again on resume.
+  - The bank a paused player used up to the pause stays used; only the extra free time is free
+    (R9.8, R9.13).
+  - A seat still in its free time from an earlier pause keeps the rest of it across a new pause.
+  - Player actions are refused while a game is paused; a player's message resumes it first.
+  - Away shows on the opponent cards in every phase (M5.2), and in the top bar's badges only in
+    the main phase, as S2.2 says.
 - **Implemented:** phase 18.
