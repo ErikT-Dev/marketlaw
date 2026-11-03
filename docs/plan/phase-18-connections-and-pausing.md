@@ -128,6 +128,7 @@ tab per game once it has started, and the readings added after the review.
 12. Browser tests lacked the leak check and a move before the restart: both added.
 13. The restart route can restart any room: kept; it needs the test-room secret, which the live
     site does not accept from players.
-14. No `webSocketError` handler: kept; the platform calls `webSocketClose` for abnormal closes too,
-    and the disconnect browser test passes.
+14. No `webSocketError` handler: not added. Whether every abnormal drop reaches `webSocketClose`
+    is not verified; the browser test covers a closed tab. Worth a check in phase 19, which builds
+    leaving.
 15. The new view fields are not shown yet: they come with the opponent board details (S3.2).
