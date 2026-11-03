@@ -37,7 +37,7 @@ describe("a paused game", () => {
   it("is abandoned with no winner after 24 hours", () => {
     const later = applyDueTimeOuts(pausedGame(), PAUSED_AT + DAY_MS, randomForNextAction);
     expect(later.state.phase).toBe("ended");
-    expect(later.state.result?.endedBy).toBe("abandoned");
+    expect(later.state.result?.endedBy).toBe("paused_too_long");
     expect(later.state.pause).toBeNull();
     expect(earliestDeadline(later.state)).toBeNull();
   });

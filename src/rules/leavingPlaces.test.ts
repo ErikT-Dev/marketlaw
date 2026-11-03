@@ -47,7 +47,7 @@ describe("places when players left", () => {
       leaveOrder: [1, 2] as const,
       seats: START.seats.map((seat) => ({ ...seat, hasLeft: true })),
     };
-    expect(endingViolations(endGame(everyoneLeft, 0, "abandoned"))).toEqual([]);
+    expect(endingViolations(endGame(everyoneLeft, 0, "everyone_left"))).toEqual([]);
     expect(endingViolations(endGame(everyoneLeft, 0, "last_player"))).toEqual([
       "I22: the winner has left or there is none",
     ]);

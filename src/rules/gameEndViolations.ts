@@ -1,4 +1,5 @@
 import type { GameState } from "./GameState";
+import { isAbandoned } from "../shared/isAbandoned";
 import type { PlaceResult } from "../shared/PlaceResult";
 import { bonusTypePointsOf } from "./bonusTypePointsOf";
 import { playerOrderOf } from "./playerOrderOf";
@@ -80,7 +81,7 @@ export function gameEndViolations(before: GameState, after: GameState): Readonly
     ...(isTieBroken
       ? []
       : ["I22: equal scores are not placed by the done order and then the player order"]),
-    ...(after.result?.endedBy === "abandoned" || places[0]?.hasLeft === false
+    ...((after.result !== null && isAbandoned(after.result.endedBy)) || places[0]?.hasLeft === false
       ? []
       : ["I22: the winner has left or there is none"]),
   ];

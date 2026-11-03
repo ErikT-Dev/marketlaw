@@ -2,6 +2,7 @@ import type { GameState } from "../../../src/rules/GameState.ts";
 import { decisionClockOf } from "../../../src/rules/decisionClockOf.ts";
 import { marketGoOf } from "../../../src/rules/marketGoOf.ts";
 import type { EpochMs } from "../../../src/shared/EpochMs.ts";
+import { isAbandoned } from "../../../src/shared/isAbandoned.ts";
 import { isRecord } from "../../harness-check/isRecord.ts";
 import { seatThen } from "./seatThen.ts";
 import { viewThen } from "./viewThen.ts";
@@ -21,7 +22,7 @@ function endedThen(state: GameState): unknown {
   return places === undefined
     ? undefined
     : {
-        abandoned: state.result?.endedBy === "abandoned",
+        abandoned: state.result !== null && isAbandoned(state.result.endedBy),
         winner: places[0]?.seat,
         places: places.map(({ seat }) => seat),
         scores: Object.fromEntries(places.map(({ seat, score }) => [seat, score])),

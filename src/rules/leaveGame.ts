@@ -23,7 +23,7 @@ function goOnWithoutLeaver(state: GameState, random: Random, at: number): GameSt
 function afterLeaving(state: GameState, random: Random, at: number): GameState {
   const stillIn = state.seats.filter((seat) => !seat.hasLeft);
   if (stillIn.length === 0) {
-    return endGame(state, at, "abandoned");
+    return endGame(state, at, "everyone_left");
   }
   if (stillIn.length === 1 && seatsLeavingAt(state, at).length === 0) {
     return endGame(state, at, "last_player");
