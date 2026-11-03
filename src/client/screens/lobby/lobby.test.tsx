@@ -22,6 +22,7 @@ function lobby(changes: Partial<Parameters<typeof LobbyPage>[0]> = {}) {
       onCreate={succeed}
       onStartAsGuest={succeed}
       onDismissRemoval={vi.fn()}
+      publicRooms={[]}
       {...changes}
     />,
   );
@@ -106,6 +107,34 @@ describe("the lobby", () => {
     expect(screen.getByRole("status").textContent).toContain(
       "You did not accept the game in time. You can join that room again in 2:00.",
     );
+  });
+});
+
+describe("the public room list", () => {
+  const rooms = [
+    {
+      code: v.parse(RoomCode, "K7QR2P"),
+      size: 4,
+      ownerName: "Quiet River Baron",
+      playerNames: ["Quiet River Baron", "Bea"],
+    },
+    { code: v.parse(RoomCode, "M4TX9C"), size: 2, ownerName: "Oli", playerNames: ["Oli", "Sam"] },
+  ];
+
+  it("lists each public room with its players and free places, joined with one click", () => {
+    const { onJoin } = lobby({ publicRooms: rooms });
+    expect(screen.getByRole("heading", { name: "Public rooms · 2" })).toBeTruthy();
+    const first = screen.getByRole("listitem", { name: "Quiet River Baron's room" });
+    expect(first.textContent).toContain("2 of 4 players · 2 free");
+    fireEvent.click(within(first).getByRole("button", { name: "Join" }));
+    expect(onJoin).toHaveBeenCalledWith("K7QR2P");
+    const full = screen.getByRole("listitem", { name: "Oli's room" });
+    expect(within(full).getByRole("button", { name: "Join" })).toHaveProperty("disabled", true);
+  });
+
+  it("says so when there are no public rooms", () => {
+    lobby({ publicRooms: [] });
+    expect(screen.getByText("No public rooms right now")).toBeTruthy();
   });
 });
 

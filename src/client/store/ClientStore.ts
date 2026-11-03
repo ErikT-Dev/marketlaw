@@ -2,6 +2,7 @@ import type { ConnectionStatus } from "../../shared/ConnectionStatus";
 import type { GameHost } from "../../shared/GameHost";
 import type { ReasonCode } from "../../shared/ReasonCode";
 import type { HostEvent } from "../../shared/HostEvent";
+import type { LobbyFeed, OpenLobbyFeed } from "../../shared/LobbyFeed";
 import type { ActionIntent } from "../../shared/protocol/ActionIntent";
 import type { RoomCode } from "../../shared/RoomCode";
 import { requestGuest } from "../api/requestGuest";
@@ -26,9 +27,12 @@ export class ClientStore {
   private listeners: ReadonlyArray<() => void> = [];
   private host: GameHost | null = null;
   private readonly openHost: OpenHost;
+  private readonly openLobby: OpenLobbyFeed;
+  private lobbyFeed: LobbyFeed | null = null;
 
-  constructor(openHost: OpenHost) {
+  constructor(openHost: OpenHost, openLobby: OpenLobbyFeed = () => ({ close: () => undefined })) {
     this.openHost = openHost;
+    this.openLobby = openLobby;
     const session = readSession();
     this.state = {
       session,
@@ -41,13 +45,22 @@ export class ClientStore {
       serverClockOffsetMs: 0,
       joinError: null,
       removal: null,
+      publicRooms: [],
     };
     if (session !== null) {
       void this.checkSession(session);
     }
     if (session?.roomCode !== null && session !== null) {
       this.enterRoom(session, session.roomCode);
+    } else {
+      this.watchLobby();
     }
+  }
+
+  private watchLobby(): void {
+    this.lobbyFeed ??= this.openLobby((publicRooms) => {
+      this.change({ publicRooms });
+    });
   }
 
   private async checkSession(session: StoredSession): Promise<void> {
@@ -162,6 +175,7 @@ export class ClientStore {
   private leaveRoom(notice: string | null, session: StoredSession | null): void {
     this.host?.close();
     this.host = null;
+    this.watchLobby();
     writeSession(session);
     this.change({
       session,
@@ -181,6 +195,8 @@ export class ClientStore {
     const inRoom = { ...session, roomCode: code };
     writeSession(inRoom);
     this.change({ session: inRoom, notice: null, joinError: null, removal: null });
+    this.lobbyFeed?.close();
+    this.lobbyFeed = null;
     this.host?.close();
     this.host = this.openHost(code, session.token);
     this.host.subscribe(this.receive);

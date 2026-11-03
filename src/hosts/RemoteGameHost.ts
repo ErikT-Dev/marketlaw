@@ -7,10 +7,8 @@ import { parseServerMessage } from "../shared/protocol/parseServerMessage";
 import { PROTOCOL_VERSION } from "../shared/PROTOCOL_VERSION";
 import { ROOM_GONE_CLOSE_CODE } from "../shared/ROOM_GONE_CLOSE_CODE";
 import type { HostSocket } from "./HostSocket";
+import { reconnectDelayMs } from "./reconnectDelayMs";
 import type { RemoteHostOptions } from "./RemoteHostOptions";
-
-const FIRST_RECONNECT_DELAY_MS = 1000;
-const LONGEST_RECONNECT_DELAY_MS = 10_000;
 
 export class RemoteGameHost implements GameHost {
   private readonly options: RemoteHostOptions;
@@ -126,10 +124,7 @@ export class RemoteGameHost implements GameHost {
         const isRoomGone = code === ROOM_GONE_CLOSE_CODE;
         this.emit({ type: "connection", status: isRoomGone ? "room_gone" : "closed" });
         if (!this.isClosedByPlayer && !isRoomGone) {
-          const delay = Math.min(
-            FIRST_RECONNECT_DELAY_MS * 2 ** this.failedConnects,
-            LONGEST_RECONNECT_DELAY_MS,
-          );
+          const delay = reconnectDelayMs(this.failedConnects);
           this.failedConnects += 1;
           this.options.runLater(delay, () => {
             this.connect();

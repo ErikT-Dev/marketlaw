@@ -1,3 +1,4 @@
+import type { PublicRoomView } from "../../../shared/protocol/PublicRoomView";
 import type { ReasonCode } from "../../../shared/ReasonCode";
 import { Toast } from "../../components/Toast";
 import type { JoinError } from "../../store/JoinError";
@@ -11,6 +12,7 @@ import { JoinWithCode } from "./JoinWithCode";
 import styles from "./Lobby.module.css";
 import { LobbyTopBar } from "./LobbyTopBar";
 import { removalText } from "./removalText";
+import { PublicRoomsList } from "./PublicRoomsList";
 import { useLobbyFlow } from "./useLobbyFlow";
 
 type Props = {
@@ -21,10 +23,12 @@ type Props = {
   readonly onCreate: (room: NewRoom) => Promise<ReasonCode | null>;
   readonly onStartAsGuest: (name: string, humanCheck: string) => Promise<ReasonCode | null>;
   readonly onDismissRemoval: () => void;
+  readonly publicRooms: ReadonlyArray<PublicRoomView>;
 };
 
 export function LobbyPage(props: Props) {
   const { name, joinError, removal, onJoin, onCreate, onStartAsGuest, onDismissRemoval } = props;
+  const { publicRooms } = props;
   const now = useServerNow();
   const flow = useLobbyFlow(name !== null, onJoin);
   return (
@@ -34,7 +38,7 @@ export function LobbyPage(props: Props) {
         <section className={styles["panel"]} aria-labelledby="rooms-heading">
           <div className={styles["panelHeader"]}>
             <h2 id="rooms-heading" className={styles["panelTitle"]}>
-              Rooms
+              Public rooms · {publicRooms.length}
             </h2>
             <JoinWithCode
               error={joinError === null ? null : joinErrorText(joinError, now)}
@@ -42,9 +46,10 @@ export function LobbyPage(props: Props) {
               onCreate={() => void flow.start({ kind: "create" })}
             />
           </div>
-          <p className={styles["small"]}>
-            Create a room and share its code, or join a room with the code a friend gave you.
-          </p>
+          <PublicRoomsList
+            rooms={publicRooms}
+            onJoin={(code) => void flow.start({ kind: "join", code })}
+          />
         </section>
       </main>
       {removal === null ? null : (

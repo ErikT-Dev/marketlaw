@@ -1,6 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { App } from "./App";
+import { openLobbyFeed } from "./openLobbyFeed";
 import { openRoomHost } from "./openRoomHost";
 import { ClientStore } from "./store/ClientStore";
 import { sessionFromLink } from "./store/sessionFromLink";
@@ -10,7 +11,7 @@ const linkedSession = sessionFromLink(window.location.hash);
 if (linkedSession !== null) {
   window.history.replaceState(null, "", window.location.pathname);
 }
-const store = new ClientStore(openRoomHost);
+const store = new ClientStore(openRoomHost, openLobbyFeed);
 if (linkedSession !== null) {
   void store.startFromSeatLink(linkedSession, () =>
     window.confirm(
