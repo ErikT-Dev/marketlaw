@@ -53,4 +53,5 @@ export const REJECTION_MESSAGES: Readonly<Record<ReasonCode, string>> = {
   username_reserved: "That username cannot be used. Choose another one.",
   no_free_room_code: "No room could be created right now. Try again.",
   no_answer: "The server did not answer. Try again.",
+  busy_elsewhere: "You are already in a room, the ranked queue or a game. Leave it first.",
 };

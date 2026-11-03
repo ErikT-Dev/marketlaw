@@ -49,6 +49,7 @@ export const ReasonCode = v.picklist([
   "username_reserved",
   "no_free_room_code",
   "no_answer",
+  "busy_elsewhere",
 ]);
 
 export type ReasonCode = v.InferOutput<typeof ReasonCode>;

@@ -1,0 +1,90 @@
+import { DurableObject } from "cloudflare:workers";
+import { acceptedSocketResponse } from "./acceptedSocketResponse";
+import * as v from "valibot";
+import type { PlayerId } from "../shared/PlayerId";
+import { PROTOCOL_VERSION } from "../shared/PROTOCOL_VERSION";
+import type { LobbyMessage } from "../shared/protocol/LobbyMessage";
+import type { RoomCode } from "../shared/RoomCode";
+import { claimPlayer } from "./lobby/claimPlayer";
+import { EMPTY_LOBBY } from "./lobby/EMPTY_LOBBY";
+import { LOBBY_RECORD_SCHEMA } from "./lobby/LOBBY_RECORD_SCHEMA";
+import type { LobbyRecord } from "./lobby/LobbyRecord";
+import { publicRoomsOf } from "./lobby/publicRoomsOf";
+import { releasePlayer } from "./lobby/releasePlayer";
+import type { RoomSummary } from "./lobby/RoomSummary";
+import { withRoomSummary } from "./lobby/withRoomSummary";
+
+const LOBBY_KEY = "lobby";
+
+export class Lobby extends DurableObject<Env> {
+  async claim(playerId: PlayerId, code: RoomCode): Promise<boolean> {
+    return this.change((record) => {
+      const claimed = claimPlayer(record, playerId, code);
+      return claimed.isOk ? claimed.value : null;
+    });
+  }
+
+  isBusy(playerId: PlayerId): boolean {
+    return this.read().busy.some((entry) => entry.playerId === playerId);
+  }
+
+  async release(playerId: PlayerId, code: RoomCode): Promise<void> {
+    await this.change((record) => releasePlayer(record, playerId, code));
+  }
+
+  async roomChanged(code: RoomCode, summary: RoomSummary | null): Promise<void> {
+    await this.change((record) => withRoomSummary(record, code, summary));
+  }
+
+  override fetch(request: Request): Response {
+    return acceptedSocketResponse(request, (server) => {
+      this.ctx.acceptWebSocket(server);
+      server.send(JSON.stringify(this.messageFor(this.read())));
+    });
+  }
+
+  override webSocketMessage(): void {
+    return undefined;
+  }
+
+  private async change(apply: (record: LobbyRecord) => LobbyRecord | null): Promise<boolean> {
+    return this.ctx.blockConcurrencyWhile(async () => {
+      const before = this.read();
+      const after = apply(before);
+      if (after === null) {
+        return false;
+      }
+      if (JSON.stringify(after) !== JSON.stringify(before)) {
+        this.ctx.storage.kv.put(LOBBY_KEY, after);
+        this.broadcastIfListChanged(before, after);
+      }
+      return Promise.resolve(true);
+    });
+  }
+
+  private read(): LobbyRecord {
+    const parsed = v.safeParse(LOBBY_RECORD_SCHEMA, this.ctx.storage.kv.get(LOBBY_KEY));
+    return parsed.success ? parsed.output : EMPTY_LOBBY;
+  }
+
+  private messageFor(record: LobbyRecord): LobbyMessage {
+    return {
+      type: "lobby",
+      protocolVersion: PROTOCOL_VERSION,
+      publicRooms: publicRoomsOf(record).map((room) => ({
+        ...room,
+        playerNames: [...room.playerNames],
+      })),
+    };
+  }
+
+  private broadcastIfListChanged(before: LobbyRecord, after: LobbyRecord): void {
+    const message = JSON.stringify(this.messageFor(after));
+    if (message === JSON.stringify(this.messageFor(before))) {
+      return;
+    }
+    for (const socket of this.ctx.getWebSockets()) {
+      socket.send(message);
+    }
+  }
+}

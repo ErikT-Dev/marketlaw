@@ -7,10 +7,12 @@ import { humanCheckRoute } from "./api/humanCheckRoute";
 import { joinRoomRoute } from "./api/joinRoomRoute";
 import { roomJson } from "./api/roomJson";
 import { sessionRoute } from "./api/sessionRoute";
+import { lobbyOf } from "./lobbyOf";
 import { confirmTestSeat } from "./testRooms/confirmTestSeat";
 import { createTestRoom } from "./testRooms/createTestRoom";
 
 export { GameRoom } from "./GameRoom";
+export { Lobby } from "./Lobby";
 
 const ROOM_PATH = /^\/api\/rooms\/([A-Z0-9]{6})\/(join|socket)$/;
 
@@ -41,6 +43,9 @@ async function route(request: Request, env: Env): Promise<Response> {
   const roomPath = ROOM_PATH.exec(pathname);
   if (roomPath !== null) {
     return routeRoom(request, env, roomPath);
+  }
+  if (pathname === "/api/lobby/socket") {
+    return lobbyOf(env).fetch(request);
   }
   if (request.method === "GET" && pathname === "/api/generated-name") {
     return generatedNameRoute(env);
