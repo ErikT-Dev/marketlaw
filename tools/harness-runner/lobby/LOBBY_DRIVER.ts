@@ -113,6 +113,7 @@ function startSession(rawGiven: Readonly<Record<string, unknown>>, random: Scrip
 
 export const LOBBY_DRIVER: ScenarioDriver = {
   name: "lobby",
+  unhandledGivenValues: () => [],
   givenFields: new Set(["accounts", "room", "other_rooms"]),
   steps: new Set([
     "create_room",

@@ -104,6 +104,7 @@ function startSession(
 export const ENGINE_DRIVER: ScenarioDriver = {
   name: "engine",
   ...ENGINE_FIELDS,
+  unhandledGivenValues: () => [],
   steps: new Set([...ENGINE_FIELDS.steps, "wait_ms"]),
   startSession,
 };

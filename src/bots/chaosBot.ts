@@ -75,7 +75,12 @@ function illegalIntent(view: PlayerView, chooser: BotChooser): ActionIntent {
   }
 }
 
+const LEAVE_ONE_IN = 400;
+
 export function chaosBot(view: PlayerView, chooser: BotChooser): ChaosMove {
+  if (chooser.pickIndex(LEAVE_ONE_IN) === 0) {
+    return { kind: "intent", intent: { type: "leave_game" } };
+  }
   const roll = chooser.pickIndex(20);
   if (roll < 2) {
     return { kind: "raw", text: MALFORMED_TEXTS[chooser.pickIndex(MALFORMED_TEXTS.length)] ?? "{" };

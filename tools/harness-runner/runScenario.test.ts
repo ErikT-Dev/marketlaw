@@ -11,6 +11,7 @@ const COUNTER_DRIVER: ScenarioDriver = {
   steps: new Set(["start_game", "end_turn", "draw", "crash"]),
   thenFields: new Set(["turn", "drawn", "seats"]),
   nestedFields: new Map([["then.seats", new Set(["seat", "stats"])]]),
+  unhandledGivenValues: () => [],
   startSession(given, random) {
     let turn = typeof given["turn"] === "number" ? given["turn"] : 1;
     const drawn: unknown[] = [];

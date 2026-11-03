@@ -1,4 +1,5 @@
 import type { RoomSummary } from "../lobby/RoomSummary";
+import { busyPlayersOf } from "./busyPlayersOf";
 import type { RoomRecord } from "./RoomRecord";
 
 export function roomSummaryOf(record: RoomRecord): RoomSummary {
@@ -8,6 +9,6 @@ export function roomSummaryOf(record: RoomRecord): RoomSummary {
     isPublic: record.isPublic,
     isWaiting: record.game === null,
     isOver: record.game?.saved.state.phase === "ended",
-    players: record.players.map(({ playerId, name }) => ({ playerId, name })),
+    players: busyPlayersOf(record).map(({ playerId, name }) => ({ playerId, name })),
   };
 }

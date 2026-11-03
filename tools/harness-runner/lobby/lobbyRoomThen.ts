@@ -8,7 +8,7 @@ function nameOf(record: RoomRecord, playerId: string): string {
 
 function stateOf(record: RoomRecord): string {
   if (record.game !== null) {
-    return "playing";
+    return record.game.saved.state.phase === "ended" ? "ended" : "playing";
   }
   return record.waiting.asking === null ? "waiting" : "accepting";
 }

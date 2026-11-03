@@ -17,6 +17,7 @@ export function pendingCardsOf(
       case "influence":
       case "draw_action":
       case "undo":
+      case "leave_game":
       case "turn_draw":
         return [];
     }

@@ -20,6 +20,7 @@ function missingFor(scenario: Scenario, driver: ScenarioDriver): ReadonlyArray<s
       .filter((field) => !driver.thenFields.has(field))
       .map((field) => `then ${field}`),
     ...unhandledNestedFields(scenario, driver.nestedFields),
+    ...driver.unhandledGivenValues(scenario.given),
   ];
 }
 

@@ -8,7 +8,7 @@ export async function isReallyBusy(env: Env, playerId: PlayerId, code: RoomCode 
   if (busyIn === null || busyIn === code) {
     return false;
   }
-  if (await env.ROOM.get(env.ROOM.idFromName(busyIn)).hasPlayer(playerId)) {
+  if (await env.ROOM.get(env.ROOM.idFromName(busyIn)).isPlayerBusy(playerId)) {
     return true;
   }
   await lobby.forget(playerId, busyIn);

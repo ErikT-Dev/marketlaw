@@ -1,3 +1,4 @@
+import { isChangeVisibleToAll } from "../../src/server/room/isChangeVisibleToAll.ts";
 import type { GameState } from "../../src/rules/GameState.ts";
 import type { SeatState } from "../../src/rules/SeatState.ts";
 import type { RoomRecord } from "../../src/server/room/RoomRecord.ts";
@@ -87,9 +88,9 @@ function versionViolations(
   const beforeState = before.game?.saved.state;
   const afterState = after.game?.saved.state;
   const isSeenByEveryone =
-    beforeState?.turn !== afterState?.turn ||
-    beforeState?.phase !== afterState?.phase ||
-    beforeState?.phase === "market";
+    beforeState === undefined ||
+    afterState === undefined ||
+    isChangeVisibleToAll(beforeState, afterState);
   return (after.game?.seats ?? []).flatMap((seat) => {
     const versionBefore = before.game?.seats.find(
       (candidate) => candidate.seat === seat.seat,

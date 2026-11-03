@@ -16,7 +16,9 @@ export function rawMessageText(
   }
   const message = isRecord(raw["message"]) ? raw["message"] : {};
   const details = Object.fromEntries(
-    Object.entries(message).filter(([field]) => field !== "action" && field !== "seat"),
+    Object.entries(message).filter(
+      ([field]) => field !== "action" && field !== "seat" && field !== "player",
+    ),
   );
   return JSON.stringify({
     protocolVersion: raw["protocol_version"] ?? PROTOCOL_VERSION,

@@ -14,6 +14,7 @@ import { findPlayerByTokenHash } from "./findPlayerByTokenHash";
 import { newGameStart } from "./newGameStart";
 import { NO_CONNECTION } from "./NO_CONNECTION";
 import { alarmChangeFor } from "./room/alarmChangeFor";
+import { busyPlayersOf } from "./room/busyPlayersOf";
 import { CompressedRoomStore } from "./room/CompressedRoomStore";
 import { createRoomIn } from "./room/createRoomIn";
 import { fireRoomAlarm } from "./room/fireRoomAlarm";
@@ -83,12 +84,13 @@ export class GameRoom extends DurableObject<Env> {
     this.ctx.abort("Restarted by a browser test");
   }
 
-  async hasPlayer(playerId: PlayerId): Promise<boolean> {
-    return this.inTurn(async () =>
-      Promise.resolve(
-        loadRoom(this.storage)?.players.some((player) => player.playerId === playerId) === true,
-      ),
-    );
+  async isPlayerBusy(playerId: PlayerId): Promise<boolean> {
+    return this.inTurn(async () => {
+      const record = loadRoom(this.storage);
+      return Promise.resolve(
+        record !== null && busyPlayersOf(record).some((player) => player.playerId === playerId),
+      );
+    });
   }
 
   async joinRejection(joining: Identity): Promise<JoinRejection | null> {

@@ -6,6 +6,7 @@ export const ROOM_GIVEN_SCHEMA = v.looseObject({
       code: v.optional(v.string()),
       size: v.optional(v.picklist([2, 3, 4])),
       public: v.optional(v.boolean()),
+      owner: v.optional(v.string()),
       players: v.optional(v.array(v.string())),
       state: v.optional(v.picklist(["playing"])),
     }),
