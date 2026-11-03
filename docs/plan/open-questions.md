@@ -978,3 +978,20 @@ file.
     within a day after.
 - **Implemented:** `src/server/room/endedRoomDeletionAt.ts`, `roomActionOutcome.ts`,
   `src/server/replays/`, `migrations/0006_replay_records.sql`, `wrangler.jsonc`; phase 19.
+
+## Q63. Which secret protects the replay export, and what does it return?
+
+- **Phase:** 19, item 4.
+- **Question:** M4.1 makes replay records available only to the people who run the game; the
+  phase asks for "the owner's secret", and the site has one owner secret already, for test rooms.
+- **Options:** a new secret (the owner would have to set it on the live site first); the test-room
+  secret, which the owner already set.
+- **Solution:** the test-room secret, so the export works on the live site without anything
+  from the owner. `GET /api/rooms/<code>/replay` with the secret returns the record from the room
+  while it exists, otherwise the stored record of its last game if it ended less than 30 days
+  ago, otherwise "Not found", as without the secret. The record is the save format without the
+  final state: seed, setup, starting state (test rooms only) and the action log, one format for
+  the export and the stored record (`rules/architecture.md`, One save format). `npm run
+  replay-export` saves it to a file (`docs/replays.md`).
+- **Implemented:** `src/server/api/replayExportRoute.ts`, `tools/replay-export/`,
+  `tools/harness-runner/checkReplayExport.ts`; phase 19.

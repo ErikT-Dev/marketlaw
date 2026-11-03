@@ -86,5 +86,7 @@ These 15 scenarios are added to `harness/required.yaml` in this phase, by file a
 - [x] 3. Cleanup: rooms through their one alarm; replay records after 30 days through the
   scheduled job. Also leaving a room after leaving its game or after it ended; records older than
   30 days count as removed before the daily job deletes them (Q62).
-- [ ] 4. Replay export for a running or ended room, protected by the owner's secret.
+- [x] 4. Replay export for a running or ended room, protected by the owner's secret. The
+  test-room secret, which the live site already has; `npm run replay-export`; the replay export
+  check in the harness (Q63).
 - [ ] 5. Screens for the above.
