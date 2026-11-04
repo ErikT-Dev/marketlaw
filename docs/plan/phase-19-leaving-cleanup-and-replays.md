@@ -1,6 +1,6 @@
 # Phase 19: Leaving, cleanup and replay records
 
-Status: in progress
+Status: done
 Milestone: 3 Playthrough
 
 ## Goal
@@ -98,7 +98,7 @@ These 15 scenarios are added to `harness/required.yaml` in this phase, by file a
   left the game" (S9.2), the last-player and abandoned end screens (S9.5) and "Room not found"
   (S16.2); Exit to lobby now also leaves the room. Abandoned endings say why (Q61).
 
-### Finish (in progress, 2026-11-04)
+### Finish (done, 2026-11-05)
 
 - [x] Scenarios added to `harness/required.yaml`.
 - [x] `npm run check` and `npm run harness` (1,000 games) green locally.
@@ -142,8 +142,16 @@ These 15 scenarios are added to `harness/required.yaml` in this phase, by file a
 - [x] Fix or answer the findings (Q64, Q65, Q66).
 - [x] Run the checks again (2026-11-04, after the review fixes): `npm run check` and `npm run harness`
   (1,000 games) green; browser tests with two workers: all 99 passed on the first run.
-- [ ] Write the Report, merge, watch the deploy (new D1 migration 0006 and the Cron Trigger),
-  check the live site including `npm run replay-export`.
+- [x] Write the Report, merge, watch the deploy (new D1 migration 0006 and the Cron Trigger),
+  check the live site including `npm run replay-export`. Done 2026-11-05: the branch check passed
+  on GitHub (the browser-test job first hit its 20-minute limit on a slow runner, 6 minutes of
+  setup, and passed on a re-run in 15 minutes); merged; the Deploy run succeeded, applied
+  `0006_replay_records.sql` and deployed the schedule `17 3 * * *`; the live bundle has the new
+  texts ("so you left the game", "Room not found"); the live D1 has the `replay_records` table;
+  the live export answers "Not found" without the secret or with a wrong one. The live
+  test-room secret is the owner's and differs from the local one, so a successful live export is
+  left for the owner (What to try); `npm run replay-export` saved a test room's record against
+  the local server.
 
 ## Report
 
