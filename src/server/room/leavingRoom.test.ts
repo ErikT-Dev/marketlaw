@@ -13,6 +13,7 @@ import { createRoomIn } from "./createRoomIn";
 import type { Identity } from "./Identity";
 import { isPlayerBusyIn } from "./isPlayerBusyIn";
 import { joinRoomIn } from "./joinRoomIn";
+import { leaveRoomIfFreeIn } from "./leaveRoomIfFreeIn";
 import { receiveMessage } from "./receiveMessage";
 import type { RoomRecord } from "./RoomRecord";
 import type { RoomStorage } from "./RoomStorage";
@@ -69,7 +70,7 @@ function leaveGame(storage: ReturnType<typeof storageOf>, sender: Identity) {
   const seat = storage.stored().game?.seats.find(({ playerId }) => playerId === sender.playerId);
   return send(storage, sender, {
     type: "action",
-    actionId: "leave-1",
+    actionId: `leave-${sender.name}`,
     stateVersion: seat?.stateVersion ?? 0,
     action: { type: "leave_game" },
   });
@@ -126,5 +127,43 @@ describe("a player who left a running game", () => {
     expect(isPlayerBusyIn(room, leaver.playerId)).toBe(false);
     const afterLeaving = withRoomSummary(playing, CODE, roomSummaryOf(room));
     expect(claimPlayer(afterLeaving, leaver.playerId, OTHER_CODE).isOk).toBe(true);
+  });
+});
+
+describe("joining another room", () => {
+  it("takes a player who left the running game out of its room", () => {
+    const { storage, leaver } = runningGame();
+    leaveGame(storage, leaver);
+    const lobby = withRoomSummary(EMPTY_LOBBY, CODE, roomSummaryOf(storage.stored()));
+    expect(lobby.staying).toEqual([{ playerId: leaver.playerId, code: CODE }]);
+    expect(leaveRoomIfFreeIn(storage, leaver.playerId)).toBe(true);
+    expect(storage.stored().players.map(({ name }) => name)).toEqual(["Bea", "Cid"]);
+    expect(withRoomSummary(lobby, CODE, roomSummaryOf(storage.stored())).staying).toEqual([]);
+  });
+
+  it("does not take a player who is still in the game out of the room", () => {
+    const { storage, leaver } = runningGame();
+    const before = storage.stored();
+    expect(leaveRoomIfFreeIn(storage, leaver.playerId)).toBe(false);
+    expect(storage.stored()).toBe(before);
+  });
+
+  it("takes each player out of the finished room and deletes it with the last one", () => {
+    const { storage } = runningGame();
+    const [ann, bea, cid] = PLAYERS;
+    if (ann === undefined || bea === undefined || cid === undefined) {
+      throw new Error("no players");
+    }
+    leaveGame(storage, ann);
+    leaveGame(storage, bea);
+    expect(storage.stored().game?.saved.state.phase).toBe("ended");
+    const lobby = withRoomSummary(EMPTY_LOBBY, CODE, roomSummaryOf(storage.stored()));
+    expect(lobby.staying.map(({ playerId }) => playerId)).toEqual(LIVE);
+    expect(leaveRoomIfFreeIn(storage, ann.playerId)).toBe(true);
+    expect(leaveRoomIfFreeIn(storage, bea.playerId)).toBe(true);
+    expect(storage.stored().players.map(({ name }) => name)).toEqual(["Cid"]);
+    expect(leaveRoomIfFreeIn(storage, cid.playerId)).toBe(true);
+    expect(storage.read()).toBeUndefined();
+    expect(withRoomSummary(lobby, CODE, null).staying).toEqual([]);
   });
 });

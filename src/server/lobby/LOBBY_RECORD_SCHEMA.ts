@@ -11,7 +11,9 @@ export const LOBBY_RECORD_SCHEMA = v.object({
       isWaiting: v.boolean(),
       isOver: v.boolean(),
       players: v.array(v.object({ playerId: PlayerId, name: v.string() })),
+      freePlayers: v.array(PlayerId),
     }),
   ),
   busy: v.array(v.object({ playerId: PlayerId, code: RoomCode })),
+  staying: v.array(v.object({ playerId: PlayerId, code: RoomCode })),
 });

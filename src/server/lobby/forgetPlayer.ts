@@ -10,5 +10,6 @@ export function forgetPlayer(record: LobbyRecord, playerId: PlayerId, code: Room
         : room,
     ),
     busy: record.busy.filter((entry) => entry.playerId !== playerId || entry.code !== code),
+    staying: record.staying,
   };
 }

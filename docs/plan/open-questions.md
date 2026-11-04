@@ -996,3 +996,22 @@ file.
   replay-export` saves it to a file (`docs/replays.md`).
 - **Implemented:** `src/server/api/replayExportRoute.ts`, `tools/replay-export/`,
   `tools/harness-runner/checkReplayExport.ts`; phase 19.
+
+## Q64. When does a player leave a finished room by going elsewhere (M2.2)?
+
+- **Phase:** 19, review findings 1 and 5.
+- **Questions and solutions:**
+  - M2.2 says joining another room or the ranked queue takes a free player out of the finished
+    room; Q58 left this to phase 19. Who counts? Every player who is in a room but no longer
+    busy in it (M2.1): everyone once its game has ended, and a player who left a running game
+    (M6.7 points to M2). Joining or creating another room takes them out of every such room, as
+    leaving it would: the room is deleted when the last player goes (M8.1). The lobby remembers
+    which rooms such players are still in; the ranked queue (phase 26) uses the same step.
+  - A player who is still in a running game is never taken out this way; they stay busy (M2.1).
+  - The replay record is written to D1 after the room has saved, replied and set its alarm. If
+    the write fails, the room logs it and carries on: the move, the reply and the deletion alarm
+    must not be lost to a D1 error. The room keeps the record until it is deleted, so the export
+    still has it for the first 24 hours (Q63).
+- **Implemented:** `src/server/api/leaveFinishedRooms.ts`, `src/server/room/leaveRoomIfFreeIn.ts`,
+  `src/server/lobby/withRoomSummary.ts`, `src/server/replays/saveReplayRecordIfEnded.ts`;
+  phase 19.

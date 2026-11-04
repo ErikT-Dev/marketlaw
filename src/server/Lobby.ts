@@ -29,6 +29,12 @@ export class Lobby extends DurableObject<Env> {
     return this.read().busy.find((entry) => entry.playerId === playerId)?.code ?? null;
   }
 
+  stayingRoomsOf(playerId: PlayerId): ReadonlyArray<RoomCode> {
+    return this.read()
+      .staying.filter((entry) => entry.playerId === playerId)
+      .map(({ code }) => code);
+  }
+
   async forget(playerId: PlayerId, code: RoomCode): Promise<void> {
     await this.change((record) => forgetPlayer(record, playerId, code));
   }
