@@ -25,5 +25,9 @@ export function withRoomSummary(
       ...(summary === null || summary.isOver ? [] : [summary]),
     ],
     busy: [...kept, ...busyHere.map(({ playerId }) => ({ playerId, code }))],
+    staying: [
+      ...record.staying.filter((entry) => entry.code !== code),
+      ...(summary?.freePlayers ?? []).map((playerId) => ({ playerId, code })),
+    ],
   };
 }

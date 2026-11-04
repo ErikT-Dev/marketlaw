@@ -1,5 +1,6 @@
 import type { Rejection } from "../shared/Rejection";
 import type { Result } from "../shared/Result";
+import { abandonPausedGame } from "./abandonPausedGame";
 import { claimAll } from "./claimAll";
 import { completeProject } from "./completeProject";
 import { completeQuest } from "./completeQuest";
@@ -7,7 +8,9 @@ import { dueTimeOuts } from "./dueTimeOuts";
 import { endTurn } from "./endTurn";
 import type { GameAction } from "./GameAction";
 import type { GameState } from "./GameState";
+import { leaveGame } from "./leaveGame";
 import { pauseGame } from "./pauseGame";
+import { pausedAbandonDeadline } from "./pausedAbandonDeadline";
 import { playCard } from "./playCard";
 import type { Random } from "./Random";
 import type { SystemAction } from "./SystemAction";
@@ -24,7 +27,28 @@ import { useDrawAction } from "./useDrawAction";
 import { useTrade } from "./useTrade";
 import { withUndoHistory } from "./withUndoHistory";
 
+function acceptedSystemAction(
+  state: GameState,
+  action: SystemAction,
+  random: Random,
+  at: number,
+): GameState {
+  switch (action.type) {
+    case "time_out":
+      return timeOut(state, action.seat, random, at);
+    case "pause_game":
+      return pauseGame(state, at);
+    case "resume_game":
+      return resumeGame(state, at);
+    case "abandon_game":
+      return abandonPausedGame(state, at);
+  }
+}
+
 function accepted(state: GameState, action: GameAction, random: Random, at: number): GameState {
+  if (isSystemAction(action)) {
+    return acceptedSystemAction(state, action, random, at);
+  }
   switch (action.type) {
     case "play_card":
       return takeIncome(
@@ -62,21 +86,27 @@ function accepted(state: GameState, action: GameAction, random: Random, at: numb
       return updateSeat(state, action.seat, undoLatest);
     case "turn_draw":
       return takeTurnDraw(state, action, random, at);
-    case "time_out":
-      return timeOut(state, action.seat, random, at);
-    case "pause_game":
-      return pauseGame(state, at);
+    case "leave_game":
+      return leaveGame(state, action.seat, random, at);
+  }
+}
+
+function isSystemActionDue(state: GameState, action: SystemAction, at: number): boolean {
+  switch (action.type) {
     case "resume_game":
-      return resumeGame(state, at);
+      return state.pause !== null;
+    case "abandon_game": {
+      const deadline = pausedAbandonDeadline(state);
+      return deadline !== null && deadline <= at;
+    }
+    case "time_out":
+    case "pause_game":
+      return dueTimeOuts(state, at).includes(action.seat);
   }
 }
 
 function systemRejectionOf(state: GameState, action: SystemAction, at: number) {
-  const isAllowed =
-    action.type === "resume_game"
-      ? state.pause !== null
-      : dueTimeOuts(state, at).includes(action.seat);
-  return isAllowed ? undefined : "not_this_step";
+  return isSystemActionDue(state, action, at) ? undefined : "not_this_step";
 }
 
 function withGraceKept(before: GameState, after: GameState): GameState {

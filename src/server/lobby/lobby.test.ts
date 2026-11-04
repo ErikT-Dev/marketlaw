@@ -26,6 +26,7 @@ function summary(changes: Partial<RoomSummary> = {}): RoomSummary {
       { playerId: ANN, name: "Ann" },
       { playerId: BEA, name: "Bea" },
     ],
+    freePlayers: [],
     ...changes,
   };
 }

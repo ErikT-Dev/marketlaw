@@ -1,6 +1,7 @@
+import type { GameEnding } from "./GameEnding";
 import type { PlaceResult } from "./PlaceResult";
 
 export type GameResult = {
-  readonly endedBy: "end_goal" | "turn_limit";
+  readonly endedBy: GameEnding;
   readonly places: ReadonlyArray<PlaceResult>;
 };

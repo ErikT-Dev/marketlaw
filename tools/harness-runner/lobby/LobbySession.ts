@@ -35,14 +35,17 @@ import type { ReasonCode } from "../../../src/shared/ReasonCode.ts";
 import type { ScriptedRandom } from "../ScriptedRandom.ts";
 import type { LobbyAccount } from "./LobbyAccount.ts";
 import type { LobbyGiven } from "./LOBBY_GIVEN_SCHEMA.ts";
+import { endedRoomFromGiven } from "./endedRoomFromGiven.ts";
 import { lobbyRoomFromGiven } from "./lobbyRoomFromGiven.ts";
-import { NO_ROOM } from "./NO_ROOM.ts";
+import { otherRoomStorage } from "./otherRoomStorage.ts";
 
 const GENERATED_CANDIDATES = 10;
 const NAME_STEP = 7;
 
 export class LobbySession {
   record: RoomRecord | null;
+  goneAs: "closed" | "deleted" = "closed";
+  readonly endedRoom: RoomRecord | null;
   now: EpochMs = v.parse(EpochMs, 0);
   readonly accounts = new Map<string, LobbyAccount>();
   readonly messagesTo = new Map<string, ServerMessage[]>();
@@ -61,6 +64,7 @@ export class LobbySession {
       this.record = record;
     },
     remove: () => {
+      this.goneAs = this.record?.game === null ? "closed" : "deleted";
       this.record = null;
     },
   };
@@ -71,9 +75,10 @@ export class LobbySession {
       this.addAccount(name, lastUsedMs ?? 0);
     }
     this.record =
-      given.room === undefined
+      given.room === undefined || given.room.players.length === 0
         ? null
         : lobbyRoomFromGiven(given.room, (name) => this.identityNamed(name), this.now);
+    this.endedRoom = endedRoomFromGiven(given, (name) => this.identityNamed(name), this.now);
     this.otherRooms = (given.other_rooms ?? []).map((room) =>
       lobbyRoomFromGiven(room, (name) => this.identityNamed(name), this.now),
     );
@@ -127,6 +132,9 @@ export class LobbySession {
       const fired = fireRoomAlarm(this.record, this.now, randomForNextAction, this.live).record;
       if (fired === this.record) {
         break;
+      }
+      if (fired === null) {
+        this.goneAs = this.record.game === null ? "closed" : "deleted";
       }
       this.record = fired;
     }
@@ -282,21 +290,15 @@ export class LobbySession {
   }
 
   private storageFor(code: unknown): RoomStorage {
-    if (this.record?.code === code) {
-      return this.storage;
-    }
-    const index = this.otherRooms.findIndex((room) => room.code === code);
-    return index < 0
-      ? NO_ROOM
-      : {
-          read: () => this.otherRooms[index],
-          write: (record) => {
-            this.otherRooms = this.otherRooms.map((room, at) => (at === index ? record : room));
+    return this.record?.code === code
+      ? this.storage
+      : otherRoomStorage(
+          () => this.otherRooms,
+          (rooms) => {
+            this.otherRooms = rooms;
           },
-          remove: () => {
-            this.otherRooms = this.otherRooms.filter((unusedRoom, at) => at !== index);
-          },
-        };
+          code,
+        );
   }
 
   private nextNameIndex(limit: number): number {

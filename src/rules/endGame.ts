@@ -2,8 +2,14 @@ import { firstCompletionFundsOf } from "./firstCompletionFundsOf";
 import { firstCompletionsOf } from "./firstCompletionsOf";
 import { gameResultOf } from "./gameResultOf";
 import type { GameState } from "./GameState";
+import type { GameEnding } from "../shared/GameEnding";
+import { scoredEndingOf } from "./scoredEndingOf";
 
-export function endGame(state: GameState, at: number): GameState {
+export function endGame(
+  state: GameState,
+  at: number,
+  endedBy: GameEnding = scoredEndingOf(state),
+): GameState {
   const firsts = firstCompletionsOf(state);
   const rewarded = {
     ...state,
@@ -15,5 +21,5 @@ export function endGame(state: GameState, at: number): GameState {
     discard: [...state.discard, ...state.holdingPile],
     holdingPile: [],
   };
-  return { ...rewarded, phase: "ended", result: gameResultOf(rewarded), clockStartedAt: at };
+  return { ...rewarded, phase: "ended", result: gameResultOf(rewarded, endedBy), clockStartedAt: at };
 }

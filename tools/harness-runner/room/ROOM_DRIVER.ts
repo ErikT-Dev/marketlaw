@@ -13,14 +13,26 @@ import { stateFromGiven } from "../engine/stateFromGiven.ts";
 import type { ScenarioDriver } from "../ScenarioDriver.ts";
 import type { ScenarioStep } from "../ScenarioStep.ts";
 import type { ScriptedRandom } from "../ScriptedRandom.ts";
+import { lobbyRoomThen } from "../lobby/lobbyRoomThen.ts";
 import { ROOM_GIVEN_SCHEMA } from "./ROOM_GIVEN_SCHEMA.ts";
+import { roomMessageContains } from "./roomMessageContains.ts";
 import { RoomSession } from "./RoomSession.ts";
 
 const ROOM_SEAT_FIELDS = ["state_version", "connected", "player"];
 
+function playerCountOf(
+  rawGiven: Readonly<Record<string, unknown>>,
+): Readonly<Record<string, number>> {
+  const room = rawGiven["room"];
+  return isRecord(room) && Array.isArray(room["players"]) && rawGiven["players"] === undefined
+    ? { players: room["players"].length }
+    : {};
+}
+
 function engineGivenOf(rawGiven: Readonly<Record<string, unknown>>): unknown {
   const seats: ReadonlyArray<unknown> = Array.isArray(rawGiven["seats"]) ? rawGiven["seats"] : [];
   return {
+    ...playerCountOf(rawGiven),
     ...Object.fromEntries(
       Object.entries(rawGiven).filter(([field]) => field !== "room" && field !== "accounts"),
     ),
@@ -105,6 +117,15 @@ function noticeTo(session: RoomSession, expected: unknown): unknown {
     : { seat: seat.seat, notice: sent.notice.kind };
 }
 
+function messageTo(session: RoomSession, expected: unknown): unknown {
+  if (isRecord(expected) && "tab" in expected) {
+    return tabMessageTo(session, expected);
+  }
+  return isRecord(expected) && "contains" in expected
+    ? roomMessageContains(session.record, (name) => session.identityNamed(name).playerId, expected)
+    : noticeTo(session, expected);
+}
+
 function runRoomStep(session: RoomSession, step: ScenarioStep): void {
   if (step === "start_game") {
     throw new Error("the room driver cannot start a game");
@@ -114,7 +135,7 @@ function runRoomStep(session: RoomSession, step: ScenarioStep): void {
     return;
   }
   if (typeof step["action"] === "string") {
-    session.sendRaw({ seat: step["seat"], message: step });
+    session.sendRaw({ seat: step["seat"], player: step["player"], message: step });
     return;
   }
   if (typeof step["disconnect"] === "number") {
@@ -148,9 +169,9 @@ function readRoomThen(session: RoomSession, field: string, expected: unknown): u
     case "seats":
       return seatsThen(session, expected);
     case "message_to":
-      return isRecord(expected) && "tab" in expected
-        ? tabMessageTo(session, expected)
-        : noticeTo(session, expected);
+      return messageTo(session, expected);
+    case "room":
+      return lobbyRoomThen(session.record, expected);
     case "connected_tab":
       return connectedTab(session, expected);
     case "view":
@@ -198,16 +219,24 @@ export const ROOM_DRIVER: ScenarioDriver = {
     "disconnect",
     "reconnect",
     "open_game",
+    "leave_game",
   ]),
-  thenFields: new Set([...ENGINE_FIELDS.thenFields, "message_to", "connected_tab"]),
+  thenFields: new Set([...ENGINE_FIELDS.thenFields, "message_to", "connected_tab", "room"]),
   nestedFields: new Map([
     ...ENGINE_FIELDS.nestedFields,
     ["given.seats", new Set([...SEAT_FIELDS, ...ROOM_SEAT_FIELDS])],
     ["then.seats", new Set([...SEAT_FIELDS, "type_counts", ...ROOM_SEAT_FIELDS])],
-    ["given.room", new Set(["code", "size", "public", "players", "state"])],
+    ["given.room", new Set(["code", "size", "public", "owner", "players", "state"])],
     ["given.accounts", new Set(["name"])],
     ["then.view", new Set([...(ENGINE_FIELDS.nestedFields.get("then.view") ?? []), "away"])],
     ["then.connected_tab", new Set(["player", "tab"])],
+    ["then.room", new Set(["state", "players"])],
   ]),
+  unhandledGivenValues: (given) => {
+    const state = isRecord(given["room"]) ? given["room"]["state"] : undefined;
+    return state === undefined || state === "playing"
+      ? []
+      : [`given room.state ${JSON.stringify(state)}`];
+  },
   startSession,
 };

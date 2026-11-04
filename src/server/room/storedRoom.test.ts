@@ -31,6 +31,7 @@ function startedRoom(): RoomRecord {
       seats: saved.state.seats.map((seat, index) => ({
         seat: seat.seat,
         playerId: players[index]?.playerId ?? v.parse(PlayerId, crypto.randomUUID()),
+        name: players[index]?.name ?? "",
         stateVersion: 0,
         acceptedActionIds: [],
       })),

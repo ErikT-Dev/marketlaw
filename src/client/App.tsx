@@ -1,6 +1,7 @@
 import { useSyncExternalStore } from "react";
 import styles from "./App.module.css";
 import { CurrentScreen } from "./CurrentScreen";
+import { RoomNotFoundDialog } from "./screens/lobby/RoomNotFoundDialog";
 import type { ClientStore } from "./store/ClientStore";
 
 type Props = {
@@ -9,6 +10,10 @@ type Props = {
 
 export function App({ store }: Props) {
   const notice = useSyncExternalStore(store.subscribe, () => store.getSnapshot().notice);
+  const goneRoomCode = useSyncExternalStore(
+    store.subscribe,
+    () => store.getSnapshot().goneRoomCode,
+  );
   return (
     <>
       <p className={styles["tooSmall"]}>
@@ -21,6 +26,7 @@ export function App({ store }: Props) {
           </p>
         )}
         <CurrentScreen store={store} />
+        {goneRoomCode === null ? null : <RoomNotFoundDialog onClose={store.dismissRemoval} />}
       </div>
     </>
   );

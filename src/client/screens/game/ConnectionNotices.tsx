@@ -6,10 +6,11 @@ import styles from "./GamePage.module.css";
 type Props = {
   readonly connection: ConnectionStatus;
   readonly isOutdated: boolean;
+  readonly isStillPlaying: boolean;
   readonly onPlayHere: () => void;
 };
 
-export function ConnectionNotices({ connection, isOutdated, onPlayHere }: Props) {
+export function ConnectionNotices({ connection, isOutdated, isStillPlaying, onPlayHere }: Props) {
   if (isOutdated) {
     return (
       <Modal title="A new version is available" size="large">
@@ -37,7 +38,9 @@ export function ConnectionNotices({ connection, isOutdated, onPlayHere }: Props)
   }
   return connection === "open" ? null : (
     <p role="status" className={styles["connectionLost"]}>
-      Connection lost. Reconnecting… Your clock keeps running; other players see you as away.
+      {isStillPlaying
+        ? "Connection lost. Reconnecting… Your clock keeps running; other players see you as away."
+        : "Connection lost. Reconnecting…"}
     </p>
   );
 }

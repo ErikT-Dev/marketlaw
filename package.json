@@ -29,7 +29,8 @@
     "design:images": "node tools/design-export/receiveBoardImages.ts",
     "design:tokens": "node tools/design-export/writeTokensCss.ts",
     "design:assets": "node tools/design-export/convertAssets.ts",
-    "test-room": "node tools/test-room/testRoomTool.ts"
+    "test-room": "node tools/test-room/testRoomTool.ts",
+    "replay-export": "node tools/replay-export/replayExportTool.ts"
   },
   "dependencies": {
     "react": "19.3.0",

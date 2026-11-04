@@ -907,3 +907,154 @@ file.
   - Away shows on the opponent cards in every phase (M5.2), and in the top bar's badges only in
     the main phase, as S2.2 says.
 - **Implemented:** phase 18.
+
+## Q60. Where do replay records live, and what removes them (O8)?
+
+- **Phase:** 19, item 1 (O8).
+- **Question:** a room's alarm ends with the room, which is deleted 24 hours after its game (M8),
+  but replay records are kept 30 days (M4.3).
+- **Options:** keep the room alive for 30 days (storage and an alarm per room); write the replay
+  record to D1 and remove old ones with a scheduled job; keep records in a single archive
+  Durable Object.
+- **Solution:** D1, written once when the game ends (1 row plus its index), removed by one daily
+  Cron Trigger. Cron Triggers are on the Free plan (5 per account, 10 ms CPU per run); the delete
+  is a single D1 statement. Recorded as D27.
+- **Implemented:** phase 19.
+
+## Q61. How is leaving built, and what does "at the same moment" mean?
+
+- **Phase:** 19, item 2.
+- **Question:** M6 says what leaving does, but not how players who leave "at the same moment"
+  (M6.9) are recognised, how a game that ends by leaving or by R9.14 is shown, or how
+  `connections-and-leaving` #15 can be checked before room chat exists (phase 21).
+- **Options:** for M6.9, treat only the time-outs of one alarm as one moment, or any due
+  time-outs at the time of a leave; for the endings, reuse "turn limit", or add endings.
+- **Solution:**
+  - Leaving is a logged engine action, `leave_game`, accepted from any player still in a game
+    that has not ended, also when done or out of actions. The player is made done, their hand
+    goes to the holding pile in a main phase and to the discard pile otherwise, and the order of
+    leaving is kept in the game state (Q49). It is not added to the done order, which only
+    breaks ties between players still in the game.
+  - "At the same moment" (M6.9) means the main-phase time-outs due at the same time that each
+    make a player leave (R9.11). While one of them is still to be applied, M6.8 waits for it, so
+    two last players who both time out abandon the game instead of one of them winning.
+  - A game result says how it ended: end goal, turn limit, last player left (M6.8), or
+    abandoned because every player left at the same moment (M6.9) or because it stayed paused for
+    24 hours (R9.14), so the four versions of the end screen (S9.5) can say why. An abandoned game
+    has no winner; I22 checks the winner only in games that are not abandoned.
+  - R9.14 is a logged system action, `abandon_game`, applied by the room's one alarm 24 hours
+    after the pause began.
+  - A player who left is no longer busy in the room (M2, M6.7): the lobby counts only players
+    still in the game.
+  - For `connections-and-leaving` #15, the room driver reads the elements from the update the
+    player would get: `left_game` when their own seat has left, `game_result` when the view has a
+    result, and `room_chat` and `exit_to_lobby` while they are still in the room, whose updates
+    will carry the chat from phase 21. The screen itself is checked by the browser tests.
+  - Leaving is visible to everyone, so it moves every player's state version, like a reveal
+    (I25), and the simulator's chaos bot leaves now and then, so the invariants see it.
+- **Implemented:** `src/rules/leaveGame.ts`, `seatsLeavingAt.ts`, `abandonPausedGame.ts`,
+  `src/shared/GameEnding.ts`, `src/server/room/busyPlayersOf.ts`; phase 19.
+
+## Q62. How do rooms and replay records clean themselves up?
+
+- **Phase:** 19, item 3.
+- **Question:** M8.2 deletes a room when its last player leaves it or 24 hours after its game
+  ended; M4.3 keeps the replay record 30 days. The spec does not say who may leave a room while
+  its game runs, and a daily job cannot remove a record at the exact moment it turns 30 days old.
+- **Solution:**
+  - A player may leave the room (`leave_room`) once they are no longer in its game: after
+    leaving the game (M6.7), or after the game ended (M8.1). A player still in a running game
+    must leave the game first. Each seat keeps its player's name, so the other players still see
+    who sat there after that player left the room.
+  - The room's one alarm is set 24 hours after its game ended; when it fires, or when a message
+    arrives after that time, the room is deleted. This adds one alarm row per finished game.
+  - When a game ends, the room writes its replay record (seed, setup, starting state for test
+    rooms, and the action log) to D1 once: one row and its index entry (B8, B17).
+  - A Cron Trigger runs once a day at 03:17 UTC and deletes every record that ended 30 days ago
+    or more, with one D1 statement. Cron Triggers are on the Workers Free plan, up to 5 per
+    account (https://developers.cloudflare.com/workers/platform/limits/, "Cron Triggers").
+  - Until the job has run, a record older than 30 days still exists in D1, so whatever reads
+    records (the export, the scenario driver) treats records older than 30 days as removed. The
+    record is therefore gone at exactly 30 days for anyone who asks, and deleted from storage
+    within a day after.
+- **Implemented:** `src/server/room/endedRoomDeletionAt.ts`, `roomActionOutcome.ts`,
+  `src/server/replays/`, `migrations/0006_replay_records.sql`, `wrangler.jsonc`; phase 19.
+
+## Q63. Which secret protects the replay export, and what does it return?
+
+- **Phase:** 19, item 4.
+- **Question:** M4.1 makes replay records available only to the people who run the game; the
+  phase asks for "the owner's secret", and the site has one owner secret already, for test rooms.
+- **Options:** a new secret (the owner would have to set it on the live site first); the test-room
+  secret, which the owner already set.
+- **Solution:** the test-room secret, so the export works on the live site without anything
+  from the owner. `GET /api/rooms/<code>/replay` with the secret returns the record from the room
+  while it exists, otherwise the stored record of its last game if it ended less than 30 days
+  ago, otherwise "Not found", as without the secret. The record is the save format without the
+  final state: seed, setup, starting state (test rooms only) and the action log, one format for
+  the export and the stored record (`rules/architecture.md`, One save format). `npm run
+  replay-export` saves it to a file (`docs/replays.md`).
+- **Implemented:** `src/server/api/replayExportRoute.ts`, `tools/replay-export/`,
+  `tools/harness-runner/checkReplayExport.ts`; phase 19.
+
+## Q64. When does a player leave a finished room by going elsewhere (M2.2)?
+
+- **Phase:** 19, review findings 1 and 5.
+- **Questions and solutions:**
+  - M2.2 says joining another room or the ranked queue takes a free player out of the finished
+    room; Q58 left this to phase 19. Who counts? Every player who is in a room but no longer
+    busy in it (M2.1): everyone once its game has ended, and a player who left a running game
+    (M6.7 points to M2). Joining or creating another room takes them out of every such room, as
+    leaving it would: the room is deleted when the last player goes (M8.1). The lobby remembers
+    which rooms such players are still in; the ranked queue (phase 26) uses the same step.
+  - A player who is still in a running game is never taken out this way; they stay busy (M2.1).
+  - The replay record is written to D1 after the room has saved, replied and set its alarm. If
+    the write fails, the room logs it and carries on: the move, the reply and the deletion alarm
+    must not be lost to a D1 error. The room keeps the record until it is deleted, so the export
+    still has it for the first 24 hours (Q63).
+- **Implemented:** `src/server/api/leaveFinishedRooms.ts`, `src/server/room/leaveRoomIfFreeIn.ts`,
+  `src/server/lobby/withRoomSummary.ts`, `src/server/replays/saveReplayRecordIfEnded.ts`;
+  phase 19.
+
+## Q65. How do scenarios check replay records and what a leaver sees?
+
+- **Phase:** 19, review findings 3 and 4.
+- **Questions and solutions:**
+  - `visibility` #13/#14 judged the 30-day cutoff in the lobby driver. They now go through the
+    real code: the driver saves the ended game's replay record with `saveReplayRecord` into an
+    in-memory SQLite database built from migration `0006_replay_records.sql` (Node's built-in
+    `node:sqlite`, no new dependency), runs the daily job `removeOldReplayRecords` at the
+    scenario's time and reads the record with the export's `keptReplayRecordText`. "kept" means
+    the export finds it and one row is stored; "removed" means neither. The three functions take
+    a narrow `ReplayRecordDatabase` type that D1 fits, so the same code runs on both. The
+    scenario runner awaits `then` fields, so a driver may read them asynchronously.
+  - `connections-and-leaving` #15: Exit to lobby is now reported only when the client shows it,
+    from the player's own seat having left or the game's result. The room chat does not exist
+    until phase 21; until then the driver counts it as shown while the player is in the room,
+    a known gap in the phase 19 file, and phase 21 makes it read the chat field.
+- **Implemented:** `src/server/replays/ReplayRecordDatabase.ts`,
+  `tools/harness-runner/lobby/replayRecordThen.ts`,
+  `tools/harness-runner/lobby/memoryReplayRecordDatabase.ts`,
+  `tools/harness-runner/lobby/replayRecordRetention.test.ts`,
+  `tools/harness-runner/room/roomMessageContains.ts`, `tools/harness-runner/runScenario.ts`;
+  phase 19.
+
+## Q66. What does a player see after their third time-out, and while disconnected?
+
+- **Phase:** 19, review findings 2, 8 and 9.
+- **Questions and solutions:**
+  - S9.4 says a time-out message says the player was made done (R9.10), but on the third
+    time-out in a row the player is not made done: they leave the game (R9.11). That message now
+    says "Your time ran out in 3 turns in a row, so you left the game. This was 3 of 3." The
+    first and second keep the made-done text.
+  - "You left the game" (S9.2) now shows the same messages as the game screen: the time-out
+    message, so the player sees why they left, and the connection notices. Like every time-out
+    message, it is shown when it happens and is not kept across a reload. The lost-connection
+    notice there leaves out "your clock keeps running", which no longer applies to a leaver.
+  - Leave game is disabled while the connection is lost, like the rest of the game screen, so
+    the confirmation is never shown for a move that cannot be sent.
+  - The "left" status colour on player badges comes from the badge's CSS instead of an inline
+    style.
+- **Implemented:** `src/client/screens/GamePage.tsx`, `src/client/screens/game/timeOutText.ts`,
+  `src/client/screens/game/ConnectionNotices.tsx`, `src/client/screens/game/LeaveGameButton.tsx`,
+  `src/client/components/PlayerBadge.tsx`; phase 19.

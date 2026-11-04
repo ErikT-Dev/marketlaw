@@ -11,6 +11,7 @@ import { CHAOS_LAST_TURN } from "./CHAOS_LAST_TURN.ts";
 import { averageFundsOf } from "./averageFundsOf.ts";
 import { gameLengthMeasuresOf } from "./gameLengthMeasuresOf.ts";
 import { seededChooser } from "./seededChooser.ts";
+import { replayRecordOf } from "../../src/server/replays/replayRecordOf.ts";
 import type { SimulatedSeat } from "./SimulatedSeat.ts";
 import type { SimulatedGame } from "./SimulatedGame.ts";
 
@@ -60,10 +61,7 @@ function measuresOf(
   saved: SavedGame | undefined,
   fundsAtTurnStart: Readonly<Record<number, number>>,
 ): Readonly<Record<string, number>> {
-  const replay =
-    saved === undefined
-      ? ""
-      : JSON.stringify({ seed: saved.seed, setup: saved.setup, actionLog: saved.actionLog });
+  const replay = saved === undefined ? "" : JSON.stringify(replayRecordOf(saved));
   return {
     rowsWritten: simulation.rowsWritten + simulation.alarm.changes,
     rowsRead: simulation.rowsRead,

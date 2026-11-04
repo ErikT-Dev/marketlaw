@@ -8,11 +8,16 @@ import { readHookInput } from "./readHookInput.ts";
 const CHECKED_PATHS = ["src", "tools", "eslint-rules", "harness", "e2e", "package.json"];
 const LAST_CHECK_FILE = "node_modules/.cache/marketlaw/last-check.json";
 const OUTPUT_LINES_SHOWN = 80;
+const HELPER_RUNNING_FILE = "node_modules/.cache/marketlaw/helper-running";
+const HELPER_MARKER_LIFETIME_MS = 3 * 60 * 60 * 1000;
 
 type LastCheck = Readonly<{ fingerprint: string; hasPassed: boolean }>;
 
 export async function checkBeforeStop(): Promise<void> {
   const input = await readHookInput();
+  if (input["hook_event_name"] !== "SubagentStop" && isHelperRunning()) {
+    return;
+  }
   const fingerprint = fingerprintOfChanges();
   if (fingerprint === undefined) {
     return;
@@ -34,6 +39,14 @@ export async function checkBeforeStop(): Promise<void> {
     );
     process.exitCode = 2;
   }
+}
+
+function isHelperRunning(): boolean {
+  if (!existsSync(HELPER_RUNNING_FILE)) {
+    return false;
+  }
+  const startedAt = Number(readFileSync(HELPER_RUNNING_FILE, "utf8").trim());
+  return Number.isFinite(startedAt) && Date.now() - startedAt < HELPER_MARKER_LIFETIME_MS;
 }
 
 function fingerprintOfChanges(): string | undefined {

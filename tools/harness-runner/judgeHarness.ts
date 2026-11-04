@@ -66,5 +66,6 @@ export function judgeHarness(run: HarnessRun): ReadonlyArray<string> {
     ...unchecked,
     ...run.cardDataProblems.map((problem) => `card-data check: ${problem}`),
     ...run.tierShareProblems.map((problem) => `statistical tier check: ${problem}`),
+    ...run.replayExportProblems.map((problem) => `replay export check: ${problem}`),
   ];
 }

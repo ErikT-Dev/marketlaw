@@ -20,6 +20,7 @@ function missingFor(scenario: Scenario, driver: ScenarioDriver): ReadonlyArray<s
       .filter((field) => !driver.thenFields.has(field))
       .map((field) => `then ${field}`),
     ...unhandledNestedFields(scenario, driver.nestedFields),
+    ...driver.unhandledGivenValues(scenario.given),
   ];
 }
 
@@ -28,18 +29,20 @@ type Played = {
   readonly measurements: ReadonlyArray<BudgetMeasurement>;
 };
 
-function play(scenario: Scenario, driver: ScenarioDriver): Played {
+async function play(scenario: Scenario, driver: ScenarioDriver): Promise<Played> {
   const random = new ScriptedRandom(scenario.random);
   try {
     const session = driver.startSession(scenario.given, random);
     for (const step of scenario.when) {
       session.runStep(step);
     }
-    const mismatches = Object.entries(scenario.then).flatMap(([field, expected]) =>
-      findMismatches(expected, session.readThen(field, expected), `then.${field}`),
+    const mismatches = await Promise.all(
+      Object.entries(scenario.then).map(async ([field, expected]) =>
+        findMismatches(expected, await session.readThen(field, expected), `then.${field}`),
+      ),
     );
     return {
-      problems: [...mismatches, ...random.problems()],
+      problems: [...mismatches.flat(), ...random.problems()],
       measurements: session.measurements?.() ?? [],
     };
   } catch (error) {
@@ -48,10 +51,10 @@ function play(scenario: Scenario, driver: ScenarioDriver): Played {
   }
 }
 
-export function runScenario(
+export async function runScenario(
   scenario: Scenario,
   drivers: ReadonlyArray<ScenarioDriver>,
-): ScenarioOutcome {
+): Promise<ScenarioOutcome> {
   const candidates = drivers.map((driver) => ({ driver, missing: missingFor(scenario, driver) }));
   const ready = candidates.find(({ missing }) => missing.length === 0);
   if (ready === undefined) {
@@ -61,7 +64,7 @@ export function runScenario(
       measurements: [],
     };
   }
-  const { problems, measurements } = play(scenario, ready.driver);
+  const { problems, measurements } = await play(scenario, ready.driver);
   return {
     result: problems.length === 0 ? { status: "passes" } : { status: "fails", problems },
     measurements,

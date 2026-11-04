@@ -22,7 +22,8 @@
 .status {
   font-size: var(--font-size-xs);
 }
-.left {
+.left,
+.left .status {
   color: var(--color-text-muted);
 }
 .firstPlayer {

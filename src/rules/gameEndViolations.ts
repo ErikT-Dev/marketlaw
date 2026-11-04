@@ -1,4 +1,5 @@
 import type { GameState } from "./GameState";
+import { isAbandoned } from "../shared/isAbandoned";
 import type { PlaceResult } from "../shared/PlaceResult";
 import { bonusTypePointsOf } from "./bonusTypePointsOf";
 import { playerOrderOf } from "./playerOrderOf";
@@ -36,6 +37,13 @@ function tieBreakOf(state: GameState, place: PlaceResult): readonly [number, num
   ];
 }
 
+function isPlacedBefore(state: GameState, place: PlaceResult, next: PlaceResult): boolean {
+  if (place.hasLeft) {
+    return next.hasLeft && state.leaveOrder.indexOf(place.seat) > state.leaveOrder.indexOf(next.seat);
+  }
+  return next.hasLeft || place.score >= next.score;
+}
+
 function isTieBrokenInOrder(state: GameState, place: PlaceResult, next: PlaceResult): boolean {
   if (place.hasLeft || next.hasLeft || place.score !== next.score) {
     return true;
@@ -58,7 +66,7 @@ export function gameEndViolations(before: GameState, after: GameState): Readonly
     .map(({ seat }) => `I22: seat ${String(seat)}'s score does not follow the formula`);
   const isOrdered = places.every((place, index) => {
     const next = places[index + 1];
-    return next === undefined || (place.hasLeft ? next.hasLeft : next.hasLeft || place.score >= next.score);
+    return next === undefined || isPlacedBefore(after, place, next);
   });
   const isTieBroken = places.every((place, index) => {
     const next = places[index + 1];
@@ -67,10 +75,14 @@ export function gameEndViolations(before: GameState, after: GameState): Readonly
   return [
     ...(isEverySeatOnce ? [] : ["I22: the places do not hold every seat exactly once"]),
     ...wrongScores,
-    ...(isOrdered ? [] : ["I22: the places are not in score order with players who left last"]),
+    ...(isOrdered
+      ? []
+      : ["I22: the places are not in score order with players who left last, the first to leave last"]),
     ...(isTieBroken
       ? []
       : ["I22: equal scores are not placed by the done order and then the player order"]),
-    ...(places[0]?.hasLeft === false ? [] : ["I22: the winner has left or there is none"]),
+    ...((after.result !== null && isAbandoned(after.result.endedBy)) || places[0]?.hasLeft === false
+      ? []
+      : ["I22: the winner has left or there is none"]),
   ];
 }

@@ -46,9 +46,11 @@ tutorial room on the server like any other game. Every rule in `rules/multiplaye
 ## Development plan
 
 Version 1 is built phase by phase from `docs/plan/` (approved by the owner). Claude builds it on
-its own (D19): find the phase and step as `docs/plan/README.md` "Where to continue" describes,
-build it as "How a phase is built" describes, merge and deploy it when it is done, and continue
-with the next. Stop for the owner only as "Waiting for the owner" describes.
+its own (D19). The owner has two commands, "continue" and "stop" (D28): follow
+`docs/plan/README.md` "Continue and stop" to find the phase and step, and build it as "How a
+phase is built" describes, as a coordinator that runs each job through a fresh helper
+(`docs/plan/phase-helpers.md`). Merge and deploy the phase when it is done, then stop. Stop for
+the owner only as "Waiting for the owner" describes.
 
 ## Commands
 

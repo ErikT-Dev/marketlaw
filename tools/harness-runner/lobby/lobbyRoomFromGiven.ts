@@ -5,16 +5,33 @@ import type { Identity } from "../../../src/server/room/Identity.ts";
 import type { RoomRecord } from "../../../src/server/room/RoomRecord.ts";
 import { ROOM_TIMES } from "../../../src/server/room/ROOM_TIMES.ts";
 import { startRoomGame } from "../../../src/server/room/startRoomGame.ts";
+import { endGame } from "../../../src/rules/endGame.ts";
 import { EpochMs } from "../../../src/shared/EpochMs.ts";
 import { RoomCode } from "../../../src/shared/RoomCode.ts";
 import type { LobbyGiven } from "./LOBBY_GIVEN_SCHEMA.ts";
+
+function endedRoom(waiting: RoomRecord, endedMs: number): RoomRecord {
+  const playing = startRoomGame(waiting, {
+    seed: 1,
+    now: v.parse(EpochMs, endedMs),
+    seatOrder: (players) => players,
+  });
+  const { game } = playing;
+  if (game === null) {
+    throw new Error("the ended room has no game");
+  }
+  return {
+    ...playing,
+    game: { ...game, saved: { ...game.saved, state: endGame(game.saved.state, endedMs) } },
+  };
+}
 
 export function lobbyRoomFromGiven(
   room: NonNullable<LobbyGiven["room"]>,
   identityNamed: (name: string) => Identity,
   now: EpochMs,
 ): RoomRecord {
-  if (room.players[0] !== room.owner) {
+  if (room.owner !== undefined && room.players[0] !== room.owner) {
     throw new Error("the room's owner must be its first player");
   }
   const waiting: RoomRecord = {
@@ -39,5 +56,7 @@ export function lobbyRoomFromGiven(
       };
     case "playing":
       return startRoomGame(waiting, { seed: 1, now, seatOrder: (players) => players });
+    case "ended":
+      return endedRoom(waiting, room.ended_ms ?? now);
   }
 }

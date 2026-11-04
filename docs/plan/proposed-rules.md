@@ -15,10 +15,12 @@ deploy workflow has already run the D1 migrations by then (phase 01 merge, 2026-
 
 ## For `rules/workflow.md`
 
-### No pause between phases
-When a phase is merged, deployed and the live site checked, start the next phase in the same
-session with a one-line status; do not end the turn to report and wait for "continue".
-**Why:** the owner asked for this after phase 02 (2026-10-27), when Claude stopped after the merge.
+### One phase per "continue", no pause inside it
+"continue" runs the current phase to its end without stopping to report inside it. When the
+phase is merged, deployed and the live site checked, stop and tell the owner; the next phase
+starts only with the next "continue" (D28).
+**Why:** the owner asked for no pauses inside or between phases (2026-10-27, 2026-11-03), then
+chose one phase per "continue" with fresh helpers to cut token use (2026-11-04, D28).
 **Enforced by:** judgment.
 
 ## For `rules/typescript.md`
@@ -125,4 +127,23 @@ the same commit as its first user, or before it.
 **Why:** found in the phase 16 review: a CLIENT commit used a host interface change that was only
 committed afterwards, so the commit in between did not type-check, which breaks bisecting and
 rolling back to it.
+**Enforced by:** judgment.
+
+## For `rules/cloudflare.md`
+
+### Nothing runs at a Worker module's top level
+Do not create a `Response`, `Request` or anything that does I/O, timers or randomness in a module
+constant in `src/server/`; build it inside a function. The Workers runtime refuses to start
+("Disallowed operation called within global scope"), and `wrangler dev` fails before any test.
+**Why:** found in phase 19, when a shared `new Response("Not found")` constant stopped the local
+server; type checks and unit tests did not notice.
+**Enforced by:** browser tests (the server does not start) · judgment.
+
+## For `rules/testing.md`
+
+### Reopening a link in a browser test needs a real navigation
+`page.goto` to a link that differs from the current address only after `#` does not reload the
+page, so the app never reads the link again. Go to `about:blank` first.
+**Why:** found in phase 19's room-not-found test, which reopened a seat link after the room was
+deleted.
 **Enforced by:** judgment.

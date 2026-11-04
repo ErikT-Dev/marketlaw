@@ -1,3 +1,4 @@
+import type { PlayerId } from "../../shared/PlayerId";
 import type { RoomCode } from "../../shared/RoomCode";
 import type { RoomPlayer } from "./RoomPlayer";
 
@@ -8,4 +9,5 @@ export type RoomSummary = {
   readonly isWaiting: boolean;
   readonly isOver: boolean;
   readonly players: ReadonlyArray<RoomPlayer>;
+  readonly freePlayers: ReadonlyArray<PlayerId>;
 };

@@ -46,6 +46,7 @@ export class ClientStore {
       serverClockOffsetMs: 0,
       joinError: null,
       removal: null,
+      goneRoomCode: null,
       publicRooms: [],
       isOutdated: false,
     };
@@ -150,7 +151,7 @@ export class ClientStore {
   };
 
   readonly dismissRemoval = (): void => {
-    this.change({ removal: null });
+    this.change({ removal: null, goneRoomCode: null });
   };
 
   readonly sendAction = (action: ActionIntent): void => {
@@ -171,6 +172,7 @@ export class ClientStore {
   };
 
   readonly exitToLobby = (): void => {
+    this.host?.sendRoomAction({ type: "leave_room" });
     this.leaveRoom(null, this.sessionOutsideRooms());
   };
 
@@ -236,7 +238,9 @@ export class ClientStore {
 
   private receiveConnection(status: ConnectionStatus): void {
     if (status === "room_gone") {
-      this.leaveRoom("That room no longer exists.", this.sessionOutsideRooms());
+      const goneRoomCode = this.state.session?.roomCode ?? null;
+      this.leaveRoom(null, this.sessionOutsideRooms());
+      this.change({ goneRoomCode });
       return;
     }
     this.change({

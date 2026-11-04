@@ -10,10 +10,13 @@ import type { RoomCode } from "../shared/RoomCode";
 import { ROOM_GONE_CLOSE_CODE } from "../shared/ROOM_GONE_CLOSE_CODE";
 import { attachmentOf } from "./attachmentOf";
 import type { ConnectionAttachment } from "./ConnectionAttachment";
-import { findPlayerByTokenHash } from "./findPlayerByTokenHash";
 import { newGameStart } from "./newGameStart";
 import { NO_CONNECTION } from "./NO_CONNECTION";
 import { alarmChangeFor } from "./room/alarmChangeFor";
+import { applyAlarmChange } from "./room/applyAlarmChange";
+import { isPlayerBusyIn } from "./room/isPlayerBusyIn";
+import type { ReplayRecord } from "./replays/ReplayRecord";
+import { replayRecordOfRoom } from "./replays/replayRecordOfRoom";
 import { CompressedRoomStore } from "./room/CompressedRoomStore";
 import { createRoomIn } from "./room/createRoomIn";
 import { fireRoomAlarm } from "./room/fireRoomAlarm";
@@ -32,10 +35,12 @@ import { withAwaySeats } from "./room/withAwaySeats";
 import { withConnection } from "./room/withConnection";
 import { lobbyOf } from "./lobbyOf";
 import { roomSummaryOf } from "./room/roomSummaryOf";
+import { saveReplayRecordIfEnded } from "./replays/saveReplayRecordIfEnded";
 import { RoomSockets } from "./RoomSockets";
-import { sha256Hex } from "./sha256Hex";
-
-type Sender = { readonly identity: Identity; readonly tokenHash: string };
+import type { RoomRemoval } from "./room/RoomRemoval";
+import type { Sender } from "./Sender";
+import { senderOfToken } from "./senderOfToken";
+import { leaveRoomIfFreeIn } from "./room/leaveRoomIfFreeIn";
 
 function nowMs(): EpochMs {
   return v.parse(EpochMs, Date.now());
@@ -83,12 +88,23 @@ export class GameRoom extends DurableObject<Env> {
     this.ctx.abort("Restarted by a browser test");
   }
 
-  async hasPlayer(playerId: PlayerId): Promise<boolean> {
+  async isPlayerBusy(playerId: PlayerId): Promise<boolean> {
     return this.inTurn(async () =>
-      Promise.resolve(
-        loadRoom(this.storage)?.players.some((player) => player.playerId === playerId) === true,
-      ),
+      Promise.resolve(isPlayerBusyIn(loadRoom(this.storage), playerId)),
     );
+  }
+
+  async replayRecord(): Promise<ReplayRecord | null> {
+    return this.inTurn(async () => Promise.resolve(replayRecordOfRoom(loadRoom(this.storage))));
+  }
+
+  async leaveIfFree(playerId: PlayerId): Promise<void> {
+    await this.inTurn(async () => {
+      const before = loadRoom(this.storage);
+      if (leaveRoomIfFreeIn(this.storage, playerId)) {
+        await this.publishChange(before, [{ playerId, reason: "left", rejoinAt: null }]);
+      }
+    });
   }
 
   async joinRejection(joining: Identity): Promise<JoinRejection | null> {
@@ -106,20 +122,24 @@ export class GameRoom extends DurableObject<Env> {
         nowMs(),
         this.sockets.livePlayers(),
       );
-      await this.rooms.save();
-      this.sockets.sendRemovals(removals);
-      const record = loadRoom(this.storage);
-      if (record !== null && record !== before) {
-        this.sockets.updatePlayers(
-          record,
-          record.players.map(({ playerId }) => playerId),
-          null,
-        );
-      }
-      await this.syncAlarm();
-      await this.reportToLobby(before ?? null);
+      await this.publishChange(before ?? null, removals);
       return rejection;
     });
+  }
+
+  private async publishChange(before: RoomRecord | null, removals: ReadonlyArray<RoomRemoval>) {
+    await this.rooms.save();
+    this.sockets.sendRemovals(removals);
+    const record = loadRoom(this.storage);
+    if (record !== null && record !== before) {
+      this.sockets.updatePlayers(
+        record,
+        record.players.map(({ playerId }) => playerId),
+        null,
+      );
+    }
+    await this.syncAlarm();
+    await this.reportToLobby(before);
   }
 
   override async alarm(): Promise<void> {
@@ -159,6 +179,7 @@ export class GameRoom extends DurableObject<Env> {
       null,
     );
     this.sockets.sendNotices(timeOutNoticesBetween(record, fired));
+    await saveReplayRecordIfEnded(this.env.DB, record, fired);
   }
 
   override async webSocketClose(socket: WebSocket): Promise<void> {
@@ -201,7 +222,7 @@ export class GameRoom extends DurableObject<Env> {
     const text = typeof message === "string" ? message : new TextDecoder().decode(message);
     const parsed = parseClientMessage(text);
     const sender = parsed.isOk
-      ? await this.senderOf(parsed.value.token, attachmentOf(socket))
+      ? await senderOfToken(this.env.DB, parsed.value.token, attachmentOf(socket))
       : null;
     await this.inTurn(async () => this.receive(socket, parsed, sender));
   }
@@ -248,6 +269,9 @@ export class GameRoom extends DurableObject<Env> {
       ]);
     }
     await this.syncAlarm();
+    if (recordAfter !== null) {
+      await saveReplayRecordIfEnded(this.env.DB, recordBefore, recordAfter);
+    }
     await this.reportToLobby(recordBefore);
   }
 
@@ -290,24 +314,6 @@ export class GameRoom extends DurableObject<Env> {
 
   private async syncAlarm(isFiring = false): Promise<void> {
     const current = isFiring ? null : await this.ctx.storage.getAlarm();
-    const change = alarmChangeFor(current, loadRoom(this.storage));
-    switch (change.kind) {
-      case "keep":
-        return;
-      case "set":
-        await this.ctx.storage.setAlarm(change.at);
-        return;
-      case "delete":
-        await this.ctx.storage.deleteAlarm();
-    }
-  }
-
-  private async senderOf(token: string, attachment: ConnectionAttachment): Promise<Sender | null> {
-    const tokenHash = await sha256Hex(token);
-    if (attachment.identity !== null && attachment.tokenHash === tokenHash) {
-      return { identity: attachment.identity, tokenHash };
-    }
-    const identity = await findPlayerByTokenHash(this.env.DB, tokenHash);
-    return identity === null ? null : { identity, tokenHash };
+    await applyAlarmChange(this.ctx.storage, alarmChangeFor(current, loadRoom(this.storage)));
   }
 }

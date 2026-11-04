@@ -8,4 +8,5 @@ export const TIME_RULES = {
   mainLimitGrowthSeconds: 120,
   mainLimitGrowthTurns: 19,
   timeoutsBeforeLeaving: 3,
+  pausedAbandonMs: 86_400_000,
 } as const;

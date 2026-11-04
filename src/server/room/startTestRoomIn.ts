@@ -54,6 +54,7 @@ export function startTestRoomIn(
               {
                 seat: seat.seat,
                 playerId: player.playerId,
+                name: player.name,
                 stateVersion: 0,
                 acceptedActionIds: [],
               },

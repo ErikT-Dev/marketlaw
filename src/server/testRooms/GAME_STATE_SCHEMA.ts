@@ -53,6 +53,7 @@ export const GAME_STATE_SCHEMA = v.object({
   questList: v.array(QuestName),
   bonusTypes: v.array(TypeName),
   doneOrder: v.array(SEAT_NUMBER_SCHEMA),
+  leaveOrder: v.array(SEAT_NUMBER_SCHEMA),
   drawLog: v.array(DRAW_LOG_ENTRY_SCHEMA),
   firstCompletions: v.array(ProjectName),
   clockStartedAt: EpochMs,

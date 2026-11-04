@@ -185,6 +185,35 @@ hibernating WebSockets. D1 keeps players and usernames, and later records and ra
 reserve chat quota in blocks so a chat message never costs a lobby row. Built in phase 17.
 *Effect:* `open-questions.md` Q52; `wrangler.jsonc` in phase 17.
 
+**D27. Replay records in D1, removed by one daily Cron Trigger (was O8).** (2026-11-03, Claude
+under D19, phase 19)
+When a game ends, its room writes the replay record (seed, setup, action log, result) to a D1
+table, so the record outlives the room, which is deleted 24 hours after the game. One Cron Trigger
+a day deletes replay records older than 30 days (M4.3) and, from phase 23 on, guests unused for 90
+days (A1.1). Cron Triggers are on the Free plan: 5 per account, 10 ms of CPU per run
+(https://developers.cloudflare.com/workers/platform/limits/, checked 2026-11-03); the deletes run
+in D1.
+*Effect:* `open-questions.md` Q60; `wrangler.jsonc` `triggers`.
+
+**D28. A coordinator and fresh helpers; one phase per "continue".** (2026-11-04, owner)
+The owner has two commands. "continue" picks up exactly where the work left off and runs to the
+end of the current phase, then stops; "stop" ends the work within 10 minutes, keeping what is
+done. The session the owner talks to is a coordinator: it starts one fresh helper agent per job
+(starter, one builder per Progress item, finisher, the phase reviewer, fixers, releaser) and
+only checks their short reports against git. Helpers follow `phase-helpers.md`, hand knowledge
+on through the Progress notes, run the full `npm run check` before an item's last commit, and
+end early at a committed, green point when an item turns out large. Stop works through a flag
+file every helper checks before each step, with a 9-minute hard stop. A Stop-hook change (skip
+while a helper marker exists, the marker expiring after 3 hours) and a new SubagentStop hook
+running the same check are applied by the owner, since `tools/hooks/` and `.claude/` are
+protected.
+*Why:* measured on phases 16 to 19, 80 to 90% of the tokens went to re-reading a conversation
+that grew to 460k to 790k tokens per phase; fresh helpers keep every conversation short, which
+cuts a phase by roughly half without dropping a check, and every item now gets the full check.
+Replaces "starts the next one" of D19 and the "Where to continue" steps of D18.
+*Effect:* `README.md` ("Continue and stop", "How a phase is built", ground rule 6),
+`phase-helpers.md`, `CLAUDE.md`, `tools/hooks/checkBeforeStop.ts`, `.claude/settings.json`.
+
 ## Open
 
 From D19 on, Claude solves these itself when the phase that needs them starts, records the
@@ -210,9 +239,3 @@ Worker was deleted after the measurement.
 **O7. Privacy notice.** Needed before phase 24.
 A short notice: what is stored (username, email, password hash, game records), why, how long,
 and how to delete it. Drafted into the spec (owner's approval) before phase 24 builds it.
-
-**O8. Scheduled jobs and replay records.** Needed before phase 19.
-A room's alarm ends with the room, so replay records kept 30 days (M4.3) and guests unused for
-90 days (A1.1) need something else to delete them, most likely a scheduled job (Cron Trigger).
-*Recommendation:* phase 19 confirms Cron Triggers are free, decides where replay records live,
-and adds the trigger to `wrangler.jsonc` (owner's approval).

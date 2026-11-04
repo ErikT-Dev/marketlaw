@@ -6,20 +6,7 @@ import { TestRoomResponse } from "../../src/shared/api/TestRoomResponse.ts";
 import { ENGINE_FIELDS } from "../harness-runner/engine/ENGINE_FIELDS.ts";
 import { GIVEN_SCHEMA } from "../harness-runner/engine/GIVEN_SCHEMA.ts";
 import { stateFromGiven } from "../harness-runner/engine/stateFromGiven.ts";
-import { readLocalTestRoomSecret } from "./readLocalTestRoomSecret.ts";
-
-const LOCAL_SITE = "http://localhost:8787";
-
-function secretFor(site: string): string {
-  const fromEnvironment = process.env["TEST_ROOM_SECRET"];
-  if (fromEnvironment !== undefined) {
-    return fromEnvironment;
-  }
-  if (site !== LOCAL_SITE) {
-    throw new Error("set TEST_ROOM_SECRET to the live site's secret");
-  }
-  return readLocalTestRoomSecret();
-}
+import { testRoomSecretFor } from "./testRoomSecretFor.ts";
 
 function givenOf(file: string, number: number): Readonly<Record<string, unknown>> {
   const scenarios: unknown = parse(readFileSync(`harness/scenarios/${file}.yaml`, "utf8"));
@@ -55,7 +42,10 @@ export async function startTestRoom(file: string, number: number, site: string):
   const state = stateFromGiven(parsed.output);
   const response = await fetch(`${site}/api/test-rooms`, {
     method: "POST",
-    headers: { "content-type": "application/json", [TEST_ROOM_SECRET_HEADER]: secretFor(site) },
+    headers: {
+      "content-type": "application/json",
+      [TEST_ROOM_SECRET_HEADER]: testRoomSecretFor(site),
+    },
     body: JSON.stringify({
       state,
       playerNames: state.seats.map((seat) => `Seat ${String(seat.seat)}`),

@@ -1,3 +1,4 @@
+import type { GameEnding } from "../shared/GameEnding";
 import type { GameResult } from "../shared/GameResult";
 import type { PlaceResult } from "../shared/PlaceResult";
 import { bonusTypePointsOf } from "./bonusTypePointsOf";
@@ -11,6 +12,7 @@ function rankOf(state: GameState, place: PlaceResult): ReadonlyArray<number> {
   const orderIndex = playerOrderOf(state).indexOf(place.seat);
   return [
     place.hasLeft ? 1 : 0,
+    -state.leaveOrder.indexOf(place.seat),
     -place.score,
     doneIndex === -1 ? state.seats.length : doneIndex,
     orderIndex === -1 ? state.seats.length : orderIndex,
@@ -23,7 +25,7 @@ function compareRanks(first: ReadonlyArray<number>, second: ReadonlyArray<number
   return index === -1 ? 0 : (first[index] ?? 0) - (second[index] ?? 0);
 }
 
-export function gameResultOf(state: GameState): GameResult {
+export function gameResultOf(state: GameState, endedBy: GameEnding): GameResult {
   const places = state.seats.map((seat) => {
     const bonusTypePoints = bonusTypePointsOf(seat, state.bonusTypes);
     return {
@@ -37,7 +39,7 @@ export function gameResultOf(state: GameState): GameResult {
     };
   });
   return {
-    endedBy: state.seats.some(hasReachedEndGoal) ? "end_goal" : "turn_limit",
+    endedBy,
     places: [...places].sort((first, second) =>
       compareRanks(rankOf(state, first), rankOf(state, second)),
     ),

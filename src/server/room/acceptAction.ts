@@ -1,5 +1,6 @@
 import type { SavedGame } from "../../rules/SavedGame";
 import type { SeatNumber } from "../../shared/SeatNumber";
+import { isChangeVisibleToAll } from "./isChangeVisibleToAll";
 import type { RoomGame } from "./RoomGame";
 
 const REMEMBERED_ACTION_IDS = 100;
@@ -9,10 +10,7 @@ export function acceptAction(
   actor: { readonly seat: SeatNumber; readonly actionId: string },
   saved: SavedGame,
 ): RoomGame {
-  const isVisibleToAll =
-    saved.state.turn !== game.saved.state.turn ||
-    saved.state.phase !== game.saved.state.phase ||
-    game.saved.state.phase === "market";
+  const isVisibleToAll = isChangeVisibleToAll(game.saved.state, saved.state);
   return {
     ...game,
     saved,

@@ -9,6 +9,7 @@ import { buildScenarioRuns } from "./buildScenarioRuns.ts";
 import { checkCardData } from "./checkCardData.ts";
 import { simulateBusyDay } from "../simulator/busyDay/simulateBusyDay.ts";
 import { simulateInParallel } from "../simulator/simulateInParallel.ts";
+import { checkReplayExport } from "./checkReplayExport.ts";
 import { checkTierShares } from "./checkTierShares.ts";
 import { LAST_SIMULATED_TURN } from "./LAST_SIMULATED_TURN.ts";
 import { SIMULATED_INVARIANTS } from "./SIMULATED_INVARIANTS.ts";
@@ -37,11 +38,12 @@ export async function runHarness(
   const budgets = readIdentifiedEntries(files.budgets);
   const run: HarnessRun = {
     required,
-    runs: buildScenarioRuns(files.scenarioFiles, required, drivers),
+    runs: await buildScenarioRuns(files.scenarioFiles, required, drivers),
     invariantIds: invariants.map(({ id }) => id),
     budgetIds: budgets.map(({ id }) => id),
     cardDataProblems: checkCardData(files.cards),
     tierShareProblems: checkTierShares(DRAWS_PER_TURN),
+    replayExportProblems: checkReplayExport(),
     simulation: await simulateInParallel(simulatedGames, LAST_SIMULATED_TURN),
     busyDay: simulateBusyDay(),
     simulatedInvariants: SIMULATED_INVARIANTS,

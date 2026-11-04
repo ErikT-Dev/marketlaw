@@ -6,6 +6,10 @@ import type { RoomRecord } from "./RoomRecord";
 
 const SEAT_NUMBERS: ReadonlyArray<SeatNumber> = [1, 2, 3, 4];
 
+function nameOf(record: RoomRecord, playerId: string): string {
+  return record.players.find((player) => player.playerId === playerId)?.name ?? "";
+}
+
 export function startRoomGame(record: RoomRecord, start: GameStart): RoomRecord {
   const seatOrder = start.seatOrder(record.players.map(({ playerId }) => playerId));
   return {
@@ -17,6 +21,7 @@ export function startRoomGame(record: RoomRecord, start: GameStart): RoomRecord 
       seats: seatOrder.map((playerId, index) => ({
         seat: SEAT_NUMBERS[index] ?? 1,
         playerId,
+        name: nameOf(record, playerId),
         stateVersion: 0,
         acceptedActionIds: [],
       })),

@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { GameHost } from "../../shared/GameHost";
 import type { HostEvent } from "../../shared/HostEvent";
 import { EpochMs } from "../../shared/EpochMs";
+import type { RoomIntent } from "../../shared/protocol/RoomIntent";
 import type { ReasonCode } from "../../shared/ReasonCode";
 import { RoomCode } from "../../shared/RoomCode";
 import { roomUpdateWith } from "../testing/roomUpdateWith";
@@ -13,6 +14,7 @@ type FakeHost = {
   readonly store: ClientStore;
   readonly emit: (event: HostEvent) => void;
   readonly resyncs: () => number;
+  readonly roomActions: () => ReadonlyArray<RoomIntent>;
 };
 
 function storeInRoom(): FakeHost {
@@ -20,9 +22,13 @@ function storeInRoom(): FakeHost {
   let listener: ((event: HostEvent) => void) | null = null;
   let resyncCount = 0;
   let nextId = 1;
+  const roomActions: RoomIntent[] = [];
   const host: GameHost = {
     sendAction: () => `action-${String(nextId++)}`,
-    sendRoomAction: () => true,
+    sendRoomAction: (action) => {
+      roomActions.push(action);
+      return true;
+    },
     requestResync: () => {
       resyncCount += 1;
     },
@@ -39,6 +45,7 @@ function storeInRoom(): FakeHost {
       listener?.(event);
     },
     resyncs: () => resyncCount,
+    roomActions: () => roomActions,
   };
 }
 
@@ -138,6 +145,24 @@ describe("client store moves", () => {
     expect(fake.resyncs()).toBe(1);
     rejectFirstAction(fake, "card_not_in_hand");
     expect(fake.resyncs()).toBe(1);
+  });
+});
+
+describe("leaving a room", () => {
+  it("takes the player out of the room when they exit to the lobby", () => {
+    const fake = storeInRoom();
+    fake.store.exitToLobby();
+    expect(fake.roomActions()).toEqual([{ type: "leave_room" }]);
+    expect(fake.store.getSnapshot().session?.roomCode).toBeNull();
+  });
+
+  it("says the room was not found when it is gone, until the notice is closed", () => {
+    const fake = storeInRoom();
+    fake.emit({ type: "connection", status: "room_gone" });
+    expect(fake.store.getSnapshot().session?.roomCode).toBeNull();
+    expect(fake.store.getSnapshot().goneRoomCode).toBe("ABCDEF");
+    fake.store.dismissRemoval();
+    expect(fake.store.getSnapshot().goneRoomCode).toBeNull();
   });
 });
 

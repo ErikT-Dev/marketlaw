@@ -52,6 +52,7 @@ export const ENGINE_FIELDS = {
     "complete_quest",
     "influence",
     "undo",
+    "leave_game",
     "turn_draw",
   ]),
   thenFields: new Set([

@@ -4,6 +4,7 @@ import { lobbyOf } from "../lobbyOf";
 import { bodyOf } from "./bodyOf";
 import { identityOf } from "./identityOf";
 import { isReallyBusy } from "./isReallyBusy";
+import { leaveFinishedRooms } from "./leaveFinishedRooms";
 import { roomJson } from "./roomJson";
 
 const BUSY = { isOk: false, reason: "busy_elsewhere", rejoinAt: null } as const;
@@ -37,5 +38,6 @@ export async function joinRoomRoute(request: Request, env: Env, code: RoomCode) 
     await lobby.release(identity.playerId, code);
     return roomJson({ isOk: false, ...rejection }, 409);
   }
+  await leaveFinishedRooms(env, identity.playerId, code);
   return roomJson({ isOk: true, code });
 }

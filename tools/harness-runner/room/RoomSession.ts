@@ -46,6 +46,12 @@ function nameForSeat(given: RoomGiven, seat: number): string {
   );
 }
 
+function checkOwnerIsFirst(given: RoomGiven, seatNames: ReadonlyArray<string>): void {
+  if (given.room?.owner !== undefined && given.room.owner !== seatNames[0]) {
+    throw new Error("the room driver makes the player in seat 1 the owner");
+  }
+}
+
 export class RoomSession {
   record: RoomRecord;
   now: EpochMs;
@@ -109,6 +115,7 @@ export class RoomSession {
       names.map((name) => [name, { playerId: v.parse(PlayerId, randomUUID()), name }]),
     );
     const players = this.seatNames.map((name) => this.identityNamed(name));
+    checkOwnerIsFirst(given, this.seatNames);
     this.record = {
       schemaVersion: ROOM_SCHEMA_VERSION,
       code: v.parse(RoomCode, given.room?.code ?? DEFAULT_ROOM_CODE),
@@ -132,6 +139,7 @@ export class RoomSession {
         seats: state.seats.map((seat, index) => ({
           seat: seat.seat,
           playerId: players[index]?.playerId ?? this.identityNamed("Seat 1").playerId,
+          name: players[index]?.name ?? "Seat 1",
           stateVersion: given.seats?.find((entry) => entry.seat === seat.seat)?.state_version ?? 0,
           acceptedActionIds: [],
         })),

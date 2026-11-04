@@ -22,6 +22,7 @@ const TURN_ONE_DRIVER: ScenarioDriver = {
   steps: new Set(),
   thenFields: new Set(["turn"]),
   nestedFields: new Map(),
+  unhandledGivenValues: () => [],
   startSession() {
     return {
       runStep() {
@@ -34,14 +35,15 @@ const TURN_ONE_DRIVER: ScenarioDriver = {
   },
 };
 
-function judge(required: RequiredList): ReadonlyArray<string> {
+async function judge(required: RequiredList): Promise<ReadonlyArray<string>> {
   const run: HarnessRun = {
     required,
-    runs: buildScenarioRuns(SCENARIO_FILES, required, [TURN_ONE_DRIVER]),
+    runs: await buildScenarioRuns(SCENARIO_FILES, required, [TURN_ONE_DRIVER]),
     invariantIds: [],
     budgetIds: [],
     cardDataProblems: [],
     tierShareProblems: [],
+    replayExportProblems: [],
     simulation: NO_GAMES,
     busyDay: null,
     simulatedInvariants: [],
@@ -50,27 +52,27 @@ function judge(required: RequiredList): ReadonlyArray<string> {
 }
 
 describe("buildScenarioRuns", () => {
-  it("does not fail the check for a failing scenario that is not required", () => {
-    expect(judge({ scenarios: [], invariants: [], budgets: [] })).toEqual([]);
+  it("does not fail the check for a failing scenario that is not required", async () => {
+    expect(await judge({ scenarios: [], invariants: [], budgets: [] })).toEqual([]);
   });
 
-  it("fails the check for a failing scenario on the required list", () => {
+  it("fails the check for a failing scenario on the required list", async () => {
     const required = {
       scenarios: [{ file: "setup", name: "starts in turn 2" }],
       invariants: [],
       budgets: [],
     };
-    expect(judge(required)).toEqual([
+    expect(await judge(required)).toEqual([
       'required scenario "setup: starts in turn 2" fails: then.turn: expected 2, got 1',
     ]);
   });
 
-  it("passes the check when the required scenario passes", () => {
+  it("passes the check when the required scenario passes", async () => {
     const required = {
       scenarios: [{ file: "setup", name: "starts in turn 1" }],
       invariants: [],
       budgets: [],
     };
-    expect(judge(required)).toEqual([]);
+    expect(await judge(required)).toEqual([]);
   });
 });

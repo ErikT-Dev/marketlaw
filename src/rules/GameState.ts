@@ -26,6 +26,7 @@ export type GameState = {
   readonly questList: ReadonlyArray<QuestName>;
   readonly bonusTypes: ReadonlyArray<TypeName>;
   readonly doneOrder: ReadonlyArray<SeatNumber>;
+  readonly leaveOrder: ReadonlyArray<SeatNumber>;
   readonly firstCompletions: ReadonlyArray<ProjectName>;
   readonly drawLog: ReadonlyArray<DrawLogEntry>;
   readonly mainPhaseStart: MainPhaseStart;

@@ -34,6 +34,7 @@ function harnessRun(parts: Partial<HarnessRun>): HarnessRun {
     budgetIds: ["B1"],
     cardDataProblems: [],
     tierShareProblems: [],
+    replayExportProblems: [],
     simulation: NO_GAMES,
     busyDay: null,
     simulatedInvariants: [],
@@ -119,6 +120,15 @@ describe("judgeHarness", () => {
     });
     expect(judgeHarness(run)).toEqual([
       "statistical tier check: turn 5 tier 2: drawn 31.00%, R17.10 says 28.57%",
+    ]);
+  });
+
+  it("fails the check when an exported replay does not replay exactly", () => {
+    const run = harnessRun({
+      replayExportProblems: ["the ended room's export does not replay exactly"],
+    });
+    expect(judgeHarness(run)).toEqual([
+      "replay export check: the ended room's export does not replay exactly",
     ]);
   });
 });

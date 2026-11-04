@@ -49,6 +49,7 @@ export function setUpGame(setup: GameSetup, random: Random): GameState {
     questList: QUESTS.map(({ name }) => name).filter((name) => !quests.includes(name)),
     bonusTypes: pickBonusTypes(random),
     doneOrder: [],
+    leaveOrder: [],
     firstCompletions: [],
     clockStartedAt: setup.startedAt,
     pause: null,

@@ -111,6 +111,7 @@ export class GameSimulation {
         seats: this.seats.map((seat) => ({
           seat: seat.seat,
           playerId: seat.identity.playerId,
+          name: seat.identity.name,
           stateVersion: 0,
           acceptedActionIds: [],
         })),

@@ -1,5 +1,6 @@
 import * as v from "valibot";
 import { describe, expect, it } from "vitest";
+import { endGame } from "../../rules/endGame";
 import { randomForNextAction } from "../../rules/randomForNextAction";
 import { startSavedGame } from "../../rules/startSavedGame";
 import { EpochMs } from "../../shared/EpochMs";
@@ -11,6 +12,7 @@ import { RoomCode } from "../../shared/RoomCode";
 import { parseClientMessage } from "../../shared/protocol/parseClientMessage";
 import { alarmChangeFor } from "./alarmChangeFor";
 import { fireAlarm } from "./fireAlarm";
+import { fireRoomAlarm } from "./fireRoomAlarm";
 import { receiveMessage } from "./receiveMessage";
 import type { RoomRecord } from "./RoomRecord";
 import type { RoomStorage } from "./RoomStorage";
@@ -37,6 +39,7 @@ function playingRoom(): RoomRecord {
       seats: saved.state.seats.map((seat, index) => ({
         seat: seat.seat,
         playerId: players[index]?.playerId ?? v.parse(PlayerId, crypto.randomUUID()),
+        name: players[index]?.name ?? "",
         stateVersion: 0,
         acceptedActionIds: [],
       })),
@@ -63,6 +66,25 @@ describe("the room alarm", () => {
     ]);
     expect(fired.game?.saved.state.turn).toBe(2);
     expect(fired.game?.seats.map(({ stateVersion }) => stateVersion)).toEqual([1, 1]);
+  });
+  it("deletes the room 24 hours after its game ended, and not before", () => {
+    const room = playingRoom();
+    const { game } = room;
+    if (game === null) {
+      throw new Error("the room has no game");
+    }
+    const endedAt = STARTED_AT + 5_000;
+    const ended = {
+      ...room,
+      game: { ...game, saved: { ...game.saved, state: endGame(game.saved.state, endedAt) } },
+    };
+    const deletionAt = endedAt + 86_400_000;
+    expect(alarmChangeFor(null, ended)).toEqual({ kind: "set", at: deletionAt });
+    const live = ended.players.map(({ playerId }) => playerId);
+    const early = v.parse(EpochMs, deletionAt - 1);
+    expect(fireRoomAlarm(ended, early, randomForNextAction, live).record).toBe(ended);
+    const due = v.parse(EpochMs, deletionAt);
+    expect(fireRoomAlarm(ended, due, randomForNextAction, live).record).toBeNull();
   });
 });
 

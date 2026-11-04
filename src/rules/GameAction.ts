@@ -33,4 +33,6 @@ export type GameAction =
   | { readonly type: "time_out"; readonly seat: SeatNumber }
   | { readonly type: "pause_game"; readonly seat: SeatNumber }
   | { readonly type: "resume_game"; readonly seat: SeatNumber }
+  | { readonly type: "abandon_game"; readonly seat: SeatNumber }
+  | { readonly type: "leave_game"; readonly seat: SeatNumber }
   | { readonly type: "turn_draw"; readonly seat: SeatNumber; readonly choice: TurnDrawChoice };

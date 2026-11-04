@@ -51,13 +51,17 @@ function incomeViolations(before: GameState, after: GameState): ReadonlyArray<st
   });
 }
 
+function actorViolations({ before, action }: Transition): ReadonlyArray<string> {
+  const seat = seatOf(before, action.seat);
+  const isActorOut =
+    seat !== undefined && (seat.hasLeft || (seat.isDone && action.type !== "leave_game"));
+  return isActorOut ? [`I18: seat ${action.seat} took an action while done or after leaving`] : [];
+}
+
 function acceptedViolations(transition: Transition, after: GameState): ReadonlyArray<string> {
   const { before, action } = transition;
   const seat = seatOf(before, action.seat);
-  const actor =
-    seat !== undefined && (seat.isDone || seat.hasLeft)
-      ? [`I18: seat ${action.seat} took an action while done or after leaving`]
-      : [];
+  const actor = actorViolations(transition);
   const play =
     action.type === "play_card" && seat !== undefined
       ? [

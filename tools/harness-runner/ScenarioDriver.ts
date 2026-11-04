@@ -7,6 +7,9 @@ export type ScenarioDriver = {
   readonly steps: ReadonlySet<string>;
   readonly thenFields: ReadonlySet<string>;
   readonly nestedFields: ReadonlyMap<string, ReadonlySet<string>>;
+  readonly unhandledGivenValues: (
+    given: Readonly<Record<string, unknown>>,
+  ) => ReadonlyArray<string>;
   readonly startSession: (
     given: Readonly<Record<string, unknown>>,
     random: ScriptedRandom,

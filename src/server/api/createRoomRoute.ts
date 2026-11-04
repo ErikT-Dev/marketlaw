@@ -6,6 +6,7 @@ import { bodyOf } from "./bodyOf";
 import { createInFreeRoom } from "./createInFreeRoom";
 import { identityOf } from "./identityOf";
 import { isReallyBusy } from "./isReallyBusy";
+import { leaveFinishedRooms } from "./leaveFinishedRooms";
 import { roomJson } from "./roomJson";
 
 const BUSY = { isOk: false, reason: "busy_elsewhere", rejoinAt: null } as const;
@@ -32,7 +33,9 @@ export async function createRoomRoute(request: Request, env: Env): Promise<Respo
   if (code === "busy") {
     return roomJson(BUSY, 409);
   }
-  return code === null
-    ? roomJson({ isOk: false, reason: "no_free_room_code", rejoinAt: null }, 503)
-    : roomJson({ isOk: true, code });
+  if (code === null) {
+    return roomJson({ isOk: false, reason: "no_free_room_code", rejoinAt: null }, 503);
+  }
+  await leaveFinishedRooms(env, identity.playerId, code);
+  return roomJson({ isOk: true, code });
 }

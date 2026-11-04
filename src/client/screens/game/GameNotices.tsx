@@ -31,6 +31,7 @@ export function GameNotices(props: Props) {
       <ConnectionNotices
         connection={props.connection}
         isOutdated={props.isOutdated}
+        isStillPlaying={!props.seat.hasLeft}
         onPlayHere={props.onPlayHere}
       />
     </>
