@@ -1038,3 +1038,23 @@ file.
   `tools/harness-runner/lobby/replayRecordRetention.test.ts`,
   `tools/harness-runner/room/roomMessageContains.ts`, `tools/harness-runner/runScenario.ts`;
   phase 19.
+
+## Q66. What does a player see after their third time-out, and while disconnected?
+
+- **Phase:** 19, review findings 2, 8 and 9.
+- **Questions and solutions:**
+  - S9.4 says a time-out message says the player was made done (R9.10), but on the third
+    time-out in a row the player is not made done: they leave the game (R9.11). That message now
+    says "Your time ran out in 3 turns in a row, so you left the game. This was 3 of 3." The
+    first and second keep the made-done text.
+  - "You left the game" (S9.2) now shows the same messages as the game screen: the time-out
+    message, so the player sees why they left, and the connection notices. Like every time-out
+    message, it is shown when it happens and is not kept across a reload. The lost-connection
+    notice there leaves out "your clock keeps running", which no longer applies to a leaver.
+  - Leave game is disabled while the connection is lost, like the rest of the game screen, so
+    the confirmation is never shown for a move that cannot be sent.
+  - The "left" status colour on player badges comes from the badge's CSS instead of an inline
+    style.
+- **Implemented:** `src/client/screens/GamePage.tsx`, `src/client/screens/game/timeOutText.ts`,
+  `src/client/screens/game/ConnectionNotices.tsx`, `src/client/screens/game/LeaveGameButton.tsx`,
+  `src/client/components/PlayerBadge.tsx`; phase 19.

@@ -113,6 +113,8 @@ These 15 scenarios are added to `harness/required.yaml` in this phase, by file a
      logged instead of thrown (Q64).
   2. "You left the game" shows no `ConnectionNotices` and no reason after 3 time-outs (R9.11,
      S9.4); the time-out text says "made done" even for 3 of 3.
+     Fixed: "You left the game" shows the time-out message and the connection notices; the third
+     time-out says the player left instead of "made done" (Q66).
   3. `visibility` #13/#14 copy the cutoff condition in the lobby driver instead of going through
      the real save/read/remove code; `removeOldReplayRecords` has no test.
      Fixed: the scenarios save, remove and read the record through the real functions on an
@@ -134,7 +136,10 @@ These 15 scenarios are added to `harness/required.yaml` in this phase, by file a
   7. Suggestion: B17 should measure `replayRecordOf(saved)`.
      Fixed: the simulator measures `replayRecordOf(saved)`.
   8. Suggestion: Leave game should be disabled while the connection is lost.
+     Fixed: disabled while the connection is not open (Q66).
   9. Minor: the badge's fixed inline colour should be a CSS class.
-- [ ] Fix or answer the findings, run the checks again.
+     Fixed: the "left" status colour comes from `Badge.module.css` (Q66).
+- [x] Fix or answer the findings (Q64, Q65, Q66).
+- [ ] Run the checks again.
 - [ ] Write the Report, merge, watch the deploy (new D1 migration 0006 and the Cron Trigger),
   check the live site including `npm run replay-export`.
