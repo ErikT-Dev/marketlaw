@@ -262,7 +262,7 @@ The 427 scenarios cover all of version 1, but each phase implements only part of
 | 16 | [Rooms and guests](phase-16-rooms-and-guests.md) | 3 Playthrough | 15 | done |
 | 17 | [Lobby and one thing at a time](phase-17-lobby-and-one-thing-at-a-time.md) | 3 Playthrough | 16 | done |
 | 18 | [Connections and pausing](phase-18-connections-and-pausing.md) | 3 Playthrough | 17 | done |
-| 19 | [Leaving, cleanup and replay records](phase-19-leaving-cleanup-and-replays.md) | 3 Playthrough | 18 | in progress |
+| 19 | [Leaving, cleanup and replay records](phase-19-leaving-cleanup-and-replays.md) | 3 Playthrough | 18 | done |
 | 20 | [Cost protection and the playthrough version](phase-20-cost-protection-and-playthrough.md) | 3 Playthrough | 19 | approved |
 | 21 | [Room chat](phase-21-room-chat.md) | 4 Together | 20 | approved |
 | 22 | [Abandon vote and rematch](phase-22-abandon-vote-and-rematch.md) | 4 Together | 20 | approved |
