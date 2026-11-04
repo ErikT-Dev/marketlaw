@@ -140,6 +140,7 @@ These 15 scenarios are added to `harness/required.yaml` in this phase, by file a
   9. Minor: the badge's fixed inline colour should be a CSS class.
      Fixed: the "left" status colour comes from `Badge.module.css` (Q66).
 - [x] Fix or answer the findings (Q64, Q65, Q66).
-- [ ] Run the checks again.
+- [x] Run the checks again (2026-11-04, after the review fixes): `npm run check` and `npm run harness`
+  (1,000 games) green; browser tests with two workers: all 99 passed on the first run.
 - [ ] Write the Report, merge, watch the deploy (new D1 migration 0006 and the Cron Trigger),
   check the live site including `npm run replay-export`.
