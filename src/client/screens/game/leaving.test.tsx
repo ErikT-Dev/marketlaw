@@ -50,6 +50,15 @@ describe("leaving the game", () => {
     expect(props.onAction).toHaveBeenCalledWith({ type: "leave_game" });
   });
 
+  it("disables Leave game while the connection is lost", () => {
+    const props = { ...gamePageProps(roomUpdateWith({})), connection: "closed" as const };
+    render(<GamePage {...props} />);
+    const button = screen.getByRole("button", { name: "Leave game" });
+    expect(button).toHaveProperty("disabled", true);
+    fireEvent.click(button);
+    expect(screen.queryByRole("dialog")).toBeNull();
+  });
+
   it("offers no Leave game once the game is over", () => {
     render(
       <GamePage {...gamePageProps(roomUpdateWith({ phase: "ended", result: LAST_PLAYER }))} />,
@@ -69,6 +78,30 @@ describe("after leaving", () => {
     );
     fireEvent.click(screen.getByRole("button", { name: "Exit to lobby" }));
     expect(props.onExitToLobby).toHaveBeenCalledTimes(1);
+  });
+
+  it("says why the player left after their third time-out in a row", () => {
+    const props = {
+      ...gamePageProps(roomUpdateWith({}, { hasLeft: true, isDone: true })),
+      timeOutNotice: { kind: "timed_out" as const, inARow: 3, of: 3 },
+    };
+    render(<GamePage {...props} />);
+    expect(screen.getByRole("heading", { name: "You left the game" })).toBeDefined();
+    const toast = screen.getByRole("status");
+    expect(toast.textContent).toContain(
+      "Your time ran out in 3 turns in a row, so you left the game. This was 3 of 3.",
+    );
+    expect(toast.textContent).not.toContain("made done");
+  });
+
+  it("tells a player who left about a lost connection without the clock warning", () => {
+    const props = {
+      ...gamePageProps(roomUpdateWith({}, { hasLeft: true, isDone: true })),
+      connection: "closed" as const,
+    };
+    render(<GamePage {...props} />);
+    const notice = screen.getByRole("status");
+    expect(notice.textContent).toBe("Connection lost. Reconnecting…");
   });
 
   it("shows the result when the game ends, and again after closing it", () => {

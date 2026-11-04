@@ -1,4 +1,5 @@
 import { GameBoard } from "./game/GameBoard";
+import { GameNotices } from "./game/GameNotices";
 import type { GamePageProps } from "./game/GamePageProps";
 import { LeftGamePage } from "./game/LeftGamePage";
 
@@ -12,13 +13,16 @@ export function GamePage(props: Props) {
   }
   if (mine.hasLeft) {
     return (
-      <LeftGamePage
-        result={view.result}
-        turn={view.turn}
-        viewer={view.seat}
-        playerNames={props.update.room.playerNames}
-        onExitToLobby={props.onExitToLobby}
-      />
+      <>
+        <LeftGamePage
+          result={view.result}
+          turn={view.turn}
+          viewer={view.seat}
+          playerNames={props.update.room.playerNames}
+          onExitToLobby={props.onExitToLobby}
+        />
+        <GameNotices {...props} seat={mine} playerNames={props.update.room.playerNames} />
+      </>
     );
   }
   return <GameBoard {...props} view={view} mine={mine} />;

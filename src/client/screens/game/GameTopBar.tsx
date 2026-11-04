@@ -15,7 +15,8 @@ type Props = {
   readonly view: PlayerView;
   readonly seat: OwnSeatView;
   readonly playerNames: ReadonlyArray<string>;
-  readonly onLeaveGame: (() => void) | null;
+  readonly onLeaveGame: () => void;
+  readonly isConnected: boolean;
 };
 
 const PHASE_NAMES: Readonly<Record<GamePhase, string>> = {
@@ -24,7 +25,7 @@ const PHASE_NAMES: Readonly<Record<GamePhase, string>> = {
   ended: "Game over",
 };
 
-export function GameTopBar({ view, seat, playerNames, onLeaveGame }: Props) {
+export function GameTopBar({ view, seat, playerNames, onLeaveGame, isConnected }: Props) {
   const awaySeats = useContext(AwaySeats);
   return (
     <header className={styles["topBar"]}>
@@ -54,7 +55,9 @@ export function GameTopBar({ view, seat, playerNames, onLeaveGame }: Props) {
       </ol>
       <div className={styles["right"]}>
         <YourClock view={view} seat={seat} playerNames={playerNames} />
-        {onLeaveGame === null ? null : <LeaveGameButton onLeave={onLeaveGame} />}
+        {view.phase === "ended" ? null : (
+          <LeaveGameButton onLeave={onLeaveGame} isDisabled={!isConnected} />
+        )}
       </div>
     </header>
   );

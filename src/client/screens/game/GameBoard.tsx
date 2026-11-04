@@ -21,17 +21,19 @@ export function GameBoard(props: Props) {
   const { update, view, mine } = props;
   const [isResultClosed, setIsResultClosed] = useState(false);
   const playerNames = update.room.playerNames;
-  const onLeaveGame =
-    view.phase === "ended"
-      ? null
-      : () => {
-          props.onAction({ type: "leave_game" });
-        };
   return (
     <ServerClockOffset.Provider value={props.serverClockOffsetMs}>
       <AwaySeats.Provider value={update.game?.awaySeats ?? []}>
         <div className={styles["page"]}>
-          <GameTopBar view={view} seat={mine} playerNames={playerNames} onLeaveGame={onLeaveGame} />
+          <GameTopBar
+            view={view}
+            seat={mine}
+            playerNames={playerNames}
+            onLeaveGame={() => {
+              props.onAction({ type: "leave_game" });
+            }}
+            isConnected={props.connection === "open"}
+          />
           <main className={styles["table"]} inert={props.connection !== "open" || props.isOutdated}>
             <LeftColumn view={view} playerNames={playerNames} />
             <MiddleColumn
