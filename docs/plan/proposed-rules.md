@@ -15,10 +15,12 @@ deploy workflow has already run the D1 migrations by then (phase 01 merge, 2026-
 
 ## For `rules/workflow.md`
 
-### No pause between phases
-When a phase is merged, deployed and the live site checked, start the next phase in the same
-session with a one-line status; do not end the turn to report and wait for "continue".
-**Why:** the owner asked for this after phase 02 (2026-10-27), when Claude stopped after the merge.
+### One phase per "continue", no pause inside it
+"continue" runs the current phase to its end without stopping to report inside it. When the
+phase is merged, deployed and the live site checked, stop and tell the owner; the next phase
+starts only with the next "continue" (D28).
+**Why:** the owner asked for no pauses inside or between phases (2026-10-27, 2026-11-03), then
+chose one phase per "continue" with fresh helpers to cut token use (2026-11-04, D28).
 **Enforced by:** judgment.
 
 ## For `rules/typescript.md`
