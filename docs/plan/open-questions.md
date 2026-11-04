@@ -1015,3 +1015,26 @@ file.
 - **Implemented:** `src/server/api/leaveFinishedRooms.ts`, `src/server/room/leaveRoomIfFreeIn.ts`,
   `src/server/lobby/withRoomSummary.ts`, `src/server/replays/saveReplayRecordIfEnded.ts`;
   phase 19.
+
+## Q65. How do scenarios check replay records and what a leaver sees?
+
+- **Phase:** 19, review findings 3 and 4.
+- **Questions and solutions:**
+  - `visibility` #13/#14 judged the 30-day cutoff in the lobby driver. They now go through the
+    real code: the driver saves the ended game's replay record with `saveReplayRecord` into an
+    in-memory SQLite database built from migration `0006_replay_records.sql` (Node's built-in
+    `node:sqlite`, no new dependency), runs the daily job `removeOldReplayRecords` at the
+    scenario's time and reads the record with the export's `keptReplayRecordText`. "kept" means
+    the export finds it and one row is stored; "removed" means neither. The three functions take
+    a narrow `ReplayRecordDatabase` type that D1 fits, so the same code runs on both. The
+    scenario runner awaits `then` fields, so a driver may read them asynchronously.
+  - `connections-and-leaving` #15: Exit to lobby is now reported only when the client shows it,
+    from the player's own seat having left or the game's result. The room chat does not exist
+    until phase 21; until then the driver counts it as shown while the player is in the room,
+    a known gap in the phase 19 file, and phase 21 makes it read the chat field.
+- **Implemented:** `src/server/replays/ReplayRecordDatabase.ts`,
+  `tools/harness-runner/lobby/replayRecordThen.ts`,
+  `tools/harness-runner/lobby/memoryReplayRecordDatabase.ts`,
+  `tools/harness-runner/lobby/replayRecordRetention.test.ts`,
+  `tools/harness-runner/room/roomMessageContains.ts`, `tools/harness-runner/runScenario.ts`;
+  phase 19.

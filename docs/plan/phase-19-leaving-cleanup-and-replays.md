@@ -44,6 +44,8 @@ step.
 - "You left the game" shows no room chat yet; chat comes in phase 21. "Room not found" has no
   **My match history** button until match histories exist (phase 25), and the end screen offers
   no rematch until phase 22.
+- Until the room chat exists (phase 21), the driver of `connections-and-leaving` #15 counts the
+  chat as shown to a player still in the room; phase 21 makes it read the chat (Q65).
 
 ## What you can see when it's done
 
@@ -113,8 +115,13 @@ These 15 scenarios are added to `harness/required.yaml` in this phase, by file a
      S9.4); the time-out text says "made done" even for 3 of 3.
   3. `visibility` #13/#14 copy the cutoff condition in the lobby driver instead of going through
      the real save/read/remove code; `removeOldReplayRecords` has no test.
+     Fixed: the scenarios save, remove and read the record through the real functions on an
+     in-memory SQLite database built from the D1 migration; `replayRecordRetention.test.ts`
+     tests the cutoff directly (Q65).
   4. Scenario #15's driver reports `room_chat` and `exit_to_lobby` whenever the player is in the
      room; list as a known gap or read a real field.
+     Fixed and answered: Exit to lobby is read from the seat having left or the result, as the
+     client shows it; the room chat is listed as a known gap until phase 21 (Q65).
   5. M2.2's second half (joining another room takes the player out of the finished room, deferred
      to this phase by Q58) is not built: build it in `isReallyBusy`, or list it as a gap.
      Fixed: built after a successful join or create rather than in `isReallyBusy` (the lobby
