@@ -195,6 +195,25 @@ days (A1.1). Cron Triggers are on the Free plan: 5 per account, 10 ms of CPU per
 in D1.
 *Effect:* `open-questions.md` Q60; `wrangler.jsonc` `triggers`.
 
+**D28. A coordinator and fresh helpers; one phase per "continue".** (2026-11-04, owner)
+The owner has two commands. "continue" picks up exactly where the work left off and runs to the
+end of the current phase, then stops; "stop" ends the work within 10 minutes, keeping what is
+done. The session the owner talks to is a coordinator: it starts one fresh helper agent per job
+(starter, one builder per Progress item, finisher, the phase reviewer, fixers, releaser) and
+only checks their short reports against git. Helpers follow `phase-helpers.md`, hand knowledge
+on through the Progress notes, run the full `npm run check` before an item's last commit, and
+end early at a committed, green point when an item turns out large. Stop works through a flag
+file every helper checks before each step, with a 9-minute hard stop. A Stop-hook change (skip
+while a helper marker exists, the marker expiring after 3 hours) and a new SubagentStop hook
+running the same check are applied by the owner, since `tools/hooks/` and `.claude/` are
+protected.
+*Why:* measured on phases 16 to 19, 80 to 90% of the tokens went to re-reading a conversation
+that grew to 460k to 790k tokens per phase; fresh helpers keep every conversation short, which
+cuts a phase by roughly half without dropping a check, and every item now gets the full check.
+Replaces "starts the next one" of D19 and the "Where to continue" steps of D18.
+*Effect:* `README.md` ("Continue and stop", "How a phase is built", ground rule 6),
+`phase-helpers.md`, `CLAUDE.md`, `tools/hooks/checkBeforeStop.ts`, `.claude/settings.json`.
+
 ## Open
 
 From D19 on, Claude solves these itself when the phase that needs them starts, records the

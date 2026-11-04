@@ -32,8 +32,8 @@ Build version 1 as defined by `harness/spec/`, until the game passes the harness
    it uses the final view.
 6. **Claude builds version 1 on its own (D19).** The owner approved the whole plan at once
    (D15) and, from phase 02 on, hands the building of version 1 to Claude. Claude works through
-   the phases in order, merges and deploys each finished phase itself, and starts the next one.
-   It solves open points and unclear spec itself, implements the solutions, and records each
+   the phases in order, one phase per "continue" (D28), and merges and deploys each finished
+   phase itself. It solves open points and unclear spec itself, implements the solutions, and records each
    such question with its solution in `open-questions.md` (see "Deciding without the owner"). It stops for the owner only for what only the owner can do (see "Waiting
    for the owner"). The owner reviews the decisions log and the phase reports when version 1 is
    done.
@@ -63,55 +63,86 @@ In addition to its own exit criteria:
   phase file, the decisions made, and the review's findings with what happened to each) into the
   phase file; then Claude merges and deploys the branch and checks the live site.
 
-## Where to continue
+## Continue and stop
 
-When the owner says "continue implementing" (or anything like it), Claude finds the work itself
-(D18):
+The owner runs the work with two commands, typed in a Claude Code session in this repository
+(D28):
 
-1. Check git: the current branch and any uncommitted changes. Uncommitted work on a phase branch
-   belongs to that phase; commit or finish it first.
-2. Read the **Status** column of the phase table below. It is the one source of truth; each phase
-   file's Status line mirrors it.
-   - A phase **waiting for the owner**: do what the phase can still do without the owner; if
+- **continue** (or anything like it): picks up exactly where the work left off and runs to the
+  end of the current phase, then stops.
+- **stop**: ends the work within 10 minutes, keeping everything done so far.
+
+Typing `/clear` before `continue` at the start of a new phase saves tokens; `continue` works
+without it too.
+
+### Continue
+
+The session that receives "continue" is the **coordinator**. It finds the work itself:
+
+1. Delete the stop flag `node_modules/.cache/marketlaw/stop-requested`. If no helper of this
+   session is running, also delete a leftover helper marker
+   `node_modules/.cache/marketlaw/helper-running`.
+2. Check git: the current branch, uncommitted changes, the last few commits.
+3. Read the **Status** column of the phase table below. It is the one source of truth; each
+   phase file's Status line mirrors it. For a phase in progress, read only the **Progress**
+   section of its phase file.
+4. Pick the next job ("How a phase is built"):
+   - **Uncommitted changes on a phase branch:** they belong to that phase, left by a stopped or
+     interrupted helper. Run the job the Progress notes name, which picks them up.
+   - **A phase in progress:** the first Progress item not ticked off, or the next Finish step.
+   - **A phase waiting for the owner:** whatever the phase can still do without the owner. If
      nothing is left, start the next phase whose dependencies are done, or stop and tell the
      owner what is needed.
-   - A phase **in progress**: switch to its branch, read its Progress checklist, and continue with
-     the first item not ticked off.
-   - Otherwise: start the first **approved** phase in the table whose dependencies are all
-     **done**, following "How a phase is built".
-3. Say in one line which phase and which step the work continues from, then work.
+   - **Otherwise:** a starter for the first **approved** phase whose dependencies are all
+     **done**.
+5. Say in one line which phase and which step the work continues from, then run jobs until the
+   phase is done. After a phase is done, the coordinator stops and tells the owner, rather than
+   starting the next one.
 
 Statuses move in this order: **approved** → **in progress** (branch created) → **done** (review
 done, report written, merged and deployed). A phase blocked on something only the owner can do is
-**waiting for the owner**, with the reason in its file. Claude updates the table
-and the phase file's Status line at each change, and commits that with the phase's work.
+**waiting for the owner**, with the reason in its file. The helpers update the table and the phase
+file's Status line at each change, and commit that with the phase's work.
+
+### Stop
+
+When the owner says "stop" (or anything like it) while a helper runs, the coordinator:
+
+1. Creates the stop flag `node_modules/.cache/marketlaw/stop-requested` and tells the owner the
+   work is stopping.
+2. Starts a background timer of 9 minutes (a background shell command that ends when the time is
+   up).
+3. Waits. Every helper checks the flag before each step and each long command
+   (`phase-helpers.md`, "Watch for stop"). It commits what passes, writes where it stopped into
+   Progress, and reports **stopped**, normally within 5 minutes.
+4. If the helper has not reported when the timer ends, stops it with `TaskStop`. Its work stays
+   on disk, uncommitted, and the next "continue" picks it up.
+5. Deletes the helper marker and tells the owner in two lines where the work stopped. If the
+   Stop hook then reports a failing check on the stopped helper's uncommitted work, it says so
+   and ends anyway; the hook lets the second attempt through, and "continue" picks the work up.
+
+If no helper is running, the coordinator only confirms that nothing is running. Pressing Esc
+does not stop a helper; closing the terminal does, at once, and leaves its work uncommitted for
+the next "continue".
 
 ## How a phase is built
 
-Every phase follows these steps (D17).
+Every phase follows the same steps (D17): start, a loop once per Builds item, stop rules, and a
+fixed finish. Since D28 a **coordinator** runs them through **helpers**, fresh agents that each
+do one job and end, so no conversation grows large. What each helper does is in
+`phase-helpers.md`.
 
-**1. Start**
+| Step | Job (`phase-helpers.md`) | Runs |
+|---|---|---|
+| 1. Start | Starter | once: branch, decisions, Progress checklist |
+| 2. Loop | Builder | once per Progress item (again if a builder ends with **partial**) |
+| 4. Finish: checks | Finisher | after the last item |
+| 4. Finish: review | Phase reviewer (D16) | once |
+| 4. Finish: fixes | Fixer | once per group of related findings |
+| 4. Finish: checks again | Finisher | after the fixes |
+| 4. Finish: release | Releaser | report, merge, deploy, live check, phase done |
 
-- Create the branch `phase-NN-name` from master.
-- Read the phase file, `decisions.md`, every spec rule under Covers, and the phase's scenarios.
-- List anything unclear or contradictory in the spec, and any open decision the phase needs;
-  decide each one as "Deciding without the owner" describes before building.
-- Turn the phase's Builds items into a **Progress** checklist at the end of the phase file. This
-  is the one part of an approved phase file Claude keeps editing; it shows where the phase stands,
-  so any session can resume it.
-
-**2. Loop, once per Builds item, in order**
-
-1. Reread the exact spec rules and scenarios for this item.
-2. Search for existing code, types and helpers to reuse.
-3. Test first: make the item's scenarios run and fail for the right reason; add unit tests for
-   what the scenarios do not reach.
-4. Build the smallest change that makes them pass.
-5. Run the fast checks: types, lint, the affected tests.
-6. Commit to the phase branch, `<AREA>: <description>`, one logical change per commit.
-7. Tick the item off in Progress, with a note on anything that differed from the phase file.
-
-**3. Stop rules, at any point**
+**3. Stop rules.** These hold for every helper (`phase-helpers.md`, "Stop rules"):
 
 - The spec is unclear or contradicts itself: decide and record it ("Deciding without the owner");
   never pick an interpretation silently.
@@ -123,20 +154,36 @@ Every phase follows these steps (D17).
 - A new dependency or a harness change is needed: make it and record it in `open-questions.md`
   (D19).
 
-**4. Finish**
+### The coordinator
 
-1. Add the phase's scenarios to `harness/required.yaml` in one edit.
-2. Run the full `npm run check`, `npm run harness` (the phase-end simulated games, D25), the browser
-   tests and the budget checks.
-3. Update `docs/enforcement.md` if a check now applies that did not before.
-4. Run the phase review (D16); fix or answer every finding; run the checks again.
-5. Write the phase report under **Report** at the end of the phase file: what was built, what to
-   try, differences from the phase file, decisions made, the review's findings and what happened
-   to each.
-6. Merge to master (`docs/merging-and-rollback.md`), watch the deploy, and check that the live
-   site works. If the deploy fails, fix it on the phase branch and merge again; roll back if the
-   live site is broken and the fix is not quick.
-7. Mark the phase **done** and start the next one.
+The coordinator only plans, starts helpers and checks their results. It never reads code, specs,
+diffs or test output and never looks at screenshots, so its own conversation stays small for the
+whole phase.
+
+- **One helper at a time.** All helpers share one working tree. Each is a fresh
+  `general-purpose` agent (never a fork, which would inherit the coordinator's conversation),
+  started in the background with a name, on the same model as the coordinator.
+- **The helper marker.** Before starting a builder, finisher, fixer or releaser, the coordinator
+  writes the current time (epoch ms) to `node_modules/.cache/marketlaw/helper-running`; after
+  the helper's report, it deletes it. While the marker exists, the Stop hook leaves the
+  helper's unfinished work alone. The SubagentStop hook checks the helper's work when the helper
+  ends (D28).
+- **The brief** is at most about 10 lines: phase, branch, job, item or finding numbers, "read
+  `docs/plan/phase-helpers.md`", and anything from earlier reports the helper needs that is not
+  already in Progress.
+- **After each report,** it checks the result for itself with short commands: `git status
+  --short`, the last commits, and the item's tick in Progress. A report that does not match
+  git is treated as **failed**.
+- **By result:**
+  - **done:** start the next job.
+  - **partial:** start a builder for the rest of the item.
+  - **stopped:** end, as "Stop" describes.
+  - **blocked:** see "Waiting for the owner".
+  - **failed:** start one more helper for the same job if the report shows a fixable cause;
+    otherwise stop and tell the owner.
+- **Review findings.** The coordinator writes the phase reviewer's findings into the Finish part
+  of Progress, then groups related findings, one group per fixer.
+- **At the end of the phase,** after the releaser, it sends the owner a notification and stops.
 
 ## Deciding without the owner
 
