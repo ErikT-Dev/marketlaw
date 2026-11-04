@@ -9,6 +9,8 @@ export async function saveReplayRecordIfEnded(
 ): Promise<void> {
   const ended = endedGameOf(before, after);
   if (ended !== null) {
-    await saveReplayRecord(db, after.code, ended);
+    await saveReplayRecord(db, after.code, ended).catch((error: unknown) => {
+      console.error("Saving the replay record failed", after.code, error);
+    });
   }
 }
