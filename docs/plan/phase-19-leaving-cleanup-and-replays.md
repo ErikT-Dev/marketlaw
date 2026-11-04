@@ -107,6 +107,8 @@ These 15 scenarios are added to `harness/required.yaml` in this phase, by file a
   1. The D1 replay-record write in `GameRoom` (after save, before the reply) has no error
      handling: a D1 failure loses the reply to the last move, the deletion alarm and the record.
      Catch it, or write after reply and alarm.
+     Fixed: the record is written after the reply, the updates and the alarm, and a D1 failure is
+     logged instead of thrown (Q64).
   2. "You left the game" shows no `ConnectionNotices` and no reason after 3 time-outs (R9.11,
      S9.4); the time-out text says "made done" even for 3 of 3.
   3. `visibility` #13/#14 copy the cutoff condition in the lobby driver instead of going through
@@ -115,9 +117,15 @@ These 15 scenarios are added to `harness/required.yaml` in this phase, by file a
      room; list as a known gap or read a real field.
   5. M2.2's second half (joining another room takes the player out of the finished room, deferred
      to this phase by Q58) is not built: build it in `isReallyBusy`, or list it as a gap.
+     Fixed: built after a successful join or create rather than in `isReallyBusy` (the lobby
+     forgets free players, so it never asked their room): the lobby now remembers which rooms
+     free players are still in, and joining or creating a room takes them out of those rooms,
+     deleting a room when its last player goes (Q64). The queue uses the same step in phase 26.
   6. No tests for `leave_room` during a running game (accepted after leaving, `room_not_waiting`
      while still in it) or for a leaver being free to join elsewhere.
+     Fixed: `src/server/room/leavingRoom.test.ts`, also covering finding 5.
   7. Suggestion: B17 should measure `replayRecordOf(saved)`.
+     Fixed: the simulator measures `replayRecordOf(saved)`.
   8. Suggestion: Leave game should be disabled while the connection is lost.
   9. Minor: the badge's fixed inline colour should be a CSS class.
 - [ ] Fix or answer the findings, run the checks again.
