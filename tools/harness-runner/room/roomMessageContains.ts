@@ -10,11 +10,13 @@ function shownElements(record: RoomRecord, playerId: PlayerId): ReadonlyArray<st
   }
   const view = updateFor(record, playerId).game?.view;
   const ownSeat = view?.seats.find((seat) => seat.kind === "own");
+  const hasLeft = ownSeat?.hasLeft === true;
+  const hasResult = view !== undefined && view.result !== null;
   return [
     "room_chat",
-    "exit_to_lobby",
-    ...(ownSeat?.hasLeft === true ? ["left_game"] : []),
-    ...(view?.result === null || view === undefined ? [] : ["game_result"]),
+    ...(hasLeft ? ["left_game"] : []),
+    ...(hasLeft || hasResult ? ["exit_to_lobby"] : []),
+    ...(hasResult ? ["game_result"] : []),
   ];
 }
 
