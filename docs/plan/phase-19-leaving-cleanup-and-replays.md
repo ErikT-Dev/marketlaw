@@ -144,3 +144,63 @@ These 15 scenarios are added to `harness/required.yaml` in this phase, by file a
   (1,000 games) green; browser tests with two workers: all 99 passed on the first run.
 - [ ] Write the Report, merge, watch the deploy (new D1 migration 0006 and the Cron Trigger),
   check the live site including `npm run replay-export`.
+
+## Report
+
+**Built.** A player can leave a game at any time with **Leave game** in the top bar and its
+confirmation. Leaving is done at once: the player is made done, keeps their city, their hand goes
+to the holding pile in a main phase and to the discard pile otherwise, and they are skipped in
+player order from then on, also during their own market go. Three main-phase time-outs in a row
+count as leaving (R9.11). When one player is left, they win (M6.8); when every remaining player
+leaves at the same moment, or a paused game stays paused for 24 hours (R9.14), the game is
+abandoned with no winner. The end screen says how the game ended. A leaver sees "You left the
+game" with the time-out message and connection notices, and later the result. Rooms delete
+themselves when their last player leaves or 24 hours after their game ended, through the room's
+one alarm; joining or creating another room takes a free player out of their finished room.
+Every ended game writes a replay record to D1 (new migration 0006), kept 30 days and removed by
+one daily Cron Trigger (03:17 UTC). The owner exports any room's replay with
+`npm run replay-export` and the test-room secret (`docs/replays.md`). A link to a room that no
+longer exists shows "Room not found".
+
+**What to try.** Play a game in two windows and press Leave game in one: that window shows "You
+left the game", the other wins at once and both see the result. In a three-player game, leave
+with one player and see the others play on with that seat skipped. Export a replay:
+`TEST_ROOM_SECRET=<the secret> npm run replay-export -- <room code> https://marketlaw.mlawd.workers.dev`.
+Open an old room link after its room was deleted: "Room not found".
+
+**Checks.** `npm run check` green; `npm run harness` green with 1,000 simulated games, the replay
+export check and this phase's 15 scenarios now required; all 99 browser tests passed.
+
+**Differences from the phase file.** R9.14 (abandoned after 24 hours paused) is built here as a
+logged system action. Leaving a room (`leave_room`) is allowed once a player is no longer in its
+game. The replay export uses the existing test-room secret instead of a new owner secret, so it
+works on the live site without anything from the owner. M2.2's second half (joining another room
+takes a free player out of a finished one), left to this phase by Q58, is built. Known gaps
+added: the room chat on "You left the game" and its check in `connections-and-leaving` #15 wait
+for phase 21.
+
+**Decisions.** Q60 (D27): replay records in D1, one daily Cron Trigger removes them. Q61: leaving
+as a logged engine action, what "at the same moment" means, how a game ended. Q62: leaving a
+room, room deletion by the alarm, records older than 30 days count as removed before the job runs.
+Q63: the export's secret and format. Q64: leaving finished rooms by going elsewhere (M2.2); the
+replay record is written after the reply and a D1 failure is logged. Q65: the replay scenarios
+run the real save, remove and read code on an in-memory SQLite database; #15 reads real fields.
+Q66: the third time-out's message, notices on "You left the game", Leave game disabled while
+disconnected.
+
+**Review findings and what happened to each.**
+1. The D1 replay-record write could lose the reply, alarm and record on a D1 error: fixed, it is
+   written after the reply, updates and alarm, and a failure is logged (Q64).
+2. "You left the game" showed no connection notices and no reason after 3 time-outs: fixed, both
+   shown, and the third time-out says the player left (Q66).
+3. The replay scenarios copied the 30-day cutoff instead of running the real code: fixed, they
+   use the real functions on SQLite built from the migration; the cutoff has a unit test (Q65).
+4. Scenario #15's driver reported chat and Exit to lobby whenever the player was in the room:
+   Exit to lobby now read from real fields; the chat is a known gap until phase 21 (Q65).
+5. M2.2's second half was not built: fixed, joining or creating a room takes free players out of
+   their finished rooms (Q64).
+6. No tests for `leave_room` during a running game or a leaver joining elsewhere: fixed, new
+   `leavingRoom.test.ts`.
+7. B17 should measure the replay record: fixed.
+8. Leave game should be disabled while the connection is lost: fixed (Q66).
+9. The badge's inline colour should be a CSS class: fixed (Q66).
