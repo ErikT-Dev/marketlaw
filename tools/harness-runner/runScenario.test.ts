@@ -58,20 +58,20 @@ function sectors(...names: ReadonlyArray<string>): ReadonlyArray<RandomEntry> {
   return names.map((value) => ({ kind: "sector", value }));
 }
 
-function resultOf(...args: Parameters<typeof runScenario>): ScenarioResult {
-  return runScenario(...args).result;
+async function resultOf(...args: Parameters<typeof runScenario>): Promise<ScenarioResult> {
+  return (await runScenario(...args)).result;
 }
 
 describe("runScenario", () => {
-  it("reports a scenario as not yet when there is no driver", () => {
-    expect(resultOf(scenario({}), [])).toEqual({
+  it("reports a scenario as not yet when there is no driver", async () => {
+    expect(await resultOf(scenario({}), [])).toEqual({
       status: "not_yet",
       missing: ["a driver"],
     });
   });
 
-  it("reports what the driver cannot do yet", () => {
-    const result = resultOf(
+  it("reports what the driver cannot do yet", async () => {
+    const result = await resultOf(
       scenario({ given: { room: {} }, when: [{ seat: 1, action: "sell" }], then: { ended: {} } }),
       [COUNTER_DRIVER],
     );
@@ -81,44 +81,45 @@ describe("runScenario", () => {
     });
   });
 
-  it("reports nested fields the driver cannot do yet", () => {
-    const result = resultOf(scenario({ then: { seats: [{ seat: 1, connected: false }] } }), [
+  it("reports nested fields the driver cannot do yet", async () => {
+    const result = await resultOf(scenario({ then: { seats: [{ seat: 1, connected: false }] } }), [
       COUNTER_DRIVER,
     ]);
     expect(result).toEqual({ status: "not_yet", missing: ["then seats.connected"] });
   });
 
-  it("passes a scenario whose then fields match", () => {
-    const result = resultOf(
+  it("passes a scenario whose then fields match", async () => {
+    const result = await resultOf(
       scenario({ given: { turn: 3 }, when: [{ seat: 1, action: "end_turn" }], then: { turn: 4 } }),
       [COUNTER_DRIVER],
     );
     expect(result).toEqual({ status: "passes" });
   });
 
-  it("does not check fields the scenario does not mention", () => {
-    const result = resultOf(scenario({ then: { seats: [{ seat: 1, stats: { funds: 5 } }] } }), [
-      COUNTER_DRIVER,
-    ]);
+  it("does not check fields the scenario does not mention", async () => {
+    const result = await resultOf(
+      scenario({ then: { seats: [{ seat: 1, stats: { funds: 5 } }] } }),
+      [COUNTER_DRIVER],
+    );
     expect(result).toEqual({ status: "passes" });
   });
 
-  it("fails a scenario whose then field differs", () => {
-    expect(resultOf(scenario({ then: { turn: 2 } }), [COUNTER_DRIVER])).toEqual({
+  it("fails a scenario whose then field differs", async () => {
+    expect(await resultOf(scenario({ then: { turn: 2 } }), [COUNTER_DRIVER])).toEqual({
       status: "fails",
       problems: ["then.turn: expected 2, got 1"],
     });
   });
 
-  it("compares lists exactly including their length", () => {
-    expect(resultOf(scenario({ then: { seats: [] } }), [COUNTER_DRIVER])).toEqual({
+  it("compares lists exactly including their length", async () => {
+    expect(await resultOf(scenario({ then: { seats: [] } }), [COUNTER_DRIVER])).toEqual({
       status: "fails",
       problems: ['then.seats: expected [], got [{"seat":1,"stats":{"funds":5,"income":1}}]'],
     });
   });
 
-  it("supplies listed random results in order", () => {
-    const result = resultOf(
+  it("supplies listed random results in order", async () => {
+    const result = await resultOf(
       scenario({
         random: sectors("Industry", "Service"),
         when: [
@@ -137,21 +138,23 @@ describe("runScenario", () => {
     expect(result).toEqual({ status: "passes" });
   });
 
-  it("fails a scenario that does not list a random result the rules ask for", () => {
-    const result = resultOf(scenario({ when: [{ seat: 1, action: "draw" }] }), [COUNTER_DRIVER]);
+  it("fails a scenario that does not list a random result the rules ask for", async () => {
+    const result = await resultOf(scenario({ when: [{ seat: 1, action: "draw" }] }), [
+      COUNTER_DRIVER,
+    ]);
     expect(result).toEqual({
       status: "fails",
       problems: ["the rules asked for a random sector the scenario does not list"],
     });
   });
 
-  it("lets setup use random results the scenario does not list", () => {
-    const result = resultOf(scenario({ when: ["start_game"] }), [COUNTER_DRIVER]);
+  it("lets setup use random results the scenario does not list", async () => {
+    const result = await resultOf(scenario({ when: ["start_game"] }), [COUNTER_DRIVER]);
     expect(result).toEqual({ status: "passes" });
   });
 
-  it("keeps listed play results for play when setup lists none", () => {
-    const result = resultOf(
+  it("keeps listed play results for play when setup lists none", async () => {
+    const result = await resultOf(
       scenario({
         random: [{ kind: "tier", value: 2 }],
         when: ["start_game", { seat: 1, action: "draw" }],
@@ -164,8 +167,8 @@ describe("runScenario", () => {
     });
   });
 
-  it("fails when a listed random result is of another kind", () => {
-    const result = resultOf(
+  it("fails when a listed random result is of another kind", async () => {
+    const result = await resultOf(
       scenario({ random: [{ kind: "tier", value: 2 }], when: [{ seat: 1, action: "draw" }] }),
       [COUNTER_DRIVER],
     );
@@ -175,16 +178,18 @@ describe("runScenario", () => {
     });
   });
 
-  it("fails when listed random results are never asked for", () => {
-    const result = resultOf(scenario({ random: sectors("Industry") }), [COUNTER_DRIVER]);
+  it("fails when listed random results are never asked for", async () => {
+    const result = await resultOf(scenario({ random: sectors("Industry") }), [COUNTER_DRIVER]);
     expect(result).toEqual({
       status: "fails",
       problems: ["1 listed random results were never asked for"],
     });
   });
 
-  it("fails a scenario when the driver stops with an error", () => {
-    const result = resultOf(scenario({ when: [{ seat: 1, action: "crash" }] }), [COUNTER_DRIVER]);
+  it("fails a scenario when the driver stops with an error", async () => {
+    const result = await resultOf(scenario({ when: [{ seat: 1, action: "crash" }] }), [
+      COUNTER_DRIVER,
+    ]);
     expect(result).toEqual({
       status: "fails",
       problems: ["the counter driver stopped: no such card"],

@@ -1,9 +1,10 @@
+import type { ReplayRecordDatabase } from "./ReplayRecordDatabase";
 import type { SavedGame } from "../../rules/SavedGame";
 import type { RoomCode } from "../../shared/RoomCode";
 import { replayRecordOf } from "./replayRecordOf";
 
 export async function saveReplayRecord(
-  db: D1Database,
+  db: ReplayRecordDatabase,
   code: RoomCode,
   saved: SavedGame,
 ): Promise<void> {

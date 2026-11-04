@@ -35,10 +35,9 @@ import type { ReasonCode } from "../../../src/shared/ReasonCode.ts";
 import type { ScriptedRandom } from "../ScriptedRandom.ts";
 import type { LobbyAccount } from "./LobbyAccount.ts";
 import type { LobbyGiven } from "./LOBBY_GIVEN_SCHEMA.ts";
+import { endedRoomFromGiven } from "./endedRoomFromGiven.ts";
 import { lobbyRoomFromGiven } from "./lobbyRoomFromGiven.ts";
-import type { LobbyReplayRecord } from "./LobbyReplayRecord.ts";
 import { otherRoomStorage } from "./otherRoomStorage.ts";
-import { replayRecordsFromGiven } from "./replayRecordsFromGiven.ts";
 
 const GENERATED_CANDIDATES = 10;
 const NAME_STEP = 7;
@@ -46,7 +45,7 @@ const NAME_STEP = 7;
 export class LobbySession {
   record: RoomRecord | null;
   goneAs: "closed" | "deleted" = "closed";
-  readonly replayRecords: ReadonlyArray<LobbyReplayRecord>;
+  readonly endedRoom: RoomRecord | null;
   now: EpochMs = v.parse(EpochMs, 0);
   readonly accounts = new Map<string, LobbyAccount>();
   readonly messagesTo = new Map<string, ServerMessage[]>();
@@ -79,7 +78,7 @@ export class LobbySession {
       given.room === undefined || given.room.players.length === 0
         ? null
         : lobbyRoomFromGiven(given.room, (name) => this.identityNamed(name), this.now);
-    this.replayRecords = replayRecordsFromGiven(given);
+    this.endedRoom = endedRoomFromGiven(given, (name) => this.identityNamed(name), this.now);
     this.otherRooms = (given.other_rooms ?? []).map((room) =>
       lobbyRoomFromGiven(room, (name) => this.identityNamed(name), this.now),
     );

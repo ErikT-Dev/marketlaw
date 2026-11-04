@@ -38,7 +38,7 @@ export async function runHarness(
   const budgets = readIdentifiedEntries(files.budgets);
   const run: HarnessRun = {
     required,
-    runs: buildScenarioRuns(files.scenarioFiles, required, drivers),
+    runs: await buildScenarioRuns(files.scenarioFiles, required, drivers),
     invariantIds: invariants.map(({ id }) => id),
     budgetIds: budgets.map(({ id }) => id),
     cardDataProblems: checkCardData(files.cards),
