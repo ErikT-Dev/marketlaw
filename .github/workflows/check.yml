@@ -74,8 +74,16 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Install Chromium
-        run: npx playwright install --with-deps chromium
+      - name: Install Chromium, each try stopped after 4 minutes, at most 3 tries
+        timeout-minutes: 13
+        run: |
+          for attempt in 1 2 3; do
+            if timeout --kill-after=10s 4m npx playwright install --with-deps chromium; then
+              exit 0
+            fi
+            echo "Chromium install try $attempt did not finish"
+          done
+          exit 1
 
       - name: Prepare the local database
         run: npm run db:migrate:local
