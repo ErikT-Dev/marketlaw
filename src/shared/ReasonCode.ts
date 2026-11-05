@@ -50,6 +50,8 @@ export const ReasonCode = v.picklist([
   "no_free_room_code",
   "no_answer",
   "busy_elsewhere",
+  "daily_action_limit",
+  "daily_game_start_limit",
 ]);
 
 export type ReasonCode = v.InferOutput<typeof ReasonCode>;

@@ -20,6 +20,7 @@ export function withRoomSummary(
       !(entry.code === code && left.some(({ playerId }) => playerId === entry.playerId)),
   );
   return {
+    ...record,
     rooms: [
       ...record.rooms.filter((room) => room.code !== code),
       ...(summary === null || summary.isOver ? [] : [summary]),

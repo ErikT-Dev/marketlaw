@@ -1,10 +1,12 @@
 import { DurableObject } from "cloudflare:workers";
 import { acceptedSocketResponse } from "./acceptedSocketResponse";
 import * as v from "valibot";
+import type { EpochMs } from "../shared/EpochMs";
 import type { PlayerId } from "../shared/PlayerId";
 import { PROTOCOL_VERSION } from "../shared/PROTOCOL_VERSION";
 import type { LobbyMessage } from "../shared/protocol/LobbyMessage";
 import type { RoomCode } from "../shared/RoomCode";
+import type { ClaimRejection } from "./lobby/ClaimRejection";
 import { claimPlayer } from "./lobby/claimPlayer";
 import { EMPTY_LOBBY } from "./lobby/EMPTY_LOBBY";
 import { forgetPlayer } from "./lobby/forgetPlayer";
@@ -18,11 +20,14 @@ import { withRoomSummary } from "./lobby/withRoomSummary";
 const LOBBY_KEY = "lobby";
 
 export class Lobby extends DurableObject<Env> {
-  async claim(playerId: PlayerId, code: RoomCode): Promise<boolean> {
-    return this.change((record) => {
-      const claimed = claimPlayer(record, playerId, code);
+  async claim(playerId: PlayerId, code: RoomCode, now: EpochMs): Promise<ClaimRejection | null> {
+    let rejection: ClaimRejection | null = null;
+    await this.change((record) => {
+      const claimed = claimPlayer(record, playerId, code, now);
+      rejection = claimed.isOk ? null : claimed.error;
       return claimed.isOk ? claimed.value : null;
     });
+    return rejection;
   }
 
   busyRoomOf(playerId: PlayerId): RoomCode | null {

@@ -99,7 +99,7 @@ function startSession(rawGiven: Readonly<Record<string, unknown>>, random: Scrip
         case "game":
           return lobbyGameThen(session.record);
         case "lobby_rooms":
-          return publicRoomsOf(session.lobbyRecord()).map((room) => ({
+          return publicRoomsOf(session.lobby).map((room) => ({
             owner: room.ownerName,
             players: room.playerNames,
             free_places: room.size - room.playerNames.length,
@@ -117,7 +117,7 @@ function startSession(rawGiven: Readonly<Record<string, unknown>>, random: Scrip
 export const LOBBY_DRIVER: ScenarioDriver = {
   name: "lobby",
   unhandledGivenValues: () => [],
-  givenFields: new Set(["accounts", "room", "other_rooms"]),
+  givenFields: new Set(["clock_ms", "accounts", "room", "other_rooms"]),
   steps: new Set([
     "create_room",
     "join_room",
@@ -142,7 +142,10 @@ export const LOBBY_DRIVER: ScenarioDriver = {
     "replay_record",
   ]),
   nestedFields: new Map([
-    ["given.accounts", new Set(["name", "kind", "last_used_ms"])],
+    [
+      "given.accounts",
+      new Set(["name", "kind", "last_used_ms", "actions_today", "games_started_today"]),
+    ],
     ["given.room", new Set(["code", "size", "public", "owner", "players", "state", "ended_ms"])],
     ["given.other_rooms", new Set(["code", "size", "public", "owner", "players", "state"])],
     ["then.lobby_rooms", new Set(["owner", "players", "free_places"])],

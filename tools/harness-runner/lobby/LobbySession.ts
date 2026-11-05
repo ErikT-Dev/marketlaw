@@ -38,6 +38,7 @@ import type { LobbyGiven } from "./LOBBY_GIVEN_SCHEMA.ts";
 import { endedRoomFromGiven } from "./endedRoomFromGiven.ts";
 import { lobbyRoomFromGiven } from "./lobbyRoomFromGiven.ts";
 import { otherRoomStorage } from "./otherRoomStorage.ts";
+import { countsTodayFromGiven } from "./countsTodayFromGiven.ts";
 
 const GENERATED_CANDIDATES = 10;
 const NAME_STEP = 7;
@@ -46,7 +47,7 @@ export class LobbySession {
   record: RoomRecord | null;
   goneAs: "closed" | "deleted" = "closed";
   readonly endedRoom: RoomRecord | null;
-  now: EpochMs = v.parse(EpochMs, 0);
+  now: EpochMs;
   readonly accounts = new Map<string, LobbyAccount>();
   readonly messagesTo = new Map<string, ServerMessage[]>();
   rejected: ReasonCode | null = null;
@@ -54,7 +55,7 @@ export class LobbySession {
   loggedInAs: string | null = null;
   private readonly pendingJoins = new Map<string, string>();
   private live: ReadonlyArray<PlayerId> = [];
-  private lobby: LobbyRecord = EMPTY_LOBBY;
+  lobby: LobbyRecord;
   private otherRooms: ReadonlyArray<RoomRecord> = [];
   private namesAsked = 0;
   private readonly random: ScriptedRandom;
@@ -71,9 +72,11 @@ export class LobbySession {
 
   constructor(given: LobbyGiven, random: ScriptedRandom) {
     this.random = random;
+    this.now = v.parse(EpochMs, given.clock_ms ?? 0);
     for (const { name, last_used_ms: lastUsedMs } of given.accounts ?? []) {
       this.addAccount(name, lastUsedMs ?? 0);
     }
+    this.lobby = { ...EMPTY_LOBBY, today: countsTodayFromGiven(given, this.now, this) };
     this.record =
       given.room === undefined || given.room.players.length === 0
         ? null
@@ -86,10 +89,6 @@ export class LobbySession {
     this.live = [this.record, ...this.otherRooms].flatMap(
       (room) => room?.players.map(({ playerId }) => playerId) ?? [],
     );
-  }
-
-  lobbyRecord(): LobbyRecord {
-    return this.lobby;
   }
 
   reportRooms(): void {
@@ -154,15 +153,13 @@ export class LobbySession {
     const size = typeof step["size"] === "number" ? step["size"] : 0;
     const roomSize = roomSizeOf(size);
     this.rejected = createRoomDecision(size, step["human_check"] === "passed");
-    const { playerId } = this.identityNamed(name);
+    const code = newRoomCode();
     if (
       this.rejected === null &&
-      this.lobbyRecord().busy.some((busy) => busy.playerId === playerId)
+      roomSize !== null &&
+      this.claimIn(this.identityNamed(name).playerId, code)
     ) {
-      this.rejected = "busy_elsewhere";
-    }
-    if (this.rejected === null && roomSize !== null) {
-      const room = { code: newRoomCode(), size: roomSize, isPublic: step["public"] === true };
+      const room = { code, size: roomSize, isPublic: step["public"] === true };
       createRoomIn(this.storage, room, this.identityNamed(name), this.now);
       this.setConnected(name, true);
     }
@@ -171,12 +168,9 @@ export class LobbySession {
   joinRoom(name: string, code: unknown): void {
     const roomCode = v.safeParse(RoomCode, code);
     const { playerId } = this.identityNamed(name);
-    const claimed = roomCode.success ? claimPlayer(this.lobby, playerId, roomCode.output) : null;
-    if (claimed?.isOk === false) {
-      this.rejected = claimed.error;
+    if (roomCode.success && !this.claimIn(playerId, roomCode.output)) {
       return;
     }
-    this.lobby = claimed?.value ?? this.lobby;
     const storage = this.storageFor(code);
     const { rejection } = joinRoomIn(storage, this.identityNamed(name), this.now, this.live);
     this.rejected = rejection?.reason ?? null;
@@ -287,6 +281,13 @@ export class LobbySession {
     }
     const names: ReadonlyArray<unknown> = draw.value;
     return names.map((name) => this.identityNamed(String(name)).playerId);
+  }
+
+  private claimIn(playerId: PlayerId, code: RoomCode): boolean {
+    const claimed = claimPlayer(this.lobby, playerId, code, this.now);
+    this.rejected = claimed.isOk ? null : claimed.error;
+    this.lobby = claimed.isOk ? claimed.value : this.lobby;
+    return claimed.isOk;
   }
 
   private storageFor(code: unknown): RoomStorage {

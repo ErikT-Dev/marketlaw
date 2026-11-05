@@ -1,6 +1,9 @@
 import * as v from "valibot";
 import { PlayerId } from "../../shared/PlayerId";
 import { RoomCode } from "../../shared/RoomCode";
+import { EMPTY_LOBBY } from "./EMPTY_LOBBY";
+
+const COUNT = v.pipe(v.number(), v.integer(), v.minValue(0));
 
 export const LOBBY_RECORD_SCHEMA = v.object({
   rooms: v.array(
@@ -16,4 +19,12 @@ export const LOBBY_RECORD_SCHEMA = v.object({
   ),
   busy: v.array(v.object({ playerId: PlayerId, code: RoomCode })),
   staying: v.array(v.object({ playerId: PlayerId, code: RoomCode })),
+  today: v.optional(
+    v.object({
+      day: COUNT,
+      players: v.array(v.object({ playerId: PlayerId, actions: COUNT, gameStarts: COUNT })),
+      siteGameStarts: COUNT,
+    }),
+    EMPTY_LOBBY.today,
+  ),
 });

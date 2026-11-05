@@ -1,5 +1,6 @@
 import * as v from "valibot";
 import { describe, expect, it } from "vitest";
+import { EpochMs } from "../../shared/EpochMs";
 import { PlayerId } from "../../shared/PlayerId";
 import { RoomCode } from "../../shared/RoomCode";
 import { claimPlayer } from "./claimPlayer";
@@ -14,6 +15,7 @@ const ANN = v.parse(PlayerId, crypto.randomUUID());
 const BEA = v.parse(PlayerId, crypto.randomUUID());
 const FIRST = v.parse(RoomCode, "K7QR2P");
 const SECOND = v.parse(RoomCode, "M4TX9C");
+const NOW = v.parse(EpochMs, 1_761_436_800_000);
 
 function summary(changes: Partial<RoomSummary> = {}): RoomSummary {
   return {
@@ -34,12 +36,12 @@ function summary(changes: Partial<RoomSummary> = {}): RoomSummary {
 describe("the lobby", () => {
   it("lets a claim for another room fail while the player is in a room", () => {
     const lobby = withRoomSummary(EMPTY_LOBBY, FIRST, summary());
-    expect(claimPlayer(lobby, ANN, SECOND)).toEqual({ isOk: false, error: "busy_elsewhere" });
-    expect(claimPlayer(lobby, ANN, FIRST)).toEqual({ isOk: true, value: lobby });
+    expect(claimPlayer(lobby, ANN, SECOND, NOW)).toEqual({ isOk: false, error: "busy_elsewhere" });
+    expect(claimPlayer(lobby, ANN, FIRST, NOW)).toEqual({ isOk: true, value: lobby });
   });
 
   it("releases a claim whose join failed but keeps players who are in the room", () => {
-    const claimed = claimPlayer(EMPTY_LOBBY, ANN, SECOND);
+    const claimed = claimPlayer(EMPTY_LOBBY, ANN, SECOND, NOW);
     if (!claimed.isOk) {
       throw new Error("claim failed");
     }
@@ -49,7 +51,7 @@ describe("the lobby", () => {
   });
 
   it("keeps a pending claim when its room reports without the claimed player yet", () => {
-    const claimed = claimPlayer(EMPTY_LOBBY, ANN, FIRST);
+    const claimed = claimPlayer(EMPTY_LOBBY, ANN, FIRST, NOW);
     if (!claimed.isOk) {
       throw new Error("claim failed");
     }
@@ -58,7 +60,10 @@ describe("the lobby", () => {
       FIRST,
       summary({ players: [{ playerId: BEA, name: "Bea" }] }),
     );
-    expect(claimPlayer(reported, ANN, SECOND)).toEqual({ isOk: false, error: "busy_elsewhere" });
+    expect(claimPlayer(reported, ANN, SECOND, NOW)).toEqual({
+      isOk: false,
+      error: "busy_elsewhere",
+    });
   });
 
   it("frees a player who left the room and forgets a stale entry", () => {
@@ -68,9 +73,9 @@ describe("the lobby", () => {
       FIRST,
       summary({ players: [{ playerId: BEA, name: "Bea" }] }),
     );
-    expect(claimPlayer(left, ANN, SECOND).isOk).toBe(true);
+    expect(claimPlayer(left, ANN, SECOND, NOW).isOk).toBe(true);
     const forgotten = forgetPlayer(lobby, ANN, FIRST);
-    expect(claimPlayer(forgotten, ANN, SECOND).isOk).toBe(true);
+    expect(claimPlayer(forgotten, ANN, SECOND, NOW).isOk).toBe(true);
     expect(publicRoomsOf(forgotten)[0]?.playerNames).toEqual(["Bea"]);
   });
 

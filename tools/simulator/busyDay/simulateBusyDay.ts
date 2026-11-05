@@ -80,7 +80,7 @@ function advance(day: Day, ms: number, code: RoomCode): void {
 }
 
 function claim(day: Day, joining: Identity, code: RoomCode): void {
-  const claimed = claimPlayer(day.counter.lobby, joining.playerId, code);
+  const claimed = claimPlayer(day.counter.lobby, joining.playerId, code, v.parse(EpochMs, day.now));
   if (claimed.isOk) {
     day.counter.changeLobby(claimed.value);
   }

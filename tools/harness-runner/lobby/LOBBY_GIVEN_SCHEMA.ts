@@ -11,12 +11,15 @@ const GIVEN_ROOM = v.strictObject({
 });
 
 export const LOBBY_GIVEN_SCHEMA = v.strictObject({
+  clock_ms: v.optional(v.number()),
   accounts: v.optional(
     v.array(
       v.strictObject({
         name: v.string(),
         kind: v.optional(v.literal("guest")),
         last_used_ms: v.optional(v.number()),
+        actions_today: v.optional(v.number()),
+        games_started_today: v.optional(v.number()),
       }),
     ),
   ),

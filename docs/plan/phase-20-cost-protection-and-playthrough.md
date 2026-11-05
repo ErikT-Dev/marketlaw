@@ -66,7 +66,7 @@ These 5 scenarios are added to `harness/required.yaml` in this phase, by file an
   local site limit for browser tests), Q70 (budgets in the report, full browser games), Q71 (how
   the phase ends). Spec: `accounts.md` A9.2–A9.4 and `screens.md` S16.1 (commit `HARNESS: Daily
   limits ...`).
-- [ ] 2. **Daily counts in the lobby and the join check** (A9.1, A9.2, A9.3; scenarios
+- [x] 2. **Daily counts in the lobby and the join check** (A9.1, A9.2, A9.3; scenarios
   `lobby-queue-and-limits` #24, #32, #33).
   - Q67: the counts live in the lobby record (`src/server/lobby/LobbyRecord.ts`,
     `LOBBY_RECORD_SCHEMA.ts`, `EMPTY_LOBBY.ts`): the UTC day number and, for today only, each
@@ -83,6 +83,20 @@ These 5 scenarios are added to `harness/required.yaml` in this phase, by file an
     `accounts[].actions_today`, `accounts[].games_started_today`, `site_games_today`, and
     `clock_ms` / `wait_ms` if it lacks them; `unchanged: true` in #32.
   - Keep `src/server/Lobby.ts` thin; new logic in files under `src/server/lobby/`.
+  - Done: `LobbyRecord.today` (`CountsToday`: day, players with actions and gameStarts,
+    siteGameStarts); `countsOn(record, now)` reads an earlier day as zeros; `dayOf`,
+    `DAILY_PLAYER_LIMITS`, `dailyLimitRejection`. `claimPlayer` and `Lobby.claim` take `now`;
+    `Lobby.claim` returns a `ClaimRejection` or null; `createInFreeRoom` returns a `Result`.
+    A player already claimed for the same room is not checked again. A lobby record saved before
+    this phase parses with empty counts (schema default), so live rooms keep their claims.
+  - Differs: the two texts of S16.1 for a player's own limits are already in
+    `REJECTION_MESSAGES.ts` (the compiler needs a text for every reason code), so the lobby shows
+    them for a rejected join or create; item 5 only adds tests and the waiting-room notices. The
+    lobby driver's `create_room` now claims the player in the lobby like the server does.
+  - For later items: write counts by mapping `countsOn(record, now)` (never `record.today`
+    directly, or yesterday's counts carry over). The lobby driver takes `clock_ms` and
+    `accounts[].actions_today` / `games_started_today`; #31 now runs in it and fails until item 3
+    (not required). `site_games_today` is not in the driver yet.
 - [ ] 3. **The check when a game starts** (A9.3, A9.4; scenarios #25, #31; Q68, Q69).
   - When the last player accepts (`src/server/room/roomActionOutcome.ts` calls
     `startRoomGame.ts`), the room asks the lobby, in one call, to check every player (A9.2,
