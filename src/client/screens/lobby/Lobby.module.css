@@ -149,7 +149,7 @@
 
 .error {
   margin: 0;
-  color: var(--color-button-danger-hover);
+  color: var(--color-board-trade-missing);
   font-size: var(--font-size-sm);
 }
 

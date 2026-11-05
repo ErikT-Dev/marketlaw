@@ -42,13 +42,30 @@ function room(changes: Partial<RoomView> = {}): RoomView {
   };
 }
 
-function waitingRoom(view: RoomView) {
-  const handlers = { onChangeSize: vi.fn(), onAccept: vi.fn(), onDecline: vi.fn() };
+function waitingRoom(view: RoomView, hasSiteGameLimitNotice = false) {
+  const handlers = {
+    onChangeSize: vi.fn(),
+    onAccept: vi.fn(),
+    onDecline: vi.fn(),
+    onDismissSiteGameLimit: vi.fn(),
+  };
   render(
-    <WaitingRoomPage room={view} myName="Ann" onLeave={vi.fn()} rejection={null} {...handlers} />,
+    <WaitingRoomPage
+      room={view}
+      myName="Ann"
+      onLeave={vi.fn()}
+      rejection={null}
+      hasSiteGameLimitNotice={hasSiteGameLimitNotice}
+      {...handlers}
+    />,
   );
   return handlers;
 }
+
+const OWN_ACTION_LIMIT_TEXT =
+  "You have used your 2,000 game actions for today. You can join rooms, the ranked queue and new games again after 00:00 UTC.";
+const OWN_GAME_START_LIMIT_TEXT =
+  "You have started 10 games today, the most per day. Try again after 00:00 UTC.";
 
 afterEach(() => {
   vi.unstubAllGlobals();
@@ -107,6 +124,36 @@ describe("the lobby", () => {
     expect(screen.getByRole("status").textContent).toContain(
       "You did not accept the game in time. You can join that room again in 2:00.",
     );
+  });
+});
+
+describe("the daily limit notices", () => {
+  it("shows the daily action limit when joining a room fails for it", () => {
+    lobby({ joinError: { code: "K7QR2P", reason: "daily_action_limit", rejoinAt: null } });
+    expect(screen.getByRole("alert").textContent).toContain(OWN_ACTION_LIMIT_TEXT);
+  });
+
+  it("shows the daily game start limit when joining a room fails for it", () => {
+    lobby({ joinError: { code: "K7QR2P", reason: "daily_game_start_limit", rejoinAt: null } });
+    expect(screen.getByRole("alert").textContent).toContain(OWN_GAME_START_LIMIT_TEXT);
+  });
+
+  it("tells a player removed for their own daily limits why, without a rejoin wait", () => {
+    lobby({ removal: { code: "K7QR2P", reason: "daily_action_limit", rejoinAt: null } });
+    expect(screen.getByRole("status").textContent).toContain("Removed from room K7QR2P");
+    expect(screen.getByRole("status").textContent).toContain(OWN_ACTION_LIMIT_TEXT);
+    document.body.innerHTML = "";
+    lobby({ removal: { code: "K7QR2P", reason: "daily_game_start_limit", rejoinAt: null } });
+    expect(screen.getByRole("status").textContent).toContain(OWN_GAME_START_LIMIT_TEXT);
+  });
+
+  it("warns everyone in the waiting room when the site game limit stops the game", () => {
+    const handlers = waitingRoom(room(), true);
+    const toast = screen.getByRole("status");
+    expect(toast.textContent).toContain("The game did not start");
+    expect(toast.textContent).toContain("Daily game limit reached, try again after 00:00 UTC");
+    fireEvent.click(screen.getByRole("button", { name: "Close: The game did not start" }));
+    expect(handlers.onDismissSiteGameLimit).toHaveBeenCalled();
   });
 });
 

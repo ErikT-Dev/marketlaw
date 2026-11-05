@@ -158,7 +158,7 @@ These 5 scenarios are added to `harness/required.yaml` in this phase, by file an
     lobby 631, database 450, total 2,126 (limit 5,000).
   - For later items: scenario "a player's actions in a game are added ..." needs the queue
     (phase 26); the lobby driver does not add actions yet.
-- [ ] 5. **Notices for the daily limits** (S16.1; design board "Notices: daily limits", without
+- [x] 5. **Notices for the daily limits** (S16.1; design board "Notices: daily limits", without
   its ranked queue text, S17).
   - The texts are in `screens.md` S16.1 (Q68). Lobby: a rejected join or create shows the text
     (`src/client/screens/lobby/joinErrorText.ts`, `src/client/store/JoinError.ts`). Waiting
@@ -169,6 +169,20 @@ These 5 scenarios are added to `harness/required.yaml` in this phase, by file an
     shows a player's own limit notice: a test route under the test-room secret
     (`src/server/testRooms/`, `hasTestRoomSecret.ts`) sets that player's counts for today; it
     must not touch the site count or other players.
+  - Done: the waiting room shows the warning toast "The game did not start" with the site text
+    (`SITE_GAME_LIMIT_TOAST`, shared with `noticeToastOf`) to the last accepter (rejected
+    `site_game_limit`) and to the others (the `site_game_limit` notice), from
+    `waitingRoomNoticesOf`; the last accepter no longer also gets the red line. The waiting room
+    moved out of `CurrentScreen.tsx` into `WaitingRoomScreen.tsx` (function length). Test route
+    `POST /api/test-daily-counts` (`setTestDailyCounts`, `TestDailyCountsRequest`: token, actions,
+    gameStarts; 404 without the test-room secret) calls `Lobby.setCountsForTest`
+    (`withPlayerCountsSet`). Browser test `e2e/dailyLimits.spec.ts`: a guest set to 10 starts
+    sees the A9.3 text in the create dialog; screenshots `harness/screens/daily-limit/`.
+  - Differs: axe found the lobby's error line (`.error` in `Lobby.module.css`, the create and
+    guest dialogs and the waiting room) at 2.7:1 contrast on the dialog; it now uses the light red
+    token `--color-board-trade-missing`.
+  - For later items: `/api/test-daily-counts` can put any player at a limit in browser tests
+    (item 7, the playthrough checklist's daily limit notices).
 - [ ] 6. **Budget checks in the report** (B1–B5, B9–B18; Q70).
   - The report's budget section (`tools/harness-runner/reportSimulation.ts`, `buildReport.ts`,
     `MEASURED_BUDGET_LIMITS.ts`, `highestMeasured.ts`) lists every budget in

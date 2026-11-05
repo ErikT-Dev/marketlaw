@@ -10,6 +10,7 @@ import { EMPTY_LOBBY } from "./EMPTY_LOBBY";
 import { LOBBY_RECORD_SCHEMA } from "./LOBBY_RECORD_SCHEMA";
 import type { LobbyRecord } from "./LobbyRecord";
 import { siteGameLimitOf } from "./siteGameLimitOf";
+import { withPlayerCountsSet } from "./withPlayerCountsSet";
 
 const ANN = v.parse(PlayerId, crypto.randomUUID());
 const CODE = v.parse(RoomCode, "K7QR2P");
@@ -99,5 +100,30 @@ describe("counting a game start", () => {
     expect(siteGameLimitOf({})).toBe(50);
     expect(siteGameLimitOf({ TEST_SITE_GAMES_PER_DAY: "not a number" })).toBe(50);
     expect(siteGameLimitOf({ TEST_SITE_GAMES_PER_DAY: "1000000" })).toBe(1_000_000);
+  });
+});
+
+describe("setting a player's counts for a browser test", () => {
+  const BEA = v.parse(PlayerId, crypto.randomUUID());
+
+  it("sets only that player's counts for today and keeps the site count and other players", () => {
+    const before = { ...lobbyWith(5, 3), today: { ...lobbyWith(5, 3).today, siteGameStarts: 7 } };
+    const set = withPlayerCountsSet(
+      before,
+      { playerId: BEA, actions: 0, gameStarts: 10 },
+      MIDNIGHT,
+    );
+    expect(set.today).toEqual({
+      day: dayOf(MIDNIGHT),
+      players: [
+        { playerId: ANN, actions: 5, gameStarts: 3 },
+        { playerId: BEA, actions: 0, gameStarts: 10 },
+      ],
+      siteGameStarts: 7,
+    });
+    expect(claimPlayer(set, BEA, CODE, MIDNIGHT)).toEqual({
+      isOk: false,
+      error: "daily_game_start_limit",
+    });
   });
 });

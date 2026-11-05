@@ -6,6 +6,7 @@ import { EpochMs } from "../../shared/EpochMs";
 import type { RoomIntent } from "../../shared/protocol/RoomIntent";
 import type { ReasonCode } from "../../shared/ReasonCode";
 import { RoomCode } from "../../shared/RoomCode";
+import { waitingRoomNoticesOf } from "../screens/lobby/waitingRoomNoticesOf";
 import { roomUpdateWith } from "../testing/roomUpdateWith";
 import { ClientStore } from "./ClientStore";
 import { writeSession } from "./writeSession";
@@ -110,6 +111,23 @@ describe("client store moves", () => {
     expect(fake.store.getSnapshot().timeOutNotice).toEqual({ kind: "timed_out", inARow: 1, of: 3 });
     fake.store.dismissTimeOutNotice();
     expect(fake.store.getSnapshot().timeOutNotice).toBeNull();
+  });
+
+  it("shows the site game limit to the last accepter and the others alike in the waiting room", () => {
+    const last = storeInRoom();
+    last.emit({ type: "rejected", code: "site_game_limit", actionId: null });
+    expect(waitingRoomNoticesOf(last.store.getSnapshot())).toEqual({
+      rejection: null,
+      hasSiteGameLimitNotice: true,
+    });
+    const other = storeInRoom();
+    other.emit({ type: "notice", notice: { kind: "site_game_limit" } });
+    expect(waitingRoomNoticesOf(other.store.getSnapshot())).toEqual({
+      rejection: null,
+      hasSiteGameLimitNotice: true,
+    });
+    other.store.dismissTimeOutNotice();
+    expect(waitingRoomNoticesOf(other.store.getSnapshot()).hasSiteGameLimitNotice).toBe(false);
   });
 
   it("rolls back a rejected move and keeps it with its code for the message", () => {
