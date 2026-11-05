@@ -1109,6 +1109,18 @@ file.
   `daily_game_start_limit`, `site_game_limit`. In the client, the same texts are shown for a
   rejected join or create in the lobby and as a notice in the waiting room.
 - **Implemented:** `accounts.md` A9.3, A9.4; `screens.md` S16.1; phase 20, items 3 and 4.
+- **Review (phase 20, finding 1):** when the room cannot reach the lobby to check the limits at
+  game start, the game does not start and is not counted: starting without the check would let
+  the limits be passed whenever the lobby fails. The last accepter is refused with `no_answer`
+  ("The server did not answer. Try again.", S10) and the room is left as it was: the asking and
+  its timer go on, the other acceptances stay, and the last accepter can accept again before
+  the time runs out (`receiveCheckingGameStart`, `startGameWithinLimits`).
+- **Review (phase 20, finding 5):** the site-limit notice in the waiting room has the title of the
+  design board, "Daily game limit reached", with the site-wide text; now written into S16.1.
+- **Harness change (review, finding 8):** `lobby-queue-and-limits` "the game start limit is
+  checked again when a game starts" (#31) now also checks that Ann, over her own limit, is
+  removed and only Bea stays (`room: {players: [Bea], state: waiting}`), as this question
+  decides. The code already did so; the scenario did not check it.
 
 ## Q69. How can the browser tests start more than 50 games a day on one local server?
 

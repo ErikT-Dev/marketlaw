@@ -283,6 +283,11 @@ These 5 scenarios are added to `harness/required.yaml` in this phase, by file an
      caught: it resets the room and the last accepter gets no reply. Catch it, decide the outcome
      (refuse with `no_answer` keeping the asking, or start without counting), record in Q68, unit
      test in `gameStartLimits.test.ts` with a rejecting checker.
+     Fixed: a lobby call that fails becomes the refusal `no_answer` (`GameStartRefusal`,
+     `receiveCheckingGameStart`): the last accepter gets "The server did not answer. Try again.",
+     the room is left as it was (asking, timer and the other acceptances kept, nothing counted),
+     and accepting again starts the game. Recorded in Q68; unit test "refuses the last acceptance
+     with no_answer and keeps the asking when the lobby does not answer".
   2. B18 leaves out the rows of a room's end: the D1 replay record and its index row, its 30-day
      delete, the room's cleanup alarm and storage delete, the lobby report when the room goes.
      Count them in the busy day (or under B8, said in `BUDGET_CHECKS.ts`); update
@@ -294,11 +299,15 @@ These 5 scenarios are added to `harness/required.yaml` in this phase, by file an
   5. Suggestion: the site-limit toast title "The game did not start" is in neither spec nor design
      (design: "Daily game limit reached"); use the design title or write the chosen one into
      S16.1 and Q68.
+     Fixed: the toast title is now the design's "Daily game limit reached"
+     (`SITE_GAME_LIMIT_TOAST`, `lobby.test.tsx`), written into S16.1 and Q68 (`HARNESS:` commit).
   6. Suggestion: `e2e/percentile95.ts` duplicates `tools/harness-runner/percentileOf.ts`; reuse it.
   7. Suggestion: B11 is not measured on the production path (`RoomSession.ts` skips
      `receiveCheckingGameStart`); drive room scenarios through it with an immediate checker.
   8. Suggestion: scenario #31 (`lobby-queue-and-limits.yaml`) does not check that the player over
      the limit is removed; add `room: {players: [Bea]}` in a recorded `HARNESS:` commit.
+     Fixed: #31 now checks `room: {players: [Bea], state: waiting}` (`HARNESS:` commit, recorded in
+     Q68); it passes, and fails with `[Ann]`, so the check is live.
 - [ ] Fix or answer the findings.
 - [ ] Checks run again after the fixes.
 - [ ] Report written, merged, deploy watched, live site checked; the playthrough written under
