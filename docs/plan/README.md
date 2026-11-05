@@ -182,7 +182,15 @@ whole phase.
   - **failed:** start one more helper for the same job if the report shows a fixable cause;
     otherwise stop and tell the owner.
 - **Review findings.** The coordinator writes the phase reviewer's findings into the Finish part
-  of Progress, then groups related findings, one group per fixer.
+  of Progress, then groups related findings, one group per fixer. When at most 4 findings need
+  a fix, one fixer takes them all.
+- **Two small jobs, one helper.** The coordinator may give one helper the starter's job and a
+  first item the starter marks **small**, or two **small** items in a row. The helper does
+  them one after the other, each with its own commits, tick and full check, and reports both.
+- **The helper log.** After each report, the coordinator adds one row to the **Helper log**
+  table in the Finish part of Progress (job, minutes, tokens, tool calls, result, from the
+  helper's completion notice) and commits it on the phase branch without pushing. The
+  releaser's push carries it.
 - **At the end of the phase,** after the releaser, it sends the owner a notification and stops.
 
 ## Deciding without the owner

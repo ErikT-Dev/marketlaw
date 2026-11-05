@@ -1244,3 +1244,33 @@ file.
   in the others), a GitHub runner delay; the part still finished in 17.5 min, so a slow
   install can bring a part close to its 20 minutes.
 - **Implemented:** phase 20, release fix (`.github/workflows/check.yml`, `deploy.yml`).
+
+## Q73. How are the helpers made cheaper and steadier after phase 20?
+
+- **Phase:** between 20 and 21 (owner's request after the phase 20 analysis).
+- **Question:** phase 20, the first phase built only with helpers (D28), used 18 helpers. One
+  helper stalled and five ended their turn to wait for a background command. The check hook
+  then ran `npm run check` beside their browser tests, because rewritten screenshots count as
+  changes, and that load made browser tests and B11 fail. The 2-player full-game setup failed
+  three times with "Choose a username" still open. Chromium installs on GitHub hung twice (11
+  minutes, then past the 20-minute job limit). Releasers waited for GitHub by calling
+  `gh run view` over and over.
+- **Solution:** approved by the owner on 2026-11-05.
+  - Helpers keep every command under 10 minutes, with the browser tests split into five named
+    commands (`phase-helpers.md`, "Keep your context small"), and wait for GitHub with one
+    `gh run watch`.
+  - The starter marks each item small or large. The coordinator may give one helper two
+    small jobs, and one fixer takes all findings when at most 4 need a fix (`README.md`, "The
+    coordinator").
+  - An item that changes only `docs/` runs Prettier and `npm run harness:check` instead of
+    the full check (`phase-helpers.md`, Builder step 6).
+  - The coordinator keeps a **Helper log** of each helper's minutes, tokens, tool calls and
+    result in the phase file.
+  - On GitHub, each Chromium install try stops after 4 minutes, with at most 3 tries.
+  - The browser tests' username step waits for the server's answer to `POST /api/guests`
+    (with the human check's time limit) before checking that the dialog has closed. The
+    check itself is unchanged.
+  - Proposed to the owner, who applies it since `tools/hooks/` is protected: the check hook
+    leaves `harness/screens/` out of the changes that start a check.
+- **Implemented:** `docs/plan/phase-helpers.md`, `docs/plan/README.md`,
+  `.github/workflows/check.yml`, `.github/workflows/deploy.yml`, `e2e/becomeGuest.ts`.
