@@ -1234,10 +1234,13 @@ file.
   the log instead of the dot reporter's `F`. The deploy job needs `browser-tests`, which is
   successful only when all 6 parts are.
 - **Effect on Actions minutes** (private repository, 2,000 free minutes a month): the tests
-  themselves take the same time, but each of the 6 jobs repeats the setup (install, Chromium,
-  local server), about 2 to 3 minutes, and GitHub rounds each job up to a whole minute. A
-  branch check costs about 50 minutes instead of about 40 (one job, had it fit), a deploy of
-  already checked code still costs about 1 minute, and a deploy that tests again about 50. That
-  leaves room for about 35 branch checks a month, enough for one phase's pushes; pushes during
-  a phase should stay batched.
+  take the same time, but each of the 6 jobs repeats the setup (install, Chromium, local
+  server, about 1.5 min) and GitHub rounds each job up to a whole minute. Measured in branch
+  check run 42063791956: the parts took 4.5, 4.6 and 7.6 min (full games with 2, 3 and 4
+  players) and about 7 min each (other tests), with `check` 3 min, so a branch check costs
+  about 42 minutes instead of about 35 in one job (had it fit). A deploy of already checked
+  code still costs about 1 minute, one that tests again about 42. That leaves room for about
+  45 branch checks a month. In that run one part spent 11 min installing Chromium (about 20 s
+  in the others), a GitHub runner delay; the part still finished in 17.5 min, so a slow
+  install can bring a part close to its 20 minutes.
 - **Implemented:** phase 20, release fix (`.github/workflows/check.yml`, `deploy.yml`).

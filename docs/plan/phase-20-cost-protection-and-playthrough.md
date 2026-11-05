@@ -347,6 +347,18 @@ These 5 scenarios are added to `harness/required.yaml` in this phase, by file an
     A rerun cannot fit in 20 min, so it was not rerun. `deploy.yml` has the same 20-min browser
     job, so a merge would not deploy. Not merged. Next: decide how the browser job fits (a longer
     job timeout in both workflows, or shards), then find the failing test.
+  - Fixed: `browser-tests` in `check.yml` and `deploy.yml` runs as 6 parallel jobs, each
+    with the 20-min limit: one per full-game player count and the other 102 tests in 3 shards;
+    the results upload on a cancel too (`if: always()`, a 15-min limit on the test step), the
+    log names every test (`--reporter=list`), and the deploy waits for all 6 (Q72). Branch check
+    run 42063791956 on `fa45928`: success, every part passed, the longest 7.6 min of tests (one
+    part 17.5 min because GitHub took 11 min to install Chromium). The failing test in run
+    42055452656 was the 46th in run order, the 2-player full game at 1920x1080, the known setup
+    flake ("Choose a username" still open, see the item above); it passed in 42063791956. Not
+    changed: the setup waits for the dialog to close with the default 5 s.
+  - For later items: on GitHub the 2-player full-game setup flake also appears without local
+    load, so it is more than load on the development machine; if it comes back on GitHub, look
+    at `e2e/becomeGuest.ts` (the dialog closes only after the server answers).
 
 ## Report
 
