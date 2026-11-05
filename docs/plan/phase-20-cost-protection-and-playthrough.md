@@ -292,10 +292,17 @@ These 5 scenarios are added to `harness/required.yaml` in this phase, by file an
      delete, the room's cleanup alarm and storage delete, the lobby report when the room goes.
      Count them in the busy day (or under B8, said in `BUDGET_CHECKS.ts`); update
      `simulateBusyDay.test.ts` and Q70.
+     Fixed: the busy day now plays each room to its end (`closeEndedRoom`): the replay record
+     (3 D1 rows: the table and its two indexes), the 30-day delete of an older one (3 rows), the
+     cleanup alarm's storage delete and the lobby report, counted under B18 (said in
+     `BUDGET_CHECKS.ts`); setting the cleanup alarm stays in B4. B18 2,126 -> 2,526 of 5,000,
+     B16 629 -> 632. `simulateBusyDay.test.ts` and Q70 updated.
   3. No leak check in the full browser games (`rules/testing.md` Leak test): add
      `hiddenCardsSentToOthers` after `startGame` in `e2e/playFullGame.ts`, and record in
      `open-questions.md` why later turns are left to the harness leak test.
   4. `docs/enforcement.md` describes B11 as the longest single message; it is the 99th percentile.
+     Fixed: the phase 20 entry in `docs/enforcement.md` now describes B11 as the 99th
+     percentile over every room-scenario message on the production path, and adds B18's room ends.
   5. Suggestion: the site-limit toast title "The game did not start" is in neither spec nor design
      (design: "Daily game limit reached"); use the design title or write the chosen one into
      S16.1 and Q68.
@@ -304,6 +311,10 @@ These 5 scenarios are added to `harness/required.yaml` in this phase, by file an
   6. Suggestion: `e2e/percentile95.ts` duplicates `tools/harness-runner/percentileOf.ts`; reuse it.
   7. Suggestion: B11 is not measured on the production path (`RoomSession.ts` skips
      `receiveCheckingGameStart`); drive room scenarios through it with an immediate checker.
+     Fixed: `RoomSession.sendRaw` sends every message through `receiveCheckingGameStart` with a
+     lobby that answers at once, and times the call until it returns (room scenarios never start a
+     game, so it never waits); driver steps may be asynchronous (`DriverSession`,
+     `runScenario`). B11 measured 5 ms of 10 in `npm run check`, 4 ms in `npm run harness` (1,000 games, green). Recorded in Q70.
   8. Suggestion: scenario #31 (`lobby-queue-and-limits.yaml`) does not check that the player over
      the limit is removed; add `room: {players: [Bea]}` in a recorded `HARNESS:` commit.
      Fixed: #31 now checks `room: {players: [Bea], state: waiting}` (`HARNESS:` commit, recorded in

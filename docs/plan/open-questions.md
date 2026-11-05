@@ -1175,6 +1175,19 @@ file.
   `budgets.yaml` defines B11 as the 99th percentile, so the room driver now gives the time of every
   message it handles and the harness takes the 99th percentile over all of them, as the budget
   says. The limit (10 ms) and the required list are unchanged.
+- **Review fixes (findings 2 and 7):**
+  - B18 now counts the end of each room in the busy day, in B18 rather than B8 (B8 is the game
+    records of phase 25): the replay record written to D1 (3 rows: the table, its primary-key
+    index and the `ended_ms` index), the daily delete of one 30 days old (3 rows; as many records
+    end each day as are deleted), the cleanup alarm's delete of the room's storage (1 row) and
+    the lobby report when the room goes (1 row). Setting the cleanup alarm is not counted again:
+    the game simulator counts it in B4, with the alarm change after the game's last action, and
+    the alarm firing writes nothing. B18 rises from 2,126 to 2,526 against 5,000; the room-end
+    reads (the room loaded by the alarm, the lobby, the deleted record) raise B16 from 629 to 632.
+  - B11 is measured on the production path: the room driver sends every message through
+    `receiveCheckingGameStart`, as `GameRoom` does, with a lobby that answers at once. Room
+    scenarios never start a game, so the call never waits for the lobby and its whole handling
+    runs before it returns; the driver times that part. Driver steps may now be asynchronous.
 
 ## Q71. How does the phase end, given the owner's playthrough?
 
