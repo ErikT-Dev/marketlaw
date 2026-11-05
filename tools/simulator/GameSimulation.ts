@@ -1,3 +1,4 @@
+import { gameStartInJoinOrder } from "./gameStartInJoinOrder.ts";
 import * as v from "valibot";
 import type { BotChooser } from "../../src/bots/BotChooser.ts";
 import { chaosBot } from "../../src/bots/chaosBot.ts";
@@ -213,7 +214,7 @@ export class GameSimulation {
       sender,
       now: v.parse(EpochMs, this.nowMs),
       randomFor: randomForNextAction,
-      gameStart: { seed: 0, now: v.parse(EpochMs, this.nowMs), seatOrder: (ids) => ids },
+      gameStart: gameStartInJoinOrder(0, v.parse(EpochMs, this.nowMs)),
       livePlayers: [],
     });
     if (outcome.isRoomGone) {

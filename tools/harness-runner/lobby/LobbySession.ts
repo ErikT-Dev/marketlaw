@@ -9,6 +9,9 @@ import { createRoomDecision } from "../../../src/server/room/createRoomDecision.
 import { fireRoomAlarm } from "../../../src/server/room/fireRoomAlarm.ts";
 import type { Identity } from "../../../src/server/room/Identity.ts";
 import { claimPlayer } from "../../../src/server/lobby/claimPlayer.ts";
+import { countGameStart } from "../../../src/server/lobby/countGameStart.ts";
+import type { GameStartRejection } from "../../../src/server/lobby/GameStartRejection.ts";
+import { siteGameLimitOf } from "../../../src/server/lobby/siteGameLimitOf.ts";
 import { EMPTY_LOBBY } from "../../../src/server/lobby/EMPTY_LOBBY.ts";
 import type { LobbyRecord } from "../../../src/server/lobby/LobbyRecord.ts";
 import { releasePlayer } from "../../../src/server/lobby/releasePlayer.ts";
@@ -22,7 +25,6 @@ import { receiveMessage } from "../../../src/server/room/receiveMessage.ts";
 import type { RoomRecord } from "../../../src/server/room/RoomRecord.ts";
 import type { RoomStorage } from "../../../src/server/room/RoomStorage.ts";
 import { roomSizeOf } from "../../../src/server/room/roomSizeOf.ts";
-import { updateFor } from "../../../src/server/room/updateFor.ts";
 import { withConnection } from "../../../src/server/room/withConnection.ts";
 import { newRoomCode } from "../../../src/server/newRoomCode.ts";
 import { randomForNextAction } from "../../../src/rules/randomForNextAction.ts";
@@ -39,6 +41,8 @@ import { endedRoomFromGiven } from "./endedRoomFromGiven.ts";
 import { lobbyRoomFromGiven } from "./lobbyRoomFromGiven.ts";
 import { otherRoomStorage } from "./otherRoomStorage.ts";
 import { countsTodayFromGiven } from "./countsTodayFromGiven.ts";
+import { deliverRoomOutcome } from "./deliverRoomOutcome.ts";
+import { rejectionOfReply } from "./rejectionOfReply.ts";
 
 const GENERATED_CANDIDATES = 10;
 const NAME_STEP = 7;
@@ -234,44 +238,26 @@ export class LobbySession {
       sender,
       now: this.now,
       randomFor: randomForNextAction,
-      gameStart: { seed: 1, now: this.now, seatOrder: (players) => this.seatOrder(players) },
+      gameStart: {
+        seed: 1,
+        now: this.now,
+        seatOrder: (players) => this.seatOrder(players),
+        limitRejectionFor: (players) => this.countGameStart(players),
+      },
       livePlayers: this.live,
     });
-    this.rejected = outcome.isRoomGone
-      ? "room_not_found"
-      : outcome.reply.type === "rejected"
-        ? outcome.reply.code
-        : null;
+    this.rejected = outcome.isRoomGone ? "room_not_found" : rejectionOfReply(outcome.reply);
     if (!outcome.isRoomGone) {
-      this.deliver(name, outcome.reply, outcome.playersToUpdate);
+      const delivery = { sender: name, accounts: this.accounts.values(), record: this.record };
+      deliverRoomOutcome(this.messagesTo, { ...delivery, now: this.now }, outcome);
     }
   }
 
-  private deliver(
-    name: string,
-    reply: ServerMessage,
-    playersToUpdate: ReadonlyArray<PlayerId>,
-  ): void {
-    this.messagesTo.set(name, [...(this.messagesTo.get(name) ?? []), reply]);
-    const record = this.record;
-    if (record === null) {
-      return;
-    }
-    for (const account of this.accounts.values()) {
-      if (playersToUpdate.includes(account.identity.playerId)) {
-        const sent = this.messagesTo.get(account.identity.name) ?? [];
-        this.messagesTo.set(account.identity.name, [
-          ...sent,
-          {
-            type: "update",
-            protocolVersion: PROTOCOL_VERSION,
-            acceptedActionId: null,
-            update: updateFor(record, account.identity.playerId),
-            serverNow: this.now,
-          },
-        ]);
-      }
-    }
+  private countGameStart(players: ReadonlyArray<PlayerId>): GameStartRejection | null {
+    const limits = { now: this.now, siteGamesPerDay: siteGameLimitOf({}) };
+    const counted = countGameStart(this.lobby, players, limits);
+    this.lobby = counted.isOk ? counted.value : this.lobby;
+    return counted.isOk ? null : counted.error;
   }
 
   private seatOrder(players: ReadonlyArray<PlayerId>): ReadonlyArray<PlayerId> {

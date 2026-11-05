@@ -1129,7 +1129,7 @@ file.
   by the scenarios with the real numbers; the browser test for the notices uses a player's own
   limit, set through the test-room secret, which affects no other test; the site notice is tested
   in the client's unit tests.
-- **Implemented:** phase 20, item 4.
+- **Implemented:** phase 20, item 3 (`siteGameLimitOf`, `.dev.vars`, `check.yml`, `deploy.yml`).
 
 ## Q70. Which budgets can the report show, and how are full games played in the browser?
 

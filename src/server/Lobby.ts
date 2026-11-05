@@ -8,12 +8,15 @@ import type { LobbyMessage } from "../shared/protocol/LobbyMessage";
 import type { RoomCode } from "../shared/RoomCode";
 import type { ClaimRejection } from "./lobby/ClaimRejection";
 import { claimPlayer } from "./lobby/claimPlayer";
+import { countGameStart } from "./lobby/countGameStart";
 import { EMPTY_LOBBY } from "./lobby/EMPTY_LOBBY";
 import { forgetPlayer } from "./lobby/forgetPlayer";
+import type { GameStartRejection } from "./lobby/GameStartRejection";
 import { LOBBY_RECORD_SCHEMA } from "./lobby/LOBBY_RECORD_SCHEMA";
 import type { LobbyRecord } from "./lobby/LobbyRecord";
 import { publicRoomsOf } from "./lobby/publicRoomsOf";
 import { releasePlayer } from "./lobby/releasePlayer";
+import { siteGameLimitOf } from "./lobby/siteGameLimitOf";
 import type { RoomSummary } from "./lobby/RoomSummary";
 import { withRoomSummary } from "./lobby/withRoomSummary";
 
@@ -26,6 +29,22 @@ export class Lobby extends DurableObject<Env> {
       const claimed = claimPlayer(record, playerId, code, now);
       rejection = claimed.isOk ? null : claimed.error;
       return claimed.isOk ? claimed.value : null;
+    });
+    return rejection;
+  }
+
+  async startGame(
+    players: ReadonlyArray<PlayerId>,
+    now: EpochMs,
+  ): Promise<GameStartRejection | null> {
+    let rejection: GameStartRejection | null = null;
+    await this.change((record) => {
+      const counted = countGameStart(record, players, {
+        now,
+        siteGamesPerDay: siteGameLimitOf(this.env),
+      });
+      rejection = counted.isOk ? null : counted.error;
+      return counted.isOk ? counted.value : null;
     });
     return rejection;
   }

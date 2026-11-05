@@ -56,7 +56,12 @@ function send(storage: RoomStorage, sender: Identity, message: Readonly<Record<s
     sender,
     now: NOW,
     randomFor: randomForNextAction,
-    gameStart: { seed: 1, now: NOW, seatOrder: (players) => players },
+    gameStart: {
+      seed: 1,
+      now: NOW,
+      seatOrder: (players) => players,
+      limitRejectionFor: () => null,
+    },
     livePlayers: LIVE,
   });
   return outcome.isRoomGone ? null : outcome.reply;

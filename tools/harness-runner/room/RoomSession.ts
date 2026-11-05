@@ -1,3 +1,4 @@
+import { gameStartInJoinOrder } from "../../simulator/gameStartInJoinOrder.ts";
 import { randomUUID } from "node:crypto";
 import * as v from "valibot";
 import type { GameState } from "../../../src/rules/GameState.ts";
@@ -230,7 +231,7 @@ export class RoomSession {
       sender,
       now: this.now,
       randomFor: () => this.random,
-      gameStart: { seed: 1, now: this.now, seatOrder: (players) => players },
+      gameStart: gameStartInJoinOrder(1, this.now),
       livePlayers: this.livePlayers(),
     });
     this.handlingMs.push(performance.now() - startedMs);

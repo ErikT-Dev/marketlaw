@@ -60,7 +60,7 @@ function accept(storage: RoomStorage, sender: Identity, now: EpochMs) {
     sender,
     now,
     randomFor: randomForNextAction,
-    gameStart: { seed: 1, now, seatOrder: (players) => players },
+    gameStart: { seed: 1, now, seatOrder: (players) => players, limitRejectionFor: () => null },
     livePlayers: BOTH,
   });
 }

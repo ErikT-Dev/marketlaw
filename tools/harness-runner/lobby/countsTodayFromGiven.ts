@@ -19,6 +19,6 @@ export function countsTodayFromGiven(
       actions: account.actions_today ?? 0,
       gameStarts: account.games_started_today ?? 0,
     })),
-    siteGameStarts: 0,
+    siteGameStarts: given.site_games_today ?? 0,
   };
 }

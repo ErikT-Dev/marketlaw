@@ -1,3 +1,4 @@
+import { gameStartInJoinOrder } from "../gameStartInJoinOrder.ts";
 import * as v from "valibot";
 import { claimPlayer } from "../../../src/server/lobby/claimPlayer.ts";
 import { withRoomSummary } from "../../../src/server/lobby/withRoomSummary.ts";
@@ -105,7 +106,7 @@ function roomAction(day: Day, sender: Identity, action: object, code: RoomCode):
     sender,
     now,
     randomFor: randomForNextAction,
-    gameStart: { seed: 1, now, seatOrder: (players) => players },
+    gameStart: gameStartInJoinOrder(1, now),
     livePlayers: day.live,
   });
   report(day, code);

@@ -12,6 +12,7 @@ const GIVEN_ROOM = v.strictObject({
 
 export const LOBBY_GIVEN_SCHEMA = v.strictObject({
   clock_ms: v.optional(v.number()),
+  site_games_today: v.optional(v.number()),
   accounts: v.optional(
     v.array(
       v.strictObject({

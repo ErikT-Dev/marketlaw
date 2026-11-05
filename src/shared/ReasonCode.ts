@@ -52,6 +52,7 @@ export const ReasonCode = v.picklist([
   "busy_elsewhere",
   "daily_action_limit",
   "daily_game_start_limit",
+  "site_game_limit",
 ]);
 
 export type ReasonCode = v.InferOutput<typeof ReasonCode>;

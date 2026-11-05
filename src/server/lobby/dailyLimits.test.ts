@@ -4,10 +4,12 @@ import { EpochMs } from "../../shared/EpochMs";
 import { PlayerId } from "../../shared/PlayerId";
 import { RoomCode } from "../../shared/RoomCode";
 import { claimPlayer } from "./claimPlayer";
+import { countGameStart } from "./countGameStart";
 import { dayOf } from "./dayOf";
 import { EMPTY_LOBBY } from "./EMPTY_LOBBY";
 import { LOBBY_RECORD_SCHEMA } from "./LOBBY_RECORD_SCHEMA";
 import type { LobbyRecord } from "./LobbyRecord";
+import { siteGameLimitOf } from "./siteGameLimitOf";
 
 const ANN = v.parse(PlayerId, crypto.randomUUID());
 const CODE = v.parse(RoomCode, "K7QR2P");
@@ -55,5 +57,47 @@ describe("the daily limits for joining a room", () => {
   it("reads a lobby record saved before the daily counts with no counts", () => {
     const saved = { rooms: [], busy: [], staying: [] };
     expect(v.parse(LOBBY_RECORD_SCHEMA, saved)).toEqual(EMPTY_LOBBY);
+  });
+});
+
+describe("counting a game start", () => {
+  const BEA = v.parse(PlayerId, crypto.randomUUID());
+  const LIMITS = { now: MIDNIGHT, siteGamesPerDay: 50 };
+
+  it("counts the start for the site and for every player", () => {
+    const counted = countGameStart(lobbyWith(5, 3), [ANN, BEA], LIMITS);
+    expect(counted.isOk ? counted.value.today : null).toEqual({
+      day: dayOf(MIDNIGHT),
+      players: [
+        { playerId: ANN, actions: 5, gameStarts: 4 },
+        { playerId: BEA, actions: 0, gameStarts: 1 },
+      ],
+      siteGameStarts: 1,
+    });
+  });
+
+  it("names every player over their own limit and counts nothing", () => {
+    expect(countGameStart(lobbyWith(0, 10), [BEA, ANN], LIMITS)).toEqual({
+      isOk: false,
+      error: {
+        kind: "players_over_limit",
+        players: [{ playerId: ANN, reason: "daily_game_start_limit" }],
+      },
+    });
+  });
+
+  it("refuses the 51st game of the day and allows it the next day", () => {
+    const full = { ...lobbyWith(0, 0), today: { ...lobbyWith(0, 0).today, siteGameStarts: 50 } };
+    expect(countGameStart(full, [ANN, BEA], LIMITS)).toEqual({
+      isOk: false,
+      error: { kind: "site_game_limit" },
+    });
+    expect(countGameStart(full, [ANN, BEA], { ...LIMITS, now: NEXT_MIDNIGHT }).isOk).toBe(true);
+  });
+
+  it("uses 50 games a day unless the environment sets a test site limit", () => {
+    expect(siteGameLimitOf({})).toBe(50);
+    expect(siteGameLimitOf({ TEST_SITE_GAMES_PER_DAY: "not a number" })).toBe(50);
+    expect(siteGameLimitOf({ TEST_SITE_GAMES_PER_DAY: "1000000" })).toBe(1_000_000);
   });
 });

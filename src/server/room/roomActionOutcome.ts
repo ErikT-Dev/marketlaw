@@ -4,18 +4,18 @@ import type { RoomIntent } from "../../shared/protocol/RoomIntent";
 import type { ReasonCode } from "../../shared/ReasonCode";
 import type { Result } from "../../shared/Result";
 import type { GameStart } from "./GameStart";
-import type { RoomChange } from "./RoomChange";
+import type { RoomActionChange } from "./RoomActionChange";
 import type { RoomRecord } from "./RoomRecord";
 import { ROOM_TIMES } from "./ROOM_TIMES";
 import { busyPlayersOf } from "./busyPlayersOf";
 import { roomWithout } from "./roomWithout";
-import { startRoomGame } from "./startRoomGame";
+import { startGameWithinLimits } from "./startGameWithinLimits";
 import { withAskingIfFull } from "./withAskingIfFull";
 
-type Outcome = Result<RoomChange, ReasonCode>;
+type Outcome = Result<RoomActionChange, ReasonCode>;
 
 function changed(record: RoomRecord | null): Outcome {
-  return { isOk: true, value: { record, removals: [] } };
+  return { isOk: true, value: { record, removals: [], notices: [], refusal: null } };
 }
 
 function changeSize(
@@ -47,11 +47,10 @@ function acceptGame(record: RoomRecord, playerId: PlayerId, start: GameStart): O
   }
   const accepted = [...asking.accepted, playerId];
   const isEveryone = record.players.every((player) => accepted.includes(player.playerId));
-  return changed(
-    isEveryone
-      ? startRoomGame(record, start)
-      : { ...record, waiting: { ...record.waiting, asking: { ...asking, accepted } } },
-  );
+  if (isEveryone) {
+    return { isOk: true, value: startGameWithinLimits(record, start) };
+  }
+  return changed({ ...record, waiting: { ...record.waiting, asking: { ...asking, accepted } } });
 }
 
 function declineGame(record: RoomRecord, playerId: PlayerId, start: GameStart): Outcome {
@@ -74,6 +73,8 @@ function declineGame(record: RoomRecord, playerId: PlayerId, start: GameStart): 
               },
             },
       removals: [{ playerId, reason: "declined", rejoinAt }],
+      notices: [],
+      refusal: null,
     },
   };
 }

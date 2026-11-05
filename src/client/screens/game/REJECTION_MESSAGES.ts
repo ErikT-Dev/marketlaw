@@ -58,4 +58,5 @@ export const REJECTION_MESSAGES: Readonly<Record<ReasonCode, string>> = {
     "You have used your 2,000 game actions for today. You can join rooms, the ranked queue and new games again after 00:00 UTC.",
   daily_game_start_limit:
     "You have started 10 games today, the most per day. Try again after 00:00 UTC.",
+  site_game_limit: "Daily game limit reached, try again after 00:00 UTC",
 };

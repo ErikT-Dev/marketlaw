@@ -1,6 +1,7 @@
 import type { Notice } from "../../../shared/Notice";
 import type { SeatNumber } from "../../../shared/SeatNumber";
 import { playerNameOf } from "./playerNameOf";
+import { REJECTION_MESSAGES } from "./REJECTION_MESSAGES";
 import { timeOutText } from "./timeOutText";
 
 export function noticeToastOf(
@@ -10,6 +11,9 @@ export function noticeToastOf(
 ): { readonly title: string; readonly text: string } {
   if (notice.kind === "timed_out") {
     return { title: "Your time ran out", text: timeOutText(notice) };
+  }
+  if (notice.kind === "site_game_limit") {
+    return { title: "The game did not start", text: REJECTION_MESSAGES.site_game_limit };
   }
   const seconds = String(Math.round(notice.freeMs / 1000));
   const others = notice.seats

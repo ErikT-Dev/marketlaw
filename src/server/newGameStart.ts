@@ -14,7 +14,7 @@ function shuffled(players: ReadonlyArray<PlayerId>): ReadonlyArray<PlayerId> {
   }, []);
 }
 
-export function newGameStart(now: EpochMs): GameStart {
+export function newGameStart(now: EpochMs): Omit<GameStart, "limitRejectionFor"> {
   const [seed = 0] = crypto.getRandomValues(new Uint32Array(1));
   return { seed, now, seatOrder: shuffled };
 }

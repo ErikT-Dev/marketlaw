@@ -117,7 +117,7 @@ function startSession(rawGiven: Readonly<Record<string, unknown>>, random: Scrip
 export const LOBBY_DRIVER: ScenarioDriver = {
   name: "lobby",
   unhandledGivenValues: () => [],
-  givenFields: new Set(["clock_ms", "accounts", "room", "other_rooms"]),
+  givenFields: new Set(["clock_ms", "site_games_today", "accounts", "room", "other_rooms"]),
   steps: new Set([
     "create_room",
     "join_room",
@@ -154,7 +154,7 @@ export const LOBBY_DRIVER: ScenarioDriver = {
       new Set(["size", "public", "owner", "players", "state", "accepted", "code_format"]),
     ],
     ["then.game", new Set(["kind", "seats"])],
-    ["then.message_to", new Set(["player", "contains"])],
+    ["then.message_to", new Set(["player", "contains", "text"])],
     ["then.accounts", new Set(["name", "kind"])],
     ["then.generated_name", new Set(["taken", "max_length", "not"])],
     ["then.logged_in", new Set(["as"])],

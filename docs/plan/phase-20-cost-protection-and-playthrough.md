@@ -97,7 +97,7 @@ These 5 scenarios are added to `harness/required.yaml` in this phase, by file an
     directly, or yesterday's counts carry over). The lobby driver takes `clock_ms` and
     `accounts[].actions_today` / `games_started_today`; #31 now runs in it and fails until item 3
     (not required). `site_games_today` is not in the driver yet.
-- [ ] 3. **The check when a game starts** (A9.3, A9.4; scenarios #25, #31; Q68, Q69).
+- [x] 3. **The check when a game starts** (A9.3, A9.4; scenarios #25, #31; Q68, Q69).
   - When the last player accepts (`src/server/room/roomActionOutcome.ts` calls
     `startRoomGame.ts`), the room asks the lobby, in one call, to check every player (A9.2,
     A9.3) and the site (A9.4) and, if all pass, count the start for the site and each player.
@@ -113,6 +113,24 @@ These 5 scenarios are added to `harness/required.yaml` in this phase, by file an
   - Test rooms (`src/server/room/startTestRoomIn.ts`) do not count (Q67).
   - `src/server/GameRoom.ts` is about 320 lines, at the file limit: put the new code in files
     under `src/server/room/`.
+  - Done: `Lobby.startGame(players, now)` checks and counts in one call (`countGameStart`:
+    players first, then the site; `siteGameLimitOf(env)`). `GameStart.limitRejectionFor` is
+    asked when the last player accepts (`startGameWithinLimits`). The room cannot wait for the
+    lobby inside the pure message handling, so `receiveCheckingGameStart` first runs an
+    `accept_game` message on a storage that keeps nothing to learn whether it starts a game, asks
+    the lobby, then handles it for real with the answer. Removal reasons `daily_action_limit` and
+    `daily_game_start_limit` (no rejoin wait); at the site limit the last accepter gets
+    `rejected: site_game_limit` and the others a `site_game_limit` notice; everyone is updated.
+    `MessageOutcome` now carries `removals` (other players removed by a room action) and
+    `notices`. `nowMs` moved out of `GameRoom.ts` to keep it under 300 lines.
+  - Differs: the compiler needs texts for the new notice and removal reasons, so
+    `noticeToastOf.ts` and `removalText.ts` already show the S16.1 texts (from
+    `REJECTION_MESSAGES`); item 5 still adds the waiting-room toast (the waiting room does not
+    show game notices yet) and the tests. The lobby driver checks `message_to.text` through those
+    client functions and reads a daily-limit removal as `rejected`.
+  - For later items: the busy-day simulator and the simulator still pass
+    `limitRejectionFor: () => null` (`tools/simulator/gameStartInJoinOrder.ts`); item 4 must
+    count the start writes in the lobby for B18 (one `Lobby.startGame` write per game start).
 - [ ] 4. **Actions added when a game ends or a player leaves** (A9.2; Q67; B18).
   - A player's actions are the accepted actions with their seat in the game's action log
     (`SavedGame.actionLog`), except `time_out`, `pause_game` and `resume_game`. `leave_game` is

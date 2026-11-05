@@ -37,6 +37,8 @@ function updated(
     },
     playersToUpdate: [],
     shouldClose: false,
+    removals: [],
+    notices: [],
   };
 }
 
