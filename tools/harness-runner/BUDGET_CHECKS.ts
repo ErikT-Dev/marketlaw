@@ -44,8 +44,9 @@ export const BUDGET_CHECKS: Readonly<Record<string, BudgetCheck>> = {
     where: "size-limit (.size-limit.js) on the production build, in npm run check",
   },
   B15: {
-    by: "not built",
-    where: "full-game browser tests (npm run e2e), phase 20 item 7",
+    by: "other check",
+    where:
+      "browser tests e2e/fullGames.spec.ts (npm run e2e): every market go and End turn of complete 2-, 3- and 4-player games, 95th percentile per game",
   },
   B16: {
     by: "harness",

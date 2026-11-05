@@ -1151,7 +1151,7 @@ file.
     turns, then take the market go and end the turn for every player until the game ends after
     turn 40 (R21), and check the end screen. Screenshots of the key screens they pass through go
     to `harness/screens/`.
-- **Implemented:** phase 20, items 5 and 6.
+- **Implemented:** phase 20, items 5, 6 and 7.
 - **Harness change (item 6):** B11 joined the required budgets in `harness/required.yaml`; the
   room scenarios measure it as the longest wall-clock time the room took to handle one message
   (never less than its CPU time), 3 ms against 10. B16 now adds the rows the busy-day simulator

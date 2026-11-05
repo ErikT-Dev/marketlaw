@@ -205,7 +205,7 @@ These 5 scenarios are added to `harness/required.yaml` in this phase, by file an
     573 + 56 = 629 (limit 50,000). B18 unchanged: 2,126 (limit 5,000).
   - For later items: item 7 changes B15 in `tools/harness-runner/BUDGET_CHECKS.ts` to
     `by: "other check"` once the full-game browser tests assert it.
-- [ ] 7. **Full browser tests** (B15; Q70). May need two parts: 7a the 2-player game and the
+- [x] 7. **Full browser tests** (B15; Q70). May need two parts: 7a the 2-player game and the
   helpers, 7b the 3- and 4-player games and screenshots.
   - Complete games with 2, 3 and 4 players from the lobby to the end screen: create, join,
     accept (reuse `e2e/startGame.ts`, `startFourPlayerGame.ts`, `openLobby.ts`), some real moves
@@ -217,6 +217,29 @@ These 5 scenarios are added to `harness/required.yaml` in this phase, by file an
     `gameScreenSizes.spec.ts` and `gameOver.spec.ts` save them).
   - Locally run with `--workers=2` and restart the dev server after client changes
     (`proposed-rules.md`).
+  - Done in one part: `e2e/fullGames.spec.ts` plays a whole game with 2, 3 and 4 players at each
+    screen size (`playFullGame`: `startGame`, every player sells a card held once in turn 1,
+    takes a marketplace card in turn 2 and draws 2 cards of a sector in the other turns
+    (`playMarketPhase`), ends the turn (`endTurnForEveryone`) until turn 40, then the end
+    screen on every page: "... wins!", the turn-limit text and one row per player). B15:
+    `timeMove` takes the time in the page from the click to the first frame where the move's
+    control is gone (the "Your go" heading, or the End turn button and its "Waiting for the
+    server…" label), so optimistic display does not count; the 95th percentile per game is
+    asserted against the limit read from `budgets.yaml` (`budgetLimitOf`) and written as a
+    test annotation. Locally about 75–120 ms (single moves up to 10 s while two workers load the
+    local server). B15 is `by: "other check"` in `BUDGET_CHECKS.ts`. Screenshots
+    `harness/screens/full-game-{2,3,4}-players-{turn-1,turn-40,game-over}/`. A game takes about
+    1 to 2.5 minutes; the test timeout is `FULL_GAME_TEST_MS` (15 minutes).
+  - Differs: no leak check in these games: by turn 40 almost every card name has been public in
+    the marketplace or the discard pile, so a name-based check says nothing there (turn 1 is
+    checked in `turnOne.spec.ts`; the harness leak test covers whole games).
+  - For later items: the Finisher should add the full games and B15 to the Playwright row of
+    `docs/enforcement.md` (and drop B15 from "not yet enforced"). Once, at turn 40 at 1920x1080,
+    axe reported a scrollable panel without keyboard access (`scrollable-region-focusable`);
+    it did not come back in 13 later games. If it recurs, find which `Panel` it is
+    (`useIsScrollable` only watches its own and its content's size). Other local failures were
+    the known two-worker load: a guest dialog still "Continuing" after 5 s, or a turn-1 sale
+    still "Waiting for the server…"; each passed when run again alone.
 - [ ] 8. **Playthrough checklist** (Q71): `docs/playthrough.md`, for the owner and invited
   testers: who is needed (2 to 4 people, each on their own computer, invited through Cloudflare
   Access, D6), what to try in which order (guest names, lobby, create and join rooms, accept,
