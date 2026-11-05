@@ -1058,3 +1058,111 @@ file.
 - **Implemented:** `src/client/screens/GamePage.tsx`, `src/client/screens/game/timeOutText.ts`,
   `src/client/screens/game/ConnectionNotices.tsx`, `src/client/screens/game/LeaveGameButton.tsx`,
   `src/client/components/PlayerBadge.tsx`; phase 19.
+
+## Q67. Where do the daily counts live, and what counts toward them?
+
+- **Phase:** 20, start (A9.1–A9.4).
+- **Questions:** where are a player's daily actions and game starts kept, and the site's game
+  starts? What is "an accepted game action"? Does creating a room count as joining it? Do test
+  rooms count?
+- **Options for the place:** (a) the lobby Durable Object's record, next to "one thing at a time";
+  (b) columns on the D1 players table, with the site count in the lobby; (c) a row per player and
+  day in the lobby's SQLite.
+- **Solution:**
+  - (a). D26 already puts the site counters in the lobby, and the lobby is single-threaded, so a
+    join can check the counts and claim the player in one step (`claim`), and a game start can
+    check every player and the site and count the start in one call, with no race between rooms.
+    The record keeps the day number (UTC epoch ms / 86,400,000) and entries for today only: a
+    record from an earlier day reads as all zeros, so the reset at 00:00 UTC (A9.1) needs no
+    alarm and no write. At most about 200 players can have counts in a day (50 games × 4), so the
+    record stays small. Cost: 1 lobby row per game start, 1 per game end and 1 per player who
+    leaves a running game, at most about 300 rows on a busy day, measured in the busy-day
+    simulator under B18. D1 and B8 are not touched.
+  - A player's actions in a game are their accepted moves in its action log: every action with
+    their seat except `time_out`, `pause_game` and `resume_game`, which the room makes, not the
+    player (spec A9.2, one added sentence). Market goes, ending the turn and undo count, as the
+    glossary says. Room messages (accept, decline, size) are not game actions.
+  - They are added when the game ends (every seat still in it) or when the player leaves it
+    (Leave game, or leaving after 3 time-outs, R9.11). An abandoned game is an ended game.
+  - Creating a room counts as joining it for A9.2 and A9.3 (spec A9.3, one added sentence);
+    A9.4 is about starting, so creating and joining rooms stay possible at the site limit.
+  - Test rooms (the test-room secret, phase 08) do not count: they are a test tool, not a game
+    players start, and they never go through the lobby.
+- **Implemented:** `accounts.md` A9.2, A9.3; phase 20, items 2 and 3.
+
+## Q68. What happens in a room when a game cannot start because of a daily limit?
+
+- **Phase:** 20, start (A9.3, A9.4, scenarios `lobby-queue-and-limits` #25 and #31).
+- **Question:** A9.3 and A9.4 say the limits are checked again when a game starts, but not what
+  the room does then. If everyone just stays, a full room asks again at once and fails again.
+  A9.2 and A9.3 also have no notice text.
+- **Options:** keep everyone and stop asking; remove the player who hit the limit; close the room.
+- **Solution:** the check runs when the last player accepts (M1.10). A player who has reached
+  A9.2 or A9.3 is removed from the room without a rejoin wait (they cannot join again today
+  anyway) and told why; the asking ends and everyone else keeps waiting, as when a player leaves
+  (M1.11, Q54). At the site limit (A9.4) nobody is at fault: the asking ends, everyone stays, and
+  everyone in the room is told; the room asks again the next time it becomes full. The player
+  texts are those of the design board "Notices: daily limits", now in `screens.md` S16.1: "You
+  have used your 2,000 game actions for today. You can join rooms, the ranked queue and new games
+  again after 00:00 UTC." and "You have started 10 games today, the most per day. Try again after
+  00:00 UTC." The reason codes are those of the scenarios: `daily_action_limit`,
+  `daily_game_start_limit`, `site_game_limit`. In the client, the same texts are shown for a
+  rejected join or create in the lobby and as a notice in the waiting room.
+- **Implemented:** `accounts.md` A9.3, A9.4; `screens.md` S16.1; phase 20, items 3 and 4.
+
+## Q69. How can the browser tests start more than 50 games a day on one local server?
+
+- **Phase:** 20, start (A9.4).
+- **Question:** one `npm run e2e` run starts well over 50 games on the local server (every full
+  game, room and lobby test at three screen sizes), and the local Durable Object storage is kept
+  between runs, so A9.4 would make most browser tests fail. `playwright.config.ts` is protected,
+  so there is no global setup to reset the count.
+- **Options:** (a) a test route under the test-room secret that resets the site count, called by
+  every game-starting helper; (b) an optional variable that only local and CI servers set,
+  raising the site limit; (c) test rooms for every browser game.
+- **Solution:** (b). The limit is the spec's 50 in code. A server whose environment sets
+  `TEST_SITE_GAMES_PER_DAY` uses that number instead; only `.dev.vars` sets it (locally and in
+  the `.dev.vars` step of `check.yml` and `deploy.yml`, to 1000000), never `wrangler.jsonc` or the
+  live site. (a) is fragile: one helper that forgets the reset fails a later test far from the
+  cause, and a test that set the site count to the limit would break the tests running beside
+  it. (c) would stop the browser tests from testing the lobby. The limit logic itself is proved
+  by the scenarios with the real numbers; the browser test for the notices uses a player's own
+  limit, set through the test-room secret, which affects no other test; the site notice is tested
+  in the client's unit tests.
+- **Implemented:** phase 20, item 4.
+
+## Q70. Which budgets can the report show, and how are full games played in the browser?
+
+- **Phase:** 20, start (Builds 2 and 3, B1–B5, B9–B18).
+- **Questions:** B10, B14 and B15 are measured outside `npm run harness` (browser tests and
+  size-limit); B11 is measured but not required; B6, B7 and B8 belong to the tutorial, chat and
+  records (phases 29, 21 and 25). How does a browser test play a whole game in reasonable time?
+- **Solution:**
+  - The report's budget section lists every budget in `budgets.yaml` with its limit, its
+    measurement and where it is measured. Those measured by the harness show the value; B10,
+    B14 and B15 show the tool that enforces them in `npm run check` or the browser tests (which
+    fail when the budget is broken); B6, B7 and B8 show the phase that builds their feature.
+    B11 joins the required budgets (`harness/required.yaml`) if it is within its limit; if it is
+    not, that is a failing budget to fix, not to leave out.
+  - B15 is measured in the full-game browser tests: the time from each click on a move to the
+    updated view, 95th percentile at most 500 ms, asserted in the test.
+  - The full games (2, 3 and 4 players, each at the three screen sizes Playwright runs) go from
+    the lobby through room creation, joining and accepting, play some real moves in the first
+    turns, then take the market go and end the turn for every player until the game ends after
+    turn 40 (R21), and check the end screen. Screenshots of the key screens they pass through go
+    to `harness/screens/`.
+- **Implemented:** phase 20, items 5 and 6.
+
+## Q71. How does the phase end, given the owner's playthrough?
+
+- **Phase:** 20, start (exit criteria; D6; `game-rules.md` open question 1).
+- **Question:** the exit criteria include the owner playing a complete game with others and
+  accepting the milestone, and the open points say findings become spec changes or phases before
+  milestone 4 starts. Only the owner can invite testers to Cloudflare Access (D6).
+- **Solution:** the releaser merges and deploys as usual, then writes the playthrough under
+  **Waiting for the owner** in the phase file (invite testers, play with the checklist, accept
+  the milestone or report findings) and marks the phase **waiting for the owner** instead of
+  done, so milestone 4 does not start before the playthrough. The checklist is
+  `docs/playthrough.md`; it asks the testers to note how many turns their games took, for the
+  game-length recheck (D24, `game-rules.md` open question 1).
+- **Implemented:** phase 20, item 7 and the release.
