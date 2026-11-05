@@ -1157,6 +1157,12 @@ file.
   (never less than its CPU time), 3 ms against 10. B16 now adds the rows the busy-day simulator
   reads outside the game (room, lobby and D1 token lookups, 56 per room) to the room's reads per
   3-player game: 629 against 50,000. B18 is unchanged at 2,126 against 5,000.
+- **Measurement change (finisher):** measured as the longest time for one message, B11 failed
+  `npm run check` twice out of four runs (21 ms and 14 ms) while other tests or the browser tests
+  loaded the computer, and passed at 3 ms otherwise: one message slowed by the load decided it.
+  `budgets.yaml` defines B11 as the 99th percentile, so the room driver now gives the time of every
+  message it handles and the harness takes the 99th percentile over all of them, as the budget
+  says. The limit (10 ms) and the required list are unchanged.
 
 ## Q71. How does the phase end, given the owner's playthrough?
 

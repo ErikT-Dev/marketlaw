@@ -29,7 +29,7 @@ export const BUDGET_CHECKS: Readonly<Record<string, BudgetCheck>> = {
   B11: {
     by: "harness",
     where:
-      "room scenarios, the longest time the room took to handle one message (wall-clock time, never less than CPU time)",
+      "room scenarios, the 99th percentile over every message the room handled of the time it took (wall-clock time, never less than CPU time)",
   },
   B12: {
     by: "harness",

@@ -200,7 +200,7 @@ function startSession(
     measurements: () => [
       { budget: "B1", value: Math.max(0, ...session.rowsForAccepted) },
       { budget: "B2", value: Math.max(0, ...session.rowsForOther) },
-      { budget: "B11", value: Math.ceil(Math.max(0, ...session.handlingMs)) },
+      ...session.handlingMs.map((value) => ({ budget: "B11", value })),
     ],
   };
 }

@@ -1,6 +1,7 @@
 import { awakeSecondsPerGame } from "./awakeSecondsPerGame.ts";
 import type { HarnessRun } from "./HarnessRun.ts";
 import { legalGameAverage } from "./legalGameAverage.ts";
+import { percentileOf } from "./percentileOf.ts";
 import { BUSY_DAY } from "../simulator/busyDay/BUSY_DAY.ts";
 import { busyDayTotal } from "../simulator/busyDay/busyDayTotal.ts";
 
@@ -46,5 +47,8 @@ export function highestMeasured(run: HarnessRun, budget: string): number | undef
     ...simulated(run, budget),
     ...(budget === "B18" && run.busyDay !== null ? [busyDayTotal(run.busyDay.written)] : []),
   ];
-  return values.length === 0 ? undefined : Math.max(...values);
+  if (values.length === 0) {
+    return undefined;
+  }
+  return budget === "B11" ? Math.ceil(percentileOf(values, 0.99)) : Math.max(...values);
 }
