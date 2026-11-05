@@ -278,7 +278,10 @@ None yet.
 ## S16. Notices and messages
 
 - **S16.1** Daily limits use the texts of A9; the site-wide ones read "Daily game limit reached,
-  try again after 00:00 UTC" and "Daily limit reached, try again after 00:00 UTC".
+  try again after 00:00 UTC" and "Daily limit reached, try again after 00:00 UTC". A player's own
+  limits read "You have used your 2,000 game actions for today. You can join rooms, the ranked
+  queue and new games again after 00:00 UTC." (A9.2) and "You have started 10 games today, the
+  most per day. Try again after 00:00 UTC." (A9.3).
 - **S16.2** Other notices: the game is open in another tab, with **Play here instead** (M5.1);
   connection lost and reconnecting, with actions disabled; a new version is available, with
   **Reload** (M9.1); and room not found.

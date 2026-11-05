@@ -214,15 +214,20 @@ ranked queue, daily limits and chat. How the game itself is played is in `game-r
 - **A9.2** **Actions per player:** each player can take at most **2,000 accepted game actions per
   day**, across all games. Market goes and ending the turn count as game actions. A player's actions in a game are added to their daily count when that
   game ends or they leave it. A player who has reached the limit cannot join a room, the ranked
-  queue or a new game until the next day.
+  queue or a new game until the next day. Only moves the player makes count: time-outs, and a game
+  pausing or resuming, do not.
 - **A9.3** **Game starts per player:** each player can start at most **10 games per day**,
   counting every game they take part in from the start. It is checked when they join a room or
-  the ranked queue, and again when a game starts.
+  the ranked queue, and again when a game starts. Creating a room counts as joining it, for A9.2
+  and A9.3. When a game cannot start because a player in it has reached A9.2 or A9.3, the asking
+  (M1.10) ends at once, that player is removed from the room without a rejoin wait and told why,
+  and everyone else stays and keeps waiting.
 - **A9.4** **Games per day:** at most **50 games can start per day** on the whole site. Once that
   many have started, players who try to start a game are told "Daily game limit reached, try
-  again after 00:00 UTC". Games already in progress are not affected. The ranked queue makes no
-  matches until 00:00 UTC; players can join it, stay in it and leave it as normal, and everyone in
-  it sees the same message.
+  again after 00:00 UTC". Games already in progress are not affected. In a room, the asking
+  (M1.10) ends at once, everyone stays and keeps waiting and is told, and the room asks again the
+  next time it becomes full. The ranked queue makes no matches until 00:00 UTC; players can join
+  it, stay in it and leave it as normal, and everyone in it sees the same message.
 - **A9.5** The tutorial does not count toward A9.2–A9.4 (C4.6).
 - **A9.6** **Site-wide caps:** at most **100 tutorials can start per day** and at most **2,000 chat
   messages can be sent per day** on the whole site. Once a cap is reached, players are told
