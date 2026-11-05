@@ -339,6 +339,14 @@ These 5 scenarios are added to `harness/required.yaml` in this phase, by file an
   the same check run alone afterwards was green. Screenshots in `harness/screens/` retaken.
 - [ ] Report written, merged, deploy watched, live site checked; the playthrough written under
   **Waiting for the owner** and the phase marked **waiting for the owner** (Q71).
+  - Report written and pushed (`PLAN: Phase 20 report`). The branch check on GitHub (run
+    42055452656) was cancelled: `check` passed in 4 min, but `browser-tests` hit the job's
+    `timeout-minutes: 20` in `.github/workflows/check.yml`. GitHub runs the 111 tests with 1
+    worker; after 16 min 78 had run (one failed, `F`, unknown which: the results are kept only on
+    failure, not on cancel) and 33 were left, including the 9 full games (about 1 to 2.5 min each).
+    A rerun cannot fit in 20 min, so it was not rerun. `deploy.yml` has the same 20-min browser
+    job, so a merge would not deploy. Not merged. Next: decide how the browser job fits (a longer
+    job timeout in both workflows, or shards), then find the failing test.
 
 ## Report
 
