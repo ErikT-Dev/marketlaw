@@ -1215,3 +1215,29 @@ file.
 - **Implemented:** phase 20, item 8 (`docs/playthrough.md`) and the release. The site lock
   was removed by D22 (replaces D6), so testers get the link instead of a Cloudflare Access
   invitation.
+
+## Q72. How do the browser tests fit GitHub's 20-minute job limit?
+
+- **Phase:** 20, release (branch check run 42055452656).
+- **Question:** GitHub runs the 111 browser tests with 1 worker (the private repository's
+  2-core runner). In run 42055452656 the `browser-tests` job hit its `timeout-minutes: 20`
+  after 78 tests, with the 9 full games still to come (about 1 to 2.5 min each), so neither
+  the branch check nor a deploy could pass. Raising the limit or dropping tests would hide the
+  problem; `playwright.config.ts` is protected.
+- **Solution:** the 20-minute limit per job stays. `browser-tests` in `check.yml` and
+  `deploy.yml` is a matrix of 6 parallel jobs: one per full-game player count
+  (`--grep` on the test title, 3 screen sizes each) and the other 102 tests in 3 Playwright
+  shards (`--grep-invert` on the full-game titles, `--shard=n/3`). No test is dropped and no
+  retries are added. `fail-fast: false` lets every part finish, so one failure does not hide
+  another. The test step has its own 15-minute limit and the results upload with
+  `if: always()`, so a slow part still leaves its traces; `--reporter=list` names every test in
+  the log instead of the dot reporter's `F`. The deploy job needs `browser-tests`, which is
+  successful only when all 6 parts are.
+- **Effect on Actions minutes** (private repository, 2,000 free minutes a month): the tests
+  themselves take the same time, but each of the 6 jobs repeats the setup (install, Chromium,
+  local server), about 2 to 3 minutes, and GitHub rounds each job up to a whole minute. A
+  branch check costs about 50 minutes instead of about 40 (one job, had it fit), a deploy of
+  already checked code still costs about 1 minute, and a deploy that tests again about 50. That
+  leaves room for about 35 branch checks a month, enough for one phase's pushes; pushes during
+  a phase should stay batched.
+- **Implemented:** phase 20, release fix (`.github/workflows/check.yml`, `deploy.yml`).
