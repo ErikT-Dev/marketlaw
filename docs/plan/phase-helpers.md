@@ -27,6 +27,10 @@ Your cost grows with everything you read, so read only what the job needs:
 - Send long command output to a file in your scratchpad and read only the end or the matching
   lines. Never print a passing test log.
 - Look at a screenshot only when the job is about that screen.
+- Wait for a GitHub run with one foreground `gh run watch <id> --exit-status > <scratchpad
+  file>` (timeout up to 600000 ms; call it again if the run is still going), then read its
+  result once with `gh run view <id> --json conclusion,jobs`. Never wait by calling
+  `gh run view` over and over: each call re-sends your whole conversation.
 
 ### Watch for stop
 The owner can stop the work at any time (`README.md`, "Continue and stop"). Before every new
@@ -135,7 +139,9 @@ One group of related review findings, named by number.
 When the finisher's second run is green.
 1. Write the phase report under **Report** at the end of the phase file: what was built, what
    to try, differences from the phase file, decisions made, the review's findings and what
-   happened to each.
+   happened to each. Commit it together with any other notes before the one push whose branch
+   check the merge waits for. Every push starts a full branch check (about 10 to 20 minutes),
+   so do not push notes on their own between that push and the merge.
 2. Merge to master as `docs/merging-and-rollback.md` describes and watch the deploy. Check
    that it really deployed: the run's conclusion and the live bundle's text, not only the
    watch command's exit code.
