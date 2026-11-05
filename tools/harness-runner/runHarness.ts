@@ -16,6 +16,7 @@ import { SIMULATED_INVARIANTS } from "./SIMULATED_INVARIANTS.ts";
 import type { HarnessOutcome } from "./HarnessOutcome.ts";
 import type { HarnessRun } from "./HarnessRun.ts";
 import { judgeHarness } from "./judgeHarness.ts";
+import { readBudgetEntries } from "./readBudgetEntries.ts";
 import { readIdentifiedEntries } from "./readIdentifiedEntries.ts";
 import { readRequiredList } from "./readRequiredList.ts";
 import type { RequiredList } from "./RequiredList.ts";
@@ -35,7 +36,7 @@ export async function runHarness(
   const requiredResult = readRequiredList(parse(readFileSync(HARNESS_PATHS.required, "utf8")));
   const required = requiredResult.isOk ? requiredResult.value : NOTHING_REQUIRED;
   const invariants = readIdentifiedEntries(files.invariants);
-  const budgets = readIdentifiedEntries(files.budgets);
+  const budgets = readBudgetEntries(files.budgets);
   const run: HarnessRun = {
     required,
     runs: await buildScenarioRuns(files.scenarioFiles, required, drivers),

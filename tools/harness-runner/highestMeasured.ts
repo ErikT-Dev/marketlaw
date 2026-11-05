@@ -1,7 +1,12 @@
 import { awakeSecondsPerGame } from "./awakeSecondsPerGame.ts";
 import type { HarnessRun } from "./HarnessRun.ts";
 import { legalGameAverage } from "./legalGameAverage.ts";
+import { BUSY_DAY } from "../simulator/busyDay/BUSY_DAY.ts";
 import { busyDayTotal } from "../simulator/busyDay/busyDayTotal.ts";
+
+function busyDayReadsPerGame(run: HarnessRun): number {
+  return run.busyDay === null ? 0 : Math.ceil(run.busyDay.rowsRead / BUSY_DAY.games);
+}
 
 function simulated(run: HarnessRun, budget: string): ReadonlyArray<number> {
   if (run.simulation.games === 0) {
@@ -23,7 +28,7 @@ function simulated(run: HarnessRun, budget: string): ReadonlyArray<number> {
     case "B9":
       return [legalGameAverage(run.simulation, "messages", 3)];
     case "B16":
-      return [legalGameAverage(run.simulation, "rowsRead", 3)];
+      return [legalGameAverage(run.simulation, "rowsRead", 3) + busyDayReadsPerGame(run)];
     case "B13":
       return [Math.ceil((run.simulation.largestMeasures["savedBytes"] ?? 0) / 1024)];
     case "B17":
@@ -39,7 +44,7 @@ export function highestMeasured(run: HarnessRun, budget: string): number | undef
       measurements.filter((measurement) => measurement.budget === budget).map(({ value }) => value),
     ),
     ...simulated(run, budget),
-    ...(budget === "B18" && run.busyDay !== null ? [busyDayTotal(run.busyDay)] : []),
+    ...(budget === "B18" && run.busyDay !== null ? [busyDayTotal(run.busyDay.written)] : []),
   ];
   return values.length === 0 ? undefined : Math.max(...values);
 }

@@ -183,7 +183,7 @@ These 5 scenarios are added to `harness/required.yaml` in this phase, by file an
     token `--color-board-trade-missing`.
   - For later items: `/api/test-daily-counts` can put any player at a limit in browser tests
     (item 7, the playthrough checklist's daily limit notices).
-- [ ] 6. **Budget checks in the report** (B1–B5, B9–B18; Q70).
+- [x] 6. **Budget checks in the report** (B1–B5, B9–B18; Q70).
   - The report's budget section (`tools/harness-runner/reportSimulation.ts`, `buildReport.ts`,
     `MEASURED_BUDGET_LIMITS.ts`, `highestMeasured.ts`) lists every budget in
     `harness/budgets.yaml` with its limit, measurement and where it is measured: the value for
@@ -192,6 +192,19 @@ These 5 scenarios are added to `harness/required.yaml` in this phase, by file an
   - Add B11 to the budgets in `harness/required.yaml` if it is within its limit (`HARNESS:`
     commit, note it in Q70). Check B16 and B18 again with the lobby reads and writes of items
     2 to 4.
+  - Done: `reportBudgets` lists every budget in `budgets.yaml` (`readBudgetEntries`: id, name,
+    limit, unit) with its limit, the measured value and where it is measured, from
+    `BUDGET_CHECKS` (`by`: harness, other check or not built). B10 and B14 show the badge
+    "other check" (`e2e/idleClient.spec.ts`, size-limit); B6, B7, B8 and B15 "not yet". A unit
+    test checks that every budget in `budgets.yaml` has an entry. B11 is required (3 ms, limit 10;
+    `HARNESS:` commit, Q70).
+  - B16: the busy-day simulator now also counts rows read outside the games (`BusyDayCount`:
+    `written` and `rowsRead`): every room storage read, one lobby read per lobby call, and the
+    token lookups and lobby checks of each page load, create and join request (constants in
+    `simulateBusyDay.ts`). B16 = room reads per 3-player game + busy-day reads per room:
+    573 + 56 = 629 (limit 50,000). B18 unchanged: 2,126 (limit 5,000).
+  - For later items: item 7 changes B15 in `tools/harness-runner/BUDGET_CHECKS.ts` to
+    `by: "other check"` once the full-game browser tests assert it.
 - [ ] 7. **Full browser tests** (B15; Q70). May need two parts: 7a the 2-player game and the
   helpers, 7b the 3- and 4-player games and screenshots.
   - Complete games with 2, 3 and 4 players from the lobby to the end screen: create, join,

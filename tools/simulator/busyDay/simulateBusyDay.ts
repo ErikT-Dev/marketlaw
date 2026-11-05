@@ -26,13 +26,18 @@ import { ROOM_CODE_CHARACTERS } from "../../../src/shared/ROOM_CODE_CHARACTERS.t
 import { RoomCode } from "../../../src/shared/RoomCode.ts";
 import { BUSY_DAY } from "./BUSY_DAY.ts";
 import { BusyDayCounter } from "./BusyDayCounter.ts";
-import type { BusyDayRows } from "./BusyDayRows.ts";
+import type { BusyDayCount } from "./BusyDayCount.ts";
 
 const SIZES = [2, 3, 4] as const;
 const ARRIVAL_MS = 30_000;
 const ACCEPT_MS = 2_000;
 const RECONNECT_MS = 3_000;
 const CODE_LENGTH = 6;
+const TOKEN_AND_LOBBY_READS_PER_ROOM_REQUEST = 4;
+const ROOM_READS_PER_JOIN_CHECK = 1;
+const TOKEN_READS_PER_PAGE_LOAD = 2;
+const TOKEN_AND_LOBBY_READS_BEFORE_JOIN_CHECK = 2;
+const LOBBY_READS_PER_CHANGE = 1;
 
 type Day = {
   readonly counter: BusyDayCounter;
@@ -60,6 +65,7 @@ function report(day: Day, code: RoomCode): void {
   const summary = after === null ? null : roomSummaryOf(after);
   const played = actionsAddedBetween(day.reported, after);
   const now = v.parse(EpochMs, day.now);
+  counter.countReads(LOBBY_READS_PER_CHANGE);
   counter.changeLobby(withActionsAdded(withRoomSummary(counter.lobby, code, summary), played, now));
   day.reported = after;
   if (counter.record?.game === null) {
@@ -95,6 +101,7 @@ function advance(day: Day, ms: number, code: RoomCode): void {
 }
 
 function claim(day: Day, joining: Identity, code: RoomCode): void {
+  day.counter.countReads(TOKEN_AND_LOBBY_READS_PER_ROOM_REQUEST + TOKEN_READS_PER_PAGE_LOAD);
   const claimed = claimPlayer(day.counter.lobby, joining.playerId, code, v.parse(EpochMs, day.now));
   if (claimed.isOk) {
     day.counter.changeLobby(claimed.value);
@@ -103,6 +110,7 @@ function claim(day: Day, joining: Identity, code: RoomCode): void {
 
 function join(day: Day, joining: Identity, code: RoomCode): void {
   advance(day, ARRIVAL_MS, code);
+  day.counter.countReads(ROOM_READS_PER_JOIN_CHECK);
   claim(day, joining, code);
   joinRoomIn(day.counter.storage, joining, v.parse(EpochMs, day.now), day.live);
   day.live = [...day.live, joining.playerId];
@@ -111,6 +119,7 @@ function join(day: Day, joining: Identity, code: RoomCode): void {
 
 function countStart(day: Day, players: ReadonlyArray<PlayerId>): GameStartRejection | null {
   const limits = { now: v.parse(EpochMs, day.now), siteGamesPerDay: siteGameLimitOf({}) };
+  day.counter.countReads(LOBBY_READS_PER_CHANGE);
   const counted = countGameStart(day.counter.lobby, players, limits);
   if (counted.isOk) {
     day.counter.changeLobby(counted.value);
@@ -180,6 +189,7 @@ function refreshPage(day: Day, refreshing: Identity, code: RoomCode): void {
     );
     report(day, code);
     advance(day, RECONNECT_MS, code);
+    day.counter.countReads(TOKEN_READS_PER_PAGE_LOAD);
     day.live = [...day.live, refreshing.playerId];
     advance(day, ARRIVAL_MS, code);
   }
@@ -214,6 +224,7 @@ function playRoom(day: Day, game: number): void {
   players.forEach((accepting) => {
     roomAction(day, accepting, { type: "accept_game" }, code);
   });
+  day.counter.countReads(TOKEN_AND_LOBBY_READS_BEFORE_JOIN_CHECK);
   joinRejectionIn(day.counter.storage, player(game, size + 1), v.parse(EpochMs, day.now), day.live);
   const lastJoiner = joiners.at(-1);
   if (lastJoiner !== undefined) {
@@ -222,7 +233,7 @@ function playRoom(day: Day, game: number): void {
   endGame(day, code);
 }
 
-export function simulateBusyDay(): BusyDayRows {
+export function simulateBusyDay(): BusyDayCount {
   const day: Day = { counter: new BusyDayCounter(), now: 1_000_000, live: [], reported: null };
   for (let game = 0; game < BUSY_DAY.games; game += 1) {
     playRoom(day, game);
