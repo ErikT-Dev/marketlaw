@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
+import { percentileOf } from "../tools/harness-runner/percentileOf";
 import { budgetLimitOf } from "./budgetLimitOf";
-import { percentile95 } from "./percentile95";
 import { playFullGame } from "./playFullGame";
 
 const GAMES = [
@@ -18,6 +18,7 @@ const GAMES = [
   },
 ];
 const TURNS = 40;
+const B15_PERCENTILE = 0.95;
 
 for (const { title, bases } of GAMES) {
   test(title, async ({ browser, viewport }, testInfo) => {
@@ -28,7 +29,7 @@ for (const { title, bases } of GAMES) {
       testInfo,
     );
     expect(times).toHaveLength(bases.length * (2 * TURNS - 1));
-    const slowest = percentile95(times);
+    const slowest = percentileOf(times, B15_PERCENTILE);
     testInfo.annotations.push({
       type: "B15",
       description: `95th percentile from a move to the updated view: ${String(Math.round(slowest))} ms over ${String(times.length)} moves`,

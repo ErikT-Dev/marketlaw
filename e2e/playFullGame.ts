@@ -2,6 +2,7 @@ import { expect, test, type Browser, type TestInfo, type ViewportSize } from "@p
 import { endTurnForEveryone } from "./endTurnForEveryone";
 import { expectScreenFits } from "./expectScreenFits";
 import { FULL_GAME_TEST_MS } from "./FULL_GAME_TEST_MS";
+import { hiddenCardsSentToOthers } from "./hiddenCardsSentToOthers";
 import { playMarketPhase } from "./playMarketPhase";
 import type { Player } from "./Player";
 import { sellOneCard } from "./sellOneCard";
@@ -32,6 +33,7 @@ export async function playFullGame(
   }
   const screen = `full-game-${String(players.length)}-players`;
   await expectScreenFits(host, `${screen}-turn-1`, testInfo);
+  expect(await hiddenCardsSentToOthers(players)).toEqual([]);
   for (const { page } of players) {
     await sellOneCard(page);
   }

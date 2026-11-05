@@ -1188,6 +1188,17 @@ file.
     `receiveCheckingGameStart`, as `GameRoom` does, with a lobby that answers at once. Room
     scenarios never start a game, so the call never waits for the lobby and its whole handling
     runs before it returns; the driver times that part. Driver steps may now be asynchronous.
+- **Review fixes (findings 3 and 6):**
+  - The full browser games check for leaks at the start of the game, before any move, as the
+    other game-screen browser tests do: no card name in one player's hand appears in a message to
+    another player (`hiddenCardsSentToOthers`). Later turns are left to the harness leak test,
+    which checks every message of every simulated game against the cards hidden from its receiver
+    at that moment. The browser check compares a player's current hand with every message the
+    others have received, by card name; once cards are sold, built or drawn into the open, and
+    since a name can stand for several copies of a card, the same names appear in public messages
+    legitimately, so a later browser check would report leaks that are not there.
+  - The B15 percentile in the full games uses the harness runner's `percentileOf`; the copy in
+    `e2e/` is removed.
 
 ## Q71. How does the phase end, given the owner's playthrough?
 

@@ -300,6 +300,11 @@ These 5 scenarios are added to `harness/required.yaml` in this phase, by file an
   3. No leak check in the full browser games (`rules/testing.md` Leak test): add
      `hiddenCardsSentToOthers` after `startGame` in `e2e/playFullGame.ts`, and record in
      `open-questions.md` why later turns are left to the harness leak test.
+     Fixed: `playFullGame` checks `hiddenCardsSentToOthers` once the game has started, before any
+     move; why later turns are left to the harness leak test is recorded in Q70.
+     `e2e/fullGames.spec.ts` with `--workers=2`: 8 of 9 passed; the 2-player game at 1920x1080
+     timed out in the human check while the game was being set up, before the new check, and passed
+     on its own rerun.
   4. `docs/enforcement.md` describes B11 as the longest single message; it is the 99th percentile.
      Fixed: the phase 20 entry in `docs/enforcement.md` now describes B11 as the 99th
      percentile over every room-scenario message on the production path, and adds B18's room ends.
@@ -309,6 +314,8 @@ These 5 scenarios are added to `harness/required.yaml` in this phase, by file an
      Fixed: the toast title is now the design's "Daily game limit reached"
      (`SITE_GAME_LIMIT_TOAST`, `lobby.test.tsx`), written into S16.1 and Q68 (`HARNESS:` commit).
   6. Suggestion: `e2e/percentile95.ts` duplicates `tools/harness-runner/percentileOf.ts`; reuse it.
+     Fixed: `fullGames.spec.ts` takes the B15 percentile with `percentileOf`; `e2e/percentile95.ts`
+     is removed (Q70).
   7. Suggestion: B11 is not measured on the production path (`RoomSession.ts` skips
      `receiveCheckingGameStart`); drive room scenarios through it with an immediate checker.
      Fixed: `RoomSession.sendRaw` sends every message through `receiveCheckingGameStart` with a
@@ -319,7 +326,7 @@ These 5 scenarios are added to `harness/required.yaml` in this phase, by file an
      the limit is removed; add `room: {players: [Bea]}` in a recorded `HARNESS:` commit.
      Fixed: #31 now checks `room: {players: [Bea], state: waiting}` (`HARNESS:` commit, recorded in
      Q68); it passes, and fails with `[Ann]`, so the check is live.
-- [ ] Fix or answer the findings.
+- [x] Fix or answer the findings.
 - [ ] Checks run again after the fixes.
 - [ ] Report written, merged, deploy watched, live site checked; the playthrough written under
   **Waiting for the owner** and the phase marked **waiting for the owner** (Q71).
