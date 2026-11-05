@@ -3,6 +3,11 @@ name: Deploy
 on:
   push:
     branches: [master]
+    paths-ignore:
+      - "docs/**"
+      - "tools/hooks/**"
+      - ".claude/**"
+      - "harness/screens/**"
   workflow_dispatch:
 
 concurrency:

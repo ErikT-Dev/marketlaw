@@ -1270,7 +1270,10 @@ file.
   - The browser tests' username step waits for the server's answer to `POST /api/guests`
     (with the human check's time limit) before checking that the dialog has closed. The
     check itself is unchanged.
-  - Proposed to the owner, who applies it since `tools/hooks/` is protected: the check hook
-    leaves `harness/screens/` out of the changes that start a check.
+  - The check hook leaves `harness/screens/` out of the changes that start a check. The owner
+    applied it, since `tools/hooks/` is protected.
+  - A push to master that changes only `docs/`, `tools/hooks/`, `.claude/` or
+    `harness/screens/` starts no deploy, since none of them reaches the live site (owner's
+    request, 2026-11-05). Deploy can still be started by hand.
 - **Implemented:** `docs/plan/phase-helpers.md`, `docs/plan/README.md`,
   `.github/workflows/check.yml`, `.github/workflows/deploy.yml`, `e2e/becomeGuest.ts`.
