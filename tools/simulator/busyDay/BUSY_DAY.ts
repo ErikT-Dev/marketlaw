@@ -4,4 +4,8 @@ export const BUSY_DAY = {
   rowsPerNewGuest: 4,
   returningPlayers: 50,
   rowsPerReturningPlayer: 1,
+  rowsPerReplayRecordWritten: 3,
+  rowsPerReplayRecordDeleted: 3,
+  rowsReadPerReplayRecordDeleted: 1,
+  rowsReadPerRoomCleanup: 1,
 } as const;

@@ -9,6 +9,7 @@ import { withRoomSummary } from "../../../src/server/lobby/withRoomSummary.ts";
 import { actionsAddedBetween } from "../../../src/server/room/actionsAddedBetween.ts";
 import { createRoomIn } from "../../../src/server/room/createRoomIn.ts";
 import type { Identity } from "../../../src/server/room/Identity.ts";
+import { endedRoomDeletionAt } from "../../../src/server/room/endedRoomDeletionAt.ts";
 import { fireRoomAlarm } from "../../../src/server/room/fireRoomAlarm.ts";
 import { joinRejectionIn } from "../../../src/server/room/joinRejectionIn.ts";
 import { nextAlarmAt } from "../../../src/server/room/nextAlarmAt.ts";
@@ -179,6 +180,24 @@ function endGame(day: Day, code: RoomCode): void {
   }
 }
 
+function closeEndedRoom(day: Day, code: RoomCode): void {
+  const record = day.counter.record;
+  const deletionAt = record === undefined ? null : endedRoomDeletionAt(record);
+  if (record === undefined || deletionAt === null) {
+    return;
+  }
+  day.counter.count(
+    "database",
+    BUSY_DAY.rowsPerReplayRecordWritten + BUSY_DAY.rowsPerReplayRecordDeleted,
+  );
+  day.counter.countReads(BUSY_DAY.rowsReadPerReplayRecordDeleted + BUSY_DAY.rowsReadPerRoomCleanup);
+  const fired = fireRoomAlarm(record, v.parse(EpochMs, deletionAt), randomForNextAction, []);
+  if (fired.record === null) {
+    day.counter.storage.remove();
+  }
+  report(day, code);
+}
+
 function refreshPage(day: Day, refreshing: Identity, code: RoomCode): void {
   const record = day.counter.record;
   if (record !== undefined) {
@@ -231,6 +250,7 @@ function playRoom(day: Day, game: number): void {
     leaveGame(day, lastJoiner, code);
   }
   endGame(day, code);
+  closeEndedRoom(day, code);
 }
 
 export function simulateBusyDay(): BusyDayCount {
