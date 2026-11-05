@@ -276,7 +276,30 @@ These 5 scenarios are added to `harness/required.yaml` in this phase, by file an
   1.0 to 1.4 min, 4-player about 2 min). No reruns needed. `docs/enforcement.md`: the full games
   and B15 in the Playwright row, phase 20 in the harness runner row, B15 out of "not yet
   enforced". Screenshots in `harness/screens/` regenerated.
-- [ ] Phase review run, findings fixed or answered.
+- [x] Phase review run (answers: the B18 rise and B11 at the 99th percentile are correct
+  measurements, not loosened tests; `GameRoom.ts` counts 289 lines without blank lines). Its
+  findings, to fix or answer next:
+  1. A failed lobby call at game start (`receiveCheckingGameStart` in `GameRoom.receive`) is not
+     caught: it resets the room and the last accepter gets no reply. Catch it, decide the outcome
+     (refuse with `no_answer` keeping the asking, or start without counting), record in Q68, unit
+     test in `gameStartLimits.test.ts` with a rejecting checker.
+  2. B18 leaves out the rows of a room's end: the D1 replay record and its index row, its 30-day
+     delete, the room's cleanup alarm and storage delete, the lobby report when the room goes.
+     Count them in the busy day (or under B8, said in `BUDGET_CHECKS.ts`); update
+     `simulateBusyDay.test.ts` and Q70.
+  3. No leak check in the full browser games (`rules/testing.md` Leak test): add
+     `hiddenCardsSentToOthers` after `startGame` in `e2e/playFullGame.ts`, and record in
+     `open-questions.md` why later turns are left to the harness leak test.
+  4. `docs/enforcement.md` describes B11 as the longest single message; it is the 99th percentile.
+  5. Suggestion: the site-limit toast title "The game did not start" is in neither spec nor design
+     (design: "Daily game limit reached"); use the design title or write the chosen one into
+     S16.1 and Q68.
+  6. Suggestion: `e2e/percentile95.ts` duplicates `tools/harness-runner/percentileOf.ts`; reuse it.
+  7. Suggestion: B11 is not measured on the production path (`RoomSession.ts` skips
+     `receiveCheckingGameStart`); drive room scenarios through it with an immediate checker.
+  8. Suggestion: scenario #31 (`lobby-queue-and-limits.yaml`) does not check that the player over
+     the limit is removed; add `room: {players: [Bea]}` in a recorded `HARNESS:` commit.
+- [ ] Fix or answer the findings.
 - [ ] Checks run again after the fixes.
 - [ ] Report written, merged, deploy watched, live site checked; the playthrough written under
   **Waiting for the owner** and the phase marked **waiting for the owner** (Q71).
