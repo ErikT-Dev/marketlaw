@@ -131,7 +131,7 @@ These 5 scenarios are added to `harness/required.yaml` in this phase, by file an
   - For later items: the busy-day simulator and the simulator still pass
     `limitRejectionFor: () => null` (`tools/simulator/gameStartInJoinOrder.ts`); item 4 must
     count the start writes in the lobby for B18 (one `Lobby.startGame` write per game start).
-- [ ] 4. **Actions added when a game ends or a player leaves** (A9.2; Q67; B18).
+- [x] 4. **Actions added when a game ends or a player leaves** (A9.2; Q67; B18).
   - A player's actions are the accepted actions with their seat in the game's action log
     (`SavedGame.actionLog`), except `time_out`, `pause_game` and `resume_game`. `leave_game` is
     the player's own move and counts. Added for every seat still in the game when it ends
@@ -143,6 +143,21 @@ These 5 scenarios are added to `harness/required.yaml` in this phase, by file an
   - The busy-day simulator (`tools/simulator/busyDay/`) plays 50 games through the room and
     lobby code: it must now count the start, end and leave writes in the lobby under B18 (limit
     5,000). Scenario #23 (queue, phase 26) is not required but shows the expected count.
+  - Done: `actionsAddedBetween(before, after)` (`src/server/room/`) lists the seats that were in
+    the running game before and are not after (left, or the game ended), each with its moves in
+    the action log except system actions (`isSystemAction`: time-out, pause, resume, abandon).
+    `GameRoom.reportToLobby` moved to `src/server/reportToLobby.ts` and passes them to
+    `Lobby.roomChanged(code, summary, { played, now })`, which applies `withRoomSummary` and
+    `withActionsAdded` (`src/server/lobby/`) in one write. A game started from a given state
+    (`startingState`, a test room) adds nothing (Q67).
+  - Differs: the busy-day simulator never started a game: the owner's page refresh after the
+    room was full let the asking run out and the room closed. The refresh now happens while the
+    room waits for players. It now counts the start in the lobby (`countGameStart`), the last
+    joiner leaves the game, then the game ends; the game action and the end are not counted as
+    room rows (`BusyDayCounter.gameStorage`, they belong to B4). Busy day: room 597, alarm 448,
+    lobby 631, database 450, total 2,126 (limit 5,000).
+  - For later items: scenario "a player's actions in a game are added ..." needs the queue
+    (phase 26); the lobby driver does not add actions yet.
 - [ ] 5. **Notices for the daily limits** (S16.1; design board "Notices: daily limits", without
   its ranked queue text, S17).
   - The texts are in `screens.md` S16.1 (Q68). Lobby: a rejected join or create shows the text

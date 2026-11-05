@@ -5,8 +5,8 @@ import { simulateBusyDay } from "./simulateBusyDay.ts";
 describe("the busy-day simulator", () => {
   it("counts the exact rows a day of 50 rooms writes outside its games", () => {
     const rows = simulateBusyDay();
-    expect(rows).toEqual({ room: 498, alarm: 398, lobby: 498, database: 450 });
-    expect(busyDayTotal(rows)).toBe(1844);
+    expect(rows).toEqual({ room: 597, alarm: 448, lobby: 631, database: 450 });
+    expect(busyDayTotal(rows)).toBe(2126);
   });
 
   it("gives the same count every time", () => {

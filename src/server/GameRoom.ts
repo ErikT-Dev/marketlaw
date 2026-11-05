@@ -34,7 +34,7 @@ import { timeOutNoticesBetween } from "./room/timeOutNoticesBetween";
 import { withAwaySeats } from "./room/withAwaySeats";
 import { withConnection } from "./room/withConnection";
 import { lobbyOf } from "./lobbyOf";
-import { roomSummaryOf } from "./room/roomSummaryOf";
+import { reportToLobby } from "./reportToLobby";
 import { saveReplayRecordIfEnded } from "./replays/saveReplayRecordIfEnded";
 import { RoomSockets } from "./RoomSockets";
 import type { RoomRemoval } from "./room/RoomRemoval";
@@ -301,15 +301,7 @@ export class GameRoom extends DurableObject<Env> {
   }
 
   private async reportToLobby(before: RoomRecord | null): Promise<void> {
-    const after = loadRoom(this.storage);
-    const summaryBefore = before === null ? null : roomSummaryOf(before);
-    const summaryAfter = after === null ? null : roomSummaryOf(after);
-    const code = after?.code ?? before?.code;
-    if (code !== undefined && JSON.stringify(summaryBefore) !== JSON.stringify(summaryAfter)) {
-      await lobbyOf(this.env)
-        .roomChanged(code, summaryAfter)
-        .catch(() => undefined);
-    }
+    await reportToLobby(this.env, before, loadRoom(this.storage));
   }
 
   private async syncAlarm(isFiring = false): Promise<void> {

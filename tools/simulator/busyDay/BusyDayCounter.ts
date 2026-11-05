@@ -22,6 +22,16 @@ export class BusyDayCounter {
     },
   };
 
+  readonly gameStorage: RoomStorage = {
+    read: () => this.record,
+    write: (record) => {
+      this.record = record;
+    },
+    remove: () => {
+      this.storage.remove();
+    },
+  };
+
   count(kind: keyof BusyDayRows, rows = 1): void {
     this.rows = { ...this.rows, [kind]: this.rows[kind] + rows };
   }

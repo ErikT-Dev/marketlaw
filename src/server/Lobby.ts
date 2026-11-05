@@ -17,7 +17,9 @@ import type { LobbyRecord } from "./lobby/LobbyRecord";
 import { publicRoomsOf } from "./lobby/publicRoomsOf";
 import { releasePlayer } from "./lobby/releasePlayer";
 import { siteGameLimitOf } from "./lobby/siteGameLimitOf";
+import type { PlayedActions } from "./lobby/PlayedActions";
 import type { RoomSummary } from "./lobby/RoomSummary";
+import { withActionsAdded } from "./lobby/withActionsAdded";
 import { withRoomSummary } from "./lobby/withRoomSummary";
 
 const LOBBY_KEY = "lobby";
@@ -67,8 +69,14 @@ export class Lobby extends DurableObject<Env> {
     await this.change((record) => releasePlayer(record, playerId, code));
   }
 
-  async roomChanged(code: RoomCode, summary: RoomSummary | null): Promise<void> {
-    await this.change((record) => withRoomSummary(record, code, summary));
+  async roomChanged(
+    code: RoomCode,
+    summary: RoomSummary | null,
+    ended: { readonly played: ReadonlyArray<PlayedActions>; readonly now: EpochMs },
+  ): Promise<void> {
+    await this.change((record) =>
+      withActionsAdded(withRoomSummary(record, code, summary), ended.played, ended.now),
+    );
   }
 
   override fetch(request: Request): Response {

@@ -1,7 +1,12 @@
 import { gameStartInJoinOrder } from "../gameStartInJoinOrder.ts";
 import * as v from "valibot";
 import { claimPlayer } from "../../../src/server/lobby/claimPlayer.ts";
+import { countGameStart } from "../../../src/server/lobby/countGameStart.ts";
+import type { GameStartRejection } from "../../../src/server/lobby/GameStartRejection.ts";
+import { siteGameLimitOf } from "../../../src/server/lobby/siteGameLimitOf.ts";
+import { withActionsAdded } from "../../../src/server/lobby/withActionsAdded.ts";
 import { withRoomSummary } from "../../../src/server/lobby/withRoomSummary.ts";
+import { actionsAddedBetween } from "../../../src/server/room/actionsAddedBetween.ts";
 import { createRoomIn } from "../../../src/server/room/createRoomIn.ts";
 import type { Identity } from "../../../src/server/room/Identity.ts";
 import { fireRoomAlarm } from "../../../src/server/room/fireRoomAlarm.ts";
@@ -29,7 +34,12 @@ const ACCEPT_MS = 2_000;
 const RECONNECT_MS = 3_000;
 const CODE_LENGTH = 6;
 
-type Day = { readonly counter: BusyDayCounter; now: number; live: PlayerId[] };
+type Day = {
+  readonly counter: BusyDayCounter;
+  now: number;
+  live: PlayerId[];
+  reported: RoomRecord | null;
+};
 
 function player(game: number, seat: number): Identity {
   const hex = (game * 16 + seat).toString(16).padStart(12, "0");
@@ -46,8 +56,12 @@ function codeOf(game: number): RoomCode {
 
 function report(day: Day, code: RoomCode): void {
   const { counter } = day;
-  const summary = counter.record === undefined ? null : roomSummaryOf(counter.record);
-  counter.changeLobby(withRoomSummary(counter.lobby, code, summary));
+  const after = counter.record ?? null;
+  const summary = after === null ? null : roomSummaryOf(after);
+  const played = actionsAddedBetween(day.reported, after);
+  const now = v.parse(EpochMs, day.now);
+  counter.changeLobby(withActionsAdded(withRoomSummary(counter.lobby, code, summary), played, now));
+  day.reported = after;
   if (counter.record?.game === null) {
     counter.syncAlarm();
   }
@@ -95,21 +109,65 @@ function join(day: Day, joining: Identity, code: RoomCode): void {
   report(day, code);
 }
 
-function roomAction(day: Day, sender: Identity, action: object, code: RoomCode): void {
+function countStart(day: Day, players: ReadonlyArray<PlayerId>): GameStartRejection | null {
+  const limits = { now: v.parse(EpochMs, day.now), siteGamesPerDay: siteGameLimitOf({}) };
+  const counted = countGameStart(day.counter.lobby, players, limits);
+  if (counted.isOk) {
+    day.counter.changeLobby(counted.value);
+  }
+  return counted.isOk ? null : counted.error;
+}
+
+function send(
+  day: Day,
+  sender: Identity,
+  message: Readonly<Record<string, unknown> & { type: "room" | "action" }>,
+  code: RoomCode,
+): void {
   advance(day, ACCEPT_MS, code);
   const now = v.parse(EpochMs, day.now);
-  receiveMessage(day.counter.storage, {
+  const storage = message.type === "room" ? day.counter.storage : day.counter.gameStorage;
+  receiveMessage(storage, {
     connection: { identity: sender, rejectionTimes: [] },
     parsed: parseClientMessage(
-      JSON.stringify({ protocolVersion: PROTOCOL_VERSION, token: "t", type: "room", action }),
+      JSON.stringify({ protocolVersion: PROTOCOL_VERSION, token: "t", ...message }),
     ),
     sender,
     now,
     randomFor: randomForNextAction,
-    gameStart: gameStartInJoinOrder(1, now),
+    gameStart: {
+      ...gameStartInJoinOrder(1, now),
+      limitRejectionFor: (players) => countStart(day, players),
+    },
     livePlayers: day.live,
   });
   report(day, code);
+}
+
+function roomAction(day: Day, sender: Identity, action: object, code: RoomCode): void {
+  send(day, sender, { type: "room", action }, code);
+}
+
+function leaveGame(day: Day, leaving: Identity, code: RoomCode): void {
+  const seat = day.counter.record?.game?.seats.find(
+    ({ playerId }) => playerId === leaving.playerId,
+  );
+  const action = { type: "leave_game" };
+  const stateVersion = seat?.stateVersion ?? 0;
+  send(day, leaving, { type: "action", actionId: "leave", stateVersion, action }, code);
+}
+
+function endGame(day: Day, code: RoomCode): void {
+  const record = day.counter.record;
+  const game = record?.game;
+  if (record !== undefined && game !== null && game !== undefined) {
+    const state = { ...game.saved.state, phase: "ended" as const };
+    day.counter.gameStorage.write({
+      ...record,
+      game: { ...game, saved: { ...game.saved, state } },
+    });
+    report(day, code);
+  }
 }
 
 function refreshPage(day: Day, refreshing: Identity, code: RoomCode): void {
@@ -136,6 +194,7 @@ function playRoom(day: Day, game: number): void {
     return;
   }
   day.counter.newRoom();
+  day.reported = null;
   day.live = [owner.playerId];
   claim(day, owner, code);
   createRoomIn(
@@ -148,22 +207,23 @@ function playRoom(day: Day, game: number): void {
   const leaver = player(game, size);
   join(day, leaver, code);
   roomAction(day, leaver, { type: "leave_room" }, code);
+  refreshPage(day, owner, code);
   joiners.forEach((joining) => {
     join(day, joining, code);
   });
-  refreshPage(day, owner, code);
   players.forEach((accepting) => {
     roomAction(day, accepting, { type: "accept_game" }, code);
   });
   joinRejectionIn(day.counter.storage, player(game, size + 1), v.parse(EpochMs, day.now), day.live);
-  const summary = day.counter.record === undefined ? null : roomSummaryOf(day.counter.record);
-  if (summary !== null) {
-    day.counter.changeLobby(withRoomSummary(day.counter.lobby, code, { ...summary, isOver: true }));
+  const lastJoiner = joiners.at(-1);
+  if (lastJoiner !== undefined) {
+    leaveGame(day, lastJoiner, code);
   }
+  endGame(day, code);
 }
 
 export function simulateBusyDay(): BusyDayRows {
-  const day: Day = { counter: new BusyDayCounter(), now: 1_000_000, live: [] };
+  const day: Day = { counter: new BusyDayCounter(), now: 1_000_000, live: [], reported: null };
   for (let game = 0; game < BUSY_DAY.games; game += 1) {
     playRoom(day, game);
   }
