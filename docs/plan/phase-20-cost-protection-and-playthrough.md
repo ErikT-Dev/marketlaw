@@ -385,6 +385,9 @@ or joining a room shows "You have started 10 games today, the most per day. Try 
 phase's 5 scenarios required (B11 4 ms of 10 at the 99th percentile, B16 632 of 50,000, B18 2,526
 of 5,000). All browser tests passed with `--workers=2`, some only on a rerun while the computer
 was under load (a guest dialog still open, a 2-player full game still at "Choose a username").
+On GitHub the 111 browser tests no longer fit one 20-minute job, so they run as 6 parallel jobs
+in both the branch check and the deploy: one per full-game player count and the other tests in 3
+shards; no test dropped, no retries added (Q72).
 
 **Differences from the phase file.** The site lock was removed earlier (D22, replaces D6), so
 testers get the link instead of a Cloudflare Access invitation. The full browser games check for
@@ -398,7 +401,7 @@ counts as an action. Q68: what a room does when a game cannot start (removal, si
 a lobby that does not answer gives `no_answer`). Q69: `TEST_SITE_GAMES_PER_DAY` lifts the site
 limit for local and GitHub browser tests only. Q70: the budgets in the report, the full browser
 games, B11 at the 99th percentile, B18 with room ends. Q71: how the phase ends with the owner's
-playthrough.
+playthrough. Q72: the GitHub browser tests in 6 parallel jobs.
 
 **Review findings and what happened to each.**
 1. A lobby call failing at game start reset the room: fixed, it is refused with `no_answer` and
