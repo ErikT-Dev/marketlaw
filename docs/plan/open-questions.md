@@ -1275,5 +1275,8 @@ file.
   - A push to master that changes only `docs/`, `tools/hooks/`, `.claude/` or
     `harness/screens/` starts no deploy, since none of them reaches the live site (owner's
     request, 2026-11-05). Deploy can still be started by hand.
+  - The GitHub repository is public (owner's decision, 2026-11-05), so Actions minutes are
+    free and unlimited; the 2,000-minute limit in Q72 no longer applies. November had used about
+    940 of the 2,000 minutes by then.
 - **Implemented:** `docs/plan/phase-helpers.md`, `docs/plan/README.md`,
   `.github/workflows/check.yml`, `.github/workflows/deploy.yml`, `e2e/becomeGuest.ts`.
