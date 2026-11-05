@@ -150,9 +150,9 @@ describe("the daily limit notices", () => {
   it("warns everyone in the waiting room when the site game limit stops the game", () => {
     const handlers = waitingRoom(room(), true);
     const toast = screen.getByRole("status");
-    expect(toast.textContent).toContain("The game did not start");
+    expect(toast.textContent).toContain("Daily game limit reached");
     expect(toast.textContent).toContain("Daily game limit reached, try again after 00:00 UTC");
-    fireEvent.click(screen.getByRole("button", { name: "Close: The game did not start" }));
+    fireEvent.click(screen.getByRole("button", { name: "Close: Daily game limit reached" }));
     expect(handlers.onDismissSiteGameLimit).toHaveBeenCalled();
   });
 });
