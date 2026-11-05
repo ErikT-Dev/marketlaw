@@ -5,7 +5,15 @@ import { dirname } from "node:path";
 import { isRecord } from "../harness-check/isRecord.ts";
 import { readHookInput } from "./readHookInput.ts";
 
-const CHECKED_PATHS = ["src", "tools", "eslint-rules", "harness", "e2e", "package.json"];
+const CHECKED_PATHS = [
+  "src",
+  "tools",
+  "eslint-rules",
+  "harness",
+  "e2e",
+  "package.json",
+  ":(exclude)harness/screens",
+];
 const LAST_CHECK_FILE = "node_modules/.cache/marketlaw/last-check.json";
 const OUTPUT_LINES_SHOWN = 80;
 const HELPER_RUNNING_FILE = "node_modules/.cache/marketlaw/helper-running";
