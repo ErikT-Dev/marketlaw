@@ -262,9 +262,20 @@ These 5 scenarios are added to `harness/required.yaml` in this phase, by file an
 
 ### Finish
 
-- [ ] Scenarios added to `harness/required.yaml`.
-- [ ] `npm run check` and `npm run harness` (1,000 games) green locally.
-- [ ] Browser tests.
+- [x] Scenarios added to `harness/required.yaml`: `lobby-queue-and-limits` #24, #25, #31, #32,
+  #33 (`HARNESS:` commit).
+- [x] `npm run check` and `npm run harness` (1,000 games) green locally. The first check failed
+  on B11 ("measured 21, over its limit of 10"), and the Stop hook's check, run while the browser
+  tests loaded the computer, on 14: the room driver took the single slowest message, so one message
+  slowed by the load decided it (3 ms otherwise). `budgets.yaml` defines B11 as the 99th
+  percentile, so it is now the 99th percentile over every message the room scenarios handle
+  (`percentileOf`, `highestMeasured`; recorded in Q70). Then green, also with two test runs at
+  once. `npm run harness` with 1,000 games green (5.8 min).
+- [x] Browser tests: all 111 green with `--workers=2`, in two runs: everything but the full games
+  (102 passed, 7.7 min) and `e2e/fullGames.spec.ts` (9 passed, 9.6 min; 2-player games about
+  1.0 to 1.4 min, 4-player about 2 min). No reruns needed. `docs/enforcement.md`: the full games
+  and B15 in the Playwright row, phase 20 in the harness runner row, B15 out of "not yet
+  enforced". Screenshots in `harness/screens/` regenerated.
 - [ ] Phase review run, findings fixed or answered.
 - [ ] Checks run again after the fixes.
 - [ ] Report written, merged, deploy watched, live site checked; the playthrough written under
