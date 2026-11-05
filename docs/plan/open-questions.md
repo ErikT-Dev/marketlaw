@@ -1152,6 +1152,11 @@ file.
     turn 40 (R21), and check the end screen. Screenshots of the key screens they pass through go
     to `harness/screens/`.
 - **Implemented:** phase 20, items 5 and 6.
+- **Harness change (item 6):** B11 joined the required budgets in `harness/required.yaml`; the
+  room scenarios measure it as the longest wall-clock time the room took to handle one message
+  (never less than its CPU time), 3 ms against 10. B16 now adds the rows the busy-day simulator
+  reads outside the game (room, lobby and D1 token lookups, 56 per room) to the room's reads per
+  3-player game: 629 against 50,000. B18 is unchanged at 2,126 against 5,000.
 
 ## Q71. How does the phase end, given the owner's playthrough?
 
