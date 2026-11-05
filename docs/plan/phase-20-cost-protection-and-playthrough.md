@@ -327,6 +327,15 @@ These 5 scenarios are added to `harness/required.yaml` in this phase, by file an
      Fixed: #31 now checks `room: {players: [Bea], state: waiting}` (`HARNESS:` commit, recorded in
      Q68); it passes, and fails with `[Ann]`, so the check is live.
 - [x] Fix or answer the findings.
-- [ ] Checks run again after the fixes.
+- [x] Checks run again after the fixes. `npm run check` green (379 tests; B11 at 99th percentile).
+  `npm run harness` with 1,000 games green (5.8 min; B11 measured 4 of 10). Browser tests with
+  `--workers=2` in two runs: everything but the full games 97 of 102 passed (8.3 min), and the
+  5 failures (a guest dialog still open, turn 1 not shown, axe finding no main landmark on an
+  unloaded page) passed on their rerun (2.2 min); `e2e/fullGames.spec.ts` 8 of 9 passed
+  (8.4 min), the 2-player game at 1280x720 failed in setup with the "Choose a username" dialog
+  still visible and passed on its rerun alone. That setup failure in a 2-player full game came
+  back (at 1920x1080 in the fixers' run), both times while other work loaded the computer: here
+  the Stop hook's `npm run check` ran alongside, and its B11 measured 11 of 10 under that load;
+  the same check run alone afterwards was green. Screenshots in `harness/screens/` retaken.
 - [ ] Report written, merged, deploy watched, live site checked; the playthrough written under
   **Waiting for the owner** and the phase marked **waiting for the owner** (Q71).
