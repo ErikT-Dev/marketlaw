@@ -5,7 +5,7 @@ import type { GameState } from "../../../src/rules/GameState.ts";
 import { SAVE_SCHEMA_VERSION } from "../../../src/rules/SAVE_SCHEMA_VERSION.ts";
 import type { Random } from "../../../src/rules/Random.ts";
 import type { ConnectionState } from "../../../src/server/room/ConnectionState.ts";
-import { receiveMessage } from "../../../src/server/room/receiveMessage.ts";
+import { receiveCheckingGameStart } from "../../../src/server/room/receiveCheckingGameStart.ts";
 import type { RoomStorage } from "../../../src/server/room/RoomStorage.ts";
 import type { Identity } from "../../../src/server/room/Identity.ts";
 import { NO_WAITING } from "../../../src/server/room/NO_WAITING.ts";
@@ -171,11 +171,11 @@ export class RoomSession {
     }
   }
 
-  reconnect(seat: number): void {
+  async reconnect(seat: number): Promise<void> {
     const name = this.seatNames[seat - 1];
     if (name !== undefined) {
       this.offline.delete(name);
-      this.sendRaw({
+      await this.sendRaw({
         seat,
         text: JSON.stringify({
           protocolVersion: PROTOCOL_VERSION,
@@ -203,7 +203,7 @@ export class RoomSession {
     this.now = until;
   }
 
-  sendRaw(raw: Readonly<Record<string, unknown>>): void {
+  async sendRaw(raw: Readonly<Record<string, unknown>>): Promise<void> {
     const name = this.senderName(raw);
     const connection = this.connections.get(name) ?? {
       state: { identity: null, rejectionTimes: [] },
@@ -225,16 +225,21 @@ export class RoomSession {
     const before = JSON.stringify(this.record);
     const rowsBefore = this.rowsWritten;
     const startedMs = performance.now();
-    const outcome = receiveMessage(this.storage, {
-      connection: connection.state,
-      parsed,
-      sender,
-      now: this.now,
-      randomFor: () => this.random,
-      gameStart: gameStartInJoinOrder(1, this.now),
-      livePlayers: this.livePlayers(),
-    });
+    const handling = receiveCheckingGameStart(
+      this.storage,
+      {
+        connection: connection.state,
+        parsed,
+        sender,
+        now: this.now,
+        randomFor: () => this.random,
+        gameStart: gameStartInJoinOrder(1, this.now),
+        livePlayers: this.livePlayers(),
+      },
+      async () => Promise.resolve(null),
+    );
     this.handlingMs.push(performance.now() - startedMs);
+    const outcome = await handling;
     this.notices.push(...timeOutNoticesBetween(recordBefore, this.record));
     if (outcome.isRoomGone) {
       throw new Error("the room is gone");
