@@ -339,3 +339,57 @@ These 5 scenarios are added to `harness/required.yaml` in this phase, by file an
   the same check run alone afterwards was green. Screenshots in `harness/screens/` retaken.
 - [ ] Report written, merged, deploy watched, live site checked; the playthrough written under
   **Waiting for the owner** and the phase marked **waiting for the owner** (Q71).
+
+## Report
+
+**Built.** The site now keeps the daily limits that hold it inside the Cloudflare Free plan
+(A9.1–A9.4). The lobby counts, per UTC day, each player's game actions and game starts and the
+site's game starts; the counts reset at 00:00 UTC without any write. A player with 2,000 actions
+today, or 10 games started today, cannot join or create a room, and sees why. When the last
+player accepts, the room checks everyone again together with the site's 50 games a day: a player
+over their own limit is removed with the reason; at the site limit everyone stays and gets the
+notice "Daily game limit reached". A player's actions are added when their game ends or when they
+leave it. The harness report lists every budget with its limit, its measurement and where it is
+measured; the busy-day simulator now plays 50 games from start to room cleanup. Browser tests play
+complete games with 2, 3 and 4 players from the lobby to the end screen at every screen size,
+measure the time from a move to the updated view (B15) and take screenshots of turn 1, turn 40
+and the end screen. `docs/playthrough.md` is the checklist for the owner's playthrough.
+
+**What to try.** Follow `docs/playthrough.md` with 2 to 4 people, each on their own computer:
+lobby and rooms, a full game, short games for time-outs, pause and leaving, and the daily limits.
+The one limit reachable by hand is 10 games per player: after 10 quick 2-player games, creating
+or joining a room shows "You have started 10 games today, the most per day. Try again after
+00:00 UTC."
+
+**Checks.** `npm run check` green; `npm run harness` green with 1,000 simulated games and this
+phase's 5 scenarios required (B11 4 ms of 10 at the 99th percentile, B16 632 of 50,000, B18 2,526
+of 5,000). All browser tests passed with `--workers=2`, some only on a rerun while the computer
+was under load (a guest dialog still open, a 2-player full game still at "Choose a username").
+
+**Differences from the phase file.** The site lock was removed earlier (D22, replaces D6), so
+testers get the link instead of a Cloudflare Access invitation. The full browser games check for
+leaks once the game starts; later turns are left to the harness leak test (Q70). B11 is the 99th
+percentile over every room-scenario message on the production path, as `budgets.yaml` defines it.
+The phase ends **waiting for the owner**, not done, until the owner has played and accepted the
+milestone (Q71).
+
+**Decisions.** Q67: the counts live in the lobby record, read as zeros from an earlier day; what
+counts as an action. Q68: what a room does when a game cannot start (removal, site-limit notice,
+a lobby that does not answer gives `no_answer`). Q69: `TEST_SITE_GAMES_PER_DAY` lifts the site
+limit for local and GitHub browser tests only. Q70: the budgets in the report, the full browser
+games, B11 at the 99th percentile, B18 with room ends. Q71: how the phase ends with the owner's
+playthrough.
+
+**Review findings and what happened to each.**
+1. A lobby call failing at game start reset the room: fixed, it is refused with `no_answer` and
+   the room keeps its asking (Q68).
+2. B18 left out the rows of a room's end: fixed, the busy day plays each room to its end; B18
+   2,526 of 5,000 (Q70).
+3. No leak check in the full browser games: fixed, checked once the game starts (Q70).
+4. `docs/enforcement.md` described B11 wrongly: fixed.
+5. The site-limit toast title was in neither spec nor design: now "Daily game limit reached",
+   written into S16.1 and Q68.
+6. `e2e/percentile95.ts` duplicated `percentileOf`: removed, reused.
+7. B11 was not measured on the production path: fixed, room scenarios go through
+   `receiveCheckingGameStart` (Q70).
+8. Scenario #31 did not check the removal: fixed (`HARNESS:` commit, Q68).
