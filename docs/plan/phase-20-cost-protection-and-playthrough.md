@@ -1,6 +1,6 @@
 # Phase 20: Cost protection and the playthrough version
 
-Status: in progress
+Status: waiting for the owner
 Milestone: 3 Playthrough
 
 ## Goal
@@ -48,6 +48,17 @@ the live site from the lobby to the final score. Invited testers only (D6).
 
 - Findings from the owner's playthrough become spec changes (with approval) or new phases before
   milestone 4 starts.
+
+## Waiting for the owner
+
+- **The playthrough** (exit criterion 3, Q71). The playthrough version is live at
+  https://marketlaw.mlawd.workers.dev since 2026-11-05 (Deploy run 42071725367). Play it with 2
+  to 4 people, each on their own computer, following `docs/playthrough.md`: share the link only
+  with your testers (the site has no lock, D22), play part 1 (lobby and rooms), at least one
+  complete game (part 2), the short games and the daily limits, and keep one note per game (room
+  code, turn the game ended in and why, length, problems). Then either accept milestone 3
+  ("Playthrough") or send the notes; findings become spec changes (with your approval) or new
+  phases before milestone 4 starts. No secret, setting or command is needed from you.
 
 ## Required scenarios
 
@@ -337,7 +348,7 @@ These 5 scenarios are added to `harness/required.yaml` in this phase, by file an
   back (at 1920x1080 in the fixers' run), both times while other work loaded the computer: here
   the Stop hook's `npm run check` ran alongside, and its B11 measured 11 of 10 under that load;
   the same check run alone afterwards was green. Screenshots in `harness/screens/` retaken.
-- [ ] Report written, merged, deploy watched, live site checked; the playthrough written under
+- [x] Report written, merged, deploy watched, live site checked; the playthrough written under
   **Waiting for the owner** and the phase marked **waiting for the owner** (Q71).
   - Report written and pushed (`PLAN: Phase 20 report`). The branch check on GitHub (run
     42055452656) was cancelled: `check` passed in 4 min, but `browser-tests` hit the job's
@@ -359,6 +370,13 @@ These 5 scenarios are added to `harness/required.yaml` in this phase, by file an
   - For later items: on GitHub the 2-player full-game setup flake also appears without local
     load, so it is more than load on the development machine; if it comes back on GitHub, look
     at `e2e/becomeGuest.ts` (the dialog closes only after the server answers).
+  - Done 2026-11-05: the Report names Q72; branch checks 42067121750 and 42068642076 passed (all
+    6 browser-test parts, no reruns); merged (`2bbfbfa`), Deploy run 42071725367 succeeded (tests
+    skipped, the merged code had passed Check; version 563d48e2). The live bundle has the new texts
+    ("Daily game limit reached", "the most per day. Try again after 00:00 UTC."); the live site
+    serves the page, a generated name, the session, rejects a malformed room request, opens the
+    lobby socket, and answers 404 for the test-only daily counts. A game needs the human check, so
+    it is left to the owner's playthrough. Phase marked **waiting for the owner** (Q71).
 
 ## Report
 
