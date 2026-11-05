@@ -1,3 +1,4 @@
+import { gameStartInJoinOrder } from "../../simulator/gameStartInJoinOrder.ts";
 import * as v from "valibot";
 import { NO_WAITING } from "../../../src/server/room/NO_WAITING.ts";
 import { ROOM_SCHEMA_VERSION } from "../../../src/server/room/ROOM_SCHEMA_VERSION.ts";
@@ -11,11 +12,7 @@ import { RoomCode } from "../../../src/shared/RoomCode.ts";
 import type { LobbyGiven } from "./LOBBY_GIVEN_SCHEMA.ts";
 
 function endedRoom(waiting: RoomRecord, endedMs: number): RoomRecord {
-  const playing = startRoomGame(waiting, {
-    seed: 1,
-    now: v.parse(EpochMs, endedMs),
-    seatOrder: (players) => players,
-  });
+  const playing = startRoomGame(waiting, gameStartInJoinOrder(1, v.parse(EpochMs, endedMs)));
   const { game } = playing;
   if (game === null) {
     throw new Error("the ended room has no game");
@@ -55,7 +52,7 @@ export function lobbyRoomFromGiven(
         },
       };
     case "playing":
-      return startRoomGame(waiting, { seed: 1, now, seatOrder: (players) => players });
+      return startRoomGame(waiting, gameStartInJoinOrder(1, now));
     case "ended":
       return endedRoom(waiting, room.ended_ms ?? now);
   }

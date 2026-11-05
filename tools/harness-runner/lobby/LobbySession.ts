@@ -9,6 +9,9 @@ import { createRoomDecision } from "../../../src/server/room/createRoomDecision.
 import { fireRoomAlarm } from "../../../src/server/room/fireRoomAlarm.ts";
 import type { Identity } from "../../../src/server/room/Identity.ts";
 import { claimPlayer } from "../../../src/server/lobby/claimPlayer.ts";
+import { countGameStart } from "../../../src/server/lobby/countGameStart.ts";
+import type { GameStartRejection } from "../../../src/server/lobby/GameStartRejection.ts";
+import { siteGameLimitOf } from "../../../src/server/lobby/siteGameLimitOf.ts";
 import { EMPTY_LOBBY } from "../../../src/server/lobby/EMPTY_LOBBY.ts";
 import type { LobbyRecord } from "../../../src/server/lobby/LobbyRecord.ts";
 import { releasePlayer } from "../../../src/server/lobby/releasePlayer.ts";
@@ -22,7 +25,6 @@ import { receiveMessage } from "../../../src/server/room/receiveMessage.ts";
 import type { RoomRecord } from "../../../src/server/room/RoomRecord.ts";
 import type { RoomStorage } from "../../../src/server/room/RoomStorage.ts";
 import { roomSizeOf } from "../../../src/server/room/roomSizeOf.ts";
-import { updateFor } from "../../../src/server/room/updateFor.ts";
 import { withConnection } from "../../../src/server/room/withConnection.ts";
 import { newRoomCode } from "../../../src/server/newRoomCode.ts";
 import { randomForNextAction } from "../../../src/rules/randomForNextAction.ts";
@@ -38,6 +40,9 @@ import type { LobbyGiven } from "./LOBBY_GIVEN_SCHEMA.ts";
 import { endedRoomFromGiven } from "./endedRoomFromGiven.ts";
 import { lobbyRoomFromGiven } from "./lobbyRoomFromGiven.ts";
 import { otherRoomStorage } from "./otherRoomStorage.ts";
+import { countsTodayFromGiven } from "./countsTodayFromGiven.ts";
+import { deliverRoomOutcome } from "./deliverRoomOutcome.ts";
+import { rejectionOfReply } from "./rejectionOfReply.ts";
 
 const GENERATED_CANDIDATES = 10;
 const NAME_STEP = 7;
@@ -46,7 +51,7 @@ export class LobbySession {
   record: RoomRecord | null;
   goneAs: "closed" | "deleted" = "closed";
   readonly endedRoom: RoomRecord | null;
-  now: EpochMs = v.parse(EpochMs, 0);
+  now: EpochMs;
   readonly accounts = new Map<string, LobbyAccount>();
   readonly messagesTo = new Map<string, ServerMessage[]>();
   rejected: ReasonCode | null = null;
@@ -54,7 +59,7 @@ export class LobbySession {
   loggedInAs: string | null = null;
   private readonly pendingJoins = new Map<string, string>();
   private live: ReadonlyArray<PlayerId> = [];
-  private lobby: LobbyRecord = EMPTY_LOBBY;
+  lobby: LobbyRecord;
   private otherRooms: ReadonlyArray<RoomRecord> = [];
   private namesAsked = 0;
   private readonly random: ScriptedRandom;
@@ -71,9 +76,11 @@ export class LobbySession {
 
   constructor(given: LobbyGiven, random: ScriptedRandom) {
     this.random = random;
+    this.now = v.parse(EpochMs, given.clock_ms ?? 0);
     for (const { name, last_used_ms: lastUsedMs } of given.accounts ?? []) {
       this.addAccount(name, lastUsedMs ?? 0);
     }
+    this.lobby = { ...EMPTY_LOBBY, today: countsTodayFromGiven(given, this.now, this) };
     this.record =
       given.room === undefined || given.room.players.length === 0
         ? null
@@ -86,10 +93,6 @@ export class LobbySession {
     this.live = [this.record, ...this.otherRooms].flatMap(
       (room) => room?.players.map(({ playerId }) => playerId) ?? [],
     );
-  }
-
-  lobbyRecord(): LobbyRecord {
-    return this.lobby;
   }
 
   reportRooms(): void {
@@ -154,15 +157,13 @@ export class LobbySession {
     const size = typeof step["size"] === "number" ? step["size"] : 0;
     const roomSize = roomSizeOf(size);
     this.rejected = createRoomDecision(size, step["human_check"] === "passed");
-    const { playerId } = this.identityNamed(name);
+    const code = newRoomCode();
     if (
       this.rejected === null &&
-      this.lobbyRecord().busy.some((busy) => busy.playerId === playerId)
+      roomSize !== null &&
+      this.claimIn(this.identityNamed(name).playerId, code)
     ) {
-      this.rejected = "busy_elsewhere";
-    }
-    if (this.rejected === null && roomSize !== null) {
-      const room = { code: newRoomCode(), size: roomSize, isPublic: step["public"] === true };
+      const room = { code, size: roomSize, isPublic: step["public"] === true };
       createRoomIn(this.storage, room, this.identityNamed(name), this.now);
       this.setConnected(name, true);
     }
@@ -171,12 +172,9 @@ export class LobbySession {
   joinRoom(name: string, code: unknown): void {
     const roomCode = v.safeParse(RoomCode, code);
     const { playerId } = this.identityNamed(name);
-    const claimed = roomCode.success ? claimPlayer(this.lobby, playerId, roomCode.output) : null;
-    if (claimed?.isOk === false) {
-      this.rejected = claimed.error;
+    if (roomCode.success && !this.claimIn(playerId, roomCode.output)) {
       return;
     }
-    this.lobby = claimed?.value ?? this.lobby;
     const storage = this.storageFor(code);
     const { rejection } = joinRoomIn(storage, this.identityNamed(name), this.now, this.live);
     this.rejected = rejection?.reason ?? null;
@@ -240,44 +238,26 @@ export class LobbySession {
       sender,
       now: this.now,
       randomFor: randomForNextAction,
-      gameStart: { seed: 1, now: this.now, seatOrder: (players) => this.seatOrder(players) },
+      gameStart: {
+        seed: 1,
+        now: this.now,
+        seatOrder: (players) => this.seatOrder(players),
+        limitRejectionFor: (players) => this.countGameStart(players),
+      },
       livePlayers: this.live,
     });
-    this.rejected = outcome.isRoomGone
-      ? "room_not_found"
-      : outcome.reply.type === "rejected"
-        ? outcome.reply.code
-        : null;
+    this.rejected = outcome.isRoomGone ? "room_not_found" : rejectionOfReply(outcome.reply);
     if (!outcome.isRoomGone) {
-      this.deliver(name, outcome.reply, outcome.playersToUpdate);
+      const delivery = { sender: name, accounts: this.accounts.values(), record: this.record };
+      deliverRoomOutcome(this.messagesTo, { ...delivery, now: this.now }, outcome);
     }
   }
 
-  private deliver(
-    name: string,
-    reply: ServerMessage,
-    playersToUpdate: ReadonlyArray<PlayerId>,
-  ): void {
-    this.messagesTo.set(name, [...(this.messagesTo.get(name) ?? []), reply]);
-    const record = this.record;
-    if (record === null) {
-      return;
-    }
-    for (const account of this.accounts.values()) {
-      if (playersToUpdate.includes(account.identity.playerId)) {
-        const sent = this.messagesTo.get(account.identity.name) ?? [];
-        this.messagesTo.set(account.identity.name, [
-          ...sent,
-          {
-            type: "update",
-            protocolVersion: PROTOCOL_VERSION,
-            acceptedActionId: null,
-            update: updateFor(record, account.identity.playerId),
-            serverNow: this.now,
-          },
-        ]);
-      }
-    }
+  private countGameStart(players: ReadonlyArray<PlayerId>): GameStartRejection | null {
+    const limits = { now: this.now, siteGamesPerDay: siteGameLimitOf({}) };
+    const counted = countGameStart(this.lobby, players, limits);
+    this.lobby = counted.isOk ? counted.value : this.lobby;
+    return counted.isOk ? null : counted.error;
   }
 
   private seatOrder(players: ReadonlyArray<PlayerId>): ReadonlyArray<PlayerId> {
@@ -287,6 +267,13 @@ export class LobbySession {
     }
     const names: ReadonlyArray<unknown> = draw.value;
     return names.map((name) => this.identityNamed(String(name)).playerId);
+  }
+
+  private claimIn(playerId: PlayerId, code: RoomCode): boolean {
+    const claimed = claimPlayer(this.lobby, playerId, code, this.now);
+    this.rejected = claimed.isOk ? null : claimed.error;
+    this.lobby = claimed.isOk ? claimed.value : this.lobby;
+    return claimed.isOk;
   }
 
   private storageFor(code: unknown): RoomStorage {

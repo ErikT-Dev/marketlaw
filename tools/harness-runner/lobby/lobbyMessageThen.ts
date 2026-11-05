@@ -1,9 +1,23 @@
+import { noticeToastOf } from "../../../src/client/screens/game/noticeToastOf.ts";
+import { REJECTION_MESSAGES } from "../../../src/client/screens/game/REJECTION_MESSAGES.ts";
 import type { ServerMessage } from "../../../src/shared/protocol/ServerMessage.ts";
 import { isRecord } from "../../harness-check/isRecord.ts";
 
 function acceptedNamesIn(messages: ReadonlyArray<ServerMessage>): ReadonlyArray<string> | null {
   const update = [...messages].reverse().find((message) => message.type === "update");
   return update?.type === "update" ? (update.update.room.asking?.acceptedNames ?? null) : null;
+}
+
+function shownTextOf(message: ServerMessage): ReadonlyArray<string> {
+  if (message.type === "rejected") {
+    return [REJECTION_MESSAGES[message.code]];
+  }
+  return message.type === "notice" ? [noticeToastOf(message.notice, 1, []).text] : [];
+}
+
+function textShownFrom(messages: ReadonlyArray<ServerMessage>, expected: unknown): unknown {
+  const texts = messages.flatMap(shownTextOf);
+  return texts.includes(String(expected)) ? expected : (texts.at(-1) ?? null);
 }
 
 export function lobbyMessageThen(
@@ -15,9 +29,11 @@ export function lobbyMessageThen(
   const contains: ReadonlyArray<unknown> = Array.isArray(asked["contains"])
     ? asked["contains"]
     : [];
-  const accepted = acceptedNamesIn(messagesTo.get(player) ?? []);
+  const messages = messagesTo.get(player) ?? [];
+  const accepted = acceptedNamesIn(messages);
   return {
     player,
+    text: textShownFrom(messages, asked["text"]),
     contains: contains.map((entry) =>
       isRecord(entry) && "accepted" in entry ? { accepted } : undefined,
     ),

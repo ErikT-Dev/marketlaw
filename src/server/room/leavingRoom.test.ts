@@ -56,7 +56,12 @@ function send(storage: RoomStorage, sender: Identity, message: Readonly<Record<s
     sender,
     now: NOW,
     randomFor: randomForNextAction,
-    gameStart: { seed: 1, now: NOW, seatOrder: (players) => players },
+    gameStart: {
+      seed: 1,
+      now: NOW,
+      seatOrder: (players) => players,
+      limitRejectionFor: () => null,
+    },
     livePlayers: LIVE,
   });
   return outcome.isRoomGone ? null : outcome.reply;
@@ -120,13 +125,13 @@ describe("a player who left a running game", () => {
   it("is free to join another room while still in the room", () => {
     const { storage, leaver } = runningGame();
     const playing = withRoomSummary(EMPTY_LOBBY, CODE, roomSummaryOf(storage.stored()));
-    expect(claimPlayer(playing, leaver.playerId, OTHER_CODE).isOk).toBe(false);
+    expect(claimPlayer(playing, leaver.playerId, OTHER_CODE, NOW).isOk).toBe(false);
     leaveGame(storage, leaver);
     const room = storage.stored();
     expect(room.players.map(({ name }) => name)).toContain(leaver.name);
     expect(isPlayerBusyIn(room, leaver.playerId)).toBe(false);
     const afterLeaving = withRoomSummary(playing, CODE, roomSummaryOf(room));
-    expect(claimPlayer(afterLeaving, leaver.playerId, OTHER_CODE).isOk).toBe(true);
+    expect(claimPlayer(afterLeaving, leaver.playerId, OTHER_CODE, NOW).isOk).toBe(true);
   });
 });
 

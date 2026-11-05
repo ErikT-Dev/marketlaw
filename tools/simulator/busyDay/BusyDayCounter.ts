@@ -3,6 +3,7 @@ import type { LobbyRecord } from "../../../src/server/lobby/LobbyRecord.ts";
 import { alarmChangeFor } from "../../../src/server/room/alarmChangeFor.ts";
 import type { RoomRecord } from "../../../src/server/room/RoomRecord.ts";
 import type { RoomStorage } from "../../../src/server/room/RoomStorage.ts";
+import type { BusyDayCount } from "./BusyDayCount.ts";
 import type { BusyDayRows } from "./BusyDayRows.ts";
 
 export class BusyDayCounter {
@@ -10,8 +11,9 @@ export class BusyDayCounter {
   record: RoomRecord | undefined;
   private alarm: number | null = null;
   private rows: BusyDayRows = { room: 0, alarm: 0, lobby: 0, database: 0 };
+  private rowsRead = 0;
   readonly storage: RoomStorage = {
-    read: () => this.record,
+    read: () => this.readRecord(),
     write: (record) => {
       this.record = record;
       this.count("room");
@@ -22,8 +24,22 @@ export class BusyDayCounter {
     },
   };
 
+  readonly gameStorage: RoomStorage = {
+    read: () => this.readRecord(),
+    write: (record) => {
+      this.record = record;
+    },
+    remove: () => {
+      this.storage.remove();
+    },
+  };
+
   count(kind: keyof BusyDayRows, rows = 1): void {
     this.rows = { ...this.rows, [kind]: this.rows[kind] + rows };
+  }
+
+  countReads(rows: number): void {
+    this.rowsRead += rows;
   }
 
   changeLobby(next: LobbyRecord): void {
@@ -46,7 +62,12 @@ export class BusyDayCounter {
     this.alarm = null;
   }
 
-  total(): BusyDayRows {
-    return this.rows;
+  total(): BusyDayCount {
+    return { written: this.rows, rowsRead: this.rowsRead };
+  }
+
+  private readRecord(): RoomRecord | undefined {
+    this.rowsRead += 1;
+    return this.record;
   }
 }

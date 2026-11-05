@@ -29,13 +29,11 @@ export async function createRoomRoute(request: Request, env: Env): Promise<Respo
   if (await isReallyBusy(env, identity.playerId, null)) {
     return roomJson(BUSY, 409);
   }
-  const code = await createInFreeRoom(env, identity, { size, isPublic: body.isPublic });
-  if (code === "busy") {
-    return roomJson(BUSY, 409);
+  const created = await createInFreeRoom(env, identity, { size, isPublic: body.isPublic });
+  if (!created.isOk) {
+    const status = created.error === "no_free_room_code" ? 503 : 409;
+    return roomJson({ isOk: false, reason: created.error, rejoinAt: null }, status);
   }
-  if (code === null) {
-    return roomJson({ isOk: false, reason: "no_free_room_code", rejoinAt: null }, 503);
-  }
-  await leaveFinishedRooms(env, identity.playerId, code);
-  return roomJson({ isOk: true, code });
+  await leaveFinishedRooms(env, identity.playerId, created.value);
+  return roomJson({ isOk: true, code: created.value });
 }

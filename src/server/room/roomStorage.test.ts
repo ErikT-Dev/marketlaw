@@ -15,7 +15,12 @@ import type { RoomRecord } from "./RoomRecord";
 import type { RoomStorage } from "./RoomStorage";
 
 const GAME_START = v.parse(EpochMs, 1_000_000);
-const JOIN_ORDER: GameStart = { seed: 7, now: GAME_START, seatOrder: (players) => players };
+const JOIN_ORDER: GameStart = {
+  seed: 7,
+  now: GAME_START,
+  seatOrder: (players) => players,
+  limitRejectionFor: () => null,
+};
 
 type CountingStorage = RoomStorage & {
   readonly writes: () => number;

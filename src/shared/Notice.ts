@@ -10,4 +10,5 @@ export type Notice =
       readonly kind: "resumed";
       readonly seats: ReadonlyArray<SeatNumber>;
       readonly freeMs: number;
-    };
+    }
+  | { readonly kind: "site_game_limit" };

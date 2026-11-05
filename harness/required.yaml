@@ -318,6 +318,12 @@ scenarios:
     - if every player leaves at the same moment the game is abandoned
     - a leaver no longer sees the game but sees the result when it ends
     - a player who leaves during their own market go is skipped and the next player goes
+  lobby-queue-and-limits:
+    - a player who started 10 games today cannot start another
+    - after 50 games start on the site today no more games start
+    - the game start limit is checked again when a game starts
+    - a guest at 2000 actions today cannot join a room
+    - the daily action count resets at midnight UTC for joining a room
 invariants:
   - I1
   - I2
@@ -353,6 +359,7 @@ budgets:
   - B4
   - B5
   - B9
+  - B11
   - B12
   - B13
   - B16

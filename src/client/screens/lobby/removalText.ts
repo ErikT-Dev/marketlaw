@@ -1,5 +1,6 @@
 import { clockText } from "../../components/clockText";
 import type { RemovalNotice } from "../../store/RemovalNotice";
+import { REJECTION_MESSAGES } from "../game/REJECTION_MESSAGES";
 
 export function removalText(removal: RemovalNotice, now: number): string {
   const wait =
@@ -13,5 +14,8 @@ export function removalText(removal: RemovalNotice, now: number): string {
       return `You did not accept the game in time. ${wait}`;
     case "disconnected":
       return "Your connection to the room was lost for 10 seconds, so your place was given up.";
+    case "daily_action_limit":
+    case "daily_game_start_limit":
+      return REJECTION_MESSAGES[removal.reason];
   }
 }

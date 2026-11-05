@@ -34,7 +34,7 @@ async function play(scenario: Scenario, driver: ScenarioDriver): Promise<Played>
   try {
     const session = driver.startSession(scenario.given, random);
     for (const step of scenario.when) {
-      session.runStep(step);
+      await session.runStep(step);
     }
     const mismatches = await Promise.all(
       Object.entries(scenario.then).map(async ([field, expected]) =>

@@ -27,5 +27,5 @@ export function receiveMessage(storage: RoomStorage, input: ReceiveInput): Recei
   } else if (shouldSave || record !== stored) {
     storage.write(next);
   }
-  return { isRoomGone: false, ...outcome, removals };
+  return { isRoomGone: false, ...outcome, removals: [...removals, ...outcome.removals] };
 }

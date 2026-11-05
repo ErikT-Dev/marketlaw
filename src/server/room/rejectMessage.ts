@@ -29,5 +29,7 @@ export function rejectMessage(
     },
     playersToUpdate: [],
     shouldClose: rejectionTimes.length >= REJECTIONS_BEFORE_CLOSING,
+    removals: [],
+    notices: [],
   };
 }

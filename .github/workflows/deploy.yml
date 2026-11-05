@@ -63,6 +63,23 @@ jobs:
   browser-tests:
     needs: tested
     if: needs.tested.outputs.already-tested != 'true'
+    name: browser-tests (${{ matrix.part }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - part: full games, 2 players
+            tests: --grep "two players play a whole game from the lobby"
+          - part: full games, 3 players
+            tests: --grep "three players play a whole game from the lobby"
+          - part: full games, 4 players
+            tests: --grep "four players play a whole game from the lobby"
+          - part: other tests 1 of 3
+            tests: --grep-invert "play a whole game from the lobby" --shard=1/3
+          - part: other tests 2 of 3
+            tests: --grep-invert "play a whole game from the lobby" --shard=2/3
+          - part: other tests 3 of 3
+            tests: --grep-invert "play a whole game from the lobby" --shard=3/3
     runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions:
@@ -86,14 +103,24 @@ jobs:
       - name: Prepare the local database
         run: npm run db:migrate:local
 
-      - name: Make a test room secret and Turnstile test keys for the local server
+      - name: Make a test room secret, Turnstile test keys and the test site game limit for the local server
         run: |
           echo "TEST_ROOM_SECRET=$(openssl rand -hex 24)" > .dev.vars
           echo "TURNSTILE_SITE_KEY=1x00000000000000000000AA" >> .dev.vars
           echo "TURNSTILE_SECRET_KEY=1x0000000000000000000000000000000AA" >> .dev.vars
+          echo "TEST_SITE_GAMES_PER_DAY=1000000" >> .dev.vars
 
       - name: Browser tests
-        run: npm run e2e
+        timeout-minutes: 15
+        run: npm run e2e -- --reporter=list ${{ matrix.tests }}
+
+      - name: Keep the browser test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-test-results (${{ matrix.part }})
+          path: test-results/
+          if-no-files-found: ignore
 
   deploy:
     needs: [tested, check, browser-tests]

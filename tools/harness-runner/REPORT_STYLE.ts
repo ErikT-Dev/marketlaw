@@ -5,7 +5,7 @@ table { border-collapse: collapse; width: 100%; } th, td { border-bottom: 1px so
 th { background: #f3f5f8; } ul { margin: 0; padding-left: 0; list-style: none; } li { margin: 2px 0; }
 .status { display: inline-block; min-width: 72px; padding: 0 6px; margin-right: 6px; border-radius: 4px; font-size: 12px; text-align: center; }
 .passes { background: #d6f5dd; color: #0b5c1f; } .fails { background: #fbd9d9; color: #8a1010; }
-.not-yet { background: #eceef2; color: #4a5263; } .passes-not-yet-required { background: #e3effd; color: #164f8f; }
+.not-yet { background: #eceef2; color: #4a5263; } .other-check { background: #fdf1d6; color: #6b4a00; } .passes-not-yet-required { background: #e3effd; color: #164f8f; }
 .detail { display: block; margin-left: 84px; color: #5b6475; font-size: 12px; }
 .verdict { padding: 12px 16px; border-radius: 6px; } .verdict.passes, .verdict.fails { font-size: 16px; }
 `;

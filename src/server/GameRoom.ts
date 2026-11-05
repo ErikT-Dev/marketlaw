@@ -1,9 +1,7 @@
 import { DurableObject } from "cloudflare:workers";
 import { acceptedSocketResponse } from "./acceptedSocketResponse";
-import * as v from "valibot";
 import type { GameState } from "../rules/GameState";
 import { randomForNextAction } from "../rules/randomForNextAction";
-import { EpochMs } from "../shared/EpochMs";
 import type { PlayerId } from "../shared/PlayerId";
 import { parseClientMessage } from "../shared/protocol/parseClientMessage";
 import type { RoomCode } from "../shared/RoomCode";
@@ -12,6 +10,7 @@ import { attachmentOf } from "./attachmentOf";
 import type { ConnectionAttachment } from "./ConnectionAttachment";
 import { newGameStart } from "./newGameStart";
 import { NO_CONNECTION } from "./NO_CONNECTION";
+import { nowMs } from "./nowMs";
 import { alarmChangeFor } from "./room/alarmChangeFor";
 import { applyAlarmChange } from "./room/applyAlarmChange";
 import { isPlayerBusyIn } from "./room/isPlayerBusyIn";
@@ -26,7 +25,8 @@ import { joinRejectionIn } from "./room/joinRejectionIn";
 import { joinRoomIn } from "./room/joinRoomIn";
 import { loadRoom } from "./room/loadRoom";
 import { playersWhoseUpdateChanged } from "./room/playersWhoseUpdateChanged";
-import { receiveMessage } from "./room/receiveMessage";
+import { receiveCheckingGameStart } from "./room/receiveCheckingGameStart";
+import type { receiveMessage } from "./room/receiveMessage";
 import type { RoomRecord } from "./room/RoomRecord";
 import { startTestRoomIn } from "./room/startTestRoomIn";
 import { resumeNoticesBetween } from "./room/resumeNoticesBetween";
@@ -34,17 +34,13 @@ import { timeOutNoticesBetween } from "./room/timeOutNoticesBetween";
 import { withAwaySeats } from "./room/withAwaySeats";
 import { withConnection } from "./room/withConnection";
 import { lobbyOf } from "./lobbyOf";
-import { roomSummaryOf } from "./room/roomSummaryOf";
+import { reportToLobby } from "./reportToLobby";
 import { saveReplayRecordIfEnded } from "./replays/saveReplayRecordIfEnded";
 import { RoomSockets } from "./RoomSockets";
 import type { RoomRemoval } from "./room/RoomRemoval";
 import type { Sender } from "./Sender";
 import { senderOfToken } from "./senderOfToken";
 import { leaveRoomIfFreeIn } from "./room/leaveRoomIfFreeIn";
-
-function nowMs(): EpochMs {
-  return v.parse(EpochMs, Date.now());
-}
 
 export class GameRoom extends DurableObject<Env> {
   private readonly sockets = new RoomSockets(this.ctx);
@@ -235,7 +231,7 @@ export class GameRoom extends DurableObject<Env> {
     const attachment = attachmentOf(socket);
     const recordBefore = loadRoom(this.storage);
     const now = nowMs();
-    const outcome = receiveMessage(this.storage, {
+    const input = {
       connection: { identity: attachment.identity, rejectionTimes: attachment.rejectionTimes },
       parsed,
       sender: sender?.identity ?? null,
@@ -243,7 +239,10 @@ export class GameRoom extends DurableObject<Env> {
       randomFor: randomForNextAction,
       gameStart: newGameStart(now),
       livePlayers: this.sockets.livePlayers(),
-    });
+    };
+    const outcome = await receiveCheckingGameStart(this.storage, input, async (players) =>
+      lobbyOf(this.env).startGame(players, now),
+    );
     if (outcome.isRoomGone) {
       socket.close(ROOM_GONE_CLOSE_CODE, "This room no longer exists");
       await this.reportToLobby(recordBefore);
@@ -264,6 +263,7 @@ export class GameRoom extends DurableObject<Env> {
         outcome.reply.type === "rejected" ? null : socket,
       );
       this.sockets.sendNotices([
+        ...outcome.notices,
         ...timeOutNoticesBetween(recordBefore, recordAfter),
         ...resumeNoticesBetween(recordBefore, recordAfter),
       ]);
@@ -301,15 +301,7 @@ export class GameRoom extends DurableObject<Env> {
   }
 
   private async reportToLobby(before: RoomRecord | null): Promise<void> {
-    const after = loadRoom(this.storage);
-    const summaryBefore = before === null ? null : roomSummaryOf(before);
-    const summaryAfter = after === null ? null : roomSummaryOf(after);
-    const code = after?.code ?? before?.code;
-    if (code !== undefined && JSON.stringify(summaryBefore) !== JSON.stringify(summaryAfter)) {
-      await lobbyOf(this.env)
-        .roomChanged(code, summaryAfter)
-        .catch(() => undefined);
-    }
+    await reportToLobby(this.env, before, loadRoom(this.storage));
   }
 
   private async syncAlarm(isFiring = false): Promise<void> {

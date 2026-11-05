@@ -126,7 +126,7 @@ function messageTo(session: RoomSession, expected: unknown): unknown {
     : noticeTo(session, expected);
 }
 
-function runRoomStep(session: RoomSession, step: ScenarioStep): void {
+async function runRoomStep(session: RoomSession, step: ScenarioStep): Promise<void> {
   if (step === "start_game") {
     throw new Error("the room driver cannot start a game");
   }
@@ -135,7 +135,7 @@ function runRoomStep(session: RoomSession, step: ScenarioStep): void {
     return;
   }
   if (typeof step["action"] === "string") {
-    session.sendRaw({ seat: step["seat"], player: step["player"], message: step });
+    await session.sendRaw({ seat: step["seat"], player: step["player"], message: step });
     return;
   }
   if (typeof step["disconnect"] === "number") {
@@ -143,7 +143,7 @@ function runRoomStep(session: RoomSession, step: ScenarioStep): void {
     return;
   }
   if (typeof step["reconnect"] === "number") {
-    session.reconnect(step["reconnect"]);
+    await session.reconnect(step["reconnect"]);
     return;
   }
   if (typeof step["wait_ms"] === "number") {
@@ -153,7 +153,7 @@ function runRoomStep(session: RoomSession, step: ScenarioStep): void {
   if (!isRecord(step["raw"])) {
     throw new Error("the room driver runs game steps and raw messages only");
   }
-  session.sendRaw(step["raw"]);
+  await session.sendRaw(step["raw"]);
 }
 
 function readRoomThen(session: RoomSession, field: string, expected: unknown): unknown {
@@ -193,14 +193,12 @@ function startSession(
     random,
   );
   return {
-    runStep: (step) => {
-      runRoomStep(session, step);
-    },
+    runStep: async (step) => runRoomStep(session, step),
     readThen: (field, expected) => readRoomThen(session, field, expected),
     measurements: () => [
       { budget: "B1", value: Math.max(0, ...session.rowsForAccepted) },
       { budget: "B2", value: Math.max(0, ...session.rowsForOther) },
-      { budget: "B11", value: Math.ceil(Math.max(0, ...session.handlingMs)) },
+      ...session.handlingMs.map((value) => ({ budget: "B11", value })),
     ],
   };
 }

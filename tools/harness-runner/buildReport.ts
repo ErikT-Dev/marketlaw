@@ -1,9 +1,8 @@
 import { escapeHtml } from "./escapeHtml.ts";
-import { highestMeasured } from "./highestMeasured.ts";
 import type { IdentifiedEntry } from "./IdentifiedEntry.ts";
-import { MEASURED_BUDGET_LIMITS } from "./MEASURED_BUDGET_LIMITS.ts";
 import { REPORT_STYLE } from "./REPORT_STYLE.ts";
 import type { ReportInput } from "./ReportInput.ts";
+import { reportBudgets } from "./reportBudgets.ts";
 import { reportRules } from "./reportRules.ts";
 import { reportGameLength } from "./reportGameLength.ts";
 import { reportSimulation } from "./reportSimulation.ts";
@@ -67,17 +66,6 @@ function identifiedList(
   return `<h2>${title}</h2><ul>${items}</ul>`;
 }
 
-function budgetList(input: ReportInput): string {
-  const measured = input.budgets.map(({ id, name }) => {
-    const value = highestMeasured(input.run, id);
-    const limit = MEASURED_BUDGET_LIMITS[id];
-    return value === undefined || limit === undefined
-      ? { id, name }
-      : { id, name: `${name} (highest measured ${value}, limit ${limit})` };
-  });
-  return identifiedList("Budgets", measured, input.run.required.budgets, input.problems);
-}
-
 export function buildReport(input: ReportInput): string {
   return [
     "<!doctype html>",
@@ -93,7 +81,7 @@ export function buildReport(input: ReportInput): string {
     "<h2>Rules</h2>",
     reportRules(input.ruleSpecs, input.run.runs, input.exceptions),
     identifiedList("Invariants", input.invariants, input.run.required.invariants, input.problems),
-    budgetList(input),
+    reportBudgets(input.run, input.budgets, input.problems),
     "</body></html>",
   ].join("\n");
 }

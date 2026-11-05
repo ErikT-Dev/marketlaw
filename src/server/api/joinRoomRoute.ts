@@ -1,3 +1,5 @@
+import * as v from "valibot";
+import { EpochMs } from "../../shared/EpochMs";
 import { JoinRoomRequest } from "../../shared/api/JoinRoomRequest";
 import type { RoomCode } from "../../shared/RoomCode";
 import { lobbyOf } from "../lobbyOf";
@@ -23,12 +25,13 @@ export async function joinRoomRoute(request: Request, env: Env, code: RoomCode) 
   const expected = await room.joinRejection(identity);
   if (expected !== null) {
     if (expected.reason === "room_not_found") {
-      await lobby.roomChanged(code, null);
+      await lobby.roomChanged(code, null, { played: [], now: v.parse(EpochMs, Date.now()) });
     }
     return roomJson({ isOk: false, ...expected }, 409);
   }
-  if (!(await lobby.claim(identity.playerId, code))) {
-    return roomJson(BUSY, 409);
+  const claimRejection = await lobby.claim(identity.playerId, code, v.parse(EpochMs, Date.now()));
+  if (claimRejection !== null) {
+    return roomJson({ isOk: false, reason: claimRejection, rejoinAt: null }, 409);
   }
   const rejection = await room.joinRoom(identity).catch(async (error: unknown) => {
     await lobby.release(identity.playerId, code);

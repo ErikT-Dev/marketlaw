@@ -1,4 +1,4 @@
-import type { BusyDayRows } from "../simulator/busyDay/BusyDayRows.ts";
+import type { BusyDayCount } from "../simulator/busyDay/BusyDayCount.ts";
 import type { SimulationSummary } from "../simulator/SimulationSummary.ts";
 import type { RequiredList } from "./RequiredList.ts";
 import type { ScenarioRun } from "./ScenarioRun.ts";
@@ -12,6 +12,6 @@ export type HarnessRun = {
   readonly tierShareProblems: ReadonlyArray<string>;
   readonly replayExportProblems: ReadonlyArray<string>;
   readonly simulation: SimulationSummary;
-  readonly busyDay: BusyDayRows | null;
+  readonly busyDay: BusyDayCount | null;
   readonly simulatedInvariants: ReadonlyArray<string>;
 };

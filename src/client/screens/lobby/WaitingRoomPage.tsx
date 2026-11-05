@@ -1,4 +1,6 @@
 import type { RoomView } from "../../../shared/protocol/RoomView";
+import { Toast } from "../../components/Toast";
+import { SITE_GAME_LIMIT_TOAST } from "../game/SITE_GAME_LIMIT_TOAST";
 import { useServerNow } from "../game/useServerNow";
 import { AcceptDialog } from "./AcceptDialog";
 import styles from "./Lobby.module.css";
@@ -15,6 +17,8 @@ type Props = {
   readonly onAccept: () => void;
   readonly onDecline: () => void;
   readonly rejection: string | null;
+  readonly hasSiteGameLimitNotice: boolean;
+  readonly onDismissSiteGameLimit: () => void;
 };
 
 export function WaitingRoomPage(props: Props) {
@@ -52,6 +56,11 @@ export function WaitingRoomPage(props: Props) {
           </p>
         </section>
       </main>
+      {props.hasSiteGameLimitNotice ? (
+        <div className={styles["toastPlace"]}>
+          <Toast kind="warning" {...SITE_GAME_LIMIT_TOAST} onClose={props.onDismissSiteGameLimit} />
+        </div>
+      ) : null}
       {room.asking === null ? null : (
         <AcceptDialog
           asking={room.asking}

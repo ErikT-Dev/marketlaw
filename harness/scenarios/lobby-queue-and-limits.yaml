@@ -346,7 +346,7 @@
     - {player: Ann, action: accept_game}
   then:
     rejected: daily_game_start_limit
-    room: {state: waiting}
+    room: {players: [Bea], state: waiting}
 
 - name: a guest at 2000 actions today cannot join a room
   covers: [A9.2]

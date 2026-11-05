@@ -13,6 +13,7 @@ import { removeOldReplayRecords } from "./replays/removeOldReplayRecords";
 import { confirmTestSeat } from "./testRooms/confirmTestSeat";
 import { createTestRoom } from "./testRooms/createTestRoom";
 import { restartTestRoom } from "./testRooms/restartTestRoom";
+import { setTestDailyCounts } from "./testRooms/setTestDailyCounts";
 
 export { GameRoom } from "./GameRoom";
 export { Lobby } from "./Lobby";
@@ -45,6 +46,7 @@ const POST_ROUTES: Readonly<Record<string, (request: Request, env: Env) => Promi
   "/api/test-rooms": createTestRoom,
   "/api/test-room-seats": confirmTestSeat,
   "/api/test-room-restarts": restartTestRoom,
+  "/api/test-daily-counts": setTestDailyCounts,
 };
 
 async function route(request: Request, env: Env): Promise<Response> {
