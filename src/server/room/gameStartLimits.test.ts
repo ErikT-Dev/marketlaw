@@ -37,7 +37,7 @@ function roomOfAnnAndBea(): { storage: RoomStorage; current: () => RoomRecord | 
 async function acceptAs(
   storage: RoomStorage,
   sender: Identity,
-  lobbyAnswer: GameStartRejection | null,
+  lobbyAnswer: GameStartRejection | null | Error,
 ) {
   const asked: Array<ReadonlyArray<PlayerId>> = [];
   const outcome = await receiveCheckingGameStart(
@@ -60,6 +60,9 @@ async function acceptAs(
     },
     async (players) => {
       asked.push(players);
+      if (lobbyAnswer instanceof Error) {
+        return Promise.reject(lobbyAnswer);
+      }
       return Promise.resolve(lobbyAnswer);
     },
   );
@@ -127,5 +130,26 @@ describe("the daily limits when a game starts", () => {
     expect(current()?.game).toBeNull();
     expect(current()?.waiting.asking).toBeNull();
     expect(current()?.players).toHaveLength(2);
+  });
+
+  it("refuses the last acceptance with no_answer and keeps the asking when the lobby does not answer", async () => {
+    const { storage, current } = roomOfAnnAndBea();
+    await acceptAs(storage, ANN, null);
+    const before = current();
+    const { outcome } = await acceptAs(storage, BEA, new Error("the lobby is unreachable"));
+    expect(outcome.reply).toEqual({
+      type: "rejected",
+      protocolVersion: PROTOCOL_VERSION,
+      actionId: null,
+      code: "no_answer",
+    });
+    expect(outcome.removals).toEqual([]);
+    expect(outcome.notices).toEqual([]);
+    expect(outcome.playersToUpdate).toEqual([]);
+    expect(current()).toEqual(before);
+    expect(current()?.waiting.asking?.accepted).toEqual([ANN.playerId]);
+    const retried = await acceptAs(storage, BEA, null);
+    expect(retried.asked).toEqual([[ANN.playerId, BEA.playerId]]);
+    expect(current()?.game).not.toBeNull();
   });
 });

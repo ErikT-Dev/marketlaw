@@ -1,6 +1,7 @@
 import type { PlayerId } from "../../shared/PlayerId";
 import type { GameStartRejection } from "../lobby/GameStartRejection";
 import type { GameStart } from "./GameStart";
+import type { GameStartRefusal } from "./GameStartRefusal";
 import type { ReceiveInput } from "./ReceiveInput";
 import type { ReceiveOutcome } from "./ReceiveOutcome";
 import { receiveMessage } from "./receiveMessage";
@@ -36,13 +37,25 @@ function startingPlayersOf(
   return startingPlayers;
 }
 
+async function refusalFrom(
+  checkGameStart: StartChecker,
+  players: ReadonlyArray<PlayerId>,
+): Promise<GameStartRefusal | null> {
+  try {
+    return await checkGameStart(players);
+  } catch {
+    return { kind: "no_answer" };
+  }
+}
+
 export async function receiveCheckingGameStart(
   storage: RoomStorage,
   input: UncheckedInput,
   checkGameStart: StartChecker,
 ): Promise<ReceiveOutcome> {
   const startingPlayers = isAcceptGame(input) ? startingPlayersOf(storage, input) : null;
-  const rejection = startingPlayers === null ? null : await checkGameStart(startingPlayers);
+  const rejection =
+    startingPlayers === null ? null : await refusalFrom(checkGameStart, startingPlayers);
   return receiveMessage(storage, {
     ...input,
     gameStart: { ...input.gameStart, limitRejectionFor: () => rejection },

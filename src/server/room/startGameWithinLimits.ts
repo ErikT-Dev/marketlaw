@@ -10,6 +10,9 @@ export function startGameWithinLimits(record: RoomRecord, start: GameStart): Roo
   if (rejection === null) {
     return { record: startRoomGame(record, start), removals: [], notices: [], refusal: null };
   }
+  if (rejection.kind === "no_answer") {
+    return { record, removals: [], notices: [], refusal: "no_answer" };
+  }
   if (rejection.kind === "site_game_limit") {
     return {
       record: { ...record, waiting: { ...record.waiting, asking: null } },
