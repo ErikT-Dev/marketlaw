@@ -378,6 +378,32 @@ These 5 scenarios are added to `harness/required.yaml` in this phase, by file an
     lobby socket, and answers 404 for the test-only daily counts. A game needs the human check, so
     it is left to the owner's playthrough. Phase marked **waiting for the owner** (Q71).
 
+### Helper log
+
+Filled in by the coordinator afterwards, from the helpers' completion notices (Q73). Tokens
+are each helper's conversation size at its end.
+
+| Job | Minutes | Tokens | Tool calls | Result |
+|---|---|---|---|---|
+| Starter | 7 | 130k | 46 | done |
+| Builder, item 2 | 11 | 125k | 47 | done |
+| Builder, item 3 | | | | failed (stalled waiting for the check) |
+| Builder, item 3, picking up | 4 | 74k | 18 | done |
+| Builder, item 4 | 9 | 125k | 45 | done |
+| Builder, item 5 | 10 | 126k | 53 | done |
+| Builder, item 6 | 8 | 124k | 41 | done |
+| Builder, item 7 | 32 | 151k | 80 | done |
+| Builder, item 8 | 5 | 102k | 24 | done |
+| Finisher, checks | 35 | 102k | 47 | done |
+| Phase reviewer | 22 | 126k | 48 | done |
+| Fixer, findings 1, 5, 8 | 9 | 86k | 28 | done |
+| Fixer, findings 2, 4, 7 | 14 | 124k | 45 | done |
+| Fixer, findings 3, 6 | 13 | 73k | 20 | done |
+| Finisher, checks again | 32 | 77k | 30 | done |
+| Releaser | 24 | 81k | 32 | failed (GitHub browser tests over 20 minutes) |
+| Fixer, GitHub browser tests | 20 | 79k | 27 | done (paused 30 min by the usage limit) |
+| Releaser, second run | 62 | 87k | 63 | done |
+
 ## Report
 
 **Built.** The site now keeps the daily limits that hold it inside the Cloudflare Free plan

@@ -31,6 +31,15 @@ Your cost grows with everything you read, so read only what the job needs:
   file>` (timeout up to 600000 ms; call it again if the run is still going), then read its
   result once with `gh run view <id> --json conclusion,jobs`. Never wait by calling
   `gh run view` over and over: each call re-sends your whole conversation.
+- Keep every command under 10 minutes, so it runs in the foreground (timeout 600000 ms) and
+  never moves to the background. Ending your turn to wait for a background command is where
+  helpers stalled. Run the browser tests in these parts, each in its own command:
+  - `npm run e2e -- --workers=2 --grep-invert "play a whole game from the lobby" --shard=1/2`
+  - the same with `--shard=2/2`
+  - `npm run e2e -- --workers=2 --grep "two players play a whole game from the lobby"`, then
+    the same for `three players` and `four players`
+
+  A single spec file or a few tests can run in one command.
 
 ### Watch for stop
 The owner can stop the work at any time (`README.md`, "Continue and stop"). Before every new
@@ -92,6 +101,8 @@ For a phase whose status is **approved** and whose dependencies are **done**.
    Decide each as "Deciding without the owner" describes before building.
 4. Turn the Builds items into a **Progress** checklist at the end of the phase file. Split an
    item that is too large for one builder (more than about three commits) into numbered parts.
+   Mark each item **small** (about one commit, or documents only) or **large**, so the
+   coordinator can give one helper two small jobs.
    Under each item, write what a builder needs that the phase file does not say: the rules and
    scenarios it covers, decisions that affect it, and existing code to reuse.
 5. Commit (`PLAN: Phase NN started; Progress checklist`) and report.
@@ -107,7 +118,9 @@ One Progress item, or the rest of a partial one.
    what the scenarios do not reach.
 5. Build the smallest change that makes them pass.
 6. Run the fast checks: types, lint, the affected tests. Before your last commit, run the full
-   `npm run check` (output to a file; read only the failures).
+   `npm run check` (output to a file; read only the failures). An item that changes only
+   `docs/` runs `npx prettier --check` on the changed files and `npm run harness:check`
+   instead; anything outside `docs/` needs the full check.
 7. Commit to the phase branch, `<AREA>: <description>`, one logical change per commit.
 8. Tick the item off in Progress, with a note on anything that differed from the phase file and
    a "For later items" line if later items should know something. Commit that with the work.
