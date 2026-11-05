@@ -1170,4 +1170,6 @@ file.
   done, so milestone 4 does not start before the playthrough. The checklist is
   `docs/playthrough.md`; it asks the testers to note how many turns their games took, for the
   game-length recheck (D24, `game-rules.md` open question 1).
-- **Implemented:** phase 20, item 7 and the release.
+- **Implemented:** phase 20, item 8 (`docs/playthrough.md`) and the release. The site lock
+  was removed by D22 (replaces D6), so testers get the link instead of a Cloudflare Access
+  invitation.

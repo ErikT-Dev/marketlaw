@@ -240,12 +240,25 @@ These 5 scenarios are added to `harness/required.yaml` in this phase, by file an
     (`useIsScrollable` only watches its own and its content's size). Other local failures were
     the known two-worker load: a guest dialog still "Continuing" after 5 s, or a turn-1 sale
     still "Waiting for the server…"; each passed when run again alone.
-- [ ] 8. **Playthrough checklist** (Q71): `docs/playthrough.md`, for the owner and invited
+- [x] 8. **Playthrough checklist** (Q71): `docs/playthrough.md`, for the owner and invited
   testers: who is needed (2 to 4 people, each on their own computer, invited through Cloudflare
   Access, D6), what to try in which order (guest names, lobby, create and join rooms, accept,
   the market and main phases, cards, combos, projects, quests, influence, undo, clocks and
   time-outs, refresh and reconnect, a second tab, leaving, the end screen, the daily limit
   notices), and what to write down (problems, and how many turns each game took, for D24).
+  - Done: `docs/playthrough.md` in four parts: lobby and rooms (guest names, create, join by code
+    and from the public list, size, leave, refresh and the 10-second removal, accept and decline
+    with the 2-minute rejoin wait), a full game (turn 1, undo, market phase, combos, influence,
+    projects, quests, income, clocks, refresh, away, a second tab, the end screen), short games
+    for time-outs, pause and leaving, and the daily limits. A note template per game: room code
+    (for a replay export), turn the game ended in and why, length, problems.
+  - Differs: the site lock was removed (D22, replaces D6), so the checklist says to share the
+    link only with testers instead of inviting them through Cloudflare Access (noted in Q71).
+    Of the daily limits, only the 10 games per player can be reached by hand on the live site
+    (10 quick 2-player games); the 2,000 actions and the site's 50 games are left to the browser
+    and unit tests.
+  - For later items: the releaser's **Waiting for the owner** entry can point to
+    `docs/playthrough.md`; it needs no secret or command.
 
 ### Finish
 
