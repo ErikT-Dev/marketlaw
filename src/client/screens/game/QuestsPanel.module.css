@@ -106,6 +106,6 @@
 }
 
 .part:hover .tooltip,
-:focus-visible .part .tooltip {
+:is(button, a[href]):focus-visible .part .tooltip {
   visibility: visible;
 }
