@@ -90,6 +90,9 @@ The session that receives "continue" is the **coordinator**. It finds the work i
    - **Uncommitted changes on a phase branch:** they belong to that phase, left by a stopped or
      interrupted helper. Run the job the Progress notes name, which picks them up.
    - **A phase in progress:** the first Progress item not ticked off, or the next Finish step.
+   - **New playthrough notes:** a file in `docs/playthrough-notes/` that no phase builds yet
+     (Q78). Before any other phase is started, a fix phase for it is planned, as 20a was (Q74),
+     and built.
    - **A phase waiting for the owner:** whatever the phase can still do without the owner. If
      nothing is left, start the next phase whose dependencies are done, or stop and tell the
      owner what is needed.
@@ -272,7 +275,7 @@ The 427 scenarios cover all of version 1, but each phase implements only part of
 | 18 | [Connections and pausing](phase-18-connections-and-pausing.md) | 3 Playthrough | 17 | done |
 | 19 | [Leaving, cleanup and replay records](phase-19-leaving-cleanup-and-replays.md) | 3 Playthrough | 18 | done |
 | 20 | [Cost protection and the playthrough version](phase-20-cost-protection-and-playthrough.md) | 3 Playthrough | 19 | done |
-| 20a | [Playthrough fixes](phase-20a-playthrough-fixes.md) | 3 Playthrough | 20 | waiting for the owner |
+| 20a | [Playthrough fixes](phase-20a-playthrough-fixes.md) | 3 Playthrough | 20 | done |
 | 21 | [Room chat](phase-21-room-chat.md) | 4 Together | 20a | approved |
 | 22 | [Abandon vote and rematch](phase-22-abandon-vote-and-rematch.md) | 4 Together | 20a | approved |
 | 23 | [Accounts: signup and login](phase-23-accounts-signup-and-login.md) | 5 Accounts and ranking | 20a | approved |

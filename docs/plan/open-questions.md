@@ -1388,3 +1388,19 @@ file.
   the owner did not object. S6.3 now says so (`HARNESS:` commit).
 - **Implemented:** `harness/spec/screens.md` S6.3; `ProjectProgressList.tsx` (phase 20a item 5)
   and its tests in `projectsAreaAndHelp.test.tsx`.
+
+## Q78. What happens with later playthroughs?
+
+- **Phase:** 20a, waiting for the owner. The owner accepted milestone 3 on 2026-11-06 and said
+  they will play more playthroughs later and want those notes addressed, while the work goes on
+  now.
+- **Question:** milestone 3 is accepted, but more playthrough notes will come during later
+  phases. When are they built?
+- **Solution:** phase 20a is done and milestone 4 starts. Each later round of notes goes in
+  `docs/playthrough-notes/` as a new dated file (Q74). The next "continue" after a phase is done
+  finds a notes file that no phase builds yet and, before starting any other phase, plans a fix
+  phase for it as 20a was planned: findings into the spec first, then a phase file named after
+  the last done phase with the next letter (for example 21a), whose dependents wait for it. A
+  phase in progress is finished first.
+- **Implemented:** `docs/plan/README.md` ("Continue", step 4, and the phase table);
+  `phase-20a-playthrough-fixes.md`.

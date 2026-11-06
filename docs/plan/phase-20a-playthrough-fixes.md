@@ -1,6 +1,6 @@
 # Phase 20a: Playthrough fixes
 
-Status: waiting for the owner
+Status: done
 Milestone: 3 Playthrough
 
 ## Goal
@@ -114,6 +114,7 @@ impossible to miss.
 - **Accept milestone 3.** After the release, play the fixed version on the live site and either
   accept milestone 3 ("Playthrough") or put new notes in `docs/playthrough-notes/` as a new dated
   file. Milestone 4 starts only after you accept.
+  Done: the owner accepted milestone 3 on 2026-11-06 (Q78).
 
 ## Required scenarios
 
