@@ -7,6 +7,7 @@ import type { ReasonCode } from "../../../shared/ReasonCode";
 import { TradeName } from "../../../shared/TradeName";
 import { gamePageProps } from "../../testing/gamePageProps";
 import { roomUpdateWith } from "../../testing/roomUpdateWith";
+import { textWithIconNames } from "../../testing/textWithIconNames";
 import { GamePage } from "../GamePage";
 
 const TRADE_REJECTIONS: Partial<Record<TradeName, ReasonCode>> = {
@@ -55,34 +56,50 @@ describe("use influence", () => {
   it("shows each trade with its uses left, used, or what is missing", () => {
     showGame();
     const dialog = within(openInfluence());
-    expect(
-      dialog.getByText(
-        "You have 4 influence and 7 funds. Influence actions can be used any time in the main phase.",
-      ),
-    ).toBeDefined();
+    expect(textWithIconNames(dialog.getByText(/^You have/))).toBe(
+      "You have [Influence 4] and [Funds 7]. Influence actions can be used any time in the main phase.",
+    );
     const tiles = within(dialog.getByRole("list", { name: "Trades" }));
     expect(tiles.getAllByRole("button")).toHaveLength(20);
     const funds = tiles.getByRole("button", { name: "4 influence → 2 funds" });
     expect(funds).toHaveProperty("disabled", false);
-    expect(funds.textContent).toBe("4 influence → 2 funds1 use left");
-    expect(tiles.getByRole("button", { name: "4 influence → 1 quality" }).textContent).toBe(
-      "4 influence → 1 qualityused",
+    expect(textWithIconNames(funds)).toBe("[Influence 4] → [Funds 2]1 use left");
+    expect(textWithIconNames(tiles.getByRole("button", { name: "4 influence → 1 quality" }))).toBe(
+      "[Influence 4] → [Quality 1]used",
     );
     const workforce = tiles.getByRole("button", { name: "6 influence → 1 workforce" });
     expect(workforce).toHaveProperty("disabled", true);
-    expect(workforce.textContent).toBe("6 influence → 1 workforceneed 2 influence");
-    expect(tiles.getByRole("button", { name: "1 fund → 1 influence" }).textContent).toBe(
-      "1 fund → 1 influenceunlimited",
+    expect(textWithIconNames(workforce)).toBe("[Influence 6] → [Workforce 1]need [Influence 2]");
+    expect(textWithIconNames(tiles.getByRole("button", { name: "1 fund → 1 influence" }))).toBe(
+      "[Funds 1] → [Influence 1]unlimited uses",
     );
-    expect(tiles.getByRole("button", { name: "3 funds → 1 build pass" })).toBeDefined();
-    expect(tiles.getByRole("button", { name: "Skip build → 1 build pass" }).textContent).toBe(
-      "Skip build → 1 build passYou can only skip build before playing a card.",
+    expect(textWithIconNames(tiles.getByRole("button", { name: "3 funds → 1 build pass" }))).toBe(
+      "[Funds 3] → [Build passes 1]unlimited uses",
     );
     expect(
-      tiles.getByRole("button", {
-        name: "2 influence + 1 distribution + 1 satisfaction → 1 product",
-      }),
-    ).toBeDefined();
+      textWithIconNames(tiles.getByRole("button", { name: "Skip build → 1 build pass" })),
+    ).toBe("Skip build → [Build passes 1]You can only skip build before playing a card.");
+    expect(
+      textWithIconNames(
+        tiles.getByRole("button", {
+          name: "2 influence + 1 distribution + 1 satisfaction → 1 product",
+        }),
+      ),
+    ).toBe("[Influence 2] + [Distribution 1] + [Satisfaction 1] → [Product 1]1 use left");
+  });
+
+  it("shows no stat as a word in the trades and the draw costs", () => {
+    showGame();
+    const dialog = within(openInfluence());
+    const shown = [
+      dialog.getByRole("list", { name: "Trades" }),
+      ...dialog.getAllByRole("columnheader"),
+    ]
+      .map((element) => textWithIconNames(element).replace(/\[[^\]]*\]/g, ""))
+      .join(" ");
+    expect(shown).not.toMatch(
+      /influence|fund|workforce|quality|satisfaction|product|distribution|build pass/i,
+    );
   });
 
   it("sends a trade and keeps the pop-up open for the next one", () => {
@@ -97,11 +114,11 @@ describe("use influence", () => {
     const { onAction } = showGame();
     const dialog = within(openInfluence());
     const table = within(dialog.getByRole("table", { name: "Draw actions" }));
-    expect(table.getAllByRole("columnheader").map((cell) => cell.textContent)).toEqual([
+    expect(table.getAllByRole("columnheader").map(textWithIconNames)).toEqual([
       "Kind",
-      "Tier 1 · 3 influence",
-      "Tier 2 · 4 influence",
-      "Tier 3 · 5 influence",
+      "Tier 1 · [Influence 3]",
+      "Tier 2 · [Influence 4]",
+      "Tier 3 · [Influence 5]",
     ]);
     const service = within(table.getByRole("row", { name: /^Service/ }));
     expect(service.getByText("None left")).toBeDefined();

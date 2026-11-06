@@ -4,7 +4,7 @@ import type { OwnSeatView } from "../../../shared/OwnSeatView";
 import type { TradeName } from "../../../shared/TradeName";
 import { Button } from "../../components/Button";
 import { Modal } from "../../components/Modal";
-import { counted } from "./counted";
+import { StatChip } from "../../components/StatChip";
 import { DrawActionTable } from "./DrawActionTable";
 import styles from "./GameDialogs.module.css";
 import influenceStyles from "./InfluenceDialog.module.css";
@@ -22,7 +22,11 @@ export function InfluenceDialog({ seat, isBusy, onTrade, onDraw, onClose }: Prop
   return (
     <Modal title="Use influence" size="extraLarge" onClose={onClose}>
       <p className={styles["text"]}>
-        {`You have ${String(seat.stats.influence)} influence and ${counted(seat.stats.funds, "fund")}. Influence actions can be used any time in the main phase.`}
+        {"You have "}
+        <StatChip stat="influence" value={seat.stats.influence} />
+        {" and "}
+        <StatChip stat="funds" value={seat.stats.funds} />
+        {". Influence actions can be used any time in the main phase."}
       </p>
       <h3 className={influenceStyles["section"]}>Trades</h3>
       <ul className={influenceStyles["tiles"]} aria-label="Trades">

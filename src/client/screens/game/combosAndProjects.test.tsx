@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import type { OwnSeatView } from "../../../shared/OwnSeatView";
 import { gamePageProps } from "../../testing/gamePageProps";
 import { roomUpdateWith } from "../../testing/roomUpdateWith";
+import { textWithIconNames } from "../../testing/textWithIconNames";
 import { GamePage } from "../GamePage";
 
 const READY: Partial<OwnSeatView> = {
@@ -48,10 +49,10 @@ describe("your city and combos", () => {
         .map((card) => card.getAttribute("aria-label")),
     ).toEqual(["Row House"]);
     const combos = within(screen.getByRole("region", { name: "Combos · 1 ready" }));
-    expect(combos.getAllByRole("listitem").map((row) => row.textContent)).toEqual([
-      "Row House · 1 Safety+1 qualityready",
-      "Row House · 1 Rental Space+1 satisfactionclaimed",
-      "Fire Station · 1 Suburban Housing+1 quality",
+    expect(combos.getAllByRole("listitem").map(textWithIconNames)).toEqual([
+      "Row House · 1 [Safety][Quality +1]ready",
+      "Row House · 1 [Rental Space][Satisfaction +1]claimed",
+      "Fire Station · 1 [Suburban Housing][Quality +1]",
     ]);
   });
 });

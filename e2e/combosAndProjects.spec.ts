@@ -22,6 +22,10 @@ test("claim combos with the totals, complete a project, and get the first-comple
   const ann = await openSeat(browser, viewport, seatOne);
   const bea = await openSeat(browser, viewport, seatTwo);
 
+  const combos = ann.getByRole("region", { name: "Combos · 1 ready" });
+  await expect(combos.getByRole("img", { name: "Safety" }).first()).toBeVisible();
+  await expect(combos.getByRole("img", { name: "Quality +1" }).first()).toBeVisible();
+  await expectScreenFits(ann, "combos-list", testInfo);
   await ann.getByRole("button", { name: "Claim all (1)" }).click();
   const claim = ann.getByRole("dialog", { name: "Claim all combos" });
   await expect(claim).toContainText("You will get in total");

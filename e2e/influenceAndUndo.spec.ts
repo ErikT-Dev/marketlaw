@@ -32,7 +32,7 @@ test("trade influence, buy a build pass for a second card, undo it, and draw a c
   const influence = page.getByRole("dialog", { name: "Use influence" });
   await expectScreenFits(page, "use-influence", testInfo);
   await influence.getByRole("button", { name: "1 fund → 1 influence" }).click();
-  await expect(page.getByRole("img", { name: "Influence 11" })).toBeVisible();
+  await expect(influence.getByRole("img", { name: "Influence 11" })).toBeVisible();
   await influence.getByRole("button", { name: "2 funds → 1 build pass" }).click();
   await expect(influence.getByRole("button", { name: "3 funds → 1 build pass" })).toBeEnabled();
   await influence.getByRole("button", { name: "Close" }).click();
@@ -53,7 +53,7 @@ test("trade influence, buy a build pass for a second card, undo it, and draw a c
 
   await page.getByRole("button", { name: "Use influence" }).click();
   await influence.getByRole("button", { name: "Draw Industry tier 1" }).click();
-  await expect(page.getByRole("img", { name: "Influence 8" })).toBeVisible();
+  await expect(influence.getByRole("img", { name: "Influence 8" })).toBeVisible();
   await influence.getByRole("button", { name: "Close" }).click();
   await expect(page.getByRole("list", { name: "Your hand" }).getByRole("button")).toHaveCount(2);
   await expect(page.getByRole("button", { name: "Undo" })).toBeDisabled();

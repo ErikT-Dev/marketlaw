@@ -252,13 +252,15 @@ and must pass again:
   - For later items: item 6 can use `<StatChip stat="..." />` without a value for an icon-only
     stat. In Playwright, `getByRole("button", { name: "Projects" })` now also matches "How projects
     work"; use `exact: true`.
-- [ ] 6. **Icons instead of words** (S1.6, S6.1, S8.3). **Small.**
+- [x] 6. **Icons instead of words** (S1.6, S6.1, S8.3). **Small.**
   - Use influence pop-up (`InfluenceDialog.tsx`, `TradeTile.tsx`, `tradeLabel.ts`,
     `tradeStatusText.ts`): every stat as its icon with tooltip and accessible name (as
     `StatChip` / `QuestPart` do); "unlimited" becomes "unlimited uses".
   - Combos list (`CombosPanel.tsx`, `comboTexts.ts`, `ComboLabel.tsx`): types (`TypeChip`) and
     stats as icons.
   - Screenshots: the Use influence pop-up and the combos list.
+  - Done in one commit. `components/StatAmountsIcons.tsx` shows stat amounts as `StatChip`s joined by " + "; `TradeIcons.tsx` draws each tile (build pass as the build pass icon), `tradeMissingAmounts.ts` gives "need …" as icons, the intro and the draw table costs use `StatChip`. Each trade button keeps its spoken name ("4 influence → 2 funds"), so the browser tests did not change their selectors. Combos list: `ComboNeedAndGain.tsx` (type as `TypeChip`, gain as `StatChip` "+1"); `comboTexts.ts` stays for the Claim all pop-up, which S6.1 does not cover. Tests read icons as `[Name value]` with `src/client/testing/textWithIconNames.ts`. New screenshot `combos-list` (`combosAndProjects.spec.ts`); `use-influence` changed.
+  - For later items: `getByRole("img", { name: "Influence 8" })` now also matches the Use influence pop-up; scope it to the dialog or the stats panel.
 - [ ] 7. **Market phase banner** (S4.5). **Small.**
   - Banner above the marketplace in the middle column (`MiddleColumn.tsx`) during the market
     phase, "MARKET PHASE" with "Your go" or "Ann's go" (whose go: `marketGoStateOf.ts`); the
