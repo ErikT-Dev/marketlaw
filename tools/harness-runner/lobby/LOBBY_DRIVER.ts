@@ -124,6 +124,7 @@ function startSession(rawGiven: Readonly<Record<string, unknown>>, random: Scrip
             : lobbyAccountsThen(session, field, expected);
       }
     },
+    measurements: () => session.chat.rowsPerChatIntent.map((value) => ({ budget: "B7", value })),
   };
   return driverSession;
 }

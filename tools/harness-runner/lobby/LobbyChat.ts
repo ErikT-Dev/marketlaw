@@ -2,17 +2,28 @@ import { chatDeliveriesBetween } from "../../../src/server/room/chatDeliveriesBe
 import type { ChatContext } from "../../../src/server/room/ChatContext.ts";
 import type { ChatMessage } from "../../../src/server/room/ChatMessage.ts";
 import type { ChatQuota } from "../../../src/server/room/ChatQuota.ts";
-import type { NewChatMessage } from "../../../src/server/room/NewChatMessage.ts";
 import { NO_CHAT_QUOTA } from "../../../src/server/room/NO_CHAT_QUOTA.ts";
 import type { ChatStorage } from "../../../src/server/room/ChatStorage.ts";
 import type { RoomRecord } from "../../../src/server/room/RoomRecord.ts";
 import type { ServerMessage } from "../../../src/shared/protocol/ServerMessage.ts";
+import type { MessageOutcome } from "../../../src/server/room/MessageOutcome.ts";
+import { isRecord } from "../../harness-check/isRecord.ts";
+
+const CHAT_INTENTS: ReadonlyArray<unknown> = ["send_chat", "mute", "unmute"];
+
+function isChatIntent(message: Readonly<Record<string, unknown>>): boolean {
+  const action = message["action"];
+  return message["type"] === "room" && isRecord(action) && CHAT_INTENTS.includes(action["type"]);
+}
 
 export class LobbyChat {
   private saved: ReadonlyArray<ChatMessage> | null;
   private quota: ChatQuota = NO_CHAT_QUOTA;
   isSavedBeforeShown = true;
   readonly notified = new Set<string>();
+  rowsWritten = 0;
+  readonly rowsPerChatIntent: number[] = [];
+  private chatIntentRowsFrom: number | null = null;
 
   readonly storage: ChatStorage = {
     messages: () => this.saved ?? [],
@@ -20,6 +31,7 @@ export class LobbyChat {
     append: ({ message, quota }) => {
       this.saved = [...(this.saved ?? []), message];
       this.quota = quota;
+      this.rowsWritten += 1;
     },
   };
 
@@ -39,16 +51,24 @@ export class LobbyChat {
     this.saved = null;
   }
 
+  beginMessage(message: Readonly<Record<string, unknown>>): void {
+    this.chatIntentRowsFrom = isChatIntent(message) ? this.rowsWritten : null;
+  }
+
   receive(
     messagesTo: Map<string, ServerMessage[]>,
-    chatMessage: NewChatMessage | null,
+    outcome: Pick<MessageOutcome, "chatMessage" | "reply">,
     change: {
       readonly before: { readonly record: RoomRecord | null; readonly messageCount: number };
       readonly after: RoomRecord | null;
     },
   ): void {
+    const { chatMessage } = outcome;
     if (chatMessage !== null) {
       this.storage.append(chatMessage);
+    }
+    if (this.chatIntentRowsFrom !== null && outcome.reply.type === "update") {
+      this.rowsPerChatIntent.push(this.rowsWritten - this.chatIntentRowsFrom);
     }
     const deliveries = chatDeliveriesBetween(change.before, change.after, this.storage.messages());
     const known = change.after?.players ?? [];

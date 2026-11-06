@@ -6,7 +6,6 @@ import { guestNameDecision } from "../../../src/server/accounts/guestNameDecisio
 import { loginStateOf } from "../../../src/server/accounts/loginStateOf.ts";
 import { nameKeyOf } from "../../../src/server/accounts/nameKeyOf.ts";
 import { createRoomDecision } from "../../../src/server/room/createRoomDecision.ts";
-import { fireRoomAlarm } from "../../../src/server/room/fireRoomAlarm.ts";
 import type { Identity } from "../../../src/server/room/Identity.ts";
 import { claimPlayer } from "../../../src/server/lobby/claimPlayer.ts";
 import { countGameStart } from "../../../src/server/lobby/countGameStart.ts";
@@ -18,7 +17,6 @@ import { releasePlayer } from "../../../src/server/lobby/releasePlayer.ts";
 import { RoomCode } from "../../../src/shared/RoomCode.ts";
 import { createRoomIn } from "../../../src/server/room/createRoomIn.ts";
 import { joinRoomIn } from "../../../src/server/room/joinRoomIn.ts";
-import { nextAlarmAt } from "../../../src/server/room/nextAlarmAt.ts";
 import { receiveMessage } from "../../../src/server/room/receiveMessage.ts";
 import type { RoomRecord } from "../../../src/server/room/RoomRecord.ts";
 import type { RoomStorage } from "../../../src/server/room/RoomStorage.ts";
@@ -49,6 +47,7 @@ import { chatTrackingStorage } from "../../../src/server/room/chatTrackingStorag
 import { leaveRoomIfFreeIn } from "../../../src/server/room/leaveRoomIfFreeIn.ts";
 import type { ChatQuotaGrant } from "../../../src/server/room/ChatQuotaGrant.ts";
 import { grantChatQuota } from "../../../src/server/lobby/grantChatQuota.ts";
+import { fireAlarmsUntil } from "./fireAlarmsUntil.ts";
 
 const GENERATED_CANDIDATES = 10;
 const NAME_STEP = 7;
@@ -75,6 +74,7 @@ export class LobbySession {
       read: () => this.record ?? undefined,
       write: (record) => {
         this.record = record;
+        this.chat.rowsWritten += 1;
       },
       remove: () => {
         this.goneAs = this.record?.game === null ? "closed" : "deleted";
@@ -124,24 +124,12 @@ export class LobbySession {
   }
 
   wait(ms: number): void {
-    const until = this.now + ms;
-    for (
-      let alarm = nextAlarmAt(this.record);
-      this.record !== null && alarm !== null && alarm <= until;
-      alarm = nextAlarmAt(this.record)
-    ) {
-      this.now = v.parse(EpochMs, alarm);
-      const fired = fireRoomAlarm(this.record, this.now, randomForNextAction, this.live).record;
-      if (fired === this.record) {
-        break;
-      }
-      if (fired === null) {
-        this.storage.remove();
-      } else {
-        this.storage.write(fired);
-      }
-    }
-    this.now = v.parse(EpochMs, until);
+    const until = v.parse(EpochMs, this.now + ms);
+    const setNow = (now: EpochMs) => {
+      this.now = now;
+    };
+    fireAlarmsUntil(this.storage, until, { live: this.live, setNow });
+    this.now = until;
   }
 
   setConnected(name: string, isConnected: boolean): void {
@@ -243,6 +231,7 @@ export class LobbySession {
     const token = `token-of-${name}`;
     const text = JSON.stringify({ protocolVersion: PROTOCOL_VERSION, token, ...message });
     const before = { record: this.record, messageCount: this.chat.storage.messages().length };
+    this.chat.beginMessage(message);
     const outcome = receiveMessage(this.storage, {
       connection: { identity: sender, rejectionTimes: [] },
       parsed: parseClientMessage(text),
@@ -263,7 +252,7 @@ export class LobbySession {
     if (!outcome.isRoomGone) {
       const delivery = { sender: name, accounts: this.accounts.values(), record: this.record };
       deliverRoomOutcome(this.messagesTo, { ...delivery, now: this.now }, outcome);
-      this.chat.receive(this.messagesTo, outcome.chatMessage, { before, after: this.record });
+      this.chat.receive(this.messagesTo, outcome, { before, after: this.record });
     }
   }
 

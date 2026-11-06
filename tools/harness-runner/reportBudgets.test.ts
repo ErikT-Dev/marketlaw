@@ -59,8 +59,8 @@ describe("the budget report", () => {
   });
 
   it("names the phase that builds the feature of a budget not measured yet", () => {
-    const item = itemOf(reportBudgets(RUN, BUDGETS, []), "B7");
+    const item = itemOf(reportBudgets(RUN, BUDGETS, []), "B6");
     expect(item).toContain('<span class="status not-yet">not yet</span>');
-    expect(item).toContain("checked by: phase 21, room chat");
+    expect(item).toContain("checked by: phase 29, the tutorial");
   });
 });
