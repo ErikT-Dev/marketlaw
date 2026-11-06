@@ -337,7 +337,18 @@ and must pass again:
     screen is in `harness/screens/` (`card-selected`, `projects-help`, `quests-help`,
     `use-influence`, `combos-list`, `market-phase-banner`). `docs/enforcement.md` names the
     discard pile in the leak test and I24.
-- [ ] Finisher again, after items 8 and 9: full check, harness, browser tests, screenshots.
+- [x] Finisher again, after items 8 and 9: full check, harness, browser tests, screenshots.
+  - Second run (2026-11-06): `npm run check` green (before and after the fix below), `npm run
+    harness` green (phase-end games, budgets). Browser tests: shard 1/2 49 passed, 5 failed;
+    `testRooms.spec.ts` "income happens by itself" was a real miss of item 8, which changed the
+    draw log to "(Income)" in `drawLog.spec.ts` but not here; fixed (b35e398) and passed at all
+    three sizes. The other four (`gameScreenSizes`, `handAndActionsScreens`, `bigCardSwitch`,
+    `turnOne`: room heading not visible, a hand card still shown) passed on their own: the
+    known two-worker load problem. Shard 2/2 51 passed. 2 players 2 passed and 1 failed at
+    1920x1080 (room heading not visible), passed on its own; 3 players 3 passed; 4 players 3
+    passed. 123 screenshots changed as expected (icons for stats and types, "Use Influence");
+    every exit-criteria screen is still in `harness/screens/`. `docs/enforcement.md`: no new
+    check.
 
 ### Helper log
 
