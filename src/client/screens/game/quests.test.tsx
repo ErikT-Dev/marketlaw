@@ -89,6 +89,23 @@ describe("quests panel", () => {
     expect(within(card).getByRole("img", { name: "tier 3 Residential card 0 of 1" })).toBeDefined();
   });
 
+  it("writes the sector name of a requirement in its sector colour", () => {
+    showQuests([
+      {
+        quest: "Penthouses",
+        turnsLeft: 5,
+        completeRejection: "quest_needs_not_met",
+        progress: [{ seat: 2, isCompleted: false, have: [2, 0, 1], negativeStats: [] }],
+      },
+    ]);
+    const card = screen.getByRole("region", { name: "Penthouses" });
+    const need = within(card).getByRole("img", { name: "3 tier 2 or 3 Residential cards" });
+    expect(need.textContent).toBe("3tier 2 or 3 Residential cards");
+    expect(within(need).getByText("Residential").style.color).toBe(
+      "var(--color-sector-residential-light)",
+    );
+  });
+
   it("shows a negative workforce, quality or satisfaction as a part not yet met", () => {
     showQuests([
       {

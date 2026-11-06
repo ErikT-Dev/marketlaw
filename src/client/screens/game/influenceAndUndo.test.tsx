@@ -116,6 +116,20 @@ describe("use influence", () => {
     });
   });
 
+  it("shows each kind name of the draw table on its sector colour", () => {
+    showGame();
+    const table = within(within(openInfluence()).getByRole("table", { name: "Draw actions" }));
+    expect(
+      table.getAllByRole("rowheader").map((cell) => [cell.textContent, cell.style.background]),
+    ).toEqual([
+      ["Residential", "var(--color-sector-residential-solid)"],
+      ["Industry", "var(--color-sector-industry-solid)"],
+      ["Service", "var(--color-sector-service-solid)"],
+      ["Public quality card", "var(--color-sector-public-solid)"],
+      ["Public satisfaction card", "var(--color-sector-public-solid)"],
+    ]);
+  });
+
   it("shows None left for a kind and tier not left even when every action is disabled", () => {
     showGame({
       ...SEAT,

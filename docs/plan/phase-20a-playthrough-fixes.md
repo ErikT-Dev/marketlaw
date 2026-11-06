@@ -212,12 +212,19 @@ and must pass again:
   - For later items: a unit test that clicks a hand card and expects the big card at once renders
     inside `<PhotoLoading value={photoLoaderThatDecodes(() => true)}>` and awaits one
     `act(async () => Promise.resolve())` first (see `handAndActions.test.tsx`).
-- [ ] 4. **Sector colours in texts** (S1.5, S5.1, S8.3). **Small.**
+- [x] 4. **Sector colours in texts** (S1.5, S5.1, S8.3). **Small.**
   - Quest requirements: `questNeedLabel.ts` builds the label as a string; the sector part of a
     `cards` need must be rendered coloured (in `QuestPart.tsx` or a new small component), with
     `sectorColor(sector, ...)` and a light enough shade to read on the panel.
   - Draw table: in `InfluenceDialog.tsx`, each kind's name cell on its sector colour; a kind maps
     to a sector as `Kind` names do (the two Public kinds use the Public colour, S1.5).
+  - Done in one commit. `BOARD_VALUES.ts` adds `--color-sector-*-light` (the solid colour mixed
+    40% with white, 5.2:1 or more on the quest panel) and `sectorColor(sector, "light")`. `QuestPart`
+    takes a `sector` (from `questNeedSector`, only for a `cards` need) and `SectorNamedText` colours
+    the sector word, in the requirement and in each progress line. `sectorOfKind.ts` maps a kind to
+    its sector; each kind name cell of `DrawActionTable` is on `solid` with `solid-text`. The
+    `quests-table` and `use-influence` screenshots changed.
+  - For later items: every `QuestPart` now needs `sector={null}` unless it names a sector.
 - [ ] 5. **Projects area and help** (S6.3, S5.4). **Large.**
   - One help button component for both panels (a real `button` named "How quests work" / "How
     projects work", `aria-expanded`, opens on click, Enter or Space; closes on Escape, a click

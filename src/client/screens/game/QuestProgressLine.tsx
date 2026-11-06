@@ -4,6 +4,7 @@ import { STAT_ICONS } from "../../icons/STAT_ICONS";
 import { QuestPart } from "./QuestPart";
 import { questNeedIconFile } from "./questNeedIconFile";
 import { questNeedLabel } from "./questNeedLabel";
+import { questNeedSector } from "./questNeedSector";
 import styles from "./QuestsPanel.module.css";
 
 type Props = {
@@ -32,6 +33,7 @@ export function QuestProgressLine({ name, progress, needs }: Props) {
               key={label}
               amount={`${String(have)}/${String(need.count)}`}
               label={label}
+              sector={questNeedSector(need)}
               iconFile={questNeedIconFile(need)}
               spokenText={`${label} ${String(have)} of ${String(need.count)}`}
             />
@@ -44,6 +46,7 @@ export function QuestProgressLine({ name, progress, needs }: Props) {
               key={stat}
               amount={`${String(value)}/0`}
               label={label}
+              sector={null}
               iconFile={STAT_ICONS[stat].file}
               spokenText={`${label} ${String(value)} of 0`}
             />

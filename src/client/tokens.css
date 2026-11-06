@@ -85,6 +85,7 @@
   --color-pending-overlay: #000000;
   --color-sector-industry-base: rgba(158, 72, 57, 0.8);
   --color-sector-industry-card: rgba(214, 55, 30, 0.4);
+  --color-sector-industry-light: #c59188;
   --color-sector-industry-pressed: rgba(171, 85, 70, 0.6);
   --color-sector-industry-solid-text: #ffffff;
   --color-sector-industry-solid: #9e4839;
@@ -93,6 +94,7 @@
   --color-sector-industry-tier3: rgba(48, 8, 0, 0.6);
   --color-sector-public-base: rgba(78, 90, 173, 0.8);
   --color-sector-public-card: rgba(31, 78, 207, 0.4);
+  --color-sector-public-light: #959cce;
   --color-sector-public-pressed: rgba(109, 116, 179, 0.6);
   --color-sector-public-solid-text: #ffffff;
   --color-sector-public-solid: #4e5aad;
@@ -101,6 +103,7 @@
   --color-sector-public-tier3: rgba(3, 15, 94, 0.6);
   --color-sector-residential-base: rgba(61, 110, 52, 0.8);
   --color-sector-residential-card: rgba(39, 148, 19, 0.4);
+  --color-sector-residential-light: #8ba885;
   --color-sector-residential-pressed: rgba(88, 138, 76, 0.6);
   --color-sector-residential-solid-text: #ffffff;
   --color-sector-residential-solid: #3d6e34;
@@ -109,6 +112,7 @@
   --color-sector-residential-tier3: rgba(11, 43, 3, 0.6);
   --color-sector-service-base: rgba(184, 136, 6, 0.8);
   --color-sector-service-card: rgba(227, 194, 57, 0.4);
+  --color-sector-service-light: #d4b86a;
   --color-sector-service-pressed: rgba(214, 164, 39, 0.6);
   --color-sector-service-solid-text: #29231e;
   --color-sector-service-solid: #b88806;
