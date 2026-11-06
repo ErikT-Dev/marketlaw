@@ -167,7 +167,8 @@ None yet.
 - **S7.3** **Chat** shows the messages since you joined, each with the sender, time and a **Mute**
   link; your own messages are highlighted; joins, leaves and similar events appear as grey lines:
   a player joined the room, left the room or left the game (also after 3 time-outs, R9.11), and
-  the game started or ended. Like messages, you see only those since you joined.
+  the game started or ended. Like messages, you see only those since you joined; a room keeps
+  its last 200 grey lines.
   Muted players are listed with **Unmute** (A11.7). The input shows the characters used, out of
   200.
 - **S7.4** When a chat limit is reached, a message over the input says which limit and when you can

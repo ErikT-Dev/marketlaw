@@ -1466,3 +1466,15 @@ file.
   - The waiting room's chat column (S11.1) is the same chat without the tabs. Spec S11.1.
 - **Implemented:** `harness/spec/accounts.md` A11.4–A11.6, `harness/spec/screens.md` S7.3, S7.4,
   S11.1; phase 21.
+
+## Q81. How many grey lines does a room keep?
+
+- **Phase:** 21, item 1 (S7.3, B13).
+- **Question:** grey lines live in the room record (Q79), and a waiting room whose players come
+  and go adds one for every join and leave, without end. S7.3 says each player sees the grey
+  lines since they joined, with no limit.
+- **Options:** (a) keep every line; (b) keep only the newest lines.
+- **Solution:** (b), the last 200 grey lines. A long-lived waiting room can no longer grow its
+  record past B13 (100 KB) through joins and leaves; 200 lines is far more than a chat column
+  shows. Spec S7.3, one clause.
+- **Implemented:** `harness/spec/screens.md` S7.3; `src/server/room/withChatEvents.ts`.
