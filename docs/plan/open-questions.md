@@ -1519,4 +1519,6 @@ file.
   - Every `chat` server message carries `mutedNames`, the receiving player's own mute list, so it
     reaches that player only. A mute or unmute sends the muter a `chat` message with no new
     entries and the new list; the muted player gets nothing.
-- **Implemented:** `harness/spec/accounts.md` A11.7, `harness/HARNESS.md`; phase 21, item 3.
+  - The scenario `chat` #11 sent Bea's two messages with no time between them, which A11.6
+    refuses; it now waits 2 seconds before the second, as the spec requires.
+- **Implemented:** `harness/spec/accounts.md` A11.7, `harness/HARNESS.md`, `harness/scenarios/chat.yaml` #11; phase 21, item 3.

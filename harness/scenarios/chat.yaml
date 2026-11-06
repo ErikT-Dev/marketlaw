@@ -114,6 +114,7 @@
     - {player: Ann, action: mute, player_to_mute: Bea}
     - {player: Bea, action: send_chat, text: "first"}
     - {player: Ann, action: unmute, player_to_unmute: Bea}
+    - wait_ms: 2000
     - {player: Bea, action: send_chat, text: "second"}
   then:
     view_chat: {player: Ann, messages: [{from: Bea, text: "second"}]}
