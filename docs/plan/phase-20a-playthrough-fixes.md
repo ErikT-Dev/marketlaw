@@ -1,6 +1,6 @@
 # Phase 20a: Playthrough fixes
 
-Status: approved
+Status: in progress
 Milestone: 3 Playthrough
 
 ## Goal
@@ -119,3 +119,95 @@ and must pass again:
 - `drawing` #11: the player who caused a discard shuffle sees it straight away
 - `visibility` #15: a card I drew that another player's hidden shuffle left in my discard pile is
   taken off that pile
+
+## Progress
+
+- [x] 0. Start: the branch `phase-20a-playthrough-fixes` already held the spec and harness changes
+  (Q74, commits `HARNESS: Quests need non-negative stats ...` and `HARNESS: The big card switches
+  ...`). No spec question was open; small screen choices are in the item notes below.
+  Until items 1 and 2 are both built, `npm run check` fails on the scenario count (429 vs 433) and
+  the 3 required scenarios that read `discard_count`; a builder of item 1 alone reports that, not
+  a failure of its item.
+- [ ] 1. **Quests need non-negative stats** (R19.4, S5.1, S16.3; scenarios `quests` #65–67).
+  **Small.**
+  - Engine: `src/rules/questRejection.ts` returns `quest_needs_not_met` while workforce, quality or
+    satisfaction is negative. The same check is written out in `projectRejection.ts`,
+    `takeIncome.ts` and `stateInvariantViolations.ts`; reuse one helper in `src/rules/` (at least
+    for the quest and the project) instead of a fourth copy.
+  - The view's "can complete" (`completeRejection` in `questPlacesShownTo.ts`) and the bots
+    (`legalBot.ts` reads `completeRejection`) follow from `rejectionOf` without change.
+  - S5.1 progress line: the client must not decide what is unmet. Add to `QuestProgress`
+    (`src/shared/QuestProgress.ts`, schema in `SERVER_MESSAGE_SCHEMA.ts`) the seat's negative
+    stats among workforce, quality and satisfaction, computed in `questPlacesShownTo.ts` from the
+    seat as shown (`seatShownTo`, R5.4). `QuestProgressLine.tsx` shows each as one more
+    `QuestPart` (for example "-1/0" with the stat's icon, spoken "workforce -1 of 0"), only while
+    the quest is not completed. Update the test fixtures that build a `QuestProgress`.
+  - S16.3: `REJECTION_MESSAGES.ts` text for `quest_needs_not_met`, word for word from S16.3.
+- [ ] 2. **The discard pile is a number** (M3.2, M3.5, R17.1, R17.6, S4.2, S8.3; scenarios
+  `visibility` #16, and `drawing` #10, #11, `visibility` #15 again). **Large.**
+  - `PlayerView.discard` (cards) becomes `discardCount` (number): `src/shared/PlayerView.ts`,
+    `viewFor.ts` (from `pilesShownTo`, which keeps R5.5), `SERVER_MESSAGE_SCHEMA.ts`,
+    `src/client/testing/roomUpdateWith.ts`. The saved state keeps its discard cards
+    (`src/server/testRooms/GAME_STATE_SCHEMA.ts` is state, not view).
+  - "None left" (S8.3) already comes from the server (`drawActionStatusesOf.ts`, `isAnyLeft`);
+    check it still uses the piles as the seat sees them.
+  - Client: `DeckAndDiscard.tsx` shows the count only; delete `DiscardPileDialog.tsx`, the link,
+    and their tests; the e2e screenshot `discard-pile` (`e2e/turnOne.spec.ts`) goes, and its
+    folder in `harness/screens/`. Check `MarketplacePanel.tsx`, `InfluenceDialog.tsx`,
+    `LeaveGameDialog.tsx` and `drawLogText.ts` for other uses.
+  - Runner: `tools/harness-runner/engine/viewThen.ts` returns `discard_count` and handles
+    `hides: [discard_cards]` in `isHidden` (no card of `state.discard` in the view's text); check
+    `ENGINE_FIELDS.ts` lists `discard_count`. `tools/harness-runner/harness.test.ts` expects 433.
+  - Leak test: `hiddenFrom` in `tools/simulator/whatSeatsSeeViolations.ts` adds `state.discard`
+    (card names are unique, all 240, so a name never appears elsewhere at the same time).
+    The e2e tests have no leak check of their own (`hiddenFrom` is only in the simulator).
+- [ ] 3. **The big card** (S6.5, S1.5). **Large.** About three commits:
+  1. Title bar on its sector colour (`BigCard.tsx`, `BigCard.module.css`, `sectorColor.ts`; the
+     header is the `header` div). Text contrast on the solid colour must pass axe
+     (`proposed-rules.md`, "Text colours are checked on solid backgrounds").
+  2. Background loading and the switch: a hook in the client that, once the game screen shows,
+     decodes the photo (`photoUrl.ts`) of every hand card and every card that joins the hand,
+     and a selection that changes (hand highlight, big card, Play card together) only when the
+     new photo is decoded or after 300 ms, with the sector colour in the photo area until it
+     arrives. Selection lives in `useHandChoice.ts` / `HandChoice.ts` / `SelectedCardPanel.tsx`;
+     keep it in the one store or hook that already holds it. Remove `loading="lazy"`. Inject the
+     timer and the image decoder so the unit test can use a photo that never loads.
+  3. Step 3 of the phase file needs no work: all 240 photos in `src/client/assets/cards/` are
+     554×478 WebP, not larger than 630×478 (checked by the starter). Say so in the tick note.
+  - Tests: browser test, several hand cards each shown in full with its own photo within 100 ms;
+    unit test of the 300 ms fallback. Screenshot of the big card (`card-selected` exists, in
+     `e2e/handAndActionsScreens.spec.ts`).
+- [ ] 4. **Sector colours in texts** (S1.5, S5.1, S8.3). **Small.**
+  - Quest requirements: `questNeedLabel.ts` builds the label as a string; the sector part of a
+    `cards` need must be rendered coloured (in `QuestPart.tsx` or a new small component), with
+    `sectorColor(sector, ...)` and a light enough shade to read on the panel.
+  - Draw table: in `InfluenceDialog.tsx`, each kind's name cell on its sector colour; a kind maps
+    to a sector as `Kind` names do (the two Public kinds use the Public colour, S1.5).
+- [ ] 5. **Projects area and help** (S6.3, S5.4). **Large.**
+  - One help button component for both panels (a real `button` named "How quests work" / "How
+    projects work", `aria-expanded`, opens on click, Enter or Space; closes on Escape, a click
+    elsewhere or the button). `Modal.tsx` has the only Escape handling to look at. Texts word for
+    word from S5.4 and S6.3, with the stats as icons (`StatChip` or the `STAT_ICONS` pattern).
+  - `ProjectProgressList.tsx`: the PROJECTS title; "First to complete gets +2" with the funds
+    icon while nobody has completed it as you see it (`view.firstCompletions` and the seats'
+    `projects`, both shown as of R5.4); "Completed by Ann, Bob" once someone has. Starter's
+    choice (S6.3 does not say): "Completed by" names the other players who completed it; your
+    own completion is your line's "completed", so when only you have completed a project the
+    line shows neither the +2 nor "Completed by".
+  - Screenshots: projects area with its help open, quests panel with its help open.
+- [ ] 6. **Icons instead of words** (S1.6, S6.1, S8.3). **Small.**
+  - Use influence pop-up (`InfluenceDialog.tsx`, `TradeTile.tsx`, `tradeLabel.ts`,
+    `tradeStatusText.ts`): every stat as its icon with tooltip and accessible name (as
+    `StatChip` / `QuestPart` do); "unlimited" becomes "unlimited uses".
+  - Combos list (`CombosPanel.tsx`, `comboTexts.ts`, `ComboLabel.tsx`): types (`TypeChip`) and
+    stats as icons.
+  - Screenshots: the Use influence pop-up and the combos list.
+- [ ] 7. **Market phase banner** (S4.5). **Small.**
+  - Banner above the marketplace in the middle column (`MiddleColumn.tsx`) during the market
+    phase, "MARKET PHASE" with "Your go" or "Ann's go" (whose go: `marketGoStateOf.ts`); the
+    phase in `GameTopBar.tsx` highlighted the same way. Screenshot of the banner (the market
+    screens are in `e2e/marketPhase.spec.ts`).
+
+### Finish
+
+- [ ] Add the 4 required scenarios to `harness/required.yaml`; full check, harness, browser tests.
