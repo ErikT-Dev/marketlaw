@@ -134,6 +134,7 @@ scenarios:
     - everything about another player except the hand is public
     - the replay record is kept for 30 days after the game ends
     - the replay record is removed after 30 days
+    - the discard pile is shown only as a number of cards
   influence:
     - 4 influence buys 2 funds once per game
     - 4 influence buys 1 quality
@@ -261,6 +262,9 @@ scenarios:
     - Penthouses needs a tier 3 card among its Residential cards
     - Metropolis needs tier 3 cards in 3 different sectors
     - empty quest places are filled in table order
+    - rejects a quest while workforce is negative
+    - rejects a quest while quality is negative
+    - rejects a quest while satisfaction is negative
   end-of-game:
     - reaching the end goal ends the game after that main phase without end-of-turn steps
     - the game goes on until the main phase ends after the end goal is reached
