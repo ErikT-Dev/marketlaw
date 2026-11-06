@@ -201,3 +201,4 @@ are each helper's conversation size at its end.
 | Job | Minutes | Tokens | Tool calls | Result |
 |---|---|---|---|---|
 | Starter | 8 | 157k | 65 | done |
+| Builder, item 1 | 25 | 228k | 107 | done |
