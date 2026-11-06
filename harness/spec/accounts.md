@@ -301,6 +301,7 @@ ranked queue, daily limits and chat. How the game itself is played is in `game-r
 - **A11.7** **Mute:** any player can mute another player in the room. They stop seeing that
   player's messages and notifications; nobody else is affected, and the muted player is not told.
   A mute lasts until the player unmutes them or the room is deleted. After unmuting, they see the
-  messages that player sends from then on.
+  messages that player sends from then on. Only another player who is in the room can be muted;
+  muting a player already muted, or unmuting one who is not, changes nothing.
 - **A11.8** **Saving:** every message is saved before it is shown to other players.
 - **A11.9** A room's chat history is deleted together with the room (M8.2).

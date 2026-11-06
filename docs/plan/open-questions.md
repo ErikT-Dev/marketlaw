@@ -1500,3 +1500,23 @@ file.
     `message_empty`, shown with the fallback text "A message cannot be empty."
 - **Implemented:** `src/server/room/newChatMessageOf.ts`, `src/shared/protocol/ServerMessage.ts`,
   `src/client/screens/game/REJECTION_MESSAGES.ts`; phase 21, item 2.
+
+## Q83. Whom can a player mute, and how does the muter learn their mute list?
+
+- **Phase:** 21, item 3 (A11.7, S7.3).
+- **Questions:** A11.7 lets a player mute "another player in the room" but does not say what
+  happens to a mute of themselves, of a name not in the room, of a player already muted, or to an
+  unmute of a player not muted. S7.3 lists muted players with Unmute, but no message carries the
+  list. Does a mute end when either player leaves the room?
+- **Solution:**
+  - A mute names another player who is in the room; anything else (themselves, an unknown name,
+    someone who left) is refused with the new code `player_not_in_room`. Muting a player already
+    muted, or unmuting one who is not muted, is accepted and changes nothing, so it writes no row.
+    An unmute names a player in the muter's own list, even one who has since left. Spec A11.7,
+    one sentence; `harness/HARNESS.md` reason codes.
+  - A mute stays when either player leaves the room and comes back, as A11.7 says: it lasts until
+    the unmute or the room's deletion.
+  - Every `chat` server message carries `mutedNames`, the receiving player's own mute list, so it
+    reaches that player only. A mute or unmute sends the muter a `chat` message with no new
+    entries and the new list; the muted player gets nothing.
+- **Implemented:** `harness/spec/accounts.md` A11.7, `harness/HARNESS.md`; phase 21, item 3.
