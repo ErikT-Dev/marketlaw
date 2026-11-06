@@ -88,7 +88,14 @@ describe("claim all", () => {
     fireEvent.click(screen.getByRole("button", { name: "Claim all (1)" }));
     const dialog = within(screen.getByRole("dialog", { name: "Claim all combos" }));
     expect(dialog.getByText("This combo is ready:")).toBeDefined();
-    expect(dialog.getByText("+0 workforce · +1 quality · +0 satisfaction")).toBeDefined();
+    expect(
+      within(dialog.getByRole("list", { name: "Ready combos" }))
+        .getAllByRole("listitem")
+        .map(textWithIconNames),
+    ).toEqual(["Row House · 1 [Safety][Quality +1]"]);
+    expect(textWithIconNames(screen.getByRole("dialog", { name: "Claim all combos" }))).toContain(
+      "You will get in total[Workforce +0] · [Quality +1] · [Satisfaction +0]",
+    );
     fireEvent.click(dialog.getByRole("button", { name: "Claim all" }));
     expect(onAction).toHaveBeenCalledWith({ type: "claim_all" });
     expect(screen.queryByRole("dialog")).toBeNull();

@@ -281,9 +281,16 @@ and must pass again:
   - Done in one commit. `MarketPhaseBanner.tsx` (a region named "MARKET PHASE", 24px letters on a strong amber background, with "Your go" or "Ann's go" from `marketGoText.ts`, which reads `view.marketGo`) is the first row of the middle column in the market phase only; the top bar's phase chip uses the same colours (`--color-board-market-phase` and `-text`, added to `tools/design-export/BOARD_VALUES.ts`, `tokens.css` regenerated). Tests: `marketPhase.test.tsx` (other's go, your go, gone in the main phase); `e2e/marketPhase.spec.ts` checks both players' banners, that it is gone in the main phase, and takes the new screenshot `market-phase-banner`. The other `market-*` screenshots changed.
   - For later items: the full-game screenshots (`full-game-*-turn-1` and others taken in the market phase) will change with the banner when the finisher runs them.
 
-- [ ] 8. **Icons in the Claim all pop-up** (S8.1, S1.6). **Small.** Added 2026-11-06 at the
+- [x] 8. **Icons in the Claim all pop-up** (S8.1, S1.6). **Small.** Added 2026-11-06 at the
   owner's request, after the finisher's first run (Q74). `comboTexts.ts` still writes the
   Claim all pop-up's stats as words (item 6's note).
+  - Done in one commit. `ComboNeed.tsx` (the need, type as `TypeChip`) is shared by the combos
+    list (`ComboNeedAndGain.tsx`) and the Claim all pop-up; each ready row is `ReadyComboRow.tsx`
+    (gain as `StatChip` "+1", then " ×2" when ready more than once); the totals are three
+    `StatChip`s "+0" joined by " · ". `comboTexts.ts` is gone. The ready rows are a list named
+    "Ready combos". Tests: `combosAndProjects.test.tsx` reads the row and the totals with
+    `textWithIconNames`; `e2e/combosAndProjects.spec.ts` checks the icons. The `claim-all`
+    screenshots changed.
 - [ ] 9. **Icons everywhere** (S1.6). **Large.** Added 2026-11-06: the owner made icons-only a
   rule for every screen and all text, prose included (Q74). Trade buttons may keep their
   spoken names (accessible names), as item 6 did.

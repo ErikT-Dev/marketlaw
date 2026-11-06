@@ -29,7 +29,10 @@ test("claim combos with the totals, complete a project, and get the first-comple
   await ann.getByRole("button", { name: "Claim all (1)" }).click();
   const claim = ann.getByRole("dialog", { name: "Claim all combos" });
   await expect(claim).toContainText("You will get in total");
-  await expect(claim.getByText("+0 workforce · +1 quality · +0 satisfaction")).toBeVisible();
+  await expect(claim.getByRole("img", { name: "Safety" })).toBeVisible();
+  await expect(claim.getByRole("img", { name: "Quality +1" }).first()).toBeVisible();
+  await expect(claim.getByRole("img", { name: "Workforce +0" })).toBeVisible();
+  await expect(claim.getByRole("img", { name: "Satisfaction +0" })).toBeVisible();
   await expectScreenFits(ann, "claim-all", testInfo);
   await claim.getByRole("button", { name: "Claim all" }).click();
   await expect(ann.getByRole("region", { name: "Combos · 0 ready" })).toBeVisible();

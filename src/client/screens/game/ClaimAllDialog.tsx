@@ -2,8 +2,9 @@ import type { ComboStatus } from "../../../shared/ComboStatus";
 import { cardOf } from "../../../shared/catalogue/cardOf";
 import { Button } from "../../components/Button";
 import { Modal } from "../../components/Modal";
-import { comboTexts } from "./comboTexts";
+import { StatChip } from "../../components/StatChip";
 import styles from "./GameDialogs.module.css";
+import { ReadyComboRow } from "./ReadyComboRow";
 
 type Props = {
   readonly combos: ReadonlyArray<ComboStatus>;
@@ -22,7 +23,6 @@ function totalOf(ready: ReadonlyArray<ComboStatus>, stat: (typeof STATS)[number]
 
 export function ClaimAllDialog({ combos, onClaim, onClose }: Props) {
   const ready = combos.filter(({ readyTimes }) => readyTimes > 0);
-  const totals = STATS.map((stat) => `+${String(totalOf(ready, stat))} ${stat}`).join(" · ");
   return (
     <Modal title="Claim all combos" size="large" onClose={onClose}>
       <p className={styles["text"]}>
@@ -30,24 +30,21 @@ export function ClaimAllDialog({ combos, onClaim, onClose }: Props) {
           ? "This combo is ready:"
           : `These ${String(ready.length)} combos are ready:`}
       </p>
-      <ul className={styles["rows"]}>
-        {ready.map((status) => {
-          const { need, gain } = comboTexts(status.card, status.combo);
-          const times = status.readyTimes > 1 ? ` ×${String(status.readyTimes)}` : "";
-          return (
-            <li key={`${status.card}-${String(status.combo)}`} className={styles["row"]}>
-              <span>{need}</span>
-              <strong className={styles["gain"]}>
-                {gain}
-                {times}
-              </strong>
-            </li>
-          );
-        })}
+      <ul className={styles["rows"]} aria-label="Ready combos">
+        {ready.map((status) => (
+          <ReadyComboRow key={`${status.card}-${String(status.combo)}`} status={status} />
+        ))}
       </ul>
       <div className={styles["total"]}>
         <span>You will get in total</span>
-        <strong>{totals}</strong>
+        <strong>
+          {STATS.map((stat, index) => (
+            <span key={stat}>
+              {index === 0 ? null : " · "}
+              <StatChip stat={stat} value={`+${String(totalOf(ready, stat))}`} />
+            </span>
+          ))}
+        </strong>
       </div>
       <div className={styles["buttons"]}>
         <Button look="secondary" onClick={onClose}>
