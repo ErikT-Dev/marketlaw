@@ -230,6 +230,9 @@ and must pass again:
 ### Finish
 
 - [ ] Add the 4 required scenarios to `harness/required.yaml`; full check, harness, browser tests.
+  - Coordinator note for the finisher and the phase reviewer: item 2 changed the view sent to
+    the browser (discard pile cards became a count) without raising `PROTOCOL_VERSION` (still 2).
+    Check against M9.1 and `rules/architecture.md` ("Versioned protocol") whether it must go up.
 
 ### Helper log
 
@@ -239,3 +242,4 @@ are each helper's conversation size at its end.
 | Job | Minutes | Tokens | Tool calls | Result |
 |---|---|---|---|---|
 | Starter and builder, item 1 | 9 | 117k | 58 | done |
+| Builder, item 2 | 7 | 94k | 36 | done |
