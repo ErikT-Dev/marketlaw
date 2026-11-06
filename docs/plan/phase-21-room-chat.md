@@ -165,3 +165,12 @@ These 14 scenarios are added to `harness/required.yaml` in this phase, by file a
 
 - [ ] Add the 14 required scenarios to `harness/required.yaml`; full check, harness, browser
   tests, budgets (B7 within its limit).
+
+### Helper log
+
+Filled in by the coordinator afterwards, from the helpers' completion notices (Q73). Tokens
+are each helper's conversation size at its end.
+
+| Job | Minutes | Tokens | Tool calls | Result |
+|---|---|---|---|---|
+| Starter | 8 | 157k | 65 | done |
