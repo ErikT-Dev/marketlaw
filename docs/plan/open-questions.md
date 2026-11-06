@@ -1319,6 +1319,13 @@ file.
     sees a blank or mixed card (owner's choice, 2026-11-06); no loading screen; the next
     card shown within 100 ms, chosen as a measurable "smoother or faster"), S8.3 (stats as icons,
     kind names on sector colours, "unlimited uses").
+  - Added on 2026-11-06, after the first finisher run, at the owner's request: stats and types
+    are always shown as icons, never as words, on every screen and in all text, prose included
+    (the owner chose "everywhere, prose too": messages, notices, help texts and the rulebook in
+    the rules viewer). The owner had asked for this during the design (2026-10-25/26), but it
+    was only in single screen rules, not a general one, so the code drifted. S1.6 is now the
+    general rule; S8.1 names the Claim all pop-up. Phase 20a items 8 and 9 build it; phase 28
+    applies it to the rules viewer and card set.
   - The spec and harness changes are one `HARNESS:` commit on the branch
     `phase-20a-playthrough-fixes`, not on master: on their own they turn `npm run check` red
     (the scenario count and the 3 changed required scenarios) until phase 20a items 1 and 2 are

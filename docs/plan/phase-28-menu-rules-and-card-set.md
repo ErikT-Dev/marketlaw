@@ -12,6 +12,9 @@ set.
 
 Phase 20a.
 
+Stats and types in the rulebook's prose, the card set and card details are shown as icons, never
+as words (S1.6, owner's rule of 2026-11-06, Q74).
+
 ## Covers
 
 - Rules: C1 (the Tutorial entry comes in phase 29), C2, C3.

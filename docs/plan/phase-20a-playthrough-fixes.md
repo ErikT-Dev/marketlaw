@@ -17,7 +17,8 @@ Phase 20.
 - Notes: `docs/playthrough-notes/2026-11-06-first-playthrough.txt`, all 9 findings (Q74).
 - Rules: R19.4 (quests need workforce, quality and satisfaction 0 or more), R17.1, R17.6, M3.2 and
   M3.5 (the discard pile is shown only as a number of cards).
-- Screens: S1.5, S1.6, S4.2, S4.5, S5.1, S5.4, S6.1, S6.3, S6.5, S8.3, and the
+- Screens: S1.5, S1.6 (every screen and text, owner's rule of 2026-11-06), S4.2, S4.5, S5.1,
+  S5.4, S6.1, S6.3, S6.5, S8.1, S8.3, and the
   `quest_needs_not_met` text in S16.3.
 
 ## Start
@@ -71,6 +72,17 @@ in a view, which the runner does not read yet.
    Each icon has its name as tooltip and accessible name.
 7. **Market phase banner** (S4.5): the MARKET PHASE banner over the marketplace with whose go it
    is, and the phase in the top bar highlighted the same way, during the market phase only.
+8. **Icons in the Claim all pop-up** (S8.1, S1.6): each combo's need and reward and the totals
+   show types and stats as icons. Small.
+9. **Icons everywhere** (S1.6, owner's rule of 2026-11-06): sweep every screen, pop-up, table,
+   label and text built so far for a stat or type written as a word, and show it as its icon
+   with the name as tooltip (hover and keyboard focus) and accessible name. At least: the
+   opponents overview and boards (S3), quest requirements and progress lines ("income 3 of
+   4"), the projects pop-up (S8.2), the end-of-game table (S9.5), messages (S9.4), rejection
+   messages (S10.9, S16.3, e.g. "You need N funds"), notices (S16) and the help texts (S5.4,
+   S6.3). Reuse `StatChip` and `TypeChip`; a text with icons inside it is built from parts, not
+   from a string. A test finds no stat or type name as visible text on the main game screens
+   and pop-ups (for example with `textWithIconNames.ts`). Large.
 
 ## Known gaps after this phase
 
@@ -269,6 +281,13 @@ and must pass again:
   - Done in one commit. `MarketPhaseBanner.tsx` (a region named "MARKET PHASE", 24px letters on a strong amber background, with "Your go" or "Ann's go" from `marketGoText.ts`, which reads `view.marketGo`) is the first row of the middle column in the market phase only; the top bar's phase chip uses the same colours (`--color-board-market-phase` and `-text`, added to `tools/design-export/BOARD_VALUES.ts`, `tokens.css` regenerated). Tests: `marketPhase.test.tsx` (other's go, your go, gone in the main phase); `e2e/marketPhase.spec.ts` checks both players' banners, that it is gone in the main phase, and takes the new screenshot `market-phase-banner`. The other `market-*` screenshots changed.
   - For later items: the full-game screenshots (`full-game-*-turn-1` and others taken in the market phase) will change with the banner when the finisher runs them.
 
+- [ ] 8. **Icons in the Claim all pop-up** (S8.1, S1.6). **Small.** Added 2026-11-06 at the
+  owner's request, after the finisher's first run (Q74). `comboTexts.ts` still writes the
+  Claim all pop-up's stats as words (item 6's note).
+- [ ] 9. **Icons everywhere** (S1.6). **Large.** Added 2026-11-06: the owner made icons-only a
+  rule for every screen and all text, prose included (Q74). Trade buttons may keep their
+  spoken names (accessible names), as item 6 did.
+
 ### Finish
 
 - [x] Add the 4 required scenarios to `harness/required.yaml`; full check, harness, browser tests.
@@ -287,6 +306,7 @@ and must pass again:
     screen is in `harness/screens/` (`card-selected`, `projects-help`, `quests-help`,
     `use-influence`, `combos-list`, `market-phase-banner`). `docs/enforcement.md` names the
     discard pile in the leak test and I24.
+- [ ] Finisher again, after items 8 and 9: full check, harness, browser tests, screenshots.
 
 ### Helper log
 
@@ -301,3 +321,4 @@ are each helper's conversation size at its end.
 | Builder, item 4 | 6 | 88k | 28 | done |
 | Builder, item 5 | 9 | 117k | 47 | done |
 | Builder, items 6 and 7 | 14 | 134k | 66 | done |
+| Finisher, first run | 30 | 91k | 38 | done |
