@@ -36,6 +36,7 @@ export function countGameStart(
         day: counts.day,
         players: [...others, ...started],
         siteGameStarts: counts.siteGameStarts + 1,
+        siteChatMessages: counts.siteChatMessages,
       },
     },
   };

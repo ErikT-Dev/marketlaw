@@ -1,7 +1,9 @@
 import * as v from "valibot";
 import { CHAT_BLOCK_SCHEMA } from "./CHAT_BLOCK_SCHEMA";
 import type { ChatMessage } from "./ChatMessage";
+import type { ChatQuota } from "./ChatQuota";
 import type { ChatStorage } from "./ChatStorage";
+import { NO_CHAT_QUOTA } from "./NO_CHAT_QUOTA";
 import type { RoomKv } from "./RoomKv";
 
 const MESSAGES_PER_BLOCK = 20;
@@ -10,13 +12,15 @@ function keyOf(block: number): string {
   return `chat:${String(block)}`;
 }
 
-function messagesIn(stored: unknown): ReadonlyArray<ChatMessage> | null {
+type ChatBlock = { readonly messages: ReadonlyArray<ChatMessage>; readonly quota: ChatQuota };
+
+function blockIn(stored: unknown): ChatBlock | null {
   if (!(stored instanceof Uint8Array)) {
     return null;
   }
   try {
     const parsed = v.safeParse(CHAT_BLOCK_SCHEMA, JSON.parse(new TextDecoder().decode(stored)));
-    return parsed.success ? parsed.output.messages : null;
+    return parsed.success ? parsed.output : null;
   } catch {
     return null;
   }
@@ -24,16 +28,19 @@ function messagesIn(stored: unknown): ReadonlyArray<ChatMessage> | null {
 
 export class ChatBlockStore {
   private messages: ReadonlyArray<ChatMessage> = [];
+  private quota: ChatQuota = NO_CHAT_QUOTA;
   private isLoaded = false;
   private changedFromBlock: number | null = null;
   private readonly kv: RoomKv;
 
   readonly storage: ChatStorage = {
     messages: () => this.messages,
-    append: (message) => {
+    quota: () => this.quota,
+    append: ({ message, quota }) => {
       const block = Math.floor(this.messages.length / MESSAGES_PER_BLOCK);
       this.changedFromBlock = Math.min(this.changedFromBlock ?? block, block);
       this.messages = [...this.messages, message];
+      this.quota = quota;
     },
   };
 
@@ -46,14 +53,17 @@ export class ChatBlockStore {
       return;
     }
     let loaded: ReadonlyArray<ChatMessage> = [];
+    let quota = NO_CHAT_QUOTA;
     for (let block = 0; ; block += 1) {
-      const messages = messagesIn(this.kv.get(keyOf(block)));
-      if (messages === null) {
+      const stored = blockIn(this.kv.get(keyOf(block)));
+      if (stored === null) {
         break;
       }
-      loaded = [...loaded, ...messages];
+      loaded = [...loaded, ...stored.messages];
+      quota = stored.quota;
     }
     this.messages = loaded;
+    this.quota = quota;
     this.isLoaded = true;
     this.changedFromBlock = null;
   }
@@ -67,7 +77,8 @@ export class ChatBlockStore {
     for (let block = from; block < blockCount; block += 1) {
       const start = block * MESSAGES_PER_BLOCK;
       const messages = this.messages.slice(start, start + MESSAGES_PER_BLOCK);
-      this.kv.put(keyOf(block), new TextEncoder().encode(JSON.stringify({ messages })));
+      const stored: ChatBlock = { messages, quota: this.quota };
+      this.kv.put(keyOf(block), new TextEncoder().encode(JSON.stringify(stored)));
     }
     this.changedFromBlock = null;
   }
@@ -77,6 +88,7 @@ export class ChatBlockStore {
       this.kv.delete(keyOf(block));
     }
     this.messages = [];
+    this.quota = NO_CHAT_QUOTA;
     this.isLoaded = true;
     this.changedFromBlock = null;
   }

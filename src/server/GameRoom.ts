@@ -7,7 +7,6 @@ import { parseClientMessage } from "../shared/protocol/parseClientMessage";
 import type { RoomCode } from "../shared/RoomCode";
 import { ROOM_GONE_CLOSE_CODE } from "../shared/ROOM_GONE_CLOSE_CODE";
 import { attachmentOf } from "./attachmentOf";
-import { newGameStart } from "./newGameStart";
 import { NO_CONNECTION } from "./NO_CONNECTION";
 import { nowMs } from "./nowMs";
 import { alarmChangeFor } from "./room/alarmChangeFor";
@@ -24,13 +23,12 @@ import { joinRejectionIn } from "./room/joinRejectionIn";
 import { joinRoomIn } from "./room/joinRoomIn";
 import { loadRoom } from "./room/loadRoom";
 import { playersWhoseUpdateChanged } from "./room/playersWhoseUpdateChanged";
-import { receiveCheckingGameStart } from "./room/receiveCheckingGameStart";
+import { receiveAskingLobbyFor } from "./receiveAskingLobbyFor";
 import type { RoomRecord } from "./room/RoomRecord";
 import { startTestRoomIn } from "./room/startTestRoomIn";
 import { resumeNoticesBetween } from "./room/resumeNoticesBetween";
 import { timeOutNoticesBetween } from "./room/timeOutNoticesBetween";
 import { withConnection } from "./room/withConnection";
-import { lobbyOf } from "./lobbyOf";
 import { reportToLobby } from "./reportToLobby";
 import { saveReplayRecordIfEnded } from "./replays/saveReplayRecordIfEnded";
 import { RoomSockets } from "./RoomSockets";
@@ -253,18 +251,15 @@ export class GameRoom extends DurableObject<Env> {
     const attachment = attachmentOf(socket);
     const recordBefore = loadRoom(this.storage);
     const messageCount = this.rooms.chat.messages().length;
-    const now = nowMs();
-    const input = {
-      connection: { identity: attachment.identity, rejectionTimes: attachment.rejectionTimes },
-      parsed,
-      sender: sender?.identity ?? null,
-      now,
-      randomFor: randomForNextAction,
-      gameStart: newGameStart(now),
-      livePlayers: this.sockets.livePlayers(),
-    };
-    const outcome = await receiveCheckingGameStart(this.storage, input, async (players) =>
-      lobbyOf(this.env).startGame(players, now),
+    const outcome = await receiveAskingLobbyFor(
+      {
+        env: this.env,
+        storage: this.storage,
+        chat: this.rooms.chat,
+        livePlayers: this.sockets.livePlayers(),
+      },
+      attachment,
+      { parsed, sender },
     );
     if (outcome.isRoomGone) {
       socket.close(ROOM_GONE_CLOSE_CODE, "This room no longer exists");

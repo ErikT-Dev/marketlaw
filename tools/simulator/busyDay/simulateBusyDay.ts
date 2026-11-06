@@ -28,6 +28,7 @@ import { RoomCode } from "../../../src/shared/RoomCode.ts";
 import { BUSY_DAY } from "./BUSY_DAY.ts";
 import { BusyDayCounter } from "./BusyDayCounter.ts";
 import type { BusyDayCount } from "./BusyDayCount.ts";
+import { NO_CHAT_CONTEXT } from "../../../src/server/room/NO_CHAT_CONTEXT.ts";
 
 const SIZES = [2, 3, 4] as const;
 const ARRIVAL_MS = 30_000;
@@ -150,6 +151,7 @@ function send(
       limitRejectionFor: (players) => countStart(day, players),
     },
     livePlayers: day.live,
+    chat: NO_CHAT_CONTEXT,
   });
   report(day, code);
 }

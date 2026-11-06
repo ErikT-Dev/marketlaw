@@ -1478,3 +1478,25 @@ file.
   record past B13 (100 KB) through joins and leaves; 200 lines is far more than a chat column
   shows. Spec S7.3, one clause.
 - **Implemented:** `harness/spec/screens.md` S7.3; `src/server/room/withChatEvents.ts`.
+
+## Q82. Which chat limit is named when several apply, and how does the player learn when to retry?
+
+- **Phase:** 21, item 2 (A11.5, A11.6, A9.6, S7.4).
+- **Questions:** a message can break several rules at once (too long and too fast, or the
+  101st message sent within 2 seconds). A11.6 says the player is told which limit they reached,
+  but not which one when several apply. S7.4 counts down to when the player can send again, but
+  no message carries that time. S7.4 gives no text for an empty message, which "cannot be sent".
+- **Solution:**
+  - The room checks in this order and names the first that applies: the text (empty, then over
+    200 characters or 800 bytes), the 100 messages in the room, the 2 seconds, then the site's
+    daily cap. The permanent limits come before the passing one, so a player at 100 messages is
+    never told to wait 2 seconds; the site cap comes last so a message refused for anything else
+    never asks the lobby for quota.
+  - The `rejected` server message gains `sendAgainAt`: the time a player refused with
+    `chat_too_fast` may send again (their last saved message plus 2 seconds), null for every
+    other rejection. The message shape changes within `PROTOCOL_VERSION` 4, which this phase
+    has not yet deployed.
+  - The input never sends an empty message (S7.4); the server still refuses one with
+    `message_empty`, shown with the fallback text "A message cannot be empty."
+- **Implemented:** `src/server/room/newChatMessageOf.ts`, `src/shared/protocol/ServerMessage.ts`,
+  `src/client/screens/game/REJECTION_MESSAGES.ts`; phase 21, item 2.

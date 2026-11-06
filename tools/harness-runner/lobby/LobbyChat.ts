@@ -1,23 +1,34 @@
 import { chatDeliveriesBetween } from "../../../src/server/room/chatDeliveriesBetween.ts";
+import type { ChatContext } from "../../../src/server/room/ChatContext.ts";
 import type { ChatMessage } from "../../../src/server/room/ChatMessage.ts";
+import type { ChatQuota } from "../../../src/server/room/ChatQuota.ts";
+import type { NewChatMessage } from "../../../src/server/room/NewChatMessage.ts";
+import { NO_CHAT_QUOTA } from "../../../src/server/room/NO_CHAT_QUOTA.ts";
 import type { ChatStorage } from "../../../src/server/room/ChatStorage.ts";
 import type { RoomRecord } from "../../../src/server/room/RoomRecord.ts";
 import type { ServerMessage } from "../../../src/shared/protocol/ServerMessage.ts";
 
 export class LobbyChat {
   private saved: ReadonlyArray<ChatMessage> | null;
+  private quota: ChatQuota = NO_CHAT_QUOTA;
   isSavedBeforeShown = true;
   readonly notified = new Set<string>();
 
   readonly storage: ChatStorage = {
     messages: () => this.saved ?? [],
-    append: (message) => {
+    quota: () => this.quota,
+    append: ({ message, quota }) => {
       this.saved = [...(this.saved ?? []), message];
+      this.quota = quota;
     },
   };
 
   constructor(given: ReadonlyArray<ChatMessage>) {
     this.saved = given;
+  }
+
+  contextFor(grantQuota: ChatContext["grantQuota"]): ChatContext {
+    return { messages: this.storage.messages(), quota: this.quota, grantQuota };
   }
 
   isDeleted(): boolean {
@@ -30,7 +41,7 @@ export class LobbyChat {
 
   receive(
     messagesTo: Map<string, ServerMessage[]>,
-    chatMessage: ChatMessage | null,
+    chatMessage: NewChatMessage | null,
     change: {
       readonly before: { readonly record: RoomRecord | null; readonly messageCount: number };
       readonly after: RoomRecord | null;

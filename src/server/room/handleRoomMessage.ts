@@ -28,6 +28,7 @@ function replyTo(playerId: PlayerId, change: RoomActionChange, input: MessageInp
       protocolVersion: PROTOCOL_VERSION,
       actionId: null,
       code: change.refusal,
+      sendAgainAt: null,
     };
   }
   return {

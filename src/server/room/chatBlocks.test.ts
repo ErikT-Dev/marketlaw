@@ -22,7 +22,15 @@ function memoryKv() {
 }
 
 function numberedMessage(index: number) {
-  return { from: ANN, name: "Ann", text: `message ${String(index)}`, at: v.parse(EpochMs, index) };
+  return {
+    message: {
+      from: ANN,
+      name: "Ann",
+      text: `message ${String(index)}`,
+      at: v.parse(EpochMs, index),
+    },
+    quota: { day: 0, left: 39 - index },
+  };
 }
 
 async function storeWithMessages(memory: ReturnType<typeof memoryKv>, count: number) {
@@ -45,6 +53,7 @@ describe("the chat blocks", () => {
     expect(reloaded.chat.messages().map(({ text }) => text)).toEqual(
       Array.from({ length: 21 }, (unused, index) => `message ${String(index)}`),
     );
+    expect(reloaded.chat.quota()).toEqual({ day: 0, left: 19 });
   });
 
   it("deletes every chat block with the room", async () => {

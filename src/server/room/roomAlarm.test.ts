@@ -17,6 +17,7 @@ import { fireRoomAlarm } from "./fireRoomAlarm";
 import { receiveMessage } from "./receiveMessage";
 import type { RoomRecord } from "./RoomRecord";
 import type { RoomStorage } from "./RoomStorage";
+import { NO_CHAT_CONTEXT } from "./NO_CHAT_CONTEXT";
 
 const STARTED_AT = 1_000_000;
 const FIRST_DEADLINE = STARTED_AT + 180_000;
@@ -126,6 +127,7 @@ function lateEndTurn(storage: RoomStorage, seatIndex: number, now: number) {
     now: v.parse(EpochMs, now),
     randomFor: randomForNextAction,
     livePlayers: [],
+    chat: NO_CHAT_CONTEXT,
     gameStart: {
       seed: 1,
       now: v.parse(EpochMs, now),

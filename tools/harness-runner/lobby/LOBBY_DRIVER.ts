@@ -10,9 +10,12 @@ import { lobbyGameThen, lobbyRoomThen } from "./lobbyRoomThen.ts";
 import { LobbySession } from "./LobbySession.ts";
 import { replayRecordThen } from "./replayRecordThen.ts";
 import { lobbyChatThen } from "./lobbyChatThen.ts";
+import { chatTextOfStep } from "./chatTextOfStep.ts";
 import { publicRoomsOf } from "../../../src/server/lobby/publicRoomsOf.ts";
 
 const ROOM_ACTIONS = ["change_size", "leave_room", "accept_game", "decline_game", "send_chat"];
+
+const CHAT_THEN_FIELDS = ["chat", "notified", "view_chat", "chat_count", "saved_before_shown"];
 
 function textOf(value: unknown): string {
   return typeof value === "string" ? value : "";
@@ -32,6 +35,8 @@ function runPlayerStep(
     session.openSite(name);
   } else if (action === "leave_game") {
     session.sendGameAction(name, { type: "leave_game" });
+  } else if (action === "send_chat") {
+    session.sendRoomAction(name, { type: "send_chat", text: chatTextOfStep(step) });
   } else if (ROOM_ACTIONS.includes(action)) {
     const details = Object.entries(step).filter(([key]) => key !== "player" && key !== "action");
     session.sendRoomAction(name, { ...Object.fromEntries(details), type: action });
@@ -111,13 +116,10 @@ function startSession(rawGiven: Readonly<Record<string, unknown>>, random: Scrip
           }));
         case "message_to":
           return lobbyMessageThen(session.messagesTo, expected);
-        case "chat":
-        case "notified":
-        case "view_chat":
-        case "saved_before_shown":
-          return lobbyChatThen(session, field, expected);
         default:
-          return lobbyAccountsThen(session, field, expected);
+          return CHAT_THEN_FIELDS.includes(field)
+            ? lobbyChatThen(session, field, expected)
+            : lobbyAccountsThen(session, field, expected);
       }
     },
   };
@@ -127,7 +129,14 @@ function startSession(rawGiven: Readonly<Record<string, unknown>>, random: Scrip
 export const LOBBY_DRIVER: ScenarioDriver = {
   name: "lobby",
   unhandledGivenValues: () => [],
-  givenFields: new Set(["clock_ms", "site_games_today", "accounts", "room", "other_rooms"]),
+  givenFields: new Set([
+    "clock_ms",
+    "site_games_today",
+    "site_counts_today",
+    "accounts",
+    "room",
+    "other_rooms",
+  ]),
   steps: new Set([
     "create_room",
     "join_room",
@@ -151,10 +160,7 @@ export const LOBBY_DRIVER: ScenarioDriver = {
     "logged_in",
     "lobby_rooms",
     "replay_record",
-    "chat",
-    "notified",
-    "view_chat",
-    "saved_before_shown",
+    ...CHAT_THEN_FIELDS,
   ]),
   nestedFields: new Map([
     [
@@ -163,7 +169,17 @@ export const LOBBY_DRIVER: ScenarioDriver = {
     ],
     [
       "given.room",
-      new Set(["code", "size", "public", "owner", "players", "state", "ended_ms", "chat"]),
+      new Set([
+        "code",
+        "size",
+        "public",
+        "owner",
+        "players",
+        "state",
+        "ended_ms",
+        "chat",
+        "messages_sent",
+      ]),
     ],
     ["given.other_rooms", new Set(["code", "size", "public", "owner", "players", "state"])],
     ["then.lobby_rooms", new Set(["owner", "players", "free_places"])],

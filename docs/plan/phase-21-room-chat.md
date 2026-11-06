@@ -131,7 +131,7 @@ These 14 scenarios are added to `harness/required.yaml` in this phase, by file a
     `GameRoom`, `chat.storage.messages()` in the driver. The client ignores `chat` messages
     until item 5a (`RemoteGameHost.receive`).
 
-- [ ] 2. **Message rules and limits** (A11.5, A11.6, A9.6; scenarios `chat` #3 to #9,
+- [x] 2. **Message rules and limits** (A11.5, A11.6, A9.6; scenarios `chat` #3 to #9,
   `lobby-queue-and-limits` #30). **Large.**
   - One shared function in `src/shared/` (item 5a's input counter uses it too): line breaks, tabs
     and other control characters become spaces, then trim, count graphemes with
@@ -147,6 +147,27 @@ These 14 scenarios are added to `harness/required.yaml` in this phase, by file a
     `receiveCheckingGameStart.ts` (a trial first, then ask the lobby, `no_answer` if it fails).
     `countsTodayFromGiven.ts` reads `site_counts_today.chat_messages`.
   - Chat rejections count toward M9.6 like any rejected message.
+  - Done (2026-11-06). The 8 scenarios pass in the lobby driver (checked locally, not yet on the
+    required list). How it is built:
+    - `measureChatText` and `CHAT_TEXT_LIMITS` in `src/shared/` (item 5a's counter uses them);
+      bytes are counted by code point, as the engine has no `TextEncoder`.
+    - `newChatMessageOf` (from `handleChatIntent`) checks in the order of Q82: text, 100 in the
+      room, 2 seconds, site cap. `MessageInput.chat` is a `ChatContext` (saved messages, the
+      room's `ChatQuota` `{ day, left }`, `grantQuota`); `NO_CHAT_CONTEXT` for callers without
+      chat. An accepted message is a `NewChatMessage` (`message` and the quota after it) in
+      `MessageOutcome.chatMessage`; every chat block stores the quota, the newest one counts.
+    - Site cap: `grantChatQuota` in `src/server/lobby/` and `Lobby.grantChatQuota(now)` grant up
+      to 20 of 2,000 per UTC day (`today.siteChatMessages`, read with a default of 0 so the
+      deployed lobby record still parses). `receiveAskingLobby` (called by `GameRoom` through
+      `receiveAskingLobbyFor`) runs a trial and asks the lobby only when an otherwise accepted
+      message finds no quota left; a failed call is `no_answer`.
+  - Differs: the `rejected` server message gains `sendAgainAt` (Q82; null except for
+    `chat_too_fast`). `REJECTION_MESSAGES` has the S7.4 texts without the countdown.
+  - For later items: the lobby driver turns `text_length`/`text_kind`/`text_bytes` into a text
+    (`chatTextOfStep.ts`) and reads `messages_sent` and `site_counts_today`. `LobbySession.ts` is
+    at 295 lines without blank lines (limit 300) and `GameRoom.ts` at 290: move code out before
+    adding to either. The client still ignores `sendAgainAt` (`RemoteGameHost.receive`); item 5b
+    needs it in `HostEvent`. The busy-day simulator (item 4) passes `NO_CHAT_CONTEXT` today.
 
 - [ ] 3. **Mute and unmute** (A11.7; scenarios `chat` #10, #11). **Small.**
   - The room record keeps who muted whom (1 row per change, B7). Each saved message records the

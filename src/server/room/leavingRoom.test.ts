@@ -18,6 +18,7 @@ import { receiveMessage } from "./receiveMessage";
 import type { RoomRecord } from "./RoomRecord";
 import type { RoomStorage } from "./RoomStorage";
 import { roomSummaryOf } from "./roomSummaryOf";
+import { NO_CHAT_CONTEXT } from "./NO_CHAT_CONTEXT";
 
 const NOW = v.parse(EpochMs, 1_000_000);
 const CODE = v.parse(RoomCode, "K7QR2P");
@@ -63,6 +64,7 @@ function send(storage: RoomStorage, sender: Identity, message: Readonly<Record<s
       limitRejectionFor: () => null,
     },
     livePlayers: LIVE,
+    chat: NO_CHAT_CONTEXT,
   });
   return outcome.isRoomGone ? null : outcome.reply;
 }

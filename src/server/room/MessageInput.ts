@@ -5,6 +5,7 @@ import type { PlayerId } from "../../shared/PlayerId";
 import type { ClientMessage } from "../../shared/protocol/ClientMessage";
 import type { ReasonCode } from "../../shared/ReasonCode";
 import type { Result } from "../../shared/Result";
+import type { ChatContext } from "./ChatContext";
 import type { ConnectionState } from "./ConnectionState";
 import type { GameStart } from "./GameStart";
 import type { Identity } from "./Identity";
@@ -19,4 +20,5 @@ export type MessageInput = {
   readonly randomFor: (saved: SavedGame) => Random;
   readonly gameStart: GameStart;
   readonly livePlayers: ReadonlyArray<PlayerId>;
+  readonly chat: ChatContext;
 };

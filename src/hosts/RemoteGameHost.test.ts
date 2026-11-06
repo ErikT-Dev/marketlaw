@@ -119,6 +119,7 @@ describe("RemoteGameHost", () => {
         protocolVersion: PROTOCOL_VERSION,
         actionId: "id-1",
         code: "stale_state",
+        sendAgainAt: null,
       }),
     );
     expect(network.events.map((event) => event.type)).toEqual(["update", "rejected"]);

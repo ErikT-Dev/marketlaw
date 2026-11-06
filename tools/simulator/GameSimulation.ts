@@ -30,6 +30,7 @@ import { newActionChecks } from "./newActionChecks.ts";
 import { SimulatedAlarm } from "./SimulatedAlarm.ts";
 import { whatSeatsSeeViolations } from "./whatSeatsSeeViolations.ts";
 import { simulatedRoomOf } from "./simulatedRoomOf.ts";
+import { NO_CHAT_CONTEXT } from "../../src/server/room/NO_CHAT_CONTEXT.ts";
 
 const MESSAGE_GAP_MS = 1_000;
 
@@ -196,6 +197,7 @@ export class GameSimulation {
       randomFor: randomForNextAction,
       gameStart: gameStartInJoinOrder(0, v.parse(EpochMs, this.nowMs)),
       livePlayers: [],
+      chat: NO_CHAT_CONTEXT,
     });
     if (outcome.isRoomGone) {
       throw new Error("the simulated room is gone");

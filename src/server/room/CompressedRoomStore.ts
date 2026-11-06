@@ -1,7 +1,7 @@
 import { ChatBlockStore } from "./ChatBlockStore";
 import { decodeRoomRecord } from "./decodeRoomRecord";
 import { encodeRoomRecord } from "./encodeRoomRecord";
-import type { ChatMessage } from "./ChatMessage";
+import type { NewChatMessage } from "./NewChatMessage";
 import type { ChatStorage } from "./ChatStorage";
 import type { RoomKv } from "./RoomKv";
 import type { RoomRecord } from "./RoomRecord";
@@ -49,7 +49,7 @@ export class CompressedRoomStore {
     this.chatBlocks.load();
   }
 
-  async save(chatMessage: ChatMessage | null = null): Promise<void> {
+  async save(chatMessage: NewChatMessage | null = null): Promise<void> {
     if (chatMessage !== null) {
       this.chat.append(chatMessage);
     }

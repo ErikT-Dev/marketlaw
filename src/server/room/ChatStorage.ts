@@ -1,6 +1,9 @@
 import type { ChatMessage } from "./ChatMessage";
+import type { ChatQuota } from "./ChatQuota";
+import type { NewChatMessage } from "./NewChatMessage";
 
 export type ChatStorage = {
   readonly messages: () => ReadonlyArray<ChatMessage>;
-  readonly append: (message: ChatMessage) => void;
+  readonly quota: () => ChatQuota;
+  readonly append: (newMessage: NewChatMessage) => void;
 };

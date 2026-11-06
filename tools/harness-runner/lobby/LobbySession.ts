@@ -47,6 +47,8 @@ import { chatFromGiven } from "./chatFromGiven.ts";
 import { lobbyWithRooms } from "./lobbyWithRooms.ts";
 import { chatTrackingStorage } from "../../../src/server/room/chatTrackingStorage.ts";
 import { leaveRoomIfFreeIn } from "../../../src/server/room/leaveRoomIfFreeIn.ts";
+import type { ChatQuotaGrant } from "../../../src/server/room/ChatQuotaGrant.ts";
+import { grantChatQuota } from "../../../src/server/lobby/grantChatQuota.ts";
 
 const GENERATED_CANDIDATES = 10;
 const NAME_STEP = 7;
@@ -255,6 +257,7 @@ export class LobbySession {
         limitRejectionFor: (players) => this.countGameStart(players),
       },
       livePlayers: this.live,
+      chat: this.chat.contextFor(() => this.grantChatQuota()),
     });
     this.rejected = outcome.isRoomGone ? "room_not_found" : rejectionOfReply(outcome.reply);
     if (!outcome.isRoomGone) {
@@ -269,6 +272,12 @@ export class LobbySession {
     const counted = countGameStart(this.lobby, players, limits);
     this.lobby = counted.isOk ? counted.value : this.lobby;
     return counted.isOk ? null : counted.error;
+  }
+
+  private grantChatQuota(): ChatQuotaGrant {
+    const grant = grantChatQuota(this.lobby, this.now);
+    this.lobby = grant.record;
+    return { kind: "granted", count: grant.granted };
   }
 
   private claimIn(playerId: PlayerId, code: RoomCode): boolean {

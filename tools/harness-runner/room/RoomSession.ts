@@ -25,6 +25,7 @@ import { PROTOCOL_VERSION } from "../../../src/shared/PROTOCOL_VERSION.ts";
 import { RoomCode } from "../../../src/shared/RoomCode.ts";
 import { rawMessageText } from "./rawMessageText.ts";
 import type { RoomGiven } from "./RoomGiven.ts";
+import { NO_CHAT_CONTEXT } from "../../../src/server/room/NO_CHAT_CONTEXT.ts";
 
 type Connection = { state: ConnectionState; isClosed: boolean };
 
@@ -237,6 +238,7 @@ export class RoomSession {
         randomFor: () => this.random,
         gameStart: gameStartInJoinOrder(1, this.now),
         livePlayers: this.livePlayers(),
+        chat: NO_CHAT_CONTEXT,
       },
       async () => Promise.resolve(null),
     );

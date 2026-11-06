@@ -17,6 +17,7 @@ import { joinRoomIn } from "./joinRoomIn";
 import { receiveMessage } from "./receiveMessage";
 import type { RoomRecord } from "./RoomRecord";
 import type { RoomStorage } from "./RoomStorage";
+import { NO_CHAT_CONTEXT } from "./NO_CHAT_CONTEXT";
 
 const NOW = v.parse(EpochMs, 1_761_436_800_000);
 function identityNamed(name: string): Identity {
@@ -64,6 +65,7 @@ function send(storage: RoomStorage, sender: Identity, message: Readonly<Record<s
       limitRejectionFor: () => null,
     },
     livePlayers: LIVE,
+    chat: NO_CHAT_CONTEXT,
   });
 }
 
@@ -187,6 +189,7 @@ describe("adding actions to the lobby's counts", () => {
       day: dayOf(NOW),
       players: [{ playerId: annId, actions: 1990, gameStarts: 2 }],
       siteGameStarts: 5,
+      siteChatMessages: 0,
     },
   };
 
@@ -206,6 +209,7 @@ describe("adding actions to the lobby's counts", () => {
         { playerId: beaId, actions: 4, gameStarts: 0 },
       ],
       siteGameStarts: 5,
+      siteChatMessages: 0,
     });
   });
 
@@ -215,6 +219,7 @@ describe("adding actions to the lobby's counts", () => {
       day: dayOf(tomorrow),
       players: [{ playerId: annId, actions: 15, gameStarts: 0 }],
       siteGameStarts: 0,
+      siteChatMessages: 0,
     });
   });
 

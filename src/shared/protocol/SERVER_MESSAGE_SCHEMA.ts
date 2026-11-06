@@ -137,6 +137,7 @@ export const SERVER_MESSAGE_SCHEMA = v.variant("type", [
     protocolVersion: COUNT,
     actionId: v.nullable(v.string()),
     code: ReasonCode,
+    sendAgainAt: v.nullable(EpochMs),
   }),
   v.object({
     type: v.literal("notice"),

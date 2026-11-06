@@ -18,6 +18,7 @@ export type ServerMessage =
       readonly protocolVersion: number;
       readonly actionId: string | null;
       readonly code: ReasonCode;
+      readonly sendAgainAt: EpochMs | null;
     }
   | { readonly type: "notice"; readonly protocolVersion: number; readonly notice: Notice }
   | {

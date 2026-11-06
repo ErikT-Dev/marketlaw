@@ -20,5 +20,6 @@ export function countsTodayFromGiven(
       gameStarts: account.games_started_today ?? 0,
     })),
     siteGameStarts: given.site_games_today ?? 0,
+    siteChatMessages: given.site_counts_today?.chat_messages ?? 0,
   };
 }

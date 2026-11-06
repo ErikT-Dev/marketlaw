@@ -28,6 +28,8 @@ export function lobbyChatThen(session: LobbySession, field: string, expected: un
       return [...session.chat.notified];
     case "view_chat":
       return viewChatOf(session, expected);
+    case "chat_count":
+      return session.chat.storage.messages().length;
     default:
       return session.chat.isSavedBeforeShown;
   }

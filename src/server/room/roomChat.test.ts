@@ -16,6 +16,7 @@ import { joinRoomIn } from "./joinRoomIn";
 import { receiveMessage } from "./receiveMessage";
 import type { RoomRecord } from "./RoomRecord";
 import type { RoomStorage } from "./RoomStorage";
+import { NO_CHAT_QUOTA } from "./NO_CHAT_QUOTA";
 
 const START = v.parse(EpochMs, 1_000_000);
 const ANN: Identity = { playerId: v.parse(PlayerId, crypto.randomUUID()), name: "Ann" };
@@ -26,6 +27,7 @@ const EVERYONE = [ANN.playerId, BEA.playerId, CAT.playerId];
 function chatRoom() {
   let stored: RoomRecord | undefined;
   let messages: ReadonlyArray<ChatMessage> = [];
+  let quota = NO_CHAT_QUOTA;
   const storage: RoomStorage = chatTrackingStorage(
     {
       read: () => stored,
@@ -54,10 +56,12 @@ function chatRoom() {
         limitRejectionFor: () => null,
       },
       livePlayers: EVERYONE,
+      chat: { messages, quota, grantQuota: () => ({ kind: "granted", count: 20 }) },
     });
     const chatMessage = outcome.isRoomGone ? null : outcome.chatMessage;
     if (chatMessage !== null) {
-      messages = [...messages, chatMessage];
+      messages = [...messages, chatMessage.message];
+      quota = chatMessage.quota;
     }
     return outcome;
   }

@@ -8,7 +8,11 @@ export function chatFromGiven(
   identityNamed: (name: string) => Identity,
   now: EpochMs,
 ): ReadonlyArray<ChatMessage> {
-  return (given.room?.chat ?? []).map(({ from, text }) => ({
+  const written = (given.room?.chat ?? []).map(({ from, text }) => ({ from, text }));
+  const counted = Object.entries(given.room?.messages_sent ?? {}).flatMap(([from, count]) =>
+    Array.from({ length: count }, (unused, index) => ({ from, text: `message ${String(index)}` })),
+  );
+  return [...written, ...counted].map(({ from, text }) => ({
     from: identityNamed(from).playerId,
     name: from,
     text,
