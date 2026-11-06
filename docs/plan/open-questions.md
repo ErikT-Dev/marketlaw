@@ -1374,3 +1374,17 @@ file.
     tooltip shows when the control the icon is in has keyboard focus, and icons are not tab stops
     of their own (`HARNESS:` commit).
 - **Implemented:** `harness/spec/screens.md` S1.6; phase 20a item 9.
+
+## Q77. Whom does "Completed by" name in the projects area?
+
+- **Phase:** 20a (phase review, finding 3).
+- **Question:** S6.3 says a project shows "Completed by Ann, Bob" once someone has completed it,
+  and that each project shows your progress or "completed". Does "Completed by" name you too,
+  and what shows when only you have completed it?
+- **Solution:** "Completed by" names only the other players: your own completion already shows
+  as "you completed ✓" in your progress, so naming you again would say it twice. When only you
+  have completed it, neither "Completed by" nor the +2 line shows (the +2 is gone once anyone
+  has completed it, R16.6). The coordinator told the owner of this choice during the phase and
+  the owner did not object. S6.3 now says so (`HARNESS:` commit).
+- **Implemented:** `harness/spec/screens.md` S6.3; `ProjectProgressList.tsx` (phase 20a item 5)
+  and its tests in `projectsAreaAndHelp.test.tsx`.

@@ -127,8 +127,9 @@ None yet.
   named "How projects work" that works as in S5.4. Each project shows your progress or
   "completed". While nobody has completed it, as far as you can see (R5.4), it says "First to
   complete gets +2" with the funds icon (R16.6). Only once someone has completed it does it say
-  who has ("Completed by Ann, Bob"), instead of the +2 line. The help text, with stats shown as
-  their icons (S1.6):
+  who has ("Completed by Ann, Bob"), instead of the +2 line. "Completed by" names only the other
+  players; your own completion is the "completed" of your progress, so when only you have
+  completed it, neither line shows (Q77). The help text, with stats shown as their icons (S1.6):
   > You have 3 projects. In the main phase, complete one when you have 8 of its stat and
   > workforce, quality and satisfaction are all 0 or more. It uses up the 8 and gives +1 income,
   > +2 funds, +3 influence and 1 card; your third project gives another +1 income and 1 card. In
