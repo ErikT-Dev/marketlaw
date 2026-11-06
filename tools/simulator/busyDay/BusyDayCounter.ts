@@ -5,6 +5,7 @@ import type { RoomRecord } from "../../../src/server/room/RoomRecord.ts";
 import type { RoomStorage } from "../../../src/server/room/RoomStorage.ts";
 import type { BusyDayCount } from "./BusyDayCount.ts";
 import type { BusyDayRows } from "./BusyDayRows.ts";
+import { ChatBlockStore } from "../../../src/server/room/ChatBlockStore.ts";
 
 export class BusyDayCounter {
   lobby: LobbyRecord = EMPTY_LOBBY;
@@ -12,6 +13,7 @@ export class BusyDayCounter {
   private alarm: number | null = null;
   private rows: BusyDayRows = { room: 0, alarm: 0, lobby: 0, database: 0 };
   private rowsRead = 0;
+  chatBlocks = this.newChatBlocks();
   readonly storage: RoomStorage = {
     read: () => this.readRecord(),
     write: (record) => {
@@ -21,6 +23,7 @@ export class BusyDayCounter {
     remove: () => {
       this.record = undefined;
       this.count("room");
+      this.chatBlocks.removeAll();
     },
   };
 
@@ -60,10 +63,28 @@ export class BusyDayCounter {
   newRoom(): void {
     this.record = undefined;
     this.alarm = null;
+    this.chatBlocks = this.newChatBlocks();
   }
 
   total(): BusyDayCount {
     return { written: this.rows, rowsRead: this.rowsRead };
+  }
+
+  private newChatBlocks(): ChatBlockStore {
+    const rows = new Map<string, Uint8Array>();
+    return new ChatBlockStore({
+      get: (key) => {
+        this.rowsRead += 1;
+        return rows.get(key);
+      },
+      put: (key, value) => {
+        rows.set(key, value);
+      },
+      delete: (key) => {
+        this.count("room");
+        return rows.delete(key);
+      },
+    });
   }
 
   private readRecord(): RoomRecord | undefined {

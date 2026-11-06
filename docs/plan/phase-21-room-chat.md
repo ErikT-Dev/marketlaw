@@ -195,7 +195,7 @@ These 14 scenarios are added to `harness/required.yaml` in this phase, by file a
   - For later items: item 5a/5b read `mutedNames` from the `chat` message for the S7.3 muted
     list and send `{ type: "mute" | "unmute", playerName }`.
 
-- [ ] 4. **Budgets with chat** (B7, B18, B4, B5, B13; exit criterion "B7 within its limit").
+- [x] 4. **Budgets with chat** (B7, B18, B4, B5, B13; exit criterion "B7 within its limit").
   **Small.**
   - B7: measure room rows per accepted chat message, mute and unmute in the scenarios (as
     `tools/harness-runner/room/RoomSession.ts` counts rows for B1 and B2), set B7 in
@@ -203,6 +203,23 @@ These 14 scenarios are added to `harness/required.yaml` in this phase, by file a
   - B18: the busy-day simulator (`tools/simulator/busyDay/`) sends 2,000 chat messages across its
     rooms and counts the lobby's quota blocks and the chat blocks deleted with the rooms (Q79).
     B4, B5 and B13 must not change: chat never touches the game's row.
+  - Done (2026-11-06). How it is built:
+    - B7: the lobby driver counts the rows of each accepted `send_chat`, `mute` and `unmute`
+      (room record writes plus the newest chat block, `LobbyChat.rowsPerChatIntent`) and reports
+      them as B7 measurements; the most is 1. `BUDGET_CHECKS` B7 is `harness`,
+      `MEASURED_BUDGET_LIMITS` B7 is 1. `reportBudgets.test.ts` now uses B6 as its example of a
+      budget not built yet.
+    - B18: after each game the busy-day simulator sends 40 chat messages per room (2,000 in all,
+      `BUSY_DAY.chatMessages`) through `receiveMessage` with a real chat context
+      (`busyDayChatContext`: the room's `ChatBlockStore`, the lobby's `grantChatQuota`). The
+      lobby writes 100 quota blocks and the rooms delete 100 chat blocks: B18 2,526 to 2,726 of
+      5,000. Rows read on the busy day 2,938 to 7,188 (B16 adds them per game). B4, B5 and B13 are
+      unchanged (the games are untouched).
+  - Differs: the lobby driver's alarm loop moved to `fireAlarmsUntil.ts` to make room in
+    `LobbySession.ts` (284 non-blank lines now).
+  - For later items: B7 is measured but becomes enforced only when it is on the required budget
+    list; the finisher adds `B7` to `harness/required.yaml` budgets with the 14 scenarios
+    (checked locally: measured 1 of 1).
 
 - [ ] 5a. **Chat on the screens** (S7.1, S7.3, S11.1, S9.2, M6.7, A11.4; design boards "Game:
   chat", "Chat message" and the waiting room's chat column). **Large.**

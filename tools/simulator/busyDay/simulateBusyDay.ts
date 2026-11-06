@@ -28,7 +28,7 @@ import { RoomCode } from "../../../src/shared/RoomCode.ts";
 import { BUSY_DAY } from "./BUSY_DAY.ts";
 import { BusyDayCounter } from "./BusyDayCounter.ts";
 import type { BusyDayCount } from "./BusyDayCount.ts";
-import { NO_CHAT_CONTEXT } from "../../../src/server/room/NO_CHAT_CONTEXT.ts";
+import { busyDayChatContext } from "./busyDayChatContext.ts";
 
 const SIZES = [2, 3, 4] as const;
 const ARRIVAL_MS = 30_000;
@@ -138,7 +138,7 @@ function send(
   advance(day, ACCEPT_MS, code);
   const now = v.parse(EpochMs, day.now);
   const storage = message.type === "room" ? day.counter.storage : day.counter.gameStorage;
-  receiveMessage(storage, {
+  const outcome = receiveMessage(storage, {
     connection: { identity: sender, rejectionTimes: [] },
     parsed: parseClientMessage(
       JSON.stringify({ protocolVersion: PROTOCOL_VERSION, token: "t", ...message }),
@@ -151,8 +151,12 @@ function send(
       limitRejectionFor: (players) => countStart(day, players),
     },
     livePlayers: day.live,
-    chat: NO_CHAT_CONTEXT,
+    chat: busyDayChatContext(day.counter, now),
   });
+  if (!outcome.isRoomGone && outcome.chatMessage !== null) {
+    day.counter.chatBlocks.storage.append(outcome.chatMessage);
+    day.counter.chatBlocks.save();
+  }
   report(day, code);
 }
 
@@ -252,6 +256,10 @@ function playRoom(day: Day, game: number): void {
     leaveGame(day, lastJoiner, code);
   }
   endGame(day, code);
+  for (let message = 0; message < BUSY_DAY.chatMessages / BUSY_DAY.games; message += 1) {
+    const sender = players[message % players.length] ?? owner;
+    roomAction(day, sender, { type: "send_chat", text: `message ${String(message)}` }, code);
+  }
   closeEndedRoom(day, code);
 }
 
