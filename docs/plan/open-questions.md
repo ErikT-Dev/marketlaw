@@ -1314,7 +1314,9 @@ file.
     rule; the owner only asked for it to be "very noticeable"), S5.1 (sector names coloured,
     negative stats shown as unmet), S5.4 (the **?** help for quests, with its text), S6.1 (combos
     as icons), S6.3 (PROJECTS title, "First to complete gets +2" with the funds icon, "Completed
-    by …" only after someone has, its **?** help text), S6.5 (sector-coloured title bar; the next
+    by …" only after someone has, its **?** help text), S6.5 (sector-coloured title bar; the hand's photos loaded in the background, and the
+    selection switching only once the new photo is ready, at most 300 ms, so the owner never
+    sees a blank or mixed card (owner's choice, 2026-11-06); no loading screen; the next
     card shown within 100 ms, chosen as a measurable "smoother or faster"), S8.3 (stats as icons,
     kind names on sector colours, "unlimited uses").
   - The spec and harness changes are one `HARNESS:` commit on the branch

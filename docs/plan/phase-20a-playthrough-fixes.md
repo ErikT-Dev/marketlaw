@@ -40,10 +40,25 @@ in a view, which the runner does not read yet.
    tier. The discard pile link and its pop-up go. The scenario runner reads `discard_count` in a
    view and `hides: [discard_cards]` (no discard pile card in the view); the harness test counts
    433 scenarios. The leak test treats discard pile cards as hidden from every player.
-3. **The big card** (S6.5, S1.5): its title bar has its sector colour as background; selecting
-   another hand card shows it in full within 100 ms of the click, with no blank or old card in
-   between. Find out what causes the delay first (image loading, rendering or the store) and fix
-   that cause; a browser test clicks through several hand cards and checks the time.
+3. **The big card** (S6.5, S1.5): its title bar has its sector colour as background, and
+   switching cards is instant. The cause of the delay is known (Q74): each card photo (240 files,
+   about 40 KB each, up to 90 KB) is first downloaded when its card is selected
+   (`loading="lazy"` in `BigCard.tsx`), and the reused `img` keeps showing the old photo until
+   the new one arrives. Selecting a card needs no server answer. The fix:
+   1. **Load the hand's photos in the background:** once the game screen is shown, download and
+      decode the photo of every card in the hand, and of each card that joins it. This runs
+      after the first screen, so the first load and the bundle budget are unchanged.
+   2. **Switch only when the photo is ready:** the hand's selection highlight, the big card and
+      Play card change together, in one step, once the new card's photo is decoded. Until then
+      the previously selected card stays, complete, and Play card plays the card shown. After
+      300 ms without the photo (slow connection or a failed file), the card is shown anyway with
+      its sector colour in the photo area until the photo arrives. There is no loading screen or
+      spinner; nothing waits for a photo except the switch.
+   3. **Check the photo files:** if they are much larger than 630×478 (twice the 315×239 shown),
+      resize them to that size, so every download is smaller.
+   4. **Test:** a browser test clicks through several hand cards and checks that each is shown in
+      full, with its own photo, within 100 ms of the click; a unit test checks the 300 ms
+      fallback with a photo that never loads.
 4. **Sector colours in texts** (S1.5, S5.1, S8.3): sector names in quest requirements in their
    sector colour; in the draw table of Use influence, each kind's name on its sector colour.
    Small.
