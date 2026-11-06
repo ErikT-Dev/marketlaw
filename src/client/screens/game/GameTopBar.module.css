@@ -22,13 +22,20 @@
   font-weight: var(--font-weight-bold);
 }
 
-.phase {
+.phase,
+.marketPhase {
   padding: 3px 10px;
   border-radius: var(--radius-lg);
   background: var(--color-board-phase-chip);
   color: var(--color-board-phase-chip-text);
   font-size: var(--font-size-panel-title);
   font-weight: var(--font-weight-bold);
+}
+
+.marketPhase {
+  background: var(--color-board-market-phase);
+  color: var(--color-board-market-phase-text);
+  text-transform: uppercase;
 }
 
 .order {

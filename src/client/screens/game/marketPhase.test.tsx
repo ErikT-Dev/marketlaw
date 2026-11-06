@@ -140,6 +140,26 @@ describe("the market go panel", () => {
   });
 });
 
+describe("the market phase banner", () => {
+  it("says whose go it is when it is another player's go", () => {
+    showGame({ marketGo: 3 }, { turnDrawRejection: "not_your_go" });
+    const banner = within(screen.getByRole("region", { name: "MARKET PHASE" }));
+    expect(banner.getByText("Cy's go")).toBeDefined();
+  });
+
+  it("says Your go on your go", () => {
+    showGame({ marketGo: 2 }, ON_YOUR_GO);
+    const banner = within(screen.getByRole("region", { name: "MARKET PHASE" }));
+    expect(banner.getByText("Your go")).toBeDefined();
+  });
+
+  it("is gone in the main phase", () => {
+    showGame({ phase: "main", marketGo: null });
+    expect(screen.queryByRole("region", { name: "MARKET PHASE" })).toBeNull();
+    expect(screen.getByText("Main phase")).toBeDefined();
+  });
+});
+
 describe("new cards", () => {
   it("marks the cards you got this turn as new in your hand", () => {
     showGame(

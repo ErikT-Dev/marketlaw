@@ -2,6 +2,8 @@ export const BOARD_VALUES: Readonly<Record<string, string>> = {
   "--color-board-top-bar": "#0f1320",
   "--color-board-phase-chip": "#3b2a6b",
   "--color-board-phase-chip-text": "#ddd6fe",
+  "--color-board-market-phase": "#f59e0b",
+  "--color-board-market-phase-text": "#1c1206",
   "--color-board-page-dim": "rgba(11, 15, 26, 0.78)",
   "--color-board-toast-success": "#14532d",
   "--color-board-toast-error": "#4c1414",

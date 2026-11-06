@@ -20,6 +20,8 @@
   --color-background-stats-board: rgba(19, 11, 19, 0.8);
   --color-board-draw-kind: #2e2442;
   --color-board-draw: #6d28d9;
+  --color-board-market-phase-text: #1c1206;
+  --color-board-market-phase: #f59e0b;
   --color-board-page-dim: rgba(11, 15, 26, 0.78);
   --color-board-pending: rgba(0, 0, 0, 0.6);
   --color-board-phase-chip-text: #ddd6fe;

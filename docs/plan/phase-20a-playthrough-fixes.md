@@ -261,11 +261,13 @@ and must pass again:
   - Screenshots: the Use influence pop-up and the combos list.
   - Done in one commit. `components/StatAmountsIcons.tsx` shows stat amounts as `StatChip`s joined by " + "; `TradeIcons.tsx` draws each tile (build pass as the build pass icon), `tradeMissingAmounts.ts` gives "need …" as icons, the intro and the draw table costs use `StatChip`. Each trade button keeps its spoken name ("4 influence → 2 funds"), so the browser tests did not change their selectors. Combos list: `ComboNeedAndGain.tsx` (type as `TypeChip`, gain as `StatChip` "+1"); `comboTexts.ts` stays for the Claim all pop-up, which S6.1 does not cover. Tests read icons as `[Name value]` with `src/client/testing/textWithIconNames.ts`. New screenshot `combos-list` (`combosAndProjects.spec.ts`); `use-influence` changed.
   - For later items: `getByRole("img", { name: "Influence 8" })` now also matches the Use influence pop-up; scope it to the dialog or the stats panel.
-- [ ] 7. **Market phase banner** (S4.5). **Small.**
+- [x] 7. **Market phase banner** (S4.5). **Small.**
   - Banner above the marketplace in the middle column (`MiddleColumn.tsx`) during the market
     phase, "MARKET PHASE" with "Your go" or "Ann's go" (whose go: `marketGoStateOf.ts`); the
     phase in `GameTopBar.tsx` highlighted the same way. Screenshot of the banner (the market
     screens are in `e2e/marketPhase.spec.ts`).
+  - Done in one commit. `MarketPhaseBanner.tsx` (a region named "MARKET PHASE", 24px letters on a strong amber background, with "Your go" or "Ann's go" from `marketGoText.ts`, which reads `view.marketGo`) is the first row of the middle column in the market phase only; the top bar's phase chip uses the same colours (`--color-board-market-phase` and `-text`, added to `tools/design-export/BOARD_VALUES.ts`, `tokens.css` regenerated). Tests: `marketPhase.test.tsx` (other's go, your go, gone in the main phase); `e2e/marketPhase.spec.ts` checks both players' banners, that it is gone in the main phase, and takes the new screenshot `market-phase-banner`. The other `market-*` screenshots changed.
+  - For later items: the full-game screenshots (`full-game-*-turn-1` and others taken in the market phase) will change with the banner when the finisher runs them.
 
 ### Finish
 
