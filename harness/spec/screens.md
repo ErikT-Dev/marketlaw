@@ -134,8 +134,13 @@ None yet.
 - **S6.5** Selecting a hand card opens the **big card** next to the hand, with what it costs and
   why ("Base cost 4, plus 3 for the 3 Residential tier 1 cards already in your city"), and
   **Play card** and **Close**. The big card's title bar has its sector colour as background
-  (S1.5). Selecting another hand card shows that card in the big card at once: the new card is
-  shown in full within 100 ms of the click, with no blank or old card in between.
+  (S1.5). Selecting another hand card shows that card in full, with its own photo, within 100 ms
+  of the click: the photos of the cards in your hand are loaded in the background. The selection
+  in the hand, the big card and Play card change together, only once the new card's photo is
+  ready, so a card is never shown with a blank or another card's photo; until then the card
+  selected before stays, and Play card plays the card shown. If the photo is not ready within
+  300 ms, the card is shown anyway, with its sector colour where the photo goes until the photo
+  arrives. Nothing else waits for a photo, and there is no loading screen.
 - **S6.6** The action buttons are: Play card, Undo, Sell cards, Claim all (with the number ready),
   Use influence, Projects and End turn. Buttons for actions you cannot take are disabled.
   Projects and Use influence always open their pop-ups (S8.2, S8.3), where each action is disabled
