@@ -68,7 +68,7 @@ describe("your stats", () => {
       .getAllByRole("listitem")
       .map((row) => row.textContent);
     expect(projects[0]).toContain("Clean up the streets");
-    expect(projects[0]).toContain("nobody yet, the first gets +2 funds");
+    expect(projects[0]).toContain("First to complete gets +2");
     expect(projects[2]).toBe("Help the homeless · you completed ✓");
   });
 

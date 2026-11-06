@@ -37,3 +37,9 @@
   justify-content: space-between;
   gap: var(--space-lg);
 }
+
+.titleWithHelp {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}

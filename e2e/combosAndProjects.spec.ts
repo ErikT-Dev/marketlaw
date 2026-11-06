@@ -31,7 +31,19 @@ test("claim combos with the totals, complete a project, and get the first-comple
   await expect(ann.getByRole("region", { name: "Combos · 0 ready" })).toBeVisible();
   await expect(ann.getByRole("img", { name: "Quality 9" })).toBeVisible();
 
-  await ann.getByRole("button", { name: "Projects" }).click();
+  const projectsArea = ann.getByRole("list", { name: "Your projects" });
+  await expect(projectsArea.getByRole("listitem").first()).toContainText(
+    "First to complete gets +2",
+  );
+  await ann.getByRole("button", { name: "How projects work" }).click();
+  await expect(ann.getByRole("region", { name: "How projects work" })).toContainText(
+    "You have 3 projects.",
+  );
+  await expectScreenFits(ann, "projects-help", testInfo);
+  await ann.keyboard.press("Escape");
+  await expect(ann.getByRole("region", { name: "How projects work" })).toHaveCount(0);
+
+  await ann.getByRole("button", { name: "Projects", exact: true }).click();
   const projects = ann.getByRole("dialog", { name: "Projects" });
   const streets = projects.getByRole("listitem", { name: "Clean up the streets" });
   await expect(streets).toContainText("Nobody has completed it yet");

@@ -16,11 +16,31 @@
   list-style: none;
 }
 
+.projectsArea {
+  margin: var(--space-md) 0 0;
+}
+
+.projectsTitle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin: 0 0 var(--space-xs);
+}
+
+.projectsTitle h3 {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-panel-title);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
 .projects {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  margin: var(--space-md) 0 0;
+  margin: 0;
   padding: 0;
   list-style: none;
   color: var(--color-text-secondary);

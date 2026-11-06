@@ -225,7 +225,7 @@ and must pass again:
     its sector; each kind name cell of `DrawActionTable` is on `solid` with `solid-text`. The
     `quests-table` and `use-influence` screenshots changed.
   - For later items: every `QuestPart` now needs `sector={null}` unless it names a sector.
-- [ ] 5. **Projects area and help** (S6.3, S5.4). **Large.**
+- [x] 5. **Projects area and help** (S6.3, S5.4). **Large.**
   - One help button component for both panels (a real `button` named "How quests work" / "How
     projects work", `aria-expanded`, opens on click, Enter or Space; closes on Escape, a click
     elsewhere or the button). `Modal.tsx` has the only Escape handling to look at. Texts word for
@@ -237,6 +237,21 @@ and must pass again:
     own completion is your line's "completed", so when only you have completed a project the
     line shows neither the +2 nor "Completed by".
   - Screenshots: projects area with its help open, quests panel with its help open.
+  - Done in one commit. `components/HelpButton.tsx` (a `?` button named "How quests work" /
+    "How projects work", `aria-expanded`; the box is a region of the same name, position fixed
+    under the button so the scrolling panel body does not clip it, and it follows the button on
+    scroll and resize); Escape and a pointer press outside close it (`useHelpBoxDismissal.ts`).
+    The texts are `QUESTS_HELP.ts` and `PROJECTS_HELP.ts`, word for word, each named stat as an
+    icon (`HelpText.tsx`). `StatChip` now takes an optional value: without one it is the icon
+    alone, named after the stat. `Panel` takes an optional `help` shown next to the title. The
+    projects area has an h3 PROJECTS with its help; lines read "· First to complete gets +2" with
+    the funds icon, or "· Completed by Ann, Cy" (others only, the starter's choice); your own
+    completion stays "· you completed ✓". Tests: `projectsAreaAndHelp.test.tsx`; e2e
+    `quests.spec.ts` (Enter opens, a click elsewhere closes, screenshot `quests-help`) and
+    `combosAndProjects.spec.ts` (screenshot `projects-help`, Escape closes).
+  - For later items: item 6 can use `<StatChip stat="..." />` without a value for an icon-only
+    stat. In Playwright, `getByRole("button", { name: "Projects" })` now also matches "How projects
+    work"; use `exact: true`.
 - [ ] 6. **Icons instead of words** (S1.6, S6.1, S8.3). **Small.**
   - Use influence pop-up (`InfluenceDialog.tsx`, `TradeTile.tsx`, `tradeLabel.ts`,
     `tradeStatusText.ts`): every stat as its icon with tooltip and accessible name (as
