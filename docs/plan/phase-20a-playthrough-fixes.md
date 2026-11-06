@@ -271,10 +271,22 @@ and must pass again:
 
 ### Finish
 
-- [ ] Add the 4 required scenarios to `harness/required.yaml`; full check, harness, browser tests.
+- [x] Add the 4 required scenarios to `harness/required.yaml`; full check, harness, browser tests.
   - Coordinator note for the finisher and the phase reviewer: item 2 changed the view sent to
     the browser (discard pile cards became a count) without raising `PROTOCOL_VERSION` (still 2).
     Check against M9.1 and `rules/architecture.md` ("Versioned protocol") whether it must go up.
+  - First run (2026-11-06): `quests` #65–67 and `visibility` #16 are on the required list.
+    `PROTOCOL_VERSION` raised to 3 (Q75): a tab with the old client would send version 2, be
+    accepted and fail to read the new views; now it is told to reload. `npm run check` green
+    (with the new version), `npm run harness` green (phase-end games, budgets). Browser tests:
+    shard 1/2 54 passed; shard 2/2 50 passed and 1 failed with `ERR_CONNECTION_RESET` loading the
+    page (`opponents.spec.ts` at 2560x1440), passed on its own; 2 players 3 passed; 3 players 2
+    passed and 1 failed at 1280x720 waiting for Turn 1 at the start, passed on its own; 4 players
+    3 passed. Both are the known local two-worker load problem; GitHub judges the full suite.
+    The screenshots changed as expected (the market banner, new deals); every exit-criteria
+    screen is in `harness/screens/` (`card-selected`, `projects-help`, `quests-help`,
+    `use-influence`, `combos-list`, `market-phase-banner`). `docs/enforcement.md` names the
+    discard pile in the leak test and I24.
 
 ### Helper log
 
