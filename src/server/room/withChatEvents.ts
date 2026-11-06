@@ -87,6 +87,7 @@ export function withChatEvents(
   return {
     ...after,
     chat: {
+      ...chat,
       readers,
       lines: [...chat.lines, ...added].slice(-MAX_CHAT_LINES),
       lineCount: chat.lineCount + entries.length,

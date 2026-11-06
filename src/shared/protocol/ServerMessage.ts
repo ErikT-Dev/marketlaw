@@ -25,6 +25,7 @@ export type ServerMessage =
       readonly type: "chat";
       readonly protocolVersion: number;
       readonly entries: ReadonlyArray<ChatEntry>;
+      readonly mutedNames: ReadonlyArray<string>;
       readonly isFullList: boolean;
     }
   | { readonly type: "opened_elsewhere"; readonly protocolVersion: number }

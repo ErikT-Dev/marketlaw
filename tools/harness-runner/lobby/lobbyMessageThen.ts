@@ -27,6 +27,16 @@ function textShownFrom(messages: ReadonlyArray<ServerMessage>, expected: unknown
   return texts.includes(String(expected)) ? expected : (texts.at(-1) ?? null);
 }
 
+function stringValuesOf(value: unknown): ReadonlyArray<string> {
+  if (typeof value === "string") {
+    return [value];
+  }
+  if (Array.isArray(value)) {
+    return value.flatMap(stringValuesOf);
+  }
+  return isRecord(value) ? Object.values(value).flatMap(stringValuesOf) : [];
+}
+
 export function lobbyMessageThen(
   messagesTo: ReadonlyMap<string, ReadonlyArray<ServerMessage>>,
   expected: unknown,
@@ -38,9 +48,12 @@ export function lobbyMessageThen(
     : [];
   const messages = messagesTo.get(player) ?? [];
   const accepted = acceptedNamesIn(messages);
+  const sentText = stringValuesOf(messages).join(" ");
+  const hides: ReadonlyArray<unknown> = Array.isArray(asked["hides"]) ? asked["hides"] : [];
   return {
     player,
     text: textShownFrom(messages, asked["text"]),
+    hides: hides.filter((word) => typeof word === "string" && !sentText.includes(word)),
     contains: contains.map((entry) =>
       isRecord(entry) && "accepted" in entry ? { accepted } : undefined,
     ),

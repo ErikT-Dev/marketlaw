@@ -74,6 +74,8 @@ function chatRoom() {
       send(sender, { type: "room", action: { type: "send_chat", text } }),
     roomAction: (sender: Identity, type: string) =>
       send(sender, { type: "room", action: { type } }),
+    mute: (sender: Identity, type: "mute" | "unmute", playerName: string) =>
+      send(sender, { type: "room", action: { type, playerName } }),
     leaveGame: (sender: Identity) => {
       const seat = stored?.game?.seats.find(({ playerId }) => playerId === sender.playerId);
       return send(sender, {
@@ -141,5 +143,78 @@ describe("the room chat", () => {
     const outside = room.say(CAT, "let me in");
     expect(outside.isRoomGone ? null : outside.reply).toMatchObject({ code: "not_in_room" });
     expect(room.messages()).toEqual([]);
+  });
+});
+
+function threePlayerRoom() {
+  const room = chatRoom();
+  const record = room.record();
+  if (record !== null) {
+    room.storage.write({ ...record, size: 3 });
+  }
+  joinRoomIn(room.storage, BEA, START, EVERYONE);
+  joinRoomIn(room.storage, CAT, START, EVERYONE);
+  return room;
+}
+
+function messagesShownTo(room: ReturnType<typeof chatRoom>, player: Identity) {
+  return shownTo(room, player).flatMap((entry) => (entry.kind === "message" ? [entry.text] : []));
+}
+
+describe("muting in the room chat", () => {
+  it("hides a muted player's messages from the muter only, then and on resync", () => {
+    const room = threePlayerRoom();
+    room.mute(ANN, "mute", "Bea");
+    const before = { record: room.record(), messageCount: room.messages().length };
+    room.say(BEA, "hi");
+    const deliveries = chatDeliveriesBetween(before, room.record(), room.messages());
+    expect(deliveries.map(({ playerId }) => playerId)).toEqual([BEA.playerId, CAT.playerId]);
+    expect(messagesShownTo(room, ANN)).toEqual([]);
+    expect(messagesShownTo(room, CAT)).toEqual(["hi"]);
+  });
+
+  it("tells only the muter, who gets their mute list with the chat", () => {
+    const room = threePlayerRoom();
+    const before = { record: room.record(), messageCount: room.messages().length };
+    room.mute(ANN, "mute", "Bea");
+    const deliveries = chatDeliveriesBetween(before, room.record(), room.messages());
+    expect(deliveries).toEqual([
+      {
+        playerId: ANN.playerId,
+        message: {
+          type: "chat",
+          protocolVersion: PROTOCOL_VERSION,
+          entries: [],
+          mutedNames: ["Bea"],
+          isFullList: false,
+        },
+      },
+    ]);
+    const record = room.record();
+    expect(record === null ? [] : chatListFor(record, [], BEA.playerId).mutedNames).toEqual([]);
+  });
+
+  it("shows only messages sent after an unmute", () => {
+    const room = threePlayerRoom();
+    room.mute(ANN, "mute", "Bea");
+    room.say(BEA, "first");
+    room.mute(ANN, "unmute", "Bea");
+    room.say(CAT, "second");
+    expect(messagesShownTo(room, ANN)).toEqual(["second"]);
+  });
+
+  it("refuses to mute oneself or someone outside the room, and repeats change nothing", () => {
+    const room = threePlayerRoom();
+    for (const name of ["Ann", "Dan"]) {
+      const outcome = room.mute(ANN, "mute", name);
+      expect(outcome.isRoomGone ? null : outcome.reply).toMatchObject({
+        code: "player_not_in_room",
+      });
+    }
+    room.mute(ANN, "mute", "Bea");
+    const muted = room.record();
+    room.mute(ANN, "mute", "Bea");
+    room.mute(ANN, "unmute", "Cat");
+    expect(room.record()).toBe(muted);
   });
 });

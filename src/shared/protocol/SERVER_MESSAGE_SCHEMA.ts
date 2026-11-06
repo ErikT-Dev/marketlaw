@@ -152,6 +152,7 @@ export const SERVER_MESSAGE_SCHEMA = v.variant("type", [
     type: v.literal("chat"),
     protocolVersion: COUNT,
     entries: v.array(CHAT_ENTRY_SCHEMA),
+    mutedNames: v.array(v.string()),
     isFullList: v.boolean(),
   }),
   v.object({ type: v.literal("opened_elsewhere"), protocolVersion: COUNT }),

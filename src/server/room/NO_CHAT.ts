@@ -1,3 +1,3 @@
 import type { RoomChat } from "./RoomChat";
 
-export const NO_CHAT: RoomChat = { readers: [], lines: [], lineCount: 0 };
+export const NO_CHAT: RoomChat = { readers: [], lines: [], lineCount: 0, mutes: [] };

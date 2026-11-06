@@ -58,6 +58,7 @@ export const ReasonCode = v.picklist([
   "chat_too_fast",
   "chat_room_limit",
   "site_daily_cap",
+  "player_not_in_room",
 ]);
 
 export type ReasonCode = v.InferOutput<typeof ReasonCode>;

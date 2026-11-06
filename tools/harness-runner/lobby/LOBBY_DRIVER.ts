@@ -37,6 +37,8 @@ function runPlayerStep(
     session.sendGameAction(name, { type: "leave_game" });
   } else if (action === "send_chat") {
     session.sendRoomAction(name, { type: "send_chat", text: chatTextOfStep(step) });
+  } else if (action === "mute" || action === "unmute") {
+    session.sendRoomAction(name, { type: action, playerName: textOf(step[`player_to_${action}`]) });
   } else if (ROOM_ACTIONS.includes(action)) {
     const details = Object.entries(step).filter(([key]) => key !== "player" && key !== "action");
     session.sendRoomAction(name, { ...Object.fromEntries(details), type: action });
@@ -147,6 +149,8 @@ export const LOBBY_DRIVER: ScenarioDriver = {
     "disconnect",
     "reconnect",
     "leave_game",
+    "mute",
+    "unmute",
     ...ROOM_ACTIONS,
   ]),
   thenFields: new Set([
@@ -197,7 +201,7 @@ export const LOBBY_DRIVER: ScenarioDriver = {
       ]),
     ],
     ["then.game", new Set(["kind", "seats"])],
-    ["then.message_to", new Set(["player", "contains", "text"])],
+    ["then.message_to", new Set(["player", "contains", "text", "hides"])],
     ["then.accounts", new Set(["name", "kind"])],
     ["then.generated_name", new Set(["taken", "max_length", "not"])],
     ["then.logged_in", new Set(["as"])],

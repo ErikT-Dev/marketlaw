@@ -5,6 +5,14 @@ import { PlayerId } from "../../shared/PlayerId";
 const COUNT = v.pipe(v.number(), v.integer(), v.minValue(0));
 
 export const CHAT_BLOCK_SCHEMA = v.object({
-  messages: v.array(v.object({ from: PlayerId, name: v.string(), text: v.string(), at: EpochMs })),
+  messages: v.array(
+    v.object({
+      from: PlayerId,
+      name: v.string(),
+      text: v.string(),
+      at: EpochMs,
+      hiddenFrom: v.array(PlayerId),
+    }),
+  ),
   quota: v.object({ day: COUNT, left: COUNT }),
 });

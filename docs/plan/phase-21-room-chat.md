@@ -169,13 +169,31 @@ These 14 scenarios are added to `harness/required.yaml` in this phase, by file a
     adding to either. The client still ignores `sendAgainAt` (`RemoteGameHost.receive`); item 5b
     needs it in `HostEvent`. The busy-day simulator (item 4) passes `NO_CHAT_CONTEXT` today.
 
-- [ ] 3. **Mute and unmute** (A11.7; scenarios `chat` #10, #11). **Small.**
+- [x] 3. **Mute and unmute** (A11.7; scenarios `chat` #10, #11). **Small.**
   - The room record keeps who muted whom (1 row per change, B7). Each saved message records the
     players who had muted its sender at that moment; they never receive it, then or on resync,
     and get no notification. Unmuting shows only later messages. The muted player is never
     told: nothing sent to them mentions it (`message_to.hides: [muted]`).
   - A player's own mute list (S7.3, "Muted players are listed with Unmute") goes with the chat
     entries to that player only.
+  - Done (2026-11-06). Scenarios `chat` #10 and #11 pass in the lobby driver (checked locally,
+    not yet on the required list). How it is built:
+    - `RoomChat.mutes` (`ChatMute`: `by`, `muted`, `mutedName`) in the room record;
+      `chatAfterMute` (from `handleChatIntent`) adds or removes one, saved as the record's 1 row.
+      Each `ChatMessage` has `hiddenFrom` (in the chat blocks too); `chatEntriesFor` leaves
+      those messages out for those players, so they never get them, on resync either, and are not
+      notified.
+    - Every `chat` server message carries `mutedNames`, the receiver's own list
+      (`mutedNamesOf`); `chatDeliveriesBetween` also sends the muter an empty-entry `chat`
+      message when their list changes.
+  - Differs: Q83. Muting oneself, an unknown name or a player not in the room is refused with the
+    new code `player_not_in_room` (text in `REJECTION_MESSAGES`); repeated mutes and unmutes of
+    nobody are accepted and write no row. Mutes stay when either player leaves. Scenario `chat`
+    #11 now waits 2 seconds between Bea's messages (it contradicted A11.6). The lobby driver
+    maps `player_to_mute`/`player_to_unmute` to `playerName` and checks `message_to.hides`
+    against the string values of the messages sent (not their keys).
+  - For later items: item 5a/5b read `mutedNames` from the `chat` message for the S7.3 muted
+    list and send `{ type: "mute" | "unmute", playerName }`.
 
 - [ ] 4. **Budgets with chat** (B7, B18, B4, B5, B13; exit criterion "B7 within its limit").
   **Small.**

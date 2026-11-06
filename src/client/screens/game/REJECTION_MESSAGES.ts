@@ -88,4 +88,5 @@ export const REJECTION_MESSAGES: Readonly<Record<ReasonCode, IconText>> = {
   chat_too_fast: "You can send 1 message every 2 seconds.",
   chat_room_limit: "You have sent 100 messages in this room, the most per room.",
   site_daily_cap: "Daily limit reached, try again after 00:00 UTC",
+  player_not_in_room: "That player is not in this room.",
 };

@@ -28,6 +28,7 @@ function numberedMessage(index: number) {
       name: "Ann",
       text: `message ${String(index)}`,
       at: v.parse(EpochMs, index),
+      hiddenFrom: [],
     },
     quota: { day: 0, left: 39 - index },
   };

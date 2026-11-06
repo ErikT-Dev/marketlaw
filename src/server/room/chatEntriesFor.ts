@@ -26,6 +26,7 @@ export function chatEntriesFor(
   const shown = messages
     .map((message, position) => ({ message, position }))
     .slice(messageFrom)
+    .filter(({ message }) => !message.hiddenFrom.includes(playerId))
     .map(({ message, position }) => ({
       position,
       rank: MESSAGE_AFTER_LINES,

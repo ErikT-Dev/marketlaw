@@ -6,4 +6,5 @@ export type ChatMessage = {
   readonly name: string;
   readonly text: string;
   readonly at: EpochMs;
+  readonly hiddenFrom: ReadonlyArray<PlayerId>;
 };

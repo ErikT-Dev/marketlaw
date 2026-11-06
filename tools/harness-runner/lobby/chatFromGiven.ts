@@ -17,5 +17,6 @@ export function chatFromGiven(
     name: from,
     text,
     at: now,
+    hiddenFrom: [],
   }));
 }
