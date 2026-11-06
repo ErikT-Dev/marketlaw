@@ -367,7 +367,20 @@ and must pass again:
      of `role="img"`, including QuestParts with word labels.
   7. Suggestion: negative-stat parts in `QuestProgressLine.tsx` use lowercase names
      ("workforce"); `StatChip` uses "Workforce".
-- [ ] Fixer A: findings 1, 2 and 7 (screen and tooltips).
+- [x] Fixer A: findings 1, 2 and 7 (screen and tooltips).
+  - 1 fixed: the right column's Your stats row is at least as tall as its content
+    (`minmax(min-content, 300fr)` in `GamePage.module.css`), so the hand gets the rest. At
+    1280x720 all 3 project lines show, also with type counts (`combos-list`, `game-table`); the
+    hand is shorter there and scrolls. Test: `e2e/expectAllProjectsInView.ts` in
+    `gameScreenSizes` and `combosAndProjects` (each project line fully in view).
+  - 2 fixed: the focus rule for tooltips is `:is(button, a[href]):focus-visible` in
+    `Chip.module.css` and `QuestsPanel.module.css` (every focusable control in the client is a
+    button or a link; the panel body is the only other tab stop). Test:
+    `e2e/tooltipsOnFocus.spec.ts` (a focused Opponents body shows no tooltip, the focused Use
+    Influence button shows its own); it fails with the old rule.
+  - 7 fixed: negative-stat parts use the icon's name ("Workforce"), as `StatChip` does.
+  - For later items: other 1280x720 screenshots of the game screen change (taller Your stats,
+    shorter hand); only those of the specs above were retaken.
 - [ ] Fixer B: findings 3, 4, 5 and 6 (records and tests).
 - [ ] Finisher after the fixes.
 
