@@ -1,11 +1,13 @@
-import { fireEvent, render, screen, within } from "@testing-library/react";
+import { act, fireEvent, render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import type { OwnSeatView } from "../../../shared/OwnSeatView";
 import type { PendingAction } from "../../store/PendingAction";
 import type { RejectedMove } from "../../store/RejectedMove";
 import { gamePageProps } from "../../testing/gamePageProps";
+import { photoLoaderThatDecodes } from "../../testing/photoLoaderThatDecodes";
 import { roomUpdateWith } from "../../testing/roomUpdateWith";
 import { GamePage } from "../GamePage";
+import { PhotoLoading } from "./PhotoLoading";
 
 const HAND: Partial<OwnSeatView> = {
   hand: ["Farm House", "Log House", "Loft"],
@@ -26,8 +28,16 @@ function showGame(
     pendingActions,
     rejectedMove,
   );
-  render(<GamePage {...props} />);
+  render(
+    <PhotoLoading value={photoLoaderThatDecodes(() => true)}>
+      <GamePage {...props} />
+    </PhotoLoading>,
+  );
   return props;
+}
+
+async function photosDecoded() {
+  await act(async () => Promise.resolve());
 }
 
 function handCard(name: string) {
@@ -45,8 +55,9 @@ describe("hand", () => {
 });
 
 describe("big card", () => {
-  it("explains the real cost and plays the selected card", () => {
+  it("explains the real cost and plays the selected card", async () => {
     const { onAction } = showGame();
+    await photosDecoded();
     fireEvent.click(handCard("Farm House"));
     const selected = screen.getByRole("region", { name: "Selected card: Farm House" });
     expect(within(selected).getByText("Costs 6 funds")).toBeDefined();
@@ -60,8 +71,9 @@ describe("big card", () => {
     expect(screen.queryByRole("region", { name: /^Selected card/ })).toBeNull();
   });
 
-  it("says why a card cannot be played and does not let it be played", () => {
+  it("says why a card cannot be played and does not let it be played", async () => {
     showGame();
+    await photosDecoded();
     fireEvent.click(handCard("Loft"));
     const selected = screen.getByRole("region", { name: "Selected card: Loft" });
     expect(
@@ -110,7 +122,7 @@ describe("actions", () => {
     expect(onAction).toHaveBeenCalledWith({ type: "end_turn" });
   });
 
-  it("disables everything but End turn at the action limit and says why", () => {
+  it("disables everything but End turn at the action limit and says why", async () => {
     showGame({
       sellRejection: "action_limit_reached",
       handDetails: [
@@ -122,6 +134,7 @@ describe("actions", () => {
         },
       ],
     });
+    await photosDecoded();
     fireEvent.click(handCard("Farm House"));
     const selected = screen.getByRole("region", { name: "Selected card: Farm House" });
     expect(within(selected).getByRole("button", { name: "Play card" })).toHaveProperty(

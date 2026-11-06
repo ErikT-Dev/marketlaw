@@ -180,7 +180,7 @@ and must pass again:
   - Leak test: `hiddenFrom` in `tools/simulator/whatSeatsSeeViolations.ts` adds `state.discard`
     (card names are unique, all 240, so a name never appears elsewhere at the same time).
     The e2e tests have no leak check of their own (`hiddenFrom` is only in the simulator).
-- [ ] 3. **The big card** (S6.5, S1.5). **Large.** About three commits:
+- [x] 3. **The big card** (S6.5, S1.5). **Large.** About three commits:
   1. Title bar on its sector colour (`BigCard.tsx`, `BigCard.module.css`, `sectorColor.ts`; the
      header is the `header` div). Text contrast on the solid colour must pass axe
      (`proposed-rules.md`, "Text colours are checked on solid backgrounds").
@@ -196,6 +196,22 @@ and must pass again:
   - Tests: browser test, several hand cards each shown in full with its own photo within 100 ms;
     unit test of the 300 ms fallback. Screenshot of the big card (`card-selected` exists, in
      `e2e/handAndActionsScreens.spec.ts`).
+  - Done in two commits. Title bar: the sector colours with alpha are not measurable by axe over
+    the card texture, so `tools/design-export/BOARD_VALUES.ts` adds opaque `--color-sector-*-solid`
+    (the base colours without alpha) and `-solid-text` (white; dark on Service, 4.85:1, where white
+    would be 3.2:1); `sectorColor(sector, "solid")`. The same solid colour sits behind the photo,
+    an `img` keyed by card, so an old photo never stays on a new card. Switch: `useHandChoice`
+    keeps the shown choice and the wanted card (`HandSwitch`); `useReadyPhotos` decodes the card
+    texture and the photo of each hand card once, also of cards that join. The loader (decode and
+    timer) is injected through the `PhotoLoading` context (`BROWSER_PHOTO_LOADER` by default,
+    `src/client/testing/photoLoaderThatDecodes.ts` in tests). Pressing the selected card again,
+    Close and sell mode change at once. Step 3: no work, all 240 photos are 554×478 WebP, not
+    larger than 630×478. Tests: `bigCardSwitch.test.tsx` (300 ms fallback with a photo that never
+    loads), `e2e/bigCardSwitch.spec.ts` (waits until the hand's photos are downloaded, then 4
+    cards each shown in full with its own decoded photo in under 100 ms, measured in the page).
+  - For later items: a unit test that clicks a hand card and expects the big card at once renders
+    inside `<PhotoLoading value={photoLoaderThatDecodes(() => true)}>` and awaits one
+    `act(async () => Promise.resolve())` first (see `handAndActions.test.tsx`).
 - [ ] 4. **Sector colours in texts** (S1.5, S5.1, S8.3). **Small.**
   - Quest requirements: `questNeedLabel.ts` builds the label as a string; the sector part of a
     `cards` need must be rendered coloured (in `QuestPart.tsx` or a new small component), with
