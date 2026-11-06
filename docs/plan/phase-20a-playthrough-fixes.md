@@ -366,3 +366,4 @@ are each helper's conversation size at its end.
 | Finisher, first run | 30 | 91k | 38 | done |
 | Builder, item 8 | 7 | 86k | 22 | done |
 | Builder, item 9 | 26 | 197k | 119 | done |
+| Finisher, second run | 35 | 78k | 33 | done |
