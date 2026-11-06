@@ -48,8 +48,8 @@ function showGame(changes: Partial<OwnSeatView> = SEAT) {
 }
 
 function openInfluence() {
-  fireEvent.click(screen.getByRole("button", { name: "Use influence" }));
-  return screen.getByRole("dialog", { name: "Use influence" });
+  fireEvent.click(screen.getByRole("button", { name: "Use Influence" }));
+  return screen.getByRole("dialog", { name: "Use Influence" });
 }
 
 describe("use influence", () => {
@@ -57,7 +57,7 @@ describe("use influence", () => {
     showGame();
     const dialog = within(openInfluence());
     expect(textWithIconNames(dialog.getByText(/^You have/))).toBe(
-      "You have [Influence 4] and [Funds 7]. Influence actions can be used any time in the main phase.",
+      "You have [Influence 4] and [Funds 7]. [Influence] actions can be used any time in the main phase.",
     );
     const tiles = within(dialog.getByRole("list", { name: "Trades" }));
     expect(tiles.getAllByRole("button")).toHaveLength(20);
@@ -107,7 +107,7 @@ describe("use influence", () => {
     const dialog = within(openInfluence());
     fireEvent.click(dialog.getByRole("button", { name: "4 influence → 2 funds" }));
     expect(onAction).toHaveBeenCalledWith({ type: "influence", trade: "influence_to_funds" });
-    expect(screen.getByRole("dialog", { name: "Use influence" })).toBeDefined();
+    expect(screen.getByRole("dialog", { name: "Use Influence" })).toBeDefined();
   });
 
   it("shows the draw actions by kind and tier and sends the one chosen", () => {

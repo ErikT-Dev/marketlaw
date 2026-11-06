@@ -1,20 +1,14 @@
-import type { HelpTextPart } from "./HelpTextPart";
-import { StatChip } from "./StatChip";
+import type { IconTextPart } from "./IconTextPart";
+import { TextWithIcons } from "./TextWithIcons";
 
 type Props = {
-  readonly parts: ReadonlyArray<HelpTextPart>;
+  readonly parts: ReadonlyArray<IconTextPart>;
 };
 
 export function HelpText({ parts }: Props) {
   return (
     <p>
-      {parts.map((part, index) =>
-        typeof part === "string" ? (
-          part
-        ) : (
-          <StatChip key={`${part.stat} ${String(index)}`} stat={part.stat} />
-        ),
-      )}
+      <TextWithIcons text={parts} />
     </p>
   );
 }

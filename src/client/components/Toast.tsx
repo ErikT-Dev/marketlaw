@@ -1,9 +1,11 @@
+import type { IconText } from "./IconText";
+import { TextWithIcons } from "./TextWithIcons";
 import styles from "./Toast.module.css";
 
 type Props = {
   readonly kind: "success" | "error" | "info" | "warning";
   readonly title: string;
-  readonly text: string;
+  readonly text: IconText;
   readonly onClose: () => void;
 };
 
@@ -15,7 +17,9 @@ export function Toast({ kind, title, text, onClose }: Props) {
     >
       <div className={styles["text"]}>
         <span className={styles["title"]}>{title}</span>
-        <span className={styles["body"]}>{text}</span>
+        <span className={styles["body"]}>
+          <TextWithIcons text={text} />
+        </span>
       </div>
       <button
         className={styles["close"]}

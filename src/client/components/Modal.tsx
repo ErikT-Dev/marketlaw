@@ -1,9 +1,11 @@
 import { useEffect, useId, type ReactNode } from "react";
+import type { IconText } from "./IconText";
 import styles from "./Modal.module.css";
 import { ModalBackdrop } from "./ModalBackdrop";
+import { TextWithIcons } from "./TextWithIcons";
 
 type Props = {
-  readonly title: string;
+  readonly title: IconText;
   readonly size: "large" | "extraLarge";
   readonly children: ReactNode;
   readonly onClose?: () => void;
@@ -34,7 +36,7 @@ export function Modal({ title, size, children, onClose }: Props) {
         aria-labelledby={titleId}
       >
         <h2 id={titleId} className={styles["title"]}>
-          {title}
+          <TextWithIcons text={title} />
         </h2>
         {children}
       </section>

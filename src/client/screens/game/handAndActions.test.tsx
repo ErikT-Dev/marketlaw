@@ -8,6 +8,7 @@ import { photoLoaderThatDecodes } from "../../testing/photoLoaderThatDecodes";
 import { roomUpdateWith } from "../../testing/roomUpdateWith";
 import { GamePage } from "../GamePage";
 import { PhotoLoading } from "./PhotoLoading";
+import { textWithIconNames } from "../../testing/textWithIconNames";
 
 const HAND: Partial<OwnSeatView> = {
   hand: ["Farm House", "Log House", "Loft"],
@@ -60,7 +61,7 @@ describe("big card", () => {
     await photosDecoded();
     fireEvent.click(handCard("Farm House"));
     const selected = screen.getByRole("region", { name: "Selected card: Farm House" });
-    expect(within(selected).getByText("Costs 6 funds")).toBeDefined();
+    expect(textWithIconNames(selected)).toContain("Costs [Funds 6]");
     expect(
       within(selected).getByText(
         "Base cost 4, plus 2 for the 2 Residential tier 1 cards already in your city.",
@@ -94,7 +95,7 @@ describe("actions", () => {
     fireEvent.click(screen.getByRole("button", { name: "Sell cards" }));
     fireEvent.click(handCard("Farm House"));
     fireEvent.click(handCard("Loft"));
-    expect(screen.getByText(/then Sell 2 cards for 2 funds/)).toBeDefined();
+    expect(textWithIconNames(document.body)).toContain("then Sell 2 cards for [Funds 2]");
     fireEvent.click(screen.getByRole("button", { name: "Sell 2 cards" }));
     expect(onAction).toHaveBeenCalledWith({ type: "sell", cards: ["Farm House", "Loft"] });
   });
@@ -179,7 +180,9 @@ describe("pending and rejected moves", () => {
       action: { type: "play_card", card: "Farm House" },
       code: "not_enough_funds",
     });
-    expect(screen.getByRole("alert").textContent).toContain("You need 6 funds; you have 7.");
+    expect(textWithIconNames(screen.getByRole("alert"))).toContain(
+      "You need [Funds 6]; you have [Funds 7].",
+    );
     fireEvent.click(screen.getByRole("button", { name: "Close: Move rejected" }));
     expect(onDismissRejection).toHaveBeenCalledTimes(1);
   });

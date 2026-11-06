@@ -1,6 +1,7 @@
 import type { OwnSeatView } from "../../../shared/OwnSeatView";
 import type { TradeStatus } from "../../../shared/TradeStatus";
 import { TRADES } from "../../../shared/TRADES";
+import type { IconText } from "../../components/IconText";
 import { REJECTION_MESSAGES } from "./REJECTION_MESSAGES";
 
 function usesLeftText(seat: OwnSeatView, status: TradeStatus): string {
@@ -12,7 +13,7 @@ function usesLeftText(seat: OwnSeatView, status: TradeStatus): string {
   return `${String(left)} ${left === 1 ? "use" : "uses"} left`;
 }
 
-export function tradeStatusText(seat: OwnSeatView, status: TradeStatus): string {
+export function tradeStatusText(seat: OwnSeatView, status: TradeStatus): IconText {
   if (status.rejection === null) {
     return usesLeftText(seat, status);
   }

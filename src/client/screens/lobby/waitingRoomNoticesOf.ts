@@ -1,8 +1,9 @@
 import type { ClientState } from "../../store/ClientState";
+import type { IconText } from "../../components/IconText";
 import { REJECTION_MESSAGES } from "../game/REJECTION_MESSAGES";
 
 export function waitingRoomNoticesOf(state: ClientState): {
-  readonly rejection: string | null;
+  readonly rejection: IconText | null;
   readonly hasSiteGameLimitNotice: boolean;
 } {
   const rejectedCode = state.rejectedMove?.code ?? null;

@@ -1,6 +1,6 @@
-import type { HelpTextPart } from "../../components/HelpTextPart";
+import type { IconTextPart } from "../../components/IconTextPart";
 
-export const QUESTS_HELP: ReadonlyArray<HelpTextPart> = [
+export const QUESTS_HELP: ReadonlyArray<IconTextPart> = [
   "Quests are shared goals. In the main phase, complete a quest when you have what it asks for: nothing is used up, and you get the reward at once. ",
   { stat: "workforce" },
   ", ",

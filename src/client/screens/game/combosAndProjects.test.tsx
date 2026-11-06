@@ -112,8 +112,9 @@ describe("projects", () => {
     const { onAction } = showGame();
     fireEvent.click(screen.getByRole("button", { name: "Projects" }));
     const dialog = within(screen.getByRole("dialog", { name: "Projects" }));
-    const streets = within(dialog.getByRole("listitem", { name: "Clean up the streets" }));
-    expect(streets.getByText("Needs 8 quality · you have 9")).toBeDefined();
+    const streetsItem = dialog.getByRole("listitem", { name: "Clean up the streets" });
+    expect(textWithIconNames(streetsItem)).toContain("Needs [Quality 8] · you have [Quality 9]");
+    const streets = within(streetsItem);
     const campaign = within(dialog.getByRole("listitem", { name: "Culture campaign" }));
     expect(campaign.getByRole("button", { name: "Need 4 more" })).toHaveProperty("disabled", true);
     const homeless = within(dialog.getByRole("listitem", { name: "Help the homeless" }));
@@ -143,22 +144,21 @@ describe("projects", () => {
       },
     });
     fireEvent.click(screen.getByRole("button", { name: "Projects" }));
-    const streets = within(screen.getByRole("listitem", { name: "Clean up the streets" }));
-    expect(streets.getByRole("button", { name: "Complete" })).toHaveProperty("disabled", true);
-    expect(
-      streets.getByText(
-        "You need 8 of the stat, and no negative workforce, quality or satisfaction.",
-      ),
-    ).toBeDefined();
+    const streetsItem = screen.getByRole("listitem", { name: "Clean up the streets" });
+    expect(within(streetsItem).getByRole("button", { name: "Complete" })).toHaveProperty(
+      "disabled",
+      true,
+    );
+    expect(textWithIconNames(streetsItem)).toContain(
+      "You need 8 of the stat, and no negative [Workforce], [Quality] or [Satisfaction].",
+    );
   });
 
   it("says when the next project would be the third", () => {
     showGame({ ...READY, projects: ["workforce", "satisfaction"] });
     fireEvent.click(screen.getByRole("button", { name: "Projects" }));
-    expect(
-      screen.getByText(
-        "This would be your 3rd project: it also gives +1 more income and 1 more card.",
-      ),
-    ).toBeDefined();
+    expect(textWithIconNames(screen.getByRole("dialog", { name: "Projects" }))).toContain(
+      "This would be your 3rd project: it also gives [Income +1] more and 1 more card.",
+    );
   });
 });

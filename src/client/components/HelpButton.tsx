@@ -1,13 +1,13 @@
 import { useCallback, useId, useRef, useState } from "react";
 import styles from "./HelpButton.module.css";
 import { HelpText } from "./HelpText";
-import type { HelpTextPart } from "./HelpTextPart";
+import type { IconTextPart } from "./IconTextPart";
 import { useBoxFollowingButton } from "./useBoxFollowingButton";
 import { useHelpBoxDismissal } from "./useHelpBoxDismissal";
 
 type Props = {
   readonly name: string;
-  readonly text: ReadonlyArray<HelpTextPart>;
+  readonly text: ReadonlyArray<IconTextPart>;
 };
 
 type BoxPosition = { readonly top: number; readonly left: number };

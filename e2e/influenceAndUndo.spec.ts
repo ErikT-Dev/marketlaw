@@ -28,8 +28,8 @@ test("trade influence, buy a build pass for a second card, undo it, and draw a c
   await page.goto(seatOne);
   await expect(page.getByRole("heading", { name: "Turn 1 of 40" })).toBeVisible();
 
-  await page.getByRole("button", { name: "Use influence" }).click();
-  const influence = page.getByRole("dialog", { name: "Use influence" });
+  await page.getByRole("button", { name: "Use Influence" }).click();
+  const influence = page.getByRole("dialog", { name: "Use Influence" });
   await expectScreenFits(page, "use-influence", testInfo);
   await influence.getByRole("button", { name: "1 fund → 1 influence" }).click();
   await expect(influence.getByRole("img", { name: "Influence 11" })).toBeVisible();
@@ -51,7 +51,7 @@ test("trade influence, buy a build pass for a second card, undo it, and draw a c
     page.getByRole("list", { name: "Your hand" }).getByRole("button", { name: "Cottage" }),
   ).toBeVisible();
 
-  await page.getByRole("button", { name: "Use influence" }).click();
+  await page.getByRole("button", { name: "Use Influence" }).click();
   await influence.getByRole("button", { name: "Draw Industry tier 1" }).click();
   await expect(influence.getByRole("img", { name: "Influence 8" })).toBeVisible();
   await influence.getByRole("button", { name: "Close" }).click();

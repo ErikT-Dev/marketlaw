@@ -1,8 +1,9 @@
+import type { IconText } from "../../components/IconText";
 import { clockText } from "../../components/clockText";
 import type { RemovalNotice } from "../../store/RemovalNotice";
 import { REJECTION_MESSAGES } from "../game/REJECTION_MESSAGES";
 
-export function removalText(removal: RemovalNotice, now: number): string {
+export function removalText(removal: RemovalNotice, now: number): IconText {
   const wait =
     removal.rejoinAt === null || removal.rejoinAt <= now
       ? "You can join that room again now."

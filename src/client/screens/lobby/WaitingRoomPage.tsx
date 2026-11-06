@@ -1,4 +1,6 @@
 import type { RoomView } from "../../../shared/protocol/RoomView";
+import type { IconText } from "../../components/IconText";
+import { TextWithIcons } from "../../components/TextWithIcons";
 import { Toast } from "../../components/Toast";
 import { SITE_GAME_LIMIT_TOAST } from "../game/SITE_GAME_LIMIT_TOAST";
 import { useServerNow } from "../game/useServerNow";
@@ -16,7 +18,7 @@ type Props = {
   readonly onLeave: () => void;
   readonly onAccept: () => void;
   readonly onDecline: () => void;
-  readonly rejection: string | null;
+  readonly rejection: IconText | null;
   readonly hasSiteGameLimitNotice: boolean;
   readonly onDismissSiteGameLimit: () => void;
 };
@@ -33,7 +35,7 @@ export function WaitingRoomPage(props: Props) {
           <WaitingRoomHeader room={room} isOwner={isOwner} onLeave={onLeave} />
           {rejection === null ? null : (
             <p role="alert" className={styles["error"]}>
-              {rejection}
+              <TextWithIcons text={rejection} />
             </p>
           )}
           <div className={styles["sizeRow"]}>

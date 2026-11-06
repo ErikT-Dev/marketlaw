@@ -1351,3 +1351,21 @@ file.
   message in either direction raises `PROTOCOL_VERSION`; the spec needs no change, since M9.1
   already rejects older versions.
 - **Implemented:** `src/shared/PROTOCOL_VERSION.ts` (3).
+
+## Q76. Which words count as a stat or a type under S1.6?
+
+- **Phase:** 20a, item 9 (Icons everywhere).
+- **Question:** S1.6 shows every stat and type as its icon, never as a word, in all text. Some
+  names contain a stat word without meaning the stat: "bonus types" and "bonus-type points"
+  (R21.6), the "first-completion bonus" (R16.6), and button and pop-up names such as "Use
+  influence". Are those words icons too, and how is a stat in a label with a fixed name spoken?
+- **Solution:**
+  - "Bonus types", "bonus-type points" and "first-completion bonus" are game concepts with their
+    own names (glossary), not the bonus stat; they stay words.
+  - "Use influence" and "influence action" name the influence stat; they show the influence icon
+    ("Use [icon]"). The button and the pop-up are then named "Use Influence" (the icon's name),
+    which the tests use.
+  - Stats in prose become parts (text and icons, `IconText` in `src/client/components/`), never a
+    string; the rejection messages of S16.3 keep their words, with each stat as its icon.
+  - "Tier" and "cost" are not stats in S1.6's list; they stay words where they are words.
+- **Implemented:** phase 20a item 9.

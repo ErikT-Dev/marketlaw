@@ -20,13 +20,15 @@ type Props = {
 
 export function InfluenceDialog({ seat, isBusy, onTrade, onDraw, onClose }: Props) {
   return (
-    <Modal title="Use influence" size="extraLarge" onClose={onClose}>
+    <Modal title={["Use ", { stat: "influence" }]} size="extraLarge" onClose={onClose}>
       <p className={styles["text"]}>
         {"You have "}
         <StatChip stat="influence" value={seat.stats.influence} />
         {" and "}
         <StatChip stat="funds" value={seat.stats.funds} />
-        {". Influence actions can be used any time in the main phase."}
+        {". "}
+        <StatChip stat="influence" />
+        {" actions can be used any time in the main phase."}
       </p>
       <h3 className={influenceStyles["section"]}>Trades</h3>
       <ul className={influenceStyles["tiles"]} aria-label="Trades">

@@ -1,8 +1,9 @@
 import type { ReasonCode } from "../../../shared/ReasonCode";
+import type { IconText } from "../../components/IconText";
 
 const SOMETHING_WENT_WRONG = "Something went wrong. The page reloads your game.";
 
-export const REJECTION_MESSAGES: Readonly<Record<ReasonCode, string>> = {
+export const REJECTION_MESSAGES: Readonly<Record<ReasonCode, IconText>> = {
   out_of_time: "Your time ran out before your move arrived.",
   wrong_phase: "You cannot do that in this phase.",
   not_your_go: "Wait for your go in the market phase.",
@@ -11,19 +12,41 @@ export const REJECTION_MESSAGES: Readonly<Record<ReasonCode, string>> = {
   game_over: "The game has ended.",
   not_in_game: "You are not playing in this game.",
   card_not_in_hand: "That card is not in your hand any more.",
-  not_enough_funds: "You do not have enough funds.",
+  not_enough_funds: ["You do not have enough ", { stat: "funds" }, "."],
   tier_not_allowed: "Tier 2 and 3 cards can be played from turn 5.",
-  no_build_pass: "You already played a card this turn. A build pass lets you play another.",
+  no_build_pass: [
+    "You already played a card this turn. A ",
+    { stat: "buildPasses" },
+    " lets you play another.",
+  ],
   build_skipped: "You skipped build this turn, so you cannot play a card.",
   nothing_to_claim: "No combo is ready to claim.",
   quest_not_on_table: "That quest is no longer on the table.",
   quest_already_completed: "You already completed this quest.",
-  quest_needs_not_met:
-    "You do not meet this quest's requirement yet, or workforce, quality or satisfaction is negative.",
+  quest_needs_not_met: [
+    "You do not meet this quest's requirement yet, or ",
+    { stat: "workforce" },
+    ", ",
+    { stat: "quality" },
+    " or ",
+    { stat: "satisfaction" },
+    " is negative.",
+  ],
   project_already_completed: "You already completed this project.",
-  project_needs_not_met:
-    "You need 8 of the stat, and no negative workforce, quality or satisfaction.",
-  trade_limit_reached: "You have used this influence action as often as allowed.",
+  project_needs_not_met: [
+    "You need 8 of the stat, and no negative ",
+    { stat: "workforce" },
+    ", ",
+    { stat: "quality" },
+    " or ",
+    { stat: "satisfaction" },
+    ".",
+  ],
+  trade_limit_reached: [
+    "You have used this ",
+    { stat: "influence" },
+    " action as often as allowed.",
+  ],
   cannot_afford_trade: "You do not have enough for this trade.",
   skip_build_after_play: "You can only skip build before playing a card.",
   no_card_of_kind: "No card of that kind and tier is left in the deck or discard pile.",

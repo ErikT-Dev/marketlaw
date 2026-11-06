@@ -3,6 +3,7 @@ import type { OwnSeatView } from "../../../shared/OwnSeatView";
 import type { TradeName } from "../../../shared/TradeName";
 import type { TradeStatus } from "../../../shared/TradeStatus";
 import { StatAmountsIcons } from "../../components/StatAmountsIcons";
+import { TextWithIcons } from "../../components/TextWithIcons";
 import styles from "./InfluenceDialog.module.css";
 import { TradeIcons } from "./TradeIcons";
 import { tradeLabel } from "./tradeLabel";
@@ -40,7 +41,7 @@ export function TradeTile({ seat, status, isBusy, onUse }: Props) {
               <StatAmountsIcons amounts={tradeMissingAmounts(seat, status)} />
             </>
           ) : (
-            tradeStatusText(seat, status)
+            <TextWithIcons text={tradeStatusText(seat, status)} />
           )}
         </span>
       </button>

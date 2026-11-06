@@ -18,7 +18,7 @@ test("the hand, the big card, sell mode and the done state fit and are found by 
 
   await hand.getByRole("button", { name: card, exact: true }).click();
   const selected = host.getByRole("region", { name: `Selected card: ${card}` });
-  await expect(selected.getByRole("heading", { name: /^Costs \d+ funds$/ })).toBeVisible();
+  await expect(selected.getByRole("heading", { name: /^Costs Funds \d+$/ })).toBeVisible();
   await expect(selected.getByRole("article", { name: card })).toBeVisible();
   await expectScreenFits(host, "card-selected", testInfo);
   await selected.getByRole("button", { name: "Close" }).click();
@@ -26,7 +26,8 @@ test("the hand, the big card, sell mode and the done state fit and are found by 
   await host.getByRole("button", { name: "Sell cards" }).click();
   await hand.getByRole("button", { name: card, exact: true }).click();
   await expect(host.getByRole("button", { name: "Sell 1 card" })).toBeVisible();
-  await expect(host.getByText(/then Sell 1 card for 1 fund\./)).toBeVisible();
+  const sellingNotice = host.getByText(/then Sell 1 card for/);
+  await expect(sellingNotice.getByRole("img", { name: "Funds 1" })).toBeVisible();
   await expectScreenFits(host, "sell-mode", testInfo);
   await hand.getByRole("button", { name: card, exact: true }).click();
   await host.getByRole("button", { name: "Cancel selling" }).click();
