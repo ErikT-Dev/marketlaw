@@ -128,7 +128,7 @@ and must pass again:
   Until items 1 and 2 are both built, `npm run check` fails on the scenario count (429 vs 433) and
   the 3 required scenarios that read `discard_count`; a builder of item 1 alone reports that, not
   a failure of its item.
-- [ ] 1. **Quests need non-negative stats** (R19.4, S5.1, S16.3; scenarios `quests` #65–67).
+- [x] 1. **Quests need non-negative stats** (R19.4, S5.1, S16.3; scenarios `quests` #65–67).
   **Small.**
   - Engine: `src/rules/questRejection.ts` returns `quest_needs_not_met` while workforce, quality or
     satisfaction is negative. The same check is written out in `projectRejection.ts`,
@@ -143,6 +143,14 @@ and must pass again:
     `QuestPart` (for example "-1/0" with the stat's icon, spoken "workforce -1 of 0"), only while
     the quest is not completed. Update the test fixtures that build a `QuestProgress`.
   - S16.3: `REJECTION_MESSAGES.ts` text for `quest_needs_not_met`, word for word from S16.3.
+  - Done: `src/rules/negativeStatsOf.ts` (used by `questRejection.ts`, `projectRejection.ts` and
+    `questPlacesShownTo.ts`; `takeIncome.ts` and the invariant left as they were). Each progress
+    entry carries `negativeStats: [{stat, value}]` (`src/shared/NegativeStat.ts`, stat typed as
+    `ProjectName`, the same three stats), in the order quality, satisfaction, workforce; the line
+    shows each as "-1/0" with its icon. `quests` #65–67 pass (checked by adding them to the
+    required list locally, not committed). The full check still fails only on the scenario count
+    and the 3 `discard_count` scenarios, as expected until item 2.
+  - For later items: whoever builds a `QuestProgress` in a test now adds `negativeStats: []`.
 - [ ] 2. **The discard pile is a number** (M3.2, M3.5, R17.1, R17.6, S4.2, S8.3; scenarios
   `visibility` #16, and `drawing` #10, #11, `visibility` #15 again). **Large.**
   - `PlayerView.discard` (cards) becomes `discardCount` (number): `src/shared/PlayerView.ts`,

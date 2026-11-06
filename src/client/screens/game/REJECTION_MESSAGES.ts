@@ -18,7 +18,8 @@ export const REJECTION_MESSAGES: Readonly<Record<ReasonCode, string>> = {
   nothing_to_claim: "No combo is ready to claim.",
   quest_not_on_table: "That quest is no longer on the table.",
   quest_already_completed: "You already completed this quest.",
-  quest_needs_not_met: "You do not meet this quest's requirement yet.",
+  quest_needs_not_met:
+    "You do not meet this quest's requirement yet, or workforce, quality or satisfaction is negative.",
   project_already_completed: "You already completed this project.",
   project_needs_not_met:
     "You need 8 of the stat, and no negative workforce, quality or satisfaction.",

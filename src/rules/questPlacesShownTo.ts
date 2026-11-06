@@ -3,6 +3,7 @@ import type { QuestPlaceView } from "../shared/QuestPlaceView";
 import type { SeatNumber } from "../shared/SeatNumber";
 import type { GameState } from "./GameState";
 import { QUEST_TABLE_RULES } from "./QUEST_TABLE_RULES";
+import { negativeStatsOf } from "./negativeStatsOf";
 import { questNeedHave } from "./questNeedHave";
 import { rejectionOf } from "./rejectionOf";
 import { seatShownTo } from "./seatShownTo";
@@ -30,6 +31,7 @@ export function questPlacesShownTo(
         seat: shown.seat,
         isCompleted: shown.questsCompleted.includes(place.quest),
         have: needs.map((need) => questNeedHave(shown, typeCounts, need)),
+        negativeStats: negativeStatsOf(shown.stats),
       })),
     };
   });

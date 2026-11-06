@@ -83,9 +83,36 @@ describe("what other players see during the main phase", () => {
       ),
     });
     const after = played(start, [{ type: "complete_quest", seat: 1, quest: "Trading post" }]);
-    expect(progressOfSeat1(after, 1)).toEqual({ seat: 1, isCompleted: true, have: [4, 1] });
-    expect(progressOfSeat1(after, 2)).toEqual({ seat: 1, isCompleted: false, have: [4, 1] });
+    expect(progressOfSeat1(after, 1)).toEqual({ seat: 1, isCompleted: true, have: [4, 1], negativeStats: [] });
+    expect(progressOfSeat1(after, 2)).toEqual({ seat: 1, isCompleted: false, have: [4, 1], negativeStats: [] });
     expect(viewFor(after, 1).quests[0]).toHaveProperty("completeRejection", "quest_already_completed");
+  });
+
+  it("shows a negative workforce, quality or satisfaction in the quest progress", () => {
+    const base = gameWith(["Landfill"], []);
+    const start = withMainPhaseStart({
+      ...base,
+      quests: [{ quest: "Trading post", turnsOnTable: 1 }],
+      seats: base.seats.map((seat) =>
+        seat.seat === 1
+          ? {
+              ...seat,
+              city: ["Apparel Store"],
+              stats: { ...seat.stats, income: 4, workforce: -1, satisfaction: -2 },
+            }
+          : seat,
+      ),
+    });
+    expect(progressOfSeat1(start, 2)).toEqual({
+      seat: 1,
+      isCompleted: false,
+      have: [4, 1],
+      negativeStats: [
+        { stat: "satisfaction", value: -2 },
+        { stat: "workforce", value: -1 },
+      ],
+    });
+    expect(viewFor(start, 1).quests[0]).toHaveProperty("completeRejection", "quest_needs_not_met");
   });
 
   it("hides another player's draws, and the deck change they cause, until the phase ends", () => {

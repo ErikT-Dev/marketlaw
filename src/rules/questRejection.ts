@@ -2,6 +2,7 @@ import type { QuestName } from "../shared/catalogue/QuestName";
 import { QUEST_TERMS } from "../shared/catalogue/QUEST_TERMS";
 import type { ReasonCode } from "../shared/ReasonCode";
 import type { GameState } from "./GameState";
+import { negativeStatsOf } from "./negativeStatsOf";
 import { questNeedHave } from "./questNeedHave";
 import type { SeatState } from "./SeatState";
 import { typeCountsOf } from "./typeCountsOf";
@@ -18,7 +19,9 @@ export function questRejection(
     return "quest_already_completed";
   }
   const typeCounts = typeCountsOf(seat);
-  const isMet = QUEST_TERMS[quest].needs.every(
+  const isMet =
+    negativeStatsOf(seat.stats).length === 0 &&
+    QUEST_TERMS[quest].needs.every(
     (need) => questNeedHave(seat, typeCounts, need) >= need.count,
   );
   return isMet ? undefined : "quest_needs_not_met";

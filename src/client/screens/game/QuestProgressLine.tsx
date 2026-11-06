@@ -1,5 +1,6 @@
 import type { QuestNeed } from "../../../shared/catalogue/QuestNeed";
 import type { QuestProgress } from "../../../shared/QuestProgress";
+import { STAT_ICONS } from "../../icons/STAT_ICONS";
 import { QuestPart } from "./QuestPart";
 import { questNeedIconFile } from "./questNeedIconFile";
 import { questNeedLabel } from "./questNeedLabel";
@@ -33,6 +34,18 @@ export function QuestProgressLine({ name, progress, needs }: Props) {
               label={label}
               iconFile={questNeedIconFile(need)}
               spokenText={`${label} ${String(have)} of ${String(need.count)}`}
+            />
+          );
+        })}
+        {progress.negativeStats.map(({ stat, value }) => {
+          const label = STAT_ICONS[stat].label.toLowerCase();
+          return (
+            <QuestPart
+              key={stat}
+              amount={`${String(value)}/0`}
+              label={label}
+              iconFile={STAT_ICONS[stat].file}
+              spokenText={`${label} ${String(value)} of 0`}
             />
           );
         })}

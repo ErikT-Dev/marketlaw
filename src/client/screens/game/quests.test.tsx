@@ -10,9 +10,9 @@ const TRADING_POST: QuestPlaceView = {
   turnsLeft: 3,
   completeRejection: null,
   progress: [
-    { seat: 1, isCompleted: false, have: [3, 0] },
-    { seat: 2, isCompleted: false, have: [4, 1] },
-    { seat: 3, isCompleted: true, have: [5, 2] },
+    { seat: 1, isCompleted: false, have: [3, 0], negativeStats: [] },
+    { seat: 2, isCompleted: false, have: [4, 1], negativeStats: [] },
+    { seat: 3, isCompleted: true, have: [5, 2], negativeStats: [] },
   ],
 };
 
@@ -20,7 +20,7 @@ const WORKING_DISTRICT: QuestPlaceView = {
   quest: "Working district",
   turnsLeft: 1,
   completeRejection: "quest_already_completed",
-  progress: [{ seat: 2, isCompleted: true, have: [3, 1] }],
+  progress: [{ seat: 2, isCompleted: true, have: [3, 1], negativeStats: [] }],
 };
 
 function showQuests(quests: ReadonlyArray<QuestPlaceView>) {
@@ -78,7 +78,7 @@ describe("quests panel", () => {
         quest: "Penthouses",
         turnsLeft: 5,
         completeRejection: "quest_needs_not_met",
-        progress: [{ seat: 2, isCompleted: false, have: [2, 0, 1] }],
+        progress: [{ seat: 2, isCompleted: false, have: [2, 0, 1], negativeStats: [] }],
       },
     ]);
     const card = screen.getByRole("region", { name: "Penthouses" });
@@ -87,5 +87,30 @@ describe("quests panel", () => {
     ).toBeDefined();
     expect(within(card).getByRole("img", { name: "1 tier 3 Residential card" })).toBeDefined();
     expect(within(card).getByRole("img", { name: "tier 3 Residential card 0 of 1" })).toBeDefined();
+  });
+
+  it("shows a negative workforce, quality or satisfaction as a part not yet met", () => {
+    showQuests([
+      {
+        ...TRADING_POST,
+        completeRejection: "quest_needs_not_met",
+        progress: [
+          {
+            seat: 1,
+            isCompleted: false,
+            have: [4, 1],
+            negativeStats: [
+              { stat: "workforce", value: -1 },
+              { stat: "satisfaction", value: -2 },
+            ],
+          },
+        ],
+      },
+    ]);
+    const card = screen.getByRole("region", { name: "Trading post" });
+    expect(within(card).queryByRole("button", { name: "Complete" })).toBeNull();
+    expect(within(card).getByRole("img", { name: "workforce -1 of 0" })).toBeDefined();
+    expect(within(card).getByRole("img", { name: "satisfaction -2 of 0" })).toBeDefined();
+    expect(within(card).queryByRole("img", { name: /^quality/ })).toBeNull();
   });
 });
