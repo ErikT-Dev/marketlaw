@@ -165,11 +165,17 @@ None yet.
   number: who drew, how many, and the sector or kind and tier; turn draws, with the option chosen,
   the marketplace card taken or the sector chosen; and discard shuffles.
 - **S7.3** **Chat** shows the messages since you joined, each with the sender, time and a **Mute**
-  link; your own messages are highlighted; joins, leaves and similar events appear as grey lines.
+  link; your own messages are highlighted; joins, leaves and similar events appear as grey lines:
+  a player joined the room, left the room or left the game (also after 3 time-outs, R9.11), and
+  the game started or ended. Like messages, you see only those since you joined.
   Muted players are listed with **Unmute** (A11.7). The input shows the characters used, out of
   200.
 - **S7.4** When a chat limit is reached, a message over the input says which limit and when you can
-  send again (A11.6).
+  send again (A11.6): "You can send 1 message every 2 seconds. Try again in N seconds." (counting
+  down, "1 second" at the end); "You have sent 100 messages in this room, the most per room.";
+  and the site-wide cap's text of S16.1. A refused message stays in the input. A message over 200
+  characters or 800 bytes reads "A message can be at most 200 characters.", and an empty one
+  cannot be sent.
 
 ## S8. Main-phase pop-ups
 
@@ -254,7 +260,8 @@ None yet.
 ## S11. Waiting room
 
 - **S11.1** The waiting room keeps the lobby's top bar and players online list, and shows the room
-  in the middle and the room chat on the right.
+  in the middle and the room chat on the right. The room chat is the Chat of S7.3 and S7.4,
+  without the tabs; the waiting room and the game show the same conversation.
 - **S11.2** The room shows its code, public or private, who the owner is, **Copy room code**, **Leave
   room**, the size control (enabled only for the owner, and not below the players present), the
   players with the owner marked, the free places, and how the game starts.

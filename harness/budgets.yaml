@@ -58,11 +58,13 @@
 - id: B7
   name: rows written per chat message
   limit: 1
-  unit: Durable Object rows written
+  unit: room Durable Object rows written per accepted chat message, mute or unmute
   measured: in chat scenarios
   why: >
     Every message is saved (A11.8); at most 100 per player per room (A11.6) caps a room at 400,
-    and the site-wide cap of 2,000 messages a day (A9.6) caps all chat.
+    and the site-wide cap of 2,000 messages a day (A9.6) caps all chat. The site-wide count costs
+    the lobby 1 row per block of 20 messages a room reserves, and deleting a room's chat 1 row per
+    20 messages; both are counted in B18 (Q79).
 
 - id: B8
   name: rows written per finished game outside the room
@@ -154,6 +156,10 @@
   name: rows written per day outside games, tutorials and chat
   limit: 5000
   unit: rows written, Durable Object and D1, for a simulated busy day
-  measured: simulator of a day with 50 games, 100 tutorials, room joins, queue use and signups
+  measured: >
+    simulator of a day with 50 games, 100 tutorials, 2,000 chat messages, room joins, queue use
+    and signups
   why: >
-    Rooms, the lobby, the queue and accounts share the rows left after B4, B6 and B7.
+    Rooms, the lobby, the queue and accounts share the rows left after B4, B6 and B7. The busy
+    day includes the 2,000 chat messages of A9.6: the lobby's chat blocks and the deletes of the
+    rooms' chat rows are counted here (Q79).

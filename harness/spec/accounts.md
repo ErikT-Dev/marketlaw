@@ -288,12 +288,16 @@ ranked queue, daily limits and chat. How the game itself is played is in `game-r
   they joined. Players who left the room take no further part in its chat.
 - **A11.3** All messages in a room are seen by every player in that room, except players who
   muted the sender.
-- **A11.4** When a message arrives, every other player in the room gets a notification.
+- **A11.4** When a message arrives, every other player in the room gets a notification: the
+  message appears in their chat at once, and while their chat is not on screen (the Chat tab is
+  not open, S7.1), it adds to the unread count. There is no sound.
 - **A11.5** **Message format:** a message is one line of plain text, 1 to 200 characters, counted
-  as the player sees them (an emoji counts as 1), and at most 800 bytes. Line breaks are replaced
-  by spaces. Spaces at the start and end are removed, and an empty message cannot be sent.
+  as the player sees them (an emoji counts as 1), and at most 800 bytes. Line breaks, tabs and
+  other control characters are replaced by spaces. Spaces at the start and end are removed, and
+  an empty message cannot be sent. Characters and bytes are counted after these changes.
 - **A11.6** **Limits per player:** at most 1 message every 2 seconds, and at most **100 messages
-  in one room**. A player who reaches a limit is told which one, and when they can send again.
+  in one room**. A player who reaches a limit is told which one, and when they can send again
+  (S7.4). A message refused for any reason is not sent, is not saved and does not count.
 - **A11.7** **Mute:** any player can mute another player in the room. They stop seeing that
   player's messages and notifications; nobody else is affected, and the muted player is not told.
   A mute lasts until the player unmutes them or the room is deleted. After unmuting, they see the
