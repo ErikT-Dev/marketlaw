@@ -423,3 +423,4 @@ are each helper's conversation size at its end.
 | Phase reviewer | 11 | 197k | 62 | ready after fixes |
 | Fixer A, findings 1, 2, 7 | 11 | 98k | 43 | done |
 | Fixer B, findings 3-6 (resumed after the usage limit) | | 80k | | done |
+| Finisher, third run | | 68k+ | | done |
