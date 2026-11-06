@@ -3,6 +3,7 @@ import { Panel } from "../../components/Panel";
 import styles from "./DrawLogPanel.module.css";
 import { drawLogRows } from "./drawLogRows";
 import { drawLogText } from "./drawLogText";
+import { TextWithIcons } from "../../components/TextWithIcons";
 
 type Props = {
   readonly drawLog: ReadonlyArray<DrawLogEntry>;
@@ -26,7 +27,9 @@ export function DrawLogPanel({ drawLog, playerNames }: Props) {
                 <span aria-hidden="true">T{row[0].turn}</span>
                 <span className={styles["visuallyHidden"]}>Turn {row[0].turn}: </span>
               </span>
-              <span>{drawLogText(row, playerNames)}</span>
+              <span>
+                <TextWithIcons text={drawLogText(row, playerNames)} />
+              </span>
             </li>
           ))}
         </ol>

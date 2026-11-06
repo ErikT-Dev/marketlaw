@@ -31,8 +31,8 @@ describe("draw log", () => {
       .getAllByRole("listitem")
       .map((row) => row.textContent);
     expect(rows).toEqual([
-      "T3Turn 3: Di drew 1 card: Public, tier 2 (income)",
-      "T2Turn 2: Ann drew 1 card: Service, tier 1 (income)",
+      "T3Turn 3: Di drew 1 card: Public, tier 2 (Income)",
+      "T2Turn 2: Ann drew 1 card: Service, tier 1 (Income)",
     ]);
   });
 

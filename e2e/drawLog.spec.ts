@@ -77,9 +77,9 @@ test("the draw log sent by the room is listed newest first and fits the screen",
     .getByRole("list", { name: "Draw log entries" })
     .getByRole("listitem");
   await expect(entries).toHaveText([
-    "T1Turn 1: Ann drew 1 card: Public quality, tier 1 (income)",
+    "T1Turn 1: Ann drew 1 card: Public quality, tier 1 (Income)",
     "T1Turn 1: Discard shuffle: 4 Public quality, tier 1 cards went into the deck",
-    "T1Turn 1: Bea drew 1 card: Service, tier 1 (income)",
+    "T1Turn 1: Bea drew 1 card: Service, tier 1 (Income)",
   ]);
   await expectScreenFits(ann.page, "draw-log", testInfo);
   expect(await hiddenCardsSentToOthers([ann, bea])).toEqual([]);

@@ -291,9 +291,33 @@ and must pass again:
     "Ready combos". Tests: `combosAndProjects.test.tsx` reads the row and the totals with
     `textWithIconNames`; `e2e/combosAndProjects.spec.ts` checks the icons. The `claim-all`
     screenshots changed.
-- [ ] 9. **Icons everywhere** (S1.6). **Large.** Added 2026-11-06: the owner made icons-only a
+- [x] 9. **Icons everywhere** (S1.6). **Large.** Added 2026-11-06: the owner made icons-only a
   rule for every screen and all text, prose included (Q74). Trade buttons may keep their
   spoken names (accessible names), as item 6 did.
+  - Done in two CLIENT commits and one HARNESS commit. Text with icons is `IconText` (a string, or
+    parts: text, `{ stat, value? }`, `{ type, count? }`; `components/IconTextPart.ts`, the old
+    `HelpTextPart`) drawn by `components/TextWithIcons.tsx` with `StatChip` / `TypeChip`.
+    `REJECTION_MESSAGES` is `Record<ReasonCode, IconText>` (S16.3 words, stats as icons), and so
+    are `rejectionMessage`, `tradeStatusText`, `noticeToastOf`, `gameOverTexts` (`why`),
+    `drawLogText` (the "(income)" cause) and the lobby texts; `Toast`, `Modal` (title),
+    `TextInput` (error) and the lobby error props take `IconText`. Changed screens: big card
+    "Costs [funds]", sell-mode notice (`SellingNotice.tsx`), "Use [influence]" button and pop-up
+    title (named "Use Influence" now), the Projects pop-up (intro, "Needs [8] · you have [n]",
+    first-completion and 3rd-project lines, `DialogNote.tsx`), the end-of-game table headers and
+    why-text, the draw log. Opponents, quests, combos, help texts and type counts already used
+    icons. Tooltips also show while the control around an icon has keyboard focus (CSS
+    `:focus-visible`); S1.6 was changed for that (icons cannot be tab stops, lint), Q76. Q76 also
+    records the words that stay words: "bonus types", "bonus-type points", "first-completion
+    bonus", the kind names "Public quality/satisfaction card", tier and cost. Test:
+    `iconsEverywhere.test.tsx` with `src/client/testing/statAndTypeWordsShownIn.ts` (game screen,
+    the Projects, Use Influence, Claim all and board pop-ups, help texts, big card, sell mode, the
+    5 stat rejection messages, end-of-game screen). The harness runner's `lobbyMessageThen.ts`
+    writes icon parts as text. e2e selectors changed in `handAndActionsScreens`, `drawLog`,
+    `gameOver`, `influenceAndUndo`; these 6 specs pass (two load flakes at two workers passed
+    alone). Screenshots with these screens changed.
+  - For later items: the button and pop-up are "Use Influence" (capital I, the icon's name). Any
+    new player-facing text with a stat or type is an `IconText`; add its screen to
+    `iconsEverywhere.test.tsx`.
 
 ### Finish
 

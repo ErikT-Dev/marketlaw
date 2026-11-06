@@ -7,6 +7,7 @@ import styles from "./GameOverDialog.module.css";
 import { GameOverTable } from "./GameOverTable";
 import { gameOverTexts } from "./gameOverTexts";
 import { playerNameOf } from "./playerNameOf";
+import { TextWithIcons } from "../../components/TextWithIcons";
 
 type Props = {
   readonly result: GameResult;
@@ -28,7 +29,9 @@ export function GameOverDialog(props: Props) {
   const hasTable = !isAbandoned(result.endedBy);
   return (
     <Modal title={title} size={hasTable ? "extraLarge" : "large"} onClose={props.onClose}>
-      <p className={styles["why"]}>{why}</p>
+      <p className={styles["why"]}>
+        <TextWithIcons text={why} />
+      </p>
       {hasTable ? (
         <GameOverTable result={result} viewer={viewer} playerNames={playerNames} />
       ) : null}

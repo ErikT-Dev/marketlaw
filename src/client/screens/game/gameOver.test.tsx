@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import type { GameResult } from "../../../shared/GameResult";
 import { gamePageProps } from "../../testing/gamePageProps";
 import { roomUpdateWith } from "../../testing/roomUpdateWith";
+import { textWithIconNames } from "../../testing/textWithIconNames";
 import { GamePage } from "../GamePage";
 
 function place(
@@ -42,8 +43,8 @@ describe("end-of-game screen", () => {
   it("names the winner, why the game ended and every player's place and values", () => {
     showResult(END_GOAL);
     const dialog = screen.getByRole("dialog", { name: "Cy wins!" });
-    expect(dialog.textContent).toContain(
-      "Cy reached income 22 and all 3 projects in turn 24, so the game ended after that main phase.",
+    expect(textWithIconNames(dialog)).toContain(
+      "Cy reached [Income 22] and all 3 projects in turn 24, so the game ended after that main phase.",
     );
     const rows = within(dialog)
       .getAllByRole("row")

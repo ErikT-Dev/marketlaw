@@ -1,11 +1,12 @@
 import type { GameResult } from "../../../shared/GameResult";
 import type { SeatNumber } from "../../../shared/SeatNumber";
+import type { IconText } from "../../components/IconText";
 import { listedNames } from "./listedNames";
 
 const CASUAL = "Casual game: ratings do not change.";
 const NO_WINNER = "Abandoned games have no winner and no game record, and ratings stay the same.";
 
-type GameOverTexts = { readonly title: string; readonly why: string };
+type GameOverTexts = { readonly title: string; readonly why: IconText };
 
 function lastPlayerTexts(winner: string, isViewer: boolean, turn: number): GameOverTexts {
   return {
@@ -46,7 +47,11 @@ export function gameOverTexts(
         .map((place) => nameOf(place.seat));
       return {
         title,
-        why: `${listedNames(reached)} reached income 22 and all 3 projects in turn ${String(turn)}, so the game ended after that main phase. ${CASUAL}`,
+        why: [
+          `${listedNames(reached)} reached `,
+          { stat: "income", value: 22 },
+          ` and all 3 projects in turn ${String(turn)}, so the game ended after that main phase. ${CASUAL}`,
+        ],
       };
     }
   }
