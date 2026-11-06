@@ -147,3 +147,13 @@ page, so the app never reads the link again. Go to `about:blank` first.
 **Why:** found in phase 19's room-not-found test, which reopened a seat link after the room was
 deleted.
 **Enforced by:** judgment.
+
+## For `rules/architecture.md`
+
+### Every message shape change raises the protocol version
+Any change to the shape of a message in either direction, a view included (a field added,
+removed or changed in type), raises `PROTOCOL_VERSION` in the same change.
+**Why:** a tab still running the old client keeps sending the old version; if it is accepted,
+it fails to read the new views. With the version raised, the server rejects it with
+`wrong_protocol_version` and the client asks for a reload (Q75, phase 20a).
+**Enforced by:** judgment · the phase review.

@@ -191,7 +191,9 @@ and must pass again:
     `ENGINE_FIELDS.ts` lists `discard_count`. `tools/harness-runner/harness.test.ts` expects 433.
   - Leak test: `hiddenFrom` in `tools/simulator/whatSeatsSeeViolations.ts` adds `state.discard`
     (card names are unique, all 240, so a name never appears elsewhere at the same time).
-    The e2e tests have no leak check of their own (`hiddenFrom` is only in the simulator).
+    The e2e tests check only hands (`e2e/hiddenCardsSentToOthers.ts`, no card in another
+    player's hand in a frame); the discard pile is checked by the simulator only (corrected
+    after review finding 6).
 - [x] 3. **The big card** (S6.5, S1.5). **Large.** About three commits:
   1. Title bar on its sector colour (`BigCard.tsx`, `BigCard.module.css`, `sectorColor.ts`; the
      header is the `header` div). Text contrast on the solid colour must pass axe
@@ -381,7 +383,17 @@ and must pass again:
   - 7 fixed: negative-stat parts use the icon's name ("Workforce"), as `StatChip` does.
   - For later items: other 1280x720 screenshots of the game screen change (taller Your stats,
     shorter hand); only those of the specs above were retaken.
-- [ ] Fixer B: findings 3, 4, 5 and 6 (records and tests).
+- [x] Fixer B: findings 3, 4, 5 and 6 (records and tests).
+  - 3 fixed: recorded as Q77; S6.3 now says "Completed by" names only the other players and
+    neither line shows when only you have completed a project (`HARNESS:` commit). No code
+    change: `ProjectProgressList.tsx` already does this.
+  - 4 fixed: `cards.test.tsx` checks the big card's title bar background and text colour for
+    one card of each sector.
+  - 5 fixed: proposed in `proposed-rules.md` (For `rules/architecture.md`).
+  - 6 fixed: item 2's note corrected (the e2e leak check covers hands, the simulator the
+    discard pile). `statAndTypeWordsShownIn.ts` now skips only icons (`role="img"` with an
+    image inside), so the words of QuestParts without an icon are checked; the
+    `iconsEverywhere` tests still pass.
 - [ ] Finisher after the fixes.
 
 ### Helper log
