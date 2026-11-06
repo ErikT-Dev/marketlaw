@@ -272,7 +272,7 @@ The 427 scenarios cover all of version 1, but each phase implements only part of
 | 18 | [Connections and pausing](phase-18-connections-and-pausing.md) | 3 Playthrough | 17 | done |
 | 19 | [Leaving, cleanup and replay records](phase-19-leaving-cleanup-and-replays.md) | 3 Playthrough | 18 | done |
 | 20 | [Cost protection and the playthrough version](phase-20-cost-protection-and-playthrough.md) | 3 Playthrough | 19 | done |
-| 20a | [Playthrough fixes](phase-20a-playthrough-fixes.md) | 3 Playthrough | 20 | in progress |
+| 20a | [Playthrough fixes](phase-20a-playthrough-fixes.md) | 3 Playthrough | 20 | waiting for the owner |
 | 21 | [Room chat](phase-21-room-chat.md) | 4 Together | 20a | approved |
 | 22 | [Abandon vote and rematch](phase-22-abandon-vote-and-rematch.md) | 4 Together | 20a | approved |
 | 23 | [Accounts: signup and login](phase-23-accounts-signup-and-login.md) | 5 Accounts and ranking | 20a | approved |

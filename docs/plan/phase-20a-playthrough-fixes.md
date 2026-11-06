@@ -1,6 +1,6 @@
 # Phase 20a: Playthrough fixes
 
-Status: in progress
+Status: waiting for the owner
 Milestone: 3 Playthrough
 
 ## Goal
@@ -402,6 +402,21 @@ and must pass again:
     the taller Your stats with all 3 project lines and the shorter, scrolling hand (fixer A);
     the rest are new deals. Every exit-criteria screen is still in `harness/screens/`.
     `docs/enforcement.md`: no new check.
+
+- [x] Release: report written, merged, deploy watched, live site checked; the phase marked
+  **waiting for the owner** (Q71).
+  - Done 2026-11-06: report pushed (`4a178ea`). Branch check run 42245385234: `check` and 5
+    browser-test parts passed; the 2-player full game failed once at 1920x1080 at turn 40, axe
+    `scrollable-region-focusable` on a panel body (`Panel.tsx`) without its tab stop. It passed
+    when the failed job was rerun, so it is a race: `useIsScrollable` sets the tab stop one
+    render after the content grows, and in a full game the other player's moves change the
+    screen while axe runs. Not changed in this phase; if it comes back, give the panel body its
+    tab stop in the same render. Merged (`105090e`), Deploy run 42247464513 succeeded (tests
+    skipped, the merged code had passed Check; version 0e5e5c79). The live bundle has the new
+    texts ("MARKET PHASE", "First to complete gets", "How quests work", "unlimited uses"); the
+    live site serves the page and a card photo, a generated name, rejects a malformed room
+    request, opens the lobby socket and answers 404 for the test-only daily counts. A game needs
+    the human check, so it is left to the owner.
 
 ### Helper log
 
