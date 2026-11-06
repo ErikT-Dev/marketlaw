@@ -43,8 +43,16 @@ function wholeWord(word: string, flags: string): RegExp {
   return new RegExp(`(?<![\\w-])${escaped(word)}(?![\\w-])`, flags);
 }
 
+function isIcon(node: Node): boolean {
+  return (
+    node instanceof Element &&
+    node.getAttribute("role") === "img" &&
+    (node.tagName === "IMG" || node.querySelector("img") !== null)
+  );
+}
+
 function textWithoutIcons(node: Node): string {
-  if (node instanceof Element && node.getAttribute("role") === "img") {
+  if (isIcon(node)) {
     return " ";
   }
   if (node.nodeType === Node.TEXT_NODE) {
