@@ -34,6 +34,11 @@ None yet.
   player lists) scroll, and show a scroll bar when they do.
 - **S1.4** Pop-ups open over a darkened screen. During a game, pop-ups never stop the clock
   (C1.3); a pop-up that hides the clock repeats the time left.
+- **S1.5** **Sector colours:** each sector has one colour from the design tokens. A Public quality
+  card and a Public satisfaction card kind use the Public colour.
+- **S1.6** **Stat and type icons:** where S5, S6 and S8 say a stat or type is shown as its icon,
+  the name appears as a tooltip when the pointer is over the icon and is the icon's accessible
+  name for screen readers, as in S6.2.
 
 ## S2. Game screen: top bar
 
@@ -66,7 +71,8 @@ None yet.
   name. A filled place shows the card's tier and name; an emptied place shows
   "Empty until next turn".
 - **S4.2** The marketplace header also shows the **bonus types** with their point values, the
-  number of cards left in the **deck**, and the **discard pile** with a link to view it (R5.5).
+  number of cards left in the **deck**, and the number of cards in the **discard pile** (R5.5),
+  without which cards they are or anything else about them (M3.2).
 - **S4.3** In the market phase, the area of your city shows the **market go panel**:
   - on your market go: option A (click a marketplace card) and option B (one button per sector),
     with what each does, and what happens if your time runs out (R18.11); the marketplace is
@@ -77,33 +83,59 @@ None yet.
   - when the marketplace is empty: that your turn draw is option B, with the sector buttons
 - **S4.4** In the market phase the main-phase actions are not shown; the action area says they open
   when the market phase ends. Quests cannot be completed (R19.5).
+- **S4.5** **Market phase banner:** during the market phase, a banner across the top of the
+  middle column, above the marketplace, reads **MARKET PHASE** in large letters on a strong
+  background, with whose go it is ("Your go" or "Ann's go"). The phase in the top bar (S2.1) is
+  highlighted the same way. Both go back to normal when the main phase starts.
 
 ## S5. Quests and projects
 
 - **S5.1** Each quest on the table shows its name, tier, turns left, requirement and reward, and
   for every player a line with their progress on each part ("income 3 of 4 · Retail 1 of 1"), or
-  "completed".
+  "completed". A negative workforce, quality or satisfaction is shown in that line as a part
+  not yet met (R19.4). In requirements, sector names are written in their sector colour (S1.5).
 - **S5.2** A quest you can complete now has a **Complete** button and a green border; a quest you
   completed is shaded green.
 - **S5.3** The quests panel has room for 5 quests (R19.1) with 4 players and three-part
   requirements.
+- **S5.4** The quests panel title **QUESTS** has a **?** button next to it, named "How quests
+  work". Clicking it, or Enter or Space on it, opens a small help box next to the title;
+  Escape, clicking elsewhere or clicking the button again closes it. Stats in the text are shown
+  as their icons (S1.6). The text:
+  > Quests are shared goals. In the main phase, complete a quest when you have what it asks for:
+  > nothing is used up, and you get the reward at once. Workforce, quality and satisfaction must
+  > all be 0 or more. Each player can complete each quest once, and several players can complete
+  > the same quest in the same turn. A completed quest leaves the table at the end of the turn;
+  > a quest nobody completes leaves after 5 turns.
 
 ## S6. Your city, stats, hand and actions
 
 - **S6.1** **Your city** shows your cards in play grouped by sector. **Combos** lists your combos,
-  with the ready ones highlighted, and the panel title says how many are ready.
+  with the ready ones highlighted, and the panel title says how many are ready. In the combos
+  list, types and stats are shown as their icons (S1.6), never as words.
 - **S6.2** **Your stats** shows funds, income, workforce, quality, satisfaction, product,
   distribution, bonus, build passes and influence, each with its icon and name, and your type
   counts with the bonus types first. Names appear as a tooltip when the pointer is over the icon,
   and are the icon's accessible name for screen readers.
-- **S6.3** Under the stats, each project shows your progress or "completed", who has completed it,
-  and when nobody has, that the first to complete it gets +2 funds (R16.6).
+- **S6.3** Under the stats, the **projects** area has the title **PROJECTS**, with a **?** button
+  named "How projects work" that works as in S5.4. Each project shows your progress or
+  "completed". While nobody has completed it, as far as you can see (R5.4), it says "First to
+  complete gets +2" with the funds icon (R16.6). Only once someone has completed it does it say
+  who has ("Completed by Ann, Bob"), instead of the +2 line. The help text, with stats shown as
+  their icons (S1.6):
+  > You have 3 projects. In the main phase, complete one when you have 8 of its stat and
+  > workforce, quality and satisfaction are all 0 or more. It uses up the 8 and gives +1 income,
+  > +2 funds, +3 influence and 1 card; your third project gives another +1 income and 1 card. In
+  > the first turn anyone completes a project, everyone who completes it that turn gets +2 funds
+  > at the end of the turn. The end goal needs all 3 projects and income 22.
 - **S6.4** **Your hand** shows your cards in 2 columns. Each card shows its number, name and its
   **real cost** (R3.8), not the base cost. Cards you got this turn are marked **new** (R18.10).
   Cards you cannot play are marked unplayable.
 - **S6.5** Selecting a hand card opens the **big card** next to the hand, with what it costs and
   why ("Base cost 4, plus 3 for the 3 Residential tier 1 cards already in your city"), and
-  **Play card** and **Close**.
+  **Play card** and **Close**. The big card's title bar has its sector colour as background
+  (S1.5). Selecting another hand card shows that card in the big card at once: the new card is
+  shown in full within 100 ms of the click, with no blank or old card in between.
 - **S6.6** The action buttons are: Play card, Undo, Sell cards, Claim all (with the number ready),
   Use influence, Projects and End turn. Buttons for actions you cannot take are disabled.
   Projects and Use influence always open their pop-ups (S8.2, S8.3), where each action is disabled
@@ -135,9 +167,11 @@ None yet.
   when you can complete it; whether the first-completion bonus is still possible; and when it
   would be your 3rd project, the extra income and card.
 - **S8.3** **Use influence** shows your influence and funds; all trades of R15.1 as tiles with uses
-  left, "unlimited", "used", or what you are missing; and the draw actions as a table of 5 kinds by
-  3 tiers with their costs, showing "None left" for kinds and tiers not in the deck or discard pile
-  as you see them (R15.3).
+  left, "unlimited uses", "used", or what you are missing; and the draw actions as a table of 5
+  kinds by 3 tiers with their costs, showing "None left" for kinds and tiers not in the deck or
+  discard pile as you see them (R15.3). Every stat in the pop-up (in trades, costs, what you are
+  missing, and your influence and funds) is shown as its icon (S1.6), never as a word. In the draw
+  table, each kind's name has its sector colour as background (S1.5).
 - **S8.4** When you have taken 50 actions in the main phase, a message says so and every action
   except End turn is disabled (R5.3).
 
@@ -314,7 +348,7 @@ None yet.
   | `project_needs_not_met` | You need 8 of the stat, and no negative workforce, quality or satisfaction. |
   | `quest_not_on_table` | That quest is no longer on the table. |
   | `quest_already_completed` | You already completed this quest. |
-  | `quest_needs_not_met` | You do not meet this quest's requirement yet. |
+  | `quest_needs_not_met` | You do not meet this quest's requirement yet, or workforce, quality or satisfaction is negative. |
   | `nothing_to_undo` | There is nothing to undo. |
   | `cannot_undo` | That action cannot be undone, because it drew a card or came after one that did. |
   | `out_of_market` | You already had your market go this turn. |

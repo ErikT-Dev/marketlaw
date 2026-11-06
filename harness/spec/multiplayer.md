@@ -62,11 +62,12 @@ None yet.
 
 - **M3.1** Players affect each other through the shared deck and discard pile, the marketplace,
   the quests table and the first-completion project rewards.
-- **M3.2** **Hidden information in a game:** two things are hidden:
+- **M3.2** **Hidden information in a game:** three things are hidden:
   - which cards are in another player's hand. You see your own hand; of other players you only
     see how many cards they hold.
   - during the main phase, what other players have done in it so far. It is revealed when the
     main phase ends (R5.4).
+  - which cards are in the discard pile. Every player sees only how many cards it holds (R17.1).
 - **M3.3** **What is public about cards going into a hand:**
   - for every draw: who drew, how many cards, and the sector or kind and tier asked for
     (main-phase draws are revealed when the main phase ends)
@@ -82,8 +83,8 @@ None yet.
 - **M3.5** **Everything else is public** and available to every player, including each player's
   stats, cards in play, type counts, combos, influence action uses, build passes, completed
   projects and quests, time bank, whether they are away (M5.2) and whether they are done with the
-  turn; the marketplace, the quests table, the bonus types, the discard pile and the number of
-  cards left in the deck (during the main phase, as described in R5.5). How this is shown on
+  turn; the marketplace, the quests table, the bonus types, and the number of cards in the discard
+  pile and left in the deck (during the main phase, as described in R5.5). How this is shown on
   screen is described in `screens.md`.
 - **M3.6** Hidden information outside a game is listed in A6.
 

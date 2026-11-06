@@ -53,7 +53,7 @@ done, so if you are quick you may wait a little for the others.
 | Bonus | 0 | Grows every turn and turns into extra funds (see [Bonus](#bonus)). |
 
 Workforce, quality and satisfaction can drop below zero. **While any of them is negative, you
-cannot gain income or complete projects**, so keep them balanced.
+cannot gain income or complete projects or quests**, so keep them balanced.
 
 Turns are numbered from 1, the same for everyone.
 
@@ -303,7 +303,8 @@ project in the same turn gets **+2 funds** extra at the end of the turn.
 ## The deck and drawing cards
 
 Everyone draws from **one shared deck** of all 240 cards. Sold cards and cards leaving the
-marketplace go to a shared **discard pile**. You can hold any number of cards.
+marketplace go to a shared **discard pile**. You see how many cards it holds, but not which
+cards. You can hold any number of cards.
 
 Every draw asks for a sector (or a kind) and a tier. The sector is either chosen or random.
 The tier is either fixed by the draw or random, with **higher tiers more likely later in the
@@ -357,7 +358,8 @@ The **quests table** has 4 quests (5 from turn 20) that everyone can complete. T
 with 4 tier 1 quests; tier 2 quests can appear from turn 5, tier 3 from turn 13.
 
 - A quest asks you to **have** something right now, such as a stat amount, a type count or
-  certain cards in your city. Nothing is used up.
+  certain cards in your city. Nothing is used up. Workforce, quality and satisfaction must all be
+  0 or more.
 - Completing a quest is a main-phase action, and you get the reward at once.
 - Each player can complete each quest once, and any number of players can complete it in the
   same turn.
