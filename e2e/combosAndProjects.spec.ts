@@ -1,4 +1,5 @@
 import { expect, test, type Browser, type ViewportSize } from "@playwright/test";
+import { expectAllProjectsInView } from "./expectAllProjectsInView";
 import { expectScreenFits } from "./expectScreenFits";
 import { startTestRoom } from "./startTestRoom";
 
@@ -37,6 +38,7 @@ test("claim combos with the totals, complete a project, and get the first-comple
   await claim.getByRole("button", { name: "Claim all" }).click();
   await expect(ann.getByRole("region", { name: "Combos · 0 ready" })).toBeVisible();
   await expect(ann.getByRole("img", { name: "Quality 9" })).toBeVisible();
+  await expectAllProjectsInView(ann);
 
   const projectsArea = ann.getByRole("list", { name: "Your projects" });
   await expect(projectsArea.getByRole("listitem").first()).toContainText(

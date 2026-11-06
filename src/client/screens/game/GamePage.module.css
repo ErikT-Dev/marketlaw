@@ -46,7 +46,7 @@
 
 .right {
   position: relative;
-  grid-template-rows: minmax(0, 300fr) minmax(0, 416fr) auto;
+  grid-template-rows: minmax(min-content, 300fr) minmax(0, 416fr) auto;
 }
 
 .toasts {
