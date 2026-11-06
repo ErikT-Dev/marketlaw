@@ -16,5 +16,13 @@ export const BOARD_VALUES: Readonly<Record<string, string>> = {
   "--color-board-trade-missing": "#fca5a5",
   "--color-board-draw": "#6d28d9",
   "--color-board-draw-kind": "#2e2442",
+  "--color-sector-industry-solid": "#9e4839",
+  "--color-sector-industry-solid-text": "#ffffff",
+  "--color-sector-public-solid": "#4e5aad",
+  "--color-sector-public-solid-text": "#ffffff",
+  "--color-sector-residential-solid": "#3d6e34",
+  "--color-sector-residential-solid-text": "#ffffff",
+  "--color-sector-service-solid": "#b88806",
+  "--color-sector-service-solid-text": "#29231e",
   "--font-size-panel-title": "13px",
 };
