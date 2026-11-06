@@ -1,0 +1,139 @@
+.chat {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-sm);
+  min-height: 0;
+}
+
+.scroller {
+  display: flex;
+  flex: 1;
+  flex-direction: column-reverse;
+  min-height: 0;
+  overflow: auto;
+  scrollbar-gutter: stable;
+}
+
+.scroller:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+}
+
+.entries {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.message,
+.ownMessage,
+.line {
+  padding: 6px var(--space-sm);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+.ownMessage {
+  background: var(--color-board-chat-own);
+}
+
+.line {
+  color: var(--color-text-muted);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--font-size-xs);
+}
+
+.sender,
+.ownSender {
+  font-weight: var(--font-weight-bold);
+}
+
+.sender {
+  color: var(--color-board-chat-sender);
+}
+
+.ownSender {
+  color: var(--color-board-chat-own-sender);
+}
+
+.time {
+  margin-left: auto;
+  color: var(--color-text-muted);
+  font-size: 11px;
+}
+
+.mute {
+  min-width: 24px;
+  min-height: 24px;
+  padding: 0 var(--space-xs);
+  border: none;
+  background: transparent;
+  color: var(--color-text-muted);
+  font: inherit;
+  font-size: 11px;
+  font-weight: var(--font-weight-bold);
+  cursor: pointer;
+}
+
+.mute:hover {
+  color: var(--color-text-primary);
+}
+
+.text {
+  margin: 2px 0 0;
+  color: var(--color-text-primary);
+}
+
+.empty {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.input {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 0 10px;
+  border-radius: var(--radius-md);
+  background: var(--color-board-chat-input);
+}
+
+.field {
+  flex: 1;
+  min-width: 0;
+  min-height: 33px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--color-board-chat-input-text);
+  font: inherit;
+  font-size: 13px;
+}
+
+.field::placeholder {
+  color: var(--color-board-chat-input-hint);
+}
+
+.input:focus-within {
+  outline: 2px solid var(--color-focus-ring);
+}
+
+.field:focus {
+  outline: none;
+}
+
+.counter {
+  flex: none;
+  color: var(--color-board-chat-input-hint);
+  font-size: 11px;
+}

@@ -166,6 +166,49 @@ describe("client store moves", () => {
   });
 });
 
+function chatMessage(from: string, isOwn = false) {
+  return { kind: "message" as const, from, text: "Hi", at: v.parse(EpochMs, 7000), isOwn };
+}
+
+describe("the room chat in the store", () => {
+  it("adds new entries, counts others' messages as unread until read, and keeps the mute list", () => {
+    const fake = storeInRoom();
+    fake.emit({ type: "chat", entries: [chatMessage("Bea")], mutedNames: [], isFullList: true });
+    fake.emit({
+      type: "chat",
+      entries: [chatMessage("Ann", true), chatMessage("Cid")],
+      mutedNames: ["Dan"],
+      isFullList: false,
+    });
+    const chat = fake.store.getSnapshot().chat;
+    expect(chat.entries.map((entry) => entry.kind === "message" && entry.from)).toEqual([
+      "Bea",
+      "Ann",
+      "Cid",
+    ]);
+    expect(chat.unreadCount).toBe(1);
+    expect(chat.mutedNames).toEqual(["Dan"]);
+    fake.store.markChatRead();
+    expect(fake.store.getSnapshot().chat.unreadCount).toBe(0);
+  });
+
+  it("replaces the chat with a full list and counts only the messages it did not have", () => {
+    const fake = storeInRoom();
+    fake.emit({ type: "chat", entries: [chatMessage("Bea")], mutedNames: [], isFullList: true });
+    const missed = [chatMessage("Bea"), chatMessage("Cid"), chatMessage("Cid")];
+    fake.emit({ type: "chat", entries: missed, mutedNames: [], isFullList: true });
+    expect(fake.store.getSnapshot().chat.entries).toHaveLength(3);
+    expect(fake.store.getSnapshot().chat.unreadCount).toBe(2);
+  });
+
+  it("forgets the chat when the player leaves the room", () => {
+    const fake = storeInRoom();
+    fake.emit({ type: "chat", entries: [chatMessage("Bea")], mutedNames: [], isFullList: false });
+    fake.store.exitToLobby();
+    expect(fake.store.getSnapshot().chat).toEqual({ entries: [], mutedNames: [], unreadCount: 0 });
+  });
+});
+
 describe("leaving a room", () => {
   it("takes the player out of the room when they exit to the lobby", () => {
     const fake = storeInRoom();

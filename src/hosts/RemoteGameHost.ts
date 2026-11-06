@@ -89,6 +89,9 @@ export class RemoteGameHost implements GameHost {
       this.emit({ type: "removed", reason: message.reason, rejoinAt: message.rejoinAt });
     } else if (message?.type === "notice") {
       this.emit({ type: "notice", notice: message.notice });
+    } else if (message?.type === "chat") {
+      const { entries, mutedNames, isFullList } = message;
+      this.emit({ type: "chat", entries, mutedNames, isFullList });
     } else if (message?.type === "rejected") {
       this.emit({ type: "rejected", code: message.code, actionId: message.actionId });
       if (message.code === "stale_state") {

@@ -221,7 +221,7 @@ These 14 scenarios are added to `harness/required.yaml` in this phase, by file a
     list; the finisher adds `B7` to `harness/required.yaml` budgets with the 14 scenarios
     (checked locally: measured 1 of 1).
 
-- [ ] 5a. **Chat on the screens** (S7.1, S7.3, S11.1, S9.2, M6.7, A11.4; design boards "Game:
+- [x] 5a. **Chat on the screens** (S7.1, S7.3, S11.1, S9.2, M6.7, A11.4; design boards "Game:
   chat", "Chat message" and the waiting room's chat column). **Large.**
   - One chat component in three places: the Chat tab beside the draw log
     (`src/client/screens/game/LeftColumn.tsx`, `DrawLogPanel.tsx`; `Tab.tsx` already shows a
@@ -236,6 +236,34 @@ These 14 scenarios are added to `harness/required.yaml` in this phase, by file a
   - Browser test: two or three players chat in the waiting room and in a game, in separate
     browser contexts; screenshots to `harness/screens/` for "Game: chat" and the waiting room's
     chat; sizes, 24×24 targets and axe as every S rule needs.
+  - Done (2026-11-07). How it is built:
+    - `HostEvent` has a `chat` event (`RemoteGameHost.receive` passes the `chat` message on).
+      The store keeps `ClientState.chat` (`RoomChat`: entries, `mutedNames`, `unreadCount`) via
+      `roomChatAfter`: new entries are appended, a full list replaces them; others' messages add
+      to `unreadCount` (a full list adds only the messages it has beyond the old list, none on a
+      fresh load); `markChatRead` clears it; entering or leaving a room empties the chat. The
+      store's initial state moved to `initialClientState.ts`.
+    - One `RoomChatPanel` (`src/client/screens/chat/`, entries oldest first, kept at the bottom by
+      `column-reverse`, Mute button `Mute <name>` on others' messages, "You" on own, grey lines from
+      `chatLineText`, local `HH:MM` from `chatTimeText`, input "Message the room…" with
+      "N / 200" from `measureChatText`; Enter sends the trimmed text and clears the input; an
+      empty text is never sent). It marks the chat read while it is on screen. Used by
+      `DrawLogAndChatPanel` (game, tabs "Draw log" / "Chat, N new"), `RoomChatSection`
+      ("Room chat", the waiting room's right column and `LeftGamePage`). Components get a
+      `ChatBinding` from `chatBindingOf` (`send_chat` / `mute` through `sendRoomAction`).
+    - Browser test `e2e/chat.spec.ts` (3 players); screenshots `waiting-room-chat`, `game-chat`.
+  - Differs: the draw log is now a tab panel; `DrawLogPanel` became `DrawLogList`, and
+    `drawLog.spec.ts` / `gameScreenSizes.spec.ts` find it as the tabpanel "Draw log" in the region
+    "Draw log and chat". Chat colours are new board values in `BOARD_VALUES.ts` / `tokens.css`
+    (`--color-board-chat-*`).
+  - For later items (5b): the input clears on send even when the message is refused, and a chat
+    rejection shows as the generic "Move rejected" toast (game) or alert (waiting room); 5b keeps
+    the text and shows the S7.4 limit message over the input. `mutedNames` is in the store but not
+    shown yet. The browser test spaces each player's messages more than 2 seconds apart (a player's
+    second message right after the game starts was refused as `chat_too_fast`). Locally, rooms saved
+    by item 1's build (record without `chat.mutes`, same `ROOM_SCHEMA_VERSION` 4) make the dev
+    server log `mutedNamesOf` errors from their alarms; clearing `.wrangler/state` stops them;
+    nothing deployed has version 4.
 
 - [ ] 5b. **Mute and limits on the screens** (S7.3 muted list, S7.4; design board "Game: chat
   limit"). **Small.**

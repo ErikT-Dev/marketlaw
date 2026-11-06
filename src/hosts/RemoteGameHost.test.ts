@@ -144,6 +144,26 @@ describe("RemoteGameHost", () => {
     ]);
   });
 
+  it("passes on chat entries with the player's own mute list", () => {
+    const network = connectedHost();
+    const entry = { kind: "message", from: "Bea", text: "Hi", at: 7000, isOwn: false };
+    network.handlers().onMessage(
+      JSON.stringify({
+        type: "chat",
+        protocolVersion: PROTOCOL_VERSION,
+        entries: [entry],
+        mutedNames: ["Cid"],
+        isFullList: true,
+      }),
+    );
+    expect(network.events.at(-1)).toEqual({
+      type: "chat",
+      entries: [entry],
+      mutedNames: ["Cid"],
+      isFullList: true,
+    });
+  });
+
   it("ignores messages it cannot read", () => {
     const network = connectedHost();
     network.handlers().onMessage("{not json");

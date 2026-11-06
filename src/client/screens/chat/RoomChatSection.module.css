@@ -1,0 +1,19 @@
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  min-width: 0;
+  min-height: 0;
+  padding: var(--space-md);
+  border: 1px solid var(--color-panel-border);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--color-panel-base) 92%, transparent);
+  box-sizing: border-box;
+}
+
+.title {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-panel-title);
+  font-weight: var(--font-weight-bold);
+}

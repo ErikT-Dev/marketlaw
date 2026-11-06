@@ -18,6 +18,12 @@
   --color-background-modal-backdrop: rgba(75, 85, 99, 0.75);
   --color-background-modal: #392a4a;
   --color-background-stats-board: rgba(19, 11, 19, 0.8);
+  --color-board-chat-input-hint: #6b7280;
+  --color-board-chat-input-text: #111827;
+  --color-board-chat-input: #ffffff;
+  --color-board-chat-own-sender: #c4b5fd;
+  --color-board-chat-own: #2e2450;
+  --color-board-chat-sender: #93c5fd;
   --color-board-draw-kind: #2e2442;
   --color-board-draw: #6d28d9;
   --color-board-market-phase-text: #1c1206;

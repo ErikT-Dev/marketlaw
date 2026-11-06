@@ -61,6 +61,22 @@
   align-content: start;
 }
 
+.waitingColumns {
+  grid-template-columns: minmax(0, 1048px) minmax(320px, 440px);
+  gap: var(--space-lg);
+  align-content: stretch;
+}
+
+.chatColumn {
+  position: relative;
+  min-height: 320px;
+}
+
+.chatColumn > * {
+  position: absolute;
+  inset: 0;
+}
+
 .panel {
   display: flex;
   flex-direction: column;

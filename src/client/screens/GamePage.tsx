@@ -20,6 +20,7 @@ export function GamePage(props: Props) {
           viewer={view.seat}
           playerNames={props.update.room.playerNames}
           onExitToLobby={props.onExitToLobby}
+          chat={props.chat}
         />
         <GameNotices {...props} seat={mine} playerNames={props.update.room.playerNames} />
       </>
