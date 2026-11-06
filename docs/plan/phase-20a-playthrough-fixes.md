@@ -424,3 +424,65 @@ are each helper's conversation size at its end.
 | Fixer A, findings 1, 2, 7 | 11 | 98k | 43 | done |
 | Fixer B, findings 3-6 (resumed after the usage limit) | | 80k | | done |
 | Finisher, third run | | 68k+ | | done |
+
+## Report
+
+**Built.** All 9 findings of the owner's first playthrough (Q74), and icons for stats and types
+on every screen. Quests cannot be completed while workforce, quality or satisfaction is negative
+(R19.4), and the quest progress line shows a negative stat as an unmet part. The discard pile is
+hidden information: the view carries only its number of cards, the discard pile pop-up is gone,
+and the leak test treats its cards as hidden from everyone. The big card has its sector colour
+behind the title bar; the hand's photos load in the background and a selected card switches only
+once its photo is ready (at most 300 ms, then the sector colour stands in). Sector names in
+quests and the kinds in the draw table carry their sector colours. PROJECTS has a title, "First
+to complete gets +2" with the funds icon, "Completed by …" once another player has, and both
+QUESTS and PROJECTS have a **?** help. A MARKET PHASE banner with whose go it is sits above the
+marketplace, and the top bar's phase is highlighted the same way. `PROTOCOL_VERSION` is 3, so a
+tab with the old client is told to reload.
+
+**What to try.** On the live site, with 2 or more players, check each finding:
+1. Click through several hand cards: the big card switches at once, never blank or mixed.
+2. The big card's title bar has its sector colour.
+3. In QUESTS, the sector name of a "cards" requirement is in its sector colour.
+4. Your stats shows PROJECTS, "First to complete gets +2" with the funds icon, and "Completed by
+   Ann" only after another player has completed that project.
+5. A quest is refused while workforce, quality or satisfaction is below 0 ("You need …"), and the
+   quest line shows the negative stat as unmet. The **?** next to QUESTS and PROJECTS opens the
+   help; Escape, a click elsewhere or the **?** closes it.
+6. Use Influence: every stat is an icon, each draw-table kind is on its sector colour, and
+   "unlimited uses".
+7. The marketplace shows "Discard N" only; there is no way to see the cards in it.
+8. In the market phase the MARKET PHASE banner shows "Your go" or "Ann's go", and the top bar's
+   phase is highlighted.
+9. The combos list shows types and stats as icons.
+10. Icons everywhere: hover any icon for its name; check the Projects, Claim all and board
+    pop-ups, the big card's cost, sell mode, the draw log, messages, rejections and the end of
+    game table for any stat or type written as a word.
+
+**Checks.** The finisher's third run: `npm run check` green, `npm run harness` green (phase-end
+simulated games, budgets), all browser tests passed with two workers without reruns. The 4 new
+scenarios are required (`quests` #65–67, `visibility` #16); `drawing` #10, #11 and `visibility`
+#15 assert the discard count and pass.
+
+**Differences from the phase file.** Items 8 and 9 were added during the phase at the owner's
+request (icons in the Claim all pop-up, then icons everywhere, Q74). The photos needed no
+resizing (all 554×478, item 3). The browser leak check covers hands; the discard pile is checked
+by the simulator's leak test. The phase ends **waiting for the owner**, not done, until the owner
+has played the fixed version and accepted milestone 3 (Q71).
+
+**Decisions.** Q74: the playthrough findings, their spec changes and this phase. Q75: any change
+to a message's shape raises `PROTOCOL_VERSION` (now 3). Q76: which words are stats or types under
+S1.6, and tooltips shown while the control around an icon has keyboard focus. Q77: "Completed by"
+names only the other players.
+
+**Review findings and what happened to each.**
+1. At 1280x720 the PROJECTS title pushed project lines out of view: fixed, Your stats is at least
+   as tall as its content; all 3 lines show, the hand scrolls.
+2. A focused scrollable panel showed all its tooltips: fixed, only a focused button or link shows
+   its tooltip.
+3. "Completed by" naming only others was not recorded: recorded as Q77 and in S6.3.
+4. No test of the big card title bar colour: added, one card of each sector.
+5. Q75's rule as a proposed rule: added to `proposed-rules.md`.
+6. Item 2's note on browser leak checks was wrong, and the word check skipped labelled parts:
+   note corrected; the check now reads quest parts without an icon.
+7. Negative-stat parts used lowercase names: fixed, "Workforce" as the icon's name.
