@@ -36,9 +36,15 @@ None yet.
   (C1.3); a pop-up that hides the clock repeats the time left.
 - **S1.5** **Sector colours:** each sector has one colour from the design tokens. A Public quality
   card and a Public satisfaction card kind use the Public colour.
-- **S1.6** **Stat and type icons:** where S5, S6 and S8 say a stat or type is shown as its icon,
-  the name appears as a tooltip when the pointer is over the icon and is the icon's accessible
-  name for screen readers, as in S6.2.
+- **S1.6** **Stats and types are always icons:** wherever a stat (funds, income, workforce,
+  quality, satisfaction, product, distribution, bonus, influence, build passes) or a card type is
+  shown to a player, it is shown as its icon, with its number next to it where there is one, and
+  never written out as a word. This holds on every screen, pop-up, table and label, and in all
+  running text: rejection messages (S10.9, S16.3), notices, help texts and the rulebook in the
+  rules viewer (S14.2). The texts in these rules name stats and types in words only to say which
+  icon goes there. The name appears as a tooltip when the pointer is over the icon or the icon
+  has keyboard focus, and is the icon's accessible name for screen readers, as in S6.2 (owner's
+  rule, 2026-11-06).
 
 ## S2. Game screen: top bar
 
@@ -167,7 +173,8 @@ None yet.
 ## S8. Main-phase pop-ups
 
 - **S8.1** **Claim all combos** lists each ready combo and its reward, and the total workforce,
-  quality and satisfaction you will get, before you confirm.
+  quality and satisfaction you will get, before you confirm. Needs, rewards and totals show their
+  types and stats as icons (S1.6).
 - **S8.2** **Projects** shows each project with its need, what you have, and a **Complete** button
   when you can complete it; whether the first-completion bonus is still possible; and when it
   would be your 3rd project, the extra income and card.
