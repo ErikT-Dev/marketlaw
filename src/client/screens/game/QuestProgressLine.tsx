@@ -40,7 +40,7 @@ export function QuestProgressLine({ name, progress, needs }: Props) {
           );
         })}
         {progress.negativeStats.map(({ stat, value }) => {
-          const label = STAT_ICONS[stat].label.toLowerCase();
+          const label = STAT_ICONS[stat].label;
           return (
             <QuestPart
               key={stat}

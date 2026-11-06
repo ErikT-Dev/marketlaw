@@ -126,8 +126,8 @@ describe("quests panel", () => {
     ]);
     const card = screen.getByRole("region", { name: "Trading post" });
     expect(within(card).queryByRole("button", { name: "Complete" })).toBeNull();
-    expect(within(card).getByRole("img", { name: "workforce -1 of 0" })).toBeDefined();
-    expect(within(card).getByRole("img", { name: "satisfaction -2 of 0" })).toBeDefined();
+    expect(within(card).getByRole("img", { name: "Workforce -1 of 0" })).toBeDefined();
+    expect(within(card).getByRole("img", { name: "Satisfaction -2 of 0" })).toBeDefined();
     expect(within(card).queryByRole("img", { name: /^quality/ })).toBeNull();
   });
 });
