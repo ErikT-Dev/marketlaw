@@ -402,3 +402,4 @@ are each helper's conversation size at its end.
 | Builder, item 9 | 26 | 197k | 119 | done |
 | Finisher, second run | 35 | 78k | 33 | done |
 | Phase reviewer | 11 | 197k | 62 | ready after fixes |
+| Fixer A, findings 1, 2, 7 | 11 | 98k | 43 | done |
