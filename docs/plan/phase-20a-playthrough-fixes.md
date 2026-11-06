@@ -350,6 +350,27 @@ and must pass again:
     every exit-criteria screen is still in `harness/screens/`. `docs/enforcement.md`: no new
     check.
 
+- [x] Phase review (2026-11-06): ready after fixes, no blockers. Findings:
+  1. Should fix: at 1280x720 the PROJECTS title and its ? push the project lines out of view in
+     Your stats (`ProjectProgressList.tsx`, `YourStatsPanel.module.css`); all 3 must be visible
+     (S6.3, `rules/frontend.md`).
+  2. Should fix: `:focus-visible .chip .tooltip` (`Chip.module.css`) and `.part`
+     (`QuestsPanel.module.css:108-110`) match any focused ancestor, so a focused scrollable panel
+     body (`Panel.tsx:38`, tabIndex 0) shows all its tooltips; limit to real controls (S1.6, Q76).
+  3. Should fix: "Completed by" naming only the other players (and showing neither line when only
+     you completed it) is not in `open-questions.md`; record it, and in S6.3 if it adds behaviour.
+  4. Suggestion: test the big card title bar's sector colour (S6.5).
+  5. Suggestion: propose Q75's standing rule (any message shape change raises
+     `PROTOCOL_VERSION`) in `docs/plan/proposed-rules.md`.
+  6. Suggestion: correct item 2's note on browser leak checks (`e2e/hiddenCardsSentToOthers.ts`
+     exists, hands only) or extend it to the discard pile; `statAndTypeWordsShownIn.ts` skips all
+     of `role="img"`, including QuestParts with word labels.
+  7. Suggestion: negative-stat parts in `QuestProgressLine.tsx` use lowercase names
+     ("workforce"); `StatChip` uses "Workforce".
+- [ ] Fixer A: findings 1, 2 and 7 (screen and tooltips).
+- [ ] Fixer B: findings 3, 4, 5 and 6 (records and tests).
+- [ ] Finisher after the fixes.
+
 ### Helper log
 
 Filled in by the coordinator afterwards, from the helpers' completion notices (Q73). Tokens
@@ -367,3 +388,4 @@ are each helper's conversation size at its end.
 | Builder, item 8 | 7 | 86k | 22 | done |
 | Builder, item 9 | 26 | 197k | 119 | done |
 | Finisher, second run | 35 | 78k | 33 | done |
+| Phase reviewer | 11 | 197k | 62 | ready after fixes |
