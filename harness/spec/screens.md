@@ -42,9 +42,9 @@ None yet.
   never written out as a word. This holds on every screen, pop-up, table and label, and in all
   running text: rejection messages (S10.9, S16.3), notices, help texts and the rulebook in the
   rules viewer (S14.2). The texts in these rules name stats and types in words only to say which
-  icon goes there. The name appears as a tooltip when the pointer is over the icon or the icon
-  has keyboard focus, and is the icon's accessible name for screen readers, as in S6.2 (owner's
-  rule, 2026-11-06).
+  icon goes there. The name appears as a tooltip when the pointer is over the icon or the control
+  the icon is in has keyboard focus (icons are not tab stops of their own: a screen shows dozens),
+  and is the icon's accessible name for screen readers, as in S6.2 (owner's rule, 2026-11-06).
 
 ## S2. Game screen: top bar
 

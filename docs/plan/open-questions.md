@@ -1368,4 +1368,9 @@ file.
   - Stats in prose become parts (text and icons, `IconText` in `src/client/components/`), never a
     string; the rejection messages of S16.3 keep their words, with each stat as its icon.
   - "Tier" and "cost" are not stats in S1.6's list; they stay words where they are words.
-- **Implemented:** phase 20a item 9.
+  - S1.6 said the tooltip shows when "the icon has keyboard focus". Icons are images, and the
+    lint rule `jsx-a11y/no-noninteractive-tabindex` (rightly) forbids making them tab stops; a
+    screen shows dozens, so a keyboard user would tab through all of them. S1.6 now says the
+    tooltip shows when the control the icon is in has keyboard focus, and icons are not tab stops
+    of their own (`HARNESS:` commit).
+- **Implemented:** `harness/spec/screens.md` S1.6; phase 20a item 9.
