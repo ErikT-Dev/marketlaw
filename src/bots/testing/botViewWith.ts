@@ -35,7 +35,7 @@ export function botViewWith(own: Partial<OwnSeatView>): PlayerView {
     marketGo: null,
     seats: [{ ...OWN_SEAT, ...own }],
     deckCount: 200,
-    discard: [],
+    discardCount: 0,
     marketplace: [],
     quests: [],
     bonusTypes: [],

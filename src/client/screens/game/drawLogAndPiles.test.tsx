@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, within } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { gamePageProps } from "../../testing/gamePageProps";
 import { roomUpdateWith } from "../../testing/roomUpdateWith";
@@ -65,26 +65,11 @@ describe("draw log", () => {
 });
 
 describe("deck and discard pile", () => {
-  it("shows the deck count and opens the discard pile", () => {
-    render(
-      <GamePage {...gamePageProps(roomUpdateWith({ deckCount: 112, discard: ["Pub", "Loft"] }))} />,
-    );
+  it("shows the deck and the discard pile as numbers only", () => {
+    render(<GamePage {...gamePageProps(roomUpdateWith({ deckCount: 112, discardCount: 2 }))} />);
     const marketplace = screen.getByRole("region", { name: "Marketplace" });
     expect(within(marketplace).getByText("Deck 112")).toBeDefined();
-    fireEvent.click(within(marketplace).getByRole("button", { name: "Discard 2 · view ›" }));
-    const dialog = screen.getByRole("dialog", { name: "Discard pile · 2 cards" });
-    expect(within(dialog).getByText(/Pub · Service, tier 1/)).toBeDefined();
-    fireEvent.click(within(dialog).getByRole("button", { name: "Close" }));
-    expect(screen.queryByRole("dialog")).toBeNull();
-  });
-
-  it("closes the discard pile with Escape and returns focus to its button", () => {
-    render(<GamePage {...gamePageProps(roomUpdateWith({ discard: ["Pub"] }))} />);
-    const opener = screen.getByRole("button", { name: "Discard 1 · view ›" });
-    fireEvent.click(opener);
-    expect(screen.getByRole("dialog", { name: "Discard pile · 1 card" })).toBeDefined();
-    fireEvent.keyDown(document, { key: "Escape" });
-    expect(screen.queryByRole("dialog")).toBeNull();
-    expect(opener.matches(":focus")).toBe(true);
+    expect(within(marketplace).getByText("Discard 2")).toBeDefined();
+    expect(within(marketplace).queryByRole("button", { name: /Discard/ })).toBeNull();
   });
 });

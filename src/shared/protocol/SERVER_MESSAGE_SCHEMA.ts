@@ -99,7 +99,7 @@ const PLAYER_VIEW = v.object({
   marketGo: v.nullable(SEAT),
   seats: v.array(SEAT_VIEW),
   deckCount: COUNT,
-  discard: CARDS,
+  discardCount: COUNT,
   marketplace: v.array(MARKETPLACE_SLOT_SCHEMA),
   quests: v.array(QUEST_PLACE_VIEW_SCHEMA),
   bonusTypes: v.array(TypeName),

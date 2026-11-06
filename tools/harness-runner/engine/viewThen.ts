@@ -26,6 +26,8 @@ function isHidden(name: string, text: string, state: GameState): boolean {
   switch (name) {
     case "deck_order":
       return !state.deck.some((card) => text.includes(JSON.stringify(card)));
+    case "discard_cards":
+      return !state.discard.some((card) => text.includes(JSON.stringify(card)));
     case "seed":
       return !text.includes('"seed":');
     default:
@@ -71,7 +73,7 @@ export function viewThen(
   return {
     seat: view.seat,
     deck_count: view.deckCount,
-    discard: view.discard,
+    discard_count: view.discardCount,
     contains: namesOf(asked["contains"]).filter((name) => text.includes(JSON.stringify(name))),
     hides: namesOf(asked["hides"]).filter((name) => isHidden(name, text, state)),
     log_contains: matchingLogEntries(view.drawLog, asked["log_contains"]),

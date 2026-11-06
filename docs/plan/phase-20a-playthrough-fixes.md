@@ -151,8 +151,19 @@ and must pass again:
     required list locally, not committed). The full check still fails only on the scenario count
     and the 3 `discard_count` scenarios, as expected until item 2.
   - For later items: whoever builds a `QuestProgress` in a test now adds `negativeStats: []`.
-- [ ] 2. **The discard pile is a number** (M3.2, M3.5, R17.1, R17.6, S4.2, S8.3; scenarios
+- [x] 2. **The discard pile is a number** (M3.2, M3.5, R17.1, R17.6, S4.2, S8.3; scenarios
   `visibility` #16, and `drawing` #10, #11, `visibility` #15 again). **Large.**
+  - Done in one commit. `PlayerView.discardCount` is `pilesShownTo(...).discard.length`;
+    `pilesShownTo` keeps the cards internally for R5.5. "None left" comes from
+    `kindTiersLeftAsSeenBy` and was not changed. The marketplace header shows "Deck N" and
+    "Discard N" as plain text; `DiscardPileDialog.tsx`, its styles, tests and the `discard-pile`
+    screenshots are gone. `turnOne.spec.ts` now checks there is no discard button and that Ann is
+    never sent the card Bea sold. The simulator's I24 check (`shownPilesViolations.ts`) compares
+    the discard count instead of the cards (its "own card in the discard pile" check has nothing
+    left to check); the leak test (`whatSeatsSeeViolations.ts`) hides `state.discard` from every
+    seat. `visibility` #16 passes (checked by adding it to the required list locally, and that it
+    fails with a wrong count). The `market-*` screenshots changed with the header.
+  - For later items: `npm run check` is green on the branch from here on.
   - `PlayerView.discard` (cards) becomes `discardCount` (number): `src/shared/PlayerView.ts`,
     `viewFor.ts` (from `pilesShownTo`, which keeps R5.5), `SERVER_MESSAGE_SCHEMA.ts`,
     `src/client/testing/roomUpdateWith.ts`. The saved state keeps its discard cards

@@ -65,11 +65,11 @@ describe("the marketplace", () => {
   });
 
   it("shows the bonus types with their points, the deck and the discard pile", () => {
-    showGame({ deckCount: 112, discard: ["Pub"] });
+    showGame({ deckCount: 112, discardCount: 1 });
     const panel = within(screen.getByRole("region", { name: "Marketplace" }));
     expect(panel.getByText(/Bonus types/).textContent).toBe("Bonus types:Farm3 ptsLuxury2 pts");
     expect(panel.getByText("Deck 112")).toBeDefined();
-    expect(panel.getByRole("button", { name: "Discard 1 · view ›" })).toBeDefined();
+    expect(panel.getByText("Discard 1")).toBeDefined();
   });
 });
 

@@ -20,7 +20,7 @@ export function MarketplacePanel({ view, isYourGo, onTake }: Props) {
         aside={
           <span className={styles["header"]}>
             <BonusTypesList bonusTypes={view.bonusTypes} />
-            <DeckAndDiscard deckCount={view.deckCount} discard={view.discard} />
+            <DeckAndDiscard deckCount={view.deckCount} discardCount={view.discardCount} />
           </span>
         }
       >

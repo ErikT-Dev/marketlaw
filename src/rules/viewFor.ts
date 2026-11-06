@@ -92,7 +92,7 @@ export function viewFor(state: GameState, viewer: SeatNumber): PlayerView {
       seat.seat === viewer ? ownSeatView(state, seat) : otherSeatView(state, seat, viewer),
     ),
     deckCount: piles.deckCount,
-    discard: piles.discard,
+    discardCount: piles.discard.length,
     marketplace: state.marketplace,
     quests: questPlacesShownTo(state, viewer),
     bonusTypes: state.bonusTypes,

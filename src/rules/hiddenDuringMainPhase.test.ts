@@ -129,9 +129,9 @@ describe("what other players see during the main phase", () => {
     const after = played(gameWith(["Pub"], ["Landfill", "Library", "Dorm"]), [
       { type: "play_card", seat: 1, card: "Liquor Shop" },
     ]);
-    expect(viewFor(after, 1).discard).toEqual(["Dorm"]);
+    expect(viewFor(after, 1).discardCount).toBe(1);
     expect(viewFor(after, 1).deckCount).toBe(2);
-    expect(viewFor(after, 2).discard).toEqual(["Landfill", "Library", "Dorm"]);
+    expect(viewFor(after, 2).discardCount).toBe(3);
     expect(viewFor(after, 2).deckCount).toBe(1);
   });
 
@@ -165,7 +165,7 @@ describe("what other players see during the main phase", () => {
     const ownSeat = mine.seats.find((seat) => seat.kind === "own");
     const drawn = ownSeat?.kind === "own" ? ownSeat.hand : [];
     expect(mine.deckCount).toBe(0);
-    expect(mine.discard).toHaveLength(1);
-    expect(mine.discard.some((card) => drawn.includes(card))).toBe(false);
+    expect(mine.discardCount).toBe(1);
+    expect(drawn).toHaveLength(1);
   });
 });
