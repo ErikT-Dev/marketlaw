@@ -1,6 +1,6 @@
 # Phase 20: Cost protection and the playthrough version
 
-Status: waiting for the owner
+Status: done
 Milestone: 3 Playthrough
 
 ## Goal
@@ -59,6 +59,9 @@ the live site from the lobby to the final score. Invited testers only (D6).
   code, turn the game ended in and why, length, problems). Then either accept milestone 3
   ("Playthrough") or send the notes; findings become spec changes (with your approval) or new
   phases before milestone 4 starts. No secret, setting or command is needed from you.
+- Done 2026-11-06: the owner played and sent 9 findings, all approved
+  (`docs/playthrough-notes/2026-11-06-first-playthrough.txt`). They are built in phase 20a,
+  which also takes over accepting milestone 3 (Q74).
 
 ## Required scenarios
 

@@ -9,7 +9,7 @@ One chat per room, in the waiting room, during the game and after it, with limit
 
 ## Depends on
 
-Phase 20.
+Phase 20a.
 
 ## Covers
 

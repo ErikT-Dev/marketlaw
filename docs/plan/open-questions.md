@@ -1281,3 +1281,47 @@ file.
     2026-11-05. If the minutes run out, the owner may make the repository public.
 - **Implemented:** `docs/plan/phase-helpers.md`, `docs/plan/README.md`,
   `.github/workflows/check.yml`, `.github/workflows/deploy.yml`, `e2e/becomeGuest.ts`.
+
+## Q74. What happens with the findings of the owner's first playthrough?
+
+- **Phase:** 20, waiting for the owner (Q71); the owner's notes are
+  `docs/playthrough-notes/2026-11-06-first-playthrough.txt`. The owner reviewed all 9 findings
+  and approved every one for implementing (2026-11-06).
+- **Question:** phase 20 says findings become spec changes or new phases before milestone 4.
+  Where do the notes live, how do the findings reach the spec, and which phase builds them?
+- **Solution:**
+  - Playthrough notes go in `docs/playthrough-notes/`, one dated file per round, kept as the
+    owner wrote them.
+  - Phase 20 is done (the owner played complete games with others). Accepting milestone 3 moves
+    to a new phase **20a, Playthrough fixes**, which builds the 9 findings and ends waiting for the
+    owner's acceptance. Phases 21, 22, 23 and 28 depend on 20a instead of 20, so milestone 4 does
+    not start before it. Phases 21–30 keep their numbers.
+  - Two findings change the rules, so they were written into the spec first:
+    - Finding 5: a quest can only be completed while workforce, quality and satisfaction are all
+      0 or more, as for projects (R19.4, rulebook "Quests" and the stats paragraph, S16.3
+      `quest_needs_not_met` text). Scenarios `quests` #65–67 added.
+    - Finding 7: the discard pile is shown only as a number of cards. Which cards are in it is now
+      hidden information (M3.2, M3.5, R17.1, rulebook "The deck and drawing cards", S4.2), so the
+      view carries only the count, not just the screen. Kept public: discard shuffles in the draw
+      log, with sector or kind, tier and count (M3.3, R17.6, reworded), and the "None left" marks
+      of the draw table (S8.3), which draw actions need (R15.3). Scenario `visibility` #16 added;
+      the view field `discard` became `discard_count` in `scenario-format.yaml` and
+      `HARNESS.md`, and the 3 scenarios that asserted the view's discard cards (`drawing` #10,
+      #11, `visibility` #15) now assert the count. They contradicted the new spec, so they were
+      changed (`rules/workflow.md`); their names stay on the required list.
+  - The other 7 findings are screen rules: S1.5 (sector colours, Public kinds use the Public
+    colour), S1.6 (icons with tooltip and accessible name), S4.5 (market phase banner, a new
+    rule; the owner only asked for it to be "very noticeable"), S5.1 (sector names coloured,
+    negative stats shown as unmet), S5.4 (the **?** help for quests, with its text), S6.1 (combos
+    as icons), S6.3 (PROJECTS title, "First to complete gets +2" with the funds icon, "Completed
+    by …" only after someone has, its **?** help text), S6.5 (sector-coloured title bar; the next
+    card shown within 100 ms, chosen as a measurable "smoother or faster"), S8.3 (stats as icons,
+    kind names on sector colours, "unlimited uses").
+  - The spec and harness changes are one `HARNESS:` commit on the branch
+    `phase-20a-playthrough-fixes`, not on master: on their own they turn `npm run check` red
+    (the scenario count and the 3 changed required scenarios) until phase 20a items 1 and 2 are
+    built.
+- **Implemented:** `harness/spec/game-rules.md`, `multiplayer.md`, `rulebook.md`, `screens.md`,
+  `harness/scenarios/quests.yaml`, `visibility.yaml`, `drawing.yaml`,
+  `harness/scenario-format.yaml`, `harness/HARNESS.md`; `docs/plan/phase-20a-playthrough-fixes.md`,
+  `docs/plan/README.md`, phase files 20, 21, 22, 23 and 28.

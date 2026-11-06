@@ -271,15 +271,16 @@ The 427 scenarios cover all of version 1, but each phase implements only part of
 | 17 | [Lobby and one thing at a time](phase-17-lobby-and-one-thing-at-a-time.md) | 3 Playthrough | 16 | done |
 | 18 | [Connections and pausing](phase-18-connections-and-pausing.md) | 3 Playthrough | 17 | done |
 | 19 | [Leaving, cleanup and replay records](phase-19-leaving-cleanup-and-replays.md) | 3 Playthrough | 18 | done |
-| 20 | [Cost protection and the playthrough version](phase-20-cost-protection-and-playthrough.md) | 3 Playthrough | 19 | waiting for the owner |
-| 21 | [Room chat](phase-21-room-chat.md) | 4 Together | 20 | approved |
-| 22 | [Abandon vote and rematch](phase-22-abandon-vote-and-rematch.md) | 4 Together | 20 | approved |
-| 23 | [Accounts: signup and login](phase-23-accounts-signup-and-login.md) | 5 Accounts and ranking | 20 | approved |
+| 20 | [Cost protection and the playthrough version](phase-20-cost-protection-and-playthrough.md) | 3 Playthrough | 19 | done |
+| 20a | [Playthrough fixes](phase-20a-playthrough-fixes.md) | 3 Playthrough | 20 | approved |
+| 21 | [Room chat](phase-21-room-chat.md) | 4 Together | 20a | approved |
+| 22 | [Abandon vote and rematch](phase-22-abandon-vote-and-rematch.md) | 4 Together | 20a | approved |
+| 23 | [Accounts: signup and login](phase-23-accounts-signup-and-login.md) | 5 Accounts and ranking | 20a | approved |
 | 24 | [Accounts: email, deletion and privacy](phase-24-accounts-email-deletion-privacy.md) | 5 Accounts and ranking | 23 | approved |
 | 25 | [Game records and match history](phase-25-game-records-and-match-history.md) | 5 Accounts and ranking | 22, 24 | approved |
 | 26 | [Ranked queue](phase-26-ranked-queue.md) | 5 Accounts and ranking | 25 | approved |
 | 27 | [Ratings, ranking and players online](phase-27-ratings-ranking-and-players-online.md) | 5 Accounts and ranking | 26 | approved |
-| 28 | [Game menu, rules viewer and card set](phase-28-menu-rules-and-card-set.md) | 6 Learning | 20 | approved |
+| 28 | [Game menu, rules viewer and card set](phase-28-menu-rules-and-card-set.md) | 6 Learning | 20a | approved |
 | 29 | [Tutorial](phase-29-tutorial.md) | 6 Learning | 27, 28 | approved |
 | 30 | [Version 1 readiness](phase-30-version-1-readiness.md) | 7 Launch | all | approved |
 
@@ -297,12 +298,13 @@ Two people in two browsers play turn 1 together on the live site, which is locke
 and invited testers from now on. Proves the architecture and measures the Cloudflare budgets on
 the real platform.
 
-### Milestone 3: Playthrough (05–20)
+### Milestone 3: Playthrough (05–20a)
 
 The real game screen, every game rule, hidden information, clocks, rooms and a lobby for guests,
 connections and leaving, and the daily limits. At the end of phase 20, 2 to 4 people can play a
 complete game from the lobby to the final score. **This is the playthrough version.** A
-checkpoint after phase 15 reviews game length with the simulator (O5).
+checkpoint after phase 15 reviews game length with the simulator (O5). Phase 20a builds the
+findings of the owner's first playthrough (Q74).
 
 ### Milestone 4: Together (21–22)
 

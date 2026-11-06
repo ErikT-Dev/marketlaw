@@ -1,0 +1,17 @@
+1. When clicking on cards in hand, the displayed card changes to that card - but there is a short delay sometimes - is it possible to make the transition between cards somehow even smoother or faster?
+
+2.The Displayed card's title bar doesn't have the sector background color - it should have it
+
+3. In the quests that require cards of a specfic sector - it would be easyer to read which sector is needed if the text (The sector name) has color matching teh sector.
+
+4. In the area where projects are displayed - the section should have a title PROJECTS, when noone has completed it it should display "First to complete gets +2 funs" with funds using the icon. When a player has completed a project only then should it say something about who has completed it.
+
+5. Any quest should only be completable when worforce, quality and satisfaction are 0 or positive - not when any of them are negative. Next to the title 'QUESTS' should be a question mark icon that should display a helper text as to how quests work and how you can complete them. Same with projects.
+
+6. The influence actions modal - all text that is referring to a stat should use the stat icon instead of text (for example funds). In the card draws table the sector colours should be used on the matching sector names - the residential kind for example should have a green background. For actions that have unlimited uses show 'unlimited uses' instead of just 'unlimited'. 
+
+7. The discard pile should just show a number of how many cards have been discarded - not which cards have ben discarded or any info about those cards either.
+
+8. When it is market phase it should be displayed somewhere very noticably, currently players can't tell that its market phase.
+
+9. Combos board should use icons instead of type names or stat names. 

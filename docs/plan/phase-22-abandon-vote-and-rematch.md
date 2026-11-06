@@ -9,7 +9,7 @@ Casual games can be abandoned by a unanimous vote, and a finished room can start
 
 ## Depends on
 
-Phase 20.
+Phase 20a.
 
 ## Covers
 

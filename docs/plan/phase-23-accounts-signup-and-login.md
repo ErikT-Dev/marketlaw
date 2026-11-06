@@ -10,7 +10,7 @@ change their username.
 
 ## Depends on
 
-Phase 20. O4 (password hashing) is decided from phase 04's measurement.
+Phase 20a. O4 (password hashing) is decided from phase 04's measurement.
 
 ## Covers
 
