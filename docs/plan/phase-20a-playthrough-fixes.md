@@ -501,3 +501,4 @@ names only the other players.
 6. Item 2's note on browser leak checks was wrong, and the word check skipped labelled parts:
    note corrected; the check now reads quest parts without an icon.
 7. Negative-stat parts used lowercase names: fixed, "Workforce" as the icon's name.
+| Releaser | 21 | 111k | 46 | done (waiting for the owner) |
