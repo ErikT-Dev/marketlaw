@@ -8,6 +8,7 @@ const GIVEN_ROOM = v.strictObject({
   players: v.array(v.string()),
   state: v.picklist(["waiting", "accepting", "playing", "ended"]),
   ended_ms: v.optional(v.number()),
+  chat: v.optional(v.array(v.strictObject({ from: v.string(), text: v.string() }))),
 });
 
 export const LOBBY_GIVEN_SCHEMA = v.strictObject({

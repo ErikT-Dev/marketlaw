@@ -81,7 +81,7 @@ These 14 scenarios are added to `harness/required.yaml` in this phase, by file a
   - Scenarios become required only in the finisher's first run; until then check them by adding
     them to `harness/required.yaml` locally without committing, as phase 20a did.
 
-- [ ] 1. **Chat on the server** (A11.1–A11.4, A11.8, A11.9, M8.1, M8.2, M6.7, M2.2; scenarios
+- [x] 1. **Chat on the server** (A11.1–A11.4, A11.8, A11.9, M8.1, M8.2, M6.7, M2.2; scenarios
   `chat` #1, #2, #12, `connections-and-leaving` #14). **Large.**
   - Protocol: room intents `send_chat` (a text with a generous parse cap such as 4,000 UTF-16
     units; longer is `malformed_message`), `mute` and `unmute` (item 3 builds their effect; add
@@ -103,6 +103,33 @@ These 14 scenarios are added to `harness/required.yaml` in this phase, by file a
     `deliverRoomOutcome.ts` pattern in the lobby driver, `GameRoom.ts` for sending to sockets.
   - Chat never changes a player's state version and is never part of `viewFor`; the leak test
     still passes (chat carries no card ids).
+  - Done (2026-11-06). The 4 scenarios pass in the lobby driver (checked locally, not yet on the
+    required list). How it is built:
+    - The room record has `chat` (`RoomChat`: `readers` with each player's `messageFrom` and
+      `lineFrom`, the grey `lines` with their message position, `lineCount`).
+      `withChatEvents` diffs the record before and after each write and adds readers and grey
+      lines; `chatTrackingStorage` wraps a `RoomStorage` so every write goes through it
+      (`GameRoom` and `LobbySession` use it; other harness storages do not and their players
+      see no chat). `ROOM_SCHEMA_VERSION` 4, `PROTOCOL_VERSION` 4.
+    - Messages: `ChatBlockStore` (`chat:<n>`, 20 per block, JSON bytes) inside
+      `CompressedRoomStore`; `rooms.chat` reads them, `rooms.save(chatMessage)` appends and
+      writes the newest block with the record; `storage.remove()` deletes the blocks too.
+    - `handleChatIntent` (from `handleRoomMessage`, before the waiting-only room actions) returns
+      `chatMessage` in `MessageOutcome`; a non-member gets `not_in_room`. An accepted
+      `send_chat` is answered with the usual room `update`; the entry itself reaches every
+      player, the sender included (`isOwn`), in a `chat` server message from
+      `chatDeliveriesBetween`. A resync gets `chatListFor` (`isFullList: true`) after the reply.
+    - Differs: `mute`/`unmute` (`playerName`) are in the schema and accepted with no effect yet.
+      A room keeps its last 200 grey lines (Q81, spec S7.3). `connections-and-leaving` #15 now
+      also runs in the lobby driver and passes. `GameRoom.reply` moved to `replyToSocket.ts`
+      and the simulator's room record to `simulatedRoomOf.ts` to stay within 300 lines.
+  - For later items: `LobbySession.ts` is at 287 lines; chat state of the driver is in
+    `LobbyChat.ts` (saved messages, `notified`, `saved_before_shown`), the then fields in
+    `lobbyChatThen.ts`. `send_chat` steps pass their fields straight into the intent
+    (`ROOM_ACTIONS`), so item 2 must turn `text_length`/`text_kind`/`text_bytes` into a text.
+    Item 2's limits need the saved messages in `MessageInput`: `rooms.chat.messages()` in
+    `GameRoom`, `chat.storage.messages()` in the driver. The client ignores `chat` messages
+    until item 5a (`RemoteGameHost.receive`).
 
 - [ ] 2. **Message rules and limits** (A11.5, A11.6, A9.6; scenarios `chat` #3 to #9,
   `lobby-queue-and-limits` #30). **Large.**

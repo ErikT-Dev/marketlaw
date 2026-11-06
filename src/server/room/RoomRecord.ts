@@ -1,5 +1,6 @@
 import type { RoomCode } from "../../shared/RoomCode";
 import type { Identity } from "./Identity";
+import type { RoomChat } from "./RoomChat";
 import type { RoomGame } from "./RoomGame";
 import type { RoomWaiting } from "./RoomWaiting";
 
@@ -11,4 +12,5 @@ export type RoomRecord = {
   readonly players: ReadonlyArray<Identity>;
   readonly waiting: RoomWaiting;
   readonly game: RoomGame | null;
+  readonly chat: RoomChat;
 };

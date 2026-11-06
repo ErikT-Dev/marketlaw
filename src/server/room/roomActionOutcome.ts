@@ -3,6 +3,7 @@ import type { PlayerId } from "../../shared/PlayerId";
 import type { RoomIntent } from "../../shared/protocol/RoomIntent";
 import type { ReasonCode } from "../../shared/ReasonCode";
 import type { Result } from "../../shared/Result";
+import type { ChatIntent } from "./ChatIntent";
 import type { GameStart } from "./GameStart";
 import type { RoomActionChange } from "./RoomActionChange";
 import type { RoomRecord } from "./RoomRecord";
@@ -82,7 +83,7 @@ function declineGame(record: RoomRecord, playerId: PlayerId, start: GameStart): 
 export function roomActionOutcome(
   record: RoomRecord,
   playerId: PlayerId,
-  intent: RoomIntent,
+  intent: Exclude<RoomIntent, ChatIntent>,
   start: GameStart,
 ): Outcome {
   if (!record.players.some((player) => player.playerId === playerId)) {

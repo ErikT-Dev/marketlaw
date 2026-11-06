@@ -171,7 +171,7 @@ function readRoomThen(session: RoomSession, field: string, expected: unknown): u
     case "message_to":
       return messageTo(session, expected);
     case "room":
-      return lobbyRoomThen(session.record, expected);
+      return lobbyRoomThen(session.record, expected, []);
     case "connected_tab":
       return connectedTab(session, expected);
     case "view":

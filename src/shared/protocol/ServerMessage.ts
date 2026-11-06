@@ -1,4 +1,5 @@
 import type { EpochMs } from "../EpochMs";
+import type { ChatEntry } from "./ChatEntry";
 import type { Notice } from "../Notice";
 import type { ReasonCode } from "../ReasonCode";
 import type { RemovalReason } from "./RemovalReason";
@@ -19,6 +20,12 @@ export type ServerMessage =
       readonly code: ReasonCode;
     }
   | { readonly type: "notice"; readonly protocolVersion: number; readonly notice: Notice }
+  | {
+      readonly type: "chat";
+      readonly protocolVersion: number;
+      readonly entries: ReadonlyArray<ChatEntry>;
+      readonly isFullList: boolean;
+    }
   | { readonly type: "opened_elsewhere"; readonly protocolVersion: number }
   | {
       readonly type: "removed";

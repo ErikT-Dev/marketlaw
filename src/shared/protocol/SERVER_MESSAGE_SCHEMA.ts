@@ -10,6 +10,7 @@ import { ReasonCode } from "../ReasonCode";
 import { RoomCode } from "../RoomCode";
 import { TradeName } from "../TradeName";
 import { RemovalReason } from "./RemovalReason";
+import { CHAT_ENTRY_SCHEMA } from "./CHAT_ENTRY_SCHEMA";
 import { DRAW_LOG_ENTRY_SCHEMA } from "./DRAW_LOG_ENTRY_SCHEMA";
 import { MARKETPLACE_SLOT_SCHEMA } from "./MARKETPLACE_SLOT_SCHEMA";
 import { GAME_RESULT_SCHEMA } from "./GAME_RESULT_SCHEMA";
@@ -145,6 +146,12 @@ export const SERVER_MESSAGE_SCHEMA = v.variant("type", [
       v.object({ kind: v.literal("resumed"), seats: v.array(SEAT), freeMs: COUNT }),
       v.object({ kind: v.literal("site_game_limit") }),
     ]),
+  }),
+  v.object({
+    type: v.literal("chat"),
+    protocolVersion: COUNT,
+    entries: v.array(CHAT_ENTRY_SCHEMA),
+    isFullList: v.boolean(),
   }),
   v.object({ type: v.literal("opened_elsewhere"), protocolVersion: COUNT }),
   v.object({

@@ -15,8 +15,6 @@ import { siteGameLimitOf } from "../../../src/server/lobby/siteGameLimitOf.ts";
 import { EMPTY_LOBBY } from "../../../src/server/lobby/EMPTY_LOBBY.ts";
 import type { LobbyRecord } from "../../../src/server/lobby/LobbyRecord.ts";
 import { releasePlayer } from "../../../src/server/lobby/releasePlayer.ts";
-import { withRoomSummary } from "../../../src/server/lobby/withRoomSummary.ts";
-import { roomSummaryOf } from "../../../src/server/room/roomSummaryOf.ts";
 import { RoomCode } from "../../../src/shared/RoomCode.ts";
 import { createRoomIn } from "../../../src/server/room/createRoomIn.ts";
 import { joinRoomIn } from "../../../src/server/room/joinRoomIn.ts";
@@ -43,6 +41,12 @@ import { otherRoomStorage } from "./otherRoomStorage.ts";
 import { countsTodayFromGiven } from "./countsTodayFromGiven.ts";
 import { deliverRoomOutcome } from "./deliverRoomOutcome.ts";
 import { rejectionOfReply } from "./rejectionOfReply.ts";
+import { LobbyChat } from "./LobbyChat.ts";
+import { seatOrderDrawn } from "./seatOrderDrawn.ts";
+import { chatFromGiven } from "./chatFromGiven.ts";
+import { lobbyWithRooms } from "./lobbyWithRooms.ts";
+import { chatTrackingStorage } from "../../../src/server/room/chatTrackingStorage.ts";
+import { leaveRoomIfFreeIn } from "../../../src/server/room/leaveRoomIfFreeIn.ts";
 
 const GENERATED_CANDIDATES = 10;
 const NAME_STEP = 7;
@@ -63,16 +67,21 @@ export class LobbySession {
   private otherRooms: ReadonlyArray<RoomRecord> = [];
   private namesAsked = 0;
   private readonly random: ScriptedRandom;
-  private readonly storage: RoomStorage = {
-    read: () => this.record ?? undefined,
-    write: (record) => {
-      this.record = record;
+  readonly chat: LobbyChat;
+  private readonly storage: RoomStorage = chatTrackingStorage(
+    {
+      read: () => this.record ?? undefined,
+      write: (record) => {
+        this.record = record;
+      },
+      remove: () => {
+        this.goneAs = this.record?.game === null ? "closed" : "deleted";
+        this.record = null;
+        this.chat.removeAll();
+      },
     },
-    remove: () => {
-      this.goneAs = this.record?.game === null ? "closed" : "deleted";
-      this.record = null;
-    },
-  };
+    () => ({ messageCount: this.chat.storage.messages().length, now: this.now }),
+  );
 
   constructor(given: LobbyGiven, random: ScriptedRandom) {
     this.random = random;
@@ -81,6 +90,7 @@ export class LobbySession {
       this.addAccount(name, lastUsedMs ?? 0);
     }
     this.lobby = { ...EMPTY_LOBBY, today: countsTodayFromGiven(given, this.now, this) };
+    this.chat = new LobbyChat(chatFromGiven(given, (name) => this.identityNamed(name), this.now));
     this.record =
       given.room === undefined || given.room.players.length === 0
         ? null
@@ -96,20 +106,7 @@ export class LobbySession {
   }
 
   reportRooms(): void {
-    const rooms = [this.record, ...this.otherRooms].flatMap((room) =>
-      room === null ? [] : [room],
-    );
-    const gone = this.lobby.rooms.filter(({ code }) => !rooms.some((room) => room.code === code));
-    for (const { code } of gone) {
-      this.lobby = withRoomSummary(this.lobby, code, null);
-    }
-    for (const room of rooms) {
-      const summary = roomSummaryOf(room);
-      const listed = this.lobby.rooms.find(({ code }) => code === room.code);
-      if (JSON.stringify(listed) !== JSON.stringify(summary)) {
-        this.lobby = withRoomSummary(this.lobby, room.code, summary);
-      }
-    }
+    this.lobby = lobbyWithRooms(this.lobby, [this.record, ...this.otherRooms]);
   }
 
   livePlayers(): ReadonlyArray<PlayerId> {
@@ -137,9 +134,10 @@ export class LobbySession {
         break;
       }
       if (fired === null) {
-        this.goneAs = this.record.game === null ? "closed" : "deleted";
+        this.storage.remove();
+      } else {
+        this.storage.write(fired);
       }
-      this.record = fired;
     }
     this.now = v.parse(EpochMs, until);
   }
@@ -180,6 +178,9 @@ export class LobbySession {
     this.rejected = rejection?.reason ?? null;
     if (rejection === null) {
       this.setConnected(name, true);
+      if (this.record !== null && this.record.code !== code) {
+        leaveRoomIfFreeIn(this.storage, playerId);
+      }
     } else if (roomCode.success) {
       this.lobby = releasePlayer(this.lobby, playerId, roomCode.output);
     }
@@ -225,13 +226,21 @@ export class LobbySession {
   }
 
   sendRoomAction(name: string, action: Readonly<Record<string, unknown>>): void {
+    this.send(name, { type: "room", action });
+  }
+
+  sendGameAction(name: string, action: Readonly<Record<string, unknown>>): void {
+    const { playerId } = this.identityNamed(name);
+    const seat = this.record?.game?.seats.find((candidate) => candidate.playerId === playerId);
+    const stateVersion = seat?.stateVersion ?? 0;
+    this.send(name, { type: "action", actionId: randomUUID(), stateVersion, action });
+  }
+
+  private send(name: string, message: Readonly<Record<string, unknown>>): void {
     const sender = this.identityNamed(name);
-    const text = JSON.stringify({
-      protocolVersion: PROTOCOL_VERSION,
-      token: `token-of-${name}`,
-      type: "room",
-      action,
-    });
+    const token = `token-of-${name}`;
+    const text = JSON.stringify({ protocolVersion: PROTOCOL_VERSION, token, ...message });
+    const before = { record: this.record, messageCount: this.chat.storage.messages().length };
     const outcome = receiveMessage(this.storage, {
       connection: { identity: sender, rejectionTimes: [] },
       parsed: parseClientMessage(text),
@@ -241,7 +250,8 @@ export class LobbySession {
       gameStart: {
         seed: 1,
         now: this.now,
-        seatOrder: (players) => this.seatOrder(players),
+        seatOrder: (players) =>
+          seatOrderDrawn(this.random, players, (name) => this.identityNamed(name)),
         limitRejectionFor: (players) => this.countGameStart(players),
       },
       livePlayers: this.live,
@@ -250,6 +260,7 @@ export class LobbySession {
     if (!outcome.isRoomGone) {
       const delivery = { sender: name, accounts: this.accounts.values(), record: this.record };
       deliverRoomOutcome(this.messagesTo, { ...delivery, now: this.now }, outcome);
+      this.chat.receive(this.messagesTo, outcome.chatMessage, { before, after: this.record });
     }
   }
 
@@ -258,15 +269,6 @@ export class LobbySession {
     const counted = countGameStart(this.lobby, players, limits);
     this.lobby = counted.isOk ? counted.value : this.lobby;
     return counted.isOk ? null : counted.error;
-  }
-
-  private seatOrder(players: ReadonlyArray<PlayerId>): ReadonlyArray<PlayerId> {
-    const draw = this.random.next("seats", "setup");
-    if (draw.kind !== "listed" || !Array.isArray(draw.value)) {
-      return players;
-    }
-    const names: ReadonlyArray<unknown> = draw.value;
-    return names.map((name) => this.identityNamed(String(name)).playerId);
   }
 
   private claimIn(playerId: PlayerId, code: RoomCode): boolean {

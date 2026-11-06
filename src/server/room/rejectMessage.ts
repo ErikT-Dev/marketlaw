@@ -31,5 +31,6 @@ export function rejectMessage(
     shouldClose: rejectionTimes.length >= REJECTIONS_BEFORE_CLOSING,
     removals: [],
     notices: [],
+    chatMessage: null,
   };
 }

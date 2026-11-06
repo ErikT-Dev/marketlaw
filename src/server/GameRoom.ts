@@ -7,7 +7,6 @@ import { parseClientMessage } from "../shared/protocol/parseClientMessage";
 import type { RoomCode } from "../shared/RoomCode";
 import { ROOM_GONE_CLOSE_CODE } from "../shared/ROOM_GONE_CLOSE_CODE";
 import { attachmentOf } from "./attachmentOf";
-import type { ConnectionAttachment } from "./ConnectionAttachment";
 import { newGameStart } from "./newGameStart";
 import { NO_CONNECTION } from "./NO_CONNECTION";
 import { nowMs } from "./nowMs";
@@ -26,17 +25,19 @@ import { joinRoomIn } from "./room/joinRoomIn";
 import { loadRoom } from "./room/loadRoom";
 import { playersWhoseUpdateChanged } from "./room/playersWhoseUpdateChanged";
 import { receiveCheckingGameStart } from "./room/receiveCheckingGameStart";
-import type { receiveMessage } from "./room/receiveMessage";
 import type { RoomRecord } from "./room/RoomRecord";
 import { startTestRoomIn } from "./room/startTestRoomIn";
 import { resumeNoticesBetween } from "./room/resumeNoticesBetween";
 import { timeOutNoticesBetween } from "./room/timeOutNoticesBetween";
-import { withAwaySeats } from "./room/withAwaySeats";
 import { withConnection } from "./room/withConnection";
 import { lobbyOf } from "./lobbyOf";
 import { reportToLobby } from "./reportToLobby";
 import { saveReplayRecordIfEnded } from "./replays/saveReplayRecordIfEnded";
 import { RoomSockets } from "./RoomSockets";
+import { replyToSocket } from "./replyToSocket";
+import { chatTrackingStorage } from "./room/chatTrackingStorage";
+import { chatDeliveriesBetween } from "./room/chatDeliveriesBetween";
+import { chatListFor } from "./room/chatListFor";
 import type { RoomRemoval } from "./room/RoomRemoval";
 import type { Sender } from "./Sender";
 import { senderOfToken } from "./senderOfToken";
@@ -49,7 +50,10 @@ export class GameRoom extends DurableObject<Env> {
     this.sockets.closeAll("This room no longer exists");
   });
 
-  private readonly storage = this.rooms.storage;
+  private readonly storage = chatTrackingStorage(this.rooms.storage, () => ({
+    messageCount: this.rooms.chat.messages().length,
+    now: nowMs(),
+  }));
 
   async createRoom(
     room: { readonly code: RoomCode; readonly size: 2 | 3 | 4; readonly isPublic: boolean },
@@ -134,8 +138,25 @@ export class GameRoom extends DurableObject<Env> {
         null,
       );
     }
+    this.sendChatSince(before, this.rooms.chat.messages().length);
     await this.syncAlarm();
     await this.reportToLobby(before);
+  }
+
+  private sendChatSince(
+    before: RoomRecord | null,
+    messageCount: number,
+    hello: { readonly socket: WebSocket; readonly playerId: PlayerId } | null = null,
+  ): void {
+    const record = loadRoom(this.storage);
+    const messages = this.rooms.chat.messages();
+    const deliveries = chatDeliveriesBetween({ record: before, messageCount }, record, messages);
+    for (const { playerId, message } of deliveries) {
+      this.sockets.sendTo([playerId], () => message);
+    }
+    if (hello !== null && record !== null) {
+      hello.socket.send(JSON.stringify(chatListFor(record, messages, hello.playerId)));
+    }
   }
 
   override async alarm(): Promise<void> {
@@ -175,6 +196,7 @@ export class GameRoom extends DurableObject<Env> {
       null,
     );
     this.sockets.sendNotices(timeOutNoticesBetween(record, fired));
+    this.sendChatSince(record, this.rooms.chat.messages().length);
     await saveReplayRecordIfEnded(this.env.DB, record, fired);
   }
 
@@ -230,6 +252,7 @@ export class GameRoom extends DurableObject<Env> {
   ): Promise<void> {
     const attachment = attachmentOf(socket);
     const recordBefore = loadRoom(this.storage);
+    const messageCount = this.rooms.chat.messages().length;
     const now = nowMs();
     const input = {
       connection: { identity: attachment.identity, rejectionTimes: attachment.rejectionTimes },
@@ -250,13 +273,21 @@ export class GameRoom extends DurableObject<Env> {
     }
     const recordAfter = loadRoom(this.storage);
     if (recordAfter !== null) {
-      await this.rooms.save();
+      await this.rooms.save(outcome.chatMessage);
       this.sockets.sendRemovals(outcome.removals);
-      this.reply(socket, { attachment, outcome, sender });
-      const isHello = parsed.isOk && parsed.value.type === "resync";
-      if (isHello && sender !== null && recordAfter.game !== null) {
-        this.sockets.welcome(recordAfter, sender.identity.playerId, socket);
+      replyToSocket(
+        socket,
+        { attachment, outcome, sender },
+        { record: recordAfter, livePlayers: this.sockets.livePlayers() },
+      );
+      const hello =
+        parsed.isOk && parsed.value.type === "resync" && sender !== null
+          ? { socket, playerId: sender.identity.playerId }
+          : null;
+      if (hello !== null && recordAfter.game !== null) {
+        this.sockets.welcome(recordAfter, hello.playerId, socket);
       }
+      this.sendChatSince(recordBefore, messageCount, hello);
       this.sockets.updatePlayers(
         recordAfter,
         outcome.playersToUpdate,
@@ -273,31 +304,6 @@ export class GameRoom extends DurableObject<Env> {
       await saveReplayRecordIfEnded(this.env.DB, recordBefore, recordAfter);
     }
     await this.reportToLobby(recordBefore);
-  }
-
-  private reply(
-    socket: WebSocket,
-    sent: {
-      readonly attachment: ConnectionAttachment;
-      readonly outcome: Extract<ReturnType<typeof receiveMessage>, { readonly isRoomGone: false }>;
-      readonly sender: Sender | null;
-    },
-  ): void {
-    const { attachment, outcome, sender } = sent;
-    socket.serializeAttachment({
-      identity: outcome.connection.identity,
-      tokenHash:
-        outcome.connection.identity === null ? null : (sender?.tokenHash ?? attachment.tokenHash),
-      rejectionTimes: outcome.connection.rejectionTimes,
-    });
-    socket.send(
-      JSON.stringify(
-        withAwaySeats(outcome.reply, loadRoom(this.storage), this.sockets.livePlayers()),
-      ),
-    );
-    if (outcome.shouldClose) {
-      socket.close(1008, "Too many rejected messages");
-    }
   }
 
   private async reportToLobby(before: RoomRecord | null): Promise<void> {

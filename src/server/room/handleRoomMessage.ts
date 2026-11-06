@@ -3,6 +3,7 @@ import { PROTOCOL_VERSION } from "../../shared/PROTOCOL_VERSION";
 import type { RoomIntent } from "../../shared/protocol/RoomIntent";
 import type { ServerMessage } from "../../shared/protocol/ServerMessage";
 import type { ConnectionState } from "./ConnectionState";
+import { handleChatIntent } from "./handleChatIntent";
 import type { MessageInput } from "./MessageInput";
 import type { MessageOutcome } from "./MessageOutcome";
 import type { RoomActionChange } from "./RoomActionChange";
@@ -44,6 +45,9 @@ export function handleRoomMessage(
   playerId: PlayerId,
   intent: RoomIntent,
 ): MessageOutcome {
+  if (intent.type === "send_chat" || intent.type === "mute" || intent.type === "unmute") {
+    return handleChatIntent(input, connection, playerId, intent);
+  }
   const { record, now, gameStart } = input;
   const outcome = roomActionOutcome(record, playerId, intent, gameStart);
   if (!outcome.isOk) {
@@ -66,5 +70,6 @@ export function handleRoomMessage(
     shouldClose: false,
     removals: change.removals.filter((removal) => removal.playerId !== playerId),
     notices: change.notices.filter((addressed) => addressed.playerId !== playerId),
+    chatMessage: null,
   };
 }

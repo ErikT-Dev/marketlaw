@@ -1,6 +1,8 @@
+import type { ChatMessage } from "../../../src/server/room/ChatMessage.ts";
 import type { RoomRecord } from "../../../src/server/room/RoomRecord.ts";
 import { ROOM_CODE_CHARACTERS } from "../../../src/shared/ROOM_CODE_CHARACTERS.ts";
 import { isRecord } from "../../harness-check/isRecord.ts";
+import { chatTextsOf } from "./chatTextsOf.ts";
 
 function nameOf(record: RoomRecord, playerId: string): string {
   return record.players.find((player) => player.playerId === playerId)?.name ?? playerId;
@@ -19,7 +21,11 @@ function codeFormatOf(record: RoomRecord, expected: unknown): unknown {
   return pattern.test(record.code) ? asked : record.code;
 }
 
-export function lobbyRoomThen(record: RoomRecord | null, expected: unknown): unknown {
+export function lobbyRoomThen(
+  record: RoomRecord | null,
+  expected: unknown,
+  messages: ReadonlyArray<ChatMessage>,
+): unknown {
   if (record === null) {
     return "closed";
   }
@@ -31,6 +37,7 @@ export function lobbyRoomThen(record: RoomRecord | null, expected: unknown): unk
     state: stateOf(record),
     accepted: (record.waiting.asking?.accepted ?? []).map((id) => nameOf(record, id)),
     code_format: codeFormatOf(record, expected),
+    chat_last: chatTextsOf(messages.slice(-1))[0],
   };
 }
 

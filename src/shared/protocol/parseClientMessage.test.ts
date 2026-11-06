@@ -13,6 +13,15 @@ function actionMessage(action: Readonly<Record<string, unknown>>): string {
   });
 }
 
+function roomMessage(action: Readonly<Record<string, unknown>>): string {
+  return JSON.stringify({
+    protocolVersion: PROTOCOL_VERSION,
+    token: "token",
+    type: "room",
+    action,
+  });
+}
+
 describe("parseClientMessage", () => {
   it("reads influence, quest, draw action and undo intents", () => {
     const intents = [
@@ -54,5 +63,23 @@ describe("parseClientMessage", () => {
         error: "malformed_message",
       });
     }
+  });
+
+  it("reads chat and mute intents and rejects a chat text over 4000 characters as malformed", () => {
+    const intents = [
+      { type: "send_chat", text: "hello mayors" },
+      { type: "mute", playerName: "Bea" },
+      { type: "unmute", playerName: "Bea" },
+    ];
+    for (const intent of intents) {
+      const parsed = parseClientMessage(roomMessage(intent));
+      expect(parsed.isOk && parsed.value.type === "room" ? parsed.value.action : null).toEqual(
+        intent,
+      );
+    }
+    expect(parseClientMessage(roomMessage({ type: "send_chat", text: "a".repeat(4001) }))).toEqual({
+      isOk: false,
+      error: "malformed_message",
+    });
   });
 });
