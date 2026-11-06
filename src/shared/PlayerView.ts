@@ -1,4 +1,3 @@
-import type { CardName } from "./catalogue/CardName";
 import type { TypeName } from "./catalogue/TypeName";
 import type { DrawLogEntry } from "./DrawLogEntry";
 import type { ProjectName } from "./ProjectName";
@@ -18,7 +17,7 @@ export type PlayerView = {
   readonly marketGo: SeatNumber | null;
   readonly seats: ReadonlyArray<OwnSeatView | OtherSeatView>;
   readonly deckCount: number;
-  readonly discard: ReadonlyArray<CardName>;
+  readonly discardCount: number;
   readonly marketplace: ReadonlyArray<MarketplaceSlot>;
   readonly quests: ReadonlyArray<QuestPlaceView>;
   readonly bonusTypes: ReadonlyArray<TypeName>;

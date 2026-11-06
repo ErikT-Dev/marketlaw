@@ -35,11 +35,23 @@ export function BigCard({ card, realCost }: Props) {
       aria-label={card.name}
       style={{ backgroundColor: sectorColor(card.sector, "card") }}
     >
-      <div className={styles["header"]}>
+      <div
+        className={styles["header"]}
+        style={{
+          background: sectorColor(card.sector, "solid"),
+          color: sectorColor(card.sector, "solid-text"),
+        }}
+      >
         <strong>#{card.number}</strong>
         {card.name}
       </div>
-      <img className={styles["photo"]} src={photoUrl(card.photo)} alt="" loading="lazy" />
+      <img
+        key={card.name}
+        className={styles["photo"]}
+        src={photoUrl(card.photo)}
+        alt=""
+        style={{ background: sectorColor(card.sector, "solid") }}
+      />
       <div className={styles["strip"]} style={{ background: sectorColor(card.sector, 1) }}>
         {stripStats(card, realCost).map(({ stat, value }) => (
           <span

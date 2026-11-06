@@ -33,7 +33,9 @@ export function GameTopBar({ view, seat, playerNames, onLeaveGame, isConnected }
         <h1 className={styles["turn"]}>
           Turn {view.turn} of {TURN_LIMIT}
         </h1>
-        <span className={styles["phase"]}>{PHASE_NAMES[view.phase]}</span>
+        <span className={styles[view.phase === "market" ? "marketPhase" : "phase"]}>
+          {PHASE_NAMES[view.phase]}
+        </span>
       </div>
       <ol className={styles["order"]} aria-label="Player order">
         {orderBadgesOf(view, playerNames, awaySeats).map((badge, index) => (

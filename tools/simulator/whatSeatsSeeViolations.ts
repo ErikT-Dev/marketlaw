@@ -24,6 +24,7 @@ function hiddenFrom(state: GameState, viewer: SeatNumber): ReadonlyArray<CardNam
   const hidden = [
     ...others.flatMap((seat) => seat.hand),
     ...state.deck,
+    ...state.discard,
     ...state.holdingPile,
     ...(state.phase === "main" ? playedThisPhase : []),
   ];

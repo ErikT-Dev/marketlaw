@@ -1,0 +1,23 @@
+.banner {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: var(--space-lg);
+  padding: var(--space-sm) var(--space-lg);
+  border-radius: var(--radius-md);
+  background: var(--color-board-market-phase);
+  color: var(--color-board-market-phase-text);
+}
+
+.title {
+  margin: 0;
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.08em;
+}
+
+.go {
+  margin: 0;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-bold);
+}

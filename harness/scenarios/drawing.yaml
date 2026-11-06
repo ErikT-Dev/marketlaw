@@ -169,7 +169,7 @@
   when:
     - {seat: 1, action: influence, trade: draw_tier_1, kind: Residential}
   then:
-    view: {seat: 2, discard: [Cottage], deck_count: 1}
+    view: {seat: 2, discard_count: 1, deck_count: 1}
 
 - name: the player who caused a discard shuffle sees it straight away
   covers: [R17.8, R5.5]
@@ -183,7 +183,7 @@
   when:
     - {seat: 1, action: influence, trade: draw_tier_1, kind: Residential}
   then:
-    view: {seat: 1, discard: [], deck_count: 1}
+    view: {seat: 1, discard_count: 0, deck_count: 1}
 
 - name: a random draw in turn 13 asks for a sector and then a tier
   covers: [R17.3, R17.10]

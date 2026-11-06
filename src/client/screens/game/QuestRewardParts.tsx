@@ -20,6 +20,7 @@ export function QuestRewardParts({ reward }: Props) {
         <QuestPart
           amount="+1"
           label={reward.gainedType}
+          sector={null}
           iconFile={typeIconFile(reward.gainedType)}
           spokenText={`gain 1 ${reward.gainedType}`}
         />
@@ -29,6 +30,7 @@ export function QuestRewardParts({ reward }: Props) {
           key={stat}
           amount={`+${String(amount)}`}
           label={STAT_ICONS[stat].label}
+          sector={null}
           iconFile={STAT_ICONS[stat].file}
           spokenText={`+${String(amount)} ${STAT_ICONS[stat].label.toLowerCase()}`}
         />

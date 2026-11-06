@@ -29,19 +29,17 @@ export function shownPilesViolations(
     (card) => !state.mainPhaseStart.discard.includes(card) || shuffledAway.includes(card),
   ).length;
   const expectedDeckCount = state.mainPhaseStart.deckCount + shuffledAway.length - drawnFromDeck;
-  const ownCards = [...(own?.hand ?? []), ...(own?.city ?? [])];
   return [
-    ...(JSON.stringify(view.discard) === JSON.stringify(expectedDiscard)
+    ...(view.discardCount === expectedDiscard.length
       ? []
-      : [`${label} is shown a discard pile that R5.5 does not give`]),
+      : [
+          `${label} is shown ${String(view.discardCount)} discard cards, not ${String(expectedDiscard.length)}`,
+        ]),
     ...(view.deckCount === expectedDeckCount
       ? []
       : [
           `${label} is shown ${String(view.deckCount)} deck cards, not ${String(expectedDeckCount)}`,
         ]),
     ...(view.deckCount < 0 ? [`${label} is shown a negative deck count`] : []),
-    ...(view.discard.some((card) => ownCards.includes(card))
-      ? [`${label} is shown one of its own cards in the discard pile`]
-      : []),
   ];
 }

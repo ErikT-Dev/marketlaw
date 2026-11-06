@@ -1,4 +1,5 @@
 import { expect, test, type Browser, type ViewportSize } from "@playwright/test";
+import { expectAllProjectsInView } from "./expectAllProjectsInView";
 import { expectScreenFits } from "./expectScreenFits";
 import { startTestRoom } from "./startTestRoom";
 
@@ -22,16 +23,36 @@ test("claim combos with the totals, complete a project, and get the first-comple
   const ann = await openSeat(browser, viewport, seatOne);
   const bea = await openSeat(browser, viewport, seatTwo);
 
+  const combos = ann.getByRole("region", { name: "Combos · 1 ready" });
+  await expect(combos.getByRole("img", { name: "Safety" }).first()).toBeVisible();
+  await expect(combos.getByRole("img", { name: "Quality +1" }).first()).toBeVisible();
+  await expectScreenFits(ann, "combos-list", testInfo);
   await ann.getByRole("button", { name: "Claim all (1)" }).click();
   const claim = ann.getByRole("dialog", { name: "Claim all combos" });
   await expect(claim).toContainText("You will get in total");
-  await expect(claim.getByText("+0 workforce · +1 quality · +0 satisfaction")).toBeVisible();
+  await expect(claim.getByRole("img", { name: "Safety" })).toBeVisible();
+  await expect(claim.getByRole("img", { name: "Quality +1" }).first()).toBeVisible();
+  await expect(claim.getByRole("img", { name: "Workforce +0" })).toBeVisible();
+  await expect(claim.getByRole("img", { name: "Satisfaction +0" })).toBeVisible();
   await expectScreenFits(ann, "claim-all", testInfo);
   await claim.getByRole("button", { name: "Claim all" }).click();
   await expect(ann.getByRole("region", { name: "Combos · 0 ready" })).toBeVisible();
   await expect(ann.getByRole("img", { name: "Quality 9" })).toBeVisible();
+  await expectAllProjectsInView(ann);
 
-  await ann.getByRole("button", { name: "Projects" }).click();
+  const projectsArea = ann.getByRole("list", { name: "Your projects" });
+  await expect(projectsArea.getByRole("listitem").first()).toContainText(
+    "First to complete gets +2",
+  );
+  await ann.getByRole("button", { name: "How projects work" }).click();
+  await expect(ann.getByRole("region", { name: "How projects work" })).toContainText(
+    "You have 3 projects.",
+  );
+  await expectScreenFits(ann, "projects-help", testInfo);
+  await ann.keyboard.press("Escape");
+  await expect(ann.getByRole("region", { name: "How projects work" })).toHaveCount(0);
+
+  await ann.getByRole("button", { name: "Projects", exact: true }).click();
   const projects = ann.getByRole("dialog", { name: "Projects" });
   const streets = projects.getByRole("listitem", { name: "Clean up the streets" });
   await expect(streets).toContainText("Nobody has completed it yet");

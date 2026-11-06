@@ -1,15 +1,18 @@
 import type { DrawAsked } from "../../../shared/DrawAsked";
 import type { DrawLogEntry } from "../../../shared/DrawLogEntry";
+import type { IconText } from "../../components/IconText";
+import type { IconTextPart } from "../../components/IconTextPart";
 import { counted } from "./counted";
 import type { DrawLogRow } from "./DrawLogRow";
 import { playerNameOf } from "./playerNameOf";
 
-const CAUSE_TEXT: Readonly<Record<Extract<DrawLogEntry, { kind: "draw" }>["cause"], string>> = {
-  income: "income",
-  project: "project",
-  quest: "quest",
-  draw_action: "draw action",
-};
+const CAUSE_TEXT: Readonly<Record<Extract<DrawLogEntry, { kind: "draw" }>["cause"], IconTextPart>> =
+  {
+    income: { stat: "income" },
+    project: "project",
+    quest: "quest",
+    draw_action: "draw action",
+  };
 
 function askedWhat(asked: DrawAsked): string {
   return asked.by === "sector" ? asked.sector : asked.kind.replace(/ card$/, "");
@@ -35,7 +38,7 @@ function marketGoDrewText(row: DrawLogRow, asked: DrawAsked): string {
   return `drew ${counted(total, "card")}: ${askedWhat(asked)}, ${tiers.join(" and ")}`;
 }
 
-export function drawLogText(row: DrawLogRow, playerNames: ReadonlyArray<string>): string {
+export function drawLogText(row: DrawLogRow, playerNames: ReadonlyArray<string>): IconText {
   const [entry] = row;
   if (entry.kind === "turn_draw") {
     const name = playerNameOf(playerNames, entry.seat);
@@ -46,7 +49,11 @@ export function drawLogText(row: DrawLogRow, playerNames: ReadonlyArray<string>)
   }
   if (entry.kind === "draw") {
     const name = playerNameOf(playerNames, entry.seat);
-    return `${name} drew ${counted(entry.count, "card")}: ${askedText(entry.asked)} (${CAUSE_TEXT[entry.cause]})`;
+    return [
+      `${name} drew ${counted(entry.count, "card")}: ${askedText(entry.asked)} (`,
+      CAUSE_TEXT[entry.cause],
+      ")",
+    ];
   }
   const shuffle = entry.seat === null ? "Discard shuffle for the marketplace" : "Discard shuffle";
   if (entry.asked === null) {

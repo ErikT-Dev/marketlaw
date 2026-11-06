@@ -1,6 +1,6 @@
 import type { ComboStatus } from "../../../shared/ComboStatus";
 import { Panel } from "../../components/Panel";
-import { comboTexts } from "./comboTexts";
+import { ComboNeedAndGain } from "./ComboNeedAndGain";
 import styles from "./CombosPanel.module.css";
 
 type Props = {
@@ -23,14 +23,12 @@ export function CombosPanel({ combos }: Props) {
       ) : (
         <ul className={styles["list"]}>
           {combos.map((status) => {
-            const { need, gain } = comboTexts(status.card, status.combo);
             return (
               <li
                 key={`${status.card}-${String(status.combo)}`}
                 className={`${styles["combo"] ?? ""} ${status.readyTimes > 0 ? (styles["ready"] ?? "") : ""}`}
               >
-                <span>{need}</span>
-                <span className={styles["gain"]}>{gain}</span>
+                <ComboNeedAndGain card={status.card} combo={status.combo} />
                 <span className={styles["status"]}>{statusText(status)}</span>
               </li>
             );

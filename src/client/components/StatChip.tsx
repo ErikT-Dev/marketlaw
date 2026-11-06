@@ -5,22 +5,28 @@ import styles from "./Chip.module.css";
 
 type Props = {
   readonly stat: StatName;
-  readonly value: number | string;
+  readonly value?: number | string | undefined;
 };
 
 export function StatChip({ stat, value }: Props) {
   const { file, label } = STAT_ICONS[stat];
   return (
-    <span className={styles["chip"]} role="img" aria-label={`${label} ${String(value)}`}>
+    <span
+      className={styles["chip"]}
+      role="img"
+      aria-label={value === undefined ? label : `${label} ${String(value)}`}
+    >
       <img className={styles["icon"]} src={iconUrl(file)} alt="" />
-      <span
-        aria-hidden="true"
-        style={{
-          color: `color-mix(in srgb, var(--color-stat-${stat === "buildPasses" ? "build-pass" : stat}) 35%, white)`,
-        }}
-      >
-        {value}
-      </span>
+      {value === undefined ? null : (
+        <span
+          aria-hidden="true"
+          style={{
+            color: `color-mix(in srgb, var(--color-stat-${stat === "buildPasses" ? "build-pass" : stat}) 35%, white)`,
+          }}
+        >
+          {value}
+        </span>
+      )}
       <span className={styles["tooltip"]} aria-hidden="true">
         {label}
       </span>

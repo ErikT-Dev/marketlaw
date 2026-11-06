@@ -40,7 +40,7 @@ test("income happens by itself in a test room and shows in the draw log", async 
     .click();
   await expect(
     page.getByRole("list", { name: "Draw log entries" }).getByRole("listitem"),
-  ).toHaveText([/Turn 1: Seat 1 drew 1 card: \w+, tier 1 \(income\)$/]);
+  ).toHaveText([/Turn 1: Seat 1 drew 1 card: \w+, tier 1 \(Income\)$/]);
   await expect(page.getByRole("img", { name: "Income 4" })).toBeVisible();
   await expectScreenFits(page, "income-draw", testInfo);
   await page.context().close();

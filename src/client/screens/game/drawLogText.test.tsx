@@ -19,7 +19,7 @@ describe("drawLogText", () => {
         ],
         NAMES,
       ),
-    ).toBe("Bea drew 1 card: Public, tier 2 (income)");
+    ).toEqual(["Bea drew 1 card: Public, tier 2 (", { stat: "income" }, ")"]);
   });
 
   it("says which cards a discard shuffle put into the deck", () => {

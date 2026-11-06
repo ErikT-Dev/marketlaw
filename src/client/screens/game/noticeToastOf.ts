@@ -1,4 +1,5 @@
 import type { Notice } from "../../../shared/Notice";
+import type { IconText } from "../../components/IconText";
 import type { SeatNumber } from "../../../shared/SeatNumber";
 import { playerNameOf } from "./playerNameOf";
 import { SITE_GAME_LIMIT_TOAST } from "./SITE_GAME_LIMIT_TOAST";
@@ -8,7 +9,7 @@ export function noticeToastOf(
   notice: Notice,
   viewer: SeatNumber,
   playerNames: ReadonlyArray<string>,
-): { readonly title: string; readonly text: string } {
+): { readonly title: string; readonly text: IconText } {
   if (notice.kind === "timed_out") {
     return { title: "Your time ran out", text: timeOutText(notice) };
   }

@@ -1,8 +1,9 @@
+import type { IconText } from "../../components/IconText";
 import { clockText } from "../../components/clockText";
 import type { JoinError } from "../../store/JoinError";
 import { REJECTION_MESSAGES } from "../game/REJECTION_MESSAGES";
 
-export function joinErrorText(error: JoinError, now: number): string {
+export function joinErrorText(error: JoinError, now: number): IconText {
   if (error.reason === "room_not_found") {
     return `No room has the code ${error.code}. Check the code and try again.`;
   }

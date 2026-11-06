@@ -92,7 +92,7 @@ it by hand.
 | R16.4 | end-of-game (1), projects (1) | Covered |
 | R16.5 | projects (2) | Covered |
 | R16.6 | end-of-game (1), projects (2) | Covered |
-| R17.1 | setup (1) | Covered |
+| R17.1 | setup (1), visibility (1) | Covered |
 | R17.2 | drawing (1) | Covered |
 | R17.3 | drawing (2), marketplace (1) | Covered |
 | R17.4 | drawing (7), influence (1), marketplace (2), setup (1) | Covered |
@@ -120,7 +120,7 @@ it by hand.
 | R19.1 | turns-and-time (1) | Covered |
 | R19.2 | – | Checked another way: The quest list scenarios in `quests.yaml` have one scenario for each of the 45 quests. *(approved by the owner, 2026-10-25)* |
 | R19.3 | setup (1) | Covered |
-| R19.4 | quests (2) | Covered |
+| R19.4 | quests (5) | Covered |
 | R19.5 | quests (50), undo (1) | Covered |
 | R19.6 | quests (1) | Covered |
 | R19.7 | quests (1) | Covered |
@@ -163,7 +163,7 @@ it by hand.
 | M2.1 | client (1), rooms (2) | Covered |
 | M2.2 | connections-and-leaving (1), rooms (1) | Covered |
 | M3.1 | – | Checked another way: A description of how players interact; each part is tested by its own rule. *(approved by the owner, 2026-10-25)* |
-| M3.2 | visibility (4) | Covered |
+| M3.2 | visibility (5) | Covered |
 | M3.3 | drawing (2), visibility (2) | Covered |
 | M3.4 | visibility (1) | Covered |
 | M3.5 | connections-and-leaving (1), visibility (2) | Covered |
@@ -347,6 +347,6 @@ it by hand.
 ## Summary
 
 - Rules: 310
-- Scenarios: 429
+- Scenarios: 433
 - Gaps: 0
 - Checked another way or also checked another way: R3.2, R3.5, R17.10, R19.2, M3.1, M3.6, M4.2, A6.4, A10.6, C5.1, C5.2, C5.3

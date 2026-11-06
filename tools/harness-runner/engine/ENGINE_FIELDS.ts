@@ -104,7 +104,7 @@ export const ENGINE_FIELDS = {
         "projects",
         "quests_completed",
         "deck_count",
-        "discard",
+        "discard_count",
         "contains",
         "hides",
         "log_contains",

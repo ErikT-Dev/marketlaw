@@ -69,6 +69,9 @@ test("one player takes a marketplace card while the other waits, then both play 
   await expectScreenFits(two.page, "market-your-turn-draw", testInfo);
   await expect(one.page.getByRole("heading", { name: "Seat 2's go" })).toBeVisible();
   await expectScreenFits(one.page, "market-before-your-go", testInfo);
+  await expect(two.page.getByRole("region", { name: "MARKET PHASE" })).toContainText("Your go");
+  await expect(one.page.getByRole("region", { name: "MARKET PHASE" })).toContainText("Seat 2's go");
+  await expectScreenFits(one.page, "market-phase-banner", testInfo);
 
   await two.page.getByRole("button", { name: "Take Row House" }).click();
   await expect(
@@ -90,6 +93,7 @@ test("one player takes a marketplace card while the other waits, then both play 
   await one.page.getByRole("button", { name: "Service" }).click();
   await expectMainPhase(one.page);
   await expectMainPhase(two.page);
+  await expect(one.page.getByRole("region", { name: "MARKET PHASE" })).toHaveCount(0);
   await expect(one.page.getByRole("list", { name: "Your hand" }).getByRole("button")).toHaveCount(
     4,
   );

@@ -1,9 +1,11 @@
 import { useId, useState } from "react";
 import { Button } from "../../components/Button";
+import type { IconText } from "../../components/IconText";
+import { TextWithIcons } from "../../components/TextWithIcons";
 import styles from "./Lobby.module.css";
 
 type Props = {
-  readonly error: string | null;
+  readonly error: IconText | null;
   readonly onJoin: (code: string) => void;
   readonly onCreate: () => void;
 };
@@ -34,7 +36,7 @@ export function JoinWithCode({ error, onJoin, onCreate }: Props) {
         />
         {error === null ? null : (
           <p id={errorId} role="alert" className={styles["joinError"]}>
-            {error}
+            <TextWithIcons text={error} />
           </p>
         )}
       </div>

@@ -1319,6 +1319,13 @@ file.
     sees a blank or mixed card (owner's choice, 2026-11-06); no loading screen; the next
     card shown within 100 ms, chosen as a measurable "smoother or faster"), S8.3 (stats as icons,
     kind names on sector colours, "unlimited uses").
+  - Added on 2026-11-06, after the first finisher run, at the owner's request: stats and types
+    are always shown as icons, never as words, on every screen and in all text, prose included
+    (the owner chose "everywhere, prose too": messages, notices, help texts and the rulebook in
+    the rules viewer). The owner had asked for this during the design (2026-10-25/26), but it
+    was only in single screen rules, not a general one, so the code drifted. S1.6 is now the
+    general rule; S8.1 names the Claim all pop-up. Phase 20a items 8 and 9 build it; phase 28
+    applies it to the rules viewer and card set.
   - The spec and harness changes are one `HARNESS:` commit on the branch
     `phase-20a-playthrough-fixes`, not on master: on their own they turn `npm run check` red
     (the scenario count and the 3 changed required scenarios) until phase 20a items 1 and 2 are
@@ -1327,3 +1334,57 @@ file.
   `harness/scenarios/quests.yaml`, `visibility.yaml`, `drawing.yaml`,
   `harness/scenario-format.yaml`, `harness/HARNESS.md`; `docs/plan/phase-20a-playthrough-fixes.md`,
   `docs/plan/README.md`, phase files 20, 21, 22, 23 and 28.
+
+## Q75. Does the protocol version go up when the view changes shape?
+
+- **Phase:** 20a (finisher, coordinator's note in Progress).
+- **Question:** item 2 replaced the view's `discard` (cards) with `discardCount` (a number), and
+  item 1 added `negativeStats` to each quest progress entry, without raising `PROTOCOL_VERSION`
+  (2). M9.1 only says client messages carry the version and an older one is rejected;
+  `rules/architecture.md` ("Versioned protocol") says intents and views carry it so that, after a
+  deploy, the server recognises tabs still running the old client instead of misreading their
+  messages. Must it go up for a view-only change?
+- **Solution:** yes. A tab with the old client would keep sending version 2, be accepted, and
+  then fail to read every view (no `discard`, a new required field). Raising the version to 3
+  makes the new server reject its messages with `wrong_protocol_version`, and the client shows
+  "A new version is available: reload." (S16.3). From here on, any change to the shape of a
+  message in either direction raises `PROTOCOL_VERSION`; the spec needs no change, since M9.1
+  already rejects older versions.
+- **Implemented:** `src/shared/PROTOCOL_VERSION.ts` (3).
+
+## Q76. Which words count as a stat or a type under S1.6?
+
+- **Phase:** 20a, item 9 (Icons everywhere).
+- **Question:** S1.6 shows every stat and type as its icon, never as a word, in all text. Some
+  names contain a stat word without meaning the stat: "bonus types" and "bonus-type points"
+  (R21.6), the "first-completion bonus" (R16.6), and button and pop-up names such as "Use
+  influence". Are those words icons too, and how is a stat in a label with a fixed name spoken?
+- **Solution:**
+  - "Bonus types", "bonus-type points" and "first-completion bonus" are game concepts with their
+    own names (glossary), not the bonus stat; they stay words.
+  - "Use influence" and "influence action" name the influence stat; they show the influence icon
+    ("Use [icon]"). The button and the pop-up are then named "Use Influence" (the icon's name),
+    which the tests use.
+  - Stats in prose become parts (text and icons, `IconText` in `src/client/components/`), never a
+    string; the rejection messages of S16.3 keep their words, with each stat as its icon.
+  - "Tier" and "cost" are not stats in S1.6's list; they stay words where they are words.
+  - S1.6 said the tooltip shows when "the icon has keyboard focus". Icons are images, and the
+    lint rule `jsx-a11y/no-noninteractive-tabindex` (rightly) forbids making them tab stops; a
+    screen shows dozens, so a keyboard user would tab through all of them. S1.6 now says the
+    tooltip shows when the control the icon is in has keyboard focus, and icons are not tab stops
+    of their own (`HARNESS:` commit).
+- **Implemented:** `harness/spec/screens.md` S1.6; phase 20a item 9.
+
+## Q77. Whom does "Completed by" name in the projects area?
+
+- **Phase:** 20a (phase review, finding 3).
+- **Question:** S6.3 says a project shows "Completed by Ann, Bob" once someone has completed it,
+  and that each project shows your progress or "completed". Does "Completed by" name you too,
+  and what shows when only you have completed it?
+- **Solution:** "Completed by" names only the other players: your own completion already shows
+  as "you completed ✓" in your progress, so naming you again would say it twice. When only you
+  have completed it, neither "Completed by" nor the +2 line shows (the +2 is gone once anyone
+  has completed it, R16.6). The coordinator told the owner of this choice during the phase and
+  the owner did not object. S6.3 now says so (`HARNESS:` commit).
+- **Implemented:** `harness/spec/screens.md` S6.3; `ProjectProgressList.tsx` (phase 20a item 5)
+  and its tests in `projectsAreaAndHelp.test.tsx`.

@@ -2,6 +2,7 @@ import type { QuestNeed } from "../../../shared/catalogue/QuestNeed";
 import { QuestPart } from "./QuestPart";
 import { questNeedIconFile } from "./questNeedIconFile";
 import { questNeedLabel } from "./questNeedLabel";
+import { questNeedSector } from "./questNeedSector";
 import styles from "./QuestsPanel.module.css";
 
 type Props = {
@@ -19,6 +20,7 @@ export function QuestNeedsLine({ needs }: Props) {
             key={label}
             amount={String(need.count)}
             label={label}
+            sector={questNeedSector(need)}
             iconFile={questNeedIconFile(need)}
             spokenText={`${String(need.count)} ${label}`}
           />

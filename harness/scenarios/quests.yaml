@@ -1040,3 +1040,45 @@
     - {seat: 2, action: end_turn}
   then:
     quests: [{quest: Countryside, turns_on_table: 1}, {quest: Farmland}, {quest: High street, turns_on_table: 1}, {quest: Mining town}]
+
+- name: rejects a quest while workforce is negative
+  covers: [R19.4]
+  given:
+    quests: [{quest: Trading post}]
+    seats:
+      - seat: 1
+        stats: {income: 4, workforce: -1}
+        city: [Liquor Shop]
+  when:
+    - {seat: 1, action: complete_quest, quest: Trading post}
+  then:
+    rejected: quest_needs_not_met
+    unchanged: true
+
+- name: rejects a quest while quality is negative
+  covers: [R19.4]
+  given:
+    quests: [{quest: Trading post}]
+    seats:
+      - seat: 1
+        stats: {income: 4, quality: -1}
+        city: [Liquor Shop]
+  when:
+    - {seat: 1, action: complete_quest, quest: Trading post}
+  then:
+    rejected: quest_needs_not_met
+    unchanged: true
+
+- name: rejects a quest while satisfaction is negative
+  covers: [R19.4]
+  given:
+    quests: [{quest: Trading post}]
+    seats:
+      - seat: 1
+        stats: {income: 4, satisfaction: -1}
+        city: [Liquor Shop]
+  when:
+    - {seat: 1, action: complete_quest, quest: Trading post}
+  then:
+    rejected: quest_needs_not_met
+    unchanged: true

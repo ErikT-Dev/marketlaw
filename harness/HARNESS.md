@@ -134,6 +134,7 @@ it out, `player_to_mute` for a mute and `player_to_unmute` for an unmute.
 | `view` | What one seat's view shows: `{seat: 2, of_seat: 1, stats: {...}, hand_count: 5, contains: [...], hides: [...]}` |
 | `message_to` | That a seat or player was sent a particular notice or text |
 | `log_contains`, `log_excludes` (inside `view`) | Public draw-log entries that must or must not appear (M3.3) |
+| `discard_count` (inside `view`) | The number of cards in the discard pile as the seat sees it (R5.5); the view never holds which cards they are (M3.2), checked with `hides: [discard_cards]` |
 | `ended` | The game has ended: `winner`, `places` (seats, 1st first), `scores`, `bonus_type_points`, or `abandoned: true` |
 | `record` | The saved game record (A3) |
 | `ratings` | ELO ratings after the game (A10) |

@@ -6,6 +6,8 @@ import { CombosPanel } from "./CombosPanel";
 import styles from "./GamePage.module.css";
 import { MarketGoPanel } from "./MarketGoPanel";
 import { marketGoStateOf } from "./marketGoStateOf";
+import { marketGoText } from "./marketGoText";
+import { MarketPhaseBanner } from "./MarketPhaseBanner";
 import { MarketplacePanel } from "./MarketplacePanel";
 import { QuestsPanel } from "./QuestsPanel";
 
@@ -21,6 +23,9 @@ export function MiddleColumn({ view, seat, playerNames, isBusy, onAction }: Prop
   const canTakeMarketCard = seat.marketCardRejection === null && !isBusy;
   return (
     <div className={styles[view.phase === "market" ? "middleInMarketPhase" : "middle"]}>
+      {view.phase === "market" ? (
+        <MarketPhaseBanner goText={marketGoText(view, seat, playerNames)} />
+      ) : null}
       <MarketplacePanel
         view={view}
         isYourGo={seat.turnDrawRejection === null}

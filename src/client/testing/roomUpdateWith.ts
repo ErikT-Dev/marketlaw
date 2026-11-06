@@ -71,7 +71,7 @@ export function roomUpdateWith(
       other(4, {}),
     ],
     deckCount: 100,
-    discard: [],
+    discardCount: 0,
     marketplace: [],
     quests: [],
     bonusTypes: [],

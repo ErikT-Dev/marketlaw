@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import type { OwnSeatView } from "../../../shared/OwnSeatView";
 import { gamePageProps } from "../../testing/gamePageProps";
 import { roomUpdateWith } from "../../testing/roomUpdateWith";
+import { textWithIconNames } from "../../testing/textWithIconNames";
 import { GamePage } from "../GamePage";
 
 const READY: Partial<OwnSeatView> = {
@@ -48,10 +49,10 @@ describe("your city and combos", () => {
         .map((card) => card.getAttribute("aria-label")),
     ).toEqual(["Row House"]);
     const combos = within(screen.getByRole("region", { name: "Combos · 1 ready" }));
-    expect(combos.getAllByRole("listitem").map((row) => row.textContent)).toEqual([
-      "Row House · 1 Safety+1 qualityready",
-      "Row House · 1 Rental Space+1 satisfactionclaimed",
-      "Fire Station · 1 Suburban Housing+1 quality",
+    expect(combos.getAllByRole("listitem").map(textWithIconNames)).toEqual([
+      "Row House · 1 [Safety][Quality +1]ready",
+      "Row House · 1 [Rental Space][Satisfaction +1]claimed",
+      "Fire Station · 1 [Suburban Housing][Quality +1]",
     ]);
   });
 });
@@ -68,7 +69,7 @@ describe("your stats", () => {
       .getAllByRole("listitem")
       .map((row) => row.textContent);
     expect(projects[0]).toContain("Clean up the streets");
-    expect(projects[0]).toContain("nobody yet, the first gets +2 funds");
+    expect(projects[0]).toContain("First to complete gets +2");
     expect(projects[2]).toBe("Help the homeless · you completed ✓");
   });
 
@@ -87,7 +88,14 @@ describe("claim all", () => {
     fireEvent.click(screen.getByRole("button", { name: "Claim all (1)" }));
     const dialog = within(screen.getByRole("dialog", { name: "Claim all combos" }));
     expect(dialog.getByText("This combo is ready:")).toBeDefined();
-    expect(dialog.getByText("+0 workforce · +1 quality · +0 satisfaction")).toBeDefined();
+    expect(
+      within(dialog.getByRole("list", { name: "Ready combos" }))
+        .getAllByRole("listitem")
+        .map(textWithIconNames),
+    ).toEqual(["Row House · 1 [Safety][Quality +1]"]);
+    expect(textWithIconNames(screen.getByRole("dialog", { name: "Claim all combos" }))).toContain(
+      "You will get in total[Workforce +0] · [Quality +1] · [Satisfaction +0]",
+    );
     fireEvent.click(dialog.getByRole("button", { name: "Claim all" }));
     expect(onAction).toHaveBeenCalledWith({ type: "claim_all" });
     expect(screen.queryByRole("dialog")).toBeNull();
@@ -104,8 +112,9 @@ describe("projects", () => {
     const { onAction } = showGame();
     fireEvent.click(screen.getByRole("button", { name: "Projects" }));
     const dialog = within(screen.getByRole("dialog", { name: "Projects" }));
-    const streets = within(dialog.getByRole("listitem", { name: "Clean up the streets" }));
-    expect(streets.getByText("Needs 8 quality · you have 9")).toBeDefined();
+    const streetsItem = dialog.getByRole("listitem", { name: "Clean up the streets" });
+    expect(textWithIconNames(streetsItem)).toContain("Needs [Quality 8] · you have [Quality 9]");
+    const streets = within(streetsItem);
     const campaign = within(dialog.getByRole("listitem", { name: "Culture campaign" }));
     expect(campaign.getByRole("button", { name: "Need 4 more" })).toHaveProperty("disabled", true);
     const homeless = within(dialog.getByRole("listitem", { name: "Help the homeless" }));
@@ -135,22 +144,21 @@ describe("projects", () => {
       },
     });
     fireEvent.click(screen.getByRole("button", { name: "Projects" }));
-    const streets = within(screen.getByRole("listitem", { name: "Clean up the streets" }));
-    expect(streets.getByRole("button", { name: "Complete" })).toHaveProperty("disabled", true);
-    expect(
-      streets.getByText(
-        "You need 8 of the stat, and no negative workforce, quality or satisfaction.",
-      ),
-    ).toBeDefined();
+    const streetsItem = screen.getByRole("listitem", { name: "Clean up the streets" });
+    expect(within(streetsItem).getByRole("button", { name: "Complete" })).toHaveProperty(
+      "disabled",
+      true,
+    );
+    expect(textWithIconNames(streetsItem)).toContain(
+      "You need 8 of the stat, and no negative [Workforce], [Quality] or [Satisfaction].",
+    );
   });
 
   it("says when the next project would be the third", () => {
     showGame({ ...READY, projects: ["workforce", "satisfaction"] });
     fireEvent.click(screen.getByRole("button", { name: "Projects" }));
-    expect(
-      screen.getByText(
-        "This would be your 3rd project: it also gives +1 more income and 1 more card.",
-      ),
-    ).toBeDefined();
+    expect(textWithIconNames(screen.getByRole("dialog", { name: "Projects" }))).toContain(
+      "This would be your 3rd project: it also gives [Income +1] more and 1 more card.",
+    );
   });
 });

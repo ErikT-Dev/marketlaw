@@ -252,7 +252,7 @@ definitions:
       time_bank_ms: {type: integer}
       time_bank_shown: {type: integer}
       deck_count: {type: integer}
-      discard: {type: array, items: {type: string}}
+      discard_count: {type: integer}
       known_in_hand: {type: array, items: {type: string}}
       vote_answers:
         type: object

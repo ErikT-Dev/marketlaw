@@ -1,6 +1,7 @@
 import type { OwnSeatView } from "../../../shared/OwnSeatView";
 import { Button } from "../../components/Button";
 import type { OpenDialog } from "./OpenDialog";
+import { StatChip } from "../../components/StatChip";
 
 type Props = {
   readonly seat: OwnSeatView;
@@ -28,7 +29,7 @@ export function ProgressButtons({ seat, isBusy, onOpenDialog }: Props) {
           onOpenDialog("influence");
         }}
       >
-        Use influence
+        Use <StatChip stat="influence" />
       </Button>
       <Button
         look="primary"

@@ -74,8 +74,6 @@
 .table th.kind {
   padding: 7px 10px;
   border-radius: var(--radius-md);
-  background: var(--color-board-draw-kind);
-  color: var(--color-text-primary);
 }
 
 .draw {

@@ -360,7 +360,8 @@ At the start of every turn from turn 2 on, in this order:
 
 - **R17.1** All players draw from **one shared deck**, which starts with all 240 cards. There is
   also a shared **discard pile**, which starts empty. Sold cards and cards removed from the
-  marketplace go to the discard pile. A hand can hold any number of cards.
+  marketplace go to the discard pile. A hand can hold any number of cards. Players see only how
+  many cards the discard pile holds, not which cards (M3.2).
 - **R17.2** The deck is an **ordered pile**, shuffled when the game starts. Every random result in
   the game (shuffles, random sectors, tiers and bonus types) comes from the game's seeded random
   sequence.
@@ -382,7 +383,7 @@ At the start of every turn from turn 2 on, in this order:
   marketplace refills (a kind place never takes step 4; R18.3).
 - **R17.6** When step 3 or 4 is used, other players only see the sector or kind and tier that was
   asked for. A discard shuffle that the fallback causes is still shown with the sector or kind and
-  tier of the cards shuffled (M3.3), because the discard pile is public.
+  tier of the cards shuffled, because discard shuffles are public (M3.3).
 - **R17.7** During the main phase, draws happen in the order the actions arrive. Cards sold during
   the main phase, and the hand of a player who leaves during it (M6.5), go to a **holding pile**
   and join the discard pile when the main phase ends, so main-phase draws only use the discard
@@ -464,7 +465,8 @@ At the start of every turn from turn 2 on, in this order:
 - **R19.3** When the game starts, the table gets 4 random tier 1 quests.
 - **R19.4** Each quest has a **requirement**: something you must have at that moment, such as an
   amount of a stat, a count of a type, or a number of cards of a sector or tier in your city.
-  Nothing is used up.
+  Nothing is used up. To complete a quest, workforce, quality and satisfaction must also all be
+  0 or more, as for projects (R16.2).
 - **R19.5** Completing a quest is a main-phase action. Each player can complete each quest on the
   table once. The **reward** is given straight away. Any number of players can complete the same
   quest in the same turn.

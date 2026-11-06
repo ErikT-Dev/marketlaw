@@ -43,6 +43,15 @@ test("five quests with three-part requirements and four players can all be reach
       .getByRole("listitem"),
   ).toHaveCount(4);
   await expectScreenFits(page, "quests-table", testInfo);
+  const help = page.getByRole("button", { name: "How quests work" });
+  await help.focus();
+  await page.keyboard.press("Enter");
+  await expect(page.getByRole("region", { name: "How quests work" })).toContainText(
+    "Quests are shared goals.",
+  );
+  await expectScreenFits(page, "quests-help", testInfo);
+  await page.getByRole("heading", { name: "Your stats" }).click();
+  await expect(page.getByRole("region", { name: "How quests work" })).toHaveCount(0);
   const cards = page.getByRole("list", { name: "Quests table" }).getByRole("region");
   if ((viewport?.width ?? 0) >= 1920) {
     for (const index of [0, 1, 2, 3, 4]) {

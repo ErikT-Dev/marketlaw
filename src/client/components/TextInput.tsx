@@ -1,4 +1,6 @@
 import { useId } from "react";
+import type { IconText } from "./IconText";
+import { TextWithIcons } from "./TextWithIcons";
 import styles from "./TextInput.module.css";
 
 type Props = {
@@ -7,7 +9,7 @@ type Props = {
   readonly onChange: (value: string) => void;
   readonly maxLength?: number;
   readonly hint?: string;
-  readonly error?: string | null;
+  readonly error?: IconText | null;
 };
 
 export function TextInput({ label, value, onChange, maxLength, hint, error = null }: Props) {
@@ -32,7 +34,7 @@ export function TextInput({ label, value, onChange, maxLength, hint, error = nul
       />
       {message === undefined ? null : (
         <span id={messageId} className={error === null ? styles["hint"] : styles["error"]}>
-          {message}
+          <TextWithIcons text={message} />
         </span>
       )}
     </div>

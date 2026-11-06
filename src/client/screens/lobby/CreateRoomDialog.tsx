@@ -2,6 +2,7 @@ import { useState } from "react";
 import type { ReasonCode } from "../../../shared/ReasonCode";
 import { Button } from "../../components/Button";
 import { Modal } from "../../components/Modal";
+import { TextWithIcons } from "../../components/TextWithIcons";
 import type { NewRoom } from "../../store/NewRoom";
 import { HumanCheck } from "./HumanCheck";
 import styles from "./Lobby.module.css";
@@ -50,7 +51,7 @@ export function CreateRoomDialog({ onCreate, onCancel }: Props) {
         <HumanCheck containerRef={containerRef} isUnavailable={isUnavailable} />
         {error === null ? null : (
           <p role="alert" className={styles["error"]}>
-            {error}
+            <TextWithIcons text={error} />
           </p>
         )}
         <div className={styles["dialogButtons"]}>

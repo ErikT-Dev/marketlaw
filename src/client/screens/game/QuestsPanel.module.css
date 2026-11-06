@@ -105,6 +105,7 @@
   z-index: 10;
 }
 
-.part:hover .tooltip {
+.part:hover .tooltip,
+:is(button, a[href]):focus-visible .part .tooltip {
   visibility: visible;
 }

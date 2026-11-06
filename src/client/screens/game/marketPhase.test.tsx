@@ -65,11 +65,11 @@ describe("the marketplace", () => {
   });
 
   it("shows the bonus types with their points, the deck and the discard pile", () => {
-    showGame({ deckCount: 112, discard: ["Pub"] });
+    showGame({ deckCount: 112, discardCount: 1 });
     const panel = within(screen.getByRole("region", { name: "Marketplace" }));
     expect(panel.getByText(/Bonus types/).textContent).toBe("Bonus types:Farm3 ptsLuxury2 pts");
     expect(panel.getByText("Deck 112")).toBeDefined();
-    expect(panel.getByRole("button", { name: "Discard 1 · view ›" })).toBeDefined();
+    expect(panel.getByText("Discard 1")).toBeDefined();
   });
 });
 
@@ -137,6 +137,26 @@ describe("the market go panel", () => {
       ),
     ).toBeDefined();
     expect(screen.getByText("Market phase")).toBeDefined();
+  });
+});
+
+describe("the market phase banner", () => {
+  it("says whose go it is when it is another player's go", () => {
+    showGame({ marketGo: 3 }, { turnDrawRejection: "not_your_go" });
+    const banner = within(screen.getByRole("region", { name: "MARKET PHASE" }));
+    expect(banner.getByText("Cy's go")).toBeDefined();
+  });
+
+  it("says Your go on your go", () => {
+    showGame({ marketGo: 2 }, ON_YOUR_GO);
+    const banner = within(screen.getByRole("region", { name: "MARKET PHASE" }));
+    expect(banner.getByText("Your go")).toBeDefined();
+  });
+
+  it("is gone in the main phase", () => {
+    showGame({ phase: "main", marketGo: null });
+    expect(screen.queryByRole("region", { name: "MARKET PHASE" })).toBeNull();
+    expect(screen.getByText("Main phase")).toBeDefined();
   });
 });
 

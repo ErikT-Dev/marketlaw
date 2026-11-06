@@ -1,6 +1,7 @@
 import { noticeToastOf } from "../../../src/client/screens/game/noticeToastOf.ts";
 import { REJECTION_MESSAGES } from "../../../src/client/screens/game/REJECTION_MESSAGES.ts";
 import type { ServerMessage } from "../../../src/shared/protocol/ServerMessage.ts";
+import type { IconText } from "../../../src/client/components/IconText.ts";
 import { isRecord } from "../../harness-check/isRecord.ts";
 
 function acceptedNamesIn(messages: ReadonlyArray<ServerMessage>): ReadonlyArray<string> | null {
@@ -8,11 +9,17 @@ function acceptedNamesIn(messages: ReadonlyArray<ServerMessage>): ReadonlyArray<
   return update?.type === "update" ? (update.update.room.asking?.acceptedNames ?? null) : null;
 }
 
+function wordsOf(text: IconText): string {
+  return typeof text === "string"
+    ? text
+    : text.map((part) => (typeof part === "string" ? part : `[${JSON.stringify(part)}]`)).join("");
+}
+
 function shownTextOf(message: ServerMessage): ReadonlyArray<string> {
   if (message.type === "rejected") {
-    return [REJECTION_MESSAGES[message.code]];
+    return [wordsOf(REJECTION_MESSAGES[message.code])];
   }
-  return message.type === "notice" ? [noticeToastOf(message.notice, 1, []).text] : [];
+  return message.type === "notice" ? [wordsOf(noticeToastOf(message.notice, 1, []).text)] : [];
 }
 
 function textShownFrom(messages: ReadonlyArray<ServerMessage>, expected: unknown): unknown {

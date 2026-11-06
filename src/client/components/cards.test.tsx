@@ -147,4 +147,22 @@ describe("BigCard", () => {
       "Combo: Fire Station gives 1 quality",
     ]);
   });
+
+  it("shows the title bar on the solid colour of the card's sector", () => {
+    const titleBars = (
+      ["Farm House", "Timber Harvesting Industry", "Fast Food Restaurant", "Landfill"] as const
+    ).map((name) => {
+      const { unmount } = render(<BigCard card={cardOf(name)} realCost={1} />);
+      const titleBar = screen.getByText(name);
+      const colours = [titleBar.style.background, titleBar.style.color];
+      unmount();
+      return colours;
+    });
+    expect(titleBars).toEqual([
+      ["var(--color-sector-residential-solid)", "var(--color-sector-residential-solid-text)"],
+      ["var(--color-sector-industry-solid)", "var(--color-sector-industry-solid-text)"],
+      ["var(--color-sector-service-solid)", "var(--color-sector-service-solid-text)"],
+      ["var(--color-sector-public-solid)", "var(--color-sector-public-solid-text)"],
+    ]);
+  });
 });

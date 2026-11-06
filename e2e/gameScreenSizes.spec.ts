@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { expectAllProjectsInView } from "./expectAllProjectsInView";
 import { expectScreenFits } from "./expectScreenFits";
 import { hiddenCardsSentToOthers } from "./hiddenCardsSentToOthers";
 import { startFourPlayerGame } from "./startFourPlayerGame";
@@ -60,6 +61,7 @@ test("the game screen fits the window with large enough targets and no accessibi
     players.map(({ name }) => name),
   );
   await expectScreenFits(host, "game-table", testInfo);
+  await expectAllProjectsInView(host);
   expect(await hiddenCardsSentToOthers(players)).toEqual([]);
   await Promise.all(players.map(async (player) => player.page.context().close()));
 });

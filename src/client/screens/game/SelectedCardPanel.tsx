@@ -3,6 +3,8 @@ import type { HandCardDetails } from "../../../shared/HandCardDetails";
 import type { OwnSeatView } from "../../../shared/OwnSeatView";
 import { BigCard } from "../../components/BigCard";
 import { Button } from "../../components/Button";
+import { StatChip } from "../../components/StatChip";
+import { TextWithIcons } from "../../components/TextWithIcons";
 import { costExplanation } from "./costExplanation";
 import { rejectionMessage } from "./rejectionMessage";
 import styles from "./SelectedCardPanel.module.css";
@@ -21,14 +23,18 @@ export function SelectedCardPanel({ details, seat, isBusy, onPlay, onClose }: Pr
   return (
     <section className={styles["selected"]} aria-label={`Selected card: ${card.name}`}>
       <BigCard card={card} realCost={details.realCost} />
-      <h3 className={styles["cost"]}>Costs {details.realCost} funds</h3>
+      <h3 className={styles["cost"]}>
+        Costs <StatChip stat="funds" value={details.realCost} />
+      </h3>
       <p className={styles["explanation"]}>{costExplanation(card, details)}</p>
       {rejection === null ? null : (
         <p className={styles["reason"]}>
-          {rejectionMessage(
-            { action: { type: "play_card", card: card.name }, code: rejection },
-            seat,
-          )}
+          <TextWithIcons
+            text={rejectionMessage(
+              { action: { type: "play_card", card: card.name }, code: rejection },
+              seat,
+            )}
+          />
         </p>
       )}
       <div className={styles["buttons"]}>

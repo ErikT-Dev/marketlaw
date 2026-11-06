@@ -1,5 +1,7 @@
 import type { GameResult } from "../../../shared/GameResult";
 import type { SeatNumber } from "../../../shared/SeatNumber";
+import type { IconText } from "../../components/IconText";
+import { TextWithIcons } from "../../components/TextWithIcons";
 import styles from "./GameOverDialog.module.css";
 import { placeOrdinal } from "./placeOrdinal";
 import { playerNameOf } from "./playerNameOf";
@@ -10,14 +12,14 @@ type Props = {
   readonly playerNames: ReadonlyArray<string>;
 };
 
-const COLUMNS = [
+const COLUMNS: ReadonlyArray<IconText> = [
   "Place",
   "Player",
   "Result",
   "Score",
   "End goal",
-  "Income",
-  "Funds + hand",
+  [{ stat: "income" }],
+  [{ stat: "funds" }, " + hand"],
   "Bonus-type pts",
 ];
 
@@ -27,9 +29,9 @@ export function GameOverTable({ result, viewer, playerNames }: Props) {
       <table className={styles["table"]}>
         <thead>
           <tr>
-            {COLUMNS.map((column) => (
-              <th key={column} scope="col">
-                {column}
+            {COLUMNS.map((column, index) => (
+              <th key={index} scope="col">
+                <TextWithIcons text={column} />
               </th>
             ))}
           </tr>

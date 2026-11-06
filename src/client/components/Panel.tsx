@@ -6,17 +6,28 @@ type Props = {
   readonly title: string;
   readonly children?: ReactNode;
   readonly aside?: ReactNode;
+  readonly help?: ReactNode;
 };
 
-export function Panel({ title, children, aside }: Props) {
+export function Panel({ title, children, aside, help }: Props) {
   const titleId = useId();
   const { scrollerRef, contentRef, isScrollable } = useIsScrollable();
+  const heading = (
+    <h2 id={titleId} className={styles["title"]}>
+      {title}
+    </h2>
+  );
   return (
     <section className={styles["panel"]} aria-labelledby={titleId}>
       <div className={styles["header"]}>
-        <h2 id={titleId} className={styles["title"]}>
-          {title}
-        </h2>
+        {help === undefined ? (
+          heading
+        ) : (
+          <div className={styles["titleWithHelp"]}>
+            {heading}
+            {help}
+          </div>
+        )}
         {aside}
       </div>
       <div
