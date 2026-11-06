@@ -219,3 +219,12 @@ and must pass again:
 ### Finish
 
 - [ ] Add the 4 required scenarios to `harness/required.yaml`; full check, harness, browser tests.
+
+### Helper log
+
+Filled in by the coordinator afterwards, from the helpers' completion notices (Q73). Tokens
+are each helper's conversation size at its end.
+
+| Job | Minutes | Tokens | Tool calls | Result |
+|---|---|---|---|---|
+| Starter and builder, item 1 | 9 | 117k | 58 | done |
