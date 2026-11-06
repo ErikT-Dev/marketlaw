@@ -394,7 +394,14 @@ and must pass again:
     discard pile). `statAndTypeWordsShownIn.ts` now skips only icons (`role="img"` with an
     image inside), so the words of QuestParts without an icon are checked; the
     `iconsEverywhere` tests still pass.
-- [ ] Finisher after the fixes.
+- [x] Finisher after the fixes.
+  - Third run (2026-11-06): `npm run check` green, `npm run harness` green (phase-end games,
+    budgets). Browser tests, all with two workers and none rerun: shard 1/2 55 passed, shard 2/2
+    53 passed, 2 players 3 passed, 3 players 3 passed, 4 players 3 passed. 125 screenshots
+    changed (47 at 1280x720, 38 at 1920x1080, 40 at 2560x1440): at 1280x720 the game screen has
+    the taller Your stats with all 3 project lines and the shorter, scrolling hand (fixer A);
+    the rest are new deals. Every exit-criteria screen is still in `harness/screens/`.
+    `docs/enforcement.md`: no new check.
 
 ### Helper log
 
