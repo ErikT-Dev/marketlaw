@@ -1327,3 +1327,20 @@ file.
   `harness/scenarios/quests.yaml`, `visibility.yaml`, `drawing.yaml`,
   `harness/scenario-format.yaml`, `harness/HARNESS.md`; `docs/plan/phase-20a-playthrough-fixes.md`,
   `docs/plan/README.md`, phase files 20, 21, 22, 23 and 28.
+
+## Q75. Does the protocol version go up when the view changes shape?
+
+- **Phase:** 20a (finisher, coordinator's note in Progress).
+- **Question:** item 2 replaced the view's `discard` (cards) with `discardCount` (a number), and
+  item 1 added `negativeStats` to each quest progress entry, without raising `PROTOCOL_VERSION`
+  (2). M9.1 only says client messages carry the version and an older one is rejected;
+  `rules/architecture.md` ("Versioned protocol") says intents and views carry it so that, after a
+  deploy, the server recognises tabs still running the old client instead of misreading their
+  messages. Must it go up for a view-only change?
+- **Solution:** yes. A tab with the old client would keep sending version 2, be accepted, and
+  then fail to read every view (no `discard`, a new required field). Raising the version to 3
+  makes the new server reject its messages with `wrong_protocol_version`, and the client shows
+  "A new version is available: reload." (S16.3). From here on, any change to the shape of a
+  message in either direction raises `PROTOCOL_VERSION`; the spec needs no change, since M9.1
+  already rejects older versions.
+- **Implemented:** `src/shared/PROTOCOL_VERSION.ts` (3).
