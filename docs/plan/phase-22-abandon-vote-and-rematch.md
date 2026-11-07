@@ -263,3 +263,4 @@ are each helper's conversation size at its end.
 | Builder, item 3 | 23 | 170k | 80 | done |
 | Builder, item 4 | 23 | 162k | 82 | done |
 | Builder, item 5 (resumed after the usage limit; second part shown) | 13 | 188k | 25 | done |
+| Finisher, first run | 28 | 83k | 35 | done |
