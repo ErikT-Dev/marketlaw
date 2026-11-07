@@ -239,6 +239,14 @@ These 16 scenarios are added to `harness/required.yaml` in this phase, by file a
 
 ### Finish
 
+Phase review (2026-11-07, `phase-reviewer`): no blockers; 5 findings, all to one fixer.
+
+- [ ] R1. Should fix. `src/rules/voteWithout.ts:9`: a leaver's answer already given is dropped, so the answered count goes down and reveals that they had answered (against M7.5). Decide (Q88), write into M7.6, make `voteShownTo`/`voteWithout` match, add a test.
+- [ ] R2. Record and test. `src/rules/leaveGame.ts:57`, `src/rules/applyDueTimeOuts.ts:357`: the caller leaving during an open vote is not covered by spec or Q84 (today the vote stays open and can pass). Write it into M7.6 or Q84; add an engine test in `src/rules/abandonVote.test.ts`.
+- [ ] R3. `src/client/screens/game/REJECTION_MESSAGES.ts:55`: the `vote_too_soon` table text differs from S16.3; move the "Next vote possible in turn N." case into `rejectionMessage.ts` with `nextVoteTurn`, as `not_enough_funds` does.
+- [ ] R4. `tools/harness-runner/harness.test.ts:24`: B11 (time per message) measured 15 of 10 ms once inside `npm run check` under load, 2 ms alone. Write it up in `docs/plan/proposed-rules.md` as a known flaky measurement; do not touch the budget.
+- [ ] R5. `src/server/room/rematch.test.ts:141`: `not.toBe("ended")` is weak; assert the exact phase and the seat count.
+
 - [x] First finisher run (2026-11-07).
   - Commit `d9ed85c` (`HARNESS:`) adds the phase's 16 scenarios to `harness/required.yaml`.
   - `npm run check` green (499 tests, client 147.63 kB of 300 kB gzipped). `npm run harness`
@@ -264,3 +272,4 @@ are each helper's conversation size at its end.
 | Builder, item 4 | 23 | 162k | 82 | done |
 | Builder, item 5 (resumed after the usage limit; second part shown) | 13 | 188k | 25 | done |
 | Finisher, first run | 32 | 90k | 45 | done |
+| Phase reviewer | 12 | 157k | 33 | done, 5 findings |
