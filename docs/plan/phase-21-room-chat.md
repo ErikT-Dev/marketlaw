@@ -375,3 +375,57 @@ are each helper's conversation size at its end.
 | Phase reviewer | 9 | 157k | 58 | done, 5 findings |
 | Fixer, findings 1 to 5 | 15 | 133k | 73 | done |
 | Finisher, second run | 29 | 75k | 29 | done |
+
+## Report
+
+**Built.** One chat per room, in the waiting room, during the game (a Chat tab beside the draw
+log, with its unread count) and on the "You left the game" page, and it stays after the game
+ends. A message is saved before anyone sees it and reaches everyone in the room who joined
+before it was sent; grey lines show joins and leaves. A message is one line of 1 to 200
+characters as seen (an emoji is one), at most 800 bytes; line breaks and tabs become spaces and
+spaces at the ends are removed. Each player may send one message every 2 seconds and 100 per
+room; the whole site sends at most 2,000 a day. A refused message stays in the input with the
+reason over it, and "Try again in N seconds" counts down. Mute hides a player's messages only
+for the one who muted, who sees "You muted Ann" with Unmute; the muted player is never told.
+The chat is deleted with the room. `PROTOCOL_VERSION` is 4, so a tab with the old client is
+told to reload; rooms saved by the old version close themselves (D1).
+
+**What to try.** On the live site, in two or three windows:
+1. Create a room and join it from the other windows: grey lines for each join; chat in the
+   waiting room, each window sees the others' messages, "You" on its own.
+2. A window that joins later sees only messages sent after it joined.
+3. Start the game: the Chat tab beside the draw log shows "Chat, N new" while it is closed.
+4. Send two messages quickly: the second is refused, stays in the input, and the limit message
+   counts down. Type 200 characters: the counter shows "200 / 200"; more is refused.
+5. Mute a player in one window: their new messages disappear only there; "You muted …" with
+   Unmute shows them again from then on.
+6. Leave the game: the "You left the game" page still has the room chat.
+
+**Checks.** The second finisher run: `npm run check` green (457 tests), `npm run harness` green
+(433 scenarios, 326 required pass, 1,000 simulated games), B7 measured 1 of 1, B18 2,726 of
+5,000. The browser tests had page-load timeouts under two workers locally that all passed on a
+one-worker rerun; GitHub's branch check judged the full browser suite before the merge. The 14
+new scenarios and B7 are required.
+
+**Differences from the phase file.** `mute`/`unmute` refuse muting oneself or a player not in
+the room with the new code `player_not_in_room` (Q83). The `rejected` message gained
+`sendAgainAt` (Q82). The draw log became a tab panel beside the chat. The design board puts the
+limit message above the tabs; S7.4 says over the input, so it is there (spec wins). A room keeps
+its last 200 grey lines (Q81).
+
+**Decisions.** Q79: chat stored in blocks of 20 messages, the lobby grants daily quota blocks of
+20, one row per message (B7); resent chat messages are a known limit, as room intents carry no
+action id. Q80: characters are graphemes, control characters and a Windows line break become one
+space, notifications, grey line kinds, limit texts, refused messages go back into the input.
+Q81: 200 grey lines per room. Q82: which limit is named first and when to retry. Q83: whom a
+player can mute and how the muter learns their list.
+
+**Review findings and what happened to each.**
+1. `saved_before_shown` could not fail: fixed, a server test over a recording store and sockets
+   fails if a message is shown before its chat block is saved.
+2. The unmute test passed when unmute did nothing: fixed, it checks the muted player's later
+   message.
+3. A Windows line break became two spaces: fixed, one space; recorded in Q80 and A11.5.
+4. A message refused for a reason outside the limits lost its text and misaligned later answers:
+   fixed, every refusal puts the text back into the input with its reason (Q80, S7.4).
+5. A resent chat message could be saved twice: answered, recorded as a known limit in Q79.
