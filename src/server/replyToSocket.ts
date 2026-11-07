@@ -3,12 +3,13 @@ import type { ConnectionAttachment } from "./ConnectionAttachment";
 import type { ReceiveOutcome } from "./room/ReceiveOutcome";
 import type { RoomRecord } from "./room/RoomRecord";
 import { withAwaySeats } from "./room/withAwaySeats";
+import type { ReplySocket } from "./ReplySocket";
 import type { Sender } from "./Sender";
 
 const TOO_MANY_REJECTIONS_CLOSE_CODE = 1008;
 
 export function replyToSocket(
-  socket: WebSocket,
+  socket: ReplySocket,
   sent: {
     readonly attachment: ConnectionAttachment;
     readonly outcome: Extract<ReceiveOutcome, { readonly isRoomGone: false }>;

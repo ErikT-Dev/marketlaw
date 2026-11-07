@@ -26,20 +26,19 @@ import { playersWhoseUpdateChanged } from "./room/playersWhoseUpdateChanged";
 import { receiveAskingLobbyFor } from "./receiveAskingLobbyFor";
 import type { RoomRecord } from "./room/RoomRecord";
 import { startTestRoomIn } from "./room/startTestRoomIn";
-import { resumeNoticesBetween } from "./room/resumeNoticesBetween";
 import { timeOutNoticesBetween } from "./room/timeOutNoticesBetween";
 import { withConnection } from "./room/withConnection";
 import { reportToLobby } from "./reportToLobby";
 import { saveReplayRecordIfEnded } from "./replays/saveReplayRecordIfEnded";
 import { RoomSockets } from "./RoomSockets";
-import { replyToSocket } from "./replyToSocket";
 import { chatTrackingStorage } from "./room/chatTrackingStorage";
-import { chatDeliveriesBetween } from "./room/chatDeliveriesBetween";
-import { chatListFor } from "./room/chatListFor";
 import type { RoomRemoval } from "./room/RoomRemoval";
 import type { Sender } from "./Sender";
 import { senderOfToken } from "./senderOfToken";
 import { leaveRoomIfFreeIn } from "./room/leaveRoomIfFreeIn";
+import type { PublishingRoom } from "./PublishingRoom";
+import { publishReceived } from "./publishReceived";
+import { sendChatSince } from "./sendChatSince";
 
 export class GameRoom extends DurableObject<Env> {
   private readonly sockets = new RoomSockets(this.ctx);
@@ -52,6 +51,12 @@ export class GameRoom extends DurableObject<Env> {
     messageCount: this.rooms.chat.messages().length,
     now: nowMs(),
   }));
+
+  private readonly publishing: PublishingRoom<WebSocket> = {
+    rooms: this.rooms,
+    storage: this.storage,
+    sockets: this.sockets,
+  };
 
   async createRoom(
     room: { readonly code: RoomCode; readonly size: 2 | 3 | 4; readonly isPublic: boolean },
@@ -136,25 +141,12 @@ export class GameRoom extends DurableObject<Env> {
         null,
       );
     }
-    this.sendChatSince(before, this.rooms.chat.messages().length);
+    sendChatSince(this.publishing, {
+      record: before,
+      messageCount: this.rooms.chat.messages().length,
+    });
     await this.syncAlarm();
     await this.reportToLobby(before);
-  }
-
-  private sendChatSince(
-    before: RoomRecord | null,
-    messageCount: number,
-    hello: { readonly socket: WebSocket; readonly playerId: PlayerId } | null = null,
-  ): void {
-    const record = loadRoom(this.storage);
-    const messages = this.rooms.chat.messages();
-    const deliveries = chatDeliveriesBetween({ record: before, messageCount }, record, messages);
-    for (const { playerId, message } of deliveries) {
-      this.sockets.sendTo([playerId], () => message);
-    }
-    if (hello !== null && record !== null) {
-      hello.socket.send(JSON.stringify(chatListFor(record, messages, hello.playerId)));
-    }
   }
 
   override async alarm(): Promise<void> {
@@ -194,7 +186,7 @@ export class GameRoom extends DurableObject<Env> {
       null,
     );
     this.sockets.sendNotices(timeOutNoticesBetween(record, fired));
-    this.sendChatSince(record, this.rooms.chat.messages().length);
+    sendChatSince(this.publishing, { record, messageCount: this.rooms.chat.messages().length });
     await saveReplayRecordIfEnded(this.env.DB, record, fired);
   }
 
@@ -266,34 +258,17 @@ export class GameRoom extends DurableObject<Env> {
       await this.reportToLobby(recordBefore);
       return;
     }
-    const recordAfter = loadRoom(this.storage);
-    if (recordAfter !== null) {
-      await this.rooms.save(outcome.chatMessage);
-      this.sockets.sendRemovals(outcome.removals);
-      replyToSocket(
+    const recordAfter = await publishReceived(
+      this.publishing,
+      {
         socket,
-        { attachment, outcome, sender },
-        { record: recordAfter, livePlayers: this.sockets.livePlayers() },
-      );
-      const hello =
-        parsed.isOk && parsed.value.type === "resync" && sender !== null
-          ? { socket, playerId: sender.identity.playerId }
-          : null;
-      if (hello !== null && recordAfter.game !== null) {
-        this.sockets.welcome(recordAfter, hello.playerId, socket);
-      }
-      this.sendChatSince(recordBefore, messageCount, hello);
-      this.sockets.updatePlayers(
-        recordAfter,
-        outcome.playersToUpdate,
-        outcome.reply.type === "rejected" ? null : socket,
-      );
-      this.sockets.sendNotices([
-        ...outcome.notices,
-        ...timeOutNoticesBetween(recordBefore, recordAfter),
-        ...resumeNoticesBetween(recordBefore, recordAfter),
-      ]);
-    }
+        attachment,
+        outcome,
+        sender,
+        isResync: parsed.isOk && parsed.value.type === "resync",
+      },
+      { record: recordBefore, messageCount },
+    );
     await this.syncAlarm();
     if (recordAfter !== null) {
       await saveReplayRecordIfEnded(this.env.DB, recordBefore, recordAfter);
