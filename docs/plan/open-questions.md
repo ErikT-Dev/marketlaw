@@ -1440,6 +1440,11 @@ file.
     and each new entry to the players who see it as it is saved (A11.8). Chat rejections carry
     when the player can send again (S7.4). `send_chat`, `mute` and `unmute` are room intents. The
     message shapes change, so `PROTOCOL_VERSION` goes to 4 (Q75).
+  - Known limit (phase 21 review, finding 5): room intents carry no action id, so they are not
+    idempotent as `rules/multiplayer.md` "Idempotent, ordered actions" asks of actions. A
+    `send_chat` resent more than 2 seconds after the first would be saved twice. Nothing resends
+    a room intent today (a send while disconnected is refused in the browser, not queued); a
+    later phase that adds resending gives room intents action ids first.
 - **Implemented:** `harness/budgets.yaml` B7 and B18; phase 21, items 1 to 4.
 
 ## Q80. What counts as a character, a notification and a grey line in the chat?
@@ -1465,6 +1470,12 @@ file.
     Try again in 1 second."; the room limit and the length texts are new; the site cap uses
     S16.1. A refused message stays in the input. Spec S7.4. A refused message is not saved and
     does not count toward any limit (spec A11.6, one sentence).
+  - A message refused for a reason that is not a limit (the server did not answer, the player is
+    no longer in the room) also goes back into the input, with that reason over it, and the
+    browser pairs each refusal with its oldest message not yet answered. Room intents carry no
+    action id (Q79), so those two reasons are taken as a chat refusal only while a message is
+    unanswered; a `no_answer` to accepting a game sent in that moment would be shown in the chat
+    instead (phase 21 review, finding 4).
   - The waiting room's chat column (S11.1) is the same chat without the tabs. Spec S11.1.
 - **Implemented:** `harness/spec/accounts.md` A11.4–A11.6, `harness/spec/screens.md` S7.3, S7.4,
   S11.1; phase 21.
