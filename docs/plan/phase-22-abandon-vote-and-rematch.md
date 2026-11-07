@@ -222,3 +222,4 @@ are each helper's conversation size at its end.
 | Starter | 14 | 147k | 72 | done |
 | Builder, item 1 | 12 | 155k | 64 | done |
 | Builder, item 2 | 11 | 124k | 50 | done |
+| Builder, item 3 | 23 | 170k | 80 | done |
