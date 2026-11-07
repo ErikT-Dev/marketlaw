@@ -2,8 +2,8 @@ import { describe, expect, it } from "vitest";
 import { measureChatText } from "./measureChatText";
 
 describe("measureChatText", () => {
-  it("turns line breaks, tabs and control characters into spaces and trims the ends", () => {
-    expect(measureChatText("  good\r\ngame\tnow\u0007\u2028ok  ").text).toBe("good  game now  ok");
+  it("turns each line break, tab and control character into one space and trims the ends", () => {
+    expect(measureChatText("  good\r\ngame\tnow\u0007\u2028ok  ").text).toBe("good game now  ok");
   });
 
   it("counts an emoji made of several code points as one character", () => {

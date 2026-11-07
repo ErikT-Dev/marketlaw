@@ -1,6 +1,6 @@
 import type { MeasuredChatText } from "./MeasuredChatText";
 
-const LINE_BREAKS_AND_CONTROL_CHARACTERS = /[\p{Cc}\u2028\u2029]/gu;
+const LINE_BREAKS_AND_CONTROL_CHARACTERS = /\r\n|[\p{Cc}\u2028\u2029]/gu;
 const UTF8_BYTE_STEPS = [0x80, 0x800, 0x10000];
 
 function utf8ByteCountOf(text: string): number {

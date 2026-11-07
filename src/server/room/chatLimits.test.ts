@@ -152,6 +152,6 @@ describe("the chat limits", () => {
   it("saves the text with line breaks turned into spaces and the ends trimmed", async () => {
     const room = await chatRoom(async () => Promise.resolve(20));
     await room.say(" good\r\ngame ");
-    expect(room.texts()).toEqual(["good  game"]);
+    expect(room.texts()).toEqual(["good game"]);
   });
 });

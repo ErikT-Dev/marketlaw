@@ -1453,7 +1453,9 @@ file.
   - Characters are grapheme clusters (`Intl.Segmenter`, in browsers and Workers), counted after
     line breaks, tabs and other control characters become spaces and the ends are trimmed; bytes
     are UTF-8 bytes of the same text. One shared function in `src/shared/` does it, so the
-    server's check and the input's counter (S7.3) agree. Spec A11.5, one sentence.
+    server's check and the input's counter (S7.3) agree. Spec A11.5, one sentence. A Windows
+    line break (CR LF, two control characters) is one line break and becomes one space (phase 21
+    review, finding 3).
   - A notification is the message appearing in the chat at once, adding to the Chat tab's unread
     count while the chat is not on screen; no sound, as the spec names none elsewhere. Spec A11.4.
   - Grey lines: joined the room, left the room, left the game (including after 3 time-outs), the
