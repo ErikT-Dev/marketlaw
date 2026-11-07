@@ -296,8 +296,18 @@ These 14 scenarios are added to `harness/required.yaml` in this phase, by file a
 
 ### Finish
 
-- [ ] Add the 14 required scenarios to `harness/required.yaml`; full check, harness, browser
+- [x] Add the 14 required scenarios to `harness/required.yaml`; full check, harness, browser
   tests, budgets (B7 within its limit).
+  - First run (2026-11-07): commit `b8e6c7e` (`HARNESS:`) adds the 14 scenarios (a new `chat`
+    section with #1 to #12, `connections-and-leaving` #14, `lobby-queue-and-limits` #30) and B7
+    to the required budgets. `npm run check` green (455 tests, client 145.22 kB of 300 kB
+    gzipped). `npm run harness` green: 433 scenarios, 1,000 simulated games, B7 measured 1 of 1,
+    B18 2,726 of 5,000. Browser tests: shard 1/2 59 passed; shard 2/2 54 passed and 1 failed
+    (`roomsAndGuests` "guests get a name ..." at 1920x1080, the username prompt did not appear in
+    time, the known two-worker load problem), which passed on its own rerun; the whole games with
+    2, 3 and 4 players passed at all three sizes. Screenshots from these runs committed.
+    `docs/enforcement.md` lists the phase's harness checks (chat steps, B7, B18 with chat) and
+    browser tests.
 
 ### Helper log
 
