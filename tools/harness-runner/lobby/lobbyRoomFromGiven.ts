@@ -61,10 +61,20 @@ function roomInState(
   }
 }
 
+function withGivenKind(
+  record: RoomRecord,
+  kind: NonNullable<LobbyGiven["room"]>["kind"],
+): RoomRecord {
+  return record.game === null || kind === undefined
+    ? record
+    : { ...record, game: { ...record.game, kind } };
+}
+
 export function lobbyRoomFromGiven(
   room: NonNullable<LobbyGiven["room"]>,
   identityNamed: (name: string) => Identity,
   now: EpochMs,
 ): RoomRecord {
-  return withChatEvents(null, roomInState(room, identityNamed, now), { messageCount: 0, now });
+  const record = withGivenKind(roomInState(room, identityNamed, now), room.kind);
+  return withChatEvents(null, record, { messageCount: 0, now });
 }

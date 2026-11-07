@@ -1,6 +1,7 @@
 import type { Notice } from "../../../shared/Notice";
 import type { IconText } from "../../components/IconText";
 import type { SeatNumber } from "../../../shared/SeatNumber";
+import { REJECTION_MESSAGES } from "./REJECTION_MESSAGES";
 import { playerNameOf } from "./playerNameOf";
 import { SITE_GAME_LIMIT_TOAST } from "./SITE_GAME_LIMIT_TOAST";
 import { timeOutText } from "./timeOutText";
@@ -15,6 +16,9 @@ export function noticeToastOf(
   }
   if (notice.kind === "site_game_limit") {
     return SITE_GAME_LIMIT_TOAST;
+  }
+  if (notice.kind === "daily_limit") {
+    return { title: "No rematch", text: REJECTION_MESSAGES[notice.reason] };
   }
   const seconds = String(Math.round(notice.freeMs / 1000));
   const others = notice.seats

@@ -73,6 +73,8 @@ export const REJECTION_MESSAGES: Readonly<Record<ReasonCode, IconText>> = {
   not_room_owner: "Only the owner can change the room size.",
   room_size_too_small: "The room cannot be smaller than the number of players in it.",
   not_asking: "Nobody is being asked to accept the game right now.",
+  rematch_not_possible:
+    "A rematch needs a finished game, at least 2 players in the room and no other rematch being asked.",
   rejoin_too_soon: "You cannot join this room again yet.",
   human_check_failed: "The human check did not pass. Try it again.",
   username_invalid:

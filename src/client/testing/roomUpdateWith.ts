@@ -93,6 +93,7 @@ export function roomUpdateWith(
       playerNames: ["Ann", "Bea", "Cy", "Di"],
       mySeat: 2,
       asking: null,
+      deletionAt: null,
     },
     game: { stateVersion: 1, view, awaySeats: [] },
   };

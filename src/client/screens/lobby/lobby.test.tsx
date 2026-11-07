@@ -39,6 +39,7 @@ function room(changes: Partial<RoomView> = {}): RoomView {
     playerNames: ["Quiet River Baron", "Ann", "Bea"],
     mySeat: null,
     asking: null,
+    deletionAt: null,
     ...changes,
   };
 }

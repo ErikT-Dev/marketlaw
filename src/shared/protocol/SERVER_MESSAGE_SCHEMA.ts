@@ -135,6 +135,7 @@ export const SERVER_MESSAGE_SCHEMA = v.variant("type", [
         playerNames: v.array(v.string()),
         mySeat: v.nullable(SEAT),
         asking: v.nullable(v.object({ deadline: EpochMs, acceptedNames: v.array(v.string()) })),
+        deletionAt: v.nullable(EpochMs),
       }),
       game: v.nullable(
         v.object({ stateVersion: COUNT, view: PLAYER_VIEW, awaySeats: v.array(SEAT) }),
@@ -156,6 +157,10 @@ export const SERVER_MESSAGE_SCHEMA = v.variant("type", [
       v.object({ kind: v.literal("timed_out"), inARow: COUNT, of: COUNT }),
       v.object({ kind: v.literal("resumed"), seats: v.array(SEAT), freeMs: COUNT }),
       v.object({ kind: v.literal("site_game_limit") }),
+      v.object({
+        kind: v.literal("daily_limit"),
+        reason: v.picklist(["daily_action_limit", "daily_game_start_limit"]),
+      }),
     ]),
   }),
   v.object({

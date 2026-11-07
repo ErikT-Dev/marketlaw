@@ -13,7 +13,14 @@ import { lobbyChatThen } from "./lobbyChatThen.ts";
 import { chatTextOfStep } from "./chatTextOfStep.ts";
 import { publicRoomsOf } from "../../../src/server/lobby/publicRoomsOf.ts";
 
-const ROOM_ACTIONS = ["change_size", "leave_room", "accept_game", "decline_game", "send_chat"];
+const ROOM_ACTIONS = [
+  "change_size",
+  "leave_room",
+  "accept_game",
+  "decline_game",
+  "ask_rematch",
+  "send_chat",
+];
 
 const CHAT_THEN_FIELDS = ["chat", "notified", "view_chat", "chat_count", "saved_before_shown"];
 
@@ -88,6 +95,10 @@ function runStep(session: LobbySession, step: ScenarioStep): void {
 function startSession(rawGiven: Readonly<Record<string, unknown>>, random: ScriptedRandom) {
   const session = new LobbySession(v.parse(LOBBY_GIVEN_SCHEMA, rawGiven), random);
   let before = session.snapshot();
+  const chatAtStart = {
+    messageCount: session.chat.storage.messages().length,
+    lineCount: session.record?.chat.lineCount ?? 0,
+  };
   let isUnchanged = true;
   const driverSession: DriverSession = {
     runStep(step) {
@@ -105,7 +116,10 @@ function startSession(rawGiven: Readonly<Record<string, unknown>>, random: Scrip
         case "room":
           return session.record === null
             ? session.goneAs
-            : lobbyRoomThen(session.record, expected, session.chat.storage.messages());
+            : lobbyRoomThen(session.record, expected, {
+                messages: session.chat.storage.messages(),
+                atStart: chatAtStart,
+              });
         case "replay_record":
           return replayRecordThen(session.endedRoom, session.now);
         case "game":
@@ -182,6 +196,7 @@ export const LOBBY_DRIVER: ScenarioDriver = {
         "players",
         "state",
         "ended_ms",
+        "kind",
         "chat",
         "messages_sent",
       ]),
@@ -199,9 +214,10 @@ export const LOBBY_DRIVER: ScenarioDriver = {
         "accepted",
         "code_format",
         "chat_last",
+        "chat",
       ]),
     ],
-    ["then.game", new Set(["kind", "seats"])],
+    ["then.game", new Set(["kind", "turn", "seats"])],
     ["then.message_to", new Set(["player", "contains", "text", "hides"])],
     ["then.accounts", new Set(["name", "kind"])],
     ["then.generated_name", new Set(["taken", "max_length", "not"])],

@@ -46,6 +46,7 @@ export const ReasonCode = v.picklist([
   "not_room_owner",
   "room_size_too_small",
   "not_asking",
+  "rematch_not_possible",
   "rejoin_too_soon",
   "human_check_failed",
   "username_invalid",

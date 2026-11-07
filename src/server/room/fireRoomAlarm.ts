@@ -2,11 +2,13 @@ import type { Random } from "../../rules/Random";
 import type { SavedGame } from "../../rules/SavedGame";
 import type { EpochMs } from "../../shared/EpochMs";
 import type { PlayerId } from "../../shared/PlayerId";
+import { endedRoomDeletionAt } from "./endedRoomDeletionAt";
 import { fireGameAlarm } from "./fireGameAlarm";
 import { isEndedRoomDue } from "./isEndedRoomDue";
 import type { RoomChange } from "./RoomChange";
 import type { RoomRecord } from "./RoomRecord";
 import { waitingAlarm } from "./waitingAlarm";
+import { withRematchTimedOut } from "./withRematchTimedOut";
 import { withLivePlayers } from "./withLivePlayers";
 
 export function fireRoomAlarm(
@@ -17,6 +19,9 @@ export function fireRoomAlarm(
 ): RoomChange {
   if (isEndedRoomDue(record, now)) {
     return { record: null, removals: [] };
+  }
+  if (endedRoomDeletionAt(record) !== null) {
+    return { record: withRematchTimedOut(record, now), removals: [] };
   }
   if (record.game !== null) {
     return { record: fireGameAlarm(record, now, randomFor, livePlayers), removals: [] };

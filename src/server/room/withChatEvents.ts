@@ -13,6 +13,10 @@ function isEnded(record: RoomRecord): boolean {
   return record.game?.saved.state.phase === "ended";
 }
 
+function isPlaying(record: RoomRecord): boolean {
+  return record.game !== null && !isEnded(record);
+}
+
 function hasLeftGame(record: RoomRecord, seat: SeatNumber): boolean {
   return (
     record.game?.saved.state.seats.find((candidate) => candidate.seat === seat)?.hasLeft === true
@@ -31,7 +35,7 @@ function lineEntriesBetween(
   after: RoomRecord,
   at: EpochMs,
 ): ReadonlyArray<ChatLineEntry> {
-  const isNewGame = before.game === null && after.game !== null;
+  const isNewGame = isPlaying(after) && !isPlaying(before);
   const seatsThatLeft = isNewGame
     ? []
     : (after.game?.seats ?? []).filter(

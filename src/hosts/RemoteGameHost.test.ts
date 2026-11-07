@@ -76,6 +76,7 @@ const ROOM_UPDATE_TEXT = JSON.stringify({
       playerNames: ["Ann"],
       mySeat: null,
       asking: null,
+      deletionAt: null,
     },
     game: null,
   },

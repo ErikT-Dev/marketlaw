@@ -24,7 +24,10 @@ function codeFormatOf(record: RoomRecord, expected: unknown): unknown {
 export function lobbyRoomThen(
   record: RoomRecord | null,
   expected: unknown,
-  messages: ReadonlyArray<ChatMessage>,
+  chat: {
+    readonly messages: ReadonlyArray<ChatMessage>;
+    readonly atStart: { readonly messageCount: number; readonly lineCount: number };
+  },
 ): unknown {
   if (record === null) {
     return "closed";
@@ -37,7 +40,12 @@ export function lobbyRoomThen(
     state: stateOf(record),
     accepted: (record.waiting.asking?.accepted ?? []).map((id) => nameOf(record, id)),
     code_format: codeFormatOf(record, expected),
-    chat_last: chatTextsOf(messages.slice(-1))[0],
+    chat_last: chatTextsOf(chat.messages.slice(-1))[0],
+    chat:
+      chat.messages.length >= chat.atStart.messageCount &&
+      record.chat.lineCount >= chat.atStart.lineCount
+        ? "kept"
+        : "removed",
   };
 }
 
@@ -48,6 +56,7 @@ export function lobbyGameThen(record: RoomRecord | null): unknown {
   }
   return {
     kind: game.kind,
+    turn: game.saved.state.turn,
     seats: Object.fromEntries(
       game.seats.map(({ seat, playerId }) => [String(seat), nameOf(record, playerId)]),
     ),

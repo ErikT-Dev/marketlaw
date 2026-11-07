@@ -147,7 +147,7 @@ These 16 scenarios are added to `harness/required.yaml` in this phase, by file a
   - For later items: the client sends `{ type: "vote", vote }`; `pendingCardsOf.ts` lists the two
     intents. `playersToUpdate` includes the actor.
 
-- [ ] 3. **Rematch on the server** (M8.4–M8.6, M2.2, A9.2–A9.4; scenarios `rooms` #23, #24,
+- [x] 3. **Rematch on the server** (M8.4–M8.6, M2.2, A9.2–A9.4; scenarios `rooms` #23, #24,
   #25, #26, #28). **Large.**
   - `RoomIntent.ts`: `ask_rematch`; reason code `rematch_not_possible`. Raise
     `PROTOCOL_VERSION`.
@@ -167,6 +167,22 @@ These 16 scenarios are added to `harness/required.yaml` in this phase, by file a
   - Lobby driver (`tools/harness-runner/lobby/`): step `ask_rematch`; given `room.kind`
     (`LOBBY_GIVEN_SCHEMA.ts`, `lobbyRoomFromGiven.ts`); then `room.accepted` and `game.kind`
     already exist. `LobbySession.ts` is over the limit: split it first.
+  - Done (2026-11-07): intent `ask_rematch`, code `rematch_not_possible`, `PROTOCOL_VERSION` 7.
+    An ended room's room intents go through `rematchOutcome.ts`; accepting is shared with the
+    waiting room (`acceptGameOutcome.ts`); a decline or the time-out (`withRematchTimedOut.ts`,
+    from `fireRoomAlarm`) only clears `asking`; `nextAlarmAt` takes the earlier of the asking
+    deadline and the deletion time (still one alarm). `startRoomGame` sizes the game by the
+    players in the room, not the room size. Daily limits in a rematch: nobody is removed; the
+    players over a limit get the new notice `{ kind: "daily_limit", reason }` (the accepter gets
+    the reason as a rejection). `RoomGame.kind` is `"casual" | "ranked"` (stored shape
+    unchanged, so `ROOM_SCHEMA_VERSION` stays 4). `RoomView.deletionAt` (null unless the game
+    has ended). `withChatEvents` now adds the "game started" line for a rematch too (S7.3: lines
+    when a game starts). Lobby driver: step `ask_rematch`, given `room.kind`, then `room.chat`
+    and `game.turn`; `LobbySession.ts` needed no change, so it was not split. The five scenarios
+    pass; unit tests in `src/server/room/rematch.test.ts`.
+  - For later items: after a rematch the new game's seats start at state version 0, lower than
+    the ended game's; the client must take the new game's view (item 5). `noticeToastOf` shows
+    the `daily_limit` notice with the `REJECTION_MESSAGES` text.
 
 - [ ] 4. **Vote screens** (S9.3, S9.5 abandoned by vote, S16.3; design boards "Pop-up: call
   abandon vote", "Pop-up: answer abandon vote", "Game: vote failed", "End: game abandoned" in
