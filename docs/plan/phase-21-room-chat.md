@@ -346,6 +346,18 @@ These 14 scenarios are added to `harness/required.yaml` in this phase, by file a
      limit in Q79; no resend exists today.
      - answered (`811d3f4`): recorded as a known limit in Q79.
 
+- [x] Second finisher run, after the fixes (2026-11-07).
+  - Commit `02c3f46` (`HARNESS:`) writes the fixer's Q80 choices into the spec: a Windows line
+    break is one line break and becomes one space (A11.5), and a message refused for any reason,
+    a limit or another, stays in or goes back into the input with the reason over it (S7.4).
+  - `npm run check` green (457 tests, client 145.25 kB of 300 kB gzipped). `npm run harness`
+    green: 433 scenarios (326 required pass, 0 fail), 1,000 simulated games, B7 measured 1 of 1,
+    B18 2,726 of 5,000. Browser tests: shard 1/2 46 passed and 16 failed, shard 2/2 45 passed and
+    16 failed, all timeouts waiting for pages while the dev server restarted under two workers
+    (the known local load problem); each shard's 16 failed tests passed on their rerun with one
+    worker (5.9 and 4.2 minutes). Screenshots from these runs committed. No new check applies,
+    so `docs/enforcement.md` is unchanged.
+
 ### Helper log
 
 Filled in by the coordinator afterwards, from the helpers' completion notices (Q73). Tokens
