@@ -28,6 +28,7 @@ function chatRoom() {
   let stored: RoomRecord | undefined;
   let messages: ReadonlyArray<ChatMessage> = [];
   let quota = NO_CHAT_QUOTA;
+  let now = START;
   const storage: RoomStorage = chatTrackingStorage(
     {
       read: () => stored,
@@ -38,7 +39,7 @@ function chatRoom() {
         stored = undefined;
       },
     },
-    () => ({ messageCount: messages.length, now: START }),
+    () => ({ messageCount: messages.length, now }),
   );
   function send(sender: Identity, body: Readonly<Record<string, unknown>>) {
     const outcome = receiveMessage(storage, {
@@ -47,7 +48,7 @@ function chatRoom() {
         JSON.stringify({ protocolVersion: PROTOCOL_VERSION, token: "t", ...body }),
       ),
       sender,
-      now: START,
+      now,
       randomFor: randomForNextAction,
       gameStart: {
         seed: 1,
@@ -70,6 +71,9 @@ function chatRoom() {
     storage,
     record: () => stored ?? null,
     messages: () => messages,
+    advance: (milliseconds: number) => {
+      now = v.parse(EpochMs, now + milliseconds);
+    },
     say: (sender: Identity, text: string) =>
       send(sender, { type: "room", action: { type: "send_chat", text } }),
     roomAction: (sender: Identity, type: string) =>
@@ -199,7 +203,8 @@ describe("muting in the room chat", () => {
     room.mute(ANN, "mute", "Bea");
     room.say(BEA, "first");
     room.mute(ANN, "unmute", "Bea");
-    room.say(CAT, "second");
+    room.advance(2_000);
+    room.say(BEA, "second");
     expect(messagesShownTo(room, ANN)).toEqual(["second"]);
   });
 
