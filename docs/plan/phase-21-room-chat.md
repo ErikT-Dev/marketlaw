@@ -1,6 +1,6 @@
 # Phase 21: Room chat
 
-Status: in progress
+Status: done
 Milestone: 4 Together
 
 ## Goal
@@ -357,6 +357,17 @@ These 14 scenarios are added to `harness/required.yaml` in this phase, by file a
     (the known local load problem); each shard's 16 failed tests passed on their rerun with one
     worker (5.9 and 4.2 minutes). Screenshots from these runs committed. No new check applies,
     so `docs/enforcement.md` is unchanged.
+
+- [x] Release: report written, merged, deploy watched, live site checked; the phase marked
+  **done**.
+  - Done 2026-11-07: report pushed (`269b4f2`). Branch check run 42374947941 green: `check` and
+    all 6 browser-test parts passed on GitHub (the local two-worker timeouts did not recur).
+    Merged (`cdc7a94`), Deploy run 42375782732 succeeded (tests skipped, the merged code had
+    passed Check). The live bundle has the new chat texts ("Message the room", "Muted players",
+    "You muted", "Try again in"); the live site serves the page and a card photo, a generated
+    name, rejects a malformed room request, opens the lobby socket and answers 404 for the
+    test-only daily counts. Chatting across windows needs the human check, so it is left to the
+    owner (What to try below).
 
 ### Helper log
 

@@ -276,7 +276,7 @@ The 427 scenarios cover all of version 1, but each phase implements only part of
 | 19 | [Leaving, cleanup and replay records](phase-19-leaving-cleanup-and-replays.md) | 3 Playthrough | 18 | done |
 | 20 | [Cost protection and the playthrough version](phase-20-cost-protection-and-playthrough.md) | 3 Playthrough | 19 | done |
 | 20a | [Playthrough fixes](phase-20a-playthrough-fixes.md) | 3 Playthrough | 20 | done |
-| 21 | [Room chat](phase-21-room-chat.md) | 4 Together | 20a | in progress |
+| 21 | [Room chat](phase-21-room-chat.md) | 4 Together | 20a | done |
 | 22 | [Abandon vote and rematch](phase-22-abandon-vote-and-rematch.md) | 4 Together | 20a | approved |
 | 23 | [Accounts: signup and login](phase-23-accounts-signup-and-login.md) | 5 Accounts and ranking | 20a | approved |
 | 24 | [Accounts: email, deletion and privacy](phase-24-accounts-email-deletion-privacy.md) | 5 Accounts and ranking | 23 | approved |
