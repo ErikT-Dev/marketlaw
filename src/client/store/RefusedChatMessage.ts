@@ -1,8 +1,8 @@
 import type { EpochMs } from "../../shared/EpochMs";
-import type { ChatLimitCode } from "./ChatLimitCode";
+import type { ChatRefusalCode } from "./ChatRefusalCode";
 
 export type RefusedChatMessage = {
-  readonly code: ChatLimitCode;
+  readonly code: ChatRefusalCode;
   readonly sendAgainAt: EpochMs | null;
   readonly text: string;
 };

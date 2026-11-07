@@ -1,11 +1,16 @@
 import type { EpochMs } from "../../shared/EpochMs";
 import type { ReasonCode } from "../../shared/ReasonCode";
-import { CHAT_LIMIT_CODES } from "./CHAT_LIMIT_CODES";
-import type { ChatLimitCode } from "./ChatLimitCode";
+import { CHAT_REFUSAL_CODES } from "./CHAT_REFUSAL_CODES";
+import type { ChatRefusalCode } from "./ChatRefusalCode";
 import type { RoomChat } from "./RoomChat";
 
-function isChatLimitCode(code: ReasonCode): code is ChatLimitCode {
-  return CHAT_LIMIT_CODES.some((limitCode) => limitCode === code);
+const CODES_OTHER_ROOM_ACTIONS_GET_TOO: ReadonlyArray<ChatRefusalCode> = [
+  "not_in_room",
+  "no_answer",
+];
+
+function isChatRefusalCode(code: ReasonCode): code is ChatRefusalCode {
+  return CHAT_REFUSAL_CODES.some((refusalCode) => refusalCode === code);
 }
 
 export function chatAfterRefusal(
@@ -13,9 +18,13 @@ export function chatAfterRefusal(
   code: ReasonCode,
   sendAgainAt: EpochMs | null,
 ): RoomChat | null {
-  if (!isChatLimitCode(code)) {
+  const [oldestText, ...stillUnanswered] = chat.unansweredTexts;
+  if (!isChatRefusalCode(code)) {
     return null;
   }
-  const [text = "", ...stillUnanswered] = chat.unansweredTexts;
+  if (oldestText === undefined && CODES_OTHER_ROOM_ACTIONS_GET_TOO.includes(code)) {
+    return null;
+  }
+  const text = oldestText ?? "";
   return { ...chat, unansweredTexts: stillUnanswered, refused: { code, sendAgainAt, text } };
 }

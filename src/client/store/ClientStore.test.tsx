@@ -232,6 +232,21 @@ describe("the room chat in the store", () => {
     expect(fake.store.getSnapshot().chat.unansweredTexts).toEqual([]);
   });
 
+  it("gives back a message refused for any reason and pairs later refusals with later texts", () => {
+    const fake = storeInRoom();
+    fake.store.sendRoomAction({ type: "send_chat", text: "First" });
+    fake.store.sendRoomAction({ type: "send_chat", text: "Second" });
+    fake.emit({ type: "rejected", code: "no_answer", actionId: null, sendAgainAt: null });
+    expect(fake.store.getSnapshot().chat.refused).toEqual({
+      code: "no_answer",
+      sendAgainAt: null,
+      text: "First",
+    });
+    fake.emit({ type: "rejected", code: "chat_too_fast", actionId: null, sendAgainAt: null });
+    expect(fake.store.getSnapshot().chat.refused?.text).toBe("Second");
+    expect(fake.store.getSnapshot().rejectedMove).toBeNull();
+  });
+
   it("forgets the chat when the player leaves the room", () => {
     const fake = storeInRoom();
     fake.emit({ type: "chat", entries: [chatMessage("Bea")], mutedNames: [], isFullList: false });
