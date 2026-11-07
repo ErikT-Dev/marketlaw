@@ -386,6 +386,7 @@ are each helper's conversation size at its end.
 | Phase reviewer | 9 | 157k | 58 | done, 5 findings |
 | Fixer, findings 1 to 5 | 15 | 133k | 73 | done |
 | Finisher, second run | 29 | 75k | 29 | done |
+| Releaser | 17 | 94k | 30 | done |
 
 ## Report
 
