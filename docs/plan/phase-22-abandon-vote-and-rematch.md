@@ -124,7 +124,7 @@ These 16 scenarios are added to `harness/required.yaml` in this phase, by file a
     the abandoned-by-vote text. A one-seat game (tutorial) would pass a vote at once, since
     nobody is asked.
 
-- [ ] 2. **Abandon vote in the room and protocol** (M7.3, M9.4; scenario
+- [x] 2. **Abandon vote in the room and protocol** (M7.3, M9.4; scenario
   `connections-and-leaving` #20). **Small.**
   - `ActionIntent.ts` / `ACTION_TYPES.ts`: the two new intents, parsed at the boundary.
   - `acceptAction.ts` / `isChangeVisibleToAll.ts`: a vote call or answer raises only the actor's
@@ -137,6 +137,15 @@ These 16 scenarios are added to `harness/required.yaml` in this phase, by file a
     `phase` and `vote` from item 1.
   - Hostile-client unit tests in `src/server/room/` for the new intents (duplicate action id,
     stale version, a seat that left).
+  - Done (2026-11-07): intents `call_vote` and `vote` (`vote: "yes" | "no"`, the HARNESS.md
+    step format), `PROTOCOL_VERSION` 6. Q87: a vote closing at its deadline raises no state
+    version (a pass ends the game, which raises everyone's); vote calls and answers raise only the
+    actor's version in the market phase too (`isChangeVisibleToAll` takes `isVoteChangeOnly`).
+    The room alarm follows the vote deadline through `earliestDeadline`, still one alarm. Room
+    driver steps `call_vote`, `vote`; #20 passes there. Tests in
+    `src/server/room/abandonVote.test.ts`.
+  - For later items: the client sends `{ type: "vote", vote }`; `pendingCardsOf.ts` lists the two
+    intents. `playersToUpdate` includes the actor.
 
 - [ ] 3. **Rematch on the server** (M8.4–M8.6, M2.2, A9.2–A9.4; scenarios `rooms` #23, #24,
   #25, #26, #28). **Large.**

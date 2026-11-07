@@ -1626,3 +1626,23 @@ file.
 - **Why:** S11.4 says the room shows the result after a game, which only makes sense if that is
   where a player goes after the end screen; one place for the result is simpler than two.
 - **Implemented:** `harness/spec/screens.md` S11.4; phase 22.
+
+## Q87. Whose state version does a vote closing at its deadline raise?
+
+- **Phase:** 22, item 2 (M7.3, M9.4).
+- **Question:** Q84 says calling and answering raise only the actor's state version, but not
+  what happens when the minute runs out. The room raised the version of every seat in a logged
+  system action, so the logged `close_vote` (seat = the caller) raised the caller's. In the
+  market phase, where every change raises everyone's version, a vote call or answer would also
+  have raised everyone's.
+- **Options:** raise the caller's version; raise everyone's; raise nobody's unless the game ends.
+- **Solution:** A vote closing at its deadline is nobody's action, so it raises no version by
+  itself; the others still get the new view (no vote open). A vote that passes ends the game, a
+  phase change, which raises everyone's. Vote calls and answers raise only the actor's version
+  in every phase, the market phase included. The answer intent is `{ type: "vote", vote: "yes" |
+  "no" }`, the step format of `HARNESS.md`.
+- **Why:** M9.4 moves a version only with the player's own actions and changes everyone must see
+  before acting again (phase changes, reveals); a failed vote changes neither, and raising the
+  caller's version would make the caller's next move `stale_state` for no reason.
+- **Implemented:** `src/server/room/withTimeOutsApplied.ts`, `acceptAction.ts`,
+  `isChangeVisibleToAll.ts`; phase 22, item 2.

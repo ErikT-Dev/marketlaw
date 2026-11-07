@@ -91,7 +91,7 @@ function versionViolations(
   const isSeenByEveryone =
     beforeState === undefined ||
     afterState === undefined ||
-    isChangeVisibleToAll(beforeState, afterState);
+    isChangeVisibleToAll(beforeState, afterState, false);
   return (after.game?.seats ?? []).flatMap((seat) => {
     const versionBefore = before.game?.seats.find(
       (candidate) => candidate.seat === seat.seat,

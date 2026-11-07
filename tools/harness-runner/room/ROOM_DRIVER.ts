@@ -218,6 +218,8 @@ export const ROOM_DRIVER: ScenarioDriver = {
     "reconnect",
     "open_game",
     "leave_game",
+    "call_vote",
+    "vote",
   ]),
   thenFields: new Set([...ENGINE_FIELDS.thenFields, "message_to", "connected_tab", "room"]),
   nestedFields: new Map([
