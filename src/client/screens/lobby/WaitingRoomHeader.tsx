@@ -1,29 +1,26 @@
+import type { ReactNode } from "react";
 import type { RoomView } from "../../../shared/protocol/RoomView";
 import { Button } from "../../components/Button";
 import styles from "./Lobby.module.css";
 
 type Props = {
   readonly room: RoomView;
-  readonly isOwner: boolean;
+  readonly subtitle: ReactNode;
   readonly onLeave: () => void;
+  readonly children: ReactNode;
 };
 
-export function WaitingRoomHeader({ room, isOwner, onLeave }: Props) {
-  const kind = room.isPublic ? "Public room" : "Private room";
+export function WaitingRoomHeader({ room, subtitle, onLeave, children }: Props) {
   return (
     <div className={styles["panelHeader"]}>
       <div>
         <h2 id="room-heading" className={styles["roomTitle"]}>
           Room {room.code}
         </h2>
-        <p className={styles["small"]}>
-          {kind} · {isOwner ? "you are the owner" : `owner: ${room.ownerName}`}
-        </p>
+        <div className={styles["small"]}>{subtitle}</div>
       </div>
       <div className={styles["dialogButtons"]}>
-        <Button look="secondary" onClick={() => void navigator.clipboard.writeText(room.code)}>
-          Copy room code
-        </Button>
+        {children}
         <Button look="danger" onClick={onLeave}>
           Leave room
         </Button>

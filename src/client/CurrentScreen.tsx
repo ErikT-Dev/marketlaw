@@ -1,6 +1,5 @@
 import { useSyncExternalStore } from "react";
-import { chatBindingOf } from "./chatBindingOf";
-import { GamePage } from "./screens/GamePage";
+import { RoomGameScreen } from "./RoomGameScreen";
 import { LobbyPage } from "./screens/lobby/LobbyPage";
 import { WaitingPage } from "./screens/WaitingPage";
 import type { ClientStore } from "./store/ClientStore";
@@ -35,21 +34,5 @@ export function CurrentScreen({ store }: Props) {
       <WaitingRoomScreen store={store} state={state} room={update.room} myName={session.name} />
     );
   }
-  return (
-    <GamePage
-      update={update}
-      chat={chatBindingOf(store, state.chat)}
-      pendingActions={state.pendingActions}
-      rejectedMove={state.rejectedMove}
-      onAction={store.sendAction}
-      onDismissRejection={store.dismissRejection}
-      serverClockOffsetMs={state.serverClockOffsetMs}
-      timeOutNotice={state.timeOutNotice}
-      onDismissTimeOutNotice={store.dismissTimeOutNotice}
-      onExitToLobby={store.exitToLobby}
-      connection={state.connection}
-      isOutdated={state.isOutdated}
-      onPlayHere={store.playHere}
-    />
-  );
+  return <RoomGameScreen store={store} state={state} update={update} myName={session.name} />;
 }

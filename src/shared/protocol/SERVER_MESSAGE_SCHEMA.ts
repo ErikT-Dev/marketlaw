@@ -133,6 +133,7 @@ export const SERVER_MESSAGE_SCHEMA = v.variant("type", [
         isPublic: v.boolean(),
         ownerName: v.string(),
         playerNames: v.array(v.string()),
+        namesInRoom: v.array(v.string()),
         mySeat: v.nullable(SEAT),
         asking: v.nullable(v.object({ deadline: EpochMs, acceptedNames: v.array(v.string()) })),
         deletionAt: v.nullable(EpochMs),

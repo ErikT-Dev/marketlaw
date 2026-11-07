@@ -1,5 +1,5 @@
 import { fireEvent, render, screen, within } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import type { GameResult } from "../../../shared/GameResult";
 import { gamePageProps } from "../../testing/gamePageProps";
 import { roomUpdateWith } from "../../testing/roomUpdateWith";
@@ -76,12 +76,20 @@ describe("end-of-game screen", () => {
     expect(dialog.textContent).toContain("Nobody reached the end goal by turn 24");
   });
 
-  it("closes to show the board, and exits to the lobby", () => {
+  it("exits to the lobby, closes to the room and has no rematch button when none is possible", () => {
     const props = showResult(END_GOAL);
+    expect(screen.queryByRole("button", { name: "Ask for a rematch" })).toBeNull();
     fireEvent.click(screen.getByRole("button", { name: "Exit to lobby" }));
     expect(props.onExitToLobby).toHaveBeenCalledTimes(1);
     fireEvent.click(screen.getByRole("button", { name: "Close" }));
-    expect(screen.queryByRole("dialog")).toBeNull();
-    expect(screen.getByText("Game over")).toBeDefined();
+    expect(props.onCloseResult).toHaveBeenCalledTimes(1);
+  });
+
+  it("asks for a rematch from the end-of-game screen", () => {
+    const onAskRematch = vi.fn();
+    const update = roomUpdateWith({ phase: "ended", turn: 24, result: END_GOAL });
+    render(<GamePage {...gamePageProps(update)} onAskRematch={onAskRematch} />);
+    fireEvent.click(screen.getByRole("button", { name: "Ask for a rematch" }));
+    expect(onAskRematch).toHaveBeenCalledTimes(1);
   });
 });

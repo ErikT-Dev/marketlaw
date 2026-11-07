@@ -32,8 +32,7 @@ test("a game played to the end goal shows the winner, the places and the scores"
   }
   await expectScreenFits(one, "game-over-end-goal", testInfo);
   await one.getByRole("button", { name: "Close" }).click();
-  await expect(one.getByText("Game over")).toBeVisible();
-  await expect(one.getByText("The game is over.")).toBeVisible();
+  await expect(one.getByText("Game over · You won with")).toBeVisible();
   await one.getByRole("button", { name: "Show result" }).click();
   await expect(one.getByRole("dialog", { name: "Seat 1 wins!" })).toBeVisible();
   await two.getByRole("button", { name: "Exit to lobby" }).click();

@@ -1,4 +1,3 @@
-import { useState } from "react";
 import type { OwnSeatView } from "../../../shared/OwnSeatView";
 import type { PlayerView } from "../../../shared/PlayerView";
 import { AwaySeats } from "./AwaySeats";
@@ -20,7 +19,6 @@ type Props = GamePageProps & {
 
 export function GameBoard(props: Props) {
   const { update, view, mine } = props;
-  const [isResultClosed, setIsResultClosed] = useState(false);
   const playerNames = update.room.playerNames;
   return (
     <ServerClockOffset.Provider value={props.serverClockOffsetMs}>
@@ -48,25 +46,17 @@ export function GameBoard(props: Props) {
               playerNames={playerNames}
               pendingActions={props.pendingActions}
               onAction={props.onAction}
-              onShowResult={
-                view.result === null
-                  ? null
-                  : () => {
-                      setIsResultClosed(false);
-                    }
-              }
             />
           </main>
-          {view.result === null || isResultClosed ? null : (
+          {view.result === null ? null : (
             <GameOverDialog
               result={view.result}
               turn={view.turn}
               viewer={view.seat}
               playerNames={playerNames}
               onExitToLobby={props.onExitToLobby}
-              onClose={() => {
-                setIsResultClosed(true);
-              }}
+              onClose={props.onCloseResult}
+              onAskRematch={props.onAskRematch}
             />
           )}
           <AnswerVoteDialogIfAsked {...props} playerNames={playerNames} />

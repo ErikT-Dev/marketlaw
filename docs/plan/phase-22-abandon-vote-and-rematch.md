@@ -211,7 +211,7 @@ These 16 scenarios are added to `harness/required.yaml` in this phase, by file a
   - For later items: the game's toasts now stack with a gap. `PlayerBadge` names can shorten
     where space is short; the lobby screens did not change.
 
-- [ ] 5. **Room after the game and rematch screens** (S9.5 rematch button, S11.4; design boards
+- [x] 5. **Room after the game and rematch screens** (S9.5 rematch button, S11.4; design boards
   "Waiting room: after the game", "Waiting room: rematch asked" in
   `design/export/lobby-and-waiting-room/contents.md`). **Large.**
   - Close on the end screen leads to the room after the game (Q86): reuse `WaitingRoomPage.tsx`
@@ -224,6 +224,18 @@ These 16 scenarios are added to `harness/required.yaml` in this phase, by file a
   - Browser test: finish a game (the test rooms in `src/server/testRooms/` can start one near
     its end), ask, accept, see the new game; a decline leaves the room as it was. Screenshots at
     the three sizes, axe.
+  - Done (2026-11-07): `RoomView.namesInRoom` (the players still in the room; `playerNames`
+    stays the game's seat names), `PROTOCOL_VERSION` 8: the client could not tell who was still in
+    an ended room otherwise. Close on the end screen leads to `RoomAfterGamePage.tsx` (chosen in
+    `RoomGameScreen.tsx`, which resets when the next game's view has no result), sharing
+    `RoomPageFrame.tsx`, `WaitingRoomHeader.tsx` and `WaitingPlayers.tsx` with the waiting room;
+    result line with **Show result** (`afterGameResultLine.ts`), the deletion time as local time
+    today or tomorrow (`roomDeletionText.ts`). `GameOverNotice.tsx` is gone; the end screen stays
+    open until Close and has **Ask for a rematch** while one is possible. The rematch dialog
+    (`RematchDialogIfAsked.tsx`, `AcceptDialog` with `isRematch`) shows over the end screen or
+    the room; the board has no asker name, so it is titled "Accept a rematch?". Unit tests
+    `src/client/screens/lobby/roomAfterGame.test.tsx`; browser test `e2e/rematch.spec.ts` (screens
+    `room-after-the-game`, `rematch-asked`); `e2e/gameOver.spec.ts` follows Q86.
 
 ### Finish
 

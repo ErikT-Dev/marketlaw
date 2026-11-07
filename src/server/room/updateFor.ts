@@ -31,6 +31,7 @@ function buildUpdate(record: RoomRecord, playerId: PlayerId): RoomUpdate {
       isPublic: record.isPublic,
       ownerName: record.players[0]?.name ?? "",
       playerNames: playerNamesOf(record),
+      namesInRoom: record.players.map(({ name }) => name),
       mySeat: seat?.seat ?? null,
       asking:
         asking === null

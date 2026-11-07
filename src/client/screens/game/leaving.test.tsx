@@ -104,7 +104,7 @@ describe("after leaving", () => {
     expect(notice.textContent).toBe("Connection lost. Reconnecting…");
   });
 
-  it("shows the result when the game ends, and again after closing it", () => {
+  it("shows the result when the game ends, and closing it leads to the room", () => {
     const update = roomUpdateWith(
       {
         phase: "ended",
@@ -120,11 +120,11 @@ describe("after leaving", () => {
       },
       { hasLeft: true, isDone: true },
     );
-    render(<GamePage {...gamePageProps(update)} />);
-    fireEvent.click(screen.getByRole("button", { name: "Close" }));
-    expect(screen.queryByRole("dialog")).toBeNull();
-    fireEvent.click(screen.getByRole("button", { name: "Show result" }));
+    const props = gamePageProps(update);
+    render(<GamePage {...props} />);
     expect(screen.getByRole("dialog").textContent).toContain("All other players left the game");
+    fireEvent.click(screen.getByRole("button", { name: "Close" }));
+    expect(props.onCloseResult).toHaveBeenCalledTimes(1);
   });
 });
 

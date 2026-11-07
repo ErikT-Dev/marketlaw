@@ -175,4 +175,13 @@ describe("a rematch in the room", () => {
     expect(current(kept).waiting.asking).toBeNull();
     expect(current(kept).game?.saved.state.phase).toBe("ended");
   });
+
+  it("lists the players still in the room apart from the seats of the ended game", async () => {
+    const { storage, kept } = await endedRoomOfAnnAndBea();
+    expect(updateFor(current(kept), ANN.playerId).room.namesInRoom).toEqual(["Ann", "Bea"]);
+    await send(storage, BEA, { type: "leave_room" });
+    const { room } = updateFor(current(kept), ANN.playerId);
+    expect(room.namesInRoom).toEqual(["Ann"]);
+    expect(room.playerNames).toEqual(["Ann", "Bea"]);
+  });
 });

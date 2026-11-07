@@ -91,6 +91,7 @@ export function roomUpdateWith(
       isPublic: false,
       ownerName: "Ann",
       playerNames: ["Ann", "Bea", "Cy", "Di"],
+      namesInRoom: ["Ann", "Bea", "Cy", "Di"],
       mySeat: 2,
       asking: null,
       deletionAt: null,

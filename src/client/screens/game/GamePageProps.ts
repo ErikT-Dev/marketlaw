@@ -17,6 +17,8 @@ export type GamePageProps = {
   readonly timeOutNotice: Notice | null;
   readonly onDismissTimeOutNotice: () => void;
   readonly onExitToLobby: () => void;
+  readonly onCloseResult: () => void;
+  readonly onAskRematch: (() => void) | null;
   readonly connection: ConnectionStatus;
   readonly isOutdated: boolean;
   readonly onPlayHere: () => void;

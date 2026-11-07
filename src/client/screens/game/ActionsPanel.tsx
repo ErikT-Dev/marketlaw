@@ -5,7 +5,6 @@ import { TextWithIcons } from "../../components/TextWithIcons";
 import styles from "./ActionsPanel.module.css";
 import { counted } from "./counted";
 import { DoneBanner } from "./DoneBanner";
-import { GameOverNotice } from "./GameOverNotice";
 import { MarketPhaseNotice } from "./MarketPhaseNotice";
 import type { HandChoice } from "./HandChoice";
 import type { OpenDialog } from "./OpenDialog";
@@ -25,7 +24,6 @@ type Props = {
   readonly onUndo: () => void;
   readonly onEndTurn: () => void;
   readonly onOpenDialog: (dialog: OpenDialog) => void;
-  readonly onShowResult: (() => void) | null;
 };
 
 function sellLabel(choice: HandChoice): string {
@@ -45,9 +43,6 @@ function canPlaySelected(seat: OwnSeatView, choice: HandChoice): boolean {
 
 export function ActionsPanel(props: Props) {
   const { seat, choice, waitingFor, isEndTurnPending, isBusy } = props;
-  if (props.onShowResult !== null) {
-    return <GameOverNotice onShowResult={props.onShowResult} />;
-  }
   if (props.isMarketPhase) {
     return <MarketPhaseNotice />;
   }
