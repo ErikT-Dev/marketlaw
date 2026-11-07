@@ -81,4 +81,5 @@ export const GIVEN_SCHEMA = v.strictObject({
   first_completions: v.optional(v.array(ProjectName)),
   clock_ms: v.optional(COUNT),
   paused: v.optional(v.boolean()),
+  last_vote_turn: v.optional(COUNT),
 });

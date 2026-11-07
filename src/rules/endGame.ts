@@ -21,5 +21,5 @@ export function endGame(
     discard: [...state.discard, ...state.holdingPile],
     holdingPile: [],
   };
-  return { ...rewarded, phase: "ended", result: gameResultOf(rewarded, endedBy), clockStartedAt: at };
+  return { ...rewarded, phase: "ended", vote: null, result: gameResultOf(rewarded, endedBy), clockStartedAt: at };
 }

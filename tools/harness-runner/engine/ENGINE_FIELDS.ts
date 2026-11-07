@@ -41,6 +41,7 @@ export const ENGINE_FIELDS = {
     "first_completions",
     "clock_ms",
     "paused",
+    "last_vote_turn",
   ]),
   steps: new Set([
     "start_game",
@@ -54,6 +55,8 @@ export const ENGINE_FIELDS = {
     "undo",
     "leave_game",
     "turn_draw",
+    "call_vote",
+    "vote",
   ]),
   thenFields: new Set([
     "paused",
@@ -77,6 +80,7 @@ export const ENGINE_FIELDS = {
     "done_order",
     "first_completions",
     "ended",
+    "vote",
   ]),
   nestedFields: new Map<string, ReadonlySet<string>>([
     ["given.seats", new Set(SEAT_FIELDS)],
@@ -109,6 +113,7 @@ export const ENGINE_FIELDS = {
         "hides",
         "log_contains",
         "log_excludes",
+        "vote_answers",
       ]),
     ],
   ]),

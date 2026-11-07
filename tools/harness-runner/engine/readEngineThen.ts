@@ -82,6 +82,7 @@ export function readEngineThen(
     done_order: () => state.doneOrder,
     first_completions: () => state.firstCompletions,
     ended: () => endedThen(state),
+    vote: () => (state.vote === null ? "closed" : "open"),
   };
   const read = fields[field];
   if (read === undefined) {

@@ -83,7 +83,7 @@ These 16 scenarios are added to `harness/required.yaml` in this phase, by file a
     `src/client/store/ClientStore.ts` (312): split them, do not grow them.
   - `connections-and-leaving` #22 (ranked games refuse votes) is not in this phase (phase 26).
 
-- [ ] 1. **Abandon vote in the engine** (M7.1–M7.6; scenarios `connections-and-leaving` #18,
+- [x] 1. **Abandon vote in the engine** (M7.1–M7.6; scenarios `connections-and-leaving` #18,
   #19, #21, #23, #24, #25, #26, #28, #29, #30). **Large.**
   - `GameState` gains the open vote (caller, seats asked, answers, deadline) and the turn of the
     last vote called; new player actions `call_vote` and `vote` (`yes`/`no`) in `GameAction.ts`,
@@ -110,6 +110,19 @@ These 16 scenarios are added to `harness/required.yaml` in this phase, by file a
     invariants (`invariantViolations.ts`) must accept the new state.
   - The browser tests start rooms from a given state (`src/server/testRooms/GAME_STATE_SCHEMA.ts`):
     it must take the new state fields.
+  - Done (2026-11-07): `GameState.vote` (`OpenVote`: caller, asked, ballots, deadline) and
+    `lastVoteTurn`; actions `call_vote`, `vote` (`answer: "yes" | "no"`) and the system action
+    `close_vote` (seat = the caller), logged when the minute is over through `applyDueTimeOuts`.
+    `receiveAction` catches up due deadlines before a vote action and skips the out-of-time
+    checks for it (a done or timed-out player can still answer). View: `PlayerView.vote`
+    (`VoteView`: caller, deadline, answered, of, hasToAnswer; null for a player who left) and
+    `nextVoteTurn`. `PROTOCOL_VERSION` 5, `SAVE_SCHEMA_VERSION` 15. The ten scenarios pass.
+  - For later items: `withTimeOutsApplied` raises the state version of a logged action's seat,
+    so a vote closing at its deadline raises the caller's version (item 2 decides whether that
+    stays). `REJECTION_MESSAGES` has placeholder vote texts; `vote_too_soon` must become "Next
+    vote possible in turn N." from `view.nextVoteTurn` (item 4). `gameOverTexts` already has
+    the abandoned-by-vote text. A one-seat game (tutorial) would pass a vote at once, since
+    nobody is asked.
 
 - [ ] 2. **Abandon vote in the room and protocol** (M7.3, M9.4; scenario
   `connections-and-leaving` #20). **Small.**

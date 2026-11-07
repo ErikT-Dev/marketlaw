@@ -10,6 +10,7 @@ import type { QuestOnTable } from "../shared/QuestOnTable";
 import type { SeatNumber } from "../shared/SeatNumber";
 import type { ClockGrace } from "./ClockGrace";
 import type { MainPhaseStart } from "./MainPhaseStart";
+import type { OpenVote } from "./OpenVote";
 import type { PausedClock } from "./PausedClock";
 import type { SeatState } from "./SeatState";
 
@@ -33,5 +34,7 @@ export type GameState = {
   readonly clockStartedAt: number;
   readonly pause: PausedClock | null;
   readonly grace: ReadonlyArray<ClockGrace>;
+  readonly vote: OpenVote | null;
+  readonly lastVoteTurn: number | null;
   readonly result: GameResult | null;
 };

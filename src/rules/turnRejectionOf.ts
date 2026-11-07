@@ -37,7 +37,7 @@ export function turnRejectionOf(
   if (state.phase === "ended") {
     return "game_over";
   }
-  if (actionType === "leave_game") {
+  if (actionType === "leave_game" || actionType === "call_vote" || actionType === "vote") {
     return undefined;
   }
   const phaseCode = phaseRejectionOf(state, seat, actionType);

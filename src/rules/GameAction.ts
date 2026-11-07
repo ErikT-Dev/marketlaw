@@ -6,6 +6,7 @@ import type { ProjectName } from "../shared/ProjectName";
 import type { SeatNumber } from "../shared/SeatNumber";
 import type { TradeName } from "../shared/TradeName";
 import type { TurnDrawChoice } from "../shared/TurnDrawChoice";
+import type { VoteAnswer } from "../shared/VoteAnswer";
 
 export type GameAction =
   | { readonly type: "play_card"; readonly seat: SeatNumber; readonly card: CardName }
@@ -35,4 +36,7 @@ export type GameAction =
   | { readonly type: "resume_game"; readonly seat: SeatNumber }
   | { readonly type: "abandon_game"; readonly seat: SeatNumber }
   | { readonly type: "leave_game"; readonly seat: SeatNumber }
+  | { readonly type: "call_vote"; readonly seat: SeatNumber }
+  | { readonly type: "vote"; readonly seat: SeatNumber; readonly answer: VoteAnswer }
+  | { readonly type: "close_vote"; readonly seat: SeatNumber }
   | { readonly type: "turn_draw"; readonly seat: SeatNumber; readonly choice: TurnDrawChoice };

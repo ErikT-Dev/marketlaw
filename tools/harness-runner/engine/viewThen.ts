@@ -78,6 +78,7 @@ export function viewThen(
     hides: namesOf(asked["hides"]).filter((name) => isHidden(name, text, state)),
     log_contains: matchingLogEntries(view.drawLog, asked["log_contains"]),
     log_excludes: absentLogItems(view.drawLog, asked["log_excludes"]),
+    vote_answers: view.vote === null ? null : { answered: view.vote.answered, of: view.vote.of },
     ...seatFields,
   };
 }

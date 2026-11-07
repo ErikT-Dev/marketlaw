@@ -108,6 +108,16 @@ const PLAYER_VIEW = v.object({
   playerOrder: v.array(SEAT),
   drawLog: v.array(DRAW_LOG_ENTRY_SCHEMA),
   firstCompletions: PROJECTS,
+  vote: v.nullable(
+    v.object({
+      caller: SEAT,
+      deadline: EpochMs,
+      answered: COUNT,
+      of: COUNT,
+      hasToAnswer: v.boolean(),
+    }),
+  ),
+  nextVoteTurn: COUNT,
   result: v.nullable(GAME_RESULT_SCHEMA),
 });
 
