@@ -184,7 +184,7 @@ These 16 scenarios are added to `harness/required.yaml` in this phase, by file a
     the ended game's; the client must take the new game's view (item 5). `noticeToastOf` shows
     the `daily_limit` notice with the `REJECTION_MESSAGES` text.
 
-- [ ] 4. **Vote screens** (S9.3, S9.5 abandoned by vote, S16.3; design boards "Pop-up: call
+- [x] 4. **Vote screens** (S9.3, S9.5 abandoned by vote, S16.3; design boards "Pop-up: call
   abandon vote", "Pop-up: answer abandon vote", "Game: vote failed", "End: game abandoned" in
   `design/export/game-endings-and-votes/contents.md`). **Large.**
   - A button to call a vote beside **Leave game** (`LeaveGameButton.tsx`, `LeaveGameDialog.tsx`
@@ -195,6 +195,21 @@ These 16 scenarios are added to `harness/required.yaml` in this phase, by file a
     `GameOverDialog.tsx` / `gameOverTexts.ts`. Rejection texts in `REJECTION_MESSAGES.ts`.
   - Browser test with three windows (call, answer, pass; call, fail), screenshots at the three
     sizes into `harness/screens/`, axe, click targets at least 24 px.
+  - Done (2026-11-07): **Vote to abandon** (`CallVoteButton.tsx`, `CallVoteDialog.tsx`, board
+    texts) in the top bar, disabled while a vote is open; `AnswerVoteDialog.tsx` (caller, time
+    left, count; hidden while the answer is pending); an info toast `OpenVoteToast.tsx` with the
+    count and time left for the caller and players who answered (the boards show nothing for
+    them); "The game goes on" toast (`useFailedVoteNotice.ts`: a vote closing with no result);
+    `vote_too_soon` reads "Next vote possible in turn N." from `view.nextVoteTurn`
+    (`GameToasts.tsx`). The end screen text already existed. `ClientStore.ts` needed no change.
+    `Toast` can have no close button. The extra button crowded the top bar at 1280 px with four
+    long names (the fourth badge was already cut off before), so player badges in the order now
+    shorten their names with an ellipsis (`Badge.module.css`, `GameTopBar.module.css`). Unit
+    tests `src/client/screens/game/abandonVote.test.tsx`; browser test `e2e/abandonVote.spec.ts`
+    (screens `call-abandon-vote`, `answer-abandon-vote`, `vote-failed`,
+    `game-over-abandoned-by-vote`); `e2e/openTestSeat.ts` opens a test room seat.
+  - For later items: the game's toasts now stack with a gap. `PlayerBadge` names can shorten
+    where space is short; the lobby screens did not change.
 
 - [ ] 5. **Room after the game and rematch screens** (S9.5 rematch button, S11.4; design boards
   "Waiting room: after the game", "Waiting room: rematch asked" in

@@ -2,6 +2,7 @@ import { useState } from "react";
 import type { OwnSeatView } from "../../../shared/OwnSeatView";
 import type { PlayerView } from "../../../shared/PlayerView";
 import { AwaySeats } from "./AwaySeats";
+import { AnswerVoteDialogIfAsked } from "./AnswerVoteDialogIfAsked";
 import { GameNotices } from "./GameNotices";
 import { GameOverDialog } from "./GameOverDialog";
 import styles from "./GamePage.module.css";
@@ -29,9 +30,7 @@ export function GameBoard(props: Props) {
             view={view}
             seat={mine}
             playerNames={playerNames}
-            onLeaveGame={() => {
-              props.onAction({ type: "leave_game" });
-            }}
+            onAction={props.onAction}
             isConnected={props.connection === "open"}
           />
           <main className={styles["table"]} inert={props.connection !== "open" || props.isOutdated}>
@@ -70,6 +69,7 @@ export function GameBoard(props: Props) {
               }}
             />
           )}
+          <AnswerVoteDialogIfAsked {...props} playerNames={playerNames} />
           <GameNotices {...props} seat={mine} playerNames={playerNames} />
         </div>
       </AwaySeats.Provider>

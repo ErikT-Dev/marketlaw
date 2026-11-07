@@ -25,7 +25,12 @@ export function GamePage(props: Props) {
             chat={props.chat}
           />
         </ServerClockOffset.Provider>
-        <GameNotices {...props} seat={mine} playerNames={props.update.room.playerNames} />
+        <GameNotices
+          {...props}
+          view={view}
+          seat={mine}
+          playerNames={props.update.room.playerNames}
+        />
       </>
     );
   }

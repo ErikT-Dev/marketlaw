@@ -50,6 +50,9 @@
 }
 
 .toasts {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
   position: fixed;
   top: 68px;
   right: var(--space-lg);

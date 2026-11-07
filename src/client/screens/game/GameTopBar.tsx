@@ -3,9 +3,11 @@ import { Fragment } from "react";
 import type { GamePhase } from "../../../shared/GamePhase";
 import type { OwnSeatView } from "../../../shared/OwnSeatView";
 import type { PlayerView } from "../../../shared/PlayerView";
+import type { ActionIntent } from "../../../shared/protocol/ActionIntent";
 import { TURN_LIMIT } from "../../../shared/TURN_LIMIT";
 import { PlayerBadge } from "../../components/PlayerBadge";
 import { AwaySeats } from "./AwaySeats";
+import { CallVoteButton } from "./CallVoteButton";
 import styles from "./GameTopBar.module.css";
 import { LeaveGameButton } from "./LeaveGameButton";
 import { orderBadgesOf } from "./orderBadgesOf";
@@ -15,7 +17,7 @@ type Props = {
   readonly view: PlayerView;
   readonly seat: OwnSeatView;
   readonly playerNames: ReadonlyArray<string>;
-  readonly onLeaveGame: () => void;
+  readonly onAction: (action: ActionIntent) => void;
   readonly isConnected: boolean;
 };
 
@@ -25,7 +27,8 @@ const PHASE_NAMES: Readonly<Record<GamePhase, string>> = {
   ended: "Game over",
 };
 
-export function GameTopBar({ view, seat, playerNames, onLeaveGame, isConnected }: Props) {
+export function GameTopBar(props: Props) {
+  const { view, seat, playerNames, isConnected } = props;
   const awaySeats = useContext(AwaySeats);
   return (
     <header className={styles["topBar"]}>
@@ -58,7 +61,20 @@ export function GameTopBar({ view, seat, playerNames, onLeaveGame, isConnected }
       <div className={styles["right"]}>
         <YourClock view={view} seat={seat} playerNames={playerNames} />
         {view.phase === "ended" ? null : (
-          <LeaveGameButton onLeave={onLeaveGame} isDisabled={!isConnected} />
+          <>
+            <CallVoteButton
+              onCall={() => {
+                props.onAction({ type: "call_vote" });
+              }}
+              isDisabled={!isConnected || view.vote !== null}
+            />
+            <LeaveGameButton
+              onLeave={() => {
+                props.onAction({ type: "leave_game" });
+              }}
+              isDisabled={!isConnected}
+            />
+          </>
         )}
       </div>
     </header>
