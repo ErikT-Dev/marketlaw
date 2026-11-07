@@ -13,7 +13,12 @@ export type HostEvent =
       readonly acceptedActionId: string | null;
       readonly serverNow: EpochMs;
     }
-  | { readonly type: "rejected"; readonly code: ReasonCode; readonly actionId: string | null }
+  | {
+      readonly type: "rejected";
+      readonly code: ReasonCode;
+      readonly actionId: string | null;
+      readonly sendAgainAt: EpochMs | null;
+    }
   | { readonly type: "connection"; readonly status: ConnectionStatus }
   | { readonly type: "notice"; readonly notice: Notice }
   | {

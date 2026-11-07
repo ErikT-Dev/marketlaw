@@ -3,6 +3,8 @@ import { useIsScrollable } from "../../components/useIsScrollable";
 import type { ChatBinding } from "./ChatBinding";
 import { ChatEntryItem } from "./ChatEntryItem";
 import { ChatInput } from "./ChatInput";
+import { ChatLimitMessage } from "./ChatLimitMessage";
+import { MutedPlayersList } from "./MutedPlayersList";
 import styles from "./RoomChatPanel.module.css";
 
 type Props = {
@@ -10,7 +12,7 @@ type Props = {
 };
 
 export function RoomChatPanel({ binding }: Props) {
-  const { chat, onSend, onMute, onSeen } = binding;
+  const { chat, onSend, onMute, onUnmute, onSeen } = binding;
   const { scrollerRef, contentRef, isScrollable } = useIsScrollable();
   useEffect(() => {
     if (chat.unreadCount > 0) {
@@ -19,6 +21,7 @@ export function RoomChatPanel({ binding }: Props) {
   }, [chat, onSeen]);
   return (
     <div className={styles["chat"]}>
+      <MutedPlayersList mutedNames={chat.mutedNames} onUnmute={onUnmute} />
       <div
         ref={scrollerRef}
         className={styles["scroller"]}
@@ -38,7 +41,8 @@ export function RoomChatPanel({ binding }: Props) {
           )}
         </div>
       </div>
-      <ChatInput onSend={onSend} />
+      {chat.refused === null ? null : <ChatLimitMessage refused={chat.refused} />}
+      <ChatInput refused={chat.refused} onSend={onSend} />
     </div>
   );
 }

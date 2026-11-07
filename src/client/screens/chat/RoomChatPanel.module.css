@@ -137,3 +137,52 @@
   color: var(--color-board-chat-input-hint);
   font-size: 11px;
 }
+
+.mutedList {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  gap: var(--space-xs);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.muted {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 0 var(--space-sm);
+  border-radius: var(--radius-md);
+  background: var(--color-board-chat-muted);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+}
+
+.unmute {
+  min-width: 24px;
+  min-height: 24px;
+  padding: 0 var(--space-xs);
+  border: none;
+  background: transparent;
+  color: var(--color-board-chat-own-sender);
+  font: inherit;
+  font-weight: var(--font-weight-bold);
+  cursor: pointer;
+}
+
+.unmute:hover {
+  color: var(--color-text-primary);
+}
+
+.limit {
+  flex: none;
+  margin: 0;
+  padding: 6px 10px;
+  border-radius: var(--radius-md);
+  background: var(--color-board-chat-limit);
+  color: var(--color-board-chat-limit-text);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+}

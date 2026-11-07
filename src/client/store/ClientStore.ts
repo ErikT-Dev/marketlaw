@@ -15,6 +15,8 @@ import type { RoomIntent } from "../../shared/protocol/RoomIntent";
 import type { NewRoom } from "./NewRoom";
 import { requestTestSeat } from "../api/requestTestSeat";
 import type { ClientState } from "./ClientState";
+import { chatAfterRefusal } from "./chatAfterRefusal";
+import { chatAfterSending } from "./chatAfterSending";
 import { CODES_THAT_RELOAD_THE_GAME } from "./CODES_THAT_RELOAD_THE_GAME";
 import { initialClientState } from "./initialClientState";
 import { NO_ROOM_CHAT } from "./NO_ROOM_CHAT";
@@ -131,6 +133,8 @@ export class ClientStore {
   readonly sendRoomAction = (action: RoomIntent): void => {
     if (this.host?.sendRoomAction(action) !== true) {
       this.change({ notice: "Not connected to the room. Try again in a moment." });
+    } else if (action.type === "send_chat") {
+      this.change({ chat: chatAfterSending(this.state.chat, action.text) });
     }
   };
 
@@ -227,7 +231,7 @@ export class ClientStore {
         this.change({ chat: roomChatAfter(this.state.chat, event) });
         return;
       case "rejected":
-        this.receiveRejection(event.code, event.actionId);
+        this.receiveRejection(event);
         return;
       case "removed":
         this.receiveRemoval(event.reason, event.rejoinAt);
@@ -261,7 +265,13 @@ export class ClientStore {
     }
   };
 
-  private receiveRejection(code: ReasonCode, actionId: string | null): void {
+  private receiveRejection(rejection: Extract<HostEvent, { readonly type: "rejected" }>): void {
+    const { code, actionId, sendAgainAt } = rejection;
+    const refusedChat = chatAfterRefusal(this.state.chat, code, sendAgainAt);
+    if (refusedChat !== null) {
+      this.change({ chat: refusedChat });
+      return;
+    }
     if (code === "wrong_protocol_version") {
       this.change({ isOutdated: true });
       return;

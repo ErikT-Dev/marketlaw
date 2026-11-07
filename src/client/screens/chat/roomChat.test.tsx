@@ -1,8 +1,10 @@
-import { fireEvent, render, screen, within } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { act, fireEvent, render, screen, within } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import * as v from "valibot";
 import { EpochMs } from "../../../shared/EpochMs";
 import type { ChatEntry } from "../../../shared/protocol/ChatEntry";
+import { NO_ROOM_CHAT } from "../../store/NO_ROOM_CHAT";
+import type { RoomChat } from "../../store/RoomChat";
 import { gamePageProps } from "../../testing/gamePageProps";
 import { roomUpdateWith } from "../../testing/roomUpdateWith";
 import { GamePage } from "../GamePage";
@@ -19,13 +21,21 @@ const ENTRIES: ReadonlyArray<ChatEntry> = [
 ];
 
 function binding(entries: ReadonlyArray<ChatEntry>, unreadCount = 0): ChatBinding {
-  return {
-    chat: { entries, mutedNames: [], unreadCount },
-    onSend: vi.fn(),
-    onMute: vi.fn(),
-    onSeen: vi.fn(),
-  };
+  return bindingOf({ ...NO_ROOM_CHAT, entries, unreadCount });
 }
+
+function bindingOf(chat: RoomChat): ChatBinding {
+  return { chat, onSend: vi.fn(), onMute: vi.fn(), onUnmute: vi.fn(), onSeen: vi.fn() };
+}
+
+function refusedChat(code: "chat_too_fast" | "chat_room_limit", sendAgainAt: number | null) {
+  const at = sendAgainAt === null ? null : v.parse(EpochMs, sendAgainAt);
+  return { ...NO_ROOM_CHAT, refused: { code, sendAgainAt: at, text: "ok gl" } };
+}
+
+afterEach(() => {
+  vi.useRealTimers();
+});
 
 function typeAndSend(text: string): void {
   const input = screen.getByRole("textbox", { name: "Message the room" });
@@ -79,6 +89,48 @@ describe("the room chat", () => {
     const chat = binding(ENTRIES, 2);
     render(<RoomChatSection binding={chat} />);
     expect(chat.onSeen).toHaveBeenCalled();
+  });
+});
+
+describe("mutes and limits in the room chat", () => {
+  it("lists muted players with Unmute", () => {
+    const chat = bindingOf({ ...NO_ROOM_CHAT, mutedNames: ["Ann"] });
+    render(<RoomChatSection binding={chat} />);
+    const muted = screen.getByRole("list", { name: "Muted players" });
+    expect(within(muted).getByText("You muted Ann")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Unmute Ann" }));
+    expect(chat.onUnmute).toHaveBeenCalledWith("Ann");
+  });
+
+  it("says when the player can send again, counting down, and keeps the refused text", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(10_000);
+    const view = render(<RoomChatSection binding={binding([])} />);
+    view.rerender(<RoomChatSection binding={bindingOf(refusedChat("chat_too_fast", 12_000))} />);
+    expect(screen.getByRole("textbox", { name: "Message the room" })).toHaveProperty(
+      "value",
+      "ok gl",
+    );
+    expect(
+      screen.getByText("You can send 1 message every 2 seconds. Try again in 2 seconds."),
+    ).toBeTruthy();
+    act(() => {
+      vi.advanceTimersByTime(1_000);
+    });
+    expect(
+      screen.getByText("You can send 1 message every 2 seconds. Try again in 1 second."),
+    ).toBeTruthy();
+    act(() => {
+      vi.advanceTimersByTime(1_000);
+    });
+    expect(screen.queryByRole("status")).toBeNull();
+  });
+
+  it("says the room limit is reached without a countdown", () => {
+    render(<RoomChatSection binding={bindingOf(refusedChat("chat_room_limit", null))} />);
+    expect(screen.getByRole("status").textContent).toBe(
+      "You have sent 100 messages in this room, the most per room.",
+    );
   });
 });
 

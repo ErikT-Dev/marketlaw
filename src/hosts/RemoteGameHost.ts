@@ -93,7 +93,8 @@ export class RemoteGameHost implements GameHost {
       const { entries, mutedNames, isFullList } = message;
       this.emit({ type: "chat", entries, mutedNames, isFullList });
     } else if (message?.type === "rejected") {
-      this.emit({ type: "rejected", code: message.code, actionId: message.actionId });
+      const { code, actionId, sendAgainAt } = message;
+      this.emit({ type: "rejected", code, actionId, sendAgainAt });
       if (message.code === "stale_state") {
         this.requestResync();
       }

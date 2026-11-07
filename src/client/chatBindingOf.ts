@@ -11,6 +11,9 @@ export function chatBindingOf(store: ClientStore, chat: RoomChat): ChatBinding {
     onMute: (playerName) => {
       store.sendRoomAction({ type: "mute", playerName });
     },
+    onUnmute: (playerName) => {
+      store.sendRoomAction({ type: "unmute", playerName });
+    },
     onSeen: store.markChatRead,
   };
 }

@@ -265,12 +265,34 @@ These 14 scenarios are added to `harness/required.yaml` in this phase, by file a
     server log `mutedNamesOf` errors from their alarms; clearing `.wrangler/state` stops them;
     nothing deployed has version 4.
 
-- [ ] 5b. **Mute and limits on the screens** (S7.3 muted list, S7.4; design board "Game: chat
+- [x] 5b. **Mute and limits on the screens** (S7.3 muted list, S7.4; design board "Game: chat
   limit"). **Small.**
   - Mute and Unmute links, "You muted Ann" rows with Unmute; the limit message over the input with
     the S7.4 texts and a countdown from the rejection's time; the refused text stays in the input.
     Browser test: a mute hides messages in one window only; a fast second message shows the limit
     message. Screenshot for "Game: chat limit".
+  - Done (2026-11-07). How it is built:
+    - `HostEvent` `rejected` carries `sendAgainAt`. The store's `RoomChat` gains
+      `unansweredTexts` (texts sent and not yet answered, `chatAfterSending`; an own message in a
+      new-entries `chat` event answers the oldest, a full list clears them) and `refused`
+      (`RefusedChatMessage`: code, `sendAgainAt`, text). A rejection with one of
+      `CHAT_LIMIT_CODES` (`message_empty`, `message_too_long`, `chat_too_fast`,
+      `chat_room_limit`, `site_daily_cap`) becomes `refused` with the oldest unanswered text
+      (`chatAfterRefusal`) instead of a rejected move, so no toast or alert; the next send clears it.
+    - `RoomChatPanel`: `MutedPlayersList` ("Muted players", rows "You muted Ann" with a button
+      `Unmute Ann`, `ChatBinding.onUnmute` sends `unmute`) above the messages; `ChatLimitMessage`
+      (role `status`) directly over the input with `chatLimitText`: the `REJECTION_MESSAGES` text,
+      for `chat_too_fast` plus "Try again in N seconds." / "1 second." from `useServerNow`, and gone
+      when the time is up. `ChatInput` puts the refused text back when the field is empty.
+      `GamePage` gives `LeftGamePage` the server clock offset too.
+    - Browser test `e2e/chat.spec.ts` "a mute hides messages in one window only ..." (3 players in
+      a game); screenshot `game-chat-limit`. New board colours `--color-board-chat-muted`,
+      `-limit`, `-limit-text` (from the board) in `BOARD_VALUES.ts` / `tokens.css`.
+  - Differs: the design board puts the limit message above the tabs; S7.4 says over the input,
+    so it is there (spec wins). A mute refused as `player_not_in_room` still shows as the generic
+    rejection. The Mute link stays on a muted player's earlier messages (muting again is a no-op).
+  - For later items: local `.wrangler/state` cleared means `npm run db:migrate:local` before the
+    browser tests (guest sign-in fails otherwise).
 
 ### Finish
 

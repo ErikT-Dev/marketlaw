@@ -57,7 +57,13 @@ function waitingRoom(view: RoomView, hasSiteGameLimitNotice = false) {
       onLeave={vi.fn()}
       rejection={null}
       hasSiteGameLimitNotice={hasSiteGameLimitNotice}
-      chat={{ chat: NO_ROOM_CHAT, onSend: vi.fn(), onMute: vi.fn(), onSeen: vi.fn() }}
+      chat={{
+        chat: NO_ROOM_CHAT,
+        onSend: vi.fn(),
+        onMute: vi.fn(),
+        onUnmute: vi.fn(),
+        onSeen: vi.fn(),
+      }}
       {...handlers}
     />,
   );

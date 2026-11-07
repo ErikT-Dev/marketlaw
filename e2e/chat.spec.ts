@@ -3,7 +3,9 @@ import { createRoomAs } from "./createRoomAs";
 import { expectScreenFits } from "./expectScreenFits";
 import { joinRoomAs } from "./joinRoomAs";
 import { openLobby } from "./openLobby";
+import type { Player } from "./Player";
 import { SIGNING_IN_TEST_MS } from "./SIGNING_IN_TEST_MS";
+import { startGame } from "./startGame";
 
 function chatOf(page: Page) {
   return page.getByRole("list", { name: "Chat messages" });
@@ -14,6 +16,31 @@ async function sendChat(page: Page, text: string): Promise<void> {
   await input.fill(text);
   await input.press("Enter");
   await expect(input).toHaveValue("");
+}
+
+const TOO_FAST = /^You can send 1 message every 2 seconds\. Try again in \d seconds?\.$/;
+
+function limitOf(page: Page) {
+  return page.getByText(TOO_FAST);
+}
+
+async function sendChatWhenAllowed(page: Page, text: string): Promise<void> {
+  const input = page.getByRole("textbox", { name: "Message the room" });
+  await input.fill(text);
+  await input.press("Enter");
+  await expect(chatOf(page).getByText(text).or(limitOf(page))).toBeVisible();
+  if (await limitOf(page).isVisible()) {
+    await expect(input).toHaveValue(text);
+    await expect(limitOf(page)).toBeHidden({ timeout: 3_000 });
+    await input.press("Enter");
+    await expect(chatOf(page).getByText(text)).toBeVisible();
+  }
+}
+
+async function openChatTabs(players: ReadonlyArray<Player>): Promise<void> {
+  for (const player of players) {
+    await player.page.getByRole("tab", { name: /^Chat/ }).click();
+  }
 }
 
 test("players chat in the waiting room and in the game, each in their own window", async ({
@@ -68,4 +95,42 @@ test("players chat in the waiting room and in the game, each in their own window
   await bea.page.getByRole("tab", { name: "Chat, 2 new" }).click();
   await expect(chatOf(bea.page)).toContainText("Income first for me.");
   await expectScreenFits(ann.page, "game-chat", testInfo);
+});
+
+test("a mute hides messages in one window only and a fast second message shows the limit", async ({
+  browser,
+  viewport,
+}, testInfo) => {
+  const [ann, bea, cid] = await startGame(browser, viewport ?? { width: 1920, height: 1080 }, [
+    "Ann",
+    "Bea",
+    "Cid",
+  ]);
+  if (ann === undefined || bea === undefined || cid === undefined) {
+    throw new Error("no players");
+  }
+  await openChatTabs([ann, bea, cid]);
+  await sendChatWhenAllowed(bea.page, "Who is going for Culture?");
+  await chatOf(ann.page)
+    .getByRole("button", { name: `Mute ${bea.name}` })
+    .click();
+  await expect(ann.page.getByRole("list", { name: "Muted players" })).toContainText(
+    `You muted ${bea.name}`,
+  );
+  await sendChatWhenAllowed(ann.page, "Income first for me.");
+  const input = ann.page.getByRole("textbox", { name: "Message the room" });
+  await input.fill("ok gl");
+  await input.press("Enter");
+  await expect(limitOf(ann.page)).toBeVisible();
+  await expect(input).toHaveValue("ok gl");
+  await expectScreenFits(ann.page, "game-chat-limit", testInfo);
+  await sendChatWhenAllowed(bea.page, "Can you see this?");
+  await expect(chatOf(cid.page)).toContainText("Can you see this?");
+  await expect(chatOf(ann.page)).not.toContainText("Can you see this?");
+  await expect(bea.page.getByRole("list", { name: "Muted players" })).toBeHidden();
+  await ann.page.getByRole("button", { name: `Unmute ${bea.name}` }).click();
+  await expect(ann.page.getByRole("list", { name: "Muted players" })).toBeHidden();
+  await sendChatWhenAllowed(bea.page, "Back again.");
+  await expect(chatOf(ann.page)).toContainText("Back again.");
+  await expect(chatOf(ann.page)).not.toContainText("Can you see this?");
 });
