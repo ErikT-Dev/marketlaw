@@ -1478,7 +1478,8 @@ file.
     instead (phase 21 review, finding 4).
   - The waiting room's chat column (S11.1) is the same chat without the tabs. Spec S11.1.
 - **Implemented:** `harness/spec/accounts.md` A11.4–A11.6, `harness/spec/screens.md` S7.3, S7.4,
-  S11.1; phase 21.
+  S11.1; phase 21. The Windows line break (A11.5) and the refusal for any reason going back into
+  the input (S7.4) were written into the spec after the review (phase 21, second finisher run).
 
 ## Q81. How many grey lines does a room keep?
 

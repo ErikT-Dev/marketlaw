@@ -293,7 +293,8 @@ ranked queue, daily limits and chat. How the game itself is played is in `game-r
   not open, S7.1), it adds to the unread count. There is no sound.
 - **A11.5** **Message format:** a message is one line of plain text, 1 to 200 characters, counted
   as the player sees them (an emoji counts as 1), and at most 800 bytes. Line breaks, tabs and
-  other control characters are replaced by spaces. Spaces at the start and end are removed, and
+  other control characters are replaced by spaces; a Windows line break (CR LF) is one line break
+  and becomes one space. Spaces at the start and end are removed, and
   an empty message cannot be sent. Characters and bytes are counted after these changes.
 - **A11.6** **Limits per player:** at most 1 message every 2 seconds, and at most **100 messages
   in one room**. A player who reaches a limit is told which one, and when they can send again

@@ -174,7 +174,9 @@ None yet.
 - **S7.4** When a chat limit is reached, a message over the input says which limit and when you can
   send again (A11.6): "You can send 1 message every 2 seconds. Try again in N seconds." (counting
   down, "1 second" at the end); "You have sent 100 messages in this room, the most per room.";
-  and the site-wide cap's text of S16.1. A refused message stays in the input. A message over 200
+  and the site-wide cap's text of S16.1. A message refused for any reason, a limit or another (the
+  server did not answer, you are no longer in the room), stays in or goes back into the input, with
+  the reason over it. A message over 200
   characters or 800 bytes reads "A message can be at most 200 characters.", and an empty one
   cannot be sent.
 
