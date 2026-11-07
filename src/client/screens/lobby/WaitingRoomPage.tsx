@@ -1,5 +1,7 @@
 import type { RoomView } from "../../../shared/protocol/RoomView";
 import type { IconText } from "../../components/IconText";
+import type { ChatBinding } from "../chat/ChatBinding";
+import { RoomChatSection } from "../chat/RoomChatSection";
 import { TextWithIcons } from "../../components/TextWithIcons";
 import { Toast } from "../../components/Toast";
 import { SITE_GAME_LIMIT_TOAST } from "../game/SITE_GAME_LIMIT_TOAST";
@@ -21,6 +23,7 @@ type Props = {
   readonly rejection: IconText | null;
   readonly hasSiteGameLimitNotice: boolean;
   readonly onDismissSiteGameLimit: () => void;
+  readonly chat: ChatBinding;
 };
 
 export function WaitingRoomPage(props: Props) {
@@ -30,7 +33,7 @@ export function WaitingRoomPage(props: Props) {
   return (
     <div className={styles["page"]}>
       <LobbyTopBar name={myName} />
-      <main className={styles["columns"]}>
+      <main className={`${styles["columns"] ?? ""} ${styles["waitingColumns"] ?? ""}`}>
         <section className={styles["panel"]} aria-labelledby="room-heading">
           <WaitingRoomHeader room={room} isOwner={isOwner} onLeave={onLeave} />
           {rejection === null ? null : (
@@ -57,6 +60,9 @@ export function WaitingRoomPage(props: Props) {
             {room.code} with friends.
           </p>
         </section>
+        <div className={styles["chatColumn"]}>
+          <RoomChatSection binding={props.chat} />
+        </div>
       </main>
       {props.hasSiteGameLimitNotice ? (
         <div className={styles["toastPlace"]}>

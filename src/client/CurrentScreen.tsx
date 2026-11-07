@@ -1,4 +1,5 @@
 import { useSyncExternalStore } from "react";
+import { chatBindingOf } from "./chatBindingOf";
 import { GamePage } from "./screens/GamePage";
 import { LobbyPage } from "./screens/lobby/LobbyPage";
 import { WaitingPage } from "./screens/WaitingPage";
@@ -37,6 +38,7 @@ export function CurrentScreen({ store }: Props) {
   return (
     <GamePage
       update={update}
+      chat={chatBindingOf(store, state.chat)}
       pendingActions={state.pendingActions}
       rejectedMove={state.rejectedMove}
       onAction={store.sendAction}

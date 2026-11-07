@@ -19,7 +19,11 @@ export const BUDGET_CHECKS: Readonly<Record<string, BudgetCheck>> = {
   B4: { by: "harness", where: LEGAL_THREE_PLAYER_AVERAGE },
   B5: { by: "harness", where: "simulator, average over complete legal-bot 4-player games" },
   B6: { by: "not built", where: "phase 29, the tutorial" },
-  B7: { by: "not built", where: "phase 21, room chat" },
+  B7: {
+    by: "harness",
+    where:
+      "lobby scenarios (chat), the most rows one accepted chat message, mute or unmute wrote: the room record and the newest chat block",
+  },
   B8: { by: "not built", where: "phase 25, game records" },
   B9: { by: "harness", where: LEGAL_THREE_PLAYER_AVERAGE },
   B10: {
@@ -57,6 +61,6 @@ export const BUDGET_CHECKS: Readonly<Record<string, BudgetCheck>> = {
   B18: {
     by: "harness",
     where:
-      "busy-day simulator, 50 rooms through the room and lobby code to the end of each room (the replay record with its two indexes, the 30-day delete of an older one, the cleanup alarm's storage delete and the lobby report; setting the cleanup alarm is in B4, with the game's last action), plus the guests' and players' rows in D1",
+      "busy-day simulator, 50 rooms through the room and lobby code to the end of each room, with 2,000 chat messages after the games (the lobby's chat quota blocks, the chat blocks deleted with each room, the replay record with its two indexes, the 30-day delete of an older one, the cleanup alarm's storage delete and the lobby report; setting the cleanup alarm is in B4, with the game's last action), plus the guests' and players' rows in D1",
   },
 };

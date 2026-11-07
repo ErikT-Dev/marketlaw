@@ -83,4 +83,10 @@ export const REJECTION_MESSAGES: Readonly<Record<ReasonCode, IconText>> = {
   daily_game_start_limit:
     "You have started 10 games today, the most per day. Try again after 00:00 UTC.",
   site_game_limit: "Daily game limit reached, try again after 00:00 UTC",
+  message_empty: "A message cannot be empty.",
+  message_too_long: "A message can be at most 200 characters.",
+  chat_too_fast: "You can send 1 message every 2 seconds.",
+  chat_room_limit: "You have sent 100 messages in this room, the most per room.",
+  site_daily_cap: "Daily limit reached, try again after 00:00 UTC",
+  player_not_in_room: "That player is not in this room.",
 };

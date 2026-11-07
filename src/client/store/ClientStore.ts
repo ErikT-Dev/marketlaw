@@ -15,9 +15,14 @@ import type { RoomIntent } from "../../shared/protocol/RoomIntent";
 import type { NewRoom } from "./NewRoom";
 import { requestTestSeat } from "../api/requestTestSeat";
 import type { ClientState } from "./ClientState";
+import { chatAfterRefusal } from "./chatAfterRefusal";
+import { chatAfterSending } from "./chatAfterSending";
 import { CODES_THAT_RELOAD_THE_GAME } from "./CODES_THAT_RELOAD_THE_GAME";
+import { initialClientState } from "./initialClientState";
+import { NO_ROOM_CHAT } from "./NO_ROOM_CHAT";
 import type { PendingAction } from "./PendingAction";
 import { readSession } from "./readSession";
+import { roomChatAfter } from "./roomChatAfter";
 import type { StoredSession } from "./StoredSession";
 import { writeSession } from "./writeSession";
 
@@ -35,21 +40,7 @@ export class ClientStore {
     this.openHost = openHost;
     this.openLobby = openLobby;
     const session = readSession();
-    this.state = {
-      session,
-      connection: "closed",
-      update: null,
-      pendingActions: [],
-      rejectedMove: null,
-      notice: null,
-      timeOutNotice: null,
-      serverClockOffsetMs: 0,
-      joinError: null,
-      removal: null,
-      goneRoomCode: null,
-      publicRooms: [],
-      isOutdated: false,
-    };
+    this.state = initialClientState(session);
     if (session !== null) {
       void this.checkSession(session);
     }
@@ -142,6 +133,8 @@ export class ClientStore {
   readonly sendRoomAction = (action: RoomIntent): void => {
     if (this.host?.sendRoomAction(action) !== true) {
       this.change({ notice: "Not connected to the room. Try again in a moment." });
+    } else if (action.type === "send_chat") {
+      this.change({ chat: chatAfterSending(this.state.chat, action.text) });
     }
   };
 
@@ -184,12 +177,19 @@ export class ClientStore {
     this.change({
       session,
       update: null,
+      chat: NO_ROOM_CHAT,
       pendingActions: [],
       rejectedMove: null,
       notice,
       connection: "closed",
     });
   }
+
+  readonly markChatRead = (): void => {
+    if (this.state.chat.unreadCount > 0) {
+      this.change({ chat: { ...this.state.chat, unreadCount: 0 } });
+    }
+  };
 
   readonly dismissTimeOutNotice = (): void => {
     this.change({ timeOutNotice: null });
@@ -198,7 +198,13 @@ export class ClientStore {
   private enterRoom(session: StoredSession, code: RoomCode): void {
     const inRoom = { ...session, roomCode: code };
     writeSession(inRoom);
-    this.change({ session: inRoom, notice: null, joinError: null, removal: null });
+    this.change({
+      session: inRoom,
+      chat: NO_ROOM_CHAT,
+      notice: null,
+      joinError: null,
+      removal: null,
+    });
     this.lobbyFeed?.close();
     this.lobbyFeed = null;
     this.host?.close();
@@ -221,8 +227,11 @@ export class ClientStore {
       case "notice":
         this.change({ timeOutNotice: event.notice });
         return;
+      case "chat":
+        this.change({ chat: roomChatAfter(this.state.chat, event) });
+        return;
       case "rejected":
-        this.receiveRejection(event.code, event.actionId);
+        this.receiveRejection(event);
         return;
       case "removed":
         this.receiveRemoval(event.reason, event.rejoinAt);
@@ -256,7 +265,13 @@ export class ClientStore {
     }
   };
 
-  private receiveRejection(code: ReasonCode, actionId: string | null): void {
+  private receiveRejection(rejection: Extract<HostEvent, { readonly type: "rejected" }>): void {
+    const { code, actionId, sendAgainAt } = rejection;
+    const refusedChat = chatAfterRefusal(this.state.chat, code, sendAgainAt);
+    if (refusedChat !== null) {
+      this.change({ chat: refusedChat });
+      return;
+    }
     if (code === "wrong_protocol_version") {
       this.change({ isOutdated: true });
       return;

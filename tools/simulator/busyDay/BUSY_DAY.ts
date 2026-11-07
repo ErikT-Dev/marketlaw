@@ -1,5 +1,6 @@
 export const BUSY_DAY = {
   games: 50,
+  chatMessages: 2000,
   newGuests: 100,
   rowsPerNewGuest: 4,
   returningPlayers: 50,

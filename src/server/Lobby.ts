@@ -11,6 +11,7 @@ import { claimPlayer } from "./lobby/claimPlayer";
 import { countGameStart } from "./lobby/countGameStart";
 import { EMPTY_LOBBY } from "./lobby/EMPTY_LOBBY";
 import { forgetPlayer } from "./lobby/forgetPlayer";
+import { grantChatQuota } from "./lobby/grantChatQuota";
 import type { GameStartRejection } from "./lobby/GameStartRejection";
 import { LOBBY_RECORD_SCHEMA } from "./lobby/LOBBY_RECORD_SCHEMA";
 import type { LobbyRecord } from "./lobby/LobbyRecord";
@@ -51,6 +52,16 @@ export class Lobby extends DurableObject<Env> {
       return counted.isOk ? counted.value : null;
     });
     return rejection;
+  }
+
+  async grantChatQuota(now: EpochMs): Promise<number> {
+    let granted = 0;
+    await this.change((record) => {
+      const grant = grantChatQuota(record, now);
+      granted = grant.granted;
+      return grant.record;
+    });
+    return granted;
   }
 
   busyRoomOf(playerId: PlayerId): RoomCode | null {

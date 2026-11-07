@@ -1,6 +1,8 @@
 import { gameStartInJoinOrder } from "../../simulator/gameStartInJoinOrder.ts";
 import * as v from "valibot";
+import { NO_CHAT } from "../../../src/server/room/NO_CHAT.ts";
 import { NO_WAITING } from "../../../src/server/room/NO_WAITING.ts";
+import { withChatEvents } from "../../../src/server/room/withChatEvents.ts";
 import { ROOM_SCHEMA_VERSION } from "../../../src/server/room/ROOM_SCHEMA_VERSION.ts";
 import type { Identity } from "../../../src/server/room/Identity.ts";
 import type { RoomRecord } from "../../../src/server/room/RoomRecord.ts";
@@ -23,7 +25,7 @@ function endedRoom(waiting: RoomRecord, endedMs: number): RoomRecord {
   };
 }
 
-export function lobbyRoomFromGiven(
+function roomInState(
   room: NonNullable<LobbyGiven["room"]>,
   identityNamed: (name: string) => Identity,
   now: EpochMs,
@@ -39,6 +41,7 @@ export function lobbyRoomFromGiven(
     players: room.players.map(identityNamed),
     waiting: NO_WAITING,
     game: null,
+    chat: NO_CHAT,
   };
   switch (room.state) {
     case "waiting":
@@ -56,4 +59,12 @@ export function lobbyRoomFromGiven(
     case "ended":
       return endedRoom(waiting, room.ended_ms ?? now);
   }
+}
+
+export function lobbyRoomFromGiven(
+  room: NonNullable<LobbyGiven["room"]>,
+  identityNamed: (name: string) => Identity,
+  now: EpochMs,
+): RoomRecord {
+  return withChatEvents(null, roomInState(room, identityNamed, now), { messageCount: 0, now });
 }

@@ -39,6 +39,7 @@ function updated(
     shouldClose: false,
     removals: [],
     notices: [],
+    chatMessage: null,
   };
 }
 

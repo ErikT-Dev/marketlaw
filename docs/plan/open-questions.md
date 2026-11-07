@@ -1404,3 +1404,135 @@ file.
   phase in progress is finished first.
 - **Implemented:** `docs/plan/README.md` ("Continue", step 4, and the phase table);
   `phase-20a-playthrough-fixes.md`.
+
+## Q79. Where is the chat stored, and what does it cost (B7, A9.6)?
+
+- **Phase:** 21, start.
+- **Questions:** a room's chat can reach 400 messages of 800 bytes (A11.5, A11.6), about 320 KB.
+  Kept in the room record, every game action would rewrite it, against B13 (100 KB) and B11
+  (10 ms). Where does it go? How does the site-wide cap of 2,000 messages a day (A9.6) fit B7's
+  1 row per message, when the count lives in the lobby (D26)? Does a mute cost a row? How does the
+  chat reach the browser?
+- **Options for the storage:** (a) in the room record; (b) one row per message; (c) the room's
+  own rows of 20 messages each (`chat:0`, `chat:1`, ...), the newest rewritten per message.
+- **Solution:**
+  - (c). A message rewrites only its block: 1 row (B7), at most about 20 KB. Game actions never
+    touch the chat, so B13 and B11 are unchanged. Deleting a room deletes its chat blocks with
+    it (A11.9, M8.2): 1 row per 20 messages, counted in B18 with the room's other cleanup.
+    (b) would cost a delete per message, up to 2,000 rows a day.
+  - The site cap: as Q52 planned, a room reserves quota from the lobby in blocks of 20 messages,
+    for the current UTC day only. The lobby grants at most what is left of 2,000 for the day and
+    writes 1 row per block (about 100 rows on a day at the cap, in B18). The room keeps what is
+    left of its block in its newest chat block, so it is saved with the message and survives
+    eviction. A block a room does not use up still counts toward the 2,000, so the site may send
+    fewer than 2,000 on a busy day, never more. If the lobby does not answer, the message is
+    refused with `no_answer`.
+  - A player's count in the room (100) and the time of their last message (2 seconds) are read
+    from the saved messages, so they cost nothing extra.
+  - Mute and unmute are saved in the room record, 1 row each, counted in B7 like a message
+    (budgets.yaml B7's unit). Each message saves the players who had muted its sender when it
+    was sent, so unmuting shows only messages sent after it (A11.7).
+  - "Since they joined" (A11.2): each player in the room record keeps the number of messages the
+    room had when they joined, written with the join. Grey lines (S7.3) are kept in the room
+    record with the same position, written with the change they describe, so they cost no row.
+  - The browser: chat is not part of the room or game view, so game updates stay small. A new
+    server message carries chat entries: everything the player may see on connect and resync,
+    and each new entry to the players who see it as it is saved (A11.8). Chat rejections carry
+    when the player can send again (S7.4). `send_chat`, `mute` and `unmute` are room intents. The
+    message shapes change, so `PROTOCOL_VERSION` goes to 4 (Q75).
+  - Known limit (phase 21 review, finding 5): room intents carry no action id, so they are not
+    idempotent as `rules/multiplayer.md` "Idempotent, ordered actions" asks of actions. A
+    `send_chat` resent more than 2 seconds after the first would be saved twice. Nothing resends
+    a room intent today (a send while disconnected is refused in the browser, not queued); a
+    later phase that adds resending gives room intents action ids first.
+- **Implemented:** `harness/budgets.yaml` B7 and B18; phase 21, items 1 to 4.
+
+## Q80. What counts as a character, a notification and a grey line in the chat?
+
+- **Phase:** 21, start (A11.4, A11.5, S7.3, S7.4).
+- **Questions:** A11.5 counts characters "as the player sees them" but does not say how, nor what
+  happens to tabs and other control characters. A11.4 asks for a notification without saying
+  what it is. S7.3 shows grey lines for "joins, leaves and similar events" without listing them,
+  and S7.4 asks for limit messages without texts.
+- **Solution:**
+  - Characters are grapheme clusters (`Intl.Segmenter`, in browsers and Workers), counted after
+    line breaks, tabs and other control characters become spaces and the ends are trimmed; bytes
+    are UTF-8 bytes of the same text. One shared function in `src/shared/` does it, so the
+    server's check and the input's counter (S7.3) agree. Spec A11.5, one sentence. A Windows
+    line break (CR LF, two control characters) is one line break and becomes one space (phase 21
+    review, finding 3).
+  - A notification is the message appearing in the chat at once, adding to the Chat tab's unread
+    count while the chat is not on screen; no sound, as the spec names none elsewhere. Spec A11.4.
+  - Grey lines: joined the room, left the room, left the game (including after 3 time-outs), the
+    game started, the game ended. The design's "… is done." line is not one of them: the end of a
+    turn belongs in the game screen, not the chat. Spec S7.3.
+  - Texts: the design board "Game: chat limit" gives "You can send 1 message every 2 seconds.
+    Try again in 1 second."; the room limit and the length texts are new; the site cap uses
+    S16.1. A refused message stays in the input. Spec S7.4. A refused message is not saved and
+    does not count toward any limit (spec A11.6, one sentence).
+  - A message refused for a reason that is not a limit (the server did not answer, the player is
+    no longer in the room) also goes back into the input, with that reason over it, and the
+    browser pairs each refusal with its oldest message not yet answered. Room intents carry no
+    action id (Q79), so those two reasons are taken as a chat refusal only while a message is
+    unanswered; a `no_answer` to accepting a game sent in that moment would be shown in the chat
+    instead (phase 21 review, finding 4).
+  - The waiting room's chat column (S11.1) is the same chat without the tabs. Spec S11.1.
+- **Implemented:** `harness/spec/accounts.md` A11.4–A11.6, `harness/spec/screens.md` S7.3, S7.4,
+  S11.1; phase 21. The Windows line break (A11.5) and the refusal for any reason going back into
+  the input (S7.4) were written into the spec after the review (phase 21, second finisher run).
+
+## Q81. How many grey lines does a room keep?
+
+- **Phase:** 21, item 1 (S7.3, B13).
+- **Question:** grey lines live in the room record (Q79), and a waiting room whose players come
+  and go adds one for every join and leave, without end. S7.3 says each player sees the grey
+  lines since they joined, with no limit.
+- **Options:** (a) keep every line; (b) keep only the newest lines.
+- **Solution:** (b), the last 200 grey lines. A long-lived waiting room can no longer grow its
+  record past B13 (100 KB) through joins and leaves; 200 lines is far more than a chat column
+  shows. Spec S7.3, one clause.
+- **Implemented:** `harness/spec/screens.md` S7.3; `src/server/room/withChatEvents.ts`.
+
+## Q82. Which chat limit is named when several apply, and how does the player learn when to retry?
+
+- **Phase:** 21, item 2 (A11.5, A11.6, A9.6, S7.4).
+- **Questions:** a message can break several rules at once (too long and too fast, or the
+  101st message sent within 2 seconds). A11.6 says the player is told which limit they reached,
+  but not which one when several apply. S7.4 counts down to when the player can send again, but
+  no message carries that time. S7.4 gives no text for an empty message, which "cannot be sent".
+- **Solution:**
+  - The room checks in this order and names the first that applies: the text (empty, then over
+    200 characters or 800 bytes), the 100 messages in the room, the 2 seconds, then the site's
+    daily cap. The permanent limits come before the passing one, so a player at 100 messages is
+    never told to wait 2 seconds; the site cap comes last so a message refused for anything else
+    never asks the lobby for quota.
+  - The `rejected` server message gains `sendAgainAt`: the time a player refused with
+    `chat_too_fast` may send again (their last saved message plus 2 seconds), null for every
+    other rejection. The message shape changes within `PROTOCOL_VERSION` 4, which this phase
+    has not yet deployed.
+  - The input never sends an empty message (S7.4); the server still refuses one with
+    `message_empty`, shown with the fallback text "A message cannot be empty."
+- **Implemented:** `src/server/room/newChatMessageOf.ts`, `src/shared/protocol/ServerMessage.ts`,
+  `src/client/screens/game/REJECTION_MESSAGES.ts`; phase 21, item 2.
+
+## Q83. Whom can a player mute, and how does the muter learn their mute list?
+
+- **Phase:** 21, item 3 (A11.7, S7.3).
+- **Questions:** A11.7 lets a player mute "another player in the room" but does not say what
+  happens to a mute of themselves, of a name not in the room, of a player already muted, or to an
+  unmute of a player not muted. S7.3 lists muted players with Unmute, but no message carries the
+  list. Does a mute end when either player leaves the room?
+- **Solution:**
+  - A mute names another player who is in the room; anything else (themselves, an unknown name,
+    someone who left) is refused with the new code `player_not_in_room`. Muting a player already
+    muted, or unmuting one who is not muted, is accepted and changes nothing, so it writes no row.
+    An unmute names a player in the muter's own list, even one who has since left. Spec A11.7,
+    one sentence; `harness/HARNESS.md` reason codes.
+  - A mute stays when either player leaves the room and comes back, as A11.7 says: it lasts until
+    the unmute or the room's deletion.
+  - Every `chat` server message carries `mutedNames`, the receiving player's own mute list, so it
+    reaches that player only. A mute or unmute sends the muter a `chat` message with no new
+    entries and the new list; the muted player gets nothing.
+  - The scenario `chat` #11 sent Bea's two messages with no time between them, which A11.6
+    refuses; it now waits 2 seconds before the second, as the spec requires.
+- **Implemented:** `harness/spec/accounts.md` A11.7, `harness/HARNESS.md`, `harness/scenarios/chat.yaml` #11; phase 21, item 3.

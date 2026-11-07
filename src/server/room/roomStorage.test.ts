@@ -13,6 +13,7 @@ import { joinRoomIn } from "./joinRoomIn";
 import { receiveMessage } from "./receiveMessage";
 import type { RoomRecord } from "./RoomRecord";
 import type { RoomStorage } from "./RoomStorage";
+import { NO_CHAT_CONTEXT } from "./NO_CHAT_CONTEXT";
 
 const GAME_START = v.parse(EpochMs, 1_000_000);
 const JOIN_ORDER: GameStart = {
@@ -74,6 +75,7 @@ function send(storage: RoomStorage, sender: Identity, message: object, now = GAM
     randomFor: randomForNextAction,
     gameStart: JOIN_ORDER,
     livePlayers: LIVE,
+    chat: NO_CHAT_CONTEXT,
   });
 }
 

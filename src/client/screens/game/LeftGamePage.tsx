@@ -2,6 +2,8 @@ import { useState } from "react";
 import type { GameResult } from "../../../shared/GameResult";
 import type { SeatNumber } from "../../../shared/SeatNumber";
 import { Button } from "../../components/Button";
+import type { ChatBinding } from "../chat/ChatBinding";
+import { RoomChatSection } from "../chat/RoomChatSection";
 import { GameOverDialog } from "./GameOverDialog";
 import styles from "./LeftGamePage.module.css";
 
@@ -11,9 +13,11 @@ type Props = {
   readonly viewer: SeatNumber;
   readonly playerNames: ReadonlyArray<string>;
   readonly onExitToLobby: () => void;
+  readonly chat: ChatBinding;
 };
 
-export function LeftGamePage({ result, turn, viewer, playerNames, onExitToLobby }: Props) {
+export function LeftGamePage(props: Props) {
+  const { result, turn, viewer, playerNames, onExitToLobby } = props;
   const [isResultClosed, setIsResultClosed] = useState(false);
   return (
     <main className={styles["page"]}>
@@ -40,6 +44,9 @@ export function LeftGamePage({ result, turn, viewer, playerNames, onExitToLobby 
           <Button look="secondary" onClick={onExitToLobby}>
             Exit to lobby
           </Button>
+        </div>
+        <div className={styles["chat"]}>
+          <RoomChatSection binding={props.chat} />
         </div>
       </section>
       {result === null || isResultClosed ? null : (

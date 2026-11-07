@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import { startSavedGame } from "../../rules/startSavedGame";
 import { EpochMs } from "../../shared/EpochMs";
 import { PlayerId } from "../../shared/PlayerId";
+import { NO_CHAT } from "./NO_CHAT";
 import { NO_WAITING } from "./NO_WAITING";
 import { ROOM_SCHEMA_VERSION } from "./ROOM_SCHEMA_VERSION";
 import { RoomCode } from "../../shared/RoomCode";
@@ -25,6 +26,7 @@ function startedRoom(): RoomRecord {
     isPublic: false,
     players,
     waiting: NO_WAITING,
+    chat: NO_CHAT,
     game: {
       kind: "casual",
       saved,

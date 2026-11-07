@@ -6,7 +6,7 @@ import { startFourPlayerGame } from "./startFourPlayerGame";
 
 const TABLE_PANELS = [
   "Opponents",
-  "Draw log",
+  "Draw log and chat",
   "Marketplace",
   "Quests",
   /^Your city/,
@@ -37,7 +37,9 @@ async function expectTableElements(page: Page, names: ReadonlyArray<string>): Pr
   for (const panel of TABLE_PANELS) {
     await expect(page.getByRole("region", { name: panel })).toBeVisible();
   }
-  await expect(page.getByRole("region", { name: "Draw log" })).toContainText("No cards drawn yet.");
+  await expect(page.getByRole("tabpanel", { name: "Draw log" })).toContainText(
+    "No cards drawn yet.",
+  );
   await expect(
     page.getByRole("region", { name: "Marketplace" }).getByText(/^Deck \d+$/),
   ).toBeVisible();

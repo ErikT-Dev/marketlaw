@@ -13,6 +13,7 @@ import { joinRoomIn } from "./joinRoomIn";
 import { receiveCheckingGameStart } from "./receiveCheckingGameStart";
 import type { RoomRecord } from "./RoomRecord";
 import type { RoomStorage } from "./RoomStorage";
+import { NO_CHAT_CONTEXT } from "./NO_CHAT_CONTEXT";
 
 const NOW = v.parse(EpochMs, 5_000_000);
 const ANN: Identity = { playerId: v.parse(PlayerId, crypto.randomUUID()), name: "Ann" };
@@ -57,6 +58,7 @@ async function acceptAs(
       randomFor: randomForNextAction,
       gameStart: { seed: 3, now: NOW, seatOrder: (players) => players },
       livePlayers: [ANN.playerId, BEA.playerId],
+      chat: NO_CHAT_CONTEXT,
     },
     async (players) => {
       asked.push(players);
@@ -122,6 +124,7 @@ describe("the daily limits when a game starts", () => {
       protocolVersion: PROTOCOL_VERSION,
       actionId: null,
       code: "site_game_limit",
+      sendAgainAt: null,
     });
     expect(outcome.notices).toEqual([
       { playerId: ANN.playerId, notice: { kind: "site_game_limit" } },
@@ -142,6 +145,7 @@ describe("the daily limits when a game starts", () => {
       protocolVersion: PROTOCOL_VERSION,
       actionId: null,
       code: "no_answer",
+      sendAgainAt: null,
     });
     expect(outcome.removals).toEqual([]);
     expect(outcome.notices).toEqual([]);

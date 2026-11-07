@@ -5,6 +5,7 @@ import { EpochMs } from "../../../shared/EpochMs";
 import type { RoomView } from "../../../shared/protocol/RoomView";
 import { RoomCode } from "../../../shared/RoomCode";
 import { LobbyPage } from "./LobbyPage";
+import { NO_ROOM_CHAT } from "../../store/NO_ROOM_CHAT";
 import { WaitingRoomPage } from "./WaitingRoomPage";
 
 async function succeed() {
@@ -56,6 +57,13 @@ function waitingRoom(view: RoomView, hasSiteGameLimitNotice = false) {
       onLeave={vi.fn()}
       rejection={null}
       hasSiteGameLimitNotice={hasSiteGameLimitNotice}
+      chat={{
+        chat: NO_ROOM_CHAT,
+        onSend: vi.fn(),
+        onMute: vi.fn(),
+        onUnmute: vi.fn(),
+        onSeen: vi.fn(),
+      }}
       {...handlers}
     />,
   );

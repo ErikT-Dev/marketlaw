@@ -4,9 +4,11 @@ import type { ActionIntent } from "../../../shared/protocol/ActionIntent";
 import type { RoomUpdate } from "../../../shared/protocol/RoomUpdate";
 import type { PendingAction } from "../../store/PendingAction";
 import type { RejectedMove } from "../../store/RejectedMove";
+import type { ChatBinding } from "../chat/ChatBinding";
 
 export type GamePageProps = {
   readonly update: RoomUpdate;
+  readonly chat: ChatBinding;
   readonly pendingActions: ReadonlyArray<PendingAction>;
   readonly rejectedMove: RejectedMove | null;
   readonly onAction: (action: ActionIntent) => void;

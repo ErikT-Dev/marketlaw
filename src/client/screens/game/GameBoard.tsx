@@ -35,7 +35,7 @@ export function GameBoard(props: Props) {
             isConnected={props.connection === "open"}
           />
           <main className={styles["table"]} inert={props.connection !== "open" || props.isOutdated}>
-            <LeftColumn view={view} playerNames={playerNames} />
+            <LeftColumn view={view} playerNames={playerNames} chat={props.chat} />
             <MiddleColumn
               view={view}
               seat={mine}

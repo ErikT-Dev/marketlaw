@@ -8,6 +8,7 @@ import type { ConnectionState } from "../../../src/server/room/ConnectionState.t
 import { receiveCheckingGameStart } from "../../../src/server/room/receiveCheckingGameStart.ts";
 import type { RoomStorage } from "../../../src/server/room/RoomStorage.ts";
 import type { Identity } from "../../../src/server/room/Identity.ts";
+import { NO_CHAT } from "../../../src/server/room/NO_CHAT.ts";
 import { NO_WAITING } from "../../../src/server/room/NO_WAITING.ts";
 import { ROOM_SCHEMA_VERSION } from "../../../src/server/room/ROOM_SCHEMA_VERSION.ts";
 import type { RoomRecord } from "../../../src/server/room/RoomRecord.ts";
@@ -24,6 +25,7 @@ import { PROTOCOL_VERSION } from "../../../src/shared/PROTOCOL_VERSION.ts";
 import { RoomCode } from "../../../src/shared/RoomCode.ts";
 import { rawMessageText } from "./rawMessageText.ts";
 import type { RoomGiven } from "./RoomGiven.ts";
+import { NO_CHAT_CONTEXT } from "../../../src/server/room/NO_CHAT_CONTEXT.ts";
 
 type Connection = { state: ConnectionState; isClosed: boolean };
 
@@ -124,6 +126,7 @@ export class RoomSession {
       isPublic: given.room?.public ?? false,
       players,
       waiting: NO_WAITING,
+      chat: NO_CHAT,
       game: {
         kind: "casual",
         saved: {
@@ -235,6 +238,7 @@ export class RoomSession {
         randomFor: () => this.random,
         gameStart: gameStartInJoinOrder(1, this.now),
         livePlayers: this.livePlayers(),
+        chat: NO_CHAT_CONTEXT,
       },
       async () => Promise.resolve(null),
     );

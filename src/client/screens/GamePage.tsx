@@ -2,6 +2,7 @@ import { GameBoard } from "./game/GameBoard";
 import { GameNotices } from "./game/GameNotices";
 import type { GamePageProps } from "./game/GamePageProps";
 import { LeftGamePage } from "./game/LeftGamePage";
+import { ServerClockOffset } from "./game/ServerClockOffset";
 
 type Props = GamePageProps;
 
@@ -14,13 +15,16 @@ export function GamePage(props: Props) {
   if (mine.hasLeft) {
     return (
       <>
-        <LeftGamePage
-          result={view.result}
-          turn={view.turn}
-          viewer={view.seat}
-          playerNames={props.update.room.playerNames}
-          onExitToLobby={props.onExitToLobby}
-        />
+        <ServerClockOffset.Provider value={props.serverClockOffsetMs}>
+          <LeftGamePage
+            result={view.result}
+            turn={view.turn}
+            viewer={view.seat}
+            playerNames={props.update.room.playerNames}
+            onExitToLobby={props.onExitToLobby}
+            chat={props.chat}
+          />
+        </ServerClockOffset.Provider>
         <GameNotices {...props} seat={mine} playerNames={props.update.room.playerNames} />
       </>
     );

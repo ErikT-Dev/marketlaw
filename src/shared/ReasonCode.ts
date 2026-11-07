@@ -53,6 +53,12 @@ export const ReasonCode = v.picklist([
   "daily_action_limit",
   "daily_game_start_limit",
   "site_game_limit",
+  "message_empty",
+  "message_too_long",
+  "chat_too_fast",
+  "chat_room_limit",
+  "site_daily_cap",
+  "player_not_in_room",
 ]);
 
 export type ReasonCode = v.InferOutput<typeof ReasonCode>;

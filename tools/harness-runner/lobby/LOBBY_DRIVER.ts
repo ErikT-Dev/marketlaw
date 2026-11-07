@@ -9,9 +9,13 @@ import { lobbyMessageThen } from "./lobbyMessageThen.ts";
 import { lobbyGameThen, lobbyRoomThen } from "./lobbyRoomThen.ts";
 import { LobbySession } from "./LobbySession.ts";
 import { replayRecordThen } from "./replayRecordThen.ts";
+import { lobbyChatThen } from "./lobbyChatThen.ts";
+import { chatTextOfStep } from "./chatTextOfStep.ts";
 import { publicRoomsOf } from "../../../src/server/lobby/publicRoomsOf.ts";
 
-const ROOM_ACTIONS = ["change_size", "leave_room", "accept_game", "decline_game"];
+const ROOM_ACTIONS = ["change_size", "leave_room", "accept_game", "decline_game", "send_chat"];
+
+const CHAT_THEN_FIELDS = ["chat", "notified", "view_chat", "chat_count", "saved_before_shown"];
 
 function textOf(value: unknown): string {
   return typeof value === "string" ? value : "";
@@ -29,6 +33,12 @@ function runPlayerStep(
     session.joinRoom(name, step["code"]);
   } else if (action === "open_site") {
     session.openSite(name);
+  } else if (action === "leave_game") {
+    session.sendGameAction(name, { type: "leave_game" });
+  } else if (action === "send_chat") {
+    session.sendRoomAction(name, { type: "send_chat", text: chatTextOfStep(step) });
+  } else if (action === "mute" || action === "unmute") {
+    session.sendRoomAction(name, { type: action, playerName: textOf(step[`player_to_${action}`]) });
   } else if (ROOM_ACTIONS.includes(action)) {
     const details = Object.entries(step).filter(([key]) => key !== "player" && key !== "action");
     session.sendRoomAction(name, { ...Object.fromEntries(details), type: action });
@@ -93,7 +103,9 @@ function startSession(rawGiven: Readonly<Record<string, unknown>>, random: Scrip
         case "unchanged":
           return isUnchanged;
         case "room":
-          return session.record === null ? session.goneAs : lobbyRoomThen(session.record, expected);
+          return session.record === null
+            ? session.goneAs
+            : lobbyRoomThen(session.record, expected, session.chat.storage.messages());
         case "replay_record":
           return replayRecordThen(session.endedRoom, session.now);
         case "game":
@@ -107,9 +119,12 @@ function startSession(rawGiven: Readonly<Record<string, unknown>>, random: Scrip
         case "message_to":
           return lobbyMessageThen(session.messagesTo, expected);
         default:
-          return lobbyAccountsThen(session, field, expected);
+          return CHAT_THEN_FIELDS.includes(field)
+            ? lobbyChatThen(session, field, expected)
+            : lobbyAccountsThen(session, field, expected);
       }
     },
+    measurements: () => session.chat.rowsPerChatIntent.map((value) => ({ budget: "B7", value })),
   };
   return driverSession;
 }
@@ -117,7 +132,14 @@ function startSession(rawGiven: Readonly<Record<string, unknown>>, random: Scrip
 export const LOBBY_DRIVER: ScenarioDriver = {
   name: "lobby",
   unhandledGivenValues: () => [],
-  givenFields: new Set(["clock_ms", "site_games_today", "accounts", "room", "other_rooms"]),
+  givenFields: new Set([
+    "clock_ms",
+    "site_games_today",
+    "site_counts_today",
+    "accounts",
+    "room",
+    "other_rooms",
+  ]),
   steps: new Set([
     "create_room",
     "join_room",
@@ -127,6 +149,9 @@ export const LOBBY_DRIVER: ScenarioDriver = {
     "wait_ms",
     "disconnect",
     "reconnect",
+    "leave_game",
+    "mute",
+    "unmute",
     ...ROOM_ACTIONS,
   ]),
   thenFields: new Set([
@@ -140,21 +165,44 @@ export const LOBBY_DRIVER: ScenarioDriver = {
     "logged_in",
     "lobby_rooms",
     "replay_record",
+    ...CHAT_THEN_FIELDS,
   ]),
   nestedFields: new Map([
     [
       "given.accounts",
       new Set(["name", "kind", "last_used_ms", "actions_today", "games_started_today"]),
     ],
-    ["given.room", new Set(["code", "size", "public", "owner", "players", "state", "ended_ms"])],
+    [
+      "given.room",
+      new Set([
+        "code",
+        "size",
+        "public",
+        "owner",
+        "players",
+        "state",
+        "ended_ms",
+        "chat",
+        "messages_sent",
+      ]),
+    ],
     ["given.other_rooms", new Set(["code", "size", "public", "owner", "players", "state"])],
     ["then.lobby_rooms", new Set(["owner", "players", "free_places"])],
     [
       "then.room",
-      new Set(["size", "public", "owner", "players", "state", "accepted", "code_format"]),
+      new Set([
+        "size",
+        "public",
+        "owner",
+        "players",
+        "state",
+        "accepted",
+        "code_format",
+        "chat_last",
+      ]),
     ],
     ["then.game", new Set(["kind", "seats"])],
-    ["then.message_to", new Set(["player", "contains", "text"])],
+    ["then.message_to", new Set(["player", "contains", "text", "hides"])],
     ["then.accounts", new Set(["name", "kind"])],
     ["then.generated_name", new Set(["taken", "max_length", "not"])],
     ["then.logged_in", new Set(["as"])],

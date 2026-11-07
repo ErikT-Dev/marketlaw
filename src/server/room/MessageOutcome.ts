@@ -1,6 +1,7 @@
 import type { PlayerId } from "../../shared/PlayerId";
 import type { ServerMessage } from "../../shared/protocol/ServerMessage";
 import type { AddressedNotice } from "./AddressedNotice";
+import type { NewChatMessage } from "./NewChatMessage";
 import type { ConnectionState } from "./ConnectionState";
 import type { RoomRecord } from "./RoomRecord";
 import type { RoomRemoval } from "./RoomRemoval";
@@ -14,4 +15,5 @@ export type MessageOutcome = {
   readonly shouldClose: boolean;
   readonly removals: ReadonlyArray<RoomRemoval>;
   readonly notices: ReadonlyArray<AddressedNotice>;
+  readonly chatMessage: NewChatMessage | null;
 };

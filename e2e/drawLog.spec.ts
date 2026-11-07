@@ -73,7 +73,7 @@ test("the draw log sent by the room is listed newest first and fits the screen",
     throw new Error("no players");
   }
   const entries = ann.page
-    .getByRole("region", { name: "Draw log" })
+    .getByRole("tabpanel", { name: "Draw log" })
     .getByRole("list", { name: "Draw log entries" })
     .getByRole("listitem");
   await expect(entries).toHaveText([

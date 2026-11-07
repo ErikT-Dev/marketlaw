@@ -119,6 +119,7 @@ describe("RemoteGameHost", () => {
         protocolVersion: PROTOCOL_VERSION,
         actionId: "id-1",
         code: "stale_state",
+        sendAgainAt: null,
       }),
     );
     expect(network.events.map((event) => event.type)).toEqual(["update", "rejected"]);
@@ -141,6 +142,26 @@ describe("RemoteGameHost", () => {
       { type: "update", serverNow: 5000 },
       { type: "notice", notice: { kind: "timed_out", inARow: 2, of: 3 } },
     ]);
+  });
+
+  it("passes on chat entries with the player's own mute list", () => {
+    const network = connectedHost();
+    const entry = { kind: "message", from: "Bea", text: "Hi", at: 7000, isOwn: false };
+    network.handlers().onMessage(
+      JSON.stringify({
+        type: "chat",
+        protocolVersion: PROTOCOL_VERSION,
+        entries: [entry],
+        mutedNames: ["Cid"],
+        isFullList: true,
+      }),
+    );
+    expect(network.events.at(-1)).toEqual({
+      type: "chat",
+      entries: [entry],
+      mutedNames: ["Cid"],
+      isFullList: true,
+    });
   });
 
   it("ignores messages it cannot read", () => {

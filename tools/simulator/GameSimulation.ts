@@ -10,8 +10,6 @@ import type { Identity } from "../../src/server/room/Identity.ts";
 import { fireAlarm } from "../../src/server/room/fireAlarm.ts";
 import { playersWhoseUpdateChanged } from "../../src/server/room/playersWhoseUpdateChanged.ts";
 import { receiveMessage } from "../../src/server/room/receiveMessage.ts";
-import { NO_WAITING } from "../../src/server/room/NO_WAITING.ts";
-import { ROOM_SCHEMA_VERSION } from "../../src/server/room/ROOM_SCHEMA_VERSION.ts";
 import type { RoomRecord } from "../../src/server/room/RoomRecord.ts";
 import type { RoomStorage } from "../../src/server/room/RoomStorage.ts";
 import { updateFor } from "../../src/server/room/updateFor.ts";
@@ -20,7 +18,6 @@ import { EpochMs } from "../../src/shared/EpochMs.ts";
 import { PlayerId } from "../../src/shared/PlayerId.ts";
 import { PROTOCOL_VERSION } from "../../src/shared/PROTOCOL_VERSION.ts";
 import { parseClientMessage } from "../../src/shared/protocol/parseClientMessage.ts";
-import { RoomCode } from "../../src/shared/RoomCode.ts";
 import type { SeatNumber } from "../../src/shared/SeatNumber.ts";
 import type { ServerMessage } from "../../src/shared/protocol/ServerMessage.ts";
 import type { BotKind } from "./BotKind.ts";
@@ -32,6 +29,8 @@ import { AwakeTally } from "./AwakeTally.ts";
 import { newActionChecks } from "./newActionChecks.ts";
 import { SimulatedAlarm } from "./SimulatedAlarm.ts";
 import { whatSeatsSeeViolations } from "./whatSeatsSeeViolations.ts";
+import { simulatedRoomOf } from "./simulatedRoomOf.ts";
+import { NO_CHAT_CONTEXT } from "../../src/server/room/NO_CHAT_CONTEXT.ts";
 
 const MESSAGE_GAP_MS = 1_000;
 
@@ -99,25 +98,7 @@ export class GameSimulation {
       stateVersion: 0,
       lastActionText: null,
     }));
-    this.record = {
-      schemaVersion: ROOM_SCHEMA_VERSION,
-      code: v.parse(RoomCode, "SMQ2AB"),
-      size: players,
-      isPublic: false,
-      players: identities,
-      waiting: NO_WAITING,
-      game: {
-        kind: "casual",
-        saved,
-        seats: this.seats.map((seat) => ({
-          seat: seat.seat,
-          playerId: seat.identity.playerId,
-          name: seat.identity.name,
-          stateVersion: 0,
-          acceptedActionIds: [],
-        })),
-      },
-    };
+    this.record = simulatedRoomOf(saved, players, identities, this.seats);
   }
 
   connectEveryone(): void {
@@ -216,6 +197,7 @@ export class GameSimulation {
       randomFor: randomForNextAction,
       gameStart: gameStartInJoinOrder(0, v.parse(EpochMs, this.nowMs)),
       livePlayers: [],
+      chat: NO_CHAT_CONTEXT,
     });
     if (outcome.isRoomGone) {
       throw new Error("the simulated room is gone");

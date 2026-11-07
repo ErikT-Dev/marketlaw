@@ -15,6 +15,7 @@ import { receiveMessage } from "./receiveMessage";
 import type { RoomRecord } from "./RoomRecord";
 import type { RoomStorage } from "./RoomStorage";
 import { withConnection } from "./withConnection";
+import { NO_CHAT_CONTEXT } from "./NO_CHAT_CONTEXT";
 
 const START = v.parse(EpochMs, 1_000_000);
 const ANN: Identity = { playerId: v.parse(PlayerId, crypto.randomUUID()), name: "Ann" };
@@ -62,6 +63,7 @@ function accept(storage: RoomStorage, sender: Identity, now: EpochMs) {
     randomFor: randomForNextAction,
     gameStart: { seed: 1, now, seatOrder: (players) => players, limitRejectionFor: () => null },
     livePlayers: BOTH,
+    chat: NO_CHAT_CONTEXT,
   });
 }
 

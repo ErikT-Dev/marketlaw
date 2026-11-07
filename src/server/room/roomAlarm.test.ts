@@ -6,6 +6,7 @@ import { startSavedGame } from "../../rules/startSavedGame";
 import { EpochMs } from "../../shared/EpochMs";
 import { PlayerId } from "../../shared/PlayerId";
 import { PROTOCOL_VERSION } from "../../shared/PROTOCOL_VERSION";
+import { NO_CHAT } from "./NO_CHAT";
 import { NO_WAITING } from "./NO_WAITING";
 import { ROOM_SCHEMA_VERSION } from "./ROOM_SCHEMA_VERSION";
 import { RoomCode } from "../../shared/RoomCode";
@@ -16,6 +17,7 @@ import { fireRoomAlarm } from "./fireRoomAlarm";
 import { receiveMessage } from "./receiveMessage";
 import type { RoomRecord } from "./RoomRecord";
 import type { RoomStorage } from "./RoomStorage";
+import { NO_CHAT_CONTEXT } from "./NO_CHAT_CONTEXT";
 
 const STARTED_AT = 1_000_000;
 const FIRST_DEADLINE = STARTED_AT + 180_000;
@@ -33,6 +35,7 @@ function playingRoom(): RoomRecord {
     isPublic: false,
     players,
     waiting: NO_WAITING,
+    chat: NO_CHAT,
     game: {
       kind: "casual",
       saved,
@@ -124,6 +127,7 @@ function lateEndTurn(storage: RoomStorage, seatIndex: number, now: number) {
     now: v.parse(EpochMs, now),
     randomFor: randomForNextAction,
     livePlayers: [],
+    chat: NO_CHAT_CONTEXT,
     gameStart: {
       seed: 1,
       now: v.parse(EpochMs, now),

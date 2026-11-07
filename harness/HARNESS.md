@@ -317,6 +317,7 @@ A repeated action id is not rejected: it returns the original result again.
 | `message_too_long` | Over 200 characters or 800 bytes |
 | `chat_too_fast` | Within 2 seconds of the player's last message |
 | `chat_room_limit` | The player already sent 100 messages in this room |
+| `player_not_in_room` | Muting someone who is not another player in the room (A11.7) |
 | `not_this_step` | In the tutorial, an action other than the one the step asks for (C4.4) |
 
 ## Checking the harness itself

@@ -9,6 +9,7 @@ import { RoomCode } from "../../shared/RoomCode";
 import { waitingRoomNoticesOf } from "../screens/lobby/waitingRoomNoticesOf";
 import { roomUpdateWith } from "../testing/roomUpdateWith";
 import { ClientStore } from "./ClientStore";
+import { NO_ROOM_CHAT } from "./NO_ROOM_CHAT";
 import { writeSession } from "./writeSession";
 
 type FakeHost = {
@@ -62,7 +63,7 @@ function fakeHost(): GameHost {
 
 function rejectFirstAction(fake: FakeHost, code: ReasonCode): void {
   fake.store.sendAction({ type: "play_card", card: "Loft" });
-  fake.emit({ type: "rejected", code, actionId: "action-1" });
+  fake.emit({ type: "rejected", code, actionId: "action-1", sendAgainAt: null });
 }
 
 beforeEach(() => {
@@ -115,7 +116,7 @@ describe("client store moves", () => {
 
   it("shows the site game limit to the last accepter and the others alike in the waiting room", () => {
     const last = storeInRoom();
-    last.emit({ type: "rejected", code: "site_game_limit", actionId: null });
+    last.emit({ type: "rejected", code: "site_game_limit", actionId: null, sendAgainAt: null });
     expect(waitingRoomNoticesOf(last.store.getSnapshot())).toEqual({
       rejection: null,
       hasSiteGameLimitNotice: true,
@@ -152,7 +153,7 @@ describe("client store moves", () => {
     rejectFirstAction(fake, "already_done");
     fake.store.sendAction({ type: "end_turn" });
     expect(fake.store.getSnapshot().rejectedMove).toBeNull();
-    fake.emit({ type: "rejected", code: "already_done", actionId: "action-2" });
+    fake.emit({ type: "rejected", code: "already_done", actionId: "action-2", sendAgainAt: null });
     fake.store.dismissRejection();
     expect(fake.store.getSnapshot().rejectedMove).toBeNull();
   });
@@ -163,6 +164,94 @@ describe("client store moves", () => {
     expect(fake.resyncs()).toBe(1);
     rejectFirstAction(fake, "card_not_in_hand");
     expect(fake.resyncs()).toBe(1);
+  });
+});
+
+function chatMessage(from: string, isOwn = false) {
+  return { kind: "message" as const, from, text: "Hi", at: v.parse(EpochMs, 7000), isOwn };
+}
+
+describe("the room chat in the store", () => {
+  it("adds new entries, counts others' messages as unread until read, and keeps the mute list", () => {
+    const fake = storeInRoom();
+    fake.emit({ type: "chat", entries: [chatMessage("Bea")], mutedNames: [], isFullList: true });
+    fake.emit({
+      type: "chat",
+      entries: [chatMessage("Ann", true), chatMessage("Cid")],
+      mutedNames: ["Dan"],
+      isFullList: false,
+    });
+    const chat = fake.store.getSnapshot().chat;
+    expect(chat.entries.map((entry) => entry.kind === "message" && entry.from)).toEqual([
+      "Bea",
+      "Ann",
+      "Cid",
+    ]);
+    expect(chat.unreadCount).toBe(1);
+    expect(chat.mutedNames).toEqual(["Dan"]);
+    fake.store.markChatRead();
+    expect(fake.store.getSnapshot().chat.unreadCount).toBe(0);
+  });
+
+  it("replaces the chat with a full list and counts only the messages it did not have", () => {
+    const fake = storeInRoom();
+    fake.emit({ type: "chat", entries: [chatMessage("Bea")], mutedNames: [], isFullList: true });
+    const missed = [chatMessage("Bea"), chatMessage("Cid"), chatMessage("Cid")];
+    fake.emit({ type: "chat", entries: missed, mutedNames: [], isFullList: true });
+    expect(fake.store.getSnapshot().chat.entries).toHaveLength(3);
+    expect(fake.store.getSnapshot().chat.unreadCount).toBe(2);
+  });
+
+  it("keeps a refused message with its limit and when to send again, not as a rejected move", () => {
+    const fake = storeInRoom();
+    const sendAgainAt = v.parse(EpochMs, 1_000_000);
+    fake.store.sendRoomAction({ type: "send_chat", text: "Hello" });
+    fake.emit({ type: "rejected", code: "chat_too_fast", actionId: null, sendAgainAt });
+    expect(fake.store.getSnapshot().chat.refused).toEqual({
+      code: "chat_too_fast",
+      sendAgainAt,
+      text: "Hello",
+    });
+    expect(fake.store.getSnapshot().rejectedMove).toBeNull();
+    fake.store.sendRoomAction({ type: "send_chat", text: "Hello again" });
+    expect(fake.store.getSnapshot().chat.refused).toBeNull();
+  });
+
+  it("gives a refusal the text of the oldest message the server has not answered", () => {
+    const fake = storeInRoom();
+    fake.store.sendRoomAction({ type: "send_chat", text: "First" });
+    fake.store.sendRoomAction({ type: "send_chat", text: "Second" });
+    fake.emit({
+      type: "chat",
+      entries: [chatMessage("Ann", true)],
+      mutedNames: [],
+      isFullList: false,
+    });
+    fake.emit({ type: "rejected", code: "chat_room_limit", actionId: null, sendAgainAt: null });
+    expect(fake.store.getSnapshot().chat.refused?.text).toBe("Second");
+    expect(fake.store.getSnapshot().chat.unansweredTexts).toEqual([]);
+  });
+
+  it("gives back a message refused for any reason and pairs later refusals with later texts", () => {
+    const fake = storeInRoom();
+    fake.store.sendRoomAction({ type: "send_chat", text: "First" });
+    fake.store.sendRoomAction({ type: "send_chat", text: "Second" });
+    fake.emit({ type: "rejected", code: "no_answer", actionId: null, sendAgainAt: null });
+    expect(fake.store.getSnapshot().chat.refused).toEqual({
+      code: "no_answer",
+      sendAgainAt: null,
+      text: "First",
+    });
+    fake.emit({ type: "rejected", code: "chat_too_fast", actionId: null, sendAgainAt: null });
+    expect(fake.store.getSnapshot().chat.refused?.text).toBe("Second");
+    expect(fake.store.getSnapshot().rejectedMove).toBeNull();
+  });
+
+  it("forgets the chat when the player leaves the room", () => {
+    const fake = storeInRoom();
+    fake.emit({ type: "chat", entries: [chatMessage("Bea")], mutedNames: [], isFullList: false });
+    fake.store.exitToLobby();
+    expect(fake.store.getSnapshot().chat).toEqual(NO_ROOM_CHAT);
   });
 });
 

@@ -26,10 +26,12 @@ export function rejectMessage(
       protocolVersion: PROTOCOL_VERSION,
       actionId: rejection.actionId,
       code: rejection.code,
+      sendAgainAt: null,
     },
     playersToUpdate: [],
     shouldClose: rejectionTimes.length >= REJECTIONS_BEFORE_CLOSING,
     removals: [],
     notices: [],
+    chatMessage: null,
   };
 }

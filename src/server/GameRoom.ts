@@ -7,8 +7,6 @@ import { parseClientMessage } from "../shared/protocol/parseClientMessage";
 import type { RoomCode } from "../shared/RoomCode";
 import { ROOM_GONE_CLOSE_CODE } from "../shared/ROOM_GONE_CLOSE_CODE";
 import { attachmentOf } from "./attachmentOf";
-import type { ConnectionAttachment } from "./ConnectionAttachment";
-import { newGameStart } from "./newGameStart";
 import { NO_CONNECTION } from "./NO_CONNECTION";
 import { nowMs } from "./nowMs";
 import { alarmChangeFor } from "./room/alarmChangeFor";
@@ -25,22 +23,22 @@ import { joinRejectionIn } from "./room/joinRejectionIn";
 import { joinRoomIn } from "./room/joinRoomIn";
 import { loadRoom } from "./room/loadRoom";
 import { playersWhoseUpdateChanged } from "./room/playersWhoseUpdateChanged";
-import { receiveCheckingGameStart } from "./room/receiveCheckingGameStart";
-import type { receiveMessage } from "./room/receiveMessage";
+import { receiveAskingLobbyFor } from "./receiveAskingLobbyFor";
 import type { RoomRecord } from "./room/RoomRecord";
 import { startTestRoomIn } from "./room/startTestRoomIn";
-import { resumeNoticesBetween } from "./room/resumeNoticesBetween";
 import { timeOutNoticesBetween } from "./room/timeOutNoticesBetween";
-import { withAwaySeats } from "./room/withAwaySeats";
 import { withConnection } from "./room/withConnection";
-import { lobbyOf } from "./lobbyOf";
 import { reportToLobby } from "./reportToLobby";
 import { saveReplayRecordIfEnded } from "./replays/saveReplayRecordIfEnded";
 import { RoomSockets } from "./RoomSockets";
+import { chatTrackingStorage } from "./room/chatTrackingStorage";
 import type { RoomRemoval } from "./room/RoomRemoval";
 import type { Sender } from "./Sender";
 import { senderOfToken } from "./senderOfToken";
 import { leaveRoomIfFreeIn } from "./room/leaveRoomIfFreeIn";
+import type { PublishingRoom } from "./PublishingRoom";
+import { publishReceived } from "./publishReceived";
+import { sendChatSince } from "./sendChatSince";
 
 export class GameRoom extends DurableObject<Env> {
   private readonly sockets = new RoomSockets(this.ctx);
@@ -49,7 +47,16 @@ export class GameRoom extends DurableObject<Env> {
     this.sockets.closeAll("This room no longer exists");
   });
 
-  private readonly storage = this.rooms.storage;
+  private readonly storage = chatTrackingStorage(this.rooms.storage, () => ({
+    messageCount: this.rooms.chat.messages().length,
+    now: nowMs(),
+  }));
+
+  private readonly publishing: PublishingRoom<WebSocket> = {
+    rooms: this.rooms,
+    storage: this.storage,
+    sockets: this.sockets,
+  };
 
   async createRoom(
     room: { readonly code: RoomCode; readonly size: 2 | 3 | 4; readonly isPublic: boolean },
@@ -134,6 +141,10 @@ export class GameRoom extends DurableObject<Env> {
         null,
       );
     }
+    sendChatSince(this.publishing, {
+      record: before,
+      messageCount: this.rooms.chat.messages().length,
+    });
     await this.syncAlarm();
     await this.reportToLobby(before);
   }
@@ -175,6 +186,7 @@ export class GameRoom extends DurableObject<Env> {
       null,
     );
     this.sockets.sendNotices(timeOutNoticesBetween(record, fired));
+    sendChatSince(this.publishing, { record, messageCount: this.rooms.chat.messages().length });
     await saveReplayRecordIfEnded(this.env.DB, record, fired);
   }
 
@@ -230,74 +242,38 @@ export class GameRoom extends DurableObject<Env> {
   ): Promise<void> {
     const attachment = attachmentOf(socket);
     const recordBefore = loadRoom(this.storage);
-    const now = nowMs();
-    const input = {
-      connection: { identity: attachment.identity, rejectionTimes: attachment.rejectionTimes },
-      parsed,
-      sender: sender?.identity ?? null,
-      now,
-      randomFor: randomForNextAction,
-      gameStart: newGameStart(now),
-      livePlayers: this.sockets.livePlayers(),
-    };
-    const outcome = await receiveCheckingGameStart(this.storage, input, async (players) =>
-      lobbyOf(this.env).startGame(players, now),
+    const messageCount = this.rooms.chat.messages().length;
+    const outcome = await receiveAskingLobbyFor(
+      {
+        env: this.env,
+        storage: this.storage,
+        chat: this.rooms.chat,
+        livePlayers: this.sockets.livePlayers(),
+      },
+      attachment,
+      { parsed, sender },
     );
     if (outcome.isRoomGone) {
       socket.close(ROOM_GONE_CLOSE_CODE, "This room no longer exists");
       await this.reportToLobby(recordBefore);
       return;
     }
-    const recordAfter = loadRoom(this.storage);
-    if (recordAfter !== null) {
-      await this.rooms.save();
-      this.sockets.sendRemovals(outcome.removals);
-      this.reply(socket, { attachment, outcome, sender });
-      const isHello = parsed.isOk && parsed.value.type === "resync";
-      if (isHello && sender !== null && recordAfter.game !== null) {
-        this.sockets.welcome(recordAfter, sender.identity.playerId, socket);
-      }
-      this.sockets.updatePlayers(
-        recordAfter,
-        outcome.playersToUpdate,
-        outcome.reply.type === "rejected" ? null : socket,
-      );
-      this.sockets.sendNotices([
-        ...outcome.notices,
-        ...timeOutNoticesBetween(recordBefore, recordAfter),
-        ...resumeNoticesBetween(recordBefore, recordAfter),
-      ]);
-    }
+    const recordAfter = await publishReceived(
+      this.publishing,
+      {
+        socket,
+        attachment,
+        outcome,
+        sender,
+        isResync: parsed.isOk && parsed.value.type === "resync",
+      },
+      { record: recordBefore, messageCount },
+    );
     await this.syncAlarm();
     if (recordAfter !== null) {
       await saveReplayRecordIfEnded(this.env.DB, recordBefore, recordAfter);
     }
     await this.reportToLobby(recordBefore);
-  }
-
-  private reply(
-    socket: WebSocket,
-    sent: {
-      readonly attachment: ConnectionAttachment;
-      readonly outcome: Extract<ReturnType<typeof receiveMessage>, { readonly isRoomGone: false }>;
-      readonly sender: Sender | null;
-    },
-  ): void {
-    const { attachment, outcome, sender } = sent;
-    socket.serializeAttachment({
-      identity: outcome.connection.identity,
-      tokenHash:
-        outcome.connection.identity === null ? null : (sender?.tokenHash ?? attachment.tokenHash),
-      rejectionTimes: outcome.connection.rejectionTimes,
-    });
-    socket.send(
-      JSON.stringify(
-        withAwaySeats(outcome.reply, loadRoom(this.storage), this.sockets.livePlayers()),
-      ),
-    );
-    if (outcome.shouldClose) {
-      socket.close(1008, "Too many rejected messages");
-    }
   }
 
   private async reportToLobby(before: RoomRecord | null): Promise<void> {
