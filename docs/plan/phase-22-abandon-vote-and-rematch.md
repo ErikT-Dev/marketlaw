@@ -239,6 +239,17 @@ These 16 scenarios are added to `harness/required.yaml` in this phase, by file a
 
 ### Finish
 
+- [x] First finisher run (2026-11-07).
+  - Commit `d9ed85c` (`HARNESS:`) adds the phase's 16 scenarios to `harness/required.yaml`.
+  - `npm run check` green (499 tests, client 147.63 kB of 300 kB gzipped). `npm run harness`
+    green: 437 scenarios (342 required pass, 0 fail), 1,000 simulated games, B4 692 and B5 905
+    of 1,600, B7 1 of 1, B11 2 of 10 ms, B18 2,726 of 5,000. Browser tests: shard 1/2 64 passed
+    and 1 failed (`bigCardSwitch.spec.ts` at 1920x1080, photos not loaded within 5 s under two
+    workers, the known local load problem), which passed on its rerun alone (3 passed); shard 2/2
+    61 passed; whole games from the lobby with 2, 3 and 4 players 3 passed each. Screenshots
+    from these runs committed (`3db3b70`). `docs/enforcement.md` lists the new browser tests
+    (abandon vote, rematch) and the drivers' vote and rematch steps.
+
 ### Helper log
 
 Filled in by the coordinator afterwards, from the helpers' completion notices (Q73). Tokens
