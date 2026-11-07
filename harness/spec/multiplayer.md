@@ -142,6 +142,11 @@ None yet.
   goes on.
 - **M7.5** While a vote is open, every player still in the game sees how many players have
   answered so far, out of how many. Who has answered, and how, is not shown.
+- **M7.6** The player who calls the vote counts as voting yes and is not asked. The vote closes
+  as soon as every player asked has answered, or when the minute is over; a no does not close it
+  early. A player who leaves the game while a vote is open is no longer asked. The 5 turns of
+  M7.2 count from the turn in which the last vote was called: after a vote in turn 3, the next
+  can be called from turn 8.
 
 ## M8. After the game
 
@@ -152,10 +157,15 @@ None yet.
 - **M8.4** **Rematch:** after a game ends, any player still in its room can ask for a rematch,
   as long as at least 2 players are in the room. Every player in the room is then asked to
   accept, and has 20 seconds to do so. Every player in the room sees the usernames of the
-  players who have accepted so far.
+  players who have accepted so far. The player who asked is asked to accept like everyone else.
+  Only one rematch can be asked at a time.
 - **M8.5** If all accept, a new casual game (M1.13) starts in the same room with those players,
   as a new game from setup. A rematch of a ranked game is casual. If anyone does not accept in
-  time, or declines, no game starts and the room stays as it was.
+  time, or declines, no game starts and the room stays as it was. A player who leaves the room,
+  or joins the ranked queue or another room (M2.2), also ends the asking at once. Nobody is
+  removed from the room for not accepting a rematch. The daily limits apply to a rematch as to
+  any game start (A9.2–A9.4); when one stops it, the asking ends, everyone stays in the room, and
+  the players concerned are told why.
 - **M8.6** When a rematch starts, the 24-hour deletion time of M8.2 no longer applies; it starts
   again when the new game ends. The chat history stays.
 

@@ -358,3 +358,38 @@
     - {seat: 2, action: leave_game}
   then:
     market_go: {seat: 3}
+
+- name: a vote closes as soon as every player asked has answered
+  covers: [M7.4, M7.6]
+  given:
+    players: 3
+  when:
+    - {seat: 1, action: call_vote}
+    - {seat: 2, action: vote, vote: yes}
+    - {seat: 3, action: vote, vote: "no"}
+  then:
+    phase: main
+    vote: closed
+
+- name: the player who called a vote cannot answer it
+  covers: [M7.6]
+  given:
+    players: 3
+  when:
+    - {seat: 1, action: call_vote}
+    - {seat: 1, action: vote, vote: yes}
+  then:
+    rejected: vote_already_answered
+    unchanged: true
+
+- name: a player who leaves during a vote is no longer asked
+  covers: [M7.6, M7.4]
+  given:
+    players: 4
+  when:
+    - {seat: 1, action: call_vote}
+    - {seat: 2, action: vote, vote: yes}
+    - {seat: 3, action: leave_game}
+    - {seat: 4, action: vote, vote: yes}
+  then:
+    ended: {abandoned: true}

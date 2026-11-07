@@ -283,6 +283,7 @@ A repeated action id is not rejected: it returns the original result again.
 | `vote_too_soon` | A vote within 5 turns of the last one |
 | `vote_already_open` | A vote while another is open |
 | `no_vote_open` | Voting when no vote is open |
+| `vote_already_answered` | Answering a vote twice, or the caller answering their own vote (M7.6) |
 | `room_not_found` | No room has that code |
 | `room_full` | The room has no free place |
 | `room_not_waiting` | The room's game has already started |
@@ -290,9 +291,10 @@ A repeated action id is not rejected: it returns the original result again.
 | `room_size_too_small` | The new size is less than the players in the room |
 | `invalid_room_size` | A size other than 2, 3 or 4 |
 | `invalid_game_sizes` | No game size chosen for the ranked queue, or a size other than 2, 3 or 4 (A8.2, A8.3) |
+| `not_asking` | Accepting or declining when no game start or rematch is being asked (M1.10, M8.4) |
 | `rejoin_too_soon` | Rejoining within 2 minutes of not accepting (M1.11, A8.9) |
 | `busy_elsewhere` | The player is already waiting in a room, in the queue or in a game (M2) |
-| `rematch_not_possible` | Fewer than 2 players in the room, or its game has not ended |
+| `rematch_not_possible` | Fewer than 2 players in the room, its game has not ended, or a rematch is already being asked |
 
 **Limits, accounts and chat**
 

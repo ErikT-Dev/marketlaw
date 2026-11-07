@@ -273,7 +273,8 @@ None yet.
   sees a message in the lobby with when they can rejoin.
 - **S11.4** After a game, the room shows the result, the players still in it, **Ask for a
   rematch**, **Leave room**, and when the room will be deleted (M8). The rematch dialog shows the
-  time left and who has accepted (M8.4).
+  time left and who has accepted (M8.4). **Close** on the end-of-game screen (S9.5) leads here;
+  the result line has **Show result**, which opens the end-of-game screen again.
 
 ## S12. Accounts
 
@@ -381,6 +382,8 @@ None yet.
   | `vote_too_soon` | Next vote possible in turn N. |
   | `vote_already_open` | A vote is already open. |
   | `no_vote_open` | There is no vote to answer. |
+  | `vote_already_answered` | You already answered this vote. |
+  | `rematch_not_possible` | A rematch needs a finished game, at least 2 players in the room and no other rematch being asked. |
   | `not_this_step` | Not this step, with what the tutorial is waiting for (S15.3). |
   | `invalid_token` | Your guest session has ended. Enter your name again. (The start page opens.) |
   | `malformed_message`, `unknown_action`, and any other code a game move cannot get (`room_not_found`, `room_full`, `room_not_waiting`, `invalid_room_size`) | Something went wrong. The page reloads your game. |
@@ -404,3 +407,8 @@ these, the spec is followed:
   phase (S2.1).
 - **The game's top bar** has no user box on any board. It has one, as in the lobby (S2.3, S12.7).
 - **The abandon vote dialogs** do not show how many players have answered. They do (S9.3).
+- **The rematch dialog** shows the player who asked as already accepted. The player who asked
+  accepts like everyone else (M8.4).
+- **The room after the game** shows the room size control and a free place. A room takes no
+  new players and cannot change its size once its game has started (M1.4, M1.6), so neither is
+  shown (S11.4).
