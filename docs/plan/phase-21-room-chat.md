@@ -309,26 +309,42 @@ These 14 scenarios are added to `harness/required.yaml` in this phase, by file a
     `docs/enforcement.md` lists the phase's harness checks (chat steps, B7, B18 with chat) and
     browser tests.
 
-- [ ] Review findings (phase reviewer, 2026-11-07; no blocker). One fixer takes all five.
+- [x] Review findings (phase reviewer, 2026-11-07; no blocker). One fixer takes all five.
   1. Should fix: `saved_before_shown` cannot fail. `tools/harness-runner/lobby/LobbyChat.ts`
      63-81 saves in the driver's own storage, then checks its own order, so it never tests
      `GameRoom.receive` (save, then `replyToSocket`, then `sendChatSince`). Make a test fail if
      a message is shown before its chat block is put (for example a recording kv under
      `CompressedRoomStore` with the GameRoom sequence, or a GameRoom test with a recording socket).
+     - fixed (`6a6c14a`): GameRoom's steps after a received message moved into
+       `src/server/publishReceived.ts` (and `sendChatSince.ts`), which GameRoom calls; the new
+       `publishReceived.test.ts` runs it over a `CompressedRoomStore` on a recording kv with
+       recording sockets and fails if the sender is answered or anyone is shown the message
+       before its chat block is put (checked by moving the save after the reply). The harness
+       step `saved_before_shown` still checks only the driver's own order; the server test is
+       the real guard.
   2. Should fix: `src/server/room/roomChat.test.ts` 197-204 "shows only messages sent after an
      unmute" passes when unmute does nothing (the later message is Cat's). After the unmute,
      advance 2 seconds, let Bea send "second" and expect `["second"]` for Ann.
+     - fixed (`5436000`): the test room has a clock; the test does exactly that.
   3. Suggestion: `src/shared/measureChatText.ts` line 3 turns CRLF into two spaces; A11.5 calls
      it one line break. Turn `\r\n` into one space first (update the tests that lock in
      `"good  game"`), or record the choice in Q80 and the spec.
+     - fixed (`30f96a4`): CR LF becomes one space; both tests now expect `"good game"`;
+       recorded in Q80 (the spec already says a line break becomes a space).
   4. Suggestion: `src/client/store/chatAfterRefusal.ts` 16-18 and `ChatInput.tsx` 30: a
      `send_chat` refused with a code outside `CHAT_LIMIT_CODES` (`no_answer`, `not_in_room`)
      leaves its text in `unansweredTexts`, so later answers pair with the wrong text, and the
      refused text is lost (S7.4 "A refused message stays in the input", A11.6 "for any reason").
      Remove the oldest unanswered text on every `send_chat` refusal and put it back in the input.
+     - fixed (`956dfb2`): `CHAT_LIMIT_CODES` became `CHAT_REFUSAL_CODES` with `not_in_room` and
+       `no_answer`; such a refusal takes the oldest unanswered text back into the input, with
+       its reason over it. Those two codes also answer other room intents, so they count as a
+       chat refusal only while a message is unanswered (Q80). Store test added; chat browser
+       test green.
   5. Note: room intents carry no action id, so a resent `send_chat` over 2 seconds later would be
      saved twice (`rules/multiplayer.md` "Idempotent, ordered actions"). Record it as a known
      limit in Q79; no resend exists today.
+     - answered (`811d3f4`): recorded as a known limit in Q79.
 
 ### Helper log
 
