@@ -527,3 +527,4 @@ are each helper's conversation size at its end.
 | Builder, item 4c | 14 | 157k | 76 | done |
 | Finisher, first run | 34 | 105k | 46 | done |
 | Phase reviewer | 18 | 198k | 91 | not ready, 1 blocker, 11 findings |
+| Fixer, group A (R1, R10, R11) | 13 | 110k | 49 | done |
