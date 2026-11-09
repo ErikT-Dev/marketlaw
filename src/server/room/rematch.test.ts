@@ -138,7 +138,9 @@ describe("a rematch in the room", () => {
     await send(storage, ANN, { type: "accept_game" });
     await send(storage, BEA, { type: "accept_game" });
     const rematch = current(kept);
-    expect(rematch.game?.saved.state.phase).not.toBe("ended");
+    expect(rematch.game?.saved.state.phase).toBe("main");
+    expect(rematch.game?.saved.state.turn).toBe(1);
+    expect(rematch.game?.saved.state.seats).toHaveLength(2);
     expect(rematch.game?.saved.state.clockStartedAt).toBe(ASKED_AT);
     expect(endedRoomDeletionAt(rematch)).toBeNull();
     expect(updateFor(rematch, ANN.playerId).room.deletionAt).toBeNull();
