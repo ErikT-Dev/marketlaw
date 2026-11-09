@@ -27,4 +27,9 @@ export async function logOutInRoom(
     await leaveAsGuest(session, name, GUEST_LOG_OUT_STEPS);
   }
   session.offline.add(name);
+  const connection = session.connections.get(name);
+  session.connections.set(name, {
+    state: connection?.state ?? { identity: null, rejectionTimes: [] },
+    isClosed: true,
+  });
 }
