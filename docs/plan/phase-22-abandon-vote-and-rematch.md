@@ -241,11 +241,31 @@ These 16 scenarios are added to `harness/required.yaml` in this phase, by file a
 
 Phase review (2026-11-07, `phase-reviewer`): no blockers; 5 findings, all to one fixer.
 
-- [ ] R1. Should fix. `src/rules/voteWithout.ts:9`: a leaver's answer already given is dropped, so the answered count goes down and reveals that they had answered (against M7.5). Decide (Q88), write into M7.6, make `voteShownTo`/`voteWithout` match, add a test.
-- [ ] R2. Record and test. `src/rules/leaveGame.ts:57`, `src/rules/applyDueTimeOuts.ts:357`: the caller leaving during an open vote is not covered by spec or Q84 (today the vote stays open and can pass). Write it into M7.6 or Q84; add an engine test in `src/rules/abandonVote.test.ts`.
-- [ ] R3. `src/client/screens/game/REJECTION_MESSAGES.ts:55`: the `vote_too_soon` table text differs from S16.3; move the "Next vote possible in turn N." case into `rejectionMessage.ts` with `nextVoteTurn`, as `not_enough_funds` does.
-- [ ] R4. `tools/harness-runner/harness.test.ts:24`: B11 (time per message) measured 15 of 10 ms once inside `npm run check` under load, 2 ms alone. Write it up in `docs/plan/proposed-rules.md` as a known flaky measurement; do not touch the budget.
-- [ ] R5. `src/server/room/rematch.test.ts:141`: `not.toBe("ended")` is weak; assert the exact phase and the seat count.
+- [x] R1. Should fix. `src/rules/voteWithout.ts:9`: a leaver's answer already given is dropped, so the answered count goes down and reveals that they had answered (against M7.5). Decide (Q88), write into M7.6, make `voteShownTo`/`voteWithout` match, add a test.
+  - Fixed (Q88, `4e842ab` `HARNESS:`, `5c81d26`): M7.6 now says the numbers shown do not
+    change when a player leaves, and a leaver's answer no longer counts towards the result.
+    `voteWithout` is gone; the vote keeps its asked seats and ballots, and `closeVote` and
+    `closeVoteIfAllAnswered` decide by `seatsStillAsked` (asked seats still in the game).
+    Engine tests in `abandonVote.test.ts`; new required scenario "a player who leaves after
+    answering a vote leaves the count shown unchanged".
+- [x] R2. Record and test. `src/rules/leaveGame.ts:57`, `src/rules/applyDueTimeOuts.ts:357`: the caller leaving during an open vote is not covered by spec or Q84 (today the vote stays open and can pass). Write it into M7.6 or Q84; add an engine test in `src/rules/abandonVote.test.ts`.
+  - Fixed (Q89, same commits): M7.6 says the vote goes on when its caller leaves and passes
+    if every player still asked votes yes; behaviour unchanged. Engine tests (passes after the
+    caller left; still closes at its deadline) and new required scenario "a vote goes on when
+    the player who called it leaves". `harness.test.ts` now counts 439 scenarios (`96a4caa`).
+- [x] R3. `src/client/screens/game/REJECTION_MESSAGES.ts:55`: the `vote_too_soon` table text differs from S16.3; move the "Next vote possible in turn N." case into `rejectionMessage.ts` with `nextVoteTurn`, as `not_enough_funds` does.
+  - Fixed (`e03899a`): `rejectionMessage(move, seat, nextVoteTurn)` gives "Next vote
+    possible in turn N." for `vote_too_soon`; `GameToasts` no longer has its own case, and
+    `SelectedCardPanel` gets `nextVoteTurn` from `RightColumn`. The table keeps a text
+    without the number ("The next vote is not possible yet."), like `not_enough_funds`.
+- [x] R4. `tools/harness-runner/harness.test.ts:24`: B11 (time per message) measured 15 of 10 ms once inside `npm run check` under load, 2 ms alone. Write it up in `docs/plan/proposed-rules.md` as a known flaky measurement; do not touch the budget.
+  - Answered (`fbc4ab7`): written up in `docs/plan/proposed-rules.md` (rerun `npm run
+    harness` alone before reading a B11 failure as a regression). Budget unchanged.
+- [x] R5. `src/server/room/rematch.test.ts:141`: `not.toBe("ended")` is weak; assert the exact phase and the seat count.
+  - Fixed (`a583979`): asserts phase `main`, turn 1 and 2 seats.
+- Fixer (2026-11-09): `npm run check` green after the fixes (503 tests). For later items: the
+  two new scenarios are already on `harness/required.yaml` (in `4e842ab`), so the second
+  finisher run expects 439 scenarios.
 
 - [x] First finisher run (2026-11-07).
   - Commit `d9ed85c` (`HARNESS:`) adds the phase's 16 scenarios to `harness/required.yaml`.
