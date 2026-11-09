@@ -304,3 +304,66 @@ are each helper's conversation size at its end.
 | Phase reviewer | 12 | 157k | 33 | done, 5 findings |
 | Fixer, R1 to R5 | 9 | 105k | 49 | done |
 | Finisher, second run | 29 | 79k | 37 | done |
+
+## Report
+
+**Built.** In a casual game any player can press **Vote to abandon** in the top bar, at most
+once every 5 turns (after a vote in turn 3, the next from turn 8). The caller counts as yes;
+every other player still in the game gets a dialog with the caller, the time left and "1 of 2 players answered",
+and answers yes or no within a minute. The vote passes only if all of them say yes, and then
+the game ends with no winner ("All players voted yes, so the game ended with no winner.", no
+table). Otherwise "The game goes on" shows, and a vote called too soon reads "Next vote possible
+in turn N.". Nobody is told who answered or how; the count does not change when a player leaves,
+and a vote goes on when its caller leaves. All timers keep running during a vote. After a game,
+Close on the end screen leads to the room after the game: the players still in the room, the
+result line with **Show result**, the room chat, the time the room will be deleted, **Ask for a
+rematch** (2 or more players) and **Leave room**. A rematch asks everyone in the room to accept
+within 20 seconds; when all accept, a new casual game starts with every player in the room and
+everyone sees it; a decline or the time-out leaves the room as it was. `PROTOCOL_VERSION` is 8,
+so a tab with the old client is told to reload; games saved by the old version close themselves
+(D1).
+
+**What to try.** On the live site, in three windows:
+1. Create a room, join it from the other two windows and start the game.
+2. Press **Vote to abandon** in one window and confirm: the other two windows get the answer
+   dialog with the time left; the caller sees "0 of 2 players answered", then "1 of 2".
+3. Answer yes in one window and no in the other: "The game goes on". Calling again at once is
+   refused with "Next vote possible in turn N.".
+4. Five turns later, call again and answer yes in both: every window shows the game abandoned
+   by vote, with no winner.
+5. Press Close: the room after the game, with **Show result**, the deletion time and the chat.
+6. Press **Ask for a rematch**: every window gets "Accept a rematch?"; accept in all three and a
+   new game starts. Ask again after it ends and decline in one window: the room stays as it was.
+
+**Checks.** The second finisher run: `npm run check` green (503 tests, client 147.63 kB of
+300 kB gzipped), `npm run harness` green (439 scenarios, 344 required pass, 1,000 simulated
+games), B11 3 of 10 ms, B18 2,726 of 5,000. The browser tests had one page-load timeout under two
+workers locally that passed on its rerun; GitHub's branch check judged the full browser suite
+before the merge. The phase's 18 scenarios are required.
+
+**Differences from the phase file.** A vote closing at its deadline is the logged system action
+`close_vote`. Vote calls and answers raise only the actor's state version in every phase (Q87).
+In a rematch, players over a daily limit are not removed but get a new `daily_limit` notice.
+`RoomView` gained `deletionAt` and `namesInRoom` (who is still in an ended room). The rematch
+adds the "game started" chat line. Player badges in the top bar now shorten long names with an
+ellipsis, since the new button crowded it at 1280 px. The rematch dialog is titled "Accept a
+rematch?" (the board names no asker). `LobbySession.ts` did not need to grow, so it was not
+split. Two scenarios came from the review (Q88, Q89), so 18 instead of 16.
+
+**Decisions.** Q84: how a vote runs (caller counts as yes, who is asked, closing when all have
+answered or at the minute, a no does not close it early; M7.6, `vote_already_answered`). Q85:
+how a rematch runs (`ask_rematch`, the room's accept flow, everyone in the room plays, the asker
+is not counted as accepted, `rematch_not_possible`). Q86: Close leads to the room after the game.
+Q87: a vote closing at its deadline raises no state version. Q88: a leaver's answer stays in the
+count shown but no longer counts towards the result. Q89: a vote goes on when its caller leaves.
+
+**Review findings and what happened to each.**
+1. A leaver's answer was dropped, so the count went down and showed they had answered: fixed
+   (Q88, M7.6), with engine tests and a new required scenario.
+2. The caller leaving during a vote was not in the spec: recorded (Q89, M7.6), behaviour
+   unchanged, with engine tests and a new required scenario.
+3. The "vote too soon" text differed from S16.3: fixed, it names the next vote's turn wherever
+   the rejection is shown.
+4. B11 (time per message) once measured 15 of 10 ms under load: answered, written up in
+   `proposed-rules.md` as a known flaky measurement; budget unchanged.
+5. A rematch test assertion was weak: fixed, it asserts the phase, turn and seat count.
