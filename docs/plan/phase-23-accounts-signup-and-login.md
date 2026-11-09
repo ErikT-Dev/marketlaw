@@ -438,8 +438,19 @@ These 20 scenarios are added to `harness/required.yaml` in this phase, by file a
 
 ### Finish
 
-- [ ] First finisher run: the 20 scenarios onto `harness/required.yaml`; full check, harness,
+- [x] First finisher run: the 20 scenarios onto `harness/required.yaml`; full check, harness,
   browser tests, budgets.
+  - Done (2026-11-09): the 20 scenarios are required (`HARNESS:` commit). `npm run check`
+    passed (581 tests). `npm run harness` passed: 364 scenarios pass, 0 fail, 86 not yet
+    required; B11 measured 9 ms of 10, B18 3,026 of 5,000 rows; every budget within its limit.
+    Browser tests (2 workers, against the running `wrangler dev`): shard 1/2 62 passed and 6
+    failed at 1280x720 (`ERR_EMPTY_RESPONSE` loading pages and views that never came), shard
+    2/2 61 passed and 3 failed (`ERR_CONNECTION_RESET`), the two-player whole game failed at
+    1280x720 and 1920x1080 (the room heading never came), three and four players passed. Every
+    failed test passed when rerun alone with one worker, so all were the local server's load;
+    GitHub judges the full suite. `docs/enforcement.md`: the account browser tests, the lobby
+    driver's account steps, B11's password hash, B18's account actions and the route test that
+    keeps tokens, passwords and email addresses out of the logs.
 - [ ] Phase review and fixes.
 - [ ] Second finisher run.
 - [ ] Release.
