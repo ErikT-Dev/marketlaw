@@ -152,7 +152,7 @@ it by hand.
 | M1.3 | rooms (2) | Covered |
 | M1.4 | rooms (2) | Covered |
 | M1.5 | rooms (1) | Covered |
-| M1.6 | hostile-client (1), rooms (4) | Covered |
+| M1.6 | accounts (1), hostile-client (1), rooms (4) | Covered |
 | M1.7 | rooms (2) | Covered |
 | M1.8 | rooms (1) | Covered |
 | M1.9 | rooms (2) | Covered |
@@ -227,7 +227,7 @@ it by hand.
 | A2.1 | accounts (3) | Covered |
 | A2.2 | accounts (1) | Covered |
 | A2.3 | accounts (1) | Covered |
-| A2.4 | accounts (4) | Covered |
+| A2.4 | accounts (5) | Covered |
 | A3.1 | connections-and-leaving (1), records-and-ratings (2) | Covered |
 | A3.2 | records-and-ratings (2) | Covered |
 | A3.3 | records-and-ratings (1) | Covered |
@@ -348,6 +348,6 @@ it by hand.
 ## Summary
 
 - Rules: 311
-- Scenarios: 452
+- Scenarios: 453
 - Gaps: 0
 - Checked another way or also checked another way: R3.2, R3.5, R17.10, R19.2, M3.1, M3.6, M4.2, A6.4, A10.6, C5.1, C5.2, C5.3

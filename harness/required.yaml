@@ -306,6 +306,7 @@ scenarios:
     - a guest who logs out while waiting in a room leaves it
     - a new account can change its username at once
     - a username change keeps the old name inside the room the player is in
+    - a freed username cannot join the room where the old holder still shows it
   rooms:
     - a player creates a public room with a chosen size and becomes its owner
     - a private room is not listed in the lobby but can be joined with its code

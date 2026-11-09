@@ -105,7 +105,8 @@ ranked queue, daily limits and chat. How the game itself is played is in `game-r
   change; a new account can change its username at once, and the username chosen when the
   account was made, or during signup (A1.3), does not start them. Inside a room the player
   keeps the name they had when they joined it (their seat, the player list and chat); the new
-  name shows everywhere else at once, and in every room they join afterwards. A new name that
+  name shows everywhere else at once, and in every room they join afterwards. While the old name
+  still shows in a room, a player who takes it cannot join that room (M1.6). A new name that
   differs only in capital letters is a change; the same name exactly changes nothing and does
   not start the 7 days. A change is checked in this order: the name itself (A2.1, A2.3), the
   7 days (`username_change_too_soon`), then whether it is taken.

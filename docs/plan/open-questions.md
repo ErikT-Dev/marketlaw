@@ -2001,3 +2001,26 @@ file.
   time (`wrangler tail`) and records it in Q90; a live cost per iteration above 400 ns replaces
   the figure (`tools/harness-runner/LIVE_PASSWORD_HASH_CPU.ts`). `budgets.yaml` B11's
   "measured" says so.
+
+## Q103. Can a freed username join a room where the old holder still shows it (A2.4, M1.6)?
+
+- **Phase:** 23, phase review (R3).
+- **Question:** inside a room a player keeps the name they joined with (A2.4, Q96). After they
+  change their username, the old name is free, and another player who takes it could join the
+  same waiting room, so two players in it would show the same name: in the player list, in
+  "accepted so far", in chat, and for mutes, which name the muted player. The spec does not say
+  whether that join is allowed.
+- **Options:** (a) allow it and tell the two apart some other way (a mark next to one name); (b)
+  rename the player in the room after all; (c) refuse the join while a player in the room shows
+  the same name, ignoring capital letters (A2.2).
+- **Solution:** (c). A room refuses a join with `username_in_room` while a player in it has the
+  same name as the joining player's, capital letters ignored; the message is "A player in this
+  room has the same username as you. Join another room." It is checked after the room's other
+  join checks. Written into M1.6, A2.4, S10.6, S10.9 and the reason codes in `HARNESS.md`, with
+  the scenario `accounts` "a freed username cannot join the room where the old holder still
+  shows it". Separately, the accept dialog no longer decides "Accepted" by comparing names: the
+  room view says whether the viewing player has accepted (`hasAccepted`, protocol version 10).
+- **Why:** it can only happen in the minutes after a rename, against the one room the renamed
+  player is in, so refusing costs almost nothing, while two equal names in one room would make
+  "accepted so far", chat and mutes ambiguous. (b) was turned down in Q96.
+- **Implemented:** phase 23, finding R3.

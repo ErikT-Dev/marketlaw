@@ -406,3 +406,16 @@
   then:
     accounts: [{name: Bea}, {name: Ann City, kind: guest}]
     room: {players: [Bea, Ann]}
+
+- name: a freed username cannot join the room where the old holder still shows it
+  covers: [M1.6, A2.4]
+  given:
+    room: {code: K7QR2P, size: 3, public: true, owner: Bea, players: [Bea, Ann], state: waiting}
+    accounts: [{name: Bea}, {name: Ann, kind: guest}, {name: Cat, kind: guest}]
+  when:
+    - {player: Ann, action: change_username, username: Ann City}
+    - {player: Cat, action: change_username, username: ann}
+    - {player: ann, action: join_room, code: K7QR2P}
+  then:
+    rejected: username_in_room
+    room: {players: [Bea, Ann]}

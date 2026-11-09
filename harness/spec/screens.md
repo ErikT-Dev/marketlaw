@@ -233,7 +233,8 @@ None yet.
   disabled with the reason (A8.1).
 - **S10.5** **Create room** asks for public or private, and size 2, 3 or 4, with the human check.
 - **S10.6** Join errors are shown under the room-code field: code not found, room full, game
-  already started, rejoin wait with the time left, and busy elsewhere (M1, M2).
+  already started, rejoin wait with the time left, a player in the room with the same username,
+  and busy elsewhere (M1, M2).
 - **S10.7** **Match found** shows the game size and asks you to confirm within the time shown,
   without naming the other players (A8.7), and says what happens if you decline.
 - **S10.8** Empty lists say so: no public rooms, only you online.
@@ -247,6 +248,7 @@ None yet.
   | `room_full` | This room is full. |
   | `room_not_waiting` | The game in this room has already started. |
   | `rejoin_too_soon` | You can join this room again in M:SS. |
+  | `username_in_room` | A player in this room has the same username as you. Join another room. |
   | `busy_elsewhere` | You are already in a room, the ranked queue or a game. Leave it first. |
   | `invalid_room_size` | Choose a room size of 2, 3 or 4 players. |
   | `not_room_owner` | Only the owner can change the room size. |
