@@ -79,6 +79,7 @@ export function RightColumn(props: Props) {
         <SelectedCardPanel
           details={selectedDetails}
           seat={seat}
+          nextVoteTurn={view.nextVoteTurn}
           isBusy={isBusy}
           onPlay={playSelected}
           onClose={clear}

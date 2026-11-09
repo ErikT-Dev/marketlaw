@@ -1,7 +1,6 @@
 import type { Notice } from "../../../shared/Notice";
 import type { OwnSeatView } from "../../../shared/OwnSeatView";
 import type { PlayerView } from "../../../shared/PlayerView";
-import type { IconText } from "../../components/IconText";
 import { Toast } from "../../components/Toast";
 import type { RejectedMove } from "../../store/RejectedMove";
 import styles from "./GamePage.module.css";
@@ -20,12 +19,6 @@ type Props = {
   readonly onDismissRejection: () => void;
   readonly playerNames: ReadonlyArray<string>;
 };
-
-function gameRejectionText(move: RejectedMove, seat: OwnSeatView, view: PlayerView): IconText {
-  return move.code === "vote_too_soon"
-    ? `Next vote possible in turn ${String(view.nextVoteTurn)}.`
-    : rejectionMessage(move, seat);
-}
 
 export function GameToasts({ view, seat, timeOutNotice, rejectedMove, ...rest }: Props) {
   const { failedVoteNextTurn, dismissFailedVote } = useFailedVoteNotice(view, !seat.hasLeft);
@@ -62,7 +55,7 @@ export function GameToasts({ view, seat, timeOutNotice, rejectedMove, ...rest }:
         <Toast
           kind="error"
           title="Move rejected"
-          text={gameRejectionText(rejectedMove, seat, view)}
+          text={rejectionMessage(rejectedMove, seat, view.nextVoteTurn)}
           onClose={rest.onDismissRejection}
         />
       )}
