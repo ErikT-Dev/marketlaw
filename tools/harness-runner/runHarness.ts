@@ -16,7 +16,7 @@ import { SIMULATED_INVARIANTS } from "./SIMULATED_INVARIANTS.ts";
 import type { HarnessOutcome } from "./HarnessOutcome.ts";
 import type { HarnessRun } from "./HarnessRun.ts";
 import { judgeHarness } from "./judgeHarness.ts";
-import { measurePasswordHashCpuMs } from "./measurePasswordHashCpuMs.ts";
+import { livePasswordHashCpuMs } from "./livePasswordHashCpuMs.ts";
 import { readBudgetEntries } from "./readBudgetEntries.ts";
 import { readIdentifiedEntries } from "./readIdentifiedEntries.ts";
 import { readRequiredList } from "./readRequiredList.ts";
@@ -48,7 +48,7 @@ export async function runHarness(
     replayExportProblems: checkReplayExport(),
     simulation: await simulateInParallel(simulatedGames, LAST_SIMULATED_TURN),
     busyDay: simulateBusyDay(),
-    passwordHashCpuMs: await measurePasswordHashCpuMs(),
+    passwordHashCpuMs: livePasswordHashCpuMs(),
     simulatedInvariants: SIMULATED_INVARIANTS,
   };
   const problems = [

@@ -8,6 +8,7 @@ import type { HarnessRun } from "./HarnessRun.ts";
 import { MEASURED_BUDGET_LIMITS } from "./MEASURED_BUDGET_LIMITS.ts";
 import { readBudgetEntries } from "./readBudgetEntries.ts";
 import { reportBudgets } from "./reportBudgets.ts";
+import type { ScenarioRun } from "./ScenarioRun.ts";
 
 const BUDGETS = readBudgetEntries(parse(readFileSync(HARNESS_PATHS.budgets, "utf8")));
 
@@ -21,8 +22,24 @@ const RUN: HarnessRun = {
   replayExportProblems: [],
   simulation: NO_GAMES,
   busyDay: { written: { room: 10, alarm: 20, lobby: 30, database: 40 }, rowsRead: 500 },
-  passwordHashCpuMs: [],
+  passwordHashCpuMs: null,
   simulatedInvariants: [],
+};
+
+const SCENARIO_RUN: ScenarioRun = {
+  scenario: {
+    file: "rooms",
+    number: 1,
+    name: "a room handles a message",
+    covers: [],
+    given: {},
+    random: [],
+    when: [],
+    then: {},
+  },
+  result: { status: "passes" },
+  isRequired: true,
+  measurements: [],
 };
 
 function itemOf(report: string, id: string): string {
@@ -49,9 +66,17 @@ describe("the budget report", () => {
   });
 
   it("measures the computing time of a login or signup by its password hash", () => {
-    const run = { ...RUN, passwordHashCpuMs: [6.2, 7.4, 7.1] };
+    const run = { ...RUN, passwordHashCpuMs: 7.4 };
     expect(itemOf(reportBudgets(run, BUDGETS, []), "B11")).toContain(
-      "measured: 8, by room scenarios",
+      "measured: 8 (room messages: not measured, password hash: 8), by room scenarios",
+    );
+  });
+
+  it("shows both halves of the computing time and judges the larger one", () => {
+    const measurements = [2.4, 0.5].map((value) => ({ budget: "B11", value }));
+    const run = { ...RUN, runs: [{ ...SCENARIO_RUN, measurements }], passwordHashCpuMs: 8 };
+    expect(itemOf(reportBudgets(run, BUDGETS, []), "B11")).toContain(
+      "measured: 8 (room messages: 3, password hash: 8), by room scenarios",
     );
   });
 

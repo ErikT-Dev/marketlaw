@@ -37,7 +37,7 @@ function harnessRun(parts: Partial<HarnessRun>): HarnessRun {
     replayExportProblems: [],
     simulation: NO_GAMES,
     busyDay: null,
-    passwordHashCpuMs: [],
+    passwordHashCpuMs: null,
     simulatedInvariants: [],
     ...parts,
   };
