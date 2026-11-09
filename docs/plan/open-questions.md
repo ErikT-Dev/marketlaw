@@ -1837,3 +1837,23 @@ file.
   shows only after 3 failed attempts that some registered account entered it, and counting
   unknown names would cost rows for names nobody has.
 - **Implemented:** `accounts.md` A1.13; phase 23, item 1b.
+
+## Q98. Signup's messages, and who can sign up with which login (A1.3, S10.9)?
+
+- **Phase:** 23, item 2 (A1.3, A1.6, A1.11, S10.9).
+- **Question:** `email_invalid` and `password_invalid` had no message in S10.9's table. The spec
+  does not say what signup does for a browser whose login is unknown or already belongs to a
+  registered user, nor what a guest stores when the address entered is already confirmed on
+  another account (A1.11: the address belongs to that account).
+- **Options:** for the login: treat it as not logged in and make a new account, or refuse it. For
+  a confirmed address: store it unconfirmed anyway, or store no address.
+- **Solution:** messages "Enter a whole email address, such as name@example.com." and "Use 8 to 64
+  characters for the password." added to S10.9. A signup that sends a login refuses it with
+  `invalid_token` unless the login is a guest's; only a signup without a login makes a new
+  account (Q94). An address already confirmed on another account is not stored (the account has
+  no email, as A1.11's removal leaves it and scenario `accounts` "signing up with an address
+  already confirmed elsewhere looks the same" expects), and the answer looks the same.
+- **Why:** a stale or registered login sent to signup is a client mistake, and silently making a
+  second account would lose the first; storing an address that another account owns would let
+  it log in by that address (Q92) and break A1.11.
+- **Implemented:** `screens.md` S10.9; phase 23, item 2.
