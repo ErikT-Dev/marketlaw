@@ -471,30 +471,49 @@ These 20 scenarios are added to `harness/required.yaml` in this phase, by file a
     report shows both halves ("room messages: n, password hash: 8"). `budgets.yaml` B11 says so
     (`HARNESS:` commit). Still for the releaser: the live `wrangler tail` measurement into Q90;
     above 400 ns per iteration it replaces the figure.
-- [ ] R2. Should fix (group B). Q97 reveals whether an email address has an account
+- [x] R2. Should fix (group B). Q97 reveals whether an email address has an account
   (`src/server/accounts/decideLogin.ts:14-17`), against A1.5, A1.3 and Q91's reason. Count
   failures for unknown login keys too (small D1 table keyed by sha256 of the login key, same
   `failedLoginsAfter`, pruned by the daily cron); reword A1.13 back; update Q97.
+  - Fixed (2026-11-09): A1.13 now counts failures for unknown usernames and addresses the same
+    way, with two new required scenarios (`HARNESS:` commit, Q97). Table
+    `unknown_login_failures` (migration 0009) keyed by the SHA-256 of `unknownLoginKeyOf`;
+    `decideLogin` takes the unknown key's failures, one row written per failure; the daily cron
+    deletes rows 15 minutes past their latest failure. B18's busy day adds 20 such failures at
+    2 rows (write and delete): B18 3,066 of 5,000. Route test checks the 4th attempt asks for the human check, the
+    row holds no readable name, and the cron removes it.
 - [ ] R3. Should fix (group C). After a rename the freed old name can join the same waiting
   room (`src/server/room/joinRoom.ts:8-33`); `AcceptDialog.tsx:36` decides `hasAccepted` by
   name. Record the question, decide it in the spec first, and take the accept state from the
   view rather than comparing names.
-- [ ] R4. Should fix (group B). The account routes have no hostile-client tests
+- [x] R4. Should fix (group B). The account routes have no hostile-client tests
   (`tools/route-tests/accountRoutes.test.ts`): malformed bodies on all five routes, signup with
   an unknown or registered token, rename/account with an unknown or expired token, logout with
   an unknown token, the 409 `username_taken` race; exact status and body, plus a D1 read that
   nothing changed.
+  - Fixed: `tools/route-tests/hostileAccountRoutes.test.ts`, with shared helpers split out of
+    `accountRoutes.test.ts`; each case compares the `players`, `logins` and
+    `unknown_login_failures` tables before and after. Firing real concurrent requests gave 409
+    only sometimes, so the race is made certain with a test-only SQLite trigger that drops the
+    name write (`RAISE(IGNORE)`), for both the username change and the guest signup. A trigger
+    that inserts the other player does not work: D1's `changes` counts the trigger's insert.
 - [ ] R5. Should fix (group C). The real room logout for a registered user is never tested
   (`GameRoom.logOut`, `RoomSockets.closeLogin`; scenario `connections-and-leaving` #33 runs the
   driver's own `logOutInRoom.ts`). Add a Workers-pool or route test calling the real `logOut`
   (only that login's sockets close with 4401, another browser stays, the seat shows away); add
   `connected: false` to #33's then.
-- [ ] R6. Should fix (group B). Signup accepts an expired guest login
+- [x] R6. Should fix (group B). Signup accepts an expired guest login
   (`src/server/api/signupRoute.ts:20-24`, `findLogoutAccount`); refuse with `invalid_token` as
   A1.14 says, reusing the expiry check.
-- [ ] R7. Suggestion (group B). Logout deletes the login before leaving the rooms and swallows
+  - Fixed: `findLogoutAccount` returns the login's last use and signup refuses an expired guest
+    login with `loginStateOf` (401 `invalid_token`); route test in
+    `hostileAccountRoutes.test.ts`; noted under Q98.
+- [x] R7. Suggestion (group B). Logout deletes the login before leaving the rooms and swallows
   room failures (`src/server/api/logoutRoute.ts:21`, `:38`): leave the rooms first, delete the
   login last.
+  - Fixed: the rooms are left first and the login deleted last; if any room fails the login is
+    kept and the route answers 503, shown by the client as "Could not log out" (Q100). No test
+    makes a room fail; the browser tests and route tests cover the normal logout.
 - [ ] R8. Note. `src/server/GameRoom.ts` is at 300 non-blank lines; split it before adding to it.
 - [ ] R9. Suggestion (group C). Whether a session is a guest's is only in `StoredSession.isGuest`
   on the client; after a signup in one tab another tab keeps guest menus. Have the session

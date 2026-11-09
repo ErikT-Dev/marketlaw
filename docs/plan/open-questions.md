@@ -1855,7 +1855,7 @@ file.
   `isHumanCheckNeededToLogIn` decide it. A failed login for an unknown key writes one row (an
   insert or replace, no secondary index), as a wrong password does; the daily cron deletes the
   rows past `forget_after_ms`, at most one delete per key. B18's busy day adds 20 such failed
-  logins at 2 rows each (the write and its share of the delete), 40 rows. A key that later
+  logins at 2 rows each (the write and its share of the delete), 40 rows: 3,066 of 5,000. A key that later
   becomes a registered account's name or address is counted on the account from then on, and
   its old row is forgotten by the cron. The key hash has no secret, so someone holding the
   database could test guessed addresses against it; only addresses typed into a failed login
@@ -1882,6 +1882,9 @@ file.
   second account would lose the first; storing an address that another account owns would let
   it log in by that address (Q92) and break A1.11.
 - **Implemented:** `screens.md` S10.9; phase 23, item 2.
+- **Changed after the phase review (R6):** a guest login unused for longer than A1.14 allows is
+  refused too (`invalid_token`), with the same expiry check as every other route
+  (`loginStateOf`); signup had accepted it.
 
 ## Q99. A username change's message, check order and a change to the same name (A2.4, S10.9)?
 
@@ -1926,6 +1929,11 @@ file.
   client only shows them; forgetting a login the server still holds would leave a guest's seat
   in a game without a way back.
 - **Implemented:** phase 23, item 4b.
+- **Changed after the phase review (R7):** the logout route first logs the player out of their
+  rooms and deletes the login last; if a room cannot be reached, the login is kept and the route
+  answers 503, which the client shows as the failed logout above, so a guest is never logged out
+  while their seat stays in a room they can no longer leave. Trying again logs out of the rooms
+  still left.
 
 ## Q101. How can the browser tests send more than 2,000 chat messages a day on one local server?
 
