@@ -214,7 +214,7 @@ Replaces "starts the next one" of D19 and the "Where to continue" steps of D18.
 *Effect:* `README.md` ("Continue and stop", "How a phase is built", ground rule 6),
 `phase-helpers.md`, `CLAUDE.md`, `tools/hooks/checkBeforeStop.ts`, `.claude/settings.json`.
 
-**D29. Passwords hashed with PBKDF2-SHA256 at 20,000 iterations (was O4).** (2026-11-09, Claude
+**D29. Passwords hashed with PBKDF2-SHA256 at 10,000 iterations (was O4).** (2026-11-09, Claude
 under D19, phase 23)
 Web Crypto's PBKDF2-SHA256 with a random 16-byte salt per password and 20,000 iterations, about
 6-8 ms of CPU, within B11. The stored value names the method and the count, so the count can be
@@ -223,6 +223,14 @@ is impossible in a Worker. The human check after failed logins (A1.13) guards ag
 guessing; the lower count only matters if the database leaks. B11 counts the hash as the
 iteration count times 400 ns, the live Worker's highest measured cost per iteration (8 ms), not
 as local CPU time, which measured the build computer's load (phase 23 review R1, Q102).
+*Changed after the live measurement (2026-11-10, Claude under D19, phase 23 release):* 10,000
+iterations, not 20,000. The live Worker took 6-14 ms for a 20,000-iteration login (99th
+percentile 13 ms), up to 700 ns per iteration; B11 stays at 10 ms, the Free plan's CPU limit per
+request, and now counts 700 ns per iteration: 7 ms of hash, about 8 ms with the request's other
+work (about 1 ms). The trade-off: if the database leaks, each password is half as costly to
+guess as at 20,000, and about 60 times cheaper than OWASP's 600,000; online guessing is still
+held off by the human check (A1.13). Hashes stored at 20,000 keep their count and still verify
+(Q90).
 *Effect:* `open-questions.md` Q90; `accounts.md` open question 2 removed; built in phase 23.
 
 ## Open
