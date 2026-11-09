@@ -57,7 +57,7 @@ async function socketTo(code: string, token: string): Promise<RoomSocket> {
   return socket;
 }
 
-async function startedGame(watcher: RoomSocket, accepting: ReadonlyArray<RoomSocket>) {
+async function startGame(watcher: RoomSocket, accepting: ReadonlyArray<RoomSocket>) {
   await vi.waitFor(() => {
     expect(watcher.latestUpdate()?.room.asking).not.toBeNull();
   }, WAITING_MS);
@@ -67,7 +67,6 @@ async function startedGame(watcher: RoomSocket, accepting: ReadonlyArray<RoomSoc
   await vi.waitFor(() => {
     expect(watcher.latestUpdate()?.game).not.toBeNull();
   }, WAITING_MS);
-  return watcher.latestUpdate()?.room.mySeat ?? null;
 }
 
 beforeAll(async () => {
@@ -92,8 +91,7 @@ describe("logging out of a room as a registered user", () => {
       const firstBrowser = await socketTo(code, firstLogin);
       const secondBrowser = await socketTo(code, secondLogin);
       const watcher = await socketTo(code, otherPlayer);
-      const watcherSeat = await startedGame(watcher, [firstBrowser, watcher]);
-      const loggingOutSeat = watcherSeat === 1 ? 2 : 1;
+      await startGame(watcher, [firstBrowser, watcher]);
 
       expect(await post("/api/logout", { token: firstLogin })).toEqual({
         status: 200,
@@ -109,7 +107,9 @@ describe("logging out of a room as a registered user", () => {
       await post("/api/logout", { token: secondLogin });
       await vi.waitFor(() => {
         expect(secondBrowser.closeCode).toBe(LOGGED_OUT_CLOSE_CODE);
-        expect(watcher.latestUpdate()?.game?.awaySeats).toEqual([loggingOutSeat]);
+        const update = watcher.latestUpdate();
+        const loggingOutSeat = (update?.room.playerNames ?? []).indexOf("Roomlogout") + 1;
+        expect(update?.game?.awaySeats).toEqual([loggingOutSeat]);
       }, WAITING_MS);
       expect(watcher.closeCode).toBeNull();
       expect(watcher.latestUpdate()?.room.playerNames).toContain("Roomlogout");
