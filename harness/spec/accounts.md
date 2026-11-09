@@ -79,7 +79,9 @@ ranked queue, daily limits and chat. How the game itself is played is in `game-r
   every further login attempt on that account in the next 15 minutes needs the human check. An
   account is never locked. The 15 minutes run from the latest failed attempt, so a further failed
   attempt starts them again. A successful login clears the failed attempts. An attempt refused
-  because the human check was missing does not count as a failed attempt.
+  because the human check was missing does not count as a failed attempt. Failed attempts are
+  counted only for an account that exists; a login for a username or email address that no
+  registered account has never asks for the human check.
 - **A1.14** **Staying logged in:** a login lasts until the player has not used the site for
   90 days in that browser, or until the player logs out. The last use is noted at most once a
   day, so a login can last up to one day longer than 90 days without use, never shorter. Every player can log out. A guest user

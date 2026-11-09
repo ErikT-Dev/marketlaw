@@ -1812,3 +1812,28 @@ file.
   change that happens at most once a week; the room is the one place where a stable name helps the
   other players.
 - **Implemented:** `accounts.md` A2.4; phase 23, item 3.
+
+## Q97. How are failed logins stored, and are logins for unknown accounts counted (A1.5, A1.13)?
+
+- **Phase:** 23, item 1b (A1.5, A1.13).
+- **Question:** A1.13 keeps the human check on for 15 minutes after the latest failed attempt,
+  so once it is on, failures more than 15 minutes apart keep it on. The times of the last few
+  failures alone cannot tell whether it is on. And failures can be counted only on an account
+  that exists; a name or address that no account has has no row to count on, so after 3 failures
+  an existing account asks for the human check and an unknown one does not, which A1.5's "whether
+  the account exists or not" does not mention.
+- **Options:** keep every failure of a run; keep the last 3 failure times plus the time the
+  human check ends; for unknown names, count failures in a new table keyed by name or address
+  (a row per failure and rows that never belong to anyone), or not count them.
+- **Solution:** `players.failed_logins_ms` keeps at most the last 3 failure times within
+  15 minutes of each other, and a new column `login_check_until_ms` (migration
+  `0008_login_check_until.sql`) holds when the human check ends: a failure that makes 3 within
+  15 minutes, or that comes while the check is on, sets it to 15 minutes after that failure. A
+  successful login clears both. Logins for an unknown username or address are not counted and
+  never ask for the human check; written into A1.13. Two failures at the same moment may count
+  as one (read, then write).
+- **Why:** two small values give A1.13 exactly with one row written per failure (B18).
+  Usernames are public anyway (players online, rooms); for an email address, the difference
+  shows only after 3 failed attempts that some registered account entered it, and counting
+  unknown names would cost rows for names nobody has.
+- **Implemented:** `accounts.md` A1.13; phase 23, item 1b.

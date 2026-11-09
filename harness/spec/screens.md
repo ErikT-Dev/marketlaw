@@ -257,6 +257,7 @@ None yet.
   | `username_invalid` | Use 3 to 20 letters, digits, spaces, - or _, without spaces at the start or end or two spaces in a row. |
   | `username_taken` | That username is taken. Choose another one. |
   | `username_reserved` | That username cannot be used. Choose another one. |
+  | `login_failed` | Wrong username, email or password. |
   | `no_free_room_code` | No room could be created right now. Try again. |
   | `no_answer` | The server did not answer. Try again. |
 
