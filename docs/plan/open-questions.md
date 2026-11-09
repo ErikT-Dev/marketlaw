@@ -1857,3 +1857,23 @@ file.
   second account would lose the first; storing an address that another account owns would let
   it log in by that address (Q92) and break A1.11.
 - **Implemented:** `screens.md` S10.9; phase 23, item 2.
+
+## Q99. A username change's message, check order and a change to the same name (A2.4, S10.9)?
+
+- **Phase:** 23, item 3 (A2.4, S10.9).
+- **Question:** `username_change_too_soon` had no message in S10.9's table. A2.4 does not say in
+  which order a change is checked, nor what a change to the current name, or to it with other
+  capital letters, does.
+- **Options:** for the same name: refuse it, accept it and start the 7 days, or accept it without
+  changing anything. For capitals only: treat it as the same name, or as a change.
+- **Solution:** message "You can change your username once every 7 days." added to S10.9. A
+  change is checked as the name itself (`username_invalid`, `username_reserved`), then the 7 days,
+  then taken (the player's own name, in any capitals, is not taken for them). The same name
+  exactly is accepted and changes nothing, so the 7 days do not start; a name that differs only
+  in capitals is a change (A2.4 says "another username"). Written into A2.4. The route answers
+  the `GuestResponse` shape with the player's own token, so the client stores the new name as it
+  stores a login.
+- **Why:** checking the name before the wait gives the more useful message first, and the wait
+  before the taken check saves a D1 read; capitals are what a player sees, so changing them is a
+  real change, while sending the same name is a no-op that should not cost a week.
+- **Implemented:** `accounts.md` A2.4, `screens.md` S10.9; phase 23, item 3.

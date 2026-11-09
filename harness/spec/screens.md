@@ -260,6 +260,7 @@ None yet.
   | `login_failed` | Wrong username, email or password. |
   | `email_invalid` | Enter a whole email address, such as name@example.com. |
   | `password_invalid` | Use 8 to 64 characters for the password. |
+  | `username_change_too_soon` | You can change your username once every 7 days. |
   | `no_free_room_code` | No room could be created right now. Try again. |
   | `no_answer` | The server did not answer. Try again. |
 
