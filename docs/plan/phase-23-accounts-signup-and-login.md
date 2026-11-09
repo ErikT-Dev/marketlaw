@@ -472,3 +472,4 @@ are each helper's conversation size at its end.
 | Builder, item 4b | 73 | 286k | 178 | done, chat browser test flaky |
 | Builder, item 4b chat test failure | 38 | 225k | 115 | done (daily chat limit used up locally, Q101) |
 | Builder, item 4c | 14 | 157k | 76 | done |
+| Finisher, first run | 34 | 105k | 46 | done |
