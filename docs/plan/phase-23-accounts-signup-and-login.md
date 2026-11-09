@@ -482,10 +482,17 @@ These 20 scenarios are added to `harness/required.yaml` in this phase, by file a
     deletes rows 15 minutes past their latest failure. B18's busy day adds 20 such failures at
     2 rows (write and delete): B18 3,066 of 5,000. Route test checks the 4th attempt asks for the human check, the
     row holds no readable name, and the cron removes it.
-- [ ] R3. Should fix (group C). After a rename the freed old name can join the same waiting
+- [x] R3. Should fix (group C). After a rename the freed old name can join the same waiting
   room (`src/server/room/joinRoom.ts:8-33`); `AcceptDialog.tsx:36` decides `hasAccepted` by
   name. Record the question, decide it in the spec first, and take the accept state from the
   view rather than comparing names.
+  - Fixed (2026-11-09): decided in Q103 and written into M1.6, A2.4, S10.6, S10.9 and
+    `HARNESS.md` first (`HARNESS:` commit): a room refuses a join with `username_in_room` while
+    a player in it has the same name, capital letters ignored, checked after the other join
+    checks. New required scenario `accounts` "a freed username cannot join the room where the
+    old holder still shows it" (the harness test now reads 453 scenarios). The asking view
+    carries `hasAccepted` for the viewing player and the accept dialog uses it instead of
+    comparing names (protocol version 10); the dialogs no longer take `myName`.
 - [x] R4. Should fix (group B). The account routes have no hostile-client tests
   (`tools/route-tests/accountRoutes.test.ts`): malformed bodies on all five routes, signup with
   an unknown or registered token, rename/account with an unknown or expired token, logout with
@@ -497,11 +504,18 @@ These 20 scenarios are added to `harness/required.yaml` in this phase, by file a
     only sometimes, so the race is made certain with a test-only SQLite trigger that drops the
     name write (`RAISE(IGNORE)`), for both the username change and the guest signup. A trigger
     that inserts the other player does not work: D1's `changes` counts the trigger's insert.
-- [ ] R5. Should fix (group C). The real room logout for a registered user is never tested
+- [x] R5. Should fix (group C). The real room logout for a registered user is never tested
   (`GameRoom.logOut`, `RoomSockets.closeLogin`; scenario `connections-and-leaving` #33 runs the
   driver's own `logOutInRoom.ts`). Add a Workers-pool or route test calling the real `logOut`
   (only that login's sockets close with 4401, another browser stays, the seat shows away); add
   `connected: false` to #33's then.
+  - Fixed: `tools/route-tests/roomLogout.test.ts` (with `RoomSocket.ts`) signs up a registered
+    user with two logins and a guest, starts a 2-player game over real room sockets, and logs
+    out each login through `/api/logout`: the first login's socket closes with 4401 while the
+    second browser and the other player stay connected and nobody is away; after the second
+    logout the seat shows away to the other player and stays in the game. #33's then has
+    `connected: false`, and the room driver's `logOutInRoom.ts` now closes the logged-out
+    connection (`HARNESS:` commit, noted under Q95).
 - [x] R6. Should fix (group B). Signup accepts an expired guest login
   (`src/server/api/signupRoute.ts:20-24`, `findLogoutAccount`); refuse with `invalid_token` as
   A1.14 says, reusing the expiry check.
@@ -514,10 +528,16 @@ These 20 scenarios are added to `harness/required.yaml` in this phase, by file a
   - Fixed: the rooms are left first and the login deleted last; if any room fails the login is
     kept and the route answers 503, shown by the client as "Could not log out" (Q100). No test
     makes a room fail; the browser tests and route tests cover the normal logout.
-- [ ] R8. Note. `src/server/GameRoom.ts` is at 300 non-blank lines; split it before adding to it.
-- [ ] R9. Suggestion (group C). Whether a session is a guest's is only in `StoredSession.isGuest`
+- [x] R8. Note. `src/server/GameRoom.ts` is at 300 non-blank lines; split it before adding to it.
+  - Answered: noted; group C's fixes did not touch `GameRoom.ts`, so it stays at 300 lines. The
+    next change that adds to it splits it first.
+- [x] R9. Suggestion (group C). Whether a session is a guest's is only in `StoredSession.isGuest`
   on the client; after a signup in one tab another tab keeps guest menus. Have the session
   answer carry the account kind.
+  - Fixed: `POST /api/session` answers `isGuest` (`findSessionAccount`, which
+    `findPlayerByTokenHash` now wraps), and the client takes the account kind and name from
+    the answer when a page opens, unless the session changed meanwhile (noted under Q100). A tab
+    left open during a signup in another tab still learns it only at its next page load.
 - [x] R10. Suggestion (group A). The route test calls the real Turnstile siteverify, so
   `npm run check` needs the network: note it in `docs/enforcement.md`.
   - Fixed: noted in the Vitest row of `docs/enforcement.md`.
