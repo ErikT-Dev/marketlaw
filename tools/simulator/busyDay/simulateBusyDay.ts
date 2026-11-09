@@ -26,6 +26,7 @@ import { parseClientMessage } from "../../../src/shared/protocol/parseClientMess
 import { ROOM_CODE_CHARACTERS } from "../../../src/shared/ROOM_CODE_CHARACTERS.ts";
 import { RoomCode } from "../../../src/shared/RoomCode.ts";
 import { BUSY_DAY } from "./BUSY_DAY.ts";
+import { busyDayAccountRows } from "./busyDayAccountRows.ts";
 import { BusyDayCounter } from "./BusyDayCounter.ts";
 import type { BusyDayCount } from "./BusyDayCount.ts";
 import { busyDayChatContext } from "./busyDayChatContext.ts";
@@ -271,7 +272,8 @@ export function simulateBusyDay(): BusyDayCount {
   day.counter.count(
     "database",
     BUSY_DAY.newGuests * BUSY_DAY.rowsPerNewGuest +
-      BUSY_DAY.returningPlayers * BUSY_DAY.rowsPerReturningPlayer,
+      BUSY_DAY.returningPlayers * BUSY_DAY.rowsPerReturningPlayer +
+      busyDayAccountRows(),
   );
   return day.counter.total();
 }

@@ -1919,3 +1919,36 @@ file.
   by the scenarios and unit tests with the real numbers (the harness runner uses the spec's
   limit). `siteGameLimitOf` and `siteChatLimitOf` share `configuredLimitOf`.
 - **Implemented:** phase 23, item 4b follow-up.
+
+## Q102. How are logins and signups measured for B11 and B18, and how are the routes' logs checked?
+
+- **Phase:** 23, item 4c (B11, B18, exit criteria).
+- **Question:** B11 is the 99th percentile over every handled message, measured as wall-clock
+  time in the room scenarios. A login or signup spends almost all its CPU time in one password
+  hash (D29, about 7-8 ms), but there are only a handful of such requests among thousands of
+  room messages, so mixing them in would hide a slow hash below the 99th percentile, and wall
+  time under the load of `npm run check` adds time the Worker would not bill. B18 does not say
+  how many account actions a busy day has. The routes run only in the Workers runtime, so a test
+  of their logs needs that runtime.
+- **Options:** for B11, (a) add the hash times to the room messages' percentile, or (b) measure
+  them as their own group and take the larger of the two 99th percentiles; wall-clock or CPU
+  time. For the logs, (a) a browser test against `wrangler dev`, whose output a test cannot
+  read, or (b) wrangler's own test harness (`createTestHarness`, wrangler 4.150.0, already a
+  dependency), which runs the Worker with its Durable Objects and a fresh D1 and returns the
+  Worker's console output.
+- **Solution:** B11 (b): the harness hashes 5 batches of 10 signups (`hashPassword`) and 10
+  logins (`verifyPassword`) and records each batch's process CPU time per hash (Windows counts
+  CPU time in 15 ms steps, hence batches); B11 is the larger of the room messages' 99th
+  percentile and the hashes' 99th percentile. Measured: 8 ms. B18: the busy day adds 20 guest
+  signups (3 rows: the account and its name and email index entries), 10 signups when not
+  logged in (5: account, name and email index, login and its index), 40 logins (2: the login
+  and its index), 10 logins after failed ones (3, clearing the failures), 20 failed logins (1),
+  20 logouts (2: the login and its index) and 10 username changes (2: account and name index),
+  300 rows in all, counted as D1 counts index entries; the day measures 3,026 of 5,000. Reads
+  are not counted here (B16 counts room, lobby and token reads only). Logs: (b),
+  `tools/route-tests/accountRoutes.test.ts` runs guest, signup, login by name, a failed login,
+  login by email, username change, account and logout through the real routes and fails if
+  any console line contains a token, the password or the email address. It sends the human
+  check to Turnstile with Cloudflare's always-passing test secret, so it needs the network,
+  like the browser tests.
+- **Implemented:** phase 23, item 4c.

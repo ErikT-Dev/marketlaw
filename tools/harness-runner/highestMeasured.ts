@@ -39,6 +39,16 @@ function simulated(run: HarnessRun, budget: string): ReadonlyArray<number> {
   }
 }
 
+function computingTimeMs(
+  messageMs: ReadonlyArray<number>,
+  passwordHashMs: ReadonlyArray<number>,
+): number | undefined {
+  const percentiles = [messageMs, passwordHashMs]
+    .filter((measured) => measured.length > 0)
+    .map((measured) => percentileOf(measured, 0.99));
+  return percentiles.length === 0 ? undefined : Math.ceil(Math.max(...percentiles));
+}
+
 export function highestMeasured(run: HarnessRun, budget: string): number | undefined {
   const values = [
     ...run.runs.flatMap(({ measurements }) =>
@@ -47,8 +57,8 @@ export function highestMeasured(run: HarnessRun, budget: string): number | undef
     ...simulated(run, budget),
     ...(budget === "B18" && run.busyDay !== null ? [busyDayTotal(run.busyDay.written)] : []),
   ];
-  if (values.length === 0) {
-    return undefined;
+  if (budget === "B11") {
+    return computingTimeMs(values, run.passwordHashCpuMs);
   }
-  return budget === "B11" ? Math.ceil(percentileOf(values, 0.99)) : Math.max(...values);
+  return values.length === 0 ? undefined : Math.max(...values);
 }

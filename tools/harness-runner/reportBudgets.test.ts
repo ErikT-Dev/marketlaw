@@ -21,6 +21,7 @@ const RUN: HarnessRun = {
   replayExportProblems: [],
   simulation: NO_GAMES,
   busyDay: { written: { room: 10, alarm: 20, lobby: 30, database: 40 }, rowsRead: 500 },
+  passwordHashCpuMs: [],
   simulatedInvariants: [],
 };
 
@@ -45,6 +46,13 @@ describe("the budget report", () => {
     expect(item).toContain("passes");
     expect(item).toContain("limit: 5000 (rows written, Durable Object and D1");
     expect(item).toContain("measured: 100, by busy-day simulator");
+  });
+
+  it("measures the computing time of a login or signup by its password hash", () => {
+    const run = { ...RUN, passwordHashCpuMs: [6.2, 7.4, 7.1] };
+    expect(itemOf(reportBudgets(run, BUDGETS, []), "B11")).toContain(
+      "measured: 8, by room scenarios",
+    );
   });
 
   it("lists a required budget over its limit as failing", () => {

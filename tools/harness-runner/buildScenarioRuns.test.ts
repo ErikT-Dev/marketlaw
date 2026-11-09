@@ -46,6 +46,7 @@ async function judge(required: RequiredList): Promise<ReadonlyArray<string>> {
     replayExportProblems: [],
     simulation: NO_GAMES,
     busyDay: null,
+    passwordHashCpuMs: [],
     simulatedInvariants: [],
   };
   return judgeHarness(run);
