@@ -17,8 +17,7 @@ function lobbyLoggedOut(answers: Answers = {}) {
   );
   render(
     <LobbyPage
-      name={null}
-      isGuest={false}
+      account={null}
       joinError={null}
       removal={null}
       onJoin={vi.fn()}

@@ -12,6 +12,7 @@ type Props = {
   readonly error?: IconText | null;
   readonly type?: "text" | "email" | "password";
   readonly autoComplete?: string;
+  readonly isDisabled?: boolean;
 };
 
 export function TextInput(props: Props) {
@@ -24,6 +25,7 @@ export function TextInput(props: Props) {
     error = null,
     type = "text",
     autoComplete,
+    isDisabled = false,
   } = props;
   const id = useId();
   const messageId = `${id}-message`;
@@ -40,6 +42,7 @@ export function TextInput(props: Props) {
         autoComplete={autoComplete}
         value={value}
         maxLength={maxLength}
+        disabled={isDisabled}
         aria-invalid={error !== null}
         aria-describedby={message === undefined ? undefined : messageId}
         onChange={(event) => {

@@ -6,6 +6,7 @@ import type { GameResult } from "../../../shared/GameResult";
 import type { RoomView } from "../../../shared/protocol/RoomView";
 import { RoomCode } from "../../../shared/RoomCode";
 import { NO_ROOM_CHAT } from "../../store/NO_ROOM_CHAT";
+import { testAccount } from "../../testing/testAccount";
 import { RoomAfterGamePage } from "./RoomAfterGamePage";
 
 const RESULT: GameResult = {
@@ -49,6 +50,7 @@ function roomAfterGame(room: RoomView, result: GameResult = RESULT) {
     <RoomAfterGamePage
       room={room}
       myName="Ann"
+      account={testAccount({ name: "Ann" })}
       result={result}
       turn={20}
       viewer={1}

@@ -3,6 +3,7 @@ import type { RoomUpdate } from "../../shared/protocol/RoomUpdate";
 import type { PendingAction } from "../store/PendingAction";
 import type { RejectedMove } from "../store/RejectedMove";
 import { NO_ROOM_CHAT } from "../store/NO_ROOM_CHAT";
+import { testAccount } from "./testAccount";
 
 export function gamePageProps(
   update: RoomUpdate,
@@ -18,6 +19,7 @@ export function gamePageProps(
       onUnmute: vi.fn(),
       onSeen: vi.fn(),
     },
+    account: testAccount(),
     pendingActions,
     rejectedMove,
     onAction: vi.fn(),

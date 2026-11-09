@@ -350,7 +350,7 @@ These 20 scenarios are added to `harness/required.yaml` in this phase, by file a
     there (or keep the old `myName` while in that room). Locally, apply migrations with
     `npm run db:migrate:local` before browser tests (0008 was missing; GitHub applies them).
 
-- [ ] 4b. **User menu, account settings and the guest logout warning** (S2.3, S12.5, S12.6,
+- [x] 4b. **User menu, account settings and the guest logout warning** (S2.3, S12.5, S12.6,
   S12.7; design boards "Account: settings", "Account: settings, guest", "Account: guest log out
   warning", "Account: user menu", "Account: user menu, guest"). **Large.**
   - The lobby's user box (`src/client/screens/lobby/LobbyTopBar.tsx`) opens the user menu and is
@@ -365,6 +365,44 @@ These 20 scenarios are added to `harness/required.yaml` in this phase, by file a
     progress). The user box shows "Guest" or nothing for registered users as the design shows.
   - Browser tests as in 4a, including signing up mid-game and keeping the seat, logging in from a
     second browser context, and logging out.
+  - Done (2026-11-09): the user box is now a button (`screens/account/UserMenu`, still labelled
+    "Your account") that opens the user menu (`UserMenuItems`, a list "User menu"): **Sign up to
+    keep your account** for guests, Account settings, My match history (shown disabled until
+    phase 25, Q100), Log out. `UserAccount` holds the menu and its dialogs and is the same in the
+    lobby (`LobbyAccount`), the waiting room and the room after a game (`RoomPageFrame`) and the
+    game's top bar (`GameTopBar`, before the clock); it takes an `AccountBinding`
+    (`accountBindingOf`, passed down like `ChatBinding`). `AccountSettingsDialog`: username with
+    **Change** (`UsernameSetting`; disabled with "You changed it on … You can change it again on
+    …" during the 7 days), the guest note with **Sign up**, **Log out**, **Close**.
+    `GuestLogOutWarning` (S12.6: Cancel, Sign up instead, Log out anyway) comes first for a
+    guest's Log out from the menu or settings; a registered user logs out at once. Sign up for a
+    guest reuses `SignUpDialog` with the guest's name. Server: read-only `POST /api/account`
+    (`api/accountRoute`, `AccountResponse` with `usernameWait`, `accounts/usernameChangeAllowedAt`,
+    also used by `decideUsernameChange`); room views carry `myName` (the name in that room, Q96),
+    which the room screens now use instead of `session.name` (so `AcceptDialog` and the rest
+    compare the room's own name); `PROTOCOL_VERSION` 9. Store: account actions moved into
+    `store/AccountSessionStore` (base class of `ClientStore`, now 254 non-blank lines) with
+    `logOut` (`POST /api/logout`, then the lobby logged out; no answer keeps the login with a
+    message), `changeUsername` and `loadAccount`; `RemoteGameHost` reports close code 4401 as
+    connection `logged_out` without reconnecting, and the store then goes to the lobby logged out
+    ("You logged out."). `StoredSession.isGuest` now reaches the room's user box. `Modal` text
+    wraps inside the game's top bar (`white-space: normal`). Tests: `account/userAccount.test.tsx`,
+    `store/accountActions.test.tsx`, host and server unit tests, browser test
+    `e2e/userMenu.spec.ts` (a guest signs up mid-game and keeps the seat, changes the username; a
+    guest logs out through the warning and leaves the game; the registered user logs out, logs in
+    from a second browser and rejoins by code; screenshots `user-menu-guest`,
+    `sign-up-during-a-game`, `user-menu`, `account-settings`, `account-settings-guest`,
+    `guest-log-out-warning`). Decisions in Q100. Differs from the phase file: nothing.
+  - For later items: `POST /api/account` has no route test yet and logs nothing (item 4c); it
+    writes no rows. The 1280x720 game screenshots changed because the top bar now holds the user
+    box (the player order badges get narrower there). Locally, `e2e/userMenu.spec.ts` with
+    `--workers=2` sometimes times out in `openLobby` under load; with one worker it passes.
+    Unresolved: `e2e/chat.spec.ts` "players chat in the waiting room and in the game" failed at
+    1280x720 in about 5 of 14 local runs on this branch (the room never answers Cid's first
+    in-game `send_chat`: no update, no chat, no rejection), and passed 9 of 9 on `9c0c9a6`; with
+    extra frame logging it passed 5 of 5, so the cause was not found. Watch it on GitHub; the
+    first suspect is timing around the room asking the lobby for chat quota
+    (`room/receiveAskingLobby.ts`), as nothing in 4b touches chat.
 
 - [ ] 4c. **Busy-day simulator: logins and signups** (B11, B18; exit criteria). **Small.**
   - `tools/simulator/busyDay/BUSY_DAY.ts` gains signups and logins (and failed logins) with their

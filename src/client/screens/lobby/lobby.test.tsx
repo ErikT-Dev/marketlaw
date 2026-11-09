@@ -6,6 +6,7 @@ import type { RoomView } from "../../../shared/protocol/RoomView";
 import { RoomCode } from "../../../shared/RoomCode";
 import { LobbyPage } from "./LobbyPage";
 import { NO_ROOM_CHAT } from "../../store/NO_ROOM_CHAT";
+import { testAccount } from "../../testing/testAccount";
 import { WaitingRoomPage } from "./WaitingRoomPage";
 
 async function succeed() {
@@ -16,8 +17,7 @@ function lobby(changes: Partial<Parameters<typeof LobbyPage>[0]> = {}) {
   const onJoin = vi.fn();
   render(
     <LobbyPage
-      name="Ann"
-      isGuest
+      account={testAccount({ name: "Ann" })}
       joinError={null}
       removal={null}
       onJoin={onJoin}
@@ -60,6 +60,7 @@ function waitingRoom(view: RoomView, hasSiteGameLimitNotice = false) {
     <WaitingRoomPage
       room={view}
       myName="Ann"
+      account={testAccount({ name: "Ann" })}
       onLeave={vi.fn()}
       rejection={null}
       hasSiteGameLimitNotice={hasSiteGameLimitNotice}
@@ -114,7 +115,7 @@ describe("the lobby", () => {
     vi.stubGlobal("fetch", async () =>
       Promise.resolve(Response.json({ name: "Busy Harbour Mayor" })),
     );
-    const { onJoin } = lobby({ name: null });
+    const { onJoin } = lobby({ account: null });
     fireEvent.change(screen.getByRole("textbox", { name: "Room code" }), {
       target: { value: "K7QR2P" },
     });

@@ -3,7 +3,7 @@ import { requestGeneratedName } from "../../api/requestGeneratedName";
 import type { AccountDialog } from "./AccountDialog";
 import type { AccountDialogs } from "./AccountDialogs";
 
-export function useAccountDialogs(name: string | null): AccountDialogs {
+export function useAccountDialogs(): AccountDialogs {
   const [dialog, setDialog] = useState<AccountDialog | null>(null);
   return {
     dialog,
@@ -12,7 +12,7 @@ export function useAccountDialogs(name: string | null): AccountDialogs {
     },
     openSignUp: async () => {
       setDialog(null);
-      setDialog({ kind: "sign_up", prefilledName: name ?? (await requestGeneratedName()) });
+      setDialog({ kind: "sign_up", prefilledName: await requestGeneratedName() });
     },
     close: () => {
       setDialog(null);

@@ -1,4 +1,5 @@
 import type { RoomView } from "../shared/protocol/RoomView";
+import type { AccountBinding } from "./screens/account/AccountBinding";
 import { chatBindingOf } from "./chatBindingOf";
 import { ServerClockOffset } from "./screens/game/ServerClockOffset";
 import { waitingRoomNoticesOf } from "./screens/lobby/waitingRoomNoticesOf";
@@ -11,14 +12,16 @@ type Props = {
   readonly state: ClientState;
   readonly room: RoomView;
   readonly myName: string;
+  readonly account: AccountBinding;
 };
 
-export function WaitingRoomScreen({ store, state, room, myName }: Props) {
+export function WaitingRoomScreen({ store, state, room, myName, account }: Props) {
   return (
     <ServerClockOffset value={state.serverClockOffsetMs}>
       <WaitingRoomPage
         room={room}
         myName={myName}
+        account={account}
         chat={chatBindingOf(store, state.chat)}
         onChangeSize={(size) => {
           store.sendRoomAction({ type: "change_size", size });

@@ -198,6 +198,13 @@ describe("RemoteGameHost", () => {
     expect(network.events).toEqual([{ type: "connection", status: "room_gone" }]);
   });
 
+  it("reports a logout and does not reconnect after it", () => {
+    const network = connectedHost();
+    network.handlers().onClose(4401);
+    expect(network.connects()).toBe(1);
+    expect(network.events).toEqual([{ type: "connection", status: "logged_out" }]);
+  });
+
   it("returns no action id when the action could not be sent", () => {
     const network = connectedHost();
     network.goOffline();

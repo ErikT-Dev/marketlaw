@@ -1877,3 +1877,27 @@ file.
   before the taken check saves a D1 read; capitals are what a player sees, so changing them is a
   real change, while sending the same name is a no-op that should not cost a week.
 - **Implemented:** `accounts.md` A2.4, `screens.md` S10.9; phase 23, item 3.
+
+## Q100. The user menu's details: match history, the 7-day date, the name in a room and a failed logout (S12.5, S12.7, A1.14, A2.4)?
+
+- **Phase:** 23, item 4b (S2.3, S12.5, S12.6, S12.7).
+- **Question:** S12.7 lists My match history, whose screen comes only in phase 25. S12.5 shows
+  the next allowed username change date, which no answer carried. After a guest signs up or
+  renames in a room, the client knew only the new name, while the room keeps the old one (Q96).
+  Nothing says what the client does when a logout gets no answer, or when another tab of the
+  same browser logs out.
+- **Options:** leave My match history out or show it disabled; compute the date in the client or
+  have the server send it; keep the old name in the stored session or have the room say it.
+- **Solution:** My match history is shown disabled until phase 25 (the menu keeps the design's
+  shape). A read-only `POST /api/account` answers the username and, during the 7 days, when it
+  was changed and when it can be changed again (no rows written); the settings dialog asks it
+  when it opens and after a change. Each room view now carries `myName`, the player's own name
+  in that room, and the room screens use it (protocol version 9); the user box shows the account
+  name. A logout that gets no answer keeps the player logged in with "Could not log out. Try
+  again in a moment."; a room socket closed for a logout (close code 4401) takes that tab to the
+  lobby logged out with "You logged out." A registered user's Log out acts at once; a guest's
+  shows the S12.6 warning first, from the menu and from account settings.
+- **Why:** the server decides the 7 days (A2.4) and the room decides its names (Q96), so the
+  client only shows them; forgetting a login the server still holds would leave a guest's seat
+  in a game without a way back.
+- **Implemented:** phase 23, item 4b.

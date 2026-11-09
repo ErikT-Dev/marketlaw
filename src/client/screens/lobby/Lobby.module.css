@@ -27,31 +27,6 @@
   font-weight: var(--font-weight-bold);
 }
 
-.userBox {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-  padding: var(--space-sm) var(--space-md);
-  border: 1px solid var(--color-panel-border);
-  border-radius: var(--radius-md);
-  background: var(--color-panel-base);
-}
-
-.avatar {
-  display: grid;
-  place-items: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: var(--color-status-online);
-  color: var(--color-background-game-window);
-  font-weight: var(--font-weight-bold);
-}
-
-.userName {
-  display: block;
-}
-
 .columns {
   display: grid;
   flex: 1;

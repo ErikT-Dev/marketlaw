@@ -6,26 +6,18 @@ import type { LobbyFeed } from "../../shared/LobbyFeed";
 import type { OpenLobbyFeed } from "../../shared/OpenLobbyFeed";
 import type { ActionIntent } from "../../shared/protocol/ActionIntent";
 import type { RoomCode } from "../../shared/RoomCode";
-import type { GuestResponse } from "../../shared/api/GuestResponse";
-import type { LoginRequest } from "../../shared/api/LoginRequest";
-import type { SignupRequest } from "../../shared/api/SignupRequest";
-import { requestGuest } from "../api/requestGuest";
-import { requestLogin } from "../api/requestLogin";
-import { requestSignup } from "../api/requestSignup";
 import { requestRoom } from "../api/requestRoom";
-import { requestSession } from "../api/requestSession";
 import type { EpochMs } from "../../shared/EpochMs";
 import type { RemovalReason } from "../../shared/protocol/RemovalReason";
 import type { RoomIntent } from "../../shared/protocol/RoomIntent";
 import type { NewRoom } from "./NewRoom";
 import { requestTestSeat } from "../api/requestTestSeat";
-import type { ClientState } from "./ClientState";
+import { AccountSessionStore } from "./AccountSessionStore";
 import { chatAfterRefusal } from "./chatAfterRefusal";
 import { chatAfterSending } from "./chatAfterSending";
 import { CODES_THAT_RELOAD_THE_GAME } from "./CODES_THAT_RELOAD_THE_GAME";
 import { initialClientState } from "./initialClientState";
 import { NO_ROOM_CHAT } from "./NO_ROOM_CHAT";
-import { ObservableState } from "./ObservableState";
 import type { PendingAction } from "./PendingAction";
 import { readSession } from "./readSession";
 import { roomChatAfter } from "./roomChatAfter";
@@ -34,7 +26,7 @@ import { writeSession } from "./writeSession";
 
 type OpenHost = (code: RoomCode, token: string) => GameHost;
 
-export class ClientStore extends ObservableState<ClientState> {
+export class ClientStore extends AccountSessionStore {
   private host: GameHost | null = null;
   private readonly openHost: OpenHost;
   private readonly openLobby: OpenLobbyFeed;
@@ -59,37 +51,6 @@ export class ClientStore extends ObservableState<ClientState> {
     this.lobbyFeed ??= this.openLobby((publicRooms) => {
       this.change({ publicRooms });
     });
-  }
-
-  private async checkSession(session: StoredSession): Promise<void> {
-    const answer = await requestSession(session.token);
-    if (answer?.isLoggedIn === false && this.state.session?.token === session.token) {
-      this.leaveRoom("Your login has ended. Choose a username to play again.", null);
-    }
-  }
-
-  readonly startAsGuest = async (name: string, humanCheck: string): Promise<ReasonCode | null> =>
-    this.startSession(await requestGuest(name, humanCheck), true);
-
-  readonly logIn = async (login: LoginRequest): Promise<ReasonCode | null> =>
-    this.startSession(await requestLogin(login), false);
-
-  readonly signUp = async (signup: Omit<SignupRequest, "token">): Promise<ReasonCode | null> => {
-    const guest = this.state.session?.isGuest === true ? this.state.session : null;
-    const token = guest === null ? {} : { token: guest.token };
-    return this.startSession(await requestSignup({ ...signup, ...token }), false);
-  };
-
-  private startSession(answer: GuestResponse, isGuest: boolean): ReasonCode | null {
-    if (!answer.isOk) {
-      return answer.reason;
-    }
-    const current = this.state.session;
-    const roomCode = current?.token === answer.token ? current.roomCode : null;
-    const session = { token: answer.token, name: answer.name, isGuest, roomCode };
-    writeSession(session);
-    this.change({ session, notice: null });
-    return null;
   }
 
   readonly startFromSeatLink = async (
@@ -177,7 +138,7 @@ export class ClientStore extends ObservableState<ClientState> {
     this.leaveRoom(null, this.sessionOutsideRooms());
   };
 
-  private leaveRoom(notice: string | null, session: StoredSession | null): void {
+  protected override leaveRoom(notice: string | null, session: StoredSession | null): void {
     this.host?.close();
     this.host = null;
     this.watchLobby();
@@ -254,6 +215,10 @@ export class ClientStore extends ObservableState<ClientState> {
   }
 
   private receiveConnection(status: ConnectionStatus): void {
+    if (status === "logged_out") {
+      this.leaveRoom("You logged out.", null);
+      return;
+    }
     if (status === "room_gone") {
       const goneRoomCode = this.state.session?.roomCode ?? null;
       this.leaveRoom(null, this.sessionOutsideRooms());

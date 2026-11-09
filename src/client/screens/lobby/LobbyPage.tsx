@@ -3,6 +3,7 @@ import type { SignupRequest } from "../../../shared/api/SignupRequest";
 import type { PublicRoomView } from "../../../shared/protocol/PublicRoomView";
 import type { ReasonCode } from "../../../shared/ReasonCode";
 import { Toast } from "../../components/Toast";
+import type { AccountBinding } from "../account/AccountBinding";
 import type { JoinError } from "../../store/JoinError";
 import type { NewRoom } from "../../store/NewRoom";
 import type { RemovalNotice } from "../../store/RemovalNotice";
@@ -18,8 +19,7 @@ import { PublicRoomsList } from "./PublicRoomsList";
 import { useLobbyFlow } from "./useLobbyFlow";
 
 type Props = {
-  readonly name: string | null;
-  readonly isGuest: boolean;
+  readonly account: AccountBinding | null;
   readonly joinError: JoinError | null;
   readonly removal: RemovalNotice | null;
   readonly onJoin: (code: string) => void;
@@ -32,18 +32,13 @@ type Props = {
 };
 
 export function LobbyPage(props: Props) {
-  const { name, joinError, removal, onJoin, onCreate, onStartAsGuest, onDismissRemoval } = props;
-  const { publicRooms, isGuest } = props;
+  const { account, joinError, removal, onJoin, onCreate, onStartAsGuest, onDismissRemoval } = props;
+  const { publicRooms } = props;
   const now = useServerNow();
-  const flow = useLobbyFlow(name !== null, onJoin);
+  const flow = useLobbyFlow(account !== null, onJoin);
   return (
     <div className={styles["page"]}>
-      <LobbyAccount
-        name={name}
-        isGuest={isGuest}
-        onLogIn={props.onLogIn}
-        onSignUp={props.onSignUp}
-      />
+      <LobbyAccount account={account} onLogIn={props.onLogIn} onSignUp={props.onSignUp} />
       <main className={styles["columns"]}>
         <section className={styles["panel"]} aria-labelledby="rooms-heading">
           <div className={styles["panelHeader"]}>

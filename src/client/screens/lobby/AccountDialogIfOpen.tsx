@@ -7,7 +7,6 @@ import { SignUpDialog } from "./SignUpDialog";
 
 type Props = {
   readonly dialogs: AccountDialogs;
-  readonly isGuest: boolean;
   readonly onLogIn: (login: LoginRequest) => Promise<ReasonCode | null>;
   readonly onSignUp: (signup: Omit<SignupRequest, "token">) => Promise<ReasonCode | null>;
 };
@@ -25,7 +24,7 @@ function closingOnSuccess<Request>(
   };
 }
 
-export function AccountDialogIfOpen({ dialogs, isGuest, onLogIn, onSignUp }: Props) {
+export function AccountDialogIfOpen({ dialogs, onLogIn, onSignUp }: Props) {
   const { dialog, close } = dialogs;
   if (dialog === null) {
     return null;
@@ -42,7 +41,7 @@ export function AccountDialogIfOpen({ dialogs, isGuest, onLogIn, onSignUp }: Pro
   return (
     <SignUpDialog
       prefilledName={dialog.prefilledName}
-      isGuest={isGuest}
+      isGuest={false}
       onSubmit={closingOnSuccess(onSignUp, close)}
       onCancel={close}
     />

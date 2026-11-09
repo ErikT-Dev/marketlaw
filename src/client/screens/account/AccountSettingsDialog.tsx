@@ -1,0 +1,48 @@
+import { Button } from "../../components/Button";
+import { Modal } from "../../components/Modal";
+import styles from "./Account.module.css";
+import type { AccountBinding } from "./AccountBinding";
+import { UsernameSetting } from "./UsernameSetting";
+
+type Props = {
+  readonly account: AccountBinding;
+  readonly onSignUp: () => void;
+  readonly onLogOut: () => void;
+  readonly onClose: () => void;
+};
+
+export function AccountSettingsDialog({ account, onSignUp, onLogOut, onClose }: Props) {
+  return (
+    <Modal title="Account settings" size="large" onClose={onClose}>
+      <UsernameSetting
+        name={account.name}
+        onChangeUsername={account.onChangeUsername}
+        onLoadAccount={account.onLoadAccount}
+      />
+      {account.isGuest ? (
+        <section className={styles["guestNote"]} aria-labelledby="guest-note-heading">
+          <h3 id="guest-note-heading" className={styles["guestNoteTitle"]}>
+            You are playing as a guest
+          </h3>
+          <p className={styles["guestNoteText"]}>
+            Your account only works in this browser. Sign up to keep your games and rating and log
+            in from anywhere.
+          </p>
+          <div>
+            <Button look="primary" onClick={onSignUp}>
+              Sign up
+            </Button>
+          </div>
+        </section>
+      ) : null}
+      <div className={styles["settingsButtons"]}>
+        <Button look="secondary" onClick={onLogOut}>
+          Log out
+        </Button>
+        <Button look="secondary" onClick={onClose}>
+          Close
+        </Button>
+      </div>
+    </Modal>
+  );
+}

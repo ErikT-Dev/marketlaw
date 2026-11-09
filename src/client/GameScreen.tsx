@@ -1,4 +1,5 @@
 import type { RoomUpdate } from "../shared/protocol/RoomUpdate";
+import type { AccountBinding } from "./screens/account/AccountBinding";
 import { chatBindingOf } from "./chatBindingOf";
 import { rematchHandlersOf } from "./rematchHandlersOf";
 import { GamePage } from "./screens/GamePage";
@@ -12,10 +13,12 @@ type Props = {
   readonly state: ClientState;
   readonly update: RoomUpdate;
   readonly myName: string;
+  readonly account: AccountBinding;
   readonly onCloseResult: () => void;
 };
 
-export function GameScreen({ store, state, update, myName, onCloseResult }: Props) {
+export function GameScreen(props: Props) {
+  const { store, state, update, myName, onCloseResult } = props;
   const { room } = update;
   const { onAskRematch, onAccept, onDecline } = rematchHandlersOf(store);
   const canAskRematch = room.namesInRoom.length >= 2 && room.asking === null;
@@ -24,6 +27,7 @@ export function GameScreen({ store, state, update, myName, onCloseResult }: Prop
       <GamePage
         update={update}
         chat={chatBindingOf(store, state.chat)}
+        account={props.account}
         pendingActions={state.pendingActions}
         rejectedMove={state.rejectedMove}
         onAction={store.sendAction}
