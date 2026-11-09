@@ -111,7 +111,7 @@ These 20 scenarios are added to `harness/required.yaml` in this phase, by file a
     `accounts` #4's `emails_sent`, #6, #28, #29 stay "not yet"); guest removal after 90 days
     (phase 24 item 4, although D27 says "from phase 23 on"; the phase files decide the order).
 
-- [ ] 1a. **Logins per browser and password hashes** (A1.1, A1.6, A1.14; D29, Q90, Q95).
+- [x] 1a. **Logins per browser and password hashes** (A1.1, A1.6, A1.14; D29, Q90, Q95).
   **Large.**
   - A migration adds a `logins` table (token hash, player id, created and last-use times) so a
     registered user can be logged in in several browsers, each with its own token and its own
@@ -127,6 +127,29 @@ These 20 scenarios are added to `harness/required.yaml` in this phase, by file a
     reason `password_invalid`.
   - The email key function (A1.11) lives here too, with unit tests, since login by email
     (item 1b) and signup (item 2) both use it.
+  - Done (2026-11-09): migration `0007_logins_and_registered_accounts.sql` rebuilds `players`
+    (SQLite cannot drop the unique `token_hash` column) as a WITHOUT ROWID table and adds
+    `logins` (WITHOUT ROWID, `token_hash` key, `player_id` index); existing guests' tokens and
+    last uses move to `logins`, so they keep working. A new guest still writes 4 rows (B18
+    `rowsPerNewGuest` unchanged), the daily last use 1 row on `logins`. `insertGuest` writes
+    both rows in one batch (the login only if the account insert took the name);
+    `findPlayerByTokenHash` and `testRooms/isTestRoomSeat` join `logins` to `players`.
+    Hashing in `src/server/accounts/`: `hashPassword`, `verifyPassword` (null stored hash =
+    unknown account: hashes against `DUMMY_PASSWORD_HASH`, always false; reads the count from the
+    stored value, refuses over 100,000; constant-time compare), `PASSWORD_HASHING`,
+    `pbkdf2Sha256Bytes`; `passwordProblem` (graphemes, as `measureChatText`) and
+    `emailKeyOf`, each with unit tests. Differs from the phase file: nothing.
+  - For later items: new `players` columns: `kind` ('guest' | 'registered', default guest),
+    `password_hash`, `email` (as entered), `email_key`, `email_entered_ms`,
+    `is_email_confirmed` (0/1), `failed_logins_ms` (JSON array text of failure times, default
+    '[]'; item 1b decides how many to keep), `username_changed_ms` (null until the first change).
+    The partial index `players_email_key (email_key, is_email_confirmed DESC, email_entered_ms)`
+    serves Q92's lookup (`ORDER BY is_email_confirmed DESC, email_entered_ms LIMIT 1`); guests
+    without an email write no index row. A new login is one `logins` row (2 rows written with its
+    `player_id` index); logout deletes it by `token_hash`. `password_invalid`, `email_invalid`
+    and `login_failed` are not yet in `src/shared/ReasonCode.ts`: the item whose route first
+    returns one adds it there, to `REJECTION_MESSAGES.ts` and to the screens.md message table
+    (spec first). `passwordProblem` and `emailKeyOf` are so far used only by their tests.
 
 - [ ] 1b. **Log in** (A1.5, A1.12, A1.13; Q91, Q92; scenarios `accounts` #11, #12, #13, #14,
   #30, #31, #32, #33). **Large.**
