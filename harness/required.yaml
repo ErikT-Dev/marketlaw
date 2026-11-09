@@ -286,6 +286,24 @@ scenarios:
     - usernames are unique ignoring capital letters
     - Deleted player cannot be used as a username
     - rejects a username with two spaces in a row
+    - changing the username during signup does not count toward the 7-day limit
+    - signup needs the human check
+    - rejects a password shorter than 8 or longer than 64 characters
+    - a registered user logs in with username or email and password
+    - a wrong password is rejected
+    - after 3 failed logins in 15 minutes further logins need the human check but the account is not locked
+    - after 3 failed logins a login without the human check is rejected
+    - a username can be changed at most once every 7 days
+    - a successful login clears the failed logins
+    - the human check after failed logins ends 15 minutes after the latest failed attempt
+    - a login with an unknown username fails like a wrong password
+    - logging in by email finds the account that entered the unconfirmed address first
+    - rejects an email address without an at sign
+    - a player who is not logged in signs up as a registered user at once
+    - logging out ends the login only in that browser
+    - a guest who logs out while waiting in a room leaves it
+    - a new account can change its username at once
+    - a username change keeps the old name inside the room the player is in
   rooms:
     - a player creates a public room with a chosen size and becomes its owner
     - a private room is not listed in the lobby but can be joined with its code
@@ -341,6 +359,8 @@ scenarios:
     - a player who leaves during a vote is no longer asked
     - a player who leaves after answering a vote leaves the count shown unchanged
     - a vote goes on when the player who called it leaves
+    - a guest who logs out during a game leaves it
+    - a registered user who logs out during a game keeps their seat
   lobby-queue-and-limits:
     - a player who started 10 games today cannot start another
     - after 50 games start on the site today no more games start
