@@ -451,7 +451,48 @@ These 20 scenarios are added to `harness/required.yaml` in this phase, by file a
     GitHub judges the full suite. `docs/enforcement.md`: the account browser tests, the lobby
     driver's account steps, B11's password hash, B18's account actions and the route test that
     keeps tokens, passwords and email addresses out of the logs.
-- [ ] Phase review and fixes.
+- [ ] Phase review (2026-11-09, `phase-reviewer`): not ready; 1 blocker, 5 should fix, 4
+  suggestions, 1 note. Fixer groups: A = R1, R10, R11; B = R2, R4, R6, R7; C = R3, R5, R9.
+- [ ] R1. Blocker (group A). B11 goes over its limit inside `npm run check` (measured 20 and 11
+  of 10 ms; 8 alone): `tools/harness-runner/measurePasswordHashCpuMs.ts`, `highestMeasured.ts`,
+  `PASSWORD_HASHING.ts`. With 5 batches the 99th percentile is the highest batch; Windows CPU
+  time steps 15.6 ms; it measures Node, not workerd. Never lower the limit or loosen the
+  measurement silently: lower the iterations (update D29/Q90, `DUMMY_PASSWORD_HASH`) or show
+  with numbers the method is wrong and change it on the record. Show both halves of B11 in the
+  report. The releaser measures `/api/logins` and `/api/signups` CPU on the live Worker
+  (`wrangler tail`) and records it in Q90.
+- [ ] R2. Should fix (group B). Q97 reveals whether an email address has an account
+  (`src/server/accounts/decideLogin.ts:14-17`), against A1.5, A1.3 and Q91's reason. Count
+  failures for unknown login keys too (small D1 table keyed by sha256 of the login key, same
+  `failedLoginsAfter`, pruned by the daily cron); reword A1.13 back; update Q97.
+- [ ] R3. Should fix (group C). After a rename the freed old name can join the same waiting
+  room (`src/server/room/joinRoom.ts:8-33`); `AcceptDialog.tsx:36` decides `hasAccepted` by
+  name. Record the question, decide it in the spec first, and take the accept state from the
+  view rather than comparing names.
+- [ ] R4. Should fix (group B). The account routes have no hostile-client tests
+  (`tools/route-tests/accountRoutes.test.ts`): malformed bodies on all five routes, signup with
+  an unknown or registered token, rename/account with an unknown or expired token, logout with
+  an unknown token, the 409 `username_taken` race; exact status and body, plus a D1 read that
+  nothing changed.
+- [ ] R5. Should fix (group C). The real room logout for a registered user is never tested
+  (`GameRoom.logOut`, `RoomSockets.closeLogin`; scenario `connections-and-leaving` #33 runs the
+  driver's own `logOutInRoom.ts`). Add a Workers-pool or route test calling the real `logOut`
+  (only that login's sockets close with 4401, another browser stays, the seat shows away); add
+  `connected: false` to #33's then.
+- [ ] R6. Should fix (group B). Signup accepts an expired guest login
+  (`src/server/api/signupRoute.ts:20-24`, `findLogoutAccount`); refuse with `invalid_token` as
+  A1.14 says, reusing the expiry check.
+- [ ] R7. Suggestion (group B). Logout deletes the login before leaving the rooms and swallows
+  room failures (`src/server/api/logoutRoute.ts:21`, `:38`): leave the rooms first, delete the
+  login last.
+- [ ] R8. Note. `src/server/GameRoom.ts` is at 300 non-blank lines; split it before adding to it.
+- [ ] R9. Suggestion (group C). Whether a session is a guest's is only in `StoredSession.isGuest`
+  on the client; after a signup in one tab another tab keeps guest menus. Have the session
+  answer carry the account kind.
+- [ ] R10. Suggestion (group A). The route test calls the real Turnstile siteverify, so
+  `npm run check` needs the network: note it in `docs/enforcement.md`.
+- [ ] R11. Suggestion (group A). Add "My match history shown disabled until phase 25" (Q100) to
+  the phase file's Known gaps.
 - [ ] Second finisher run.
 - [ ] Release.
 
@@ -473,3 +514,4 @@ are each helper's conversation size at its end.
 | Builder, item 4b chat test failure | 38 | 225k | 115 | done (daily chat limit used up locally, Q101) |
 | Builder, item 4c | 14 | 157k | 76 | done |
 | Finisher, first run | 34 | 105k | 46 | done |
+| Phase reviewer | 18 | 198k | 91 | not ready, 1 blocker, 11 findings |
