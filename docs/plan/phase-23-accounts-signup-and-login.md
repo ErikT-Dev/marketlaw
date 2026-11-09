@@ -544,7 +544,17 @@ These 20 scenarios are added to `harness/required.yaml` in this phase, by file a
 - [x] R11. Suggestion (group A). Add "My match history shown disabled until phase 25" (Q100) to
   the phase file's Known gaps.
   - Fixed: added to Known gaps after this phase.
-- [ ] Second finisher run.
+- [x] Second finisher run.
+  - Done (2026-11-09): local D1 migrated (0009). `npm run check` passed (594 tests).
+    `npm run harness` passed: 453 scenarios, 367 pass, 0 fail, 86 not yet required; B11
+    measured 8 of 10 (room messages: 2, password hash: 8), B18 3,066 of 5,000; every budget
+    within its limit. Browser tests (2 workers, a fresh `wrangler dev` started by the tests):
+    shard 1/2 68 passed; shard 2/2 63 passed and 1 failed (`opponents.spec.ts` at 2560x1440,
+    the room heading never came); two players 3 passed; three players 2 passed and 1 failed
+    at 1920x1080 (a dialog stayed open past 5 s); four players 3 passed. Both failed tests
+    passed when rerun alone with one worker, so both were the local server's load; GitHub
+    judges the full suite. No server left on port 8787. `docs/enforcement.md`: the room
+    logout route test under Identity.
 - [ ] Release.
 
 ### Helper log

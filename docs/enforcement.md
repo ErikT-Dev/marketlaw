@@ -77,7 +77,7 @@ rules that rely on it are enforced by review only.
 | Persist before ack | multiplayer | restart e2e · review |
 | Idempotent, ordered actions | multiplayer | scenarios |
 | Full resync | multiplayer | e2e |
-| Identity: unguessable tokens, slow salted password hashes | multiplayer | forged-token scenario · review |
+| Identity: unguessable tokens, slow salted password hashes | multiplayer | forged-token scenario · route test `tools/route-tests/roomLogout.test.ts` (a logout closes only that login's room sockets) · review |
 | Identity: never log tokens, passwords or email addresses | multiplayer | route test `tools/route-tests/accountRoutes.test.ts` (account routes) · review |
 | Replays | multiplayer | replay determinism test |
 | Budgets | cloudflare | harness budget check |
