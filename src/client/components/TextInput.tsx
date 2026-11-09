@@ -10,9 +10,23 @@ type Props = {
   readonly maxLength?: number;
   readonly hint?: string;
   readonly error?: IconText | null;
+  readonly type?: "text" | "email" | "password";
+  readonly autoComplete?: string;
+  readonly isDisabled?: boolean;
 };
 
-export function TextInput({ label, value, onChange, maxLength, hint, error = null }: Props) {
+export function TextInput(props: Props) {
+  const {
+    label,
+    value,
+    onChange,
+    maxLength,
+    hint,
+    error = null,
+    type = "text",
+    autoComplete,
+    isDisabled = false,
+  } = props;
   const id = useId();
   const messageId = `${id}-message`;
   const message = error ?? hint;
@@ -24,8 +38,11 @@ export function TextInput({ label, value, onChange, maxLength, hint, error = nul
       <input
         id={id}
         className={styles["input"]}
+        type={type}
+        autoComplete={autoComplete}
         value={value}
         maxLength={maxLength}
+        disabled={isDisabled}
         aria-invalid={error !== null}
         aria-describedby={message === undefined ? undefined : messageId}
         onChange={(event) => {

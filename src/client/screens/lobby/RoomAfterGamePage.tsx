@@ -13,6 +13,7 @@ import styles from "./Lobby.module.css";
 import { RematchDialogIfAsked } from "./RematchDialogIfAsked";
 import { roomDeletionText } from "./roomDeletionText";
 import { RoomPageFrame } from "./RoomPageFrame";
+import type { AccountBinding } from "../account/AccountBinding";
 import { RoomRejectionAlert } from "./RoomRejectionAlert";
 import { RoomToast } from "./RoomToast";
 import { WaitingPlayers } from "./WaitingPlayers";
@@ -21,6 +22,7 @@ import { WaitingRoomHeader } from "./WaitingRoomHeader";
 type Props = {
   readonly room: RoomView;
   readonly myName: string;
+  readonly account: AccountBinding;
   readonly result: GameResult;
   readonly turn: number;
   readonly viewer: SeatNumber;
@@ -55,12 +57,7 @@ export function RoomAfterGamePage(props: Props) {
           onAskRematch={canAskRematch ? props.onAskRematch : null}
         />
       ) : null}
-      <RematchDialogIfAsked
-        room={room}
-        myName={myName}
-        onAccept={props.onAccept}
-        onDecline={props.onDecline}
-      />
+      <RematchDialogIfAsked room={room} onAccept={props.onAccept} onDecline={props.onDecline} />
     </>
   );
   const resultLine = (
@@ -77,7 +74,7 @@ export function RoomAfterGamePage(props: Props) {
     </p>
   );
   return (
-    <RoomPageFrame myName={myName} chat={props.chat} overlay={overlay}>
+    <RoomPageFrame account={props.account} chat={props.chat} overlay={overlay}>
       <WaitingRoomHeader room={room} subtitle={resultLine} onLeave={props.onLeave}>
         <Button look="primary" onClick={props.onAskRematch} isDisabled={!canAskRematch}>
           Ask for a rematch

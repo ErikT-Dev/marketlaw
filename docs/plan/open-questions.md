@@ -1681,3 +1681,354 @@ file.
 - **Implemented:** `harness/spec/multiplayer.md` M7.6, scenario `connections-and-leaving` "a vote
   goes on when the player who called it leaves", tests in `src/rules/abandonVote.test.ts`; phase
   22, review fixes.
+
+## Q90. How are passwords hashed within the free plan (O4)?
+
+- **Phase:** 23, starter (O4, `accounts.md` open question 2, A1.5, A1.6).
+- **Question:** phase 04 measured PBKDF2-SHA256 on the live Free plan Worker: 10,000 iterations
+  3-4 ms of CPU, 50,000 8-16 ms, 100,000 15-19 ms, and the runtime refuses more than 100,000.
+  OWASP asks for 600,000. B11 allows 10 ms of CPU per request (99th percentile). Which hash, and
+  how strong?
+- **Options:** (a) PBKDF2-SHA256 through Web Crypto at a count that fits B11; (b) PBKDF2 at
+  100,000, over B11 on every login and signup; (c) a hash in WebAssembly (bcrypt, Argon2), slower
+  per millisecond than the built-in one and limited by the same 10 ms; (d) no passwords, an
+  emailed sign-in link, which changes A1.5 and A1.6 and needs the email provider (O3, phase 24).
+- **Solution:** (a). PBKDF2-SHA256 from Web Crypto with 20,000 iterations (about 6-8 ms from the
+  measurement), a random 16-byte salt per password from `crypto.getRandomValues`, and a 32-byte
+  result. The stored value names the method and the count with the salt and the hash
+  (`pbkdf2-sha256$20000$<salt>$<hash>`, base64), so the count can be raised later without a
+  format change. Every login computes exactly one hash: a login for an unknown username or email
+  hashes against a fixed dummy value, so the reply time does not show whether the account
+  exists, and a login refused for a missing human check (A1.13) computes none. The derived bytes
+  are compared in constant time. No server-side pepper: it would need a new secret that only the
+  owner can set.
+- **Why:** it keeps the spec's login method (passwords, A1.5) and fits B11 with room for the rest
+  of the request. Against online guessing the human check after 3 failures (A1.13) is the
+  protection; the iteration count only matters if the D1 database itself leaks, where 20,000 is
+  about 30 times cheaper to attack than OWASP's 600,000. That weakness is accepted for the Free
+  plan and named here for the owner's review.
+- **Implemented:** `decisions.md` O4 moved to Decided as D29; `accounts.md` open question 2
+  removed; phase 23, item 1.
+- **Kept after the phase review (R1):** 20,000 iterations stay. The local measurement that went
+  over B11 measured the build computer's load (Q102); lowering the count to pass it would have
+  meant about 5,000 iterations, four times weaker. B11 now counts the hash at 400 ns per
+  iteration from the live measurements: 8 ms. The live measurement after the phase 23 merge goes
+  here.
+
+## Q91. Failed logins: what counts, and when does the human check end (A1.13)?
+
+- **Phase:** 23, starter (A1.13).
+- **Question:** A1.13 does not say whether the "next 15 minutes" run from the third failure or
+  from each later one, whether a successful login clears the failures, whether an attempt refused
+  for a missing human check counts, or what a login for an unknown account says.
+- **Options:** the 15 minutes from the third failure only, or from the latest failure; clear on
+  success, or let the failures expire; count refused attempts, or not.
+- **Solution:** the 15 minutes run from the latest failed attempt; a successful login clears the
+  failures; an attempt refused for a missing human check is not a failed attempt (no password was
+  checked); a login for an unknown username or email fails with the same `login_failed` as a wrong
+  password. Written into A1.5 and A1.13, with the scenarios `accounts` "a successful login clears
+  the failed logins", "the human check after failed logins ends 15 minutes after the latest
+  failed attempt" and "a login with an unknown username fails like a wrong password".
+- **Why:** "every further attempt" needing the check is meant to slow a guesser, so each new
+  failure keeps the check on; once the right password is given there is nothing left to slow;
+  and the same reply for an unknown account keeps usernames and addresses from being probed.
+- **Implemented:** `accounts.md` A1.5, A1.13; phase 23, item 1.
+
+## Q92. Which account does an email address log in to (A1.5, A1.11)?
+
+- **Phase:** 23, starter (A1.5).
+- **Question:** an unconfirmed address reserves nothing (A1.11), so several accounts can hold the
+  same address, and no address can be confirmed before phase 24. Which account does a login by
+  email find?
+- **Options:** the account that entered the address first; the one that entered it last; try the
+  password on every account with the address (one hash each, over B11).
+- **Solution:** the account that has confirmed the address; while none has, the account that
+  entered it first. Addresses are compared as A1.11 says. Written into A1.5, with the scenario
+  `accounts` "logging in by email finds the account that entered the unconfirmed address first".
+- **Why:** a later signup with someone else's address cannot take over their email login, and
+  the username always works as well.
+- **Implemented:** `accounts.md` A1.5; phase 23, item 1.
+
+## Q93. What is a valid email address (A1.3)?
+
+- **Phase:** 23, starter (A1.3).
+- **Question:** signup asks for an email address, but the spec does not say which ones are
+  refused.
+- **Options:** a full address grammar; a short shape check; none until confirmation.
+- **Solution:** at most 254 characters, no spaces, exactly one "@" with something before it, and a
+  dot in the part after it with something on both sides; otherwise `email_invalid`. Written into
+  A1.3, with the scenario `accounts` "rejects an email address without an at sign".
+- **Why:** confirmation (A1.4) is the real test of an address; the shape check only catches typing
+  mistakes before they cost an email.
+- **Implemented:** `accounts.md` A1.3; phase 23, item 2.
+
+## Q94. Signing up and logging in when not logged in, or as a guest (A1.3, A1.5, S10.1)?
+
+- **Phase:** 23, starter (A1.3, A1.5, S10.1, S12.7).
+- **Question:** S10.1 shows **Sign up** to players who are not logged in, but A1.3 describes signup
+  only from a guest account. And a guest who logs in to another account would lose the guest
+  account without the warning of A1.14.
+- **Options:** signup when logged out first makes a guest, then signs up; or it makes a registered
+  account at once. Log in offered to guests too (silently dropping the guest), or only to players
+  who are not logged in.
+- **Solution:** signup when not logged in makes the account a registered user at once, with the
+  username prefilled as in A1.2 and one human check. Log in is offered only to players who are not
+  logged in (as S10.1 and S12.7 already show); a guest who wants another account logs out first,
+  with the warning. Written into A1.3 and A1.5, with the scenario `accounts` "a player who is not
+  logged in signs up as a registered user at once".
+- **Why:** one form and one human check is what S10.1's button promises, and nobody loses a guest
+  account without the warning.
+- **Implemented:** `accounts.md` A1.3, A1.5; phase 23, items 2 and 4.
+
+## Q95. What does logging out do in a room, and in other browsers (A1.14, M6.10)?
+
+- **Phase:** 23, starter (A1.14, M6.10).
+- **Question:** M6.10 says a guest who logs out during a game leaves it. The spec does not say what
+  happens to a guest waiting in a room, to a registered user's seat, or to the same account's
+  logins in other browsers.
+- **Options:** for a waiting guest, leave the room or stay until the room notices; for a
+  registered user, leave or keep the seat; end every login of the account or only this one.
+- **Solution:** a guest who logs out leaves the room they are in, waiting or playing. A registered
+  user who logs out keeps their seat and place, as if their connection closed (M5, M6 apply as
+  usual), and can log back in. Logging out ends the login of that browser only. Written into
+  A1.14, with the scenarios `accounts` "logging out ends the login only in that browser", "a guest
+  who logs out while waiting in a room leaves it" and `connections-and-leaving` "a registered user
+  who logs out during a game keeps their seat".
+- **Why:** a guest who logged out can never come back, so keeping their place would only make the
+  others wait; a registered user can come back, which is what the disconnect rules are for.
+- **Implemented:** `accounts.md` A1.14; phase 23, items 1 and 2.
+- **Changed after the phase review (R5):** the scenario "a registered user who logs out during a
+  game keeps their seat" also checks that the logged-out connection is closed (`connected:
+  false`). The real room logout is tested in `tools/route-tests/roomLogout.test.ts`.
+
+## Q96. When does the 7-day username wait start, and does a change rename a player in a room (A2.4)?
+
+- **Phase:** 23, starter (A2.4, A3.5).
+- **Question:** A2.4 does not say whether the name chosen when an account is made starts the
+  7 days, nor whether a change shows in a room the player is in. Room records, seats, chat lines
+  and mutes hold names as they were at joining.
+- **Options:** the 7 days from account creation, or from the last change only. Rename the player
+  in their current room (a room and a lobby write, and every place a room keeps the name), or
+  keep the old name there until they join another room.
+- **Solution:** the 7 days run from the last change only; making the account and signing up do
+  not start them. Inside the room the player is in, they keep the name they joined with; the new
+  name shows everywhere else at once and in every room they join afterwards. Game records show
+  current usernames anyway (A3.5, phase 25). Written into A2.4, with the scenarios `accounts` "a
+  new account can change its username at once" and "a username change keeps the old name inside
+  the room the player is in".
+- **Why:** renaming inside a running room touches the seat, the player list, chat and mutes for a
+  change that happens at most once a week; the room is the one place where a stable name helps the
+  other players.
+- **Implemented:** `accounts.md` A2.4; phase 23, item 3.
+
+## Q97. How are failed logins stored, and are logins for unknown accounts counted (A1.5, A1.13)?
+
+- **Phase:** 23, item 1b (A1.5, A1.13).
+- **Question:** A1.13 keeps the human check on for 15 minutes after the latest failed attempt,
+  so once it is on, failures more than 15 minutes apart keep it on. The times of the last few
+  failures alone cannot tell whether it is on. And failures can be counted only on an account
+  that exists; a name or address that no account has has no row to count on, so after 3 failures
+  an existing account asks for the human check and an unknown one does not, which A1.5's "whether
+  the account exists or not" does not mention.
+- **Options:** keep every failure of a run; keep the last 3 failure times plus the time the
+  human check ends; for unknown names, count failures in a new table keyed by name or address
+  (a row per failure and rows that never belong to anyone), or not count them.
+- **Solution:** `players.failed_logins_ms` keeps at most the last 3 failure times within
+  15 minutes of each other, and a new column `login_check_until_ms` (migration
+  `0008_login_check_until.sql`) holds when the human check ends: a failure that makes 3 within
+  15 minutes, or that comes while the check is on, sets it to 15 minutes after that failure. A
+  successful login clears both. Logins for an unknown username or address are not counted and
+  never ask for the human check; written into A1.13. Two failures at the same moment may count
+  as one (read, then write).
+- **Why:** two small values give A1.13 exactly with one row written per failure (B18).
+  Usernames are public anyway (players online, rooms); for an email address, the difference
+  shows only after 3 failed attempts that some registered account entered it, and counting
+  unknown names would cost rows for names nobody has.
+- **Implemented:** `accounts.md` A1.13; phase 23, item 1b.
+- **Changed after the phase review (R2):** not counting unknown names let anyone find out
+  whether an email address has a registered account (3 wrong passwords, then the 4th asks for
+  the human check or not), against A1.5 ("whether the account exists or not"), A1.3 (signup
+  looks the same for a used address) and Q91's reason. Failures for a username or address that
+  no registered account has are now counted the same way, in a new D1 table
+  `unknown_login_failures` (migration `0009_unknown_login_failures.sql`): one row per login
+  key, keyed by the SHA-256 of the key as `loginLookupOf` makes it (`name:` or `email:` and
+  the compared form), so no address is stored readably; the same `failed_logins_ms` and
+  `login_check_until_ms` as `players`, and `forget_after_ms`, 15 minutes after the latest
+  failure, when the row stops mattering. The same `failedLoginsAfter` and
+  `isHumanCheckNeededToLogIn` decide it. A failed login for an unknown key writes one row (an
+  insert or replace, no secondary index), as a wrong password does; the daily cron deletes the
+  rows past `forget_after_ms`, at most one delete per key. B18's busy day adds 20 such failed
+  logins at 2 rows each (the write and its share of the delete), 40 rows: 3,066 of 5,000. A key that later
+  becomes a registered account's name or address is counted on the account from then on, and
+  its old row is forgotten by the cron. The key hash has no secret, so someone holding the
+  database could test guessed addresses against it; only addresses typed into a failed login
+  are there, for at most a day. A1.13 says so, with the scenarios `accounts` "after 3 failed
+  logins with an unknown username further logins need the human check" and "... with an unknown
+  email address ...".
+
+## Q98. Signup's messages, and who can sign up with which login (A1.3, S10.9)?
+
+- **Phase:** 23, item 2 (A1.3, A1.6, A1.11, S10.9).
+- **Question:** `email_invalid` and `password_invalid` had no message in S10.9's table. The spec
+  does not say what signup does for a browser whose login is unknown or already belongs to a
+  registered user, nor what a guest stores when the address entered is already confirmed on
+  another account (A1.11: the address belongs to that account).
+- **Options:** for the login: treat it as not logged in and make a new account, or refuse it. For
+  a confirmed address: store it unconfirmed anyway, or store no address.
+- **Solution:** messages "Enter a whole email address, such as name@example.com." and "Use 8 to 64
+  characters for the password." added to S10.9. A signup that sends a login refuses it with
+  `invalid_token` unless the login is a guest's; only a signup without a login makes a new
+  account (Q94). An address already confirmed on another account is not stored (the account has
+  no email, as A1.11's removal leaves it and scenario `accounts` "signing up with an address
+  already confirmed elsewhere looks the same" expects), and the answer looks the same.
+- **Why:** a stale or registered login sent to signup is a client mistake, and silently making a
+  second account would lose the first; storing an address that another account owns would let
+  it log in by that address (Q92) and break A1.11.
+- **Implemented:** `screens.md` S10.9; phase 23, item 2.
+- **Changed after the phase review (R6):** a guest login unused for longer than A1.14 allows is
+  refused too (`invalid_token`), with the same expiry check as every other route
+  (`loginStateOf`); signup had accepted it.
+
+## Q99. A username change's message, check order and a change to the same name (A2.4, S10.9)?
+
+- **Phase:** 23, item 3 (A2.4, S10.9).
+- **Question:** `username_change_too_soon` had no message in S10.9's table. A2.4 does not say in
+  which order a change is checked, nor what a change to the current name, or to it with other
+  capital letters, does.
+- **Options:** for the same name: refuse it, accept it and start the 7 days, or accept it without
+  changing anything. For capitals only: treat it as the same name, or as a change.
+- **Solution:** message "You can change your username once every 7 days." added to S10.9. A
+  change is checked as the name itself (`username_invalid`, `username_reserved`), then the 7 days,
+  then taken (the player's own name, in any capitals, is not taken for them). The same name
+  exactly is accepted and changes nothing, so the 7 days do not start; a name that differs only
+  in capitals is a change (A2.4 says "another username"). Written into A2.4. The route answers
+  the `GuestResponse` shape with the player's own token, so the client stores the new name as it
+  stores a login.
+- **Why:** checking the name before the wait gives the more useful message first, and the wait
+  before the taken check saves a D1 read; capitals are what a player sees, so changing them is a
+  real change, while sending the same name is a no-op that should not cost a week.
+- **Implemented:** `accounts.md` A2.4, `screens.md` S10.9; phase 23, item 3.
+
+## Q100. The user menu's details: match history, the 7-day date, the name in a room and a failed logout (S12.5, S12.7, A1.14, A2.4)?
+
+- **Phase:** 23, item 4b (S2.3, S12.5, S12.6, S12.7).
+- **Question:** S12.7 lists My match history, whose screen comes only in phase 25. S12.5 shows
+  the next allowed username change date, which no answer carried. After a guest signs up or
+  renames in a room, the client knew only the new name, while the room keeps the old one (Q96).
+  Nothing says what the client does when a logout gets no answer, or when another tab of the
+  same browser logs out.
+- **Options:** leave My match history out or show it disabled; compute the date in the client or
+  have the server send it; keep the old name in the stored session or have the room say it.
+- **Solution:** My match history is shown disabled until phase 25 (the menu keeps the design's
+  shape). A read-only `POST /api/account` answers the username and, during the 7 days, when it
+  was changed and when it can be changed again (no rows written); the settings dialog asks it
+  when it opens and after a change. Each room view now carries `myName`, the player's own name
+  in that room, and the room screens use it (protocol version 9); the user box shows the account
+  name. A logout that gets no answer keeps the player logged in with "Could not log out. Try
+  again in a moment."; a room socket closed for a logout (close code 4401) takes that tab to the
+  lobby logged out with "You logged out." A registered user's Log out acts at once; a guest's
+  shows the S12.6 warning first, from the menu and from account settings.
+- **Why:** the server decides the 7 days (A2.4) and the room decides its names (Q96), so the
+  client only shows them; forgetting a login the server still holds would leave a guest's seat
+  in a game without a way back.
+- **Implemented:** phase 23, item 4b.
+- **Changed after the phase review (R7):** the logout route first logs the player out of their
+  rooms and deletes the login last; if a room cannot be reached, the login is kept and the route
+  answers 503, which the client shows as the failed logout above, so a guest is never logged out
+  while their seat stays in a room they can no longer leave. Trying again logs out of the rooms
+  still left.
+- **Changed after the phase review (R9):** the session answer (`POST /api/session`, asked when
+  a page opens) also says whether the account is a guest, and the client takes the account kind
+  and username from it, so a tab opened after a signup or rename elsewhere shows the right menus
+  without trusting what the browser stored. A tab that stays open during a signup in another tab
+  learns it at its next page load.
+
+## Q101. How can the browser tests send more than 2,000 chat messages a day on one local server?
+
+- **Phase:** 23, item 4b follow-up (A9.6; the same problem as Q69 for chat).
+- **Question:** each room takes the site's chat quota from the lobby in blocks of 20, and the
+  local Durable Object storage keeps the site count between runs, so a day of local browser test
+  runs uses up A9.6's 2,000 messages. From then on every room's first message that needs a block
+  is refused with `site_daily_cap`, and `e2e/chat.spec.ts` fails where a message never shows.
+  This looked like a regression of item 4b, which changed nothing in chat.
+- **Options:** (a) a test route that resets the site chat count; (b) an optional variable that
+  only local and CI servers set, raising the site chat limit, as Q69 does for games.
+- **Solution:** (b), for the reasons of Q69. The limit is the spec's 2,000 in code
+  (`siteChatLimitOf`); a server whose environment sets `TEST_SITE_CHAT_MESSAGES_PER_DAY` uses that
+  number instead. Only `.dev.vars` sets it (locally and in the `.dev.vars` step of `check.yml` and
+  `deploy.yml`, to 1000000), never `wrangler.jsonc` or the live site. The cap itself stays proved
+  by the scenarios and unit tests with the real numbers (the harness runner uses the spec's
+  limit). `siteGameLimitOf` and `siteChatLimitOf` share `configuredLimitOf`.
+- **Implemented:** phase 23, item 4b follow-up.
+
+## Q102. How are logins and signups measured for B11 and B18, and how are the routes' logs checked?
+
+- **Phase:** 23, item 4c (B11, B18, exit criteria).
+- **Question:** B11 is the 99th percentile over every handled message, measured as wall-clock
+  time in the room scenarios. A login or signup spends almost all its CPU time in one password
+  hash (D29, about 7-8 ms), but there are only a handful of such requests among thousands of
+  room messages, so mixing them in would hide a slow hash below the 99th percentile, and wall
+  time under the load of `npm run check` adds time the Worker would not bill. B18 does not say
+  how many account actions a busy day has. The routes run only in the Workers runtime, so a test
+  of their logs needs that runtime.
+- **Options:** for B11, (a) add the hash times to the room messages' percentile, or (b) measure
+  them as their own group and take the larger of the two 99th percentiles; wall-clock or CPU
+  time. For the logs, (a) a browser test against `wrangler dev`, whose output a test cannot
+  read, or (b) wrangler's own test harness (`createTestHarness`, wrangler 4.150.0, already a
+  dependency), which runs the Worker with its Durable Objects and a fresh D1 and returns the
+  Worker's console output.
+- **Solution:** B11 (b): the harness hashes 5 batches of 10 signups (`hashPassword`) and 10
+  logins (`verifyPassword`) and records each batch's process CPU time per hash (Windows counts
+  CPU time in 15 ms steps, hence batches); B11 is the larger of the room messages' 99th
+  percentile and the hashes' 99th percentile. Measured: 8 ms. B18: the busy day adds 20 guest
+  signups (3 rows: the account and its name and email index entries), 10 signups when not
+  logged in (5: account, name and email index, login and its index), 40 logins (2: the login
+  and its index), 10 logins after failed ones (3, clearing the failures), 20 failed logins (1),
+  20 logouts (2: the login and its index) and 10 username changes (2: account and name index),
+  300 rows in all, counted as D1 counts index entries; the day measures 3,026 of 5,000. Reads
+  are not counted here (B16 counts room, lobby and token reads only). Logs: (b),
+  `tools/route-tests/accountRoutes.test.ts` runs guest, signup, login by name, a failed login,
+  login by email, username change, account and logout through the real routes and fails if
+  any console line contains a token, the password or the email address. It sends the human
+  check to Turnstile with Cloudflare's always-passing test secret, so it needs the network,
+  like the browser tests.
+- **Implemented:** phase 23, item 4c.
+- **Changed after the phase review (R1):** the hash half of B11 went over its limit inside
+  `npm run check` (20 and 11 of 10 ms; 8 alone), because the method measured this computer's
+  load, not the Worker. Measured on the build computer (8 logical CPUs, Node, process CPU time
+  per hash, batches of 20): 20,000 iterations 7.5-7.9 ms idle and 14.9-17.2 ms with the other
+  CPUs busy; 10,000 iterations 3.8-4.1 ms idle and 6.3-9.4 ms busy; 100,000 iterations 37.5-39.9
+  ms idle, against 15-19 ms on the live Free plan Worker (phase 04). Node here is about twice as
+  slow as the Worker when idle and four times when busy, so the number judged the machine, and
+  passing it under load would need about 5,000 iterations, four times weaker, for no saving on
+  the Worker. New method: the hash half is the iteration count (`PASSWORD_HASHING`) times
+  400 ns, the highest CPU time per iteration among the live measurements (10,000 iterations at
+  4 ms; 100,000 at 19 ms is 190 ns), times one hash per login or signup: 8 ms at 20,000, and a
+  count above 25,000 fails B11. The report shows both halves: the room messages' 99th percentile
+  and the password hash. The releaser measures the live `/api/logins` and `/api/signups` CPU
+  time (`wrangler tail`) and records it in Q90; a live cost per iteration above 400 ns replaces
+  the figure (`tools/harness-runner/LIVE_PASSWORD_HASH_CPU.ts`). `budgets.yaml` B11's
+  "measured" says so.
+
+## Q103. Can a freed username join a room where the old holder still shows it (A2.4, M1.6)?
+
+- **Phase:** 23, phase review (R3).
+- **Question:** inside a room a player keeps the name they joined with (A2.4, Q96). After they
+  change their username, the old name is free, and another player who takes it could join the
+  same waiting room, so two players in it would show the same name: in the player list, in
+  "accepted so far", in chat, and for mutes, which name the muted player. The spec does not say
+  whether that join is allowed.
+- **Options:** (a) allow it and tell the two apart some other way (a mark next to one name); (b)
+  rename the player in the room after all; (c) refuse the join while a player in the room shows
+  the same name, ignoring capital letters (A2.2).
+- **Solution:** (c). A room refuses a join with `username_in_room` while a player in it has the
+  same name as the joining player's, capital letters ignored; the message is "A player in this
+  room has the same username as you. Join another room." It is checked after the room's other
+  join checks. Written into M1.6, A2.4, S10.6, S10.9 and the reason codes in `HARNESS.md`, with
+  the scenario `accounts` "a freed username cannot join the room where the old holder still
+  shows it". Separately, the accept dialog no longer decides "Accepted" by comparing names: the
+  room view says whether the viewing player has accepted (`hasAccepted`, protocol version 10).
+- **Why:** it can only happen in the minutes after a rename, against the one room the renamed
+  player is in, so refusing costs almost nothing, while two equal names in one room would make
+  "accepted so far", chat and mutes ambiguous. (b) was turned down in Q96.
+- **Implemented:** phase 23, finding R3.

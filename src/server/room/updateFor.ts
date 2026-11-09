@@ -32,6 +32,7 @@ function buildUpdate(record: RoomRecord, playerId: PlayerId): RoomUpdate {
       ownerName: record.players[0]?.name ?? "",
       playerNames: playerNamesOf(record),
       namesInRoom: record.players.map(({ name }) => name),
+      myName: nameOf(record, playerId),
       mySeat: seat?.seat ?? null,
       asking:
         asking === null
@@ -39,6 +40,7 @@ function buildUpdate(record: RoomRecord, playerId: PlayerId): RoomUpdate {
           : {
               deadline: asking.deadline,
               acceptedNames: asking.accepted.map((accepted) => nameOf(record, accepted)),
+              hasAccepted: asking.accepted.includes(playerId),
             },
       deletionAt: endedRoomDeletionAt(record),
     },

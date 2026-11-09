@@ -7,6 +7,7 @@ import { useServerNow } from "../game/useServerNow";
 import { AcceptDialog } from "./AcceptDialog";
 import styles from "./Lobby.module.css";
 import { RoomPageFrame } from "./RoomPageFrame";
+import type { AccountBinding } from "../account/AccountBinding";
 import { RoomRejectionAlert } from "./RoomRejectionAlert";
 import { RoomSizeChoice } from "./RoomSizeChoice";
 import { RoomToast } from "./RoomToast";
@@ -16,6 +17,7 @@ import { WaitingRoomHeader } from "./WaitingRoomHeader";
 type Props = {
   readonly room: RoomView;
   readonly myName: string;
+  readonly account: AccountBinding;
   readonly onChangeSize: (size: 2 | 3 | 4) => void;
   readonly onLeave: () => void;
   readonly onAccept: () => void;
@@ -42,7 +44,6 @@ export function WaitingRoomPage(props: Props) {
           asking={room.asking}
           isRematch={false}
           playerCount={room.size}
-          myName={myName}
           now={now}
           onAccept={onAccept}
           onDecline={onDecline}
@@ -51,7 +52,7 @@ export function WaitingRoomPage(props: Props) {
     </>
   );
   return (
-    <RoomPageFrame myName={myName} chat={props.chat} overlay={overlay}>
+    <RoomPageFrame account={props.account} chat={props.chat} overlay={overlay}>
       <WaitingRoomHeader
         room={room}
         subtitle={`${kind} · ${isOwner ? "you are the owner" : `owner: ${room.ownerName}`}`}

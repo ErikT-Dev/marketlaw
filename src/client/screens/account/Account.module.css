@@ -1,0 +1,156 @@
+.userMenuPlace {
+  position: relative;
+}
+
+.userBox {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-xs) var(--space-md);
+  border: 1px solid var(--color-panel-border);
+  border-radius: var(--radius-md);
+  background: var(--color-panel-base);
+  color: var(--color-text-primary);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.userBox:focus-visible,
+.menuItem:focus-visible,
+.signUpItem:focus-visible,
+.guestLogOutItem:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+}
+
+.avatar {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--color-status-online);
+  color: var(--color-background-game-window);
+  font-weight: var(--font-weight-bold);
+}
+
+.userText {
+  display: flex;
+  flex-direction: column;
+  white-space: nowrap;
+}
+
+.userName {
+  display: block;
+}
+
+.guestMark {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+}
+
+.userMenu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 260px;
+  margin: 0;
+  padding: 6px;
+  border: 1px solid var(--color-panel-border);
+  border-radius: var(--radius-md);
+  background: var(--color-board-user-menu);
+  box-sizing: border-box;
+  list-style: none;
+}
+
+.menuItem,
+.signUpItem,
+.guestLogOutItem {
+  width: 100%;
+  min-height: 39px;
+  padding: 10px var(--space-md);
+  border: none;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--color-text-primary);
+  font: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  text-align: left;
+  cursor: pointer;
+}
+
+.menuItem:hover:enabled,
+.signUpItem:hover,
+.guestLogOutItem:hover {
+  background: var(--color-panel-base);
+}
+
+.menuItem:disabled {
+  color: var(--color-text-muted);
+  cursor: default;
+}
+
+.signUpItem {
+  color: var(--color-board-account-link);
+}
+
+.guestLogOutItem {
+  color: var(--color-board-guest-log-out);
+}
+
+.usernameForm {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+}
+
+.usernameForm > :first-child {
+  flex: 1;
+}
+
+.usernameForm > button {
+  margin-top: 21px;
+}
+
+.guestNote {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  padding: var(--space-md) 14px;
+  border-radius: var(--radius-md);
+  background: var(--color-board-guest-note);
+}
+
+.guestNoteTitle {
+  margin: 0;
+  font-size: var(--font-size-md);
+}
+
+.guestNoteText,
+.warningDetail {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-panel-title);
+}
+
+.warningText {
+  margin: 0;
+  font-weight: var(--font-weight-bold);
+}
+
+.settingsButtons {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-sm);
+}
+
+.warningButtons {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-sm);
+}

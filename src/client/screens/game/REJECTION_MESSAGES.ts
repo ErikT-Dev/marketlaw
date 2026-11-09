@@ -76,11 +76,16 @@ export const REJECTION_MESSAGES: Readonly<Record<ReasonCode, IconText>> = {
   rematch_not_possible:
     "A rematch needs a finished game, at least 2 players in the room and no other rematch being asked.",
   rejoin_too_soon: "You cannot join this room again yet.",
+  username_in_room: "A player in this room has the same username as you. Join another room.",
   human_check_failed: "The human check did not pass. Try it again.",
   username_invalid:
     "Use 3 to 20 letters, digits, spaces, - or _, without spaces at the start or end or two spaces in a row.",
   username_taken: "That username is taken. Choose another one.",
   username_reserved: "That username cannot be used. Choose another one.",
+  login_failed: "Wrong username, email or password.",
+  email_invalid: "Enter a whole email address, such as name@example.com.",
+  password_invalid: "Use 8 to 64 characters for the password.",
+  username_change_too_soon: "You can change your username once every 7 days.",
   no_free_room_code: "No room could be created right now. Try again.",
   no_answer: "The server did not answer. Try again.",
   busy_elsewhere: "You are already in a room, the ranked queue or a game. Leave it first.",

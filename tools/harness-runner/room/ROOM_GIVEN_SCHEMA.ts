@@ -11,7 +11,14 @@ export const ROOM_GIVEN_SCHEMA = v.looseObject({
       state: v.optional(v.picklist(["playing"])),
     }),
   ),
-  accounts: v.optional(v.array(v.strictObject({ name: v.string() }))),
+  accounts: v.optional(
+    v.array(
+      v.strictObject({
+        name: v.string(),
+        kind: v.optional(v.picklist(["guest", "registered"])),
+      }),
+    ),
+  ),
   seats: v.optional(
     v.array(
       v.looseObject({

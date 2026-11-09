@@ -1,5 +1,6 @@
 import type { EpochMs } from "../../shared/EpochMs";
 import type { Result } from "../../shared/Result";
+import { nameKeyOf } from "../accounts/nameKeyOf";
 import type { Identity } from "./Identity";
 import type { JoinRejection } from "./JoinRejection";
 import type { RoomRecord } from "./RoomRecord";
@@ -24,6 +25,9 @@ export function joinRoom(
   }
   if (record.players.length >= record.size) {
     return { isOk: false, error: { reason: "room_full", rejoinAt: null } };
+  }
+  if (record.players.some(({ name }) => nameKeyOf(name) === nameKeyOf(joining.name))) {
+    return { isOk: false, error: { reason: "username_in_room", rejoinAt: null } };
   }
   const joined: RoomRecord = {
     ...record,

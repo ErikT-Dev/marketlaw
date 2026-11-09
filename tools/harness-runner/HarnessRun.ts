@@ -13,5 +13,6 @@ export type HarnessRun = {
   readonly replayExportProblems: ReadonlyArray<string>;
   readonly simulation: SimulationSummary;
   readonly busyDay: BusyDayCount | null;
+  readonly passwordHashCpuMs: number | null;
   readonly simulatedInvariants: ReadonlyArray<string>;
 };

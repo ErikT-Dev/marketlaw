@@ -1,11 +1,6 @@
-import * as v from "valibot";
-import { GuestResponse } from "../../shared/api/GuestResponse";
-import { postJson } from "./postJson";
-
-const NO_ANSWER: GuestResponse = { isOk: false, reason: "no_answer" };
+import type { GuestResponse } from "../../shared/api/GuestResponse";
+import { requestAccount } from "./requestAccount";
 
 export async function requestGuest(name: string, humanCheck: string): Promise<GuestResponse> {
-  const answer = await postJson("/api/guests", { name, humanCheck }).catch(() => null);
-  const parsed = v.safeParse(GuestResponse, answer);
-  return parsed.success ? parsed.output : NO_ANSWER;
+  return requestAccount("/api/guests", { name, humanCheck });
 }

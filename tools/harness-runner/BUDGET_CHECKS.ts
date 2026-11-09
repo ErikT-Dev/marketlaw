@@ -33,7 +33,7 @@ export const BUDGET_CHECKS: Readonly<Record<string, BudgetCheck>> = {
   B11: {
     by: "harness",
     where:
-      "room scenarios through the production path (receiveCheckingGameStart, with a lobby that answers at once), the 99th percentile over every message the room handled of the time it took (wall-clock time, never less than CPU time)",
+      "room scenarios through the production path (receiveCheckingGameStart, with a lobby that answers at once), the 99th percentile over every message the room handled of the time it took (wall-clock time, never less than CPU time); and separately the password hash of one login or signup (one hash each), its iteration count times the CPU time per iteration measured on the live Free plan Worker (400 ns, Q102)",
   },
   B12: {
     by: "harness",
@@ -61,6 +61,6 @@ export const BUDGET_CHECKS: Readonly<Record<string, BudgetCheck>> = {
   B18: {
     by: "harness",
     where:
-      "busy-day simulator, 50 rooms through the room and lobby code to the end of each room, with 2,000 chat messages after the games (the lobby's chat quota blocks, the chat blocks deleted with each room, the replay record with its two indexes, the 30-day delete of an older one, the cleanup alarm's storage delete and the lobby report; setting the cleanup alarm is in B4, with the game's last action), plus the guests' and players' rows in D1",
+      "busy-day simulator, 50 rooms through the room and lobby code to the end of each room, with 2,000 chat messages after the games (the lobby's chat quota blocks, the chat blocks deleted with each room, the replay record with its two indexes, the 30-day delete of an older one, the cleanup alarm's storage delete and the lobby report; setting the cleanup alarm is in B4, with the game's last action), plus the guests' and players' rows in D1 and the day's signups, logins, failed logins (for unknown usernames and addresses too, with their daily delete), logouts and username changes",
   },
 };

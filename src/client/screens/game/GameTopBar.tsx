@@ -6,6 +6,8 @@ import type { PlayerView } from "../../../shared/PlayerView";
 import type { ActionIntent } from "../../../shared/protocol/ActionIntent";
 import { TURN_LIMIT } from "../../../shared/TURN_LIMIT";
 import { PlayerBadge } from "../../components/PlayerBadge";
+import type { AccountBinding } from "../account/AccountBinding";
+import { UserAccount } from "../account/UserAccount";
 import { AwaySeats } from "./AwaySeats";
 import { CallVoteButton } from "./CallVoteButton";
 import styles from "./GameTopBar.module.css";
@@ -19,6 +21,7 @@ type Props = {
   readonly playerNames: ReadonlyArray<string>;
   readonly onAction: (action: ActionIntent) => void;
   readonly isConnected: boolean;
+  readonly account: AccountBinding;
 };
 
 const PHASE_NAMES: Readonly<Record<GamePhase, string>> = {
@@ -59,6 +62,7 @@ export function GameTopBar(props: Props) {
         ))}
       </ol>
       <div className={styles["right"]}>
+        <UserAccount account={props.account} />
         <YourClock view={view} seat={seat} playerNames={playerNames} />
         {view.phase === "ended" ? null : (
           <>

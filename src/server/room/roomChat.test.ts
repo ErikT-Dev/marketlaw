@@ -125,6 +125,19 @@ describe("the room chat", () => {
     ]);
   });
 
+  it("names the chat lines of a renamed player with the name they joined the room with", () => {
+    const room = chatRoom();
+    joinRoomIn(room.storage, BEA, START, EVERYONE);
+    const renamedBea = { ...BEA, name: "Bea City" };
+    joinRoomIn(room.storage, renamedBea, START, EVERYONE);
+    room.say(renamedBea, "hello");
+    expect(shownTo(room, ANN)).toEqual([
+      line("joined_room", "Bea"),
+      { kind: "message", from: "Bea", text: "hello", at: START, isOwn: false },
+    ]);
+    expect(room.record()?.players.map(({ name }) => name)).toEqual(["Ann", "Bea"]);
+  });
+
   it("adds grey lines when the game starts, a player leaves it and it ends", () => {
     const room = chatRoom();
     joinRoomIn(room.storage, BEA, START, EVERYONE);

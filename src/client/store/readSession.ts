@@ -6,6 +6,7 @@ import type { StoredSession } from "./StoredSession";
 const STORED_SESSION = v.object({
   token: v.string(),
   name: v.string(),
+  isGuest: v.optional(v.boolean(), true),
   roomCode: v.nullable(RoomCode),
 });
 

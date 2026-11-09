@@ -29,6 +29,7 @@ export function GameBoard(props: Props) {
             seat={mine}
             playerNames={playerNames}
             onAction={props.onAction}
+            account={props.account}
             isConnected={props.connection === "open"}
           />
           <main className={styles["table"]} inert={props.connection !== "open" || props.isOutdated}>

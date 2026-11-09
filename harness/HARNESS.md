@@ -293,6 +293,7 @@ A repeated action id is not rejected: it returns the original result again.
 | `invalid_game_sizes` | No game size chosen for the ranked queue, or a size other than 2, 3 or 4 (A8.2, A8.3) |
 | `not_asking` | Accepting or declining when no game start or rematch is being asked (M1.10, M8.4) |
 | `rejoin_too_soon` | Rejoining within 2 minutes of not accepting (M1.11, A8.9) |
+| `username_in_room` | Joining a room where a player has the same username, capital letters ignored (M1.6) |
 | `busy_elsewhere` | The player is already waiting in a room, in the queue or in a game (M2) |
 | `rematch_not_possible` | Fewer than 2 players in the room, its game has not ended, or a rematch is already being asked |
 

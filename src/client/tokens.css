@@ -18,6 +18,7 @@
   --color-background-modal-backdrop: rgba(75, 85, 99, 0.75);
   --color-background-modal: #392a4a;
   --color-background-stats-board: rgba(19, 11, 19, 0.8);
+  --color-board-account-link: #c4b5fd;
   --color-board-chat-input-hint: #6b7280;
   --color-board-chat-input-text: #111827;
   --color-board-chat-input: #ffffff;
@@ -29,6 +30,8 @@
   --color-board-chat-sender: #93c5fd;
   --color-board-draw-kind: #2e2442;
   --color-board-draw: #6d28d9;
+  --color-board-guest-log-out: #fca5a5;
+  --color-board-guest-note: #2e2442;
   --color-board-market-phase-text: #1c1206;
   --color-board-market-phase: #f59e0b;
   --color-board-page-dim: rgba(11, 15, 26, 0.78);
@@ -46,6 +49,7 @@
   --color-board-trade-off: #2b2840;
   --color-board-trade-status: #ddd6fe;
   --color-board-trade: #4c1d95;
+  --color-board-user-menu: #1e1b2e;
   --color-button-danger-base: #ef4444;
   --color-button-danger-hover: #dc2626;
   --color-button-disabled-base: #9ca3af;

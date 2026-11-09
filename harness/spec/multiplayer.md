@@ -32,7 +32,9 @@ None yet.
 - **M1.5** Every room has a **room code** of 6 characters, made of the capital letters A–Z and
   digits, leaving out look-alike characters (O, 0, I, 1 and L). No two rooms that exist at the
   same time have the same code.
-- **M1.6** Any player can join a room with its code while it is waiting for players and not full.
+- **M1.6** Any player can join a room with its code while it is waiting for players and not full,
+  unless a player in it has the same username, capital letters ignored (A2.2). That can only
+  happen after a username change, since a room keeps the name a player joined with (A2.4).
 - **M1.7** **Public rooms** are also listed in the lobby, where anyone can see them and join with
   one click. The list shows the players in each room and how many places are free.
 - **M1.8** **Private rooms** can only be joined with the room code.

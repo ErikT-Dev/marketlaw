@@ -1,4 +1,5 @@
 import { useSyncExternalStore } from "react";
+import { accountBindingOf } from "./accountBindingOf";
 import { RoomGameScreen } from "./RoomGameScreen";
 import { LobbyPage } from "./screens/lobby/LobbyPage";
 import { WaitingPage } from "./screens/WaitingPage";
@@ -15,12 +16,14 @@ export function CurrentScreen({ store }: Props) {
   if (session?.roomCode === null || session === null) {
     return (
       <LobbyPage
-        name={session?.name ?? null}
+        account={session === null ? null : accountBindingOf(store, session)}
         joinError={state.joinError}
         removal={state.removal}
         onJoin={(code) => void store.joinRoom(code)}
         onCreate={store.createRoom}
         onStartAsGuest={store.startAsGuest}
+        onLogIn={store.logIn}
+        onSignUp={store.signUp}
         onDismissRemoval={store.dismissRemoval}
         publicRooms={state.publicRooms}
       />
@@ -29,10 +32,20 @@ export function CurrentScreen({ store }: Props) {
   if (update === null) {
     return <WaitingPage connection={state.connection} />;
   }
+  const account = accountBindingOf(store, session);
+  const { myName } = update.room;
   if (update.game === null) {
     return (
-      <WaitingRoomScreen store={store} state={state} room={update.room} myName={session.name} />
+      <WaitingRoomScreen
+        store={store}
+        state={state}
+        room={update.room}
+        myName={myName}
+        account={account}
+      />
     );
   }
-  return <RoomGameScreen store={store} state={state} update={update} myName={session.name} />;
+  return (
+    <RoomGameScreen store={store} state={state} update={update} myName={myName} account={account} />
+  );
 }

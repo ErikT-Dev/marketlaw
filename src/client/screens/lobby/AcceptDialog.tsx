@@ -8,7 +8,6 @@ type Props = {
   readonly asking: AskingView;
   readonly isRematch: boolean;
   readonly playerCount: number;
-  readonly myName: string;
   readonly now: number;
   readonly onAccept: () => void;
   readonly onDecline: () => void;
@@ -32,8 +31,8 @@ function textsOf(isRematch: boolean, playerCount: number) {
 }
 
 export function AcceptDialog(props: Props) {
-  const { asking, myName, now, onAccept, onDecline } = props;
-  const hasAccepted = asking.acceptedNames.includes(myName);
+  const { asking, now, onAccept, onDecline } = props;
+  const { hasAccepted } = asking;
   const texts = textsOf(props.isRematch, props.playerCount);
   return (
     <Modal title={texts.title} size="large">

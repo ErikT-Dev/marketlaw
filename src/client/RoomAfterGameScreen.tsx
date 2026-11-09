@@ -1,6 +1,7 @@
 import type { GameResult } from "../shared/GameResult";
 import type { PlayerView } from "../shared/PlayerView";
 import type { RoomView } from "../shared/protocol/RoomView";
+import type { AccountBinding } from "./screens/account/AccountBinding";
 import { chatBindingOf } from "./chatBindingOf";
 import { rematchHandlersOf } from "./rematchHandlersOf";
 import { ServerClockOffset } from "./screens/game/ServerClockOffset";
@@ -16,14 +17,17 @@ type Props = {
   readonly view: PlayerView;
   readonly result: GameResult;
   readonly myName: string;
+  readonly account: AccountBinding;
 };
 
-export function RoomAfterGameScreen({ store, state, room, view, result, myName }: Props) {
+export function RoomAfterGameScreen(props: Props) {
+  const { store, state, room, view, result, myName, account } = props;
   return (
     <ServerClockOffset.Provider value={state.serverClockOffsetMs}>
       <RoomAfterGamePage
         room={room}
         myName={myName}
+        account={account}
         result={result}
         turn={view.turn}
         viewer={view.seat}

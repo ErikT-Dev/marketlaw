@@ -20,7 +20,12 @@ type FakeHost = {
 };
 
 function storeInRoom(): FakeHost {
-  writeSession({ token: "token", name: "Ann", roomCode: v.parse(RoomCode, "ABCDEF") });
+  writeSession({
+    token: "token",
+    name: "Ann",
+    isGuest: true,
+    roomCode: v.parse(RoomCode, "ABCDEF"),
+  });
   let listener: ((event: HostEvent) => void) | null = null;
   let resyncCount = 0;
   let nextId = 1;
@@ -75,7 +80,12 @@ afterEach(() => {
   vi.useRealTimers();
 });
 
-const SEAT_LINK = { token: "seat-token", name: "Seat 1", roomCode: v.parse(RoomCode, "K7QR2P") };
+const SEAT_LINK = {
+  token: "seat-token",
+  name: "Seat 1",
+  isGuest: true,
+  roomCode: v.parse(RoomCode, "K7QR2P"),
+};
 
 function serverSaysTestSeat(isTestRoomSeat: boolean): void {
   vi.stubGlobal("fetch", () => Promise.resolve(Response.json({ isTestRoomSeat })));

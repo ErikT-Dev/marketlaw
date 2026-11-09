@@ -1,7 +1,5 @@
 import { randomUUID } from "node:crypto";
 import * as v from "valibot";
-import { firstFreeName } from "../../../src/server/accounts/firstFreeName.ts";
-import { generatedNames } from "../../../src/server/accounts/generatedNames.ts";
 import { guestNameDecision } from "../../../src/server/accounts/guestNameDecision.ts";
 import { loginStateOf } from "../../../src/server/accounts/loginStateOf.ts";
 import { nameKeyOf } from "../../../src/server/accounts/nameKeyOf.ts";
@@ -10,6 +8,7 @@ import type { Identity } from "../../../src/server/room/Identity.ts";
 import { claimPlayer } from "../../../src/server/lobby/claimPlayer.ts";
 import { countGameStart } from "../../../src/server/lobby/countGameStart.ts";
 import type { GameStartRejection } from "../../../src/server/lobby/GameStartRejection.ts";
+import { siteChatLimitOf } from "../../../src/server/lobby/siteChatLimitOf.ts";
 import { siteGameLimitOf } from "../../../src/server/lobby/siteGameLimitOf.ts";
 import { EMPTY_LOBBY } from "../../../src/server/lobby/EMPTY_LOBBY.ts";
 import type { LobbyRecord } from "../../../src/server/lobby/LobbyRecord.ts";
@@ -48,9 +47,10 @@ import { leaveRoomIfFreeIn } from "../../../src/server/room/leaveRoomIfFreeIn.ts
 import type { ChatQuotaGrant } from "../../../src/server/room/ChatQuotaGrant.ts";
 import { grantChatQuota } from "../../../src/server/lobby/grantChatQuota.ts";
 import { fireAlarmsUntil } from "./fireAlarmsUntil.ts";
-
-const GENERATED_CANDIDATES = 10;
-const NAME_STEP = 7;
+import type { LobbyRegistration } from "./LobbyRegistration.ts";
+import type { FailedLogins } from "../../../src/server/accounts/FailedLogins.ts";
+import { registrationFromGiven } from "./registrationFromGiven.ts";
+import { scriptedGeneratedName } from "./scriptedGeneratedName.ts";
 
 export class LobbySession {
   record: RoomRecord | null;
@@ -61,7 +61,9 @@ export class LobbySession {
   readonly messagesTo = new Map<string, ServerMessage[]>();
   rejected: ReasonCode | null = null;
   generatedName: string | null = null;
-  loggedInAs: string | null = null;
+  loggedIn: Readonly<Record<string, string>> | null = null;
+  readonly visitorLogins = new Map<string, string>();
+  readonly unknownLoginFailures = new Map<string, FailedLogins>();
   private readonly pendingJoins = new Map<string, string>();
   private live: ReadonlyArray<PlayerId> = [];
   lobby: LobbyRecord;
@@ -88,8 +90,10 @@ export class LobbySession {
   constructor(given: LobbyGiven, random: ScriptedRandom) {
     this.random = random;
     this.now = v.parse(EpochMs, given.clock_ms ?? 0);
-    for (const { name, last_used_ms: lastUsedMs } of given.accounts ?? []) {
-      this.addAccount(name, lastUsedMs ?? 0);
+    for (const account of given.accounts ?? []) {
+      const registration = registrationFromGiven(account, this.now);
+      const usernameChangedMs = account.last_username_change_ms ?? null;
+      this.addAccount(account.name, account.last_used_ms ?? 0, registration, usernameChangedMs);
     }
     this.lobby = { ...EMPTY_LOBBY, today: countsTodayFromGiven(given, this.now, this) };
     this.chat = new LobbyChat(chatFromGiven(given, (name) => this.identityNamed(name), this.now));
@@ -182,12 +186,9 @@ export class LobbySession {
   }
 
   askGeneratedName(): void {
-    const draw = this.random.next("generated_name", "setup");
-    const candidates =
-      draw.kind === "listed" && typeof draw.value === "string"
-        ? [draw.value]
-        : generatedNames((limit) => this.nextNameIndex(limit), GENERATED_CANDIDATES);
-    this.generatedName = firstFreeName(candidates, this.takenKeys());
+    const asked = scriptedGeneratedName(this.random, this.takenKeys(), this.namesAsked);
+    this.generatedName = asked.name;
+    this.namesAsked = asked.namesAsked;
   }
 
   createGuest(visitor: string, step: Readonly<Record<string, unknown>>): void {
@@ -209,7 +210,7 @@ export class LobbySession {
   openSite(name: string): void {
     const account = this.accounts.get(name);
     const state = account === undefined ? "expired" : loginStateOf(account.lastUsedMs, this.now);
-    this.loggedInAs = state === "expired" ? null : name;
+    this.loggedIn = state === "expired" ? null : { as: name };
     if (account !== undefined && state === "record_use") {
       this.accounts.set(name, { ...account, lastUsedMs: this.now });
     }
@@ -264,7 +265,10 @@ export class LobbySession {
   }
 
   private grantChatQuota(): ChatQuotaGrant {
-    const grant = grantChatQuota(this.lobby, this.now);
+    const grant = grantChatQuota(this.lobby, {
+      now: this.now,
+      siteChatMessagesPerDay: siteChatLimitOf({}),
+    });
     this.lobby = grant.record;
     return { kind: "granted", count: grant.granted };
   }
@@ -288,21 +292,19 @@ export class LobbySession {
         );
   }
 
-  private nextNameIndex(limit: number): number {
-    this.namesAsked += 1;
-    return (this.namesAsked * NAME_STEP) % limit;
-  }
-
   private takenKeys(): ReadonlyArray<string> {
     return [...this.accounts.keys()].map(nameKeyOf);
   }
 
-  private addAccount(name: string, lastUsedMs: number): LobbyAccount {
-    const account: LobbyAccount = {
-      identity: { playerId: v.parse(PlayerId, randomUUID()), name },
-      kind: "guest",
-      lastUsedMs,
-    };
+  private addAccount(
+    name: string,
+    lastUsedMs: number,
+    registration: LobbyRegistration | null = null,
+    usernameChangedMs: number | null = null,
+  ): LobbyAccount {
+    const playerId = v.parse(PlayerId, randomUUID());
+    const identity = { playerId, name };
+    const account: LobbyAccount = { identity, lastUsedMs, registration, usernameChangedMs };
     this.accounts.set(name, account);
     return account;
   }

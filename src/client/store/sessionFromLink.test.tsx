@@ -6,6 +6,7 @@ describe("sessionFromLink", () => {
     expect(sessionFromLink("#session=abc123&name=Ann&room=K7QR2P")).toEqual({
       token: "abc123",
       name: "Ann",
+      isGuest: true,
       roomCode: "K7QR2P",
     });
   });

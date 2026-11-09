@@ -13,6 +13,11 @@ export function sessionFromLink(hash: string): StoredSession | null {
   const fields = Object.fromEntries(new URLSearchParams(hash.replace(/^#/, "")));
   const parsed = v.safeParse(LINKED_SESSION, fields);
   return parsed.success
-    ? { token: parsed.output.session, name: parsed.output.name, roomCode: parsed.output.room }
+    ? {
+        token: parsed.output.session,
+        name: parsed.output.name,
+        isGuest: true,
+        roomCode: parsed.output.room,
+      }
     : null;
 }

@@ -39,6 +39,11 @@ import { leaveRoomIfFreeIn } from "./room/leaveRoomIfFreeIn";
 import type { PublishingRoom } from "./PublishingRoom";
 import { publishReceived } from "./publishReceived";
 import { sendChatSince } from "./sendChatSince";
+import type { ConnectionAttachment } from "./ConnectionAttachment";
+import type { ReplySocket } from "./ReplySocket";
+import type { ClientMessage } from "../shared/protocol/ClientMessage";
+import { leaveAsLoggedOutGuest } from "./leaveAsLoggedOutGuest";
+import { UNHEARD_REPLIES } from "./UNHEARD_REPLIES";
 
 export class GameRoom extends DurableObject<Env> {
   private readonly sockets = new RoomSockets(this.ctx);
@@ -52,7 +57,7 @@ export class GameRoom extends DurableObject<Env> {
     now: nowMs(),
   }));
 
-  private readonly publishing: PublishingRoom<WebSocket> = {
+  private readonly publishing: PublishingRoom<ReplySocket> = {
     rooms: this.rooms,
     storage: this.storage,
     sockets: this.sockets,
@@ -106,6 +111,32 @@ export class GameRoom extends DurableObject<Env> {
       const before = loadRoom(this.storage);
       if (leaveRoomIfFreeIn(this.storage, playerId)) {
         await this.publishChange(before, [{ playerId, reason: "left", rejoinAt: null }]);
+      }
+    });
+  }
+
+  async logOut(login: {
+    readonly sender: Sender;
+    readonly token: string;
+    readonly isGuest: boolean;
+  }): Promise<void> {
+    const { identity, tokenHash } = login.sender;
+    const reply = {
+      socket: UNHEARD_REPLIES,
+      attachment: { identity, tokenHash, rejectionTimes: [] },
+    };
+    await this.inTurn(async () => {
+      if (login.isGuest) {
+        const receive = async (message: ClientMessage) =>
+          this.receive(reply, { isOk: true, value: message }, login.sender);
+        await leaveAsLoggedOutGuest(
+          { storage: this.storage, receive },
+          { playerId: identity.playerId, token: login.token },
+        );
+      }
+      this.sockets.closeLogin(tokenHash);
+      if (!this.sockets.livePlayers().includes(identity.playerId)) {
+        await this.markDisconnected(identity.playerId, null);
       }
     });
   }
@@ -195,21 +226,23 @@ export class GameRoom extends DurableObject<Env> {
     if (identity === null || this.sockets.isConnectedElsewhere(identity.playerId, socket)) {
       return;
     }
-    await this.inTurn(async () => {
-      const record = loadRoom(this.storage);
-      const marked =
-        record === null
-          ? null
-          : withConnection(record, identity.playerId, { isConnected: false, at: nowMs() });
-      if (marked !== null && marked !== record) {
-        this.storage.write(marked);
-        await this.rooms.save();
-        await this.syncAlarm();
-      }
-      if (record !== null) {
-        this.sockets.updateOthers(record, socket);
-      }
-    });
+    await this.inTurn(async () => this.markDisconnected(identity.playerId, socket));
+  }
+
+  private async markDisconnected(playerId: PlayerId, closing: ReplySocket | null): Promise<void> {
+    const record = loadRoom(this.storage);
+    const marked =
+      record === null
+        ? null
+        : withConnection(record, playerId, { isConnected: false, at: nowMs() });
+    if (marked !== null && marked !== record) {
+      this.storage.write(marked);
+      await this.rooms.save();
+      await this.syncAlarm();
+    }
+    if (record !== null) {
+      this.sockets.updateOthers(record, closing);
+    }
   }
 
   private async inTurn<T>(handle: () => Promise<T>): Promise<T> {
@@ -232,15 +265,19 @@ export class GameRoom extends DurableObject<Env> {
     const sender = parsed.isOk
       ? await senderOfToken(this.env.DB, parsed.value.token, attachmentOf(socket))
       : null;
-    await this.inTurn(async () => this.receive(socket, parsed, sender));
+    await this.inTurn(async () =>
+      this.receive({ socket, attachment: attachmentOf(socket) }, parsed, sender),
+    );
   }
 
   private async receive(
-    socket: WebSocket,
+    {
+      socket,
+      attachment,
+    }: { readonly socket: ReplySocket; readonly attachment: ConnectionAttachment },
     parsed: ReturnType<typeof parseClientMessage>,
     sender: Sender | null,
   ): Promise<void> {
-    const attachment = attachmentOf(socket);
     const recordBefore = loadRoom(this.storage);
     const messageCount = this.rooms.chat.messages().length;
     const outcome = await receiveAskingLobbyFor(

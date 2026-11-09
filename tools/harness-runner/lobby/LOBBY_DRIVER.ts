@@ -12,6 +12,10 @@ import { replayRecordThen } from "./replayRecordThen.ts";
 import { lobbyChatThen } from "./lobbyChatThen.ts";
 import { chatTextOfStep } from "./chatTextOfStep.ts";
 import { publicRoomsOf } from "../../../src/server/lobby/publicRoomsOf.ts";
+import { logInVisitor } from "./logInVisitor.ts";
+import { logOutPlayer } from "./logOutPlayer.ts";
+import { signUpInLobby } from "./signUpInLobby.ts";
+import { changeUsernameInLobby } from "./changeUsernameInLobby.ts";
 
 const ROOM_ACTIONS = [
   "change_size",
@@ -40,6 +44,8 @@ function runPlayerStep(
     session.joinRoom(name, step["code"]);
   } else if (action === "open_site") {
     session.openSite(name);
+  } else if (action === "log_out") {
+    logOutPlayer(session, name);
   } else if (action === "leave_game") {
     session.sendGameAction(name, { type: "leave_game" });
   } else if (action === "send_chat") {
@@ -54,12 +60,21 @@ function runPlayerStep(
   }
 }
 
-function runVisitorStep(
+async function runVisitorStep(
   session: LobbySession,
   visitor: string,
   step: Readonly<Record<string, unknown>>,
 ) {
   switch (textOf(step["action"])) {
+    case "log_in":
+      await logInVisitor(session, visitor, step);
+      return;
+    case "log_out":
+      session.visitorLogins.delete(visitor);
+      return;
+    case "sign_up":
+      await signUpInLobby(session, { visitor }, step);
+      return;
     case "join_room":
       session.visitorJoins(visitor, step["code"]);
       return;
@@ -74,7 +89,7 @@ function runVisitorStep(
   }
 }
 
-function runStep(session: LobbySession, step: ScenarioStep): void {
+async function runStep(session: LobbySession, step: ScenarioStep): Promise<void> {
   if (typeof step === "string") {
     throw new Error(`the lobby driver has no step ${step}`);
   }
@@ -86,7 +101,11 @@ function runStep(session: LobbySession, step: ScenarioStep): void {
   } else if (typeof step["reconnect"] === "string") {
     session.setConnected(step["reconnect"], true);
   } else if (typeof step["visitor"] === "string") {
-    runVisitorStep(session, step["visitor"], step);
+    await runVisitorStep(session, step["visitor"], step);
+  } else if (step["action"] === "sign_up") {
+    await signUpInLobby(session, { player: textOf(step["player"]) }, step);
+  } else if (step["action"] === "change_username") {
+    await changeUsernameInLobby(session, textOf(step["player"]), textOf(step["username"]));
   } else {
     runPlayerStep(session, textOf(step["player"]), step);
   }
@@ -101,9 +120,9 @@ function startSession(rawGiven: Readonly<Record<string, unknown>>, random: Scrip
   };
   let isUnchanged = true;
   const driverSession: DriverSession = {
-    runStep(step) {
+    async runStep(step) {
       before = session.snapshot();
-      runStep(session, step);
+      await runStep(session, step);
       session.reportRooms();
       isUnchanged = before === session.snapshot();
     },
@@ -160,6 +179,10 @@ export const LOBBY_DRIVER: ScenarioDriver = {
     "open_site",
     "create_guest",
     "ask_generated_name",
+    "log_in",
+    "log_out",
+    "sign_up",
+    "change_username",
     "wait_ms",
     "disconnect",
     "reconnect",
@@ -184,7 +207,17 @@ export const LOBBY_DRIVER: ScenarioDriver = {
   nestedFields: new Map([
     [
       "given.accounts",
-      new Set(["name", "kind", "last_used_ms", "actions_today", "games_started_today"]),
+      new Set([
+        "name",
+        "kind",
+        "email",
+        "email_confirmed",
+        "password",
+        "last_used_ms",
+        "last_username_change_ms",
+        "actions_today",
+        "games_started_today",
+      ]),
     ],
     [
       "given.room",
@@ -219,9 +252,9 @@ export const LOBBY_DRIVER: ScenarioDriver = {
     ],
     ["then.game", new Set(["kind", "turn", "seats"])],
     ["then.message_to", new Set(["player", "contains", "text", "hides"])],
-    ["then.accounts", new Set(["name", "kind"])],
+    ["then.accounts", new Set(["name", "kind", "email", "email_confirmed"])],
     ["then.generated_name", new Set(["taken", "max_length", "not"])],
-    ["then.logged_in", new Set(["as"])],
+    ["then.logged_in", new Set(["visitor", "as"])],
   ]),
   startSession,
 };

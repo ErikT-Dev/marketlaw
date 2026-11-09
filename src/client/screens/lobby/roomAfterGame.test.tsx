@@ -6,6 +6,7 @@ import type { GameResult } from "../../../shared/GameResult";
 import type { RoomView } from "../../../shared/protocol/RoomView";
 import { RoomCode } from "../../../shared/RoomCode";
 import { NO_ROOM_CHAT } from "../../store/NO_ROOM_CHAT";
+import { testAccount } from "../../testing/testAccount";
 import { RoomAfterGamePage } from "./RoomAfterGamePage";
 
 const RESULT: GameResult = {
@@ -29,6 +30,7 @@ function endedRoom(changes: Partial<RoomView> = {}): RoomView {
     ownerName: "Ann",
     playerNames: ["Ann", "Bea", "Cy"],
     namesInRoom: ["Ann", "Bea"],
+    myName: "Ann",
     mySeat: 1,
     asking: null,
     deletionAt: v.parse(EpochMs, Date.now() + 3_600_000),
@@ -48,6 +50,7 @@ function roomAfterGame(room: RoomView, result: GameResult = RESULT) {
     <RoomAfterGamePage
       room={room}
       myName="Ann"
+      account={testAccount({ name: "Ann" })}
       result={result}
       turn={20}
       viewer={1}
@@ -111,7 +114,9 @@ describe("the room after a game", () => {
 
   it("shows the rematch dialog with the time left and who has accepted", () => {
     const deadline = v.parse(EpochMs, Date.now() + 16_500);
-    const handlers = roomAfterGame(endedRoom({ asking: { deadline, acceptedNames: ["Bea"] } }));
+    const handlers = roomAfterGame(
+      endedRoom({ asking: { deadline, acceptedNames: ["Bea"], hasAccepted: false } }),
+    );
     const dialog = screen.getByRole("dialog", { name: "Accept a rematch?" });
     expect(within(dialog).getByRole("timer").textContent).toContain(
       "left to accept. A new casual game starts from the beginning when all 2 players in the room accept.",

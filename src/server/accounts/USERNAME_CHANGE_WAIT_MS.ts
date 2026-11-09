@@ -1,0 +1,1 @@
+export const USERNAME_CHANGE_WAIT_MS = 7 * 86_400_000;

@@ -1,7 +1,7 @@
 import { awakeSecondsPerGame } from "./awakeSecondsPerGame.ts";
+import { computingTimeOf } from "./computingTimeOf.ts";
 import type { HarnessRun } from "./HarnessRun.ts";
 import { legalGameAverage } from "./legalGameAverage.ts";
-import { percentileOf } from "./percentileOf.ts";
 import { BUSY_DAY } from "../simulator/busyDay/BUSY_DAY.ts";
 import { busyDayTotal } from "../simulator/busyDay/busyDayTotal.ts";
 
@@ -39,7 +39,16 @@ function simulated(run: HarnessRun, budget: string): ReadonlyArray<number> {
   }
 }
 
+function computingTimeMs(run: HarnessRun): number | undefined {
+  const { roomMessagesMs, passwordHashMs } = computingTimeOf(run);
+  const halves = [roomMessagesMs, passwordHashMs].filter((half) => half !== undefined);
+  return halves.length === 0 ? undefined : Math.max(...halves);
+}
+
 export function highestMeasured(run: HarnessRun, budget: string): number | undefined {
+  if (budget === "B11") {
+    return computingTimeMs(run);
+  }
   const values = [
     ...run.runs.flatMap(({ measurements }) =>
       measurements.filter((measurement) => measurement.budget === budget).map(({ value }) => value),
@@ -47,8 +56,5 @@ export function highestMeasured(run: HarnessRun, budget: string): number | undef
     ...simulated(run, budget),
     ...(budget === "B18" && run.busyDay !== null ? [busyDayTotal(run.busyDay.written)] : []),
   ];
-  if (values.length === 0) {
-    return undefined;
-  }
-  return budget === "B11" ? Math.ceil(percentileOf(values, 0.99)) : Math.max(...values);
+  return values.length === 0 ? undefined : Math.max(...values);
 }

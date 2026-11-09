@@ -1,14 +1,20 @@
 import * as v from "valibot";
 import { RoomCode } from "../shared/RoomCode";
+import { accountRoute } from "./api/accountRoute";
 import { createGuestRoute } from "./api/createGuestRoute";
 import { createRoomRoute } from "./api/createRoomRoute";
 import { generatedNameRoute } from "./api/generatedNameRoute";
 import { humanCheckRoute } from "./api/humanCheckRoute";
 import { joinRoomRoute } from "./api/joinRoomRoute";
+import { loginRoute } from "./api/loginRoute";
+import { logoutRoute } from "./api/logoutRoute";
 import { replayExportRoute } from "./api/replayExportRoute";
 import { roomJson } from "./api/roomJson";
 import { sessionRoute } from "./api/sessionRoute";
+import { signupRoute } from "./api/signupRoute";
+import { usernameChangeRoute } from "./api/usernameChangeRoute";
 import { lobbyOf } from "./lobbyOf";
+import { removeForgottenLoginFailures } from "./removeForgottenLoginFailures";
 import { removeOldReplayRecords } from "./replays/removeOldReplayRecords";
 import { confirmTestSeat } from "./testRooms/confirmTestSeat";
 import { createTestRoom } from "./testRooms/createTestRoom";
@@ -40,8 +46,13 @@ async function routeRoom(request: Request, env: Env, path: RegExpExecArray): Pro
 }
 
 const POST_ROUTES: Readonly<Record<string, (request: Request, env: Env) => Promise<Response>>> = {
+  "/api/account": accountRoute,
   "/api/guests": createGuestRoute,
+  "/api/logins": loginRoute,
+  "/api/logout": logoutRoute,
   "/api/rooms": createRoomRoute,
+  "/api/signups": signupRoute,
+  "/api/username-changes": usernameChangeRoute,
   "/api/session": sessionRoute,
   "/api/test-rooms": createTestRoom,
   "/api/test-room-seats": confirmTestSeat,
@@ -74,5 +85,6 @@ export default {
   fetch: route,
   async scheduled(controller, env) {
     await removeOldReplayRecords(env.DB, controller.scheduledTime);
+    await removeForgottenLoginFailures(env.DB, controller.scheduledTime);
   },
 } satisfies ExportedHandler<Env>;

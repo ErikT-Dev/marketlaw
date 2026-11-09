@@ -5,6 +5,7 @@ import type { RoomIntent } from "../shared/protocol/RoomIntent";
 import type { ServerMessage } from "../shared/protocol/ServerMessage";
 import { parseServerMessage } from "../shared/protocol/parseServerMessage";
 import { PROTOCOL_VERSION } from "../shared/PROTOCOL_VERSION";
+import { LOGGED_OUT_CLOSE_CODE } from "../shared/LOGGED_OUT_CLOSE_CODE";
 import { OPENED_ELSEWHERE_CLOSE_CODE } from "../shared/OPENED_ELSEWHERE_CLOSE_CODE";
 import { ROOM_GONE_CLOSE_CODE } from "../shared/ROOM_GONE_CLOSE_CODE";
 import type { HostSocket } from "./HostSocket";
@@ -130,9 +131,10 @@ export class RemoteGameHost implements GameHost {
       onClose: (code) => {
         this.socket = null;
         const isRoomGone = code === ROOM_GONE_CLOSE_CODE;
-        if (code === OPENED_ELSEWHERE_CLOSE_CODE) {
+        if (code === OPENED_ELSEWHERE_CLOSE_CODE || code === LOGGED_OUT_CLOSE_CODE) {
           this.reconnector.close();
-          this.emit({ type: "connection", status: "opened_elsewhere" });
+          const status = code === LOGGED_OUT_CLOSE_CODE ? "logged_out" : "opened_elsewhere";
+          this.emit({ type: "connection", status });
           return;
         }
         this.emit({ type: "connection", status: isRoomGone ? "room_gone" : "closed" });
