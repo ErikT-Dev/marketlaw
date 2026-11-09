@@ -115,6 +115,49 @@ describe("an abandon vote", () => {
     expect(left.state.phase).toBe("main");
   });
 
+  it("keeps the count shown when a player who answered leaves", () => {
+    const answered = received(gameWithVote(4), { type: "vote", seat: 2, answer: "no" });
+    const left = received(answered, { type: "leave_game", seat: 2 });
+    expect(viewFor(left.state, 3).vote).toEqual({
+      caller: 1,
+      deadline: VOTE_DEADLINE,
+      answered: 1,
+      of: 3,
+      hasToAnswer: true,
+    });
+  });
+
+  it("no longer counts the answer of a player who left towards the result", () => {
+    const answered = received(gameWithVote(4), { type: "vote", seat: 2, answer: "no" });
+    const left = received(answered, { type: "leave_game", seat: 2 });
+    const yes = received(left, { type: "vote", seat: 3, answer: "yes" });
+    const ended = received(yes, { type: "vote", seat: 4, answer: "yes" });
+    expect(ended.state.result?.endedBy).toBe("abandoned_by_vote");
+  });
+
+  it("stays open and can pass when the player who called it leaves", () => {
+    const left = received(gameWithVote(4), { type: "leave_game", seat: 1 });
+    expect(viewFor(left.state, 2).vote).toEqual({
+      caller: 1,
+      deadline: VOTE_DEADLINE,
+      answered: 0,
+      of: 3,
+      hasToAnswer: true,
+    });
+    const answers = ([2, 3, 4] as const).reduce(
+      (current, seat) => received(current, { type: "vote", seat, answer: "yes" }),
+      left,
+    );
+    expect(answers.state.result?.endedBy).toBe("abandoned_by_vote");
+  });
+
+  it("still closes at its deadline when the player who called it left", () => {
+    const left = received(gameWithVote(4), { type: "leave_game", seat: 1 });
+    const later = applyDueTimeOuts(left, VOTE_DEADLINE, randomForNextAction);
+    expect(later.state.vote).toBeNull();
+    expect(later.state.phase).toBe("main");
+  });
+
   it("is cleared when the game ends another way", () => {
     const ended = received(gameWithVote(2), { type: "leave_game", seat: 2 });
     expect(ended.state.result?.endedBy).toBe("last_player");

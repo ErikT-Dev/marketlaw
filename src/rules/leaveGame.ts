@@ -9,7 +9,6 @@ import type { Random } from "./Random";
 import { seatOf } from "./seatOf";
 import { seatsLeavingAt } from "./seatsLeavingAt";
 import { updateSeat } from "./updateSeat";
-import { voteWithout } from "./voteWithout";
 
 function goOnWithoutLeaver(state: GameState, random: Random, at: number): GameState {
   switch (state.phase) {
@@ -54,7 +53,6 @@ export function leaveGame(
     holdingPile: isMainPhase ? [...state.holdingPile, ...hand] : state.holdingPile,
     discard: isMainPhase ? state.discard : [...state.discard, ...hand],
     leaveOrder: [...state.leaveOrder, seat],
-    vote: voteWithout(state.vote, seat),
     clockStartedAt: marketGoOf(state) === seat ? at : state.clockStartedAt,
   };
   return closeVoteIfAllAnswered(afterLeaving(left, random, at), at);
