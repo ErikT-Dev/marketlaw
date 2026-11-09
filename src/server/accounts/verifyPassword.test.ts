@@ -9,7 +9,7 @@ describe("hashPassword and verifyPassword", () => {
     const stored = await hashPassword("correct horse", SALT);
     const [method, iterations, salt, hash] = stored.split("$");
     expect(method).toBe("pbkdf2-sha256");
-    expect(iterations).toBe("20000");
+    expect(iterations).toBe("10000");
     expect(salt).toBe(btoa(String.fromCharCode(...SALT)));
     expect(atob(hash ?? "")).toHaveLength(32);
   });
@@ -27,7 +27,7 @@ describe("hashPassword and verifyPassword", () => {
 
   it("reads the iteration count from the stored hash", async () => {
     const stored = await hashPassword("correct horse", SALT);
-    const withFewerIterations = stored.replace("$20000$", "$1000$");
+    const withFewerIterations = stored.replace("$10000$", "$1000$");
     expect(await verifyPassword("correct horse", withFewerIterations)).toBe(false);
   });
 

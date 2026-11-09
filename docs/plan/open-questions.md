@@ -1725,6 +1725,22 @@ file.
   assumes: at 20,000 iterations a login's 99th percentile is over B11's 10 ms. The figure is
   replaced in Q102; the fix (fewer iterations, or B11 changed on the record) is open, see
   phase 23's Release note.
+- **Changed after the live measurement (2026-11-10):** 10,000 iterations
+  (`PASSWORD_HASHING`, `DUMMY_PASSWORD_HASH` `pbkdf2-sha256$10000$...`). B11 stays at 10 ms:
+  it is the Free plan's CPU limit per request, not a choice. Expected live CPU at 700 ns per
+  iteration: 7 ms of hash plus about 1 ms of other work, about 8 ms for the slowest login, and
+  6-7 ms at the 99th percentile (650 ns). 12,000 was considered: 8.4 ms of hash, about 9.4 ms
+  with the other work, under 1 ms of margin, which the live spread (6-14 ms at one count) can
+  eat; 10,000 leaves about 2 ms. Strength, for the owner: against a leaked database each
+  guess costs half of what it did at 20,000, and about 60 times less than OWASP's 600,000 (it
+  was about 30 times less); a weak password falls quickly either way, a strong one stays out
+  of reach. Online guessing is unchanged: the human check after 3 failures (A1.13) is the
+  protection there. Hashes already stored at 20,000 keep their own count: `verifyPassword`
+  reads the count from the stored value, so those accounts still log in, at about 14 ms of CPU
+  per login (none was stopped live at 20,000). They are not rehashed at login (that would add
+  a second hash and a write to every such login); they are only the accounts made since the
+  phase 23 deploy, and under D1 the data may be wiped if they become a problem. Raising the
+  count later works the same way: new hashes take the new count, old ones keep theirs.
 
 ## Q91. Failed logins: what counts, and when does the human check end (A1.13)?
 
@@ -2026,6 +2042,11 @@ file.
   20,000 iterations, over the 10 ms limit, and a count above about 14,000 fails B11.
   `LIVE_PASSWORD_HASH_CPU` still says 400 ns: changing it alone would turn `npm run check`
   red, so it changes together with the fix (phase 23, Release note).
+- **Fixed (2026-11-10):** `LIVE_PASSWORD_HASH_CPU` is 700 ns and the count is 10,000 (Q90,
+  D29), so B11's password-hash half is 7 ms of 10; a count above about 14,000 fails it. The
+  harness text is unchanged: `budgets.yaml` B11 already counts the iteration count times the
+  live cost per iteration, and names neither figure. The releaser measures the live login CPU
+  again after the next deploy and records it in Q90.
 
 ## Q103. Can a freed username join a room where the old holder still shows it (A2.4, M1.6)?
 

@@ -579,6 +579,14 @@ These 20 scenarios are added to `harness/required.yaml` in this phase, by file a
     (about 12,000 fits: 8.4 ms of hash at 700 ns, plus about 1 ms of other work; D29, Q90 and
     `DUMMY_PASSWORD_HASH` change, stored hashes keep their own count) or B11 changed on the
     record, then `LIVE_PASSWORD_HASH_CPU` set to 700 ns and a new release.
+  - [x] Fix (2026-11-10, fixer): B11 stays at 10 ms (the Free plan's CPU limit). The count is
+    10,000 (`PASSWORD_HASHING`, `DUMMY_PASSWORD_HASH`), `LIVE_PASSWORD_HASH_CPU` is 700 ns, so
+    B11's hash half is 7 ms; expected live about 8 ms for the slowest login with the other
+    work. 12,000 left under 1 ms of margin. Recorded in D29, Q90 (strength trade-off: half the
+    cost of 20,000 for an attacker with a leaked database) and Q102. Hashes stored at 20,000
+    keep their count and still verify (about 14 ms each); not rehashed, data may be wiped (D1).
+    No spec or harness change: neither names the count. `npm run check` green.
+  - [ ] Release again: deploy, measure live login CPU (`wrangler tail`), record it in Q90.
 
 ### Helper log
 

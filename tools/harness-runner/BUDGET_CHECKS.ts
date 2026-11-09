@@ -33,7 +33,7 @@ export const BUDGET_CHECKS: Readonly<Record<string, BudgetCheck>> = {
   B11: {
     by: "harness",
     where:
-      "room scenarios through the production path (receiveCheckingGameStart, with a lobby that answers at once), the 99th percentile over every message the room handled of the time it took (wall-clock time, never less than CPU time); and separately the password hash of one login or signup (one hash each), its iteration count times the CPU time per iteration measured on the live Free plan Worker (400 ns, Q102)",
+      "room scenarios through the production path (receiveCheckingGameStart, with a lobby that answers at once), the 99th percentile over every message the room handled of the time it took (wall-clock time, never less than CPU time); and separately the password hash of one login or signup (one hash each), its iteration count times the CPU time per iteration measured on the live Free plan Worker (700 ns, Q102)",
   },
   B12: {
     by: "harness",
