@@ -11,6 +11,7 @@ import { replayExportRoute } from "./api/replayExportRoute";
 import { roomJson } from "./api/roomJson";
 import { sessionRoute } from "./api/sessionRoute";
 import { signupRoute } from "./api/signupRoute";
+import { usernameChangeRoute } from "./api/usernameChangeRoute";
 import { lobbyOf } from "./lobbyOf";
 import { removeOldReplayRecords } from "./replays/removeOldReplayRecords";
 import { confirmTestSeat } from "./testRooms/confirmTestSeat";
@@ -48,6 +49,7 @@ const POST_ROUTES: Readonly<Record<string, (request: Request, env: Env) => Promi
   "/api/logout": logoutRoute,
   "/api/rooms": createRoomRoute,
   "/api/signups": signupRoute,
+  "/api/username-changes": usernameChangeRoute,
   "/api/session": sessionRoute,
   "/api/test-rooms": createTestRoom,
   "/api/test-room-seats": confirmTestSeat,

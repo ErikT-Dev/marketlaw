@@ -15,6 +15,7 @@ import { publicRoomsOf } from "../../../src/server/lobby/publicRoomsOf.ts";
 import { logInVisitor } from "./logInVisitor.ts";
 import { logOutPlayer } from "./logOutPlayer.ts";
 import { signUpInLobby } from "./signUpInLobby.ts";
+import { changeUsernameInLobby } from "./changeUsernameInLobby.ts";
 
 const ROOM_ACTIONS = [
   "change_size",
@@ -103,6 +104,8 @@ async function runStep(session: LobbySession, step: ScenarioStep): Promise<void>
     await runVisitorStep(session, step["visitor"], step);
   } else if (step["action"] === "sign_up") {
     await signUpInLobby(session, { player: textOf(step["player"]) }, step);
+  } else if (step["action"] === "change_username") {
+    await changeUsernameInLobby(session, textOf(step["player"]), textOf(step["username"]));
   } else {
     runPlayerStep(session, textOf(step["player"]), step);
   }
@@ -179,6 +182,7 @@ export const LOBBY_DRIVER: ScenarioDriver = {
     "log_in",
     "log_out",
     "sign_up",
+    "change_username",
     "wait_ms",
     "disconnect",
     "reconnect",
@@ -210,6 +214,7 @@ export const LOBBY_DRIVER: ScenarioDriver = {
         "email_confirmed",
         "password",
         "last_used_ms",
+        "last_username_change_ms",
         "actions_today",
         "games_started_today",
       ]),

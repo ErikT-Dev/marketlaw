@@ -268,13 +268,42 @@ These 20 scenarios are added to `harness/required.yaml` in this phase, by file a
     name and email index entries), a signup when not logged in 2 rows as a new guest does plus the
     email index; item 4c counts them. The route has no route test yet (item 4c); it logs nothing.
 
-- [ ] 3. **Username change** (A2.1-A2.4, A3.5; Q96; scenarios `accounts` #26, #38, #39, and the
+- [x] 3. **Username change** (A2.1-A2.4, A3.5; Q96; scenarios `accounts` #26, #38, #39, and the
   second step of #5). **Small.**
   - A route for a logged-in player (guest or registered): a free, valid name (reuse the A2 checks),
     at most once every 7 days counted from the last change (`username_change_too_soon`); given
     `last_username_change_ms` in the lobby driver. The rooms the player is in keep the name they
     joined with (Q96); the lobby's players-online name may follow at its next report.
   - Step `change_username` in the lobby driver.
+  - Done (2026-11-09): `POST /api/username-changes` (`api/usernameChangeRoute.ts`, body
+    `UsernameChangeRequest` `{ token, username }`, answer the `GuestResponse` shape with the
+    caller's own token and the new name; `invalid_token` 401 for an unknown or expired login).
+    `accounts/decideUsernameChange` (unit tests) checks as Q99 says: the same name exactly is
+    `unchanged` (nothing written, the 7 days do not start), then `usernameProblem`, then
+    `username_change_too_soon` (`USERNAME_CHANGE_WAIT_MS`, from `username_changed_ms`; null
+    = never changed, so signup and new accounts do not count), then taken (the own name in other
+    capitals is not taken). D1: `findRenameAccount` (1 read) and `renamePlayer`, one
+    `UPDATE OR IGNORE` of `name`, `name_key`, `username_changed_ms` (1 row plus the name
+    index entries), guarded by the 7 days; a lost race gives `username_taken` 409. Spec first
+    (Q99): the message "You can change your username once every 7 days." in S10.9, the check
+    order and the same-name rule in A2.4; `username_change_too_soon` added to `ReasonCode.ts`
+    and `REJECTION_MESSAGES.ts`. `PROTOCOL_VERSION` not raised (HTTP only). Q96 inside the
+    room needed no room change: chat lines, seats, the player list and mutes are named from the
+    room record's `players`, never from the token (`handleChatIntent` reads `record.players`;
+    a rejoin by the same player id keeps the record), so item 2's worry did not apply; a unit
+    test in `roomChat.test.ts` now proves it. `GameRoom.ts` was not touched, so not split
+    (still at the limit). Lobby driver: player step `change_username`
+    (`changeUsernameInLobby.ts`, through `decideUsernameChange`), given
+    `accounts[].last_username_change_ms`; `LobbyAccount` gained `usernameChangedMs` (signup keeps the
+    guest's). `accounts` #5, #26, #38, #39 pass when required locally. Differs from the phase
+    file: nothing.
+  - For later items: item 4b calls `POST /api/username-changes` and stores the answer with
+    `writeSession` like a login; the settings screen needs the next allowed date, which no
+    answer carries yet (`players.username_changed_ms` + 7 days): add it to the session answer
+    or this route's answer in 4b (an HTTP shape, no protocol raise). The players-online list
+    does not exist yet, so nothing in the lobby shows the name. Rows: a change writes 1
+    `players` row plus its name index entries (item 4c). The route has no route test yet
+    (item 4c); it logs nothing.
 
 - [ ] 4a. **Log in and sign up screens** (S10.1, S12.2, S12.3; design boards "Account: log in",
   "Account: log in after failed attempts", "Account: sign up", "Account: sign up during a

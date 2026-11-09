@@ -5,4 +5,5 @@ export type LobbyAccount = {
   readonly identity: Identity;
   readonly lastUsedMs: number;
   readonly registration: LobbyRegistration | null;
+  readonly usernameChangedMs: number | null;
 };
