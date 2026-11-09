@@ -16,11 +16,14 @@ export function CurrentScreen({ store }: Props) {
     return (
       <LobbyPage
         name={session?.name ?? null}
+        isGuest={session?.isGuest ?? false}
         joinError={state.joinError}
         removal={state.removal}
         onJoin={(code) => void store.joinRoom(code)}
         onCreate={store.createRoom}
         onStartAsGuest={store.startAsGuest}
+        onLogIn={store.logIn}
+        onSignUp={store.signUp}
         onDismissRemoval={store.dismissRemoval}
         publicRooms={state.publicRooms}
       />

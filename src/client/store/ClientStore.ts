@@ -6,7 +6,12 @@ import type { LobbyFeed } from "../../shared/LobbyFeed";
 import type { OpenLobbyFeed } from "../../shared/OpenLobbyFeed";
 import type { ActionIntent } from "../../shared/protocol/ActionIntent";
 import type { RoomCode } from "../../shared/RoomCode";
+import type { GuestResponse } from "../../shared/api/GuestResponse";
+import type { LoginRequest } from "../../shared/api/LoginRequest";
+import type { SignupRequest } from "../../shared/api/SignupRequest";
 import { requestGuest } from "../api/requestGuest";
+import { requestLogin } from "../api/requestLogin";
+import { requestSignup } from "../api/requestSignup";
 import { requestRoom } from "../api/requestRoom";
 import { requestSession } from "../api/requestSession";
 import type { EpochMs } from "../../shared/EpochMs";
@@ -20,6 +25,7 @@ import { chatAfterSending } from "./chatAfterSending";
 import { CODES_THAT_RELOAD_THE_GAME } from "./CODES_THAT_RELOAD_THE_GAME";
 import { initialClientState } from "./initialClientState";
 import { NO_ROOM_CHAT } from "./NO_ROOM_CHAT";
+import { ObservableState } from "./ObservableState";
 import type { PendingAction } from "./PendingAction";
 import { readSession } from "./readSession";
 import { roomChatAfter } from "./roomChatAfter";
@@ -28,19 +34,17 @@ import { writeSession } from "./writeSession";
 
 type OpenHost = (code: RoomCode, token: string) => GameHost;
 
-export class ClientStore {
-  private state: ClientState;
-  private listeners: ReadonlyArray<() => void> = [];
+export class ClientStore extends ObservableState<ClientState> {
   private host: GameHost | null = null;
   private readonly openHost: OpenHost;
   private readonly openLobby: OpenLobbyFeed;
   private lobbyFeed: LobbyFeed | null = null;
 
   constructor(openHost: OpenHost, openLobby: OpenLobbyFeed = () => ({ close: () => undefined })) {
+    super(initialClientState(readSession()));
     this.openHost = openHost;
     this.openLobby = openLobby;
-    const session = readSession();
-    this.state = initialClientState(session);
+    const session = this.state.session;
     if (session !== null) {
       void this.checkSession(session);
     }
@@ -64,25 +68,29 @@ export class ClientStore {
     }
   }
 
-  readonly subscribe = (listener: () => void): (() => void) => {
-    this.listeners = [...this.listeners, listener];
-    return () => {
-      this.listeners = this.listeners.filter((known) => known !== listener);
-    };
+  readonly startAsGuest = async (name: string, humanCheck: string): Promise<ReasonCode | null> =>
+    this.startSession(await requestGuest(name, humanCheck), true);
+
+  readonly logIn = async (login: LoginRequest): Promise<ReasonCode | null> =>
+    this.startSession(await requestLogin(login), false);
+
+  readonly signUp = async (signup: Omit<SignupRequest, "token">): Promise<ReasonCode | null> => {
+    const guest = this.state.session?.isGuest === true ? this.state.session : null;
+    const token = guest === null ? {} : { token: guest.token };
+    return this.startSession(await requestSignup({ ...signup, ...token }), false);
   };
 
-  readonly getSnapshot = (): ClientState => this.state;
-
-  readonly startAsGuest = async (name: string, humanCheck: string): Promise<ReasonCode | null> => {
-    const guest = await requestGuest(name, humanCheck);
-    if (!guest.isOk) {
-      return guest.reason;
+  private startSession(answer: GuestResponse, isGuest: boolean): ReasonCode | null {
+    if (!answer.isOk) {
+      return answer.reason;
     }
-    const session = { token: guest.token, name: guest.name, roomCode: null };
+    const current = this.state.session;
+    const roomCode = current?.token === answer.token ? current.roomCode : null;
+    const session = { token: answer.token, name: answer.name, isGuest, roomCode };
     writeSession(session);
     this.change({ session, notice: null });
     return null;
-  };
+  }
 
   readonly startFromSeatLink = async (
     linked: StoredSession,
@@ -301,12 +309,5 @@ export class ClientStore {
   private sessionOutsideRooms(): StoredSession | null {
     const session = this.state.session;
     return session === null ? null : { ...session, roomCode: null };
-  }
-
-  private change(changes: Partial<ClientState>): void {
-    this.state = { ...this.state, ...changes };
-    this.listeners.forEach((listener) => {
-      listener();
-    });
   }
 }

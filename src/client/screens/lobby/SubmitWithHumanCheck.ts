@@ -7,6 +7,7 @@ export type SubmitWithHumanCheck = {
   readonly humanCheckToken: string;
   readonly isUnavailable: boolean;
   readonly error: IconText | null;
+  readonly problem: ReasonCode | null;
   readonly isSending: boolean;
   readonly submit: (send: (token: string) => Promise<ReasonCode | null>) => Promise<void>;
 };

@@ -1,9 +1,9 @@
 import { useState } from "react";
 import type { ReasonCode } from "../../../shared/ReasonCode";
-import { Button } from "../../components/Button";
 import { Modal } from "../../components/Modal";
 import { TextWithIcons } from "../../components/TextWithIcons";
 import type { NewRoom } from "../../store/NewRoom";
+import { DialogButtons } from "./DialogButtons";
 import { HumanCheck } from "./HumanCheck";
 import styles from "./Lobby.module.css";
 import { RoomSizeChoice } from "./RoomSizeChoice";
@@ -54,19 +54,12 @@ export function CreateRoomDialog({ onCreate, onCancel }: Props) {
             <TextWithIcons text={error} />
           </p>
         )}
-        <div className={styles["dialogButtons"]}>
-          <Button look="secondary" onClick={onCancel}>
-            Cancel
-          </Button>
-          <Button
-            look="primary"
-            isSubmit
-            isDisabled={humanCheckToken === ""}
-            loadingLabel={isSending ? "Creating" : null}
-          >
-            Create room
-          </Button>
-        </div>
+        <DialogButtons
+          submitLabel="Create room"
+          sendingLabel={isSending ? "Creating" : null}
+          isDisabled={humanCheckToken === ""}
+          onCancel={onCancel}
+        />
       </form>
     </Modal>
   );

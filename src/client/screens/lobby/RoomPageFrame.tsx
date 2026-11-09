@@ -3,6 +3,7 @@ import type { ChatBinding } from "../chat/ChatBinding";
 import { RoomChatSection } from "../chat/RoomChatSection";
 import styles from "./Lobby.module.css";
 import { LobbyTopBar } from "./LobbyTopBar";
+import { UserBox } from "./UserBox";
 
 type Props = {
   readonly myName: string;
@@ -14,7 +15,9 @@ type Props = {
 export function RoomPageFrame({ myName, chat, children, overlay }: Props) {
   return (
     <div className={styles["page"]}>
-      <LobbyTopBar name={myName} />
+      <LobbyTopBar>
+        <UserBox name={myName} isGuest />
+      </LobbyTopBar>
       <main className={`${styles["columns"] ?? ""} ${styles["waitingColumns"] ?? ""}`}>
         <section className={styles["panel"]} aria-labelledby="room-heading">
           {children}

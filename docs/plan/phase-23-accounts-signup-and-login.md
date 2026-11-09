@@ -305,7 +305,7 @@ These 20 scenarios are added to `harness/required.yaml` in this phase, by file a
     `players` row plus its name index entries (item 4c). The route has no route test yet
     (item 4c); it logs nothing.
 
-- [ ] 4a. **Log in and sign up screens** (S10.1, S12.2, S12.3; design boards "Account: log in",
+- [x] 4a. **Log in and sign up screens** (S10.1, S12.2, S12.3; design boards "Account: log in",
   "Account: log in after failed attempts", "Account: sign up", "Account: sign up during a
   game"). **Large.**
   - Lobby top bar: **Log in** and **Sign up** when not logged in (S10.1). Log in form: username or
@@ -317,6 +317,38 @@ These 20 scenarios are added to `harness/required.yaml` in this phase, by file a
     lobby and any room with it.
   - Browser tests at every supported size, by role and name, with the axe check; screenshots to
     `harness/screens/`.
+  - Done (2026-11-09): the lobby top bar (`LobbyTopBar` now takes its right side as children)
+    shows **Log in** and **Sign up** (`AccountButtons`) when not logged in, else `UserBox`
+    ("Guest" only for guests; nothing for registered users, as 4b says). `LobbyAccount` holds the
+    top bar and the dialogs (`useAccountDialogs`, `AccountDialogIfOpen`, closing on success).
+    `LogInDialog` (username or email, password, "No account yet? Sign up"; no forgotten password
+    link until phase 24) with `useLoginAttempts`: the human check (`LoginHumanCheck`, with the
+    A1.13 explanation) appears after the first `human_check_failed` and is sent from then on;
+    `login_failed` shows under the password. `SignUpDialog` (username prefilled with the guest's
+    name or a generated one, email, password, human check, what is kept; `noValidate` so the
+    spec's own email message shows) puts each refusal under its field. Store: `logIn`,
+    `signUp` (sends `token` only when the session is a guest's) and `startSession`, which stores
+    the answer with `writeSession` and keeps the room only when the token is unchanged (a guest's
+    signup); the lobby feed needs no token, so nothing reconnects. `StoredSession` gained
+    `isGuest` (sessions stored earlier read as guests). Shared pieces: `api/requestAccount`
+    (also used by `requestGuest` now), `DialogButtons` (also in `CreateRoomDialog`, for the
+    duplication check), `TextInput` `type` and `autoComplete`, `useSubmitWithHumanCheck` now
+    returns the `problem` code too, `ObservableState` (subscribe, snapshot, change) taken out of
+    `ClientStore.ts` (284 non-blank lines now), token `--color-board-account-link`. Tests:
+    `accountDialogs.test.tsx`, `store/accountSessions.test.tsx`, browser test
+    `e2e/accounts.spec.ts` (sign up when not logged in, three failed logins, the human check,
+    log in from a second browser; screenshots `sign-up`, `log-in`,
+    `log-in-after-failed-attempts`). Differs from the phase file: the board "Account: sign up
+    during a game" needs the guest's entry point, the user menu, which is item 4b; the dialog
+    already handles a guest (prefilled own name, token sent, room kept).
+  - For later items: 4b opens `SignUpDialog` for a guest through `LobbyAccount`'s dialogs (make
+    `openSignUp` reachable from the user menu) and must show it in the waiting room and game too.
+    `RoomPageFrame` passes `isGuest` as always true to `UserBox` for now: thread the session's
+    `isGuest` there in 4b. After a guest signs up with a new name in a room, `session.name` is
+    the new name while the room still uses the old one (Q96), and `AcceptDialog` compares
+    `myName` with the room's `acceptedNames`: 4b must use the room's own name for the player
+    there (or keep the old `myName` while in that room). Locally, apply migrations with
+    `npm run db:migrate:local` before browser tests (0008 was missing; GitHub applies them).
 
 - [ ] 4b. **User menu, account settings and the guest logout warning** (S2.3, S12.5, S12.6,
   S12.7; design boards "Account: settings", "Account: settings, guest", "Account: guest log out

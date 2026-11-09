@@ -17,11 +17,14 @@ function lobby(changes: Partial<Parameters<typeof LobbyPage>[0]> = {}) {
   render(
     <LobbyPage
       name="Ann"
+      isGuest
       joinError={null}
       removal={null}
       onJoin={onJoin}
       onCreate={succeed}
       onStartAsGuest={succeed}
+      onLogIn={succeed}
+      onSignUp={succeed}
       onDismissRemoval={vi.fn()}
       publicRooms={[]}
       {...changes}

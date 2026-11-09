@@ -354,3 +354,29 @@
   padding: var(--space-xl) 0;
   text-align: center;
 }
+
+.accountButtons {
+  display: flex;
+  gap: var(--space-sm);
+}
+
+.accountLinks {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.linkButton {
+  min-height: 24px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--color-board-account-link);
+  font: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  cursor: pointer;
+}
+
+.linkButton:hover {
+  text-decoration: underline;
+}
