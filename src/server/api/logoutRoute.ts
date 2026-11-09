@@ -18,7 +18,6 @@ export async function logoutRoute(request: Request, env: Env): Promise<Response>
   if (account === null) {
     return Response.json(LOGGED_OUT);
   }
-  await deleteLogin(env.DB, tokenHash);
   const { playerId } = account.identity;
   const lobby = lobbyOf(env);
   const busyCode = await lobby.busyRoomOf(playerId);
@@ -31,12 +30,12 @@ export async function logoutRoute(request: Request, env: Env): Promise<Response>
     token: body.token,
     isGuest: account.isGuest,
   };
-  await Promise.all(
-    [...new Set(codes)].map(async (code) =>
-      env.ROOM.get(env.ROOM.idFromName(code))
-        .logOut(login)
-        .catch(() => undefined),
-    ),
+  const leftRooms = await Promise.allSettled(
+    [...new Set(codes)].map(async (code) => env.ROOM.get(env.ROOM.idFromName(code)).logOut(login)),
   );
+  if (leftRooms.some(({ status }) => status === "rejected")) {
+    return new Response("Could not log out, try again", { status: 503 });
+  }
+  await deleteLogin(env.DB, tokenHash);
   return Response.json(LOGGED_OUT);
 }
