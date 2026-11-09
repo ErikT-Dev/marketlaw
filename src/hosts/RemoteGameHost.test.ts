@@ -75,6 +75,7 @@ const ROOM_UPDATE_TEXT = JSON.stringify({
       ownerName: "Ann",
       playerNames: ["Ann"],
       namesInRoom: ["Ann"],
+      myName: "Ann",
       mySeat: null,
       asking: null,
       deletionAt: null,

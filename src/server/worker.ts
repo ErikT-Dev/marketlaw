@@ -1,5 +1,6 @@
 import * as v from "valibot";
 import { RoomCode } from "../shared/RoomCode";
+import { accountRoute } from "./api/accountRoute";
 import { createGuestRoute } from "./api/createGuestRoute";
 import { createRoomRoute } from "./api/createRoomRoute";
 import { generatedNameRoute } from "./api/generatedNameRoute";
@@ -44,6 +45,7 @@ async function routeRoom(request: Request, env: Env, path: RegExpExecArray): Pro
 }
 
 const POST_ROUTES: Readonly<Record<string, (request: Request, env: Env) => Promise<Response>>> = {
+  "/api/account": accountRoute,
   "/api/guests": createGuestRoute,
   "/api/logins": loginRoute,
   "/api/logout": logoutRoute,

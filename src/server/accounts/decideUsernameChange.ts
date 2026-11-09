@@ -1,7 +1,7 @@
 import { nameKeyOf } from "./nameKeyOf";
 import type { UsernameChange } from "./UsernameChange";
 import type { UsernameChangeDecision } from "./UsernameChangeDecision";
-import { USERNAME_CHANGE_WAIT_MS } from "./USERNAME_CHANGE_WAIT_MS";
+import { usernameChangeAllowedAt } from "./usernameChangeAllowedAt";
 import { usernameProblem } from "./usernameProblem";
 
 export async function decideUsernameChange(
@@ -16,7 +16,7 @@ export async function decideUsernameChange(
   if (nameProblem !== null) {
     return { kind: "refused", reason: nameProblem };
   }
-  if (changedMs !== null && now < changedMs + USERNAME_CHANGE_WAIT_MS) {
+  if (usernameChangeAllowedAt(changedMs, now) !== null) {
     return { kind: "refused", reason: "username_change_too_soon" };
   }
   const isOwnName = nameKeyOf(wantedName) === nameKeyOf(currentName);

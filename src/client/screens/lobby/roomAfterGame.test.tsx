@@ -29,6 +29,7 @@ function endedRoom(changes: Partial<RoomView> = {}): RoomView {
     ownerName: "Ann",
     playerNames: ["Ann", "Bea", "Cy"],
     namesInRoom: ["Ann", "Bea"],
+    myName: "Ann",
     mySeat: 1,
     asking: null,
     deletionAt: v.parse(EpochMs, Date.now() + 3_600_000),

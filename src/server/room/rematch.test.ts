@@ -186,4 +186,10 @@ describe("a rematch in the room", () => {
     expect(room.namesInRoom).toEqual(["Ann"]);
     expect(room.playerNames).toEqual(["Ann", "Bea"]);
   });
+
+  it("tells each player the name they have in the room", async () => {
+    const { kept } = await endedRoomOfAnnAndBea();
+    expect(updateFor(current(kept), ANN.playerId).room.myName).toBe("Ann");
+    expect(updateFor(current(kept), BEA.playerId).room.myName).toBe("Bea");
+  });
 });
