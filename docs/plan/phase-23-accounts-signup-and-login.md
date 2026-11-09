@@ -562,6 +562,23 @@ These 20 scenarios are added to `harness/required.yaml` in this phase, by file a
     existed. All 6 browser-test parts passed. Fixed: `startRouteTestServer` creates the folder
     first (reproduced locally without `dist`, then 9 route tests pass); `npm run check` passed
     (594 tests). Proposed rule added.
+  - Second branch check (run 42705398486, `956b873`) green: `check` and all 6 browser-test
+    parts. Merged (`1fe3b93`); Deploy run 42707307440 succeeded (tests skipped, the merged code
+    had passed Check) and applied D1 migrations 0007, 0008 and 0009 to the live database
+    (`wrangler d1 migrations list --remote`: none left). The live bundle has the new texts
+    ("Sign up to keep your account", "Account settings", "My match history", "No account yet",
+    `username_in_room`). Live site: the page, a generated name, `/api/account`, `/api/logout` and
+    `/api/session` with a forged token answer "not logged in", the lobby socket opens, the
+    test-only routes answer 404. Signing up and logging in need the human check in a browser,
+    so they are left to the owner (What to try).
+  - Live CPU (`wrangler tail`, Q90): 109 logins 6-14 ms, median 8, 99th percentile 13; signups
+    refused for the human check 1-3 ms. That is 650-700 ns per iteration, above the 400 ns B11
+    assumes, so a login's 99th percentile is over B11's 10 ms. The figure is replaced on the
+    record (Q102: 700 ns); `LIVE_PASSWORD_HASH_CPU` is not changed yet, since alone it turns
+    `npm run check` red. Still to do before the phase is done: a fix, either fewer iterations
+    (about 12,000 fits: 8.4 ms of hash at 700 ns, plus about 1 ms of other work; D29, Q90 and
+    `DUMMY_PASSWORD_HASH` change, stored hashes keep their own count) or B11 changed on the
+    record, then `LIVE_PASSWORD_HASH_CPU` set to 700 ns and a new release.
 
 ### Helper log
 

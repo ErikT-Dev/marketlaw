@@ -1712,8 +1712,19 @@ file.
 - **Kept after the phase review (R1):** 20,000 iterations stay. The local measurement that went
   over B11 measured the build computer's load (Q102); lowering the count to pass it would have
   meant about 5,000 iterations, four times weaker. B11 now counts the hash at 400 ns per
-  iteration from the live measurements: 8 ms. The live measurement after the phase 23 merge goes
-  here.
+  iteration from the live measurements: 8 ms.
+- **Measured live after the phase 23 merge (2026-11-10):** `wrangler tail` on the deployed
+  Worker, 109 calls of `POST /api/logins` with unknown usernames (each computes one 20,000-
+  iteration hash against the dummy value, then writes one `unknown_login_failures` row): CPU
+  time per request 6-14 ms, median 8 ms, 95th percentile 10 ms, 99th percentile 13 ms; all 109
+  ended `ok`, none was stopped for CPU. Six `POST /api/signups` refused for the human check
+  (no hash) took 1-3 ms, so a request's work besides the hash is about 1 ms. A signup that
+  passes the human check could not be sent from a script (Turnstile needs a browser); it
+  computes the same one 20,000-iteration hash as a login. Per iteration that is about 350 ns at
+  the median and 650-700 ns at the 99th percentile and the highest call, above the 400 ns B11
+  assumes: at 20,000 iterations a login's 99th percentile is over B11's 10 ms. The figure is
+  replaced in Q102; the fix (fewer iterations, or B11 changed on the record) is open, see
+  phase 23's Release note.
 
 ## Q91. Failed logins: what counts, and when does the human check end (A1.13)?
 
@@ -2009,6 +2020,12 @@ file.
   time (`wrangler tail`) and records it in Q90; a live cost per iteration above 400 ns replaces
   the figure (`tools/harness-runner/LIVE_PASSWORD_HASH_CPU.ts`). `budgets.yaml` B11's
   "measured" says so.
+- **Live figure after the merge (2026-11-10):** the live measurement (Q90) gives 700 ns per
+  iteration by this method (the highest call, 14 ms for 20,000 iterations; the 99th percentile
+  13 ms is 650 ns). This replaces the 400 ns figure. With it, the hash half of B11 is 14 ms at
+  20,000 iterations, over the 10 ms limit, and a count above about 14,000 fails B11.
+  `LIVE_PASSWORD_HASH_CPU` still says 400 ns: changing it alone would turn `npm run check`
+  red, so it changes together with the fix (phase 23, Release note).
 
 ## Q103. Can a freed username join a room where the old holder still shows it (A2.4, M1.6)?
 
