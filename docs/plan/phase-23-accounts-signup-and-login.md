@@ -397,12 +397,20 @@ These 20 scenarios are added to `harness/required.yaml` in this phase, by file a
     writes no rows. The 1280x720 game screenshots changed because the top bar now holds the user
     box (the player order badges get narrower there). Locally, `e2e/userMenu.spec.ts` with
     `--workers=2` sometimes times out in `openLobby` under load; with one worker it passes.
-    Unresolved: `e2e/chat.spec.ts` "players chat in the waiting room and in the game" failed at
-    1280x720 in about 5 of 14 local runs on this branch (the room never answers Cid's first
-    in-game `send_chat`: no update, no chat, no rejection), and passed 9 of 9 on `9c0c9a6`; with
-    extra frame logging it passed 5 of 5, so the cause was not found. Watch it on GitHub; the
-    first suspect is timing around the room asking the lobby for chat quota
-    (`room/receiveAskingLobby.ts`), as nothing in 4b touches chat.
+    Found (2026-11-09): `e2e/chat.spec.ts` "players chat in the waiting room and in the game"
+    failing at 1280x720 (a chat message that never shows) was not a 4b regression. Server logging
+    showed the room refusing the message with `site_daily_cap`: the local lobby's A9.6 count
+    (2,000 chat messages a day, taken by rooms in blocks of 20) is kept between local runs and had
+    been used up by the day's browser test runs, so a room whose quota ran out (Cid's first
+    in-game message, or Ann's first message in a new room once the count was full) was refused;
+    the client shows that refusal at the message box, which the test does not look at. Whether a run
+    failed depended only on how much of the day's count was left, not on 4b's code. Fixed as Q69
+    did for games (Q101): `lobby/siteChatLimitOf` (spec 2,000) unless the environment sets
+    `TEST_SITE_CHAT_MESSAGES_PER_DAY`, which only `.dev.vars` sets (locally and in `check.yml` and
+    `deploy.yml`, to 1000000); `siteGameLimitOf` and `siteChatLimitOf` share
+    `lobby/configuredLimitOf`; `grantChatQuota` takes the limit. With it the test passed 15 of 15
+    in a row (one worker); before it, 3 of 3 failed once the count was full. Locally, add
+    `TEST_SITE_CHAT_MESSAGES_PER_DAY=1000000` to `.dev.vars` and restart `wrangler dev`.
 
 - [ ] 4c. **Busy-day simulator: logins and signups** (B11, B18; exit criteria). **Small.**
   - `tools/simulator/busyDay/BUSY_DAY.ts` gains signups and logins (and failed logins) with their
