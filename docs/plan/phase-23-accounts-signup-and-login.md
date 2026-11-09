@@ -630,7 +630,7 @@ logging out ends it there and nowhere else. A guest who logs out is warned first
 cannot come back and that they leave any room or game; a registered user who logs out keeps
 their seat and shows as away. Account settings change the username at most once every 7 days
 (the signup's own name choice does not count), showing the date it can change again. Passwords
-are stored as PBKDF2-SHA256 with 20,000 iterations and a random salt (D29). Three D1 migrations
+are stored as PBKDF2-SHA256 with 10,000 iterations and a random salt (D29). Three D1 migrations
 (0007 to 0009) add the logins, registered accounts and failed-login tables. `PROTOCOL_VERSION`
 is 10, so a tab with the old client is told to reload; games saved by the old version close
 themselves (D1).
@@ -651,7 +651,9 @@ themselves (D1).
 (453 scenarios, 367 required pass, 0 fail), B11 8 of 10 ms (room messages 2, password hash 8),
 B18 3,066 of 5,000 rows. Two browser tests timed out locally under two workers and passed alone,
 the known local load problem; GitHub's branch check judged the full suite before the merge. The
-phase's 20 scenarios are required, plus 3 from the review (23 in all).
+phase's 20 scenarios are required, plus 3 from the review (23 in all). After the first release
+the live login CPU was over B11, so the count went from 20,000 to 10,000 iterations; B11 now
+counts the hash at the live 700 ns per iteration (7 ms), and `npm run check` is green.
 
 **Differences from the phase file.** Failed logins are counted for unknown names and addresses
 too, in their own table keyed by a hash, so the human check cannot tell whether an account exists
@@ -662,7 +664,7 @@ username changes; a logout writes 2 rows. B11's password-hash half is computed f
 iteration count and the live Worker's cost per iteration instead of measured on the build
 computer (Q102, R1). `POST /api/session` now says whether the account is a guest's (R9).
 
-**Decisions.** Q90: PBKDF2-SHA256, 20,000 iterations, one hash per login including unknown
+**Decisions.** Q90: PBKDF2-SHA256, 10,000 iterations (20,000 until the live measurement), one hash per login including unknown
 accounts. Q91: what counts as a failed login and when the human check ends. Q92: which account
 an email address logs in to. Q93: what a valid email address is. Q94: signing up and logging in
 when not logged in. Q95: logging out ends only that browser's login; guests leave, registered
@@ -675,7 +677,8 @@ room where the old holder still shows it.
 
 **Review findings and what happened to each.**
 1. B11 went over its limit inside `npm run check`: answered with numbers (Q102), the method
-   measured the build computer; 20,000 iterations stay and the hash counts at the live cost.
+   measured the build computer; the hash counts at the live cost. Measured live after the merge,
+   20,000 iterations were over B11, so the count is now 10,000 (Q90).
 2. Failed logins revealed whether an email address had an account: fixed, unknown names and
    addresses count too (Q97), with two new required scenarios.
 3. A freed username could join the room where the old holder still showed it: fixed (Q103), with
