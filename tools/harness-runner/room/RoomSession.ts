@@ -24,6 +24,7 @@ import type { ServerMessage } from "../../../src/shared/protocol/ServerMessage.t
 import { PROTOCOL_VERSION } from "../../../src/shared/PROTOCOL_VERSION.ts";
 import { RoomCode } from "../../../src/shared/RoomCode.ts";
 import { rawMessageText } from "./rawMessageText.ts";
+import { roomTokenOf } from "./roomTokenOf.ts";
 import type { RoomGiven } from "./RoomGiven.ts";
 import { NO_CHAT_CONTEXT } from "../../../src/server/room/NO_CHAT_CONTEXT.ts";
 
@@ -32,10 +33,6 @@ type Connection = { state: ConnectionState; isClosed: boolean };
 const DEFAULT_ROOM_CODE = "K7QR2P";
 const ROOM_SIZE = v.picklist([2, 3, 4]);
 const PLAYER_COUNT = v.picklist([1, 2, 3, 4]);
-
-function tokenOf(name: string): string {
-  return `token-of-${name.replace(/\W/g, "-")}`;
-}
 
 function logLengthOf(record: RoomRecord): number {
   return record.game?.saved.actionLog.length ?? 0;
@@ -182,7 +179,7 @@ export class RoomSession {
         seat,
         text: JSON.stringify({
           protocolVersion: PROTOCOL_VERSION,
-          token: tokenOf(name),
+          token: roomTokenOf(name),
           type: "resync",
         }),
       });
@@ -218,7 +215,7 @@ export class RoomSession {
     const seatNumber = this.seatNames.indexOf(name) + 1;
     const seat = this.record.game?.seats.find((candidate) => candidate.seat === seatNumber);
     const text = rawMessageText(raw, {
-      token: tokenOf(name),
+      token: roomTokenOf(name),
       stateVersion: seat?.stateVersion ?? 0,
       actionId: `auto-${this.nextActionNumber++}`,
     });
@@ -257,6 +254,7 @@ export class RoomSession {
   private countRows(before: RoomRecord, rowsBefore: number, reply: ServerMessage): void {
     const isAccepted =
       logLengthOf(this.record) > logLengthOf(before) ||
+      this.record.players.length !== before.players.length ||
       (reply.type === "update" && reply.acceptedActionId !== null);
     (isAccepted ? this.rowsForAccepted : this.rowsForOther).push(this.rowsWritten - rowsBefore);
   }
@@ -270,6 +268,6 @@ export class RoomSession {
   }
 
   private identityByToken(token: string): Identity | null {
-    return [...this.accounts.values()].find(({ name }) => tokenOf(name) === token) ?? null;
+    return [...this.accounts.values()].find(({ name }) => roomTokenOf(name) === token) ?? null;
   }
 }

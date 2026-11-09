@@ -6,6 +6,7 @@ import { generatedNameRoute } from "./api/generatedNameRoute";
 import { humanCheckRoute } from "./api/humanCheckRoute";
 import { joinRoomRoute } from "./api/joinRoomRoute";
 import { loginRoute } from "./api/loginRoute";
+import { logoutRoute } from "./api/logoutRoute";
 import { replayExportRoute } from "./api/replayExportRoute";
 import { roomJson } from "./api/roomJson";
 import { sessionRoute } from "./api/sessionRoute";
@@ -43,6 +44,7 @@ async function routeRoom(request: Request, env: Env, path: RegExpExecArray): Pro
 const POST_ROUTES: Readonly<Record<string, (request: Request, env: Env) => Promise<Response>>> = {
   "/api/guests": createGuestRoute,
   "/api/logins": loginRoute,
+  "/api/logout": logoutRoute,
   "/api/rooms": createRoomRoute,
   "/api/session": sessionRoute,
   "/api/test-rooms": createTestRoom,

@@ -68,7 +68,7 @@ export async function logInVisitor(
   if (decision.kind === "logged_in") {
     const { name } = decision.account.account.identity;
     session.accounts.set(name, withFailedLogins(decision.account, NO_FAILED_LOGINS));
-    session.loggedIn = { visitor, as: name };
+    session.visitorLogins.set(visitor, name);
     return;
   }
   if (decision.kind === "wrong_password") {

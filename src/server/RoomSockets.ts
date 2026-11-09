@@ -12,6 +12,8 @@ import { updateFor } from "./room/updateFor";
 import { otherTabsOf } from "./room/otherTabsOf";
 import { withAwaySeats } from "./room/withAwaySeats";
 import { OPENED_ELSEWHERE_CLOSE_CODE } from "../shared/OPENED_ELSEWHERE_CLOSE_CODE";
+import { LOGGED_OUT_CLOSE_CODE } from "../shared/LOGGED_OUT_CLOSE_CODE";
+import type { ReplySocket } from "./ReplySocket";
 
 export class RoomSockets {
   private readonly ctx: DurableObjectState;
@@ -27,6 +29,14 @@ export class RoomSockets {
   closeAll(reason: string): void {
     for (const socket of this.ctx.getWebSockets()) {
       socket.close(ROOM_GONE_CLOSE_CODE, reason);
+    }
+  }
+
+  closeLogin(tokenHash: string): void {
+    for (const socket of this.openSockets()) {
+      if (attachmentOf(socket).tokenHash === tokenHash) {
+        socket.close(LOGGED_OUT_CLOSE_CODE, "Logged out");
+      }
     }
   }
 
@@ -60,15 +70,16 @@ export class RoomSockets {
     }
   }
 
-  welcome(record: RoomRecord, playerId: PlayerId, socket: WebSocket): void {
+  welcome(record: RoomRecord, playerId: PlayerId, socket: ReplySocket): void {
     const elsewhere: ServerMessage = {
       type: "opened_elsewhere",
       protocolVersion: PROTOCOL_VERSION,
     };
-    const tabs = this.openSockets().map((tab) => ({
-      tab,
-      playerId: attachmentOf(tab).identity?.playerId ?? null,
-    }));
+    const tabs: ReadonlyArray<{ readonly tab: ReplySocket; readonly playerId: PlayerId | null }> =
+      this.openSockets().map((tab) => ({
+        tab,
+        playerId: attachmentOf(tab).identity?.playerId ?? null,
+      }));
     for (const other of otherTabsOf(tabs, playerId, socket)) {
       other.send(JSON.stringify(elsewhere));
       other.close(OPENED_ELSEWHERE_CLOSE_CODE, "The game was opened in another tab");
@@ -76,7 +87,7 @@ export class RoomSockets {
     this.updateOthers(record, socket);
   }
 
-  updateOthers(record: RoomRecord, socket: WebSocket): void {
+  updateOthers(record: RoomRecord, socket: ReplySocket | null): void {
     if (record.game !== null) {
       this.updatePlayers(
         record,
@@ -116,7 +127,7 @@ export class RoomSockets {
   updatePlayers(
     record: RoomRecord | null,
     playerIds: ReadonlyArray<PlayerId>,
-    except: WebSocket | null,
+    except: ReplySocket | null,
   ): void {
     if (record === null || playerIds.length === 0) {
       return;

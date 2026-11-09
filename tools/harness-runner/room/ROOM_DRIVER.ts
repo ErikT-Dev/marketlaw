@@ -17,6 +17,7 @@ import { lobbyRoomThen } from "../lobby/lobbyRoomThen.ts";
 import { ROOM_GIVEN_SCHEMA } from "./ROOM_GIVEN_SCHEMA.ts";
 import { roomMessageContains } from "./roomMessageContains.ts";
 import { RoomSession } from "./RoomSession.ts";
+import { logOutInRoom } from "./logOutInRoom.ts";
 
 const ROOM_SEAT_FIELDS = ["state_version", "connected", "player"];
 
@@ -126,9 +127,17 @@ function messageTo(session: RoomSession, expected: unknown): unknown {
     : noticeTo(session, expected);
 }
 
-async function runRoomStep(session: RoomSession, step: ScenarioStep): Promise<void> {
+async function runRoomStep(
+  session: RoomSession,
+  step: ScenarioStep,
+  registeredNames: ReadonlyArray<string>,
+): Promise<void> {
   if (step === "start_game") {
     throw new Error("the room driver cannot start a game");
+  }
+  if (step["action"] === "log_out" && typeof step["player"] === "string") {
+    await logOutInRoom(session, step["player"], registeredNames.includes(step["player"]));
+    return;
   }
   if (step["action"] === "open_game" && typeof step["player"] === "string") {
     session.openGame(step["player"], typeof step["tab"] === "number" ? step["tab"] : 1);
@@ -190,13 +199,13 @@ function startSession(
 ): DriverSession {
   const given = v.parse(GIVEN_SCHEMA, engineGivenOf(rawGiven));
   const random = engineRandom({ scripted, purpose: () => "play", startingDeck: [] });
-  const session = new RoomSession(
-    stateFromGiven(given),
-    v.parse(ROOM_GIVEN_SCHEMA, rawGiven),
-    random,
-  );
+  const roomGiven = v.parse(ROOM_GIVEN_SCHEMA, rawGiven);
+  const session = new RoomSession(stateFromGiven(given), roomGiven, random);
+  const registeredNames = (roomGiven.accounts ?? [])
+    .filter((account) => account.kind === "registered")
+    .map(({ name }) => name);
   return {
-    runStep: async (step) => runRoomStep(session, step),
+    runStep: async (step) => runRoomStep(session, step, registeredNames),
     readThen: (field, expected) => readRoomThen(session, field, expected),
     measurements: () => [
       { budget: "B1", value: Math.max(0, ...session.rowsForAccepted) },
@@ -223,6 +232,7 @@ export const ROOM_DRIVER: ScenarioDriver = {
     "leave_game",
     "call_vote",
     "vote",
+    "log_out",
   ]),
   thenFields: new Set([...ENGINE_FIELDS.thenFields, "message_to", "connected_tab", "room"]),
   nestedFields: new Map([
@@ -230,7 +240,7 @@ export const ROOM_DRIVER: ScenarioDriver = {
     ["given.seats", new Set([...SEAT_FIELDS, ...ROOM_SEAT_FIELDS])],
     ["then.seats", new Set([...SEAT_FIELDS, "type_counts", ...ROOM_SEAT_FIELDS])],
     ["given.room", new Set(["code", "size", "public", "owner", "players", "state"])],
-    ["given.accounts", new Set(["name"])],
+    ["given.accounts", new Set(["name", "kind"])],
     ["then.view", new Set([...(ENGINE_FIELDS.nestedFields.get("then.view") ?? []), "away"])],
     ["then.connected_tab", new Set(["player", "tab"])],
     ["then.room", new Set(["state", "players"])],

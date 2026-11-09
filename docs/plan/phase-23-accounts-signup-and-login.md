@@ -192,7 +192,7 @@ These 20 scenarios are added to `harness/required.yaml` in this phase, by file a
     `registration` on the account (`emailEnteredMs: session.now`), which `log_in` and
     `then.accounts.kind` then see. Each failed login writes 1 row, a login 2 (3 after failures).
 
-- [ ] 1c. **Log out** (A1.14, M6.10; Q95; scenarios `connections-and-leaving` #17, #33,
+- [x] 1c. **Log out** (A1.14, M6.10; Q95; scenarios `connections-and-leaving` #17, #33,
   `accounts` #36, #37). **Large.**
   - A logout route deletes the browser's `logins` row (one D1 row); the token stops working at
     once. The client forgets the stored session and goes to the lobby logged out.
@@ -202,6 +202,30 @@ These 20 scenarios are added to `harness/required.yaml` in this phase, by file a
     only disconnected: the room's sockets for that browser close, the seat stays (M5, M6).
   - Room driver (`connections-and-leaving` #17, #33) and lobby driver (`accounts` #36, #37) gain
     the step `log_out`; `then.seats[].left: false` may need reading in the room driver.
+  - Done (2026-11-09): `POST /api/logout` (`api/logoutRoute.ts`, body `SessionRequest`
+    `{ token }`, answer always the `SessionResponse` `{ isLoggedIn: false }`, 400 for a malformed
+    body) finds the login (`findLogoutAccount`: identity and guest or registered), deletes its
+    `logins` row (`deleteLogin`, 1 D1 row) and calls `GameRoom.logOut` in every room the lobby
+    lists for the player (busy and staying). A guest leaves there through the normal message path
+    (`leaveAsLoggedOutGuest` with `room/guestLogOutIntentIn` and `guestLogOutMessageOf`):
+    `leave_game` while still playing (M6.10), then `leave_room`, so the lobby releases them by
+    the room's usual report; replies go to `UNHEARD_REPLIES`. For everyone the room then closes
+    the sockets of that login (`RoomSockets.closeLogin`, close code `LOGGED_OUT_CLOSE_CODE`
+    4401 in `src/shared/`) and marks the player disconnected if no other socket is open
+    (`markDisconnected`, taken out of `webSocketClose`). `RoomSockets` and `publishReceived`
+    now take any `ReplySocket`. Drivers: lobby `log_out` (player: `logOutPlayer.ts`; visitor:
+    ends that visitor's login; `LobbySession.visitorLogins` now holds logins per visitor and
+    `then.logged_in.visitor` reads it), room `log_out` (`logOutInRoom.ts`, given
+    `accounts[].kind`); the room driver counts a room membership change as accepted for B1/B2
+    (B2 allows membership writes). `connections-and-leaving` #17, #33 and `accounts` #36, #37
+    pass when required locally. `PROTOCOL_VERSION` not raised: no message shape changed.
+    Differs from the phase file: the client part (forget the stored session, go to the lobby
+    logged out) moves to item 4b, which adds the only Log out button; without a caller it would
+    be unused code (knip).
+  - For later items: `GameRoom.ts` is at 300 non-blank lines (the limit); split it before adding
+    to it. Item 4b calls `POST /api/logout` with `{ token }`, then `writeSession(null)`, and
+    treats close code 4401 on a room socket as logged out (no reconnect). The route has no route
+    test yet (item 4c); it logs nothing.
 
 - [ ] 2. **Signup** (A1.3, A1.6, A1.12, A2.1-A2.4; Q93, Q94; scenarios `accounts` #5, #7, #8,
   #33, #34, #35, and #4 without its email). **Large.**

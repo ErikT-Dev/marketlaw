@@ -1,0 +1,1 @@
+export const LOGGED_OUT_CLOSE_CODE = 4401;

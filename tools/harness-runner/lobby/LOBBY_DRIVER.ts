@@ -13,6 +13,7 @@ import { lobbyChatThen } from "./lobbyChatThen.ts";
 import { chatTextOfStep } from "./chatTextOfStep.ts";
 import { publicRoomsOf } from "../../../src/server/lobby/publicRoomsOf.ts";
 import { logInVisitor } from "./logInVisitor.ts";
+import { logOutPlayer } from "./logOutPlayer.ts";
 
 const ROOM_ACTIONS = [
   "change_size",
@@ -41,6 +42,8 @@ function runPlayerStep(
     session.joinRoom(name, step["code"]);
   } else if (action === "open_site") {
     session.openSite(name);
+  } else if (action === "log_out") {
+    logOutPlayer(session, name);
   } else if (action === "leave_game") {
     session.sendGameAction(name, { type: "leave_game" });
   } else if (action === "send_chat") {
@@ -63,6 +66,9 @@ async function runVisitorStep(
   switch (textOf(step["action"])) {
     case "log_in":
       await logInVisitor(session, visitor, step);
+      return;
+    case "log_out":
+      session.visitorLogins.delete(visitor);
       return;
     case "join_room":
       session.visitorJoins(visitor, step["code"]);
@@ -165,6 +171,7 @@ export const LOBBY_DRIVER: ScenarioDriver = {
     "create_guest",
     "ask_generated_name",
     "log_in",
+    "log_out",
     "wait_ms",
     "disconnect",
     "reconnect",

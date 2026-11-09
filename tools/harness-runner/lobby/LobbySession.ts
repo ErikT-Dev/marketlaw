@@ -60,6 +60,7 @@ export class LobbySession {
   rejected: ReasonCode | null = null;
   generatedName: string | null = null;
   loggedIn: Readonly<Record<string, string>> | null = null;
+  readonly visitorLogins = new Map<string, string>();
   private readonly pendingJoins = new Map<string, string>();
   private live: ReadonlyArray<PlayerId> = [];
   lobby: LobbyRecord;

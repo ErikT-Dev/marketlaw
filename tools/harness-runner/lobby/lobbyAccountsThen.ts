@@ -1,6 +1,14 @@
 import { isRecord } from "../../harness-check/isRecord.ts";
 import type { LobbySession } from "./LobbySession.ts";
 
+function loggedInThen(session: LobbySession, visitor: unknown) {
+  if (typeof visitor !== "string") {
+    return session.loggedIn ?? undefined;
+  }
+  const name = session.visitorLogins.get(visitor);
+  return name === undefined ? undefined : { visitor, as: name };
+}
+
 export function lobbyAccountsThen(session: LobbySession, field: string, expected: unknown) {
   const asked = isRecord(expected) ? expected : {};
   switch (field) {
@@ -24,6 +32,6 @@ export function lobbyAccountsThen(session: LobbySession, field: string, expected
           };
     }
     default:
-      return session.loggedIn ?? undefined;
+      return loggedInThen(session, asked["visitor"]);
   }
 }
