@@ -303,4 +303,4 @@ are each helper's conversation size at its end.
 | Finisher, first run | 32 | 90k | 45 | done |
 | Phase reviewer | 12 | 157k | 33 | done, 5 findings |
 | Fixer, R1 to R5 | 9 | 105k | 49 | done |
-| Finisher, second run | 21 | 75k | 32 | done |
+| Finisher, second run | 29 | 79k | 37 | done |
