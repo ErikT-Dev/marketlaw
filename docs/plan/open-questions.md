@@ -1709,6 +1709,11 @@ file.
   plan and named here for the owner's review.
 - **Implemented:** `decisions.md` O4 moved to Decided as D29; `accounts.md` open question 2
   removed; phase 23, item 1.
+- **Kept after the phase review (R1):** 20,000 iterations stay. The local measurement that went
+  over B11 measured the build computer's load (Q102); lowering the count to pass it would have
+  meant about 5,000 iterations, four times weaker. B11 now counts the hash at 400 ns per
+  iteration from the live measurements: 8 ms. The live measurement after the phase 23 merge goes
+  here.
 
 ## Q91. Failed logins: what counts, and when does the human check end (A1.13)?
 
@@ -1952,3 +1957,19 @@ file.
   check to Turnstile with Cloudflare's always-passing test secret, so it needs the network,
   like the browser tests.
 - **Implemented:** phase 23, item 4c.
+- **Changed after the phase review (R1):** the hash half of B11 went over its limit inside
+  `npm run check` (20 and 11 of 10 ms; 8 alone), because the method measured this computer's
+  load, not the Worker. Measured on the build computer (8 logical CPUs, Node, process CPU time
+  per hash, batches of 20): 20,000 iterations 7.5-7.9 ms idle and 14.9-17.2 ms with the other
+  CPUs busy; 10,000 iterations 3.8-4.1 ms idle and 6.3-9.4 ms busy; 100,000 iterations 37.5-39.9
+  ms idle, against 15-19 ms on the live Free plan Worker (phase 04). Node here is about twice as
+  slow as the Worker when idle and four times when busy, so the number judged the machine, and
+  passing it under load would need about 5,000 iterations, four times weaker, for no saving on
+  the Worker. New method: the hash half is the iteration count (`PASSWORD_HASHING`) times
+  400 ns, the highest CPU time per iteration among the live measurements (10,000 iterations at
+  4 ms; 100,000 at 19 ms is 190 ns), times one hash per login or signup: 8 ms at 20,000, and a
+  count above 25,000 fails B11. The report shows both halves: the room messages' 99th percentile
+  and the password hash. The releaser measures the live `/api/logins` and `/api/signups` CPU
+  time (`wrangler tail`) and records it in Q90; a live cost per iteration above 400 ns replaces
+  the figure (`tools/harness-runner/LIVE_PASSWORD_HASH_CPU.ts`). `budgets.yaml` B11's
+  "measured" says so.

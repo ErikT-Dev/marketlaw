@@ -220,7 +220,9 @@ Web Crypto's PBKDF2-SHA256 with a random 16-byte salt per password and 20,000 it
 6-8 ms of CPU, within B11. The stored value names the method and the count, so the count can be
 raised later. Phase 04 measured 100,000 at 15-19 ms and the runtime refuses more; OWASP's 600,000
 is impossible in a Worker. The human check after failed logins (A1.13) guards against online
-guessing; the lower count only matters if the database leaks.
+guessing; the lower count only matters if the database leaks. B11 counts the hash as the
+iteration count times 400 ns, the live Worker's highest measured cost per iteration (8 ms), not
+as local CPU time, which measured the build computer's load (phase 23 review R1, Q102).
 *Effect:* `open-questions.md` Q90; `accounts.md` open question 2 removed; built in phase 23.
 
 ## Open
