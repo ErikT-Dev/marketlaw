@@ -587,6 +587,19 @@ These 20 scenarios are added to `harness/required.yaml` in this phase, by file a
     keep their count and still verify (about 14 ms each); not rehashed, data may be wiped (D1).
     No spec or harness change: neither names the count. `npm run check` green.
   - [ ] Release again: deploy, measure live login CPU (`wrangler tail`), record it in Q90.
+    - Branch check run 42709737136 (`fd43713`) green after one rerun: a `dailyLimits.spec.ts`
+      axe contrast failure passed on the rerun (flaky check).
+    - Merged `fd43713` (`588dade`, same tree as the tested commit, so Deploy skipped the tests);
+      Deploy run 42713291364 succeeded, Current Version ID `1ef35734` (`wrangler deployments
+      status`: 100%). Live bundle has the phase 23 texts; `/api/account`, `/api/logout` and
+      `/api/session` with a forged token answer "not logged in", test-only routes 404.
+    - Live CPU not measured yet: 100 logins with unknown usernames (all `400 login_failed`)
+      were sent at 22:38 UTC, but `wrangler tail` caught only 16, and every tail event, also
+      from a fresh tail and fresh requests up to 22:47 UTC (10 minutes after the deploy), names
+      the old version `4df00578` (20,000 iterations), not `1ef35734`. The 16: 5-8 ms, median 7,
+      which looks like 20,000 iterations. So the figures do not measure 10,000 and are not
+      recorded in Q90. Next: confirm the live Worker serves `1ef35734`, then measure again;
+      another batch of about 100 logins needs the owner's approval (the approval covered one).
 
 ### Helper log
 
