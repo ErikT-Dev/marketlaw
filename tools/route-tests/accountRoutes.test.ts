@@ -43,6 +43,8 @@ describe("the account routes", () => {
         humanCheck: DUMMY_HUMAN_CHECK,
       });
       const guestToken = tokenOf(guest);
+      const asGuest = await post("/api/session", { token: guestToken });
+      expect(asGuest.body).toMatchObject({ isLoggedIn: true, isGuest: true });
       const signup = await post("/api/signups", {
         token: guestToken,
         email: EMAIL,
@@ -50,6 +52,8 @@ describe("the account routes", () => {
         humanCheck: DUMMY_HUMAN_CHECK,
       });
       expect(signup).toMatchObject({ status: 200, body: { isOk: true, token: guestToken } });
+      const asRegistered = await post("/api/session", { token: guestToken });
+      expect(asRegistered.body).toMatchObject({ isLoggedIn: true, isGuest: false });
       const byName = await post("/api/logins", { login: "routetester", password: PASSWORD });
       expect(byName).toMatchObject({ status: 200, body: { isOk: true, name: "Routetester" } });
       const failed = await post("/api/logins", { login: EMAIL, password: WRONG_PASSWORD });

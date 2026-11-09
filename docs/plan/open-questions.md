@@ -1934,6 +1934,11 @@ file.
   answers 503, which the client shows as the failed logout above, so a guest is never logged out
   while their seat stays in a room they can no longer leave. Trying again logs out of the rooms
   still left.
+- **Changed after the phase review (R9):** the session answer (`POST /api/session`, asked when
+  a page opens) also says whether the account is a guest, and the client takes the account kind
+  and username from it, so a tab opened after a signup or rename elsewhere shows the right menus
+  without trusting what the browser stored. A tab that stays open during a signup in another tab
+  learns it at its next page load.
 
 ## Q101. How can the browser tests send more than 2,000 chat messages a day on one local server?
 

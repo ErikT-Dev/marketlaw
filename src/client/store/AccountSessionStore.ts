@@ -23,6 +23,22 @@ export abstract class AccountSessionStore extends ObservableState<ClientState> {
     if (answer?.isLoggedIn === false && this.state.session?.token === session.token) {
       this.leaveRoom("Your login has ended. Choose a username to play again.", null);
     }
+    if (answer?.isLoggedIn === true) {
+      this.takeCheckedAccount(session, answer.name, answer.isGuest);
+    }
+  }
+
+  private takeCheckedAccount(checked: StoredSession, name: string, isGuest: boolean): void {
+    const current = this.state.session;
+    const isUnchangedSinceCheck =
+      current?.token === checked.token &&
+      current.name === checked.name &&
+      current.isGuest === checked.isGuest;
+    if (isUnchangedSinceCheck && (current.name !== name || current.isGuest !== isGuest)) {
+      const session = { ...current, name, isGuest };
+      writeSession(session);
+      this.change({ session });
+    }
   }
 
   readonly startAsGuest = async (name: string, humanCheck: string): Promise<ReasonCode | null> =>

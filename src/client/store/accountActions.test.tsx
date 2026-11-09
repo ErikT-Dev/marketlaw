@@ -47,7 +47,12 @@ function serverAnswers(answerFor: (path: string) => unknown): ReadonlyArray<Sent
 
 function loggedInAnswer(path: string): unknown {
   return path === "/api/session"
-    ? { isLoggedIn: true, playerId: "7d0c7f1e-4b7a-4c5e-9a39-2f4d9c1b8e10", name: "Ann" }
+    ? {
+        isLoggedIn: true,
+        playerId: "7d0c7f1e-4b7a-4c5e-9a39-2f4d9c1b8e10",
+        name: "Ann",
+        isGuest: true,
+      }
     : { isLoggedIn: false };
 }
 
@@ -57,6 +62,24 @@ beforeEach(() => {
 
 afterEach(() => {
   vi.unstubAllGlobals();
+});
+
+describe("checking the session", () => {
+  it("takes the account kind and name from the session answer", async () => {
+    writeSession(IN_ROOM);
+    serverAnswers(() => ({
+      isLoggedIn: true,
+      playerId: "7d0c7f1e-4b7a-4c5e-9a39-2f4d9c1b8e10",
+      name: "Ann Rider",
+      isGuest: false,
+    }));
+    const store = new ClientStore(() => hostWithEvents().host);
+    const registered = { ...IN_ROOM, name: "Ann Rider", isGuest: false };
+    await vi.waitFor(() => {
+      expect(store.getSnapshot().session).toEqual(registered);
+    });
+    expect(readSession()).toEqual(registered);
+  });
 });
 
 describe("logging out and changing the username", () => {
