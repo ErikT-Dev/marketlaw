@@ -21,10 +21,6 @@ ranked queue, daily limits and chat. How the game itself is played is in `game-r
    to any address. This needs an outside email-sending service with a secret key, which is a new
    dependency. Alternative: a different provider, or leaving email confirmation and password
    reset out until one is chosen. To be decided before accounts are built.
-2. **Password hashing** (A1.5, A1.6). Currently: registered users log in with a password, which
-   the server stores as a secure hash. The free plan allows about 10 ms of computing time per
-   request, and a secure hash may take longer. To be measured before accounts are built; if it
-   does not fit, the login method may need to change.
 
 ## A1. Accounts
 
@@ -46,12 +42,19 @@ ranked queue, daily limits and chat. How the game itself is played is in `game-r
   usernames (A2.4). Signup needs the human check. If the address is already confirmed on another
   account, signup looks exactly the same as with a free address; only the email sent to that
   address says it is already in use. Their account becomes a registered user, keeping everything
-  they have done as a guest, including their seat in a game in progress.
+  they have done as a guest, including their seat in a game in progress. A player who is not
+  logged in can sign up too: this creates their account as a registered user at once, with a
+  username as in A1.2 and one human check. An email address is at most 254 characters, with no
+  spaces, exactly one "@", something before it, and a dot in the part after it with something on
+  both sides.
 - **A1.4** **Email verification:** after signup the player is sent a link to confirm their email
   address. Until they confirm it they can play and log in as normal, but cannot reset their
   password.
 - **A1.5** **Logging in:** a registered user logs in with their username or email address, plus
-  their password.
+  their password. An email address finds the account that has confirmed it (A1.11); while no
+  account has, it finds the account that entered it first. Logging in is offered to players who
+  are not logged in; a guest user who wants to log in to another account logs out first (A1.14).
+  A failed login says only that the login failed, whether the account exists or not.
 - **A1.6** **Passwords:** a password is 8 to 64 characters.
 - **A1.7** **Forgotten password:** a registered user with a confirmed email address can ask for a
   reset link, which is sent to that address. The request needs the human check.
@@ -74,12 +77,17 @@ ranked queue, daily limits and chat. How the game itself is played is in `game-r
   email changes and password-reset requests, and after failed logins (A1.13).
 - **A1.13** **Failed logins:** after 3 failed login attempts on an account within 15 minutes,
   every further login attempt on that account in the next 15 minutes needs the human check. An
-  account is never locked.
+  account is never locked. The 15 minutes run from the latest failed attempt, so a further failed
+  attempt starts them again. A successful login clears the failed attempts. An attempt refused
+  because the human check was missing does not count as a failed attempt.
 - **A1.14** **Staying logged in:** a login lasts until the player has not used the site for
   90 days in that browser, or until the player logs out. The last use is noted at most once a
   day, so a login can last up to one day longer than 90 days without use, never shorter. Every player can log out. A guest user
   who logs out cannot log back in, and is warned of this first. A guest user who logs out during
-  a game leaves that game (M6).
+  a game leaves that game (M6), and one who logs out while waiting in a room leaves the room. A
+  registered user who logs out keeps their seat and place: it is as if their connection closed,
+  and they can log back in and continue. Logging out ends the login only in that browser; a
+  registered user's logins in other browsers go on.
 - **A1.15** **Deleting an account:** a registered user can delete their account. Their email
   address and password are removed, their username becomes free, and their game records show
   "Deleted player". Deleting an account during a game counts as leaving it (M6).
@@ -91,7 +99,11 @@ ranked queue, daily limits and chat. How the game itself is played is in `game-r
 - **A2.2** Uniqueness ignores capital letters ("Mayor" and "mayor" are the same name).
 - **A2.3** "Deleted player" is reserved and cannot be used.
 - **A2.4** **Changing username:** any player, guest or registered, can change their username to
-  another username that is not taken, at most once every 7 days.
+  another username that is not taken, at most once every 7 days. The 7 days run from the last
+  change; a new account can change its username at once, and the username chosen when the
+  account was made, or during signup (A1.3), does not start them. Inside a room the player
+  keeps the name they had when they joined it (their seat, the player list and chat); the new
+  name shows everywhere else at once, and in every room they join afterwards.
 
 ## A3. Game records
 

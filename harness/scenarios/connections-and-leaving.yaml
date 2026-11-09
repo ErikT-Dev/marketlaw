@@ -417,3 +417,18 @@
     - {seat: 4, action: vote, vote: yes}
   then:
     ended: {abandoned: true}
+
+- name: a registered user who logs out during a game keeps their seat
+  covers: [A1.14, M6.10]
+  given:
+    players: 3
+    accounts: [{name: Ann, kind: registered}]
+    seats:
+      - seat: 1
+        player: Ann
+  when:
+    - {player: Ann, action: log_out}
+  then:
+    seats:
+      - seat: 1
+        left: false
