@@ -579,3 +579,4 @@ are each helper's conversation size at its end.
 | Fixer, group A (R1, R10, R11) | 13 | 110k | 49 | done |
 | Fixer, group B (R2, R4, R6, R7) | 18 | 167k | 84 | done |
 | Fixer, group C (R3, R5, R8, R9) | 23 | 178k | 118 | done |
+| Finisher, second run | 39 | 91k | 38 | done |
