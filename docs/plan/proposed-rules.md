@@ -169,3 +169,12 @@ the failure was the load, not the code; note it in the phase's Progress. A B11 f
 also shows alone is a real regression. Never raise the budget for a load spike.
 **Why:** found in the phase 22 review (finding R4), `tools/harness-runner/harness.test.ts`.
 **Enforced by:** judgment.
+
+### Tests that start the Worker must not need a built client
+`wrangler.jsonc` serves `./dist/client` as assets, and wrangler's `createTestHarness` refuses to
+start when that folder is missing. Locally it always exists from an earlier build, but GitHub's
+Check job runs the tests before `npm run size` builds the client. A test that starts the Worker
+creates the folder first (`tools/route-tests/startRouteTestServer.ts`).
+**Why:** found at the phase 23 release: the route tests passed in every local run and failed on
+the first branch check, which ran only at the release because the branch was first pushed then.
+**Enforced by:** GitHub's branch check.

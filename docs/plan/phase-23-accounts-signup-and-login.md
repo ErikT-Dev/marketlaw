@@ -556,6 +556,12 @@ These 20 scenarios are added to `harness/required.yaml` in this phase, by file a
     judges the full suite. No server left on port 8787. `docs/enforcement.md`: the room
     logout route test under Identity.
 - [ ] Release.
+  - Report pushed (`64f0906`). The first branch check (run 42703156794) failed in `check`: the
+    three route tests could not start the Worker on GitHub, because `dist/client` (the assets
+    folder in `wrangler.jsonc`) is built only later in `npm run check`; locally it always
+    existed. All 6 browser-test parts passed. Fixed: `startRouteTestServer` creates the folder
+    first (reproduced locally without `dist`, then 9 route tests pass); `npm run check` passed
+    (594 tests). Proposed rule added.
 
 ### Helper log
 
