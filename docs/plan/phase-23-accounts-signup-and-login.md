@@ -36,6 +36,7 @@ Phase 20a. O4 (password hashing) is decided from phase 04's measurement.
 
 - Email confirmation, resets, email changes and deleting accounts come in phase 24; until then
   the account screens do not show those parts.
+- My match history is in the user menu but shown disabled until phase 25 (Q100).
 
 ## What you can see when it's done
 
@@ -453,7 +454,7 @@ These 20 scenarios are added to `harness/required.yaml` in this phase, by file a
     keeps tokens, passwords and email addresses out of the logs.
 - [ ] Phase review (2026-11-09, `phase-reviewer`): not ready; 1 blocker, 5 should fix, 4
   suggestions, 1 note. Fixer groups: A = R1, R10, R11; B = R2, R4, R6, R7; C = R3, R5, R9.
-- [ ] R1. Blocker (group A). B11 goes over its limit inside `npm run check` (measured 20 and 11
+- [x] R1. Blocker (group A). B11 goes over its limit inside `npm run check` (measured 20 and 11
   of 10 ms; 8 alone): `tools/harness-runner/measurePasswordHashCpuMs.ts`, `highestMeasured.ts`,
   `PASSWORD_HASHING.ts`. With 5 batches the 99th percentile is the highest batch; Windows CPU
   time steps 15.6 ms; it measures Node, not workerd. Never lower the limit or loosen the
@@ -461,6 +462,15 @@ These 20 scenarios are added to `harness/required.yaml` in this phase, by file a
   with numbers the method is wrong and change it on the record. Show both halves of B11 in the
   report. The releaser measures `/api/logins` and `/api/signups` CPU on the live Worker
   (`wrangler tail`) and records it in Q90.
+  - Fixed (2026-11-09): the method was wrong, shown with numbers in Q102: on this computer the
+    same 20,000-iteration hash costs 7.5-7.9 ms of CPU idle and 14.9-17.2 ms with the other CPUs
+    busy, and 100,000 iterations 38 ms against 15-19 ms on the live Worker, so it measured the
+    machine's load; passing it would have needed about 5,000 iterations. 20,000 stay (Q90, D29;
+    `DUMMY_PASSWORD_HASH` unchanged). B11's hash half is now the iteration count times 400 ns,
+    the live Worker's highest measured cost per iteration (`LIVE_PASSWORD_HASH_CPU`): 8 ms; the
+    report shows both halves ("room messages: n, password hash: 8"). `budgets.yaml` B11 says so
+    (`HARNESS:` commit). Still for the releaser: the live `wrangler tail` measurement into Q90;
+    above 400 ns per iteration it replaces the figure.
 - [ ] R2. Should fix (group B). Q97 reveals whether an email address has an account
   (`src/server/accounts/decideLogin.ts:14-17`), against A1.5, A1.3 and Q91's reason. Count
   failures for unknown login keys too (small D1 table keyed by sha256 of the login key, same
@@ -489,10 +499,12 @@ These 20 scenarios are added to `harness/required.yaml` in this phase, by file a
 - [ ] R9. Suggestion (group C). Whether a session is a guest's is only in `StoredSession.isGuest`
   on the client; after a signup in one tab another tab keeps guest menus. Have the session
   answer carry the account kind.
-- [ ] R10. Suggestion (group A). The route test calls the real Turnstile siteverify, so
+- [x] R10. Suggestion (group A). The route test calls the real Turnstile siteverify, so
   `npm run check` needs the network: note it in `docs/enforcement.md`.
-- [ ] R11. Suggestion (group A). Add "My match history shown disabled until phase 25" (Q100) to
+  - Fixed: noted in the Vitest row of `docs/enforcement.md`.
+- [x] R11. Suggestion (group A). Add "My match history shown disabled until phase 25" (Q100) to
   the phase file's Known gaps.
+  - Fixed: added to Known gaps after this phase.
 - [ ] Second finisher run.
 - [ ] Release.
 
