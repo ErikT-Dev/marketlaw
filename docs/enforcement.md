@@ -68,7 +68,7 @@ rules that rely on it are enforced by review only.
 | Deterministic tests | testing | purity rules · simulator |
 | Invariants under simulation | testing | harness |
 | Leak test | testing | harness · e2e |
-| Hostile client tests | testing | scenarios |
+| Hostile client tests | testing | scenarios · route tests `tools/route-tests/hostileAccountRoutes.test.ts` (account routes: exact answer, D1 unchanged) |
 | Never weaken tests | testing | ESLint · protected paths |
 | No snapshots for logic | testing | `vitest/no-restricted-matchers` |
 | ASCII test names | testing | `vitest/valid-title` |

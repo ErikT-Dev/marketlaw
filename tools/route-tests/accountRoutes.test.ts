@@ -1,8 +1,10 @@
 import * as v from "valibot";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { createTestHarness, type TestHarness } from "wrangler";
+import type { TestHarness } from "wrangler";
+import { postToRoute } from "./postToRoute.ts";
+import { startRouteTestServer } from "./startRouteTestServer.ts";
+import { tokenOf } from "./tokenOf.ts";
 
-const ALWAYS_PASSING_TURNSTILE_SECRET = "1x0000000000000000000000000000000AA";
 const DUMMY_HUMAN_CHECK = "XXXX.DUMMY.TOKEN.XXXX";
 const PASSWORD = "quiet-harbour-71";
 const WRONG_PASSWORD = "loud-harbour-17";
@@ -10,29 +12,10 @@ const EMAIL = "Route.Tester+logs@example.com";
 const STARTING_MS = 30_000;
 const LOGGED_LINE = v.looseObject({ message: v.string() });
 
-type Answer = { readonly status: number; readonly body: Readonly<Record<string, unknown>> };
-
 let server: TestHarness;
 
-async function post(path: string, body: Readonly<Record<string, unknown>>): Promise<Answer> {
-  const response = await server.fetch(`http://localhost${path}`, {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify(body),
-  });
-  const answer: unknown = await response.json();
-  return {
-    status: response.status,
-    body: typeof answer === "object" && answer !== null ? { ...answer } : {},
-  };
-}
-
-function tokenOf(answer: Answer): string {
-  const { token } = answer.body;
-  if (typeof token !== "string") {
-    throw new Error(`The answer has no token: ${String(answer.status)}`);
-  }
-  return token;
+async function post(path: string, body: Readonly<Record<string, unknown>>) {
+  return postToRoute(server, path, body);
 }
 
 function logsShowing(secrets: ReadonlyArray<string>): ReadonlyArray<string> {
@@ -44,16 +27,7 @@ function logsShowing(secrets: ReadonlyArray<string>): ReadonlyArray<string> {
 }
 
 beforeAll(async () => {
-  server = createTestHarness({
-    workers: [
-      {
-        configPath: "./wrangler.jsonc",
-        secrets: { TURNSTILE_SECRET_KEY: ALWAYS_PASSING_TURNSTILE_SECRET },
-      },
-    ],
-  });
-  await server.listen();
-  await server.getWorker().applyD1Migrations("DB");
+  server = await startRouteTestServer();
 }, STARTING_MS);
 
 afterAll(async () => {
