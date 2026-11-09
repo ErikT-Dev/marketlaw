@@ -214,6 +214,15 @@ Replaces "starts the next one" of D19 and the "Where to continue" steps of D18.
 *Effect:* `README.md` ("Continue and stop", "How a phase is built", ground rule 6),
 `phase-helpers.md`, `CLAUDE.md`, `tools/hooks/checkBeforeStop.ts`, `.claude/settings.json`.
 
+**D29. Passwords hashed with PBKDF2-SHA256 at 20,000 iterations (was O4).** (2026-11-09, Claude
+under D19, phase 23)
+Web Crypto's PBKDF2-SHA256 with a random 16-byte salt per password and 20,000 iterations, about
+6-8 ms of CPU, within B11. The stored value names the method and the count, so the count can be
+raised later. Phase 04 measured 100,000 at 15-19 ms and the runtime refuses more; OWASP's 600,000
+is impossible in a Worker. The human check after failed logins (A1.13) guards against online
+guessing; the lower count only matters if the database leaks.
+*Effect:* `open-questions.md` Q90; `accounts.md` open question 2 removed; built in phase 23.
+
 ## Open
 
 From D19 on, Claude solves these itself when the phase that needs them starts, records the
@@ -221,20 +230,6 @@ solution in `open-questions.md`, and moves the point to Decided.
 
 **O3. Email provider.** Needed before phase 24. (`accounts.md` open question 1)
 *Recommendation:* compare free tiers against A1.9 at the start of phase 24.
-
-**O4. Password hashing within the free plan.** Measured in phase 04, decided before phase 23.
-(`accounts.md` open question 2)
-*Recommendation:* a one-hour experiment in phase 04 measures a secure hash on the live Worker. If
-it does not fit, the owner decides on another login method before rooms and accounts are built.
-*Measured 2026-10-27 (phase 04):* a temporary Worker on the Free plan hashed a password with
-PBKDF2-SHA256 (Web Crypto, the only built-in slow hash). CPU time per hash, from `wrangler tail`:
-1,000 iterations 0-1 ms; 10,000 3-4 ms; 50,000 8-16 ms; 100,000 15-19 ms (still accepted,
-although over the 10 ms limit). Above 100,000 the runtime refuses: "Pbkdf2 failed: iteration
-counts above 100000 are not supported". OWASP asks for 600,000 iterations of PBKDF2-SHA256, so a
-hash that strong is impossible in a Worker. Options for phase 23: PBKDF2 at 100,000 iterations
-(about 6 times weaker than OWASP, and over B11 for each login), a hash in WebAssembly (still
-limited by the 10 ms CPU limit), or a login without passwords (an emailed sign-in link). The probe
-Worker was deleted after the measurement.
 
 **O7. Privacy notice.** Needed before phase 24.
 A short notice: what is stored (username, email, password hash, game records), why, how long,

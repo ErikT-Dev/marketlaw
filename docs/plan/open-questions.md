@@ -1681,3 +1681,134 @@ file.
 - **Implemented:** `harness/spec/multiplayer.md` M7.6, scenario `connections-and-leaving` "a vote
   goes on when the player who called it leaves", tests in `src/rules/abandonVote.test.ts`; phase
   22, review fixes.
+
+## Q90. How are passwords hashed within the free plan (O4)?
+
+- **Phase:** 23, starter (O4, `accounts.md` open question 2, A1.5, A1.6).
+- **Question:** phase 04 measured PBKDF2-SHA256 on the live Free plan Worker: 10,000 iterations
+  3-4 ms of CPU, 50,000 8-16 ms, 100,000 15-19 ms, and the runtime refuses more than 100,000.
+  OWASP asks for 600,000. B11 allows 10 ms of CPU per request (99th percentile). Which hash, and
+  how strong?
+- **Options:** (a) PBKDF2-SHA256 through Web Crypto at a count that fits B11; (b) PBKDF2 at
+  100,000, over B11 on every login and signup; (c) a hash in WebAssembly (bcrypt, Argon2), slower
+  per millisecond than the built-in one and limited by the same 10 ms; (d) no passwords, an
+  emailed sign-in link, which changes A1.5 and A1.6 and needs the email provider (O3, phase 24).
+- **Solution:** (a). PBKDF2-SHA256 from Web Crypto with 20,000 iterations (about 6-8 ms from the
+  measurement), a random 16-byte salt per password from `crypto.getRandomValues`, and a 32-byte
+  result. The stored value names the method and the count with the salt and the hash
+  (`pbkdf2-sha256$20000$<salt>$<hash>`, base64), so the count can be raised later without a
+  format change. Every login computes exactly one hash: a login for an unknown username or email
+  hashes against a fixed dummy value, so the reply time does not show whether the account
+  exists, and a login refused for a missing human check (A1.13) computes none. The derived bytes
+  are compared in constant time. No server-side pepper: it would need a new secret that only the
+  owner can set.
+- **Why:** it keeps the spec's login method (passwords, A1.5) and fits B11 with room for the rest
+  of the request. Against online guessing the human check after 3 failures (A1.13) is the
+  protection; the iteration count only matters if the D1 database itself leaks, where 20,000 is
+  about 30 times cheaper to attack than OWASP's 600,000. That weakness is accepted for the Free
+  plan and named here for the owner's review.
+- **Implemented:** `decisions.md` O4 moved to Decided as D29; `accounts.md` open question 2
+  removed; phase 23, item 1.
+
+## Q91. Failed logins: what counts, and when does the human check end (A1.13)?
+
+- **Phase:** 23, starter (A1.13).
+- **Question:** A1.13 does not say whether the "next 15 minutes" run from the third failure or
+  from each later one, whether a successful login clears the failures, whether an attempt refused
+  for a missing human check counts, or what a login for an unknown account says.
+- **Options:** the 15 minutes from the third failure only, or from the latest failure; clear on
+  success, or let the failures expire; count refused attempts, or not.
+- **Solution:** the 15 minutes run from the latest failed attempt; a successful login clears the
+  failures; an attempt refused for a missing human check is not a failed attempt (no password was
+  checked); a login for an unknown username or email fails with the same `login_failed` as a wrong
+  password. Written into A1.5 and A1.13, with the scenarios `accounts` "a successful login clears
+  the failed logins", "the human check after failed logins ends 15 minutes after the latest
+  failed attempt" and "a login with an unknown username fails like a wrong password".
+- **Why:** "every further attempt" needing the check is meant to slow a guesser, so each new
+  failure keeps the check on; once the right password is given there is nothing left to slow;
+  and the same reply for an unknown account keeps usernames and addresses from being probed.
+- **Implemented:** `accounts.md` A1.5, A1.13; phase 23, item 1.
+
+## Q92. Which account does an email address log in to (A1.5, A1.11)?
+
+- **Phase:** 23, starter (A1.5).
+- **Question:** an unconfirmed address reserves nothing (A1.11), so several accounts can hold the
+  same address, and no address can be confirmed before phase 24. Which account does a login by
+  email find?
+- **Options:** the account that entered the address first; the one that entered it last; try the
+  password on every account with the address (one hash each, over B11).
+- **Solution:** the account that has confirmed the address; while none has, the account that
+  entered it first. Addresses are compared as A1.11 says. Written into A1.5, with the scenario
+  `accounts` "logging in by email finds the account that entered the unconfirmed address first".
+- **Why:** a later signup with someone else's address cannot take over their email login, and
+  the username always works as well.
+- **Implemented:** `accounts.md` A1.5; phase 23, item 1.
+
+## Q93. What is a valid email address (A1.3)?
+
+- **Phase:** 23, starter (A1.3).
+- **Question:** signup asks for an email address, but the spec does not say which ones are
+  refused.
+- **Options:** a full address grammar; a short shape check; none until confirmation.
+- **Solution:** at most 254 characters, no spaces, exactly one "@" with something before it, and a
+  dot in the part after it with something on both sides; otherwise `email_invalid`. Written into
+  A1.3, with the scenario `accounts` "rejects an email address without an at sign".
+- **Why:** confirmation (A1.4) is the real test of an address; the shape check only catches typing
+  mistakes before they cost an email.
+- **Implemented:** `accounts.md` A1.3; phase 23, item 2.
+
+## Q94. Signing up and logging in when not logged in, or as a guest (A1.3, A1.5, S10.1)?
+
+- **Phase:** 23, starter (A1.3, A1.5, S10.1, S12.7).
+- **Question:** S10.1 shows **Sign up** to players who are not logged in, but A1.3 describes signup
+  only from a guest account. And a guest who logs in to another account would lose the guest
+  account without the warning of A1.14.
+- **Options:** signup when logged out first makes a guest, then signs up; or it makes a registered
+  account at once. Log in offered to guests too (silently dropping the guest), or only to players
+  who are not logged in.
+- **Solution:** signup when not logged in makes the account a registered user at once, with the
+  username prefilled as in A1.2 and one human check. Log in is offered only to players who are not
+  logged in (as S10.1 and S12.7 already show); a guest who wants another account logs out first,
+  with the warning. Written into A1.3 and A1.5, with the scenario `accounts` "a player who is not
+  logged in signs up as a registered user at once".
+- **Why:** one form and one human check is what S10.1's button promises, and nobody loses a guest
+  account without the warning.
+- **Implemented:** `accounts.md` A1.3, A1.5; phase 23, items 2 and 4.
+
+## Q95. What does logging out do in a room, and in other browsers (A1.14, M6.10)?
+
+- **Phase:** 23, starter (A1.14, M6.10).
+- **Question:** M6.10 says a guest who logs out during a game leaves it. The spec does not say what
+  happens to a guest waiting in a room, to a registered user's seat, or to the same account's
+  logins in other browsers.
+- **Options:** for a waiting guest, leave the room or stay until the room notices; for a
+  registered user, leave or keep the seat; end every login of the account or only this one.
+- **Solution:** a guest who logs out leaves the room they are in, waiting or playing. A registered
+  user who logs out keeps their seat and place, as if their connection closed (M5, M6 apply as
+  usual), and can log back in. Logging out ends the login of that browser only. Written into
+  A1.14, with the scenarios `accounts` "logging out ends the login only in that browser", "a guest
+  who logs out while waiting in a room leaves it" and `connections-and-leaving` "a registered user
+  who logs out during a game keeps their seat".
+- **Why:** a guest who logged out can never come back, so keeping their place would only make the
+  others wait; a registered user can come back, which is what the disconnect rules are for.
+- **Implemented:** `accounts.md` A1.14; phase 23, items 1 and 2.
+
+## Q96. When does the 7-day username wait start, and does a change rename a player in a room (A2.4)?
+
+- **Phase:** 23, starter (A2.4, A3.5).
+- **Question:** A2.4 does not say whether the name chosen when an account is made starts the
+  7 days, nor whether a change shows in a room the player is in. Room records, seats, chat lines
+  and mutes hold names as they were at joining.
+- **Options:** the 7 days from account creation, or from the last change only. Rename the player
+  in their current room (a room and a lobby write, and every place a room keeps the name), or
+  keep the old name there until they join another room.
+- **Solution:** the 7 days run from the last change only; making the account and signing up do
+  not start them. Inside the room the player is in, they keep the name they joined with; the new
+  name shows everywhere else at once and in every room they join afterwards. Game records show
+  current usernames anyway (A3.5, phase 25). Written into A2.4, with the scenarios `accounts` "a
+  new account can change its username at once" and "a username change keeps the old name inside
+  the room the player is in".
+- **Why:** renaming inside a running room touches the seat, the player list, chat and mutes for a
+  change that happens at most once a week; the room is the one place where a stable name helps the
+  other players.
+- **Implemented:** `accounts.md` A2.4; phase 23, item 3.
