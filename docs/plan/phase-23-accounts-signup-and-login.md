@@ -600,6 +600,10 @@ These 20 scenarios are added to `harness/required.yaml` in this phase, by file a
       which looks like 20,000 iterations. So the figures do not measure 10,000 and are not
       recorded in Q90. Next: confirm the live Worker serves `1ef35734`, then measure again;
       another batch of about 100 logins needs the owner's approval (the approval covered one).
+    - The owner chose to pause here (2026-11-10) and approved one more batch of about 100
+      logins with unknown usernames, sent on their next "continue" once the live Worker is
+      confirmed to serve `1ef35734`. Branch commits `8a7367e`, `e1319ae` and later are docs
+      only and go to master with the done commit.
 
 ### Helper log
 
