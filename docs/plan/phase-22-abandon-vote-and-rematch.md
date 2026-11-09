@@ -293,3 +293,4 @@ are each helper's conversation size at its end.
 | Builder, item 5 (resumed after the usage limit; second part shown) | 13 | 188k | 25 | done |
 | Finisher, first run | 32 | 90k | 45 | done |
 | Phase reviewer | 12 | 157k | 33 | done, 5 findings |
+| Fixer, R1 to R5 | 9 | 105k | 49 | done |
