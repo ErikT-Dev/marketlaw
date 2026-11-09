@@ -1,6 +1,6 @@
 # Phase 22: Abandon vote and rematch
 
-Status: in progress
+Status: done
 Milestone: 4 Together
 
 ## Goal
@@ -286,6 +286,17 @@ Phase review (2026-11-07, `phase-reviewer`): no blockers; 5 findings, all to one
     whole spec alone, 6 passed); shard 2/2 61 passed; whole games from the lobby with 2, 3 and 4
     players 3 passed each. Screenshots from these runs committed. No new check applies, so
     `docs/enforcement.md` is unchanged.
+
+- [x] Release: report written, merged, deploy watched, live site checked; the phase marked
+  **done**.
+  - Done 2026-11-09: report pushed (`4f60bb2`). Branch check run 42621599256 green: `check` and
+    all 6 browser-test parts passed on GitHub (the local two-worker timeout did not recur).
+    Merged (`497ba47`), Deploy run 42623151734 succeeded (tests skipped, the merged code had
+    passed Check). The live bundle has the new texts ("Vote to abandon", "Next vote possible in
+    turn", "Ask for a rematch", "Accept a rematch?"); the live site serves the page and a card
+    photo, a generated name, rejects a malformed room request, opens the lobby socket and answers
+    404 for the test-only routes. Voting and rematches across windows need the human check, so
+    they are left to the owner (What to try below).
 
 ### Helper log
 
