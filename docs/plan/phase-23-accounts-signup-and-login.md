@@ -568,3 +568,4 @@ are each helper's conversation size at its end.
 | Phase reviewer | 18 | 198k | 91 | not ready, 1 blocker, 11 findings |
 | Fixer, group A (R1, R10, R11) | 13 | 110k | 49 | done |
 | Fixer, group B (R2, R4, R6, R7) | 18 | 167k | 84 | done |
+| Fixer, group C (R3, R5, R8, R9) | – | – | – | done |
