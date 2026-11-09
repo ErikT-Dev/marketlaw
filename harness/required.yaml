@@ -339,6 +339,8 @@ scenarios:
     - a vote closes as soon as every player asked has answered
     - the player who called a vote cannot answer it
     - a player who leaves during a vote is no longer asked
+    - a player who leaves after answering a vote leaves the count shown unchanged
+    - a vote goes on when the player who called it leaves
   lobby-queue-and-limits:
     - a player who started 10 games today cannot start another
     - after 50 games start on the site today no more games start

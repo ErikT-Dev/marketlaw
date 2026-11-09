@@ -144,9 +144,11 @@ None yet.
   answered so far, out of how many. Who has answered, and how, is not shown.
 - **M7.6** The player who calls the vote counts as voting yes and is not asked. The vote closes
   as soon as every player asked has answered, or when the minute is over; a no does not close it
-  early. A player who leaves the game while a vote is open is no longer asked. The 5 turns of
-  M7.2 count from the turn in which the last vote was called: after a vote in turn 3, the next
-  can be called from turn 8.
+  early. A player who leaves the game while a vote is open is no longer asked, and an answer
+  they gave no longer counts towards the result; the numbers shown (M7.5) do not change when they
+  leave. If the player who called the vote leaves, the vote goes on and passes if every player
+  still asked votes yes. The 5 turns of M7.2 count from the turn in which the last vote was
+  called: after a vote in turn 3, the next can be called from turn 8.
 
 ## M8. After the game
 

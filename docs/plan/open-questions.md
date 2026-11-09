@@ -1646,3 +1646,38 @@ file.
   caller's version would make the caller's next move `stale_state` for no reason.
 - **Implemented:** `src/server/room/withTimeOutsApplied.ts`, `acceptAction.ts`,
   `isChangeVisibleToAll.ts`; phase 22, item 2.
+
+## Q88. What happens to the answer of a player who leaves during a vote?
+
+- **Phase:** 22, review finding R1 (M7.5, M7.6).
+- **Question:** Q84 says a player who leaves during a vote is no longer asked, but not what
+  happens to an answer they already gave. The engine dropped it, so the shown count of answers
+  went down by one, and everyone saw that the leaver had answered, against M7.5.
+- **Options:** drop the answer and the leaver from both numbers; keep the answer in the count
+  and in the result; keep the numbers shown unchanged and decide the result by the players still
+  asked.
+- **Solution:** The numbers shown (M7.5) do not change when a player leaves: "answered" counts
+  every answer given, a leaver's included, and "of" counts every player asked when the vote was
+  called. The vote no longer waits for the leaver, and their answer, if any, no longer counts
+  towards the result: the vote closes when every player still in the game and asked has
+  answered, and passes if all of them said yes. Written into M7.6.
+- **Why:** leaving is seen by everyone, so any change of the numbers at that moment would tell
+  whether the leaver had answered; unchanged numbers tell nothing. M7.4 decides by the players
+  still in the game.
+- **Implemented:** `harness/spec/multiplayer.md` M7.6, scenario `connections-and-leaving` "a player
+  who leaves after answering a vote leaves the count shown unchanged"; `src/rules/closeVote.ts`,
+  `closeVoteIfAllAnswered.ts`, `seatsStillAsked.ts`; phase 22, review fixes.
+
+## Q89. What happens to a vote when its caller leaves?
+
+- **Phase:** 22, review finding R2 (M7.6).
+- **Question:** Neither M7 nor Q84 says what happens when the player who called a vote leaves
+  the game while it is open. The engine kept the vote open, and it could still pass.
+- **Options:** close the vote as failed; keep it open with the caller's yes no longer needed.
+- **Solution:** The vote goes on and passes if every player still asked votes yes; its deadline
+  is unchanged and closes it as usual. Written into M7.6.
+- **Why:** the same as any other leaver (Q88): the vote is decided by the players still in the
+  game, and closing it would take the choice from them for no reason.
+- **Implemented:** `harness/spec/multiplayer.md` M7.6, scenario `connections-and-leaving` "a vote
+  goes on when the player who called it leaves", tests in `src/rules/abandonVote.test.ts`; phase
+  22, review fixes.
