@@ -580,3 +580,82 @@ are each helper's conversation size at its end.
 | Fixer, group B (R2, R4, R6, R7) | 18 | 167k | 84 | done |
 | Fixer, group C (R3, R5, R8, R9) | 23 | 178k | 118 | done |
 | Finisher, second run | 39 | 91k | 38 | done |
+
+## Report
+
+**Built.** Guests can now become registered users, and registered users can log in from any
+browser. When not logged in, the lobby's top bar has **Log in** and **Sign up**; otherwise it
+has the user box, which opens the user menu in the lobby, the waiting room, the room after a game
+and the game's top bar: **Sign up to keep your account** (guests), **Account settings**, **My
+match history** (shown disabled until phase 25) and **Log out**. Signing up asks for a username
+(the guest's own name is prefilled), an email address, a password of 8 to 64 characters and the
+human check, and keeps everything, including a seat in a game in progress. Logging in takes the
+username or the email address with the password; after 3 failed logins in 15 minutes every
+further login needs the human check, but the account is never locked, and an unknown name or
+address fails exactly like a wrong password. Every login is a new login for that browser only;
+logging out ends it there and nowhere else. A guest who logs out is warned first that they
+cannot come back and that they leave any room or game; a registered user who logs out keeps
+their seat and shows as away. Account settings change the username at most once every 7 days
+(the signup's own name choice does not count), showing the date it can change again. Passwords
+are stored as PBKDF2-SHA256 with 20,000 iterations and a random salt (D29). Three D1 migrations
+(0007 to 0009) add the logins, registered accounts and failed-login tables. `PROTOCOL_VERSION`
+is 10, so a tab with the old client is told to reload; games saved by the old version close
+themselves (D1).
+
+**What to try.** On the live site:
+1. Open the lobby, create a room and start a game as a guest with a second window.
+2. In the game's top bar, open the user menu and choose **Sign up to keep your account**; sign
+   up with an email address and a password. The game goes on with your seat.
+3. In a different browser (or a private window), press **Log in** and log in with the username
+   or the email address and the password. Rejoin the room by its code.
+4. Log in with a wrong password three times: the fourth try asks for the human check.
+5. Open **Account settings** and change the username; the button is then disabled with the date
+   of the next allowed change.
+6. Log out in one browser: the other browser stays logged in. As a guest, **Log out** first
+   shows the warning.
+
+**Checks.** The second finisher run: `npm run check` green (594 tests), `npm run harness` green
+(453 scenarios, 367 required pass, 0 fail), B11 8 of 10 ms (room messages 2, password hash 8),
+B18 3,066 of 5,000 rows. Two browser tests timed out locally under two workers and passed alone,
+the known local load problem; GitHub's branch check judged the full suite before the merge. The
+phase's 20 scenarios are required, plus 3 from the review (23 in all).
+
+**Differences from the phase file.** Failed logins are counted for unknown names and addresses
+too, in their own table keyed by a hash, so the human check cannot tell whether an account exists
+(Q97, R2). A room refuses a join with `username_in_room` while a player in it shows the same name
+(Q103, R3). The logout button and the client's part of logging out came with the user menu
+(item 4b), not with the logout itself (item 1c). The busy-day simulator also counts logouts and
+username changes; a logout writes 2 rows. B11's password-hash half is computed from the
+iteration count and the live Worker's cost per iteration instead of measured on the build
+computer (Q102, R1). `POST /api/session` now says whether the account is a guest's (R9).
+
+**Decisions.** Q90: PBKDF2-SHA256, 20,000 iterations, one hash per login including unknown
+accounts. Q91: what counts as a failed login and when the human check ends. Q92: which account
+an email address logs in to. Q93: what a valid email address is. Q94: signing up and logging in
+when not logged in. Q95: logging out ends only that browser's login; guests leave, registered
+users keep their seat. Q96: when the 7-day wait starts; a new name shows in a room only after
+it. Q97: how failed logins are stored, unknown accounts included. Q98: signup's messages and
+whose login can sign up. Q99: a username change's message and check order. Q100: the user
+menu's details. Q101: the browser tests' chat limit on one local server. Q102: how B11 and B18
+measure logins and signups, and how the logs are checked. Q103: a freed username cannot join a
+room where the old holder still shows it.
+
+**Review findings and what happened to each.**
+1. B11 went over its limit inside `npm run check`: answered with numbers (Q102), the method
+   measured the build computer; 20,000 iterations stay and the hash counts at the live cost.
+2. Failed logins revealed whether an email address had an account: fixed, unknown names and
+   addresses count too (Q97), with two new required scenarios.
+3. A freed username could join the room where the old holder still showed it: fixed (Q103), with
+   a new required scenario; the accept dialog takes its state from the view.
+4. The account routes had no hostile-client tests: fixed, every route with malformed and forged
+   requests, checking that nothing in D1 changed.
+5. The real room logout of a registered user was untested: fixed with a route test over real
+   room sockets.
+6. Signup accepted an expired guest login: fixed, refused with `invalid_token`.
+7. Logout deleted the login before leaving the rooms: fixed, rooms first, and a failed room keeps
+   the login ("Could not log out").
+8. `GameRoom.ts` is at its size limit: noted; the next change that adds to it splits it.
+9. Another tab kept guest menus after a signup: fixed at the next page load (the session answer
+   carries the account kind).
+10. The route test needs the network: noted in `docs/enforcement.md`.
+11. Match history shown disabled: added to the known gaps.
