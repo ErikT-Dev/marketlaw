@@ -432,3 +432,4 @@
     seats:
       - seat: 1
         left: false
+        connected: false

@@ -1797,6 +1797,9 @@ file.
 - **Why:** a guest who logged out can never come back, so keeping their place would only make the
   others wait; a registered user can come back, which is what the disconnect rules are for.
 - **Implemented:** `accounts.md` A1.14; phase 23, items 1 and 2.
+- **Changed after the phase review (R5):** the scenario "a registered user who logs out during a
+  game keeps their seat" also checks that the logged-out connection is closed (`connected:
+  false`). The real room logout is tested in `tools/route-tests/roomLogout.test.ts`.
 
 ## Q96. When does the 7-day username wait start, and does a change rename a player in a room (A2.4)?
 
