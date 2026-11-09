@@ -297,6 +297,8 @@ scenarios:
     - a successful login clears the failed logins
     - the human check after failed logins ends 15 minutes after the latest failed attempt
     - a login with an unknown username fails like a wrong password
+    - after 3 failed logins with an unknown username further logins need the human check
+    - after 3 failed logins with an unknown email address further logins need the human check
     - logging in by email finds the account that entered the unconfirmed address first
     - rejects an email address without an at sign
     - a player who is not logged in signs up as a registered user at once

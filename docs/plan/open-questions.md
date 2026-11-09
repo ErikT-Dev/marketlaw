@@ -1842,6 +1842,26 @@ file.
   shows only after 3 failed attempts that some registered account entered it, and counting
   unknown names would cost rows for names nobody has.
 - **Implemented:** `accounts.md` A1.13; phase 23, item 1b.
+- **Changed after the phase review (R2):** not counting unknown names let anyone find out
+  whether an email address has a registered account (3 wrong passwords, then the 4th asks for
+  the human check or not), against A1.5 ("whether the account exists or not"), A1.3 (signup
+  looks the same for a used address) and Q91's reason. Failures for a username or address that
+  no registered account has are now counted the same way, in a new D1 table
+  `unknown_login_failures` (migration `0009_unknown_login_failures.sql`): one row per login
+  key, keyed by the SHA-256 of the key as `loginLookupOf` makes it (`name:` or `email:` and
+  the compared form), so no address is stored readably; the same `failed_logins_ms` and
+  `login_check_until_ms` as `players`, and `forget_after_ms`, 15 minutes after the latest
+  failure, when the row stops mattering. The same `failedLoginsAfter` and
+  `isHumanCheckNeededToLogIn` decide it. A failed login for an unknown key writes one row (an
+  insert or replace, no secondary index), as a wrong password does; the daily cron deletes the
+  rows past `forget_after_ms`, at most one delete per key. B18's busy day adds 20 such failed
+  logins at 2 rows each (the write and its share of the delete), 40 rows. A key that later
+  becomes a registered account's name or address is counted on the account from then on, and
+  its old row is forgotten by the cron. The key hash has no secret, so someone holding the
+  database could test guessed addresses against it; only addresses typed into a failed login
+  are there, for at most a day. A1.13 says so, with the scenarios `accounts` "after 3 failed
+  logins with an unknown username further logins need the human check" and "... with an unknown
+  email address ...".
 
 ## Q98. Signup's messages, and who can sign up with which login (A1.3, S10.9)?
 

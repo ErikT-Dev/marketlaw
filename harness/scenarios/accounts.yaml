@@ -314,6 +314,30 @@
   then:
     rejected: login_failed
 
+- name: after 3 failed logins with an unknown username further logins need the human check
+  covers: [A1.13, A1.5]
+  given:
+    accounts: [{name: Ann, kind: registered, password: "correct horse"}]
+  when:
+    - {visitor: v1, action: log_in, login: Nobody Here, password: "a"}
+    - {visitor: v1, action: log_in, login: nobody here, password: "b"}
+    - {visitor: v1, action: log_in, login: Nobody Here, password: "c"}
+    - {visitor: v2, action: log_in, login: Nobody Here, password: "d"}
+  then:
+    rejected: human_check_failed
+
+- name: after 3 failed logins with an unknown email address further logins need the human check
+  covers: [A1.13, A1.5]
+  given:
+    accounts: [{name: Ann, kind: registered, email: player@example.com, password: "correct horse"}]
+  when:
+    - {visitor: v1, action: log_in, login: nobody@example.com, password: "a"}
+    - {visitor: v1, action: log_in, login: nobody@example.com, password: "b"}
+    - {visitor: v1, action: log_in, login: Nobody+1@example.com, password: "c"}
+    - {visitor: v2, action: log_in, login: nobody@example.com, password: "d"}
+  then:
+    rejected: human_check_failed
+
 - name: logging in by email finds the account that entered the unconfirmed address first
   covers: [A1.5, A1.11]
   given:
