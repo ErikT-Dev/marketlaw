@@ -19,6 +19,8 @@ export function pendingCardsOf(
       case "undo":
       case "leave_game":
       case "turn_draw":
+      case "call_vote":
+      case "vote":
         return [];
     }
   });

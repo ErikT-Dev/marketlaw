@@ -242,6 +242,13 @@
   gap: var(--space-lg);
 }
 
+.resultLine {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin-top: var(--space-xs);
+}
+
 .humanCheck {
   min-height: 65px;
 }

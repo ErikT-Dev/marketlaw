@@ -8,6 +8,7 @@ const GIVEN_ROOM = v.strictObject({
   players: v.array(v.string()),
   state: v.picklist(["waiting", "accepting", "playing", "ended"]),
   ended_ms: v.optional(v.number()),
+  kind: v.optional(v.picklist(["casual", "ranked"])),
   chat: v.optional(v.array(v.strictObject({ from: v.string(), text: v.string() }))),
   messages_sent: v.optional(v.record(v.string(), v.number())),
 });

@@ -108,6 +108,16 @@ const PLAYER_VIEW = v.object({
   playerOrder: v.array(SEAT),
   drawLog: v.array(DRAW_LOG_ENTRY_SCHEMA),
   firstCompletions: PROJECTS,
+  vote: v.nullable(
+    v.object({
+      caller: SEAT,
+      deadline: EpochMs,
+      answered: COUNT,
+      of: COUNT,
+      hasToAnswer: v.boolean(),
+    }),
+  ),
+  nextVoteTurn: COUNT,
   result: v.nullable(GAME_RESULT_SCHEMA),
 });
 
@@ -123,8 +133,10 @@ export const SERVER_MESSAGE_SCHEMA = v.variant("type", [
         isPublic: v.boolean(),
         ownerName: v.string(),
         playerNames: v.array(v.string()),
+        namesInRoom: v.array(v.string()),
         mySeat: v.nullable(SEAT),
         asking: v.nullable(v.object({ deadline: EpochMs, acceptedNames: v.array(v.string()) })),
+        deletionAt: v.nullable(EpochMs),
       }),
       game: v.nullable(
         v.object({ stateVersion: COUNT, view: PLAYER_VIEW, awaySeats: v.array(SEAT) }),
@@ -146,6 +158,10 @@ export const SERVER_MESSAGE_SCHEMA = v.variant("type", [
       v.object({ kind: v.literal("timed_out"), inARow: COUNT, of: COUNT }),
       v.object({ kind: v.literal("resumed"), seats: v.array(SEAT), freeMs: COUNT }),
       v.object({ kind: v.literal("site_game_limit") }),
+      v.object({
+        kind: v.literal("daily_limit"),
+        reason: v.picklist(["daily_action_limit", "daily_game_start_limit"]),
+      }),
     ]),
   }),
   v.object({

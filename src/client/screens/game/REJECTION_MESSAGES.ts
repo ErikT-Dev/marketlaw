@@ -52,6 +52,10 @@ export const REJECTION_MESSAGES: Readonly<Record<ReasonCode, IconText>> = {
   no_card_of_kind: "No card of that kind and tier is left in the deck or discard pile.",
   nothing_to_undo: "There is nothing to undo.",
   cannot_undo: "That action cannot be undone, because it drew a card or came after one that did.",
+  vote_too_soon: "The next vote is not possible yet.",
+  vote_already_open: "A vote is already open.",
+  no_vote_open: "There is no vote to answer.",
+  vote_already_answered: "You already answered this vote.",
   out_of_market: "You already had your market go this turn.",
   card_not_in_marketplace: "That card was just taken.",
   marketplace_empty: "The marketplace is empty: choose a sector.",
@@ -69,6 +73,8 @@ export const REJECTION_MESSAGES: Readonly<Record<ReasonCode, IconText>> = {
   not_room_owner: "Only the owner can change the room size.",
   room_size_too_small: "The room cannot be smaller than the number of players in it.",
   not_asking: "Nobody is being asked to accept the game right now.",
+  rematch_not_possible:
+    "A rematch needs a finished game, at least 2 players in the room and no other rematch being asked.",
   rejoin_too_soon: "You cannot join this room again yet.",
   human_check_failed: "The human check did not pass. Try it again.",
   username_invalid:

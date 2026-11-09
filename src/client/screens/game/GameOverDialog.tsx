@@ -16,6 +16,7 @@ type Props = {
   readonly playerNames: ReadonlyArray<string>;
   readonly onExitToLobby: () => void;
   readonly onClose: () => void;
+  readonly onAskRematch: (() => void) | null;
 };
 
 export function GameOverDialog(props: Props) {
@@ -39,6 +40,11 @@ export function GameOverDialog(props: Props) {
         <Button look="secondary" onClick={props.onExitToLobby}>
           Exit to lobby
         </Button>
+        {props.onAskRematch === null ? null : (
+          <Button look="primary" onClick={props.onAskRematch}>
+            Ask for a rematch
+          </Button>
+        )}
         <Button look="success" onClick={props.onClose}>
           Close
         </Button>

@@ -1,3 +1,4 @@
+import { isVoteAction } from "../../rules/isVoteAction";
 import { receiveAction } from "../../rules/receiveAction";
 import type { EpochMs } from "../../shared/EpochMs";
 import type { PlayerId } from "../../shared/PlayerId";
@@ -84,7 +85,7 @@ function handleAction(
   }
   const game = acceptAction(
     caughtUp.game,
-    { seat: seat.seat, actionId: message.actionId },
+    { seat: seat.seat, actionId: message.actionId, isVoting: isVoteAction(action) },
     received.saved,
   );
   const next = { ...record, game };

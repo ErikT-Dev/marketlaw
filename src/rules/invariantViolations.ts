@@ -2,6 +2,7 @@ import { BONUS_PER_FUND } from "./BONUS_PER_FUND";
 import { cardOf } from "../shared/catalogue/cardOf";
 import { FIRST_TURN_FOR_HIGHER_TIERS } from "./FIRST_TURN_FOR_HIGHER_TIERS";
 import { gameEndViolations } from "./gameEndViolations";
+import { isVoteAction } from "./isVoteAction";
 import type { GameState } from "./GameState";
 import { seatOf } from "./seatOf";
 import { stateInvariantViolations } from "./stateInvariantViolations";
@@ -53,8 +54,11 @@ function incomeViolations(before: GameState, after: GameState): ReadonlyArray<st
 
 function actorViolations({ before, action }: Transition): ReadonlyArray<string> {
   const seat = seatOf(before, action.seat);
+  const isOutOfTurnAllowed = action.type === "leave_game" || isVoteAction(action);
   const isActorOut =
-    seat !== undefined && (seat.hasLeft || (seat.isDone && action.type !== "leave_game"));
+    action.type !== "close_vote" &&
+    seat !== undefined &&
+    (seat.hasLeft || (seat.isDone && !isOutOfTurnAllowed));
   return isActorOut ? [`I18: seat ${action.seat} took an action while done or after leaving`] : [];
 }
 

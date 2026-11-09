@@ -4,6 +4,7 @@ import styles from "./Lobby.module.css";
 type Props = {
   readonly room: RoomView;
   readonly myName: string;
+  readonly isAfterGame: boolean;
 };
 
 function markOf(name: string, room: RoomView, myName: string): string {
@@ -14,15 +15,18 @@ function markOf(name: string, room: RoomView, myName: string): string {
   return marks.join(" · ");
 }
 
-export function WaitingPlayers({ room, myName }: Props) {
-  const free = Math.max(0, room.size - room.playerNames.length);
+export function WaitingPlayers({ room, myName, isAfterGame }: Props) {
+  const names = isAfterGame ? room.namesInRoom : room.playerNames;
+  const free = isAfterGame ? 0 : Math.max(0, room.size - names.length);
   return (
     <section aria-labelledby="waiting-players">
       <h3 id="waiting-players" className={styles["label"]}>
-        Players · {room.playerNames.length} of {room.size}
+        {isAfterGame
+          ? `Players still in the room · ${String(names.length)}`
+          : `Players · ${String(names.length)} of ${String(room.size)}`}
       </h3>
       <ul className={styles["playerList"]} aria-label="Players in the room">
-        {room.playerNames.map((name) => (
+        {names.map((name) => (
           <li key={name} className={styles["playerRow"]}>
             <span className={styles["online"]} aria-hidden="true" />
             <strong>{name === myName ? "You" : name}</strong>

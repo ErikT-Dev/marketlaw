@@ -30,7 +30,7 @@ export function PlayerBadge({ name, status, rating, isFirstPlayer = false }: Pro
   return (
     <span className={`${styles["badge"] ?? ""} ${status === "left" ? (styles["left"] ?? "") : ""}`}>
       <span className={styles["dot"]} style={{ background: color }} aria-hidden="true" />
-      <span>{name}</span>
+      <span className={styles["name"]}>{name}</span>
       {rating === undefined ? null : <span className={styles["rating"]}>{rating}</span>}
       {status === "none" ? null : (
         <span className={styles["status"]} {...(status === "left" ? {} : { style: { color } })}>

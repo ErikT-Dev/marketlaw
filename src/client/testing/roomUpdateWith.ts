@@ -79,6 +79,8 @@ export function roomUpdateWith(
     playerOrder: [3, 4, 2],
     drawLog: [],
     firstCompletions: [],
+    vote: null,
+    nextVoteTurn: 1,
     result: null,
     ...changes,
   };
@@ -89,8 +91,10 @@ export function roomUpdateWith(
       isPublic: false,
       ownerName: "Ann",
       playerNames: ["Ann", "Bea", "Cy", "Di"],
+      namesInRoom: ["Ann", "Bea", "Cy", "Di"],
       mySeat: 2,
       asking: null,
+      deletionAt: null,
     },
     game: { stateVersion: 1, view, awaySeats: [] },
   };

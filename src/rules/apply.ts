@@ -1,6 +1,9 @@
 import type { Rejection } from "../shared/Rejection";
 import type { Result } from "../shared/Result";
 import { abandonPausedGame } from "./abandonPausedGame";
+import { answerVote } from "./answerVote";
+import { callVote } from "./callVote";
+import { closeVote } from "./closeVote";
 import { claimAll } from "./claimAll";
 import { completeProject } from "./completeProject";
 import { completeQuest } from "./completeQuest";
@@ -15,6 +18,7 @@ import { playCard } from "./playCard";
 import type { Random } from "./Random";
 import type { SystemAction } from "./SystemAction";
 import { isSystemAction } from "./isSystemAction";
+import { isVoteAction } from "./isVoteAction";
 import { rejectionOf } from "./rejectionOf";
 import { resumeGame } from "./resumeGame";
 import { sellCards } from "./sellCards";
@@ -25,6 +29,8 @@ import { undoLatest } from "./undoLatest";
 import { updateSeat } from "./updateSeat";
 import { useDrawAction } from "./useDrawAction";
 import { useTrade } from "./useTrade";
+import type { VoteAction } from "./VoteAction";
+import { voteDeadlineOf } from "./voteDeadlineOf";
 import { withUndoHistory } from "./withUndoHistory";
 
 function acceptedSystemAction(
@@ -42,12 +48,23 @@ function acceptedSystemAction(
       return resumeGame(state, at);
     case "abandon_game":
       return abandonPausedGame(state, at);
+    case "close_vote":
+      return closeVote(state, at);
   }
+}
+
+function acceptedVoteAction(state: GameState, action: VoteAction, at: number): GameState {
+  return action.type === "call_vote"
+    ? callVote(state, action.seat, at)
+    : answerVote(state, action.seat, action.answer, at);
 }
 
 function accepted(state: GameState, action: GameAction, random: Random, at: number): GameState {
   if (isSystemAction(action)) {
     return acceptedSystemAction(state, action, random, at);
+  }
+  if (isVoteAction(action)) {
+    return acceptedVoteAction(state, action, at);
   }
   switch (action.type) {
     case "play_card":
@@ -97,6 +114,10 @@ function isSystemActionDue(state: GameState, action: SystemAction, at: number): 
       return state.pause !== null;
     case "abandon_game": {
       const deadline = pausedAbandonDeadline(state);
+      return deadline !== null && deadline <= at;
+    }
+    case "close_vote": {
+      const deadline = voteDeadlineOf(state);
       return deadline !== null && deadline <= at;
     }
     case "time_out":

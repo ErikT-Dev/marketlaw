@@ -53,6 +53,8 @@ export function setUpGame(setup: GameSetup, random: Random): GameState {
     firstCompletions: [],
     clockStartedAt: setup.startedAt,
     pause: null,
+    vote: null,
+    lastVoteTurn: null,
     grace: [],
     result: null,
   });

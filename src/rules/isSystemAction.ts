@@ -6,6 +6,7 @@ const SYSTEM_TYPES: ReadonlyArray<GameAction["type"]> = [
   "pause_game",
   "resume_game",
   "abandon_game",
+  "close_vote",
 ];
 
 export function isSystemAction(action: GameAction): action is SystemAction {

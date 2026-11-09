@@ -10,5 +10,9 @@ export function nextAlarmAt(record: RoomRecord | null): number | null {
   if (record.game === null) {
     return nextWaitingDeadline(record);
   }
-  return endedRoomDeletionAt(record) ?? earliestDeadline(record.game.saved.state);
+  const deletionAt = endedRoomDeletionAt(record);
+  if (deletionAt === null) {
+    return earliestDeadline(record.game.saved.state);
+  }
+  return Math.min(deletionAt, record.waiting.asking?.deadline ?? deletionAt);
 }

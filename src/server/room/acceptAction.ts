@@ -5,12 +5,14 @@ import type { RoomGame } from "./RoomGame";
 
 const REMEMBERED_ACTION_IDS = 100;
 
-export function acceptAction(
-  game: RoomGame,
-  actor: { readonly seat: SeatNumber; readonly actionId: string },
-  saved: SavedGame,
-): RoomGame {
-  const isVisibleToAll = isChangeVisibleToAll(game.saved.state, saved.state);
+type Actor = {
+  readonly seat: SeatNumber;
+  readonly actionId: string;
+  readonly isVoting: boolean;
+};
+
+export function acceptAction(game: RoomGame, actor: Actor, saved: SavedGame): RoomGame {
+  const isVisibleToAll = isChangeVisibleToAll(game.saved.state, saved.state, actor.isVoting);
   return {
     ...game,
     saved,

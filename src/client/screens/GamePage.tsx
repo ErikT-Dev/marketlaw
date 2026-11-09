@@ -22,10 +22,17 @@ export function GamePage(props: Props) {
             viewer={view.seat}
             playerNames={props.update.room.playerNames}
             onExitToLobby={props.onExitToLobby}
+            onCloseResult={props.onCloseResult}
+            onAskRematch={props.onAskRematch}
             chat={props.chat}
           />
         </ServerClockOffset.Provider>
-        <GameNotices {...props} seat={mine} playerNames={props.update.room.playerNames} />
+        <GameNotices
+          {...props}
+          view={view}
+          seat={mine}
+          playerNames={props.update.room.playerNames}
+        />
       </>
     );
   }

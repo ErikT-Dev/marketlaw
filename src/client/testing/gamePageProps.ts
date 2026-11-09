@@ -26,6 +26,8 @@ export function gamePageProps(
     timeOutNotice: null,
     onDismissTimeOutNotice: vi.fn(),
     onExitToLobby: vi.fn(),
+    onCloseResult: vi.fn(),
+    onAskRematch: null,
     connection: "open" as const,
     isOutdated: false,
     onPlayHere: vi.fn(),

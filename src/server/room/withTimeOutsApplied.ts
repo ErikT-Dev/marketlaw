@@ -6,10 +6,13 @@ export function withTimeOutsApplied(game: RoomGame, caughtUp: SavedGame): RoomGa
   if (caughtUp === game.saved) {
     return game;
   }
-  const isVisibleToAll = isChangeVisibleToAll(game.saved.state, caughtUp.state);
-  const timedOut = caughtUp.actionLog
-    .slice(game.saved.actionLog.length)
-    .map(({ action }) => action.seat);
+  const added = caughtUp.actionLog.slice(game.saved.actionLog.length).map(({ action }) => action);
+  const timedOut = added.filter(({ type }) => type !== "close_vote").map(({ seat }) => seat);
+  const isVisibleToAll = isChangeVisibleToAll(
+    game.saved.state,
+    caughtUp.state,
+    timedOut.length === 0,
+  );
   return {
     ...game,
     saved: caughtUp,

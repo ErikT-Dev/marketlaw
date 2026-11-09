@@ -16,6 +16,9 @@ import { tradeRejection } from "./tradeRejection";
 import { seatOf } from "./seatOf";
 import type { SeatState } from "./SeatState";
 import { turnRejectionOf } from "./turnRejectionOf";
+import { isVoteAction } from "./isVoteAction";
+import type { VoteAction } from "./VoteAction";
+import { voteRejectionOf } from "./voteRejectionOf";
 
 type PlayCard = Extract<GameAction, { readonly type: "play_card" }>;
 type TurnDraw = Extract<GameAction, { readonly type: "turn_draw" }>;
@@ -83,12 +86,11 @@ function sellRejection(
   return removeCards(seat.hand, cards) === undefined ? "card_not_in_hand" : undefined;
 }
 
-export function rejectionOf(state: GameState, action: PlayerAction): ReasonCode | undefined {
-  const turnCode = turnRejectionOf(state, action.seat, action.type);
-  const seat = seatOf(state, action.seat);
-  if (turnCode !== undefined || seat === undefined) {
-    return turnCode;
-  }
+function seatActionRejection(
+  state: GameState,
+  seat: SeatState,
+  action: Exclude<PlayerAction, VoteAction>,
+): ReasonCode | undefined {
   switch (action.type) {
     case "play_card":
       return playRejection(state, seat, action);
@@ -115,4 +117,15 @@ export function rejectionOf(state: GameState, action: PlayerAction): ReasonCode 
     case "turn_draw":
       return turnDrawRejection(state, action);
   }
+}
+
+export function rejectionOf(state: GameState, action: PlayerAction): ReasonCode | undefined {
+  const turnCode = turnRejectionOf(state, action.seat, action.type);
+  const seat = seatOf(state, action.seat);
+  if (turnCode !== undefined || seat === undefined) {
+    return turnCode;
+  }
+  return isVoteAction(action)
+    ? voteRejectionOf(state, action)
+    : seatActionRejection(state, seat, action);
 }

@@ -171,7 +171,10 @@ function readRoomThen(session: RoomSession, field: string, expected: unknown): u
     case "message_to":
       return messageTo(session, expected);
     case "room":
-      return lobbyRoomThen(session.record, expected, []);
+      return lobbyRoomThen(session.record, expected, {
+        messages: [],
+        atStart: { messageCount: 0, lineCount: 0 },
+      });
     case "connected_tab":
       return connectedTab(session, expected);
     case "view":
@@ -218,6 +221,8 @@ export const ROOM_DRIVER: ScenarioDriver = {
     "reconnect",
     "open_game",
     "leave_game",
+    "call_vote",
+    "vote",
   ]),
   thenFields: new Set([...ENGINE_FIELDS.thenFields, "message_to", "connected_tab", "room"]),
   nestedFields: new Map([

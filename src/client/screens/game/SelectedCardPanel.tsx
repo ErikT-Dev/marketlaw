@@ -12,12 +12,14 @@ import styles from "./SelectedCardPanel.module.css";
 type Props = {
   readonly details: HandCardDetails;
   readonly seat: OwnSeatView;
+  readonly nextVoteTurn: number;
   readonly isBusy: boolean;
   readonly onPlay: () => void;
   readonly onClose: () => void;
 };
 
-export function SelectedCardPanel({ details, seat, isBusy, onPlay, onClose }: Props) {
+export function SelectedCardPanel(props: Props) {
+  const { details, seat, nextVoteTurn, isBusy, onPlay, onClose } = props;
   const card = cardOf(details.card);
   const rejection = details.playRejection;
   return (
@@ -33,6 +35,7 @@ export function SelectedCardPanel({ details, seat, isBusy, onPlay, onClose }: Pr
             text={rejectionMessage(
               { action: { type: "play_card", card: card.name }, code: rejection },
               seat,
+              nextVoteTurn,
             )}
           />
         </p>

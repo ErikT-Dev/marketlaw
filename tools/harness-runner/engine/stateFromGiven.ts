@@ -92,6 +92,8 @@ export function stateFromGiven(given: Given): GameState {
     firstCompletions: given.first_completions ?? [],
     clockStartedAt: v.parse(EpochMs, given.clock_ms ?? 0),
     pause: null,
+    vote: null,
+    lastVoteTurn: given.last_vote_turn ?? null,
     grace: [],
     result: null,
   });

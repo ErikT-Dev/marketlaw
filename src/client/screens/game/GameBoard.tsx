@@ -1,7 +1,7 @@
-import { useState } from "react";
 import type { OwnSeatView } from "../../../shared/OwnSeatView";
 import type { PlayerView } from "../../../shared/PlayerView";
 import { AwaySeats } from "./AwaySeats";
+import { AnswerVoteDialogIfAsked } from "./AnswerVoteDialogIfAsked";
 import { GameNotices } from "./GameNotices";
 import { GameOverDialog } from "./GameOverDialog";
 import styles from "./GamePage.module.css";
@@ -19,7 +19,6 @@ type Props = GamePageProps & {
 
 export function GameBoard(props: Props) {
   const { update, view, mine } = props;
-  const [isResultClosed, setIsResultClosed] = useState(false);
   const playerNames = update.room.playerNames;
   return (
     <ServerClockOffset.Provider value={props.serverClockOffsetMs}>
@@ -29,9 +28,7 @@ export function GameBoard(props: Props) {
             view={view}
             seat={mine}
             playerNames={playerNames}
-            onLeaveGame={() => {
-              props.onAction({ type: "leave_game" });
-            }}
+            onAction={props.onAction}
             isConnected={props.connection === "open"}
           />
           <main className={styles["table"]} inert={props.connection !== "open" || props.isOutdated}>
@@ -49,27 +46,20 @@ export function GameBoard(props: Props) {
               playerNames={playerNames}
               pendingActions={props.pendingActions}
               onAction={props.onAction}
-              onShowResult={
-                view.result === null
-                  ? null
-                  : () => {
-                      setIsResultClosed(false);
-                    }
-              }
             />
           </main>
-          {view.result === null || isResultClosed ? null : (
+          {view.result === null ? null : (
             <GameOverDialog
               result={view.result}
               turn={view.turn}
               viewer={view.seat}
               playerNames={playerNames}
               onExitToLobby={props.onExitToLobby}
-              onClose={() => {
-                setIsResultClosed(true);
-              }}
+              onClose={props.onCloseResult}
+              onAskRematch={props.onAskRematch}
             />
           )}
+          <AnswerVoteDialogIfAsked {...props} playerNames={playerNames} />
           <GameNotices {...props} seat={mine} playerNames={playerNames} />
         </div>
       </AwaySeats.Provider>

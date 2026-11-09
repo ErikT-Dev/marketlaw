@@ -20,7 +20,6 @@ type Props = {
   readonly playerNames: ReadonlyArray<string>;
   readonly pendingActions: ReadonlyArray<PendingAction>;
   readonly onAction: (action: ActionIntent) => void;
-  readonly onShowResult: (() => void) | null;
 };
 
 function namesStillPlaying(view: PlayerView, playerNames: ReadonlyArray<string>) {
@@ -51,7 +50,6 @@ export function RightColumn(props: Props) {
       <ActionsPanel
         seat={seat}
         isMarketPhase={view.phase === "market"}
-        onShowResult={props.onShowResult}
         choice={choice}
         waitingFor={namesStillPlaying(view, playerNames)}
         isEndTurnPending={pendingActions.some(({ action }) => action.type === "end_turn")}
@@ -81,6 +79,7 @@ export function RightColumn(props: Props) {
         <SelectedCardPanel
           details={selectedDetails}
           seat={seat}
+          nextVoteTurn={view.nextVoteTurn}
           isBusy={isBusy}
           onPlay={playSelected}
           onClose={clear}

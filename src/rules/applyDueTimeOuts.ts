@@ -4,6 +4,20 @@ import { pausedAbandonDeadline } from "./pausedAbandonDeadline";
 import type { Random } from "./Random";
 import type { SavedGame } from "./SavedGame";
 
+function closedIfVoteDue(
+  saved: SavedGame,
+  at: number,
+  randomFor: (saved: SavedGame) => Random,
+): SavedGame {
+  const { vote } = saved.state;
+  if (vote === null || vote.deadline > at) {
+    return saved;
+  }
+  const close = { type: "close_vote", seat: vote.caller } as const;
+  const result = applyToSavedGame(saved, close, at, randomFor(saved));
+  return result.isOk ? result.value : saved;
+}
+
 function abandonedIfPausedTooLong(
   saved: SavedGame,
   at: number,
@@ -28,5 +42,5 @@ export function applyDueTimeOuts(
     const result = applyToSavedGame(current, { type: "time_out", seat }, at, randomFor(current));
     return result.isOk ? result.value : current;
   }, saved);
-  return abandonedIfPausedTooLong(timedOut, at, randomFor);
+  return abandonedIfPausedTooLong(closedIfVoteDue(timedOut, at, randomFor), at, randomFor);
 }

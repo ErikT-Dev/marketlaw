@@ -1,15 +1,15 @@
 import type { RoomView } from "../../../shared/protocol/RoomView";
+import { Button } from "../../components/Button";
 import type { IconText } from "../../components/IconText";
 import type { ChatBinding } from "../chat/ChatBinding";
-import { RoomChatSection } from "../chat/RoomChatSection";
-import { TextWithIcons } from "../../components/TextWithIcons";
-import { Toast } from "../../components/Toast";
 import { SITE_GAME_LIMIT_TOAST } from "../game/SITE_GAME_LIMIT_TOAST";
 import { useServerNow } from "../game/useServerNow";
 import { AcceptDialog } from "./AcceptDialog";
 import styles from "./Lobby.module.css";
-import { LobbyTopBar } from "./LobbyTopBar";
+import { RoomPageFrame } from "./RoomPageFrame";
+import { RoomRejectionAlert } from "./RoomRejectionAlert";
 import { RoomSizeChoice } from "./RoomSizeChoice";
+import { RoomToast } from "./RoomToast";
 import { WaitingPlayers } from "./WaitingPlayers";
 import { WaitingRoomHeader } from "./WaitingRoomHeader";
 
@@ -30,55 +30,56 @@ export function WaitingRoomPage(props: Props) {
   const { room, myName, onChangeSize, onLeave, onAccept, onDecline, rejection } = props;
   const now = useServerNow();
   const isOwner = room.ownerName === myName;
-  return (
-    <div className={styles["page"]}>
-      <LobbyTopBar name={myName} />
-      <main className={`${styles["columns"] ?? ""} ${styles["waitingColumns"] ?? ""}`}>
-        <section className={styles["panel"]} aria-labelledby="room-heading">
-          <WaitingRoomHeader room={room} isOwner={isOwner} onLeave={onLeave} />
-          {rejection === null ? null : (
-            <p role="alert" className={styles["error"]}>
-              <TextWithIcons text={rejection} />
-            </p>
-          )}
-          <div className={styles["sizeRow"]}>
-            <RoomSizeChoice
-              label="Room size"
-              size={room.size}
-              smallest={room.playerNames.length}
-              isEnabled={isOwner}
-              onChoose={onChangeSize}
-            />
-            <p className={styles["small"]}>
-              Only the owner can change the size, and not below the number of players already in the
-              room.
-            </p>
-          </div>
-          <WaitingPlayers room={room} myName={myName} />
-          <p className={styles["small"]}>
-            The game starts when the room is full and every player accepts. Share the room code{" "}
-            {room.code} with friends.
-          </p>
-        </section>
-        <div className={styles["chatColumn"]}>
-          <RoomChatSection binding={props.chat} />
-        </div>
-      </main>
-      {props.hasSiteGameLimitNotice ? (
-        <div className={styles["toastPlace"]}>
-          <Toast kind="warning" {...SITE_GAME_LIMIT_TOAST} onClose={props.onDismissSiteGameLimit} />
-        </div>
-      ) : null}
+  const kind = room.isPublic ? "Public room" : "Private room";
+  const overlay = (
+    <>
+      <RoomToast
+        toast={props.hasSiteGameLimitNotice ? SITE_GAME_LIMIT_TOAST : null}
+        onClose={props.onDismissSiteGameLimit}
+      />
       {room.asking === null ? null : (
         <AcceptDialog
           asking={room.asking}
-          size={room.size}
+          isRematch={false}
+          playerCount={room.size}
           myName={myName}
           now={now}
           onAccept={onAccept}
           onDecline={onDecline}
         />
       )}
-    </div>
+    </>
+  );
+  return (
+    <RoomPageFrame myName={myName} chat={props.chat} overlay={overlay}>
+      <WaitingRoomHeader
+        room={room}
+        subtitle={`${kind} · ${isOwner ? "you are the owner" : `owner: ${room.ownerName}`}`}
+        onLeave={onLeave}
+      >
+        <Button look="secondary" onClick={() => void navigator.clipboard.writeText(room.code)}>
+          Copy room code
+        </Button>
+      </WaitingRoomHeader>
+      <RoomRejectionAlert rejection={rejection} />
+      <div className={styles["sizeRow"]}>
+        <RoomSizeChoice
+          label="Room size"
+          size={room.size}
+          smallest={room.playerNames.length}
+          isEnabled={isOwner}
+          onChoose={onChangeSize}
+        />
+        <p className={styles["small"]}>
+          Only the owner can change the size, and not below the number of players already in the
+          room.
+        </p>
+      </div>
+      <WaitingPlayers room={room} myName={myName} isAfterGame={false} />
+      <p className={styles["small"]}>
+        The game starts when the room is full and every player accepts. Share the room code{" "}
+        {room.code} with friends.
+      </p>
+    </RoomPageFrame>
   );
 }

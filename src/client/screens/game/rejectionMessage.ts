@@ -11,11 +11,8 @@ function realCostOfRejectedPlay(move: RejectedMove, seat: OwnSeatView): number |
   return seat.handDetails.find((details) => details.card === action.card)?.realCost;
 }
 
-export function rejectionMessage(move: RejectedMove, seat: OwnSeatView): IconText {
+function notEnoughFundsMessage(move: RejectedMove, seat: OwnSeatView): IconText {
   const realCost = realCostOfRejectedPlay(move, seat);
-  if (move.code !== "not_enough_funds") {
-    return REJECTION_MESSAGES[move.code];
-  }
   const funds = String(seat.stats.funds);
   if (realCost === undefined) {
     return [
@@ -33,4 +30,17 @@ export function rejectionMessage(move: RejectedMove, seat: OwnSeatView): IconTex
     { stat: "funds", value: funds },
     ".",
   ];
+}
+
+export function rejectionMessage(
+  move: RejectedMove,
+  seat: OwnSeatView,
+  nextVoteTurn: number,
+): IconText {
+  if (move.code === "not_enough_funds") {
+    return notEnoughFundsMessage(move, seat);
+  }
+  return move.code === "vote_too_soon"
+    ? `Next vote possible in turn ${String(nextVoteTurn)}.`
+    : REJECTION_MESSAGES[move.code];
 }

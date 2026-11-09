@@ -299,3 +299,16 @@
   then:
     rejected: busy_elsewhere
     unchanged: true
+
+- name: a player leaving the room ends a rematch asking
+  covers: [M8.5]
+  given:
+    accounts: [{name: Ann}, {name: Bea}, {name: Cat}]
+    room: {code: K7QR2P, size: 3, public: true, owner: Ann, players: [Ann, Bea, Cat], state: ended}
+  when:
+    - {player: Ann, action: ask_rematch}
+    - {player: Cat, action: leave_room}
+    - {player: Bea, action: accept_game}
+  then:
+    rejected: not_asking
+    room: {state: ended, players: [Ann, Bea]}

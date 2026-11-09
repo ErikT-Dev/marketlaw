@@ -1,6 +1,7 @@
 import { viewFor } from "../../rules/viewFor";
 import type { PlayerId } from "../../shared/PlayerId";
 import type { RoomUpdate } from "../../shared/protocol/RoomUpdate";
+import { endedRoomDeletionAt } from "./endedRoomDeletionAt";
 import type { RoomRecord } from "./RoomRecord";
 
 const UPDATES_BY_RECORD = new WeakMap<
@@ -30,6 +31,7 @@ function buildUpdate(record: RoomRecord, playerId: PlayerId): RoomUpdate {
       isPublic: record.isPublic,
       ownerName: record.players[0]?.name ?? "",
       playerNames: playerNamesOf(record),
+      namesInRoom: record.players.map(({ name }) => name),
       mySeat: seat?.seat ?? null,
       asking:
         asking === null
@@ -38,6 +40,7 @@ function buildUpdate(record: RoomRecord, playerId: PlayerId): RoomUpdate {
               deadline: asking.deadline,
               acceptedNames: asking.accepted.map((accepted) => nameOf(record, accepted)),
             },
+      deletionAt: endedRoomDeletionAt(record),
     },
     game:
       record.game === null || seat === undefined

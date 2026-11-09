@@ -8,6 +8,7 @@ export const GAME_RESULT_SCHEMA = v.object({
     "last_player",
     "everyone_left",
     "paused_too_long",
+    "abandoned_by_vote",
   ]),
   places: v.array(
     v.object({

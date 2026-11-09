@@ -189,13 +189,14 @@ it by hand.
 | M7.1 | connections-and-leaving (2) | Covered |
 | M7.2 | connections-and-leaving (3) | Covered |
 | M7.3 | connections-and-leaving (4) | Covered |
-| M7.4 | connections-and-leaving (2) | Covered |
-| M7.5 | connections-and-leaving (1) | Covered |
+| M7.4 | connections-and-leaving (5) | Covered |
+| M7.5 | connections-and-leaving (2) | Covered |
+| M7.6 | connections-and-leaving (5) | Covered |
 | M8.1 | rooms (1) | Covered |
 | M8.2 | chat (1), rooms (2) | Covered |
 | M8.3 | rooms (1) | Covered |
 | M8.4 | rooms (3) | Covered |
-| M8.5 | rooms (2) | Covered |
+| M8.5 | rooms (3) | Covered |
 | M8.6 | rooms (1) | Covered |
 | M9.1 | hostile-client (1) | Covered |
 | M9.2 | hostile-client (2) | Covered |
@@ -346,7 +347,7 @@ it by hand.
 
 ## Summary
 
-- Rules: 310
-- Scenarios: 433
+- Rules: 311
+- Scenarios: 439
 - Gaps: 0
 - Checked another way or also checked another way: R3.2, R3.5, R17.10, R19.2, M3.1, M3.6, M4.2, A6.4, A10.6, C5.1, C5.2, C5.3

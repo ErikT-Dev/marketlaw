@@ -1,11 +1,13 @@
 import type { ConnectionStatus } from "../../../shared/ConnectionStatus";
 import type { Notice } from "../../../shared/Notice";
 import type { OwnSeatView } from "../../../shared/OwnSeatView";
+import type { PlayerView } from "../../../shared/PlayerView";
 import type { RejectedMove } from "../../store/RejectedMove";
 import { ConnectionNotices } from "./ConnectionNotices";
 import { GameToasts } from "./GameToasts";
 
 type Props = {
+  readonly view: PlayerView;
   readonly seat: OwnSeatView;
   readonly playerNames: ReadonlyArray<string>;
   readonly timeOutNotice: Notice | null;
@@ -21,6 +23,7 @@ export function GameNotices(props: Props) {
   return (
     <>
       <GameToasts
+        view={props.view}
         seat={props.seat}
         playerNames={props.playerNames}
         timeOutNotice={props.timeOutNotice}

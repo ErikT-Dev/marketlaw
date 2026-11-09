@@ -1536,3 +1536,148 @@ file.
   - The scenario `chat` #11 sent Bea's two messages with no time between them, which A11.6
     refuses; it now waits 2 seconds before the second, as the spec requires.
 - **Implemented:** `harness/spec/accounts.md` A11.7, `harness/HARNESS.md`, `harness/scenarios/chat.yaml` #11; phase 21, item 3.
+
+## Q84. How exactly does an abandon vote run?
+
+- **Phase:** 22, start (M7, S9.3).
+- **Questions:** M7 does not say whether the caller answers, when a vote closes (does one no end
+  it at once?), what happens to a player who leaves during a vote, from which turn "every 5
+  turns" counts, what answering twice gets, whether a vote changes the other players' state
+  versions, or how the end screen tells an abandoned-by-vote game from the other abandoned
+  endings.
+- **Options:** close at the first no, or only when everyone has answered or the minute is over;
+  count 5 turns from the vote's call or from its close; raise every player's state version on a
+  vote, or only the actor's.
+- **Solution:**
+  - The caller counts as voting yes and is not asked. A player asked is every other seat still
+    in the game when the vote is called; one who leaves during the vote is no longer asked. The
+    vote closes when every player still asked has answered (passing if all said yes) or when the
+    minute is over (failing unless all said yes). A no does not close it early: with one answer
+    out of two shown and the vote then closing, everyone would know how that player voted
+    (M7.5). New spec rule M7.6, and scenarios `connections-and-leaving` #28 to #30.
+  - The 5 turns count from the turn in which the last vote was called, passed or failed; the
+    first vote can be called in any turn. A vote can be called in any phase. Its 1-minute
+    deadline is absolute and is one of the room's deadlines (`earliestDeadline`, one alarm).
+  - Answering twice, and the caller answering, are refused with the new code
+    `vote_already_answered` (S16.3, `HARNESS.md`). A player who left gets `not_in_game`; an ended
+    game `game_over`.
+  - Calling and answering raise only the actor's state version. The others get a new view (the
+    count changes) with their version unchanged, so a vote never makes another player's move
+    `stale_state` (M9.4 lists phase changes and reveals). A passed vote ends the game, a phase
+    change, which raises everyone's.
+  - A passed vote ends the game with the new ending `abandoned_by_vote`: no winner, no game record
+    (A3.1), ratings unchanged (A10.9); `isAbandoned` includes it. The view carries the open vote
+    (time left, answered, of, whether this player still has to answer) and the next turn a vote
+    is possible, which the "vote failed" message (S9.3) and `vote_too_soon` (S16.3) show.
+  - Ranked games refusing votes (`vote_not_allowed`, `connections-and-leaving` #22) come with
+    ranked games in phase 26. Bots never call or answer votes; simulated games are unchanged.
+- **Why:** the closest reading of M7 that keeps M7.5's secrecy and M9.4's per-player versions.
+- **Implemented:** `harness/spec/multiplayer.md` M7.6, `harness/spec/screens.md` S16.3,
+  `harness/HARNESS.md`, `harness/scenarios/connections-and-leaving.yaml` #28 to #30; phase 22.
+
+## Q85. How exactly does a rematch run?
+
+- **Phase:** 22, start (M8.4–M8.6, S11.4).
+- **Questions:** M8.4 does not say whether the asker counts as accepted (the design board shows
+  them accepted, but scenarios `rooms` #23 and #24 have the asker accept like the others), whether
+  a second rematch can be asked while one is open, what happens when a player leaves the room
+  during the asking, whether decliners are removed as in M1.11, whether the daily limits apply,
+  or how a rematch of a ranked game is told apart in the room record before ranked games exist.
+- **Solution:**
+  - A new room intent `ask_rematch`. It reuses the room's accept flow (`accept_game`,
+    `decline_game`, 20 seconds, the accepted usernames in `asking`). The asker is asked like
+    everyone else and is not counted as accepted (scenarios win over the design; added to S17).
+    Only one rematch is asked at a time.
+  - Possible when the room's game has ended, at least 2 players are in the room and no rematch is
+    being asked; otherwise `rematch_not_possible`. A player not in the room gets `not_in_room`.
+  - A decline, a time-out, or a player leaving the room, joining the ranked queue or another room
+    (M2.2) ends the asking at once. Nobody is removed or blocked from rejoining, the room stays
+    ended and its deletion time does not change; a new rematch can be asked straight away. New
+    sentences in M8.4 and M8.5, and scenario `rooms` #28.
+  - The new game has every player in the room, including players who left the previous game but
+    stayed in the room, in a newly drawn seat order, as a room game start does. The room size is
+    unchanged. An ended room takes no new players and its size cannot change (M1.4, M1.6), so the
+    after-the-game screen shows neither (S17).
+  - The daily limits apply as to any game start (A9.2–A9.4): when one stops the rematch, the
+    asking ends, everyone stays in the room and the players concerned get the existing notices.
+  - `RoomGame.kind` becomes `"casual" | "ranked"`; every game started in this phase is casual,
+    and the lobby driver's given `room.kind` sets the ended game's kind, so `rooms` #23 can check
+    that a rematch of a ranked game is casual. Ranked starts come in phase 26.
+  - The chat history stays. The ended game's replay record (M4.3) is already stored when it
+    ended, so replacing the room's game loses nothing.
+- **Why:** follows M8 and the scenarios, and reuses the M1.10 asking instead of a second one.
+- **Implemented:** `harness/spec/multiplayer.md` M8.4, M8.5, `harness/spec/screens.md` S16.3,
+  S17, `harness/HARNESS.md`, `harness/scenarios/rooms.yaml` #28; phase 22.
+
+## Q86. Where does a player see the room after a game?
+
+- **Phase:** 22, start (S9.5, S11.4).
+- **Question:** S11.4 describes the room after a game, and S9.5 gives the end-of-game screen a
+  **Close** button, but nothing says how a player gets from one to the other. Until now Close
+  showed the final board with a **Show result** button.
+- **Options:** keep the board after Close and add a way to the room; Close leads to the room.
+- **Solution:** Close leads to the room after the game (S11.4), with the lobby's top bar, the
+  room and the room chat, as the design board "Waiting room: after the game" shows. Its result
+  line ("Game over · Ann won with 512 points", or the abandoned text) has **Show result**, which
+  opens the end-of-game screen again. A player who left the game (S9.2) sees the end-of-game
+  screen when the game ends and gets the same room after Close. The rematch dialog appears over
+  whichever of the two the player is on; when the rematch starts, everyone in it sees the new
+  game.
+- **Why:** S11.4 says the room shows the result after a game, which only makes sense if that is
+  where a player goes after the end screen; one place for the result is simpler than two.
+- **Implemented:** `harness/spec/screens.md` S11.4; phase 22.
+
+## Q87. Whose state version does a vote closing at its deadline raise?
+
+- **Phase:** 22, item 2 (M7.3, M9.4).
+- **Question:** Q84 says calling and answering raise only the actor's state version, but not
+  what happens when the minute runs out. The room raised the version of every seat in a logged
+  system action, so the logged `close_vote` (seat = the caller) raised the caller's. In the
+  market phase, where every change raises everyone's version, a vote call or answer would also
+  have raised everyone's.
+- **Options:** raise the caller's version; raise everyone's; raise nobody's unless the game ends.
+- **Solution:** A vote closing at its deadline is nobody's action, so it raises no version by
+  itself; the others still get the new view (no vote open). A vote that passes ends the game, a
+  phase change, which raises everyone's. Vote calls and answers raise only the actor's version
+  in every phase, the market phase included. The answer intent is `{ type: "vote", vote: "yes" |
+  "no" }`, the step format of `HARNESS.md`.
+- **Why:** M9.4 moves a version only with the player's own actions and changes everyone must see
+  before acting again (phase changes, reveals); a failed vote changes neither, and raising the
+  caller's version would make the caller's next move `stale_state` for no reason.
+- **Implemented:** `src/server/room/withTimeOutsApplied.ts`, `acceptAction.ts`,
+  `isChangeVisibleToAll.ts`; phase 22, item 2.
+
+## Q88. What happens to the answer of a player who leaves during a vote?
+
+- **Phase:** 22, review finding R1 (M7.5, M7.6).
+- **Question:** Q84 says a player who leaves during a vote is no longer asked, but not what
+  happens to an answer they already gave. The engine dropped it, so the shown count of answers
+  went down by one, and everyone saw that the leaver had answered, against M7.5.
+- **Options:** drop the answer and the leaver from both numbers; keep the answer in the count
+  and in the result; keep the numbers shown unchanged and decide the result by the players still
+  asked.
+- **Solution:** The numbers shown (M7.5) do not change when a player leaves: "answered" counts
+  every answer given, a leaver's included, and "of" counts every player asked when the vote was
+  called. The vote no longer waits for the leaver, and their answer, if any, no longer counts
+  towards the result: the vote closes when every player still in the game and asked has
+  answered, and passes if all of them said yes. Written into M7.6.
+- **Why:** leaving is seen by everyone, so any change of the numbers at that moment would tell
+  whether the leaver had answered; unchanged numbers tell nothing. M7.4 decides by the players
+  still in the game.
+- **Implemented:** `harness/spec/multiplayer.md` M7.6, scenario `connections-and-leaving` "a player
+  who leaves after answering a vote leaves the count shown unchanged"; `src/rules/closeVote.ts`,
+  `closeVoteIfAllAnswered.ts`, `seatsStillAsked.ts`; phase 22, review fixes.
+
+## Q89. What happens to a vote when its caller leaves?
+
+- **Phase:** 22, review finding R2 (M7.6).
+- **Question:** Neither M7 nor Q84 says what happens when the player who called a vote leaves
+  the game while it is open. The engine kept the vote open, and it could still pass.
+- **Options:** close the vote as failed; keep it open with the caller's yes no longer needed.
+- **Solution:** The vote goes on and passes if every player still asked votes yes; its deadline
+  is unchanged and closes it as usual. Written into M7.6.
+- **Why:** the same as any other leaver (Q88): the vote is decided by the players still in the
+  game, and closing it would take the choice from them for no reason.
+- **Implemented:** `harness/spec/multiplayer.md` M7.6, scenario `connections-and-leaving` "a vote
+  goes on when the player who called it leaves", tests in `src/rules/abandonVote.test.ts`; phase
+  22, review fixes.

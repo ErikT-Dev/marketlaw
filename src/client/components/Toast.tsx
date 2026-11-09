@@ -6,7 +6,7 @@ type Props = {
   readonly kind: "success" | "error" | "info" | "warning";
   readonly title: string;
   readonly text: IconText;
-  readonly onClose: () => void;
+  readonly onClose: (() => void) | null;
 };
 
 export function Toast({ kind, title, text, onClose }: Props) {
@@ -21,14 +21,16 @@ export function Toast({ kind, title, text, onClose }: Props) {
           <TextWithIcons text={text} />
         </span>
       </div>
-      <button
-        className={styles["close"]}
-        type="button"
-        aria-label={`Close: ${title}`}
-        onClick={onClose}
-      >
-        ×
-      </button>
+      {onClose === null ? null : (
+        <button
+          className={styles["close"]}
+          type="button"
+          aria-label={`Close: ${title}`}
+          onClick={onClose}
+        >
+          ×
+        </button>
+      )}
     </div>
   );
 }

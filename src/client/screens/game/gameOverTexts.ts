@@ -34,6 +34,11 @@ export function gameOverTexts(
         title: "The game was abandoned",
         why: `The game stayed paused for 24 hours with every player away, so it ended with no winner. ${NO_WINNER}`,
       };
+    case "abandoned_by_vote":
+      return {
+        title: "The game was abandoned",
+        why: `All players voted yes, so the game ended with no winner. ${NO_WINNER}`,
+      };
     case "last_player":
       return lastPlayerTexts(nameOf(winner?.seat ?? viewer), winner?.seat === viewer, turn);
     case "turn_limit":

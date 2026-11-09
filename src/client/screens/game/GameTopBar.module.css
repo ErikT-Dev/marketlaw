@@ -45,7 +45,14 @@
   min-width: 0;
   margin: 0 auto;
   padding: 0;
+  overflow: hidden;
   list-style: none;
+}
+
+.order > li {
+  display: flex;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .order::before {
@@ -55,6 +62,7 @@
 }
 
 .arrow {
+  flex-shrink: 0;
   color: var(--color-text-muted);
   font-weight: var(--font-weight-bold);
 }
@@ -68,6 +76,8 @@
 
 .right {
   display: flex;
+  flex-shrink: 0;
   align-items: center;
   gap: var(--space-md);
+  white-space: nowrap;
 }

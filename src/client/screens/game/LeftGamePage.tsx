@@ -1,4 +1,3 @@
-import { useState } from "react";
 import type { GameResult } from "../../../shared/GameResult";
 import type { SeatNumber } from "../../../shared/SeatNumber";
 import { Button } from "../../components/Button";
@@ -13,12 +12,13 @@ type Props = {
   readonly viewer: SeatNumber;
   readonly playerNames: ReadonlyArray<string>;
   readonly onExitToLobby: () => void;
+  readonly onCloseResult: () => void;
+  readonly onAskRematch: (() => void) | null;
   readonly chat: ChatBinding;
 };
 
 export function LeftGamePage(props: Props) {
   const { result, turn, viewer, playerNames, onExitToLobby } = props;
-  const [isResultClosed, setIsResultClosed] = useState(false);
   return (
     <main className={styles["page"]}>
       <section className={styles["panel"]} aria-labelledby="left-game-title">
@@ -31,16 +31,6 @@ export function LeftGamePage(props: Props) {
             : "The game has ended. You are still in the room and its chat."}
         </p>
         <div className={styles["buttons"]}>
-          {result === null ? null : (
-            <Button
-              look="primary"
-              onClick={() => {
-                setIsResultClosed(false);
-              }}
-            >
-              Show result
-            </Button>
-          )}
           <Button look="secondary" onClick={onExitToLobby}>
             Exit to lobby
           </Button>
@@ -49,16 +39,15 @@ export function LeftGamePage(props: Props) {
           <RoomChatSection binding={props.chat} />
         </div>
       </section>
-      {result === null || isResultClosed ? null : (
+      {result === null ? null : (
         <GameOverDialog
           result={result}
           turn={turn}
           viewer={viewer}
           playerNames={playerNames}
           onExitToLobby={onExitToLobby}
-          onClose={() => {
-            setIsResultClosed(true);
-          }}
+          onClose={props.onCloseResult}
+          onAskRematch={props.onAskRematch}
         />
       )}
     </main>

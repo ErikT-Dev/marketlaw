@@ -9,6 +9,7 @@ export const RoomIntent = v.variant("type", [
   v.strictObject({ type: v.literal("leave_room") }),
   v.strictObject({ type: v.literal("accept_game") }),
   v.strictObject({ type: v.literal("decline_game") }),
+  v.strictObject({ type: v.literal("ask_rematch") }),
   v.strictObject({
     type: v.literal("send_chat"),
     text: v.pipe(v.string(), v.maxLength(CHAT_TEXT_PARSE_LIMIT)),

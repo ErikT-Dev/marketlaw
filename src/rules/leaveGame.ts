@@ -1,4 +1,5 @@
 import type { SeatNumber } from "../shared/SeatNumber";
+import { closeVoteIfAllAnswered } from "./closeVoteIfAllAnswered";
 import { endGame } from "./endGame";
 import { endMainPhaseIfAllDone } from "./endMainPhaseIfAllDone";
 import { endMarketPhase } from "./endMarketPhase";
@@ -54,5 +55,5 @@ export function leaveGame(
     leaveOrder: [...state.leaveOrder, seat],
     clockStartedAt: marketGoOf(state) === seat ? at : state.clockStartedAt,
   };
-  return afterLeaving(left, random, at);
+  return closeVoteIfAllAnswered(afterLeaving(left, random, at), at);
 }

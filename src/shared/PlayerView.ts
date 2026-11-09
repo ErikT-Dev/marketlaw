@@ -8,6 +8,7 @@ import type { OtherSeatView } from "./OtherSeatView";
 import type { OwnSeatView } from "./OwnSeatView";
 import type { QuestPlaceView } from "./QuestPlaceView";
 import type { SeatNumber } from "./SeatNumber";
+import type { VoteView } from "./VoteView";
 
 export type PlayerView = {
   readonly seat: SeatNumber;
@@ -25,5 +26,7 @@ export type PlayerView = {
   readonly playerOrder: ReadonlyArray<SeatNumber>;
   readonly drawLog: ReadonlyArray<DrawLogEntry>;
   readonly firstCompletions: ReadonlyArray<ProjectName>;
+  readonly vote: VoteView | null;
+  readonly nextVoteTurn: number;
   readonly result: GameResult | null;
 };
