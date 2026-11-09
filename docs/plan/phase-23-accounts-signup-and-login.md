@@ -613,6 +613,7 @@ are each helper's conversation size at its end.
 | Finisher, second run | 39 | 91k | 38 | done |
 | Releaser | 46 | 131k | 80 | partial (merged and deployed; live hash CPU over B11) |
 | Fixer, live hash CPU (10,000 iterations) | 4 | 82k | 16 | done |
+| Releaser, second time | 14 | 77k | 25 | partial (handed back during the branch check rerun) |
 
 ## Report
 
