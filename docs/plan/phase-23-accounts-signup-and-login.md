@@ -227,7 +227,7 @@ These 20 scenarios are added to `harness/required.yaml` in this phase, by file a
     treats close code 4401 on a room socket as logged out (no reconnect). The route has no route
     test yet (item 4c); it logs nothing.
 
-- [ ] 2. **Signup** (A1.3, A1.6, A1.12, A2.1-A2.4; Q93, Q94; scenarios `accounts` #5, #7, #8,
+- [x] 2. **Signup** (A1.3, A1.6, A1.12, A2.1-A2.4; Q93, Q94; scenarios `accounts` #5, #7, #8,
   #33, #34, #35, and #4 without its email). **Large.**
   - A signup route: email, password, username (optional; the current one is kept), human check.
     Checks in this order: human check (`human_check_failed`), username (existing
@@ -241,6 +241,32 @@ These 20 scenarios are added to `harness/required.yaml` in this phase, by file a
   - The email is stored unconfirmed; no email is sent in this phase.
   - Lobby driver: step `sign_up` (player or visitor), `then.accounts` fields `kind`, `email`,
     `email_confirmed`.
+  - Done (2026-11-09): `POST /api/signups` (`api/signupRoute.ts`, body `SignupRequest`
+    `{ token?, username?, email, password, humanCheck }`, answer the `GuestResponse` shape). With
+    a guest's token, `registerGuest` turns that row into a registered user in one `UPDATE OR
+    IGNORE` (same player id, same login and token, so seats and everything else stay; 1 D1 row
+    plus index rows); a token that is unknown or a registered user's gets `invalid_token` (Q98).
+    Without a token, `insertRegisteredUser` writes the account and its first login in one batch
+    and returns a new token (as `insertGuest`). The username defaults to the guest's own; a
+    guest may keep it with other capitals. Checks in `accounts/signupProblem` in the phase
+    file's order (human check, username, taken, `emailProblem` (Q93), `passwordProblem`);
+    the password is hashed only after they pass. An address already confirmed on another account
+    is not stored (`unclaimedEmailOf`, one read; Q98, A1.11). `email_invalid` and
+    `password_invalid` added to screens.md S10.9 (spec first, Q98), `ReasonCode.ts` and
+    `REJECTION_MESSAGES.ts`. `PROTOCOL_VERSION` not raised (HTTP only). Lobby driver: step
+    `sign_up` for a player and a visitor (`signUpInLobby.ts`, through `signupProblem`; a
+    visitor without `username` takes the generated name), `then.accounts` reports `email` and
+    `email_confirmed`. `accounts` #7, #8, #33, #34, #35 pass when required locally; #5 runs its
+    signup and waits for `change_username` (item 3); #4 and #6 wait for `emails_sent` (phase 24).
+    `GameRoom.ts` was not touched, so not split. Differs from the phase file: nothing.
+  - For later items: a signup with a new username renames the account in D1 only; rooms keep
+    their records' names (Q96), but `room/handleChatIntent.ts` names chat lines with the
+    sender's current identity name from the token, so after a rename chat in the current room
+    would show the new name: item 3 (#39) must handle this for both signup and username change.
+    The client calls `POST /api/signups` in item 4a (send `token` only for a guest; store the
+    answer's token with `writeSession`). Rows: a guest signup writes 1 `players` row (plus its
+    name and email index entries), a signup when not logged in 2 rows as a new guest does plus the
+    email index; item 4c counts them. The route has no route test yet (item 4c); it logs nothing.
 
 - [ ] 3. **Username change** (A2.1-A2.4, A3.5; Q96; scenarios `accounts` #26, #38, #39, and the
   second step of #5). **Small.**

@@ -14,6 +14,7 @@ import { chatTextOfStep } from "./chatTextOfStep.ts";
 import { publicRoomsOf } from "../../../src/server/lobby/publicRoomsOf.ts";
 import { logInVisitor } from "./logInVisitor.ts";
 import { logOutPlayer } from "./logOutPlayer.ts";
+import { signUpInLobby } from "./signUpInLobby.ts";
 
 const ROOM_ACTIONS = [
   "change_size",
@@ -70,6 +71,9 @@ async function runVisitorStep(
     case "log_out":
       session.visitorLogins.delete(visitor);
       return;
+    case "sign_up":
+      await signUpInLobby(session, { visitor }, step);
+      return;
     case "join_room":
       session.visitorJoins(visitor, step["code"]);
       return;
@@ -97,6 +101,8 @@ async function runStep(session: LobbySession, step: ScenarioStep): Promise<void>
     session.setConnected(step["reconnect"], true);
   } else if (typeof step["visitor"] === "string") {
     await runVisitorStep(session, step["visitor"], step);
+  } else if (step["action"] === "sign_up") {
+    await signUpInLobby(session, { player: textOf(step["player"]) }, step);
   } else {
     runPlayerStep(session, textOf(step["player"]), step);
   }
@@ -172,6 +178,7 @@ export const LOBBY_DRIVER: ScenarioDriver = {
     "ask_generated_name",
     "log_in",
     "log_out",
+    "sign_up",
     "wait_ms",
     "disconnect",
     "reconnect",
@@ -240,7 +247,7 @@ export const LOBBY_DRIVER: ScenarioDriver = {
     ],
     ["then.game", new Set(["kind", "turn", "seats"])],
     ["then.message_to", new Set(["player", "contains", "text", "hides"])],
-    ["then.accounts", new Set(["name", "kind"])],
+    ["then.accounts", new Set(["name", "kind", "email", "email_confirmed"])],
     ["then.generated_name", new Set(["taken", "max_length", "not"])],
     ["then.logged_in", new Set(["visitor", "as"])],
   ]),

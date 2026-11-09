@@ -53,6 +53,8 @@ export const ReasonCode = v.picklist([
   "username_taken",
   "username_reserved",
   "login_failed",
+  "email_invalid",
+  "password_invalid",
   "no_free_room_code",
   "no_answer",
   "busy_elsewhere",

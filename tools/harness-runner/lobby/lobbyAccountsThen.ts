@@ -16,6 +16,8 @@ export function lobbyAccountsThen(session: LobbySession, field: string, expected
       return [...session.accounts.values()].map(({ identity, registration }) => ({
         name: identity.name,
         kind: registration === null ? "guest" : "registered",
+        email: registration?.email ?? null,
+        email_confirmed: registration?.isEmailConfirmed ?? false,
       }));
     case "generated_name": {
       const name = session.generatedName ?? "";
