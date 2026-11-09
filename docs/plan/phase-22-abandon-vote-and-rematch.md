@@ -277,6 +277,15 @@ Phase review (2026-11-07, `phase-reviewer`): no blockers; 5 findings, all to one
     61 passed; whole games from the lobby with 2, 3 and 4 players 3 passed each. Screenshots
     from these runs committed (`3db3b70`). `docs/enforcement.md` lists the new browser tests
     (abandon vote, rematch) and the drivers' vote and rematch steps.
+- [x] Second finisher run (2026-11-09), after the fixes for R1 to R5.
+  - `npm run check` green (503 tests, client 147.63 kB of 300 kB gzipped). `npm run harness`
+    green: 439 scenarios (344 required pass, 0 fail), 1,000 simulated games, B4 692 and B5 905
+    of 1,600, B7 1 of 1, B11 3 of 10 ms, B18 2,726 of 5,000. Browser tests: shard 1/2 64 passed
+    and 1 failed (`abandonVote.spec.ts` at 1280x720, a seat page not loaded within the 30 s test
+    timeout under two workers, the known local load problem), which passed on its rerun (the
+    whole spec alone, 6 passed); shard 2/2 61 passed; whole games from the lobby with 2, 3 and 4
+    players 3 passed each. Screenshots from these runs committed. No new check applies, so
+    `docs/enforcement.md` is unchanged.
 
 ### Helper log
 
