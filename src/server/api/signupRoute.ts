@@ -1,6 +1,7 @@
 import type { GuestResponse } from "../../shared/api/GuestResponse";
 import { SignupRequest } from "../../shared/api/SignupRequest";
 import { hashPassword } from "../accounts/hashPassword";
+import { loginStateOf } from "../accounts/loginStateOf";
 import { nameKeyOf } from "../accounts/nameKeyOf";
 import { signupProblem } from "../accounts/signupProblem";
 import { findLogoutAccount } from "../findLogoutAccount";
@@ -17,10 +18,16 @@ function json(body: GuestResponse, status: number): Response {
   return Response.json(body, { status });
 }
 
-async function guestOf(env: Env, token: string | undefined): Promise<LogoutAccount | null> {
+async function guestOf(
+  env: Env,
+  token: string | undefined,
+  now: number,
+): Promise<LogoutAccount | null> {
   const account =
     token === undefined ? null : await findLogoutAccount(env.DB, await sha256Hex(token));
-  return account?.isGuest === true ? account : null;
+  return account?.isGuest === true && loginStateOf(account.lastUsedMs, now) !== "expired"
+    ? account
+    : null;
 }
 
 async function signedUp(env: Env, body: SignupRequest, guest: LogoutAccount | null, name: string) {
@@ -43,7 +50,7 @@ export async function signupRoute(request: Request, env: Env): Promise<Response>
   if (body === null) {
     return json({ isOk: false, reason: "malformed_message" }, 400);
   }
-  const guest = await guestOf(env, body.token);
+  const guest = await guestOf(env, body.token, Date.now());
   if (body.token !== undefined && guest === null) {
     return json({ isOk: false, reason: "invalid_token" }, 401);
   }
