@@ -157,3 +157,15 @@ removed or changed in type), raises `PROTOCOL_VERSION` in the same change.
 it fails to read the new views. With the version raised, the server rejects it with
 `wrong_protocol_version` and the client asks for a reload (Q75, phase 20a).
 **Enforced by:** judgment · the phase review.
+
+## For `rules/testing.md`
+
+### B11 can fail once under load; rerun before reading it as a regression
+B11 (computing time per message, 99th percentile, limit 10 ms) is measured with the wall clock
+of the machine running the harness. Inside `npm run check`, where type checks, lint and other
+tests run at the same time, it once measured 15 ms; the same harness run alone measured 2 ms.
+When B11 alone fails in `npm run check`, run `npm run harness` on its own: if it passes there,
+the failure was the load, not the code; note it in the phase's Progress. A B11 failure that
+also shows alone is a real regression. Never raise the budget for a load spike.
+**Why:** found in the phase 22 review (finding R4), `tools/harness-runner/harness.test.ts`.
+**Enforced by:** judgment.
