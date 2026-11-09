@@ -412,13 +412,29 @@ These 20 scenarios are added to `harness/required.yaml` in this phase, by file a
     in a row (one worker); before it, 3 of 3 failed once the count was full. Locally, add
     `TEST_SITE_CHAT_MESSAGES_PER_DAY=1000000` to `.dev.vars` and restart `wrangler dev`.
 
-- [ ] 4c. **Busy-day simulator: logins and signups** (B11, B18; exit criteria). **Small.**
+- [x] 4c. **Busy-day simulator: logins and signups** (B11, B18; exit criteria). **Small.**
   - `tools/simulator/busyDay/BUSY_DAY.ts` gains signups and logins (and failed logins) with their
     rows per action from items 1 and 2; B18 must stay within 5,000.
   - B11: measure the password hash's CPU time in the harness (one hash per login and signup) and
     add it to the B11 measurements; it must stay under 10 ms at the 99th percentile.
   - A test that runs signup, login, a failed login and logout through the routes and checks that
     no console output contains the token, password or email address.
+  - Done (2026-11-09), as Q102 says: `BUSY_DAY_ACCOUNT_ACTIONS` (guest signups, signups when
+    not logged in, logins, logins after failures, failed logins, logouts, username changes, each
+    with its D1 rows, index entries counted as D1 counts them) adds 300 rows; B18 measures 3,026
+    of 5,000. B11: `measurePasswordHashCpuMs` hashes 5 batches of 10 signups and 10 logins and
+    records the process CPU time per hash; B11 is the larger of the room messages' and the
+    hashes' 99th percentile, measured 8 ms. `tools/route-tests/accountRoutes.test.ts` runs
+    guest, signup, login by name, a failed login, login by email, username change, account and
+    logout through the real Worker (wrangler's `createTestHarness`, fresh D1 with the
+    migrations) and fails if any console line holds a token, the password or the email address;
+    checked by adding a `console.log` of the login body, which it caught. Differs from the phase
+    file: logouts and username changes are counted too; a logout is 2 rows (the login and its
+    index entry), not 1 as item 1c's note says.
+  - For later items: the route test needs the network (Turnstile's always-passing test secret,
+    passed to the harness, so no `.dev.vars` is needed) and takes about 2 s. It is the place
+    for further route tests (`server.getWorker().getEnv()` gives the D1 binding in Node). B11's
+    hash measurement is CPU time, so load in `npm run check` barely moves it.
 
 ### Finish
 
