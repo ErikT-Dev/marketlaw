@@ -395,3 +395,4 @@ are each helper's conversation size at its end.
 | Builder, item 1c | 12 | 165k | 60 | done |
 | Builder, item 2 | 9 | 131k | 45 | done |
 | Builder, item 3 | 11 | 141k | 67 | done |
+| Builder, item 4a | 19 | 180k | 87 | done |
