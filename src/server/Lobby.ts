@@ -17,6 +17,7 @@ import { LOBBY_RECORD_SCHEMA } from "./lobby/LOBBY_RECORD_SCHEMA";
 import type { LobbyRecord } from "./lobby/LobbyRecord";
 import { publicRoomsOf } from "./lobby/publicRoomsOf";
 import { releasePlayer } from "./lobby/releasePlayer";
+import { siteChatLimitOf } from "./lobby/siteChatLimitOf";
 import { siteGameLimitOf } from "./lobby/siteGameLimitOf";
 import type { PlayedActions } from "./lobby/PlayedActions";
 import type { PlayerCountsToday } from "./lobby/PlayerCountsToday";
@@ -57,7 +58,10 @@ export class Lobby extends DurableObject<Env> {
   async grantChatQuota(now: EpochMs): Promise<number> {
     let granted = 0;
     await this.change((record) => {
-      const grant = grantChatQuota(record, now);
+      const grant = grantChatQuota(record, {
+        now,
+        siteChatMessagesPerDay: siteChatLimitOf(this.env),
+      });
       granted = grant.granted;
       return grant.record;
     });

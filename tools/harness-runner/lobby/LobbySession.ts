@@ -8,6 +8,7 @@ import type { Identity } from "../../../src/server/room/Identity.ts";
 import { claimPlayer } from "../../../src/server/lobby/claimPlayer.ts";
 import { countGameStart } from "../../../src/server/lobby/countGameStart.ts";
 import type { GameStartRejection } from "../../../src/server/lobby/GameStartRejection.ts";
+import { siteChatLimitOf } from "../../../src/server/lobby/siteChatLimitOf.ts";
 import { siteGameLimitOf } from "../../../src/server/lobby/siteGameLimitOf.ts";
 import { EMPTY_LOBBY } from "../../../src/server/lobby/EMPTY_LOBBY.ts";
 import type { LobbyRecord } from "../../../src/server/lobby/LobbyRecord.ts";
@@ -262,7 +263,10 @@ export class LobbySession {
   }
 
   private grantChatQuota(): ChatQuotaGrant {
-    const grant = grantChatQuota(this.lobby, this.now);
+    const grant = grantChatQuota(this.lobby, {
+      now: this.now,
+      siteChatMessagesPerDay: siteChatLimitOf({}),
+    });
     this.lobby = grant.record;
     return { kind: "granted", count: grant.granted };
   }

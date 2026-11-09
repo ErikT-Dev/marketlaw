@@ -2,15 +2,17 @@ import type { EpochMs } from "../../shared/EpochMs";
 import { countsOn } from "./countsOn";
 import type { LobbyRecord } from "./LobbyRecord";
 
-const SITE_CHAT_MESSAGES_PER_DAY = 2000;
 const CHAT_QUOTA_BLOCK = 20;
 
 export function grantChatQuota(
   record: LobbyRecord,
-  now: EpochMs,
+  limits: { readonly now: EpochMs; readonly siteChatMessagesPerDay: number },
 ): { readonly record: LobbyRecord; readonly granted: number } {
-  const counts = countsOn(record, now);
-  const granted = Math.min(CHAT_QUOTA_BLOCK, SITE_CHAT_MESSAGES_PER_DAY - counts.siteChatMessages);
+  const counts = countsOn(record, limits.now);
+  const granted = Math.min(
+    CHAT_QUOTA_BLOCK,
+    limits.siteChatMessagesPerDay - counts.siteChatMessages,
+  );
   if (granted <= 0) {
     return { record, granted: 0 };
   }

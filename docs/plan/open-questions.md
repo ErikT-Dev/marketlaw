@@ -1901,3 +1901,21 @@ file.
   client only shows them; forgetting a login the server still holds would leave a guest's seat
   in a game without a way back.
 - **Implemented:** phase 23, item 4b.
+
+## Q101. How can the browser tests send more than 2,000 chat messages a day on one local server?
+
+- **Phase:** 23, item 4b follow-up (A9.6; the same problem as Q69 for chat).
+- **Question:** each room takes the site's chat quota from the lobby in blocks of 20, and the
+  local Durable Object storage keeps the site count between runs, so a day of local browser test
+  runs uses up A9.6's 2,000 messages. From then on every room's first message that needs a block
+  is refused with `site_daily_cap`, and `e2e/chat.spec.ts` fails where a message never shows.
+  This looked like a regression of item 4b, which changed nothing in chat.
+- **Options:** (a) a test route that resets the site chat count; (b) an optional variable that
+  only local and CI servers set, raising the site chat limit, as Q69 does for games.
+- **Solution:** (b), for the reasons of Q69. The limit is the spec's 2,000 in code
+  (`siteChatLimitOf`); a server whose environment sets `TEST_SITE_CHAT_MESSAGES_PER_DAY` uses that
+  number instead. Only `.dev.vars` sets it (locally and in the `.dev.vars` step of `check.yml` and
+  `deploy.yml`, to 1000000), never `wrangler.jsonc` or the live site. The cap itself stays proved
+  by the scenarios and unit tests with the real numbers (the harness runner uses the spec's
+  limit). `siteGameLimitOf` and `siteChatLimitOf` share `configuredLimitOf`.
+- **Implemented:** phase 23, item 4b follow-up.
