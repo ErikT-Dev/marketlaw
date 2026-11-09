@@ -612,6 +612,7 @@ are each helper's conversation size at its end.
 | Fixer, group C (R3, R5, R8, R9) | 23 | 178k | 118 | done |
 | Finisher, second run | 39 | 91k | 38 | done |
 | Releaser | 46 | 131k | 80 | partial (merged and deployed; live hash CPU over B11) |
+| Fixer, live hash CPU (10,000 iterations) | 4 | 82k | 16 | done |
 
 ## Report
 
