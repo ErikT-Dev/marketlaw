@@ -5,9 +5,9 @@ export function lobbyAccountsThen(session: LobbySession, field: string, expected
   const asked = isRecord(expected) ? expected : {};
   switch (field) {
     case "accounts":
-      return [...session.accounts.values()].map(({ identity, kind }) => ({
+      return [...session.accounts.values()].map(({ identity, registration }) => ({
         name: identity.name,
-        kind,
+        kind: registration === null ? "guest" : "registered",
       }));
     case "generated_name": {
       const name = session.generatedName ?? "";
@@ -24,6 +24,6 @@ export function lobbyAccountsThen(session: LobbySession, field: string, expected
           };
     }
     default:
-      return session.loggedInAs === null ? undefined : { as: session.loggedInAs };
+      return session.loggedIn ?? undefined;
   }
 }

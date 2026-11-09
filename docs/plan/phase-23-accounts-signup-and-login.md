@@ -151,7 +151,7 @@ These 20 scenarios are added to `harness/required.yaml` in this phase, by file a
     returns one adds it there, to `REJECTION_MESSAGES.ts` and to the screens.md message table
     (spec first). `passwordProblem` and `emailKeyOf` are so far used only by their tests.
 
-- [ ] 1b. **Log in** (A1.5, A1.12, A1.13; Q91, Q92; scenarios `accounts` #11, #12, #13, #14,
+- [x] 1b. **Log in** (A1.5, A1.12, A1.13; Q91, Q92; scenarios `accounts` #11, #12, #13, #14,
   #30, #31, #32, #33). **Large.**
   - A login route takes username or email, password and an optional human check token; it finds
     the account (username by name key; email by email key, confirmed first, else earliest entered,
@@ -164,6 +164,33 @@ These 20 scenarios are added to `harness/required.yaml` in this phase, by file a
   - Lobby driver: step `log_in` (visitor), given `accounts` fields `kind: registered`, `email`,
     `email_confirmed`, `password`; then `logged_in: {visitor, as}`. The step `sign_up` of #33
     comes with item 2; until then #33 can be checked only after item 2.
+  - Done (2026-11-09): `POST /api/logins` (`api/loginRoute.ts`, body `LoginRequest`
+    `{ login, password, humanCheck? }`, answer the `GuestResponse` shape). Q97: `failed_logins_ms`
+    keeps at most the last 3 failure times within 15 minutes of each other, and migration
+    `0008_login_check_until.sql` adds `players.login_check_until_ms` (when the human check ends),
+    since A1.13's "15 minutes from the latest failure" cannot be read from the times alone; a
+    successful login clears both (one extra row, only when there were failures). Logins for an
+    unknown name or address are not counted and never ask for the human check (written into
+    A1.13). Shared logic in `src/server/accounts/`: `decideLogin` (human check only when needed,
+    then exactly one password verify, dummy for unknown accounts), `failedLoginsAfter`,
+    `isHumanCheckNeededToLogIn`, `loginLookupOf` ("@" means email; usernames cannot hold one);
+    D1 in `findLoginAccount`, `recordFailedLogin` (1 row), `insertLogin` (the `logins` row).
+    `login_failed` added to screens.md S10.9, `ReasonCode.ts` and `REJECTION_MESSAGES.ts`
+    ("Wrong username, email or password.", from the design). `PROTOCOL_VERSION` not raised: the
+    new code comes only from the HTTP route, never over a socket. Lobby driver: visitor step
+    `log_in` through `decideLogin`; given `accounts` `kind: registered`, `email`,
+    `email_confirmed`, `password`; `then.logged_in.visitor`. `LobbyAccount` now has
+    `registration: LobbyRegistration | null` instead of `kind`; generated names moved out of
+    `LobbySession.ts` into `scriptedGeneratedName.ts` (278 non-blank lines now). Scenarios #11,
+    #12, #13, #14, #30, #31, #32 pass when required locally; #33 waits for `sign_up` (item 2).
+    Differs from the phase file: the extra column (Q97).
+  - For later items: a name file and a function file that differ only in case collide on Windows
+    (`LoginDecision.ts` / `logInDecision.ts`), hence `decideLogin`. The login route is not yet
+    called by the client (item 4a: parse its answer with `GuestResponse`) nor by a route test
+    (item 4c). Item 2's signup sets `kind = 'registered'`, `password_hash` (`hashPassword`),
+    `email`, `email_key` (`emailKeyOf`) and `email_entered_ms`; in the lobby driver it sets
+    `registration` on the account (`emailEnteredMs: session.now`), which `log_in` and
+    `then.accounts.kind` then see. Each failed login writes 1 row, a login 2 (3 after failures).
 
 - [ ] 1c. **Log out** (A1.14, M6.10; Q95; scenarios `connections-and-leaving` #17, #33,
   `accounts` #36, #37). **Large.**

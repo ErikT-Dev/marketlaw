@@ -12,6 +12,7 @@ import { replayRecordThen } from "./replayRecordThen.ts";
 import { lobbyChatThen } from "./lobbyChatThen.ts";
 import { chatTextOfStep } from "./chatTextOfStep.ts";
 import { publicRoomsOf } from "../../../src/server/lobby/publicRoomsOf.ts";
+import { logInVisitor } from "./logInVisitor.ts";
 
 const ROOM_ACTIONS = [
   "change_size",
@@ -54,12 +55,15 @@ function runPlayerStep(
   }
 }
 
-function runVisitorStep(
+async function runVisitorStep(
   session: LobbySession,
   visitor: string,
   step: Readonly<Record<string, unknown>>,
 ) {
   switch (textOf(step["action"])) {
+    case "log_in":
+      await logInVisitor(session, visitor, step);
+      return;
     case "join_room":
       session.visitorJoins(visitor, step["code"]);
       return;
@@ -74,7 +78,7 @@ function runVisitorStep(
   }
 }
 
-function runStep(session: LobbySession, step: ScenarioStep): void {
+async function runStep(session: LobbySession, step: ScenarioStep): Promise<void> {
   if (typeof step === "string") {
     throw new Error(`the lobby driver has no step ${step}`);
   }
@@ -86,7 +90,7 @@ function runStep(session: LobbySession, step: ScenarioStep): void {
   } else if (typeof step["reconnect"] === "string") {
     session.setConnected(step["reconnect"], true);
   } else if (typeof step["visitor"] === "string") {
-    runVisitorStep(session, step["visitor"], step);
+    await runVisitorStep(session, step["visitor"], step);
   } else {
     runPlayerStep(session, textOf(step["player"]), step);
   }
@@ -101,9 +105,9 @@ function startSession(rawGiven: Readonly<Record<string, unknown>>, random: Scrip
   };
   let isUnchanged = true;
   const driverSession: DriverSession = {
-    runStep(step) {
+    async runStep(step) {
       before = session.snapshot();
-      runStep(session, step);
+      await runStep(session, step);
       session.reportRooms();
       isUnchanged = before === session.snapshot();
     },
@@ -160,6 +164,7 @@ export const LOBBY_DRIVER: ScenarioDriver = {
     "open_site",
     "create_guest",
     "ask_generated_name",
+    "log_in",
     "wait_ms",
     "disconnect",
     "reconnect",
@@ -184,7 +189,16 @@ export const LOBBY_DRIVER: ScenarioDriver = {
   nestedFields: new Map([
     [
       "given.accounts",
-      new Set(["name", "kind", "last_used_ms", "actions_today", "games_started_today"]),
+      new Set([
+        "name",
+        "kind",
+        "email",
+        "email_confirmed",
+        "password",
+        "last_used_ms",
+        "actions_today",
+        "games_started_today",
+      ]),
     ],
     [
       "given.room",
@@ -221,7 +235,7 @@ export const LOBBY_DRIVER: ScenarioDriver = {
     ["then.message_to", new Set(["player", "contains", "text", "hides"])],
     ["then.accounts", new Set(["name", "kind"])],
     ["then.generated_name", new Set(["taken", "max_length", "not"])],
-    ["then.logged_in", new Set(["as"])],
+    ["then.logged_in", new Set(["visitor", "as"])],
   ]),
   startSession,
 };

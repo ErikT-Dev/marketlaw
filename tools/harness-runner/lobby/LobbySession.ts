@@ -1,7 +1,5 @@
 import { randomUUID } from "node:crypto";
 import * as v from "valibot";
-import { firstFreeName } from "../../../src/server/accounts/firstFreeName.ts";
-import { generatedNames } from "../../../src/server/accounts/generatedNames.ts";
 import { guestNameDecision } from "../../../src/server/accounts/guestNameDecision.ts";
 import { loginStateOf } from "../../../src/server/accounts/loginStateOf.ts";
 import { nameKeyOf } from "../../../src/server/accounts/nameKeyOf.ts";
@@ -48,9 +46,9 @@ import { leaveRoomIfFreeIn } from "../../../src/server/room/leaveRoomIfFreeIn.ts
 import type { ChatQuotaGrant } from "../../../src/server/room/ChatQuotaGrant.ts";
 import { grantChatQuota } from "../../../src/server/lobby/grantChatQuota.ts";
 import { fireAlarmsUntil } from "./fireAlarmsUntil.ts";
-
-const GENERATED_CANDIDATES = 10;
-const NAME_STEP = 7;
+import type { LobbyRegistration } from "./LobbyRegistration.ts";
+import { registrationFromGiven } from "./registrationFromGiven.ts";
+import { scriptedGeneratedName } from "./scriptedGeneratedName.ts";
 
 export class LobbySession {
   record: RoomRecord | null;
@@ -61,7 +59,7 @@ export class LobbySession {
   readonly messagesTo = new Map<string, ServerMessage[]>();
   rejected: ReasonCode | null = null;
   generatedName: string | null = null;
-  loggedInAs: string | null = null;
+  loggedIn: Readonly<Record<string, string>> | null = null;
   private readonly pendingJoins = new Map<string, string>();
   private live: ReadonlyArray<PlayerId> = [];
   lobby: LobbyRecord;
@@ -88,8 +86,9 @@ export class LobbySession {
   constructor(given: LobbyGiven, random: ScriptedRandom) {
     this.random = random;
     this.now = v.parse(EpochMs, given.clock_ms ?? 0);
-    for (const { name, last_used_ms: lastUsedMs } of given.accounts ?? []) {
-      this.addAccount(name, lastUsedMs ?? 0);
+    for (const account of given.accounts ?? []) {
+      const registration = registrationFromGiven(account, this.now);
+      this.addAccount(account.name, account.last_used_ms ?? 0, registration);
     }
     this.lobby = { ...EMPTY_LOBBY, today: countsTodayFromGiven(given, this.now, this) };
     this.chat = new LobbyChat(chatFromGiven(given, (name) => this.identityNamed(name), this.now));
@@ -182,12 +181,9 @@ export class LobbySession {
   }
 
   askGeneratedName(): void {
-    const draw = this.random.next("generated_name", "setup");
-    const candidates =
-      draw.kind === "listed" && typeof draw.value === "string"
-        ? [draw.value]
-        : generatedNames((limit) => this.nextNameIndex(limit), GENERATED_CANDIDATES);
-    this.generatedName = firstFreeName(candidates, this.takenKeys());
+    const asked = scriptedGeneratedName(this.random, this.takenKeys(), this.namesAsked);
+    this.generatedName = asked.name;
+    this.namesAsked = asked.namesAsked;
   }
 
   createGuest(visitor: string, step: Readonly<Record<string, unknown>>): void {
@@ -209,7 +205,7 @@ export class LobbySession {
   openSite(name: string): void {
     const account = this.accounts.get(name);
     const state = account === undefined ? "expired" : loginStateOf(account.lastUsedMs, this.now);
-    this.loggedInAs = state === "expired" ? null : name;
+    this.loggedIn = state === "expired" ? null : { as: name };
     if (account !== undefined && state === "record_use") {
       this.accounts.set(name, { ...account, lastUsedMs: this.now });
     }
@@ -288,21 +284,17 @@ export class LobbySession {
         );
   }
 
-  private nextNameIndex(limit: number): number {
-    this.namesAsked += 1;
-    return (this.namesAsked * NAME_STEP) % limit;
-  }
-
   private takenKeys(): ReadonlyArray<string> {
     return [...this.accounts.keys()].map(nameKeyOf);
   }
 
-  private addAccount(name: string, lastUsedMs: number): LobbyAccount {
-    const account: LobbyAccount = {
-      identity: { playerId: v.parse(PlayerId, randomUUID()), name },
-      kind: "guest",
-      lastUsedMs,
-    };
+  private addAccount(
+    name: string,
+    lastUsedMs: number,
+    registration: LobbyRegistration | null = null,
+  ): LobbyAccount {
+    const playerId = v.parse(PlayerId, randomUUID());
+    const account: LobbyAccount = { identity: { playerId, name }, lastUsedMs, registration };
     this.accounts.set(name, account);
     return account;
   }

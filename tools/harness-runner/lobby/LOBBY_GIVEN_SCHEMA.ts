@@ -23,7 +23,10 @@ export const LOBBY_GIVEN_SCHEMA = v.strictObject({
     v.array(
       v.strictObject({
         name: v.string(),
-        kind: v.optional(v.literal("guest")),
+        kind: v.optional(v.picklist(["guest", "registered"])),
+        email: v.optional(v.nullable(v.string())),
+        email_confirmed: v.optional(v.boolean()),
+        password: v.optional(v.string()),
         last_used_ms: v.optional(v.number()),
         actions_today: v.optional(v.number()),
         games_started_today: v.optional(v.number()),
