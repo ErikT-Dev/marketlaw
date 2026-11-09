@@ -4,6 +4,7 @@ import { loginLookupOf } from "../../../src/server/accounts/loginLookupOf.ts";
 import type { LoginLookup } from "../../../src/server/accounts/LoginLookup.ts";
 import { nameKeyOf } from "../../../src/server/accounts/nameKeyOf.ts";
 import { NO_FAILED_LOGINS } from "../../../src/server/accounts/NO_FAILED_LOGINS.ts";
+import { unknownLoginKeyOf } from "../../../src/server/accounts/unknownLoginKeyOf.ts";
 import type { LobbyAccount } from "./LobbyAccount.ts";
 import type { LobbyRegistration } from "./LobbyRegistration.ts";
 import type { LobbySession } from "./LobbySession.ts";
@@ -60,8 +61,11 @@ export async function logInVisitor(
   step: Readonly<Record<string, unknown>>,
 ): Promise<void> {
   const password = textOf(step["password"]);
-  const decision = await decideLogin(accountFor(session, textOf(step["login"])), {
+  const login = textOf(step["login"]);
+  const unknownKey = unknownLoginKeyOf(login);
+  const decision = await decideLogin(accountFor(session, login), {
     now: session.now,
+    unknownAccountFailedLogins: session.unknownLoginFailures.get(unknownKey) ?? NO_FAILED_LOGINS,
     isHuman: () => Promise.resolve(step["human_check"] === "passed"),
     isPasswordRight: (found) => Promise.resolve(found?.registration.password === password),
   });
@@ -70,6 +74,9 @@ export async function logInVisitor(
     session.accounts.set(name, withFailedLogins(decision.account, NO_FAILED_LOGINS));
     session.visitorLogins.set(visitor, name);
     return;
+  }
+  if (decision.kind === "unknown_account") {
+    session.unknownLoginFailures.set(unknownKey, decision.failedLogins);
   }
   if (decision.kind === "wrong_password") {
     const { account } = decision.account;

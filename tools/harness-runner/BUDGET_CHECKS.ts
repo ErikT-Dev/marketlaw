@@ -61,6 +61,6 @@ export const BUDGET_CHECKS: Readonly<Record<string, BudgetCheck>> = {
   B18: {
     by: "harness",
     where:
-      "busy-day simulator, 50 rooms through the room and lobby code to the end of each room, with 2,000 chat messages after the games (the lobby's chat quota blocks, the chat blocks deleted with each room, the replay record with its two indexes, the 30-day delete of an older one, the cleanup alarm's storage delete and the lobby report; setting the cleanup alarm is in B4, with the game's last action), plus the guests' and players' rows in D1 and the day's signups, logins, failed logins, logouts and username changes",
+      "busy-day simulator, 50 rooms through the room and lobby code to the end of each room, with 2,000 chat messages after the games (the lobby's chat quota blocks, the chat blocks deleted with each room, the replay record with its two indexes, the 30-day delete of an older one, the cleanup alarm's storage delete and the lobby report; setting the cleanup alarm is in B4, with the game's last action), plus the guests' and players' rows in D1 and the day's signups, logins, failed logins (for unknown usernames and addresses too, with their daily delete), logouts and username changes",
   },
 };

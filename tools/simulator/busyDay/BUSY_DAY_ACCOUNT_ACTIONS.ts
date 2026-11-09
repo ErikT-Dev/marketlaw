@@ -6,6 +6,7 @@ export const BUSY_DAY_ACCOUNT_ACTIONS = {
   login: { perDay: 40, rowsWritten: 2 },
   loginAfterFailedLogins: { perDay: 10, rowsWritten: 3 },
   failedLogin: { perDay: 20, rowsWritten: 1 },
+  failedLoginForUnknownAccount: { perDay: 20, rowsWritten: 2 },
   logout: { perDay: 20, rowsWritten: 2 },
   usernameChange: { perDay: 10, rowsWritten: 2 },
 } as const satisfies Readonly<Record<string, BusyDayAccountAction>>;

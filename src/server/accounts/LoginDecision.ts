@@ -3,7 +3,7 @@ import type { LoginAttemptAccount } from "./LoginAttemptAccount";
 
 export type LoginDecision<Account extends LoginAttemptAccount> =
   | { readonly kind: "human_check_failed" }
-  | { readonly kind: "unknown_account" }
+  | { readonly kind: "unknown_account"; readonly failedLogins: FailedLogins }
   | {
       readonly kind: "wrong_password";
       readonly account: Account;

@@ -14,6 +14,7 @@ import { sessionRoute } from "./api/sessionRoute";
 import { signupRoute } from "./api/signupRoute";
 import { usernameChangeRoute } from "./api/usernameChangeRoute";
 import { lobbyOf } from "./lobbyOf";
+import { removeForgottenLoginFailures } from "./removeForgottenLoginFailures";
 import { removeOldReplayRecords } from "./replays/removeOldReplayRecords";
 import { confirmTestSeat } from "./testRooms/confirmTestSeat";
 import { createTestRoom } from "./testRooms/createTestRoom";
@@ -84,5 +85,6 @@ export default {
   fetch: route,
   async scheduled(controller, env) {
     await removeOldReplayRecords(env.DB, controller.scheduledTime);
+    await removeForgottenLoginFailures(env.DB, controller.scheduledTime);
   },
 } satisfies ExportedHandler<Env>;

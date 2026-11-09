@@ -48,6 +48,7 @@ import type { ChatQuotaGrant } from "../../../src/server/room/ChatQuotaGrant.ts"
 import { grantChatQuota } from "../../../src/server/lobby/grantChatQuota.ts";
 import { fireAlarmsUntil } from "./fireAlarmsUntil.ts";
 import type { LobbyRegistration } from "./LobbyRegistration.ts";
+import type { FailedLogins } from "../../../src/server/accounts/FailedLogins.ts";
 import { registrationFromGiven } from "./registrationFromGiven.ts";
 import { scriptedGeneratedName } from "./scriptedGeneratedName.ts";
 
@@ -62,6 +63,7 @@ export class LobbySession {
   generatedName: string | null = null;
   loggedIn: Readonly<Record<string, string>> | null = null;
   readonly visitorLogins = new Map<string, string>();
+  readonly unknownLoginFailures = new Map<string, FailedLogins>();
   private readonly pendingJoins = new Map<string, string>();
   private live: ReadonlyArray<PlayerId> = [];
   lobby: LobbyRecord;

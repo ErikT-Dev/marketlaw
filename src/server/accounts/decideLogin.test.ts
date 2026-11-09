@@ -5,10 +5,15 @@ import { NO_FAILED_LOGINS } from "./NO_FAILED_LOGINS";
 
 const CHECK_ON: FailedLogins = { timesMs: [0, 1, 2], humanCheckUntilMs: 1000 };
 
-function attemptOf(isHuman: boolean, isPasswordRight: boolean) {
+function attemptOf(
+  isHuman: boolean,
+  isPasswordRight: boolean,
+  unknownAccountFailedLogins: FailedLogins = NO_FAILED_LOGINS,
+) {
   const checked = { humanChecks: 0, passwords: 0 };
   const attempt = {
     now: 10,
+    unknownAccountFailedLogins,
     isHuman: () => {
       checked.humanChecks += 1;
       return Promise.resolve(isHuman);
@@ -39,7 +44,24 @@ describe("decideLogin", () => {
   it("checks a password once for an unknown account and fails it", async () => {
     const { attempt, checked } = attemptOf(false, true);
     const decision = await decideLogin(null, attempt);
-    expect(decision.kind).toBe("unknown_account");
+    expect(decision).toEqual({
+      kind: "unknown_account",
+      failedLogins: { timesMs: [10], humanCheckUntilMs: null },
+    });
+    expect(checked).toEqual({ humanChecks: 0, passwords: 1 });
+  });
+
+  it("asks for the human check for an unknown account after its failed logins", async () => {
+    const { attempt, checked } = attemptOf(false, false, CHECK_ON);
+    const decision = await decideLogin(null, attempt);
+    expect(decision.kind).toBe("human_check_failed");
+    expect(checked).toEqual({ humanChecks: 1, passwords: 0 });
+  });
+
+  it("uses the account's failed logins, not the unknown name's, when the account exists", async () => {
+    const { attempt, checked } = attemptOf(false, true, CHECK_ON);
+    const decision = await decideLogin({ failedLogins: NO_FAILED_LOGINS }, attempt);
+    expect(decision.kind).toBe("logged_in");
     expect(checked).toEqual({ humanChecks: 0, passwords: 1 });
   });
 
