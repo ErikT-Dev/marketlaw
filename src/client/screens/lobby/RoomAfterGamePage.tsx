@@ -57,12 +57,7 @@ export function RoomAfterGamePage(props: Props) {
           onAskRematch={canAskRematch ? props.onAskRematch : null}
         />
       ) : null}
-      <RematchDialogIfAsked
-        room={room}
-        myName={myName}
-        onAccept={props.onAccept}
-        onDecline={props.onDecline}
-      />
+      <RematchDialogIfAsked room={room} onAccept={props.onAccept} onDecline={props.onDecline} />
     </>
   );
   const resultLine = (

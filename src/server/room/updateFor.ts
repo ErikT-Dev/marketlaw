@@ -40,6 +40,7 @@ function buildUpdate(record: RoomRecord, playerId: PlayerId): RoomUpdate {
           : {
               deadline: asking.deadline,
               acceptedNames: asking.accepted.map((accepted) => nameOf(record, accepted)),
+              hasAccepted: asking.accepted.includes(playerId),
             },
       deletionAt: endedRoomDeletionAt(record),
     },

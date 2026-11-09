@@ -114,7 +114,9 @@ describe("the room after a game", () => {
 
   it("shows the rematch dialog with the time left and who has accepted", () => {
     const deadline = v.parse(EpochMs, Date.now() + 16_500);
-    const handlers = roomAfterGame(endedRoom({ asking: { deadline, acceptedNames: ["Bea"] } }));
+    const handlers = roomAfterGame(
+      endedRoom({ asking: { deadline, acceptedNames: ["Bea"], hasAccepted: false } }),
+    );
     const dialog = screen.getByRole("dialog", { name: "Accept a rematch?" });
     expect(within(dialog).getByRole("timer").textContent).toContain(
       "left to accept. A new casual game starts from the beginning when all 2 players in the room accept.",

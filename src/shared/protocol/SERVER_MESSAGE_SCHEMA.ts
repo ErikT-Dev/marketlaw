@@ -136,7 +136,13 @@ export const SERVER_MESSAGE_SCHEMA = v.variant("type", [
         namesInRoom: v.array(v.string()),
         myName: v.string(),
         mySeat: v.nullable(SEAT),
-        asking: v.nullable(v.object({ deadline: EpochMs, acceptedNames: v.array(v.string()) })),
+        asking: v.nullable(
+          v.object({
+            deadline: EpochMs,
+            acceptedNames: v.array(v.string()),
+            hasAccepted: v.boolean(),
+          }),
+        ),
         deletionAt: v.nullable(EpochMs),
       }),
       game: v.nullable(

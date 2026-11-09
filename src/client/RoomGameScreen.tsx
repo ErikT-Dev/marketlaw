@@ -39,7 +39,6 @@ export function RoomGameScreen({ store, state, update, myName, account }: Props)
       store={store}
       state={state}
       update={update}
-      myName={myName}
       account={account}
       onCloseResult={() => {
         setIsResultClosed(true);

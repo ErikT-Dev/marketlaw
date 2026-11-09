@@ -76,6 +76,7 @@ export const REJECTION_MESSAGES: Readonly<Record<ReasonCode, IconText>> = {
   rematch_not_possible:
     "A rematch needs a finished game, at least 2 players in the room and no other rematch being asked.",
   rejoin_too_soon: "You cannot join this room again yet.",
+  username_in_room: "A player in this room has the same username as you. Join another room.",
   human_check_failed: "The human check did not pass. Try it again.",
   username_invalid:
     "Use 3 to 20 letters, digits, spaces, - or _, without spaces at the start or end or two spaces in a row.",

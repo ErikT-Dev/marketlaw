@@ -44,7 +44,6 @@ export function WaitingRoomPage(props: Props) {
           asking={room.asking}
           isRematch={false}
           playerCount={room.size}
-          myName={myName}
           now={now}
           onAccept={onAccept}
           onDecline={onDecline}

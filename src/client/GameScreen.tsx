@@ -12,13 +12,12 @@ type Props = {
   readonly store: ClientStore;
   readonly state: ClientState;
   readonly update: RoomUpdate;
-  readonly myName: string;
   readonly account: AccountBinding;
   readonly onCloseResult: () => void;
 };
 
 export function GameScreen(props: Props) {
-  const { store, state, update, myName, onCloseResult } = props;
+  const { store, state, update, onCloseResult } = props;
   const { room } = update;
   const { onAskRematch, onAccept, onDecline } = rematchHandlersOf(store);
   const canAskRematch = room.namesInRoom.length >= 2 && room.asking === null;
@@ -44,12 +43,7 @@ export function GameScreen(props: Props) {
       />
       {update.game?.view.result === null ? null : (
         <ServerClockOffset.Provider value={state.serverClockOffsetMs}>
-          <RematchDialogIfAsked
-            room={room}
-            myName={myName}
-            onAccept={onAccept}
-            onDecline={onDecline}
-          />
+          <RematchDialogIfAsked room={room} onAccept={onAccept} onDecline={onDecline} />
         </ServerClockOffset.Provider>
       )}
     </>

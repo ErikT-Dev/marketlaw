@@ -226,7 +226,7 @@ describe("the waiting room", () => {
     const handlers = waitingRoom(
       room({
         playerNames: ["Quiet River Baron", "Ann", "Bea", "Cy"],
-        asking: { deadline, acceptedNames: ["Quiet River Baron", "Bea"] },
+        asking: { deadline, acceptedNames: ["Quiet River Baron", "Bea"], hasAccepted: false },
       }),
     );
     const dialog = screen.getByRole("dialog", { name: "The room is full: accept the game?" });
@@ -236,6 +236,16 @@ describe("the waiting room", () => {
     expect(dialog.textContent).toContain("Accepted so far: Quiet River Baron, Bea");
     fireEvent.click(within(dialog).getByRole("button", { name: "Accept" }));
     expect(handlers.onAccept).toHaveBeenCalled();
+  });
+
+  it("shows Accepted when the room says this player has accepted, not when a name matches", () => {
+    const deadline = v.parse(EpochMs, Date.now() + 14_500);
+    waitingRoom(room({ asking: { deadline, acceptedNames: ["Bea"], hasAccepted: true } }));
+    const accepted = screen.getByRole("button", { name: "Accepted" });
+    expect(accepted).toHaveProperty("disabled", true);
+    document.body.innerHTML = "";
+    waitingRoom(room({ asking: { deadline, acceptedNames: ["Ann"], hasAccepted: false } }));
+    expect(screen.getByRole("button", { name: "Accept" })).toHaveProperty("disabled", false);
   });
 });
 

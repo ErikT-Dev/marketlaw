@@ -48,6 +48,7 @@ export const ReasonCode = v.picklist([
   "not_asking",
   "rematch_not_possible",
   "rejoin_too_soon",
+  "username_in_room",
   "human_check_failed",
   "username_invalid",
   "username_taken",
