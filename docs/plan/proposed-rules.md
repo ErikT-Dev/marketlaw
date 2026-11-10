@@ -160,15 +160,15 @@ it fails to read the new views. With the version raised, the server rejects it w
 
 ## For `rules/testing.md`
 
-### B11 can fail once under load; rerun before reading it as a regression
-B11 (computing time per message, 99th percentile, limit 10 ms) is measured with the wall clock
-of the machine running the harness. Inside `npm run check`, where type checks, lint and other
-tests run at the same time, it once measured 15 ms; the same harness run alone measured 2 ms.
-When B11 alone fails in `npm run check`, run `npm run harness` on its own: if it passes there,
-the failure was the load, not the code; note it in the phase's Progress. A B11 failure that
-also shows alone is a real regression. Never raise the budget for a load spike.
-**Why:** found in the phase 22 review (finding R4), `tools/harness-runner/harness.test.ts`.
-**Enforced by:** judgment.
+### A wall-clock budget needs repeated runs, not reruns
+B11 (computing time per message, 99th percentile, limit 10 ms) is measured with the wall clock,
+which counts other processes' load, and over only 55 messages, so its 99th percentile is the
+slowest one. Since phase 24 the harness runs the room scenarios three times and keeps each
+message's fastest time (Q118), so a load spike no longer fails it. A B11 failure is now a real
+regression: do not rerun past it. Never raise the budget for a load spike.
+**Why:** found in the phase 22 review (finding R4) and again in phase 24, where one
+`npm run check` measured 12 ms; alone the slowest message takes 1 to 3 ms.
+**Enforced by:** `tools/harness-runner/buildSteadyScenarioRuns.ts`.
 
 ### Tests that start the Worker must not need a built client
 `wrangler.jsonc` serves `./dist/client` as assets, and wrangler's `createTestHarness` refuses to

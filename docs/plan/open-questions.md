@@ -2512,3 +2512,24 @@ file.
   or a message on the screens; refusing would need one in `screens.md` for a case that only
   needs nothing to happen.
 - **Implemented:** phase 24, review R7.
+
+## Q118. Why did B11 fail `npm run check` under load, and how is it measured reliably?
+
+- **Phase:** 24, second finisher run (B11; Q102, phase 20 finisher).
+- **Question:** one `npm run check` failed B11 at 12 ms of 10 with no room code changed, and the
+  next run passed. Is it a regression or the load, and how does the check stop depending on it?
+- **Finding:** the measurement. The room scenarios send 55 messages, and the 99th percentile of 55
+  values is the largest one, so one message decides B11, as it did before phase 20 moved to the
+  percentile. The time is the wall clock, which counts the time the operating system gives to
+  the other test processes of `npm run check`. Measured alone, the slowest message took 1.2 to
+  2.6 ms; with the full test suite running beside it, single messages took up to 6.8 ms while
+  the second slowest stayed under 2 ms. Thread CPU time is no fix: on Windows it is counted in
+  steps of about 15.6 ms.
+- **Solution:** the harness runs the room scenarios three times, one after the other, and keeps
+  for each message the fastest of its three times; the results, the other measurements and the
+  report come from the first run. A message slowed by the load in one run is measured by another;
+  a message that is really slow is slow in all three and still fails. The limit (10 ms), the
+  percentile and the required list are unchanged. `budgets.yaml` says how B11 is measured.
+- **Why:** a budget that fails on load teaches everyone to rerun past it, which hides a real
+  regression; three runs of the room scenarios add about a second to the harness.
+- **Implemented:** phase 24, second finisher run (`tools/harness-runner/buildSteadyScenarioRuns.ts`).
