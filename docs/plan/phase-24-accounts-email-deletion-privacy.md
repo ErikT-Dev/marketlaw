@@ -1,6 +1,6 @@
 # Phase 24: Accounts: email, deletion and privacy
 
-Status: in progress
+Status: done
 Milestone: 5 Accounts and ranking
 
 ## Goal
@@ -388,6 +388,17 @@ These 15 scenarios are added to `harness/required.yaml` in this phase, by file a
     receive the confirmation (look in spam too), open the link, and request a reset. Record the
     result here and in Q104. If the send fails, read the Worker log line ("Brevo answered
     <status>") and Brevo's transactional log.
+  - Releaser (2026-11-10): the live test send was not made. Signing up needs the human check,
+    and in an automated browser the live Turnstile widget asks for its checkbox to be clicked;
+    the releaser does not click through a human check, and no email route works without one
+    for an account that does not exist yet. Checked instead: the live Worker serves
+    `72a911d2` (100%), has the secret `BREVO_API_KEY` (`wrangler secret list`), and
+    `emailSenderOf` picks Brevo whenever it and `EMAIL_FROM` are set; the privacy contact
+    answers `mlaw.support@gmail.com`. Left for the owner, the one thing to try: sign up on the
+    live site with `mlaw.support@gmail.com`, find the email in the inbox or spam, open the link
+    ("Email confirmed"), then ask for a reset with **Forgot your password?** and open that link.
+    If no email comes, the Worker's log (Cloudflare dashboard, Workers, marketlaw, Logs) has
+    "Sending an email failed: Brevo answered <status>", and Brevo's transactional log says why.
 
 ### Finish
 
@@ -484,7 +495,23 @@ These 15 scenarios are added to `harness/required.yaml` in this phase, by file a
     three-player abandon vote at 2560 (game screen not shown within 5 s); load. Dev server
     stopped by its process, nothing on 8787. Every screenshot restored: nothing under
     `src/client` or `e2e` changed since the last screenshot commit (115617f).
-- [ ] Release.
+- [x] Release.
+  - Report pushed (`ee04c0c`). Branch check run 42864404230 green after three reruns of
+    failed browser-test parts, none caused by the code: Chromium's install failed on the runner
+    (dpkg lock, twice), `dailyLimits.spec.ts` axe measured the Create room button at 2.53:1
+    mid-transition (seen in phase 23 too), and `bigCardSwitch.spec.ts` at 2560 took 161 of
+    100 ms on the 2-core runner. `check` and every other part passed each time.
+  - Merged (`f9ff37c`); Deploy run 42872411306 succeeded (tests skipped, the merged tree had
+    passed Check), applied D1 migrations 0010 and 0011, Current Version ID `72a911d2`
+    (`wrangler deployments status`: 100%). The live bundle has the new texts ("Forgot your
+    password?", "Check your email", "Change email address", "Delete account", `link_expired`,
+    `password_wrong`).
+  - Live site: the lobby loads with no page errors; Log in shows **Forgot your password?**;
+    `#privacy` shows the notice's five parts and `mlaw.support@gmail.com`; a forged
+    `#confirm=` link opens "This link no longer works"; `POST /api/email-confirmations` with a
+    forged link answers `link_expired`, `POST /api/account-deletions` with a forged token
+    `invalid_token`; `/api/test-outbox` answers 404 without the secret.
+  - Item 10's live send is left to the owner (see item 10).
 
 ### Helper log
 
@@ -543,6 +570,10 @@ reload.
 4. Open the privacy notice from Sign up or Account settings.
 5. Delete a test account in **Account settings** (password needed); during a game it warns that
    you leave the game.
+
+The one thing only the owner can check: no email has been sent live yet (item 10). Steps 1 and
+2 with `mlaw.support@gmail.com` are that check; if no email arrives, the Worker log says "Sending
+an email failed: Brevo answered <status>".
 
 **Checks.** The second finisher run: `npm run check` green (650 tests), `npm run harness` green
 (458 scenarios, 383 pass, 0 fail, 75 not yet, none required; 1,000 simulated games), B11 9 of

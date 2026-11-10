@@ -2145,7 +2145,9 @@ file.
   the same day: `src/server/email/brevoSenderOf.ts` posts with plain `fetch`, no npm package; it
   is used only when both `BREVO_API_KEY` and `EMAIL_FROM` are set, otherwise `emailSenderOf`
   keeps the test outbox (which fails every send without `TEST_ROOM_SECRET`). Spec: A1.4, S12.3,
-  S12.4 (spam folder), in its own `HARNESS:` commit.
+  S12.4 (spam folder), in its own `HARNESS:` commit. Released 2026-11-10 (Worker version
+  `72a911d2`, secret `BREVO_API_KEY` present); the live test send was left to the owner,
+  since signing up needs a human check an automated browser should not pass (phase 24, item 10).
 
 ## Q105. What does the privacy notice say, and where is it (O7)?
 
