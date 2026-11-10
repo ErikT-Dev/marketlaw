@@ -1,8 +1,8 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { resendSenderOf } from "./resendSenderOf";
+import { brevoSenderOf } from "./brevoSenderOf";
 
-const API_KEY = "re_secret_key_1234";
-const ENV = { RESEND_API_KEY: API_KEY, EMAIL_FROM: "MarketLaw <noreply@example.com>" };
+const API_KEY = "xkeysib-secret-key-1234";
+const ENV = { BREVO_API_KEY: API_KEY, EMAIL_FROM: "game.sender@example.com" };
 const LINK = "https://marketlaw.example/#confirm=link-token-5678";
 const EMAIL = {
   to: "player@example.org",
@@ -44,45 +44,52 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-describe("resendSenderOf", () => {
-  it("is not used without the Resend key or the sender address", () => {
-    expect(resendSenderOf({})).toBeNull();
-    expect(resendSenderOf({ EMAIL_FROM: ENV.EMAIL_FROM })).toBeNull();
-    expect(resendSenderOf({ RESEND_API_KEY: API_KEY })).toBeNull();
-    expect(resendSenderOf({ RESEND_API_KEY: "", EMAIL_FROM: ENV.EMAIL_FROM })).toBeNull();
+describe("brevoSenderOf", () => {
+  it("is not used without the Brevo key or the sender address", () => {
+    expect(brevoSenderOf({})).toBeNull();
+    expect(brevoSenderOf({ EMAIL_FROM: ENV.EMAIL_FROM })).toBeNull();
+    expect(brevoSenderOf({ BREVO_API_KEY: API_KEY })).toBeNull();
+    expect(brevoSenderOf({ BREVO_API_KEY: "", EMAIL_FROM: ENV.EMAIL_FROM })).toBeNull();
   });
 
-  it("posts the email to Resend with the key and the sender address", async () => {
-    const requests = answerWith(Response.json({ id: "email-id" }));
-    expect(await resendSenderOf(ENV)?.send(EMAIL)).toBe("sent");
+  it("posts the email to Brevo with the key and the sender address", async () => {
+    const requests = answerWith(
+      Response.json({ messageId: "<message-id@relay.example>" }, { status: 201 }),
+    );
+    expect(await brevoSenderOf(ENV)?.send(EMAIL)).toBe("sent");
     expect(requests).toHaveLength(1);
     const request = requests[0];
-    expect(request?.url).toBe("https://api.resend.com/emails");
+    expect(request?.url).toBe("https://api.brevo.com/v3/smtp/email");
     expect(request?.method).toBe("POST");
-    expect(request?.headers.get("Authorization")).toBe(`Bearer ${API_KEY}`);
+    expect(request?.headers.get("api-key")).toBe(API_KEY);
     expect(request?.headers.get("Content-Type")).toBe("application/json");
     expect(await request?.json()).toStrictEqual({
-      from: ENV.EMAIL_FROM,
-      to: EMAIL.to,
+      sender: { name: "MarketLaw", email: ENV.EMAIL_FROM },
+      to: [{ email: EMAIL.to }],
       subject: EMAIL.subject,
-      text: EMAIL.text,
+      textContent: EMAIL.text,
     });
   });
 
-  it("fails and logs only the status when Resend refuses the email", async () => {
+  it("fails and logs only the status when Brevo refuses the email", async () => {
     const lines = loggedLines();
-    answerWith(Response.json({ message: `Invalid to: ${EMAIL.to}` }, { status: 422 }));
-    expect(await resendSenderOf(ENV)?.send(EMAIL)).toBe("failed");
+    answerWith(
+      Response.json(
+        { code: "invalid_parameter", message: `Invalid to: ${EMAIL.to}` },
+        { status: 400 },
+      ),
+    );
+    expect(await brevoSenderOf(ENV)?.send(EMAIL)).toBe("failed");
     expectNothingPrivateIn(lines());
-    expect(lines().join(" ")).toContain("422");
+    expect(lines().join(" ")).toContain("400");
   });
 
-  it("fails and logs nothing private when Resend cannot be reached", async () => {
+  it("fails and logs nothing private when Brevo cannot be reached", async () => {
     const lines = loggedLines();
     vi.stubGlobal("fetch", async () =>
       Promise.reject(new Error(`offline while sending to ${EMAIL.to} with ${API_KEY}`)),
     );
-    expect(await resendSenderOf(ENV)?.send(EMAIL)).toBe("failed");
+    expect(await brevoSenderOf(ENV)?.send(EMAIL)).toBe("failed");
     expectNothingPrivateIn(lines());
   });
 });
