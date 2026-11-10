@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import { App } from "./App";
 import { openLobbyFeed } from "./openLobbyFeed";
 import { openRoomHost } from "./openRoomHost";
+import { keepPrivacyNoticeInsideApp } from "./screens/privacy/keepPrivacyNoticeInsideApp";
 import { ClientStore } from "./store/ClientStore";
 import { emailLinkFrom } from "./store/emailLinkFrom";
 import { sessionFromLink } from "./store/sessionFromLink";
@@ -13,6 +14,7 @@ const emailLink = emailLinkFrom(window.location.hash);
 if (linkedSession !== null || emailLink !== null) {
   window.history.replaceState(null, "", window.location.pathname);
 }
+keepPrivacyNoticeInsideApp();
 const store = new ClientStore(openRoomHost, openLobbyFeed);
 if (linkedSession !== null) {
   void store.startFromSeatLink(linkedSession, () =>

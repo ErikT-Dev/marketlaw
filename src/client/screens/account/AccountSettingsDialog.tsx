@@ -1,8 +1,10 @@
 import { Button } from "../../components/Button";
 import { Modal } from "../../components/Modal";
+import { PrivacyNoticeLink } from "../privacy/PrivacyNoticeLink";
 import styles from "./Account.module.css";
 import type { AccountBinding } from "./AccountBinding";
 import { EmailSetting } from "./EmailSetting";
+import { GuestSignUpNote } from "./GuestSignUpNote";
 import type { UserAccountDialog } from "./UserAccountDialog";
 import { UsernameSetting } from "./UsernameSetting";
 import { useAccountDetails } from "./useAccountDetails";
@@ -36,22 +38,8 @@ export function AccountSettingsDialog(props: Props) {
           onSendAgain={account.onSendConfirmationAgain}
         />
       )}
-      {account.isGuest ? (
-        <section className={styles["guestNote"]} aria-labelledby="guest-note-heading">
-          <h3 id="guest-note-heading" className={styles["guestNoteTitle"]}>
-            You are playing as a guest
-          </h3>
-          <p className={styles["guestNoteText"]}>
-            Your account only works in this browser. Sign up to keep your games and rating and log
-            in from anywhere.
-          </p>
-          <div>
-            <Button look="primary" onClick={onSignUp}>
-              Sign up
-            </Button>
-          </div>
-        </section>
-      ) : null}
+      {account.isGuest ? <GuestSignUpNote onSignUp={onSignUp} /> : null}
+      <PrivacyNoticeLink />
       <div className={styles["settingsButtons"]}>
         <div className={styles["settingButtons"]}>
           <Button look="secondary" onClick={onLogOut}>

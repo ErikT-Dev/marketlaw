@@ -13,6 +13,7 @@ import { joinRoomRoute } from "./api/joinRoomRoute";
 import { loginRoute } from "./api/loginRoute";
 import { logoutRoute } from "./api/logoutRoute";
 import { newPasswordRoute } from "./api/newPasswordRoute";
+import { privacyContactRoute } from "./api/privacyContactRoute";
 import { replayExportRoute } from "./api/replayExportRoute";
 import { resetEmailRoute } from "./api/resetEmailRoute";
 import { roomJson } from "./api/roomJson";
@@ -91,6 +92,9 @@ async function route(request: Request, env: Env): Promise<Response> {
   }
   if (request.method === "GET" && pathname === "/api/human-check") {
     return humanCheckRoute(env);
+  }
+  if (request.method === "GET" && pathname === "/api/privacy-contact") {
+    return privacyContactRoute(env);
   }
   const postRoute = request.method === "POST" ? POST_ROUTES[pathname] : undefined;
   return postRoute === undefined

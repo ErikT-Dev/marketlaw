@@ -1,0 +1,53 @@
+.page {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  overflow-y: auto;
+  background: var(--color-background-game-window);
+  color: var(--color-text-primary);
+  outline: none;
+}
+
+.notice {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  max-width: 840px;
+  margin: 0 auto;
+  padding: var(--space-xxl) var(--space-xl);
+  line-height: 1.5;
+}
+
+.notice h1 {
+  margin: 0;
+  font-size: var(--font-size-xl);
+}
+
+.part h2 {
+  margin: 0 0 var(--space-sm);
+  font-size: var(--font-size-lg);
+}
+
+.part p,
+.part ul {
+  margin: 0;
+}
+
+.linkLine {
+  margin: 0;
+  font-size: var(--font-size-sm);
+}
+
+.link {
+  display: inline-block;
+  min-height: 24px;
+  line-height: 24px;
+  color: var(--color-board-account-link);
+  font-weight: var(--font-weight-bold);
+}
+
+@media (max-width: 1279px) {
+  .page {
+    display: none;
+  }
+}

@@ -326,7 +326,21 @@ These 15 scenarios are added to `harness/required.yaml` in this phase, by file a
     and during a game warns that it counts as leaving. Reuse the account settings and the guest
     logout warning of phase 23 item 4b. Browser tests and screenshots as 6a.
 
-- [ ] 7. **Privacy notice page** (A12.1, S12.8; Q105). **Small.**
+- [x] 7. **Privacy notice page** (A12.1, S12.8; Q105). **Small.**
+  - Done (2026-11-10): `src/client/screens/privacy/` (`PrivacyNoticePage` with
+    `PrivacyNoticeParts`, lazy-loaded by `LazyPrivacyNoticePage`, so B14 does not grow by its
+    text). The page opens at `#privacy` (`PrivacyNoticeLink`, a real link, in **Sign up** and
+    **Account settings**; `usePrivacyNoticeOpen` follows the address), covers the app (made
+    `inert`, so a form behind it keeps what was typed) and goes back with **Back**, Escape or the
+    browser's back button; opened directly, `keepPrivacyNoticeInsideApp` puts the lobby behind it.
+    Contact address: `GET /api/privacy-contact` (`privacyContactRoute`, `PrivacyContactResponse`)
+    from the `PRIVACY_CONTACT` var, now the placeholder "PLACEHOLDER: the owner has not given the
+    contact address yet". Browser test `e2e/privacyNotice.spec.ts` (the five parts by heading,
+    from signup, settings and a direct link; screen `privacy-notice` at three sizes, axe). The
+    guest note of the settings moved to `GuestSignUpNote` (function length). No protocol change.
+  - Differs: nothing from the phase file.
+  - For later items: item 10 replaces the placeholder in `wrangler.jsonc` and the expected text in
+    `e2e/privacyNotice.spec.ts`. Screenshots of signup and account settings now show the link.
   - A page open to everyone with the parts of A12.1 as headings, the contact address from a
     `wrangler.jsonc` var (`PRIVACY_CONTACT`, served to the client; until the owner gives it, a
     clearly marked placeholder value in `vars`, replaced in item 10), and a way back. Linked from
@@ -359,6 +373,9 @@ These 15 scenarios are added to `harness/required.yaml` in this phase, by file a
 
 - [ ] First finisher run: the 15 scenarios onto `harness/required.yaml`; full check, harness,
   browser tests, budgets.
+  - Note from item 6b: the `TextInput` field error colour (#ef4444 on the modal background) fails
+    axe contrast. It predates this phase; screenshots with axe are taken without a field error
+    showing. Decide whether to fix it here or record it as a known gap.
 - [ ] Phase review.
 - [ ] Second finisher run.
 - [ ] Release.
