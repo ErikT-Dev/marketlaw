@@ -17,8 +17,8 @@ export async function registerGuest(
       nameKeyOf(account.name),
       account.passwordHash,
       account.email,
-      account.email === null ? null : emailKeyOf(account.email),
-      account.email === null ? null : account.now,
+      emailKeyOf(account.email),
+      account.now,
       playerId,
     )
     .run();

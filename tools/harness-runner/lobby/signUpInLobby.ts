@@ -18,7 +18,7 @@ function registrationOf(session: LobbySession, step: Readonly<Record<string, unk
   const email = textOf(step["email"]);
   const registration: LobbyRegistration = {
     password: textOf(step["password"]),
-    email: accountConfirmingEmail(session, email) !== null ? null : email,
+    email,
     isEmailConfirmed: false,
     pendingEmail: null,
     emailEnteredMs: session.now,

@@ -26,8 +26,8 @@ export async function insertRegisteredUser(
         now,
         account.passwordHash,
         email,
-        email === null ? null : emailKeyOf(email),
-        email === null ? null : now,
+        emailKeyOf(email),
+        now,
       ),
     db
       .prepare(

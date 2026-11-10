@@ -39,13 +39,13 @@ type Signup = {
   readonly body: SignupRequest;
   readonly guest: LogoutAccount | null;
   readonly name: string;
-  readonly email: string | null;
   readonly now: EpochMs;
 };
 
 async function signedUp(env: Env, signup: Signup) {
-  const { body, guest, name, email, now } = signup;
-  const account = { name, passwordHash: await hashPassword(body.password), email, now };
+  const { body, guest, name, now } = signup;
+  const passwordHash = await hashPassword(body.password);
+  const account = { name, passwordHash, email: body.email, now };
   if (guest === null || body.token === undefined) {
     return insertRegisteredUser(env.DB, account);
   }
@@ -79,11 +79,7 @@ export async function signupRoute(request: Request, env: Env): Promise<Response>
   return signUpAndSendEmail(request, env, { body, guest, name, now: nowMs() });
 }
 
-async function signUpAndSendEmail(
-  request: Request,
-  env: Env,
-  signup: Omit<Signup, "email">,
-): Promise<Response> {
+async function signUpAndSendEmail(request: Request, env: Env, signup: Signup): Promise<Response> {
   const { body, guest, name, now } = signup;
   const reservation = await reserveAccountEmail(env, {
     playerId: guest?.identity.playerId ?? null,
@@ -93,8 +89,8 @@ async function signUpAndSendEmail(
   if (!reservation.isOk) {
     return json({ isOk: false, reason: reservation.reason }, 429);
   }
-  const email = await unclaimedEmailOf(env.DB, body.email);
-  const account = await signedUp(env, { ...signup, email });
+  const isUnclaimed = (await unclaimedEmailOf(env.DB, body.email)) !== null;
+  const account = await signedUp(env, signup);
   if (account === null) {
     await returnAccountEmail(env, reservation.countedKeys, now);
     return json({ isOk: false, reason: "username_taken" }, 409);
@@ -102,7 +98,7 @@ async function signUpAndSendEmail(
   const { playerId } = account.identity;
   await sendAccountEmail(env, {
     playerId,
-    kind: email === null ? "already_in_use" : "confirm",
+    kind: isUnclaimed ? "confirm" : "already_in_use",
     to: body.email,
     siteUrl: new URL(request.url).origin,
     now,
