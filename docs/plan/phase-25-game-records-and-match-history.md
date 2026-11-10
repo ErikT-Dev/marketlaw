@@ -203,6 +203,12 @@ These 10 scenarios are added to `harness/required.yaml` in this phase, by file a
 - [ ] 4. **Match history and game record pages** (S13.1, S13.2, S13.4, S10.1, S12.7; Q121;
   design boards "Records: match history", "Records: game record", "Records: match history
   empty", "Records: another player's match history"). **Large.**
+  - Stopped (2026-11-10): done so far: reading only, no code. Next: start the item from the
+    top. Findings for the builder: `MatchHistoryEntry` has no `kind`, but S13.1 shows casual or
+    ranked per game (add it in `historyEntryOf.ts`); `StoredSession` and `AccountBinding` carry
+    no player id, which **My match history** and "(you)" need (every account answer and the
+    session check carry `playerId`; older stored sessions need a default of none until the
+    check). Uncommitted changes: no (only this note).
   - Pages over the current screen by link (`#history/<player id>`, `#record/<game id>`), lazy
     loaded, with **Back**: reuse the privacy notice's pattern (`src/client/screens/privacy/`,
     `usePrivacyNoticeOpen.ts`, `keepPrivacyNoticeInsideApp.ts`, `LazyPrivacyNoticePage.tsx`,
