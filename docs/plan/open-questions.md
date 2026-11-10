@@ -2626,3 +2626,21 @@ file.
   screen keeps the game and its clock as they are, as the rules viewer will (C1.3); 50 at a time
   keeps a read small for a player with many games.
 - **Implemented:** phase 25, items 3 to 5.
+
+## Q122. When does the scenario see an unused guest deleted (A1.1, A1.14)?
+
+- **Phase:** 25, item 3 (A1.1, A1.14; Q55, Q112; scenario `accounts` "a guest account not used for
+  90 days is deleted and shows as Deleted player").
+- **Question:** the scenario waits exactly 90 days after the guest's noted last use and expects
+  the account gone. Q112 deletes a guest when its noted last use is more than 91 days old, since
+  the last use is noted at most once a day (A1.14), so at exactly 90 days it is still there. A1.1
+  said only "not used for 90 days".
+- **Options:** delete at 90 days of noted use, which can remove a guest used less than 90 days
+  ago; or keep Q112 and let the scenario wait past 91 days.
+- **Solution:** Q112 stays. A1.1 now says the guest is deleted up to two days after 90 days
+  without use (the noted last use, and the daily run), never sooner. The scenario waits 91 days
+  and 1 second; the lobby driver deletes guests whose login has expired (`loginStateOf`) after a
+  wait, as the daily run does.
+- **Why:** a guest must never lose its account before 90 days without use; the scenario's point
+  is that a deleted guest shows as "Deleted player".
+- **Implemented:** phase 25, item 3.

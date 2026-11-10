@@ -26,7 +26,8 @@ None.
   - A **guest user** is any account that has not completed the signup flow. It has a username
     but no password, and only works in the browser where it was made. A guest account that has
     not been used for 90 days is deleted, its username becomes free, and its game records show
-    "Deleted player".
+    "Deleted player". Its last use is noted at most once a day (A1.14) and deleting runs once a
+    day, so it is deleted up to two days later than 90 days without use, never sooner.
   - A **registered user** has completed the signup flow, and can log in from any browser.
 - **A1.2** **Joining without being logged in:** a player who is not logged in is asked for a
   username when they join a game. The field is prefilled with a randomly generated descriptive
