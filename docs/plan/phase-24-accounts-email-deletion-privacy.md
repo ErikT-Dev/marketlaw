@@ -509,3 +509,72 @@ each helper's conversation size at its end.
 | Fixer, group A (R1, R2, R6) | 9 | 115k | 43 | done |
 | Fixer, group B (R3, R4, R5, R7) | 14 | 110k | 51 | done (ticks added by the coordinator) |
 | Finisher, second run | 43 | 119k | 80 | done |
+
+## Report
+
+**Built.** Registered users now get emails, sent through Brevo from `mlaw.support@gmail.com`
+(D30, Q104). Signing up sends a confirmation link and shows "Check your email" with **Send it
+again**; an address already confirmed by another account gets an "already in use" email
+instead, and the screen looks exactly the same (A1.3, Q116). Opening a confirmation link
+confirms the address; the first account to confirm an address keeps it, and it is removed from
+every other account (dots and `googlemail.com` do not make a different gmail address, A1.11).
+**Forgot your password?** in Log in sends a reset link to a confirmed address only; the link
+sets a new password, ends every other login of the account and logs this browser in. Links work
+24 hours (confirmation) or 1 hour (reset), once, and only the newest one. At most 3 emails a day
+go to one account and to one address, and 90 a day on the whole site; a failed send does not
+count. Account settings show the address, whether it is confirmed, a pending change (kept until
+the new address is confirmed), a removed address with **Add an email address**, **Change email
+address** and **Delete account**. Deleting needs the password, removes the email, password and
+logins, frees the username, and during a game counts as leaving it (M6.10). Guests unused for 90
+days are removed by the daily scheduled job. The privacy notice opens at `#privacy`, linked from
+Sign up and Account settings, with the contact address `mlaw.support@gmail.com`. No email
+address appears in any log line or in any message to another player (tested). Two D1
+migrations (0010, 0011). `PROTOCOL_VERSION` is 14, so a tab with the old client is told to
+reload.
+
+**What to try.** On the live site:
+1. Sign up with an email address you can read. "Check your email" appears. Find the email in the
+   inbox or the spam folder (it comes from MarketLaw, `mlaw.support@gmail.com`, with a Brevo
+   footer) and open its link: "Email confirmed".
+2. Log out, press **Log in**, then **Forgot your password?**, enter the address and pass the
+   human check. Open the reset email's link, set a new password: you are logged in.
+3. In **Account settings**, change the email address: the old one stays until you open the link
+   sent to the new one.
+4. Open the privacy notice from Sign up or Account settings.
+5. Delete a test account in **Account settings** (password needed); during a game it warns that
+   you leave the game.
+
+**Checks.** The second finisher run: `npm run check` green (650 tests), `npm run harness` green
+(458 scenarios, 383 pass, 0 fail, 75 not yet, none required; 1,000 simulated games), B11 9 of
+10 ms, B14 157.5 of 300 kB, B18 3,846 of 5,000 rows. Two browser tests timed out locally under
+two workers and passed alone, the known local load problem; GitHub's branch check judges the
+full suite before the merge. The phase's 15 scenarios are required, plus 1 from the review (16
+in all).
+
+**Differences from the phase file.** The provider is Brevo, not Resend (owner's choice, no
+domain needed, $0; Q104). A deleted account's row is removed, not kept as a marker; phase 25
+shows "Deleted player" for records without an account (Q111). The test outbox stores emails
+only where `TEST_ROOM_SECRET` is set (Q108). The email screens and settings differ from the
+boards as `screens.md` S17 lists (Q113, Q114). B11 now keeps each room message's fastest of
+three scenario runs, since a single wall-clock measure failed under load (Q118).
+
+**Decisions.** Q104: Brevo over plain `fetch`, 90 emails a day. Q105: the privacy notice (A12.1,
+S12.8). Q106: email links, resending, limits and failed sends. Q107: deleting an account. Q108:
+how emails are sent, counted and tested. Q109: opening confirmation and reset links. Q110:
+changing and adding an address. Q111: what deleting removes and how it leaves rooms. Q112:
+removing unused guests. Q113: the email screens. Q114: the email and delete parts of settings.
+Q115: deletion does not count wrong passwords. Q116: signing up with an address confirmed
+elsewhere keeps it unconfirmed on the account. Q117: changing to the own confirmed address
+changes nothing. Q118: how B11 is measured reliably.
+
+**Review findings and what happened to each.**
+1. R1 (blocker): the daily email limits were not atomic: fixed, the counts are taken in one D1
+   batch before sending and given back on failure; route test with 5 parallel requests.
+2. R2: a password reset did not close the account's room sockets: fixed, with a route test.
+3. R3: the log check's email regex had lost its backslashes: fixed and checked.
+4. R4: signing up with an address confirmed elsewhere showed no address in settings: fixed
+   (Q116), scenario updated.
+5. R5: seven tokens were missing from `BOARD_VALUES.ts`: fixed.
+6. R6: deletion allows unlimited password guesses with a login token: accepted (Q115).
+7. R7: changing to the own confirmed address left a pending change: fixed, it changes nothing
+   (Q117), with a new required scenario.
