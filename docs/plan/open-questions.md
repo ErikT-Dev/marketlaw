@@ -1741,6 +1741,15 @@ file.
   a second hash and a write to every such login); they are only the accounts made since the
   phase 23 deploy, and under D1 the data may be wiped if they become a problem. Raising the
   count later works the same way: new hashes take the new count, old ones keep theirs.
+- **Measured live at 10,000 iterations (2026-11-10):** the live Worker serves version
+  `1ef35734` (`wrangler deployments status` 100%, and every tail event names it; the 16 events
+  of 2026-11-09 that named `4df00578` were not counted). `wrangler tail` caught all 100 calls of
+  `POST /api/logins` with unknown usernames (one 10,000-iteration hash against the dummy value
+  each, all `400 login_failed`, all ended `ok`), sent one every 1.5 s: CPU time per request
+  2-9 ms, median 5 ms, 99th percentile 8 ms, highest 9 ms. Within B11's 10 ms. By Q102's method
+  (the highest call over the iteration count, the other work included) that is 900 ns per
+  iteration, so `LIVE_PASSWORD_HASH_CPU` is now 900 ns: B11's hash half is 9 ms of 10, and a
+  count above about 11,000 fails it.
 
 ## Q91. Failed logins: what counts, and when does the human check end (A1.13)?
 
@@ -2047,6 +2056,11 @@ file.
   harness text is unchanged: `budgets.yaml` B11 already counts the iteration count times the
   live cost per iteration, and names neither figure. The releaser measures the live login CPU
   again after the next deploy and records it in Q90.
+- **Measured at 10,000 (2026-11-10):** the highest live login took 9 ms (Q90), 900 ns per
+  iteration by this method, above 700 ns, so `LIVE_PASSWORD_HASH_CPU` is 900 ns and B11's
+  password-hash half is 9 ms of 10. The figure is higher than at 20,000 because the about 1 ms
+  of other work is a larger share of a shorter request; the method keeps counting it, which errs
+  on the safe side.
 
 ## Q103. Can a freed username join a room where the old holder still shows it (A2.4, M1.6)?
 

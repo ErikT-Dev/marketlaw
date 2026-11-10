@@ -1,6 +1,6 @@
 # Phase 23: Accounts: signup and login
 
-Status: in progress
+Status: done
 Milestone: 5 Accounts and ranking
 
 ## Goal
@@ -555,7 +555,7 @@ These 20 scenarios are added to `harness/required.yaml` in this phase, by file a
     passed when rerun alone with one worker, so both were the local server's load; GitHub
     judges the full suite. No server left on port 8787. `docs/enforcement.md`: the room
     logout route test under Identity.
-- [ ] Release.
+- [x] Release.
   - Report pushed (`64f0906`). The first branch check (run 42703156794) failed in `check`: the
     three route tests could not start the Worker on GitHub, because `dist/client` (the assets
     folder in `wrangler.jsonc`) is built only later in `npm run check`; locally it always
@@ -586,7 +586,30 @@ These 20 scenarios are added to `harness/required.yaml` in this phase, by file a
     cost of 20,000 for an attacker with a leaked database) and Q102. Hashes stored at 20,000
     keep their count and still verify (about 14 ms each); not rehashed, data may be wiped (D1).
     No spec or harness change: neither names the count. `npm run check` green.
-  - [ ] Release again: deploy, measure live login CPU (`wrangler tail`), record it in Q90.
+  - [x] Release again: deploy, measure live login CPU (`wrangler tail`), record it in Q90.
+    - Branch check run 42709737136 (`fd43713`) green after one rerun: a `dailyLimits.spec.ts`
+      axe contrast failure passed on the rerun (flaky check).
+    - Merged `fd43713` (`588dade`, same tree as the tested commit, so Deploy skipped the tests);
+      Deploy run 42713291364 succeeded, Current Version ID `1ef35734` (`wrangler deployments
+      status`: 100%). Live bundle has the phase 23 texts; `/api/account`, `/api/logout` and
+      `/api/session` with a forged token answer "not logged in", test-only routes 404.
+    - Live CPU not measured yet: 100 logins with unknown usernames (all `400 login_failed`)
+      were sent at 22:38 UTC, but `wrangler tail` caught only 16, and every tail event, also
+      from a fresh tail and fresh requests up to 22:47 UTC (10 minutes after the deploy), names
+      the old version `4df00578` (20,000 iterations), not `1ef35734`. The 16: 5-8 ms, median 7,
+      which looks like 20,000 iterations. So the figures do not measure 10,000 and are not
+      recorded in Q90. Next: confirm the live Worker serves `1ef35734`, then measure again;
+      another batch of about 100 logins needs the owner's approval (the approval covered one).
+    - The owner chose to pause here (2026-11-10) and approved one more batch of about 100
+      logins with unknown usernames, sent on their next "continue" once the live Worker is
+      confirmed to serve `1ef35734`. Branch commits `8a7367e`, `e1319ae` and later are docs
+      only and go to master with the done commit.
+    - Measured (2026-11-10, releaser): the live Worker serves `1ef35734` (`wrangler deployments
+      status` 100%, `versions list`, and every tail event's scriptVersion). The approved batch
+      of 100 logins with unknown usernames, one every 1.5 s: all `400 login_failed`, tail caught
+      all 100, all `1ef35734`: CPU 2-9 ms, median 5, 99th percentile 8, highest 9. Within B11's
+      10 ms (Q90). By Q102's method that is 900 ns per iteration, so `LIVE_PASSWORD_HASH_CPU`
+      is 900 ns (B11's hash half 9 of 10; Q102). No further batch sent.
 
 ### Helper log
 
@@ -613,6 +636,8 @@ are each helper's conversation size at its end.
 | Finisher, second run | 39 | 91k | 38 | done |
 | Releaser | 46 | 131k | 80 | partial (merged and deployed; live hash CPU over B11) |
 | Fixer, live hash CPU (10,000 iterations) | 4 | 82k | 16 | done |
+| Releaser, second time | 23 | 79k | 26 | partial (branch check green after a rerun) |
+| Releaser, third time | 13 | 88k | 41 | partial (merged and deployed; live CPU not yet measured) |
 
 ## Report
 
@@ -653,7 +678,9 @@ B18 3,066 of 5,000 rows. Two browser tests timed out locally under two workers a
 the known local load problem; GitHub's branch check judged the full suite before the merge. The
 phase's 20 scenarios are required, plus 3 from the review (23 in all). After the first release
 the live login CPU was over B11, so the count went from 20,000 to 10,000 iterations; B11 now
-counts the hash at the live 700 ns per iteration (7 ms), and `npm run check` is green.
+counts the hash at the live cost per iteration, and `npm run check` is green. Measured live at
+10,000 iterations: 100 logins 2-9 ms, median 5, 99th percentile 8, within B11; by Q102's method
+that is 900 ns per iteration, so B11's hash half is 9 ms of 10.
 
 **Differences from the phase file.** Failed logins are counted for unknown names and addresses
 too, in their own table keyed by a hash, so the human check cannot tell whether an account exists
