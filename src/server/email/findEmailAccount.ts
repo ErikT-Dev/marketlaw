@@ -31,5 +31,6 @@ export async function findEmailAccount(
     playerId: id,
     isGuest: kind === "guest",
     unconfirmedEmail: isConfirmed === 1 ? null : email,
+    confirmedEmail: isConfirmed === 1 ? email : null,
   };
 }

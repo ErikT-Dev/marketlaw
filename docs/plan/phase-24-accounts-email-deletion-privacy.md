@@ -432,14 +432,23 @@ These 15 scenarios are added to `harness/required.yaml` in this phase, by file a
       after the new password is saved; the logins are already gone from D1, so a room that does
       not answer does not fail the reset. Route test "resetting the password in a room" in
       `roomLogout.test.ts` (both logins' sockets closed, the seat kept and shown away).
-  - [ ] R3. The log check's email regex in `tools/route-tests/accountRoutes.test.ts:23` lost its
-    backslashes; use `/[^s@"'<>]+@[^s@"'<>]+.[a-z]{2,}/iu`. Fixer group B.
+  - [x] R3. The log check's email regex in `tools/route-tests/accountRoutes.test.ts:23` lost its
+    backslashes (whitespace class and escaped dot). Fixer group B.
+    - Fixed: the regex has its whitespace class and escaped dot again; checked that it now
+      matches `james@example.com` (the old one did not), and the log test still passes.
   - [ ] R4. After signing up with an address confirmed elsewhere, Account settings show no
     address and Add an email address, unlike a free address (A1.3 "looks exactly the same").
     Decide, record in open-questions.md, and implement. Fixer group B.
+    - Fixed (Q116): signup keeps the entered address on the account as not confirmed whether or
+      not another account has confirmed it, so settings show it with **Send it again**, which
+      sends "already in use" again through `reserveAccountEmail` while the other account holds
+      it. A1.3 says so; scenario `accounts` "signing up with an address already confirmed
+      elsewhere looks the same" now expects the address, not confirmed (`HARNESS:` commit).
+      Route test `tools/route-tests/ownAndHeldEmailRoutes.test.ts`.
   - [ ] R5. Seven tokens in `src/client/tokens.css` are missing from
     `tools/design-export/BOARD_VALUES.ts` (email-pending, -pending-text, -removed,
     -removed-text, account-link, guest-log-out, guest-note); add them. Fixer group B.
+    - Fixed: the seven tokens are in `BOARD_VALUES.ts` with their `tokens.css` values.
   - [x] R6 (suggestion). Account deletion allows unlimited password guesses with a session
     token; count failures as logins do, or record that it is accepted. Fixer group A.
     - Answered: accepted, recorded as Q115 (the login token already opens everything the
@@ -447,6 +456,14 @@ These 15 scenarios are added to `harness/required.yaml` in this phase, by file a
   - [ ] R7 (suggestion). Changing the email to the account's own confirmed address sends
     "already in use" and leaves a pending change that never confirms; treat it as no change or
     refuse it, and record the decision. Fixer group B.
+    - Fixed (Q117): no change. After the login, address and human check, an address with the
+      same email key as the account's confirmed one sends and counts nothing, drops a pending
+      change and its link, and answers OK. A1.10 says so; new required scenario `accounts`
+      "changing the email address to the confirmed one already on the account changes nothing"
+      (458 scenarios now); route test in `ownAndHeldEmailRoutes.test.ts`.
+    - For the second finisher run: one `npm run check` failed B11 (computing time, measured 12
+      of 10 ms) while nothing in the room code had changed; the next run passed. The measure is
+      wall-clock time under load.
 - [ ] Second finisher run.
 - [ ] Release.
 

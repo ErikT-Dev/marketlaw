@@ -1,6 +1,8 @@
 import type { EmailResponse } from "../../shared/api/EmailResponse";
 import { EmailChangeRequest } from "../../shared/api/EmailChangeRequest";
+import { emailKeyOf } from "../accounts/emailKeyOf";
 import { emailProblem } from "../accounts/emailProblem";
+import { dropPendingEmail } from "../email/dropPendingEmail";
 import { reserveAccountEmail } from "../email/reserveAccountEmail";
 import { savePendingEmail } from "../email/savePendingEmail";
 import { sendAccountEmail } from "../email/sendAccountEmail";
@@ -31,7 +33,11 @@ export async function emailChangeRoute(request: Request, env: Env): Promise<Resp
   if (!(await verifyHumanCheck(env, request, body.humanCheck))) {
     return json({ isOk: false, reason: "human_check_failed" }, 400);
   }
-  const { playerId } = account;
+  const { playerId, confirmedEmail } = account;
+  if (confirmedEmail !== null && emailKeyOf(confirmedEmail) === emailKeyOf(body.email)) {
+    await dropPendingEmail(env.DB, playerId);
+    return json({ isOk: true }, 200);
+  }
   const reservation = await reserveAccountEmail(env, { playerId, address: body.email, now });
   if (!reservation.isOk) {
     return json({ isOk: false, reason: reservation.reason }, 429);
