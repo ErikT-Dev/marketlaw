@@ -1,51 +1,14 @@
-import { expect, test, type APIRequestContext, type Page } from "@playwright/test";
-import * as v from "valibot";
-import { TEST_ROOM_SECRET_HEADER } from "../src/shared/api/TEST_ROOM_SECRET_HEADER";
-import { TestOutboxResponse } from "../src/shared/api/TestOutboxResponse";
-import { readLocalTestRoomSecret } from "../tools/test-room/readLocalTestRoomSecret";
+import { expect, test } from "@playwright/test";
 import { expectScreenFits } from "./expectScreenFits";
 import { HUMAN_CHECK_MS } from "./HUMAN_CHECK_MS";
+import { newestLinkSentTo } from "./newestLinkSentTo";
+import { openLink } from "./openLink";
 import { openLobby } from "./openLobby";
+import { signUpInLobby } from "./signUpInLobby";
 import { SIGNING_IN_TEST_MS } from "./SIGNING_IN_TEST_MS";
 
 const PASSWORD = "harbour lights 42";
 const NEW_PASSWORD = "quiet tides 77";
-
-async function newestLinkSentTo(
-  request: APIRequestContext,
-  to: string,
-  fragment: string,
-): Promise<string> {
-  const response = await request.post("/api/test-outbox", {
-    headers: { [TEST_ROOM_SECRET_HEADER]: readLocalTestRoomSecret() },
-    data: { to },
-  });
-  const { emails } = v.parse(TestOutboxResponse, await response.json());
-  const pattern = new RegExp(`/#${fragment}=[\\w-]+`);
-  const link = emails.flatMap((email) => pattern.exec(email.text) ?? [])[0];
-  if (link === undefined) {
-    throw new Error(`no ${fragment} link was sent`);
-  }
-  return link;
-}
-
-async function openLink(page: Page, link: string): Promise<void> {
-  await page.goto("about:blank");
-  await page.goto(link);
-}
-
-async function signUp(page: Page, name: string, email: string): Promise<void> {
-  await page.getByRole("button", { name: "Sign up" }).click();
-  const dialog = page.getByRole("dialog", { name: "Sign up" });
-  await expect(dialog.getByLabel("Username")).not.toHaveValue("");
-  await dialog.getByLabel("Username").fill(name);
-  await dialog.getByLabel("Email address").fill(email);
-  await dialog.getByLabel("Password").fill(PASSWORD);
-  const send = dialog.getByRole("button", { name: "Sign up" });
-  await expect(send).toBeEnabled({ timeout: HUMAN_CHECK_MS });
-  await send.click();
-  await expect(dialog).toBeHidden({ timeout: HUMAN_CHECK_MS });
-}
 
 test("a player confirms the email address from its link and sets a new password", async ({
   browser,
@@ -56,7 +19,7 @@ test("a player confirms the email address from its link and sets a new password"
   const size = viewport ?? { width: 1920, height: 1080 };
   const player = await openLobby(browser, "Prompt Mill Warden", size);
   const email = `${player.name.replaceAll(" ", ".").toLowerCase()}@example.com`;
-  await signUp(player.page, player.name, email);
+  await signUpInLobby(player.page, player.name, email, PASSWORD);
   const checkEmail = player.page.getByRole("dialog", { name: "Check your email" });
   await expect(checkEmail).toContainText(`We sent a link to ${email}.`);
   await checkEmail.getByRole("button", { name: "Send it again" }).click();

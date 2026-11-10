@@ -1,3 +1,4 @@
+import type { EmailChangeRequest } from "../../shared/api/EmailChangeRequest";
 import type { NewPasswordRequest } from "../../shared/api/NewPasswordRequest";
 import type { ResetEmailRequest } from "../../shared/api/ResetEmailRequest";
 import type { ReasonCode } from "../../shared/ReasonCode";
@@ -44,6 +45,31 @@ export abstract class EmailAccountStore extends AccountSessionStore {
     const problem = await this.sendConfirmationAgain();
     if (problem === null) {
       this.showEmailDialog({ kind: "check_email", address });
+    }
+    return problem;
+  };
+
+  readonly changeEmail = async (
+    change: Omit<EmailChangeRequest, "token">,
+  ): Promise<ReasonCode | null> => {
+    const session = this.state.session;
+    if (session === null) {
+      return "invalid_token";
+    }
+    return requestEmailAction("/api/email-changes", { ...change, token: session.token });
+  };
+
+  readonly deleteAccount = async (password: string): Promise<ReasonCode | null> => {
+    const session = this.state.session;
+    if (session === null) {
+      return "invalid_token";
+    }
+    const problem = await requestEmailAction("/api/account-deletions", {
+      token: session.token,
+      password,
+    });
+    if (problem === null && this.state.session?.token === session.token) {
+      this.leaveRoom(null, null);
     }
     return problem;
   };

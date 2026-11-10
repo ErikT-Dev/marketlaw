@@ -1,21 +1,20 @@
 import { useState } from "react";
-import type { AccountResponse } from "../../../shared/api/AccountResponse";
+import type { UsernameWait } from "../../../shared/api/UsernameWait";
 import type { ReasonCode } from "../../../shared/ReasonCode";
 import { Button } from "../../components/Button";
 import { TextInput } from "../../components/TextInput";
 import { REJECTION_MESSAGES } from "../game/REJECTION_MESSAGES";
 import styles from "./Account.module.css";
 import { usernameHintOf } from "./usernameHintOf";
-import { useUsernameWait } from "./useUsernameWait";
 
 type Props = {
   readonly name: string;
   readonly onChangeUsername: (username: string) => Promise<ReasonCode | null>;
-  readonly onLoadAccount: () => Promise<AccountResponse | null>;
+  readonly wait: UsernameWait | null;
+  readonly onChanged: () => Promise<void>;
 };
 
-export function UsernameSetting({ name, onChangeUsername, onLoadAccount }: Props) {
-  const { wait, reload } = useUsernameWait(onLoadAccount);
+export function UsernameSetting({ name, wait, onChangeUsername, onChanged }: Props) {
   const [username, setUsername] = useState(name);
   const [problem, setProblem] = useState<ReasonCode | null>(null);
   const [isSending, setIsSending] = useState(false);
@@ -25,7 +24,7 @@ export function UsernameSetting({ name, onChangeUsername, onLoadAccount }: Props
     const answer = await onChangeUsername(username.trim());
     setProblem(answer);
     setIsSending(false);
-    await reload();
+    await onChanged();
   }
   return (
     <form

@@ -2,11 +2,9 @@ import { useState } from "react";
 import type { ResetEmailRequest } from "../../../shared/api/ResetEmailRequest";
 import type { ReasonCode } from "../../../shared/ReasonCode";
 import { Modal } from "../../components/Modal";
-import { TextInput } from "../../components/TextInput";
-import { DialogButtons } from "../lobby/DialogButtons";
-import { HumanCheck } from "../lobby/HumanCheck";
 import { useSubmitWithHumanCheck } from "../lobby/useSubmitWithHumanCheck";
 import styles from "./Email.module.css";
+import { EmailLinkFields } from "./EmailLinkFields";
 import { ResetLinkSentDialog } from "./ResetLinkSentDialog";
 
 type Props = {
@@ -17,8 +15,7 @@ type Props = {
 export function ForgotPasswordDialog({ onSend, onClose }: Props) {
   const [email, setEmail] = useState("");
   const [sentTo, setSentTo] = useState<string | null>(null);
-  const { containerRef, humanCheckToken, isUnavailable, error, isSending, submit } =
-    useSubmitWithHumanCheck();
+  const check = useSubmitWithHumanCheck();
   if (sentTo !== null) {
     return <ResetLinkSentDialog address={sentTo} onClose={onClose} />;
   }
@@ -30,7 +27,7 @@ export function ForgotPasswordDialog({ onSend, onClose }: Props) {
         onSubmit={(event) => {
           event.preventDefault();
           const address = email.trim();
-          void submit(async (humanCheck) => {
+          void check.submit(async (humanCheck) => {
             const problem = await onSend({ email: address, humanCheck });
             if (problem === null) {
               setSentTo(address);
@@ -43,20 +40,11 @@ export function ForgotPasswordDialog({ onSend, onClose }: Props) {
           Enter the email address of your account. If it is confirmed, we send you a link to set a
           new password.
         </p>
-        <TextInput
+        <EmailLinkFields
           label="Email address"
-          type="email"
-          value={email}
-          maxLength={254}
-          autoComplete="email"
-          onChange={setEmail}
-          error={error}
-        />
-        <HumanCheck containerRef={containerRef} isUnavailable={isUnavailable} />
-        <DialogButtons
-          submitLabel="Send link"
-          sendingLabel={isSending ? "Sending" : null}
-          isDisabled={humanCheckToken === "" || email.trim() === ""}
+          email={email}
+          onChangeEmail={setEmail}
+          check={check}
           onCancel={onClose}
         />
       </form>

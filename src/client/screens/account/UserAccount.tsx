@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { SignUpDialog } from "../lobby/SignUpDialog";
+import { AccountChangeDialog } from "./AccountChangeDialog";
 import type { AccountBinding } from "./AccountBinding";
 import { AccountSettingsDialog } from "./AccountSettingsDialog";
 import { GuestLogOutWarning } from "./GuestLogOutWarning";
@@ -18,6 +19,9 @@ export function UserAccount({ account }: Props) {
   function openSignUp() {
     setDialog("sign_up");
   }
+  function openSettings() {
+    setDialog("settings");
+  }
   function logOut() {
     if (account.isGuest) {
       setDialog("guest_log_out_warning");
@@ -31,19 +35,19 @@ export function UserAccount({ account }: Props) {
         name={account.name}
         isGuest={account.isGuest}
         onSignUp={openSignUp}
-        onOpenSettings={() => {
-          setDialog("settings");
-        }}
+        onOpenSettings={openSettings}
         onLogOut={logOut}
       />
       {dialog === "settings" ? (
         <AccountSettingsDialog
           account={account}
           onSignUp={openSignUp}
+          onOpenDialog={setDialog}
           onLogOut={logOut}
           onClose={close}
         />
       ) : null}
+      <AccountChangeDialog dialog={dialog} account={account} onBack={openSettings} />
       {dialog === "guest_log_out_warning" ? (
         <GuestLogOutWarning onSignUp={openSignUp} onLogOut={account.onLogOut} onCancel={close} />
       ) : null}

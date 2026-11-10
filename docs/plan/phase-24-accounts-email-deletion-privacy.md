@@ -300,9 +300,26 @@ These 15 scenarios are added to `harness/required.yaml` in this phase, by file a
     browser in. Browser tests read the link from the test outbox (item 1). Screenshots next to
     the boards, at every supported size; axe; 24 px targets.
 
-- [ ] 6b. **Account settings: email and deleting** (S12.5, S12.6; design boards "Account:
+- [x] 6b. **Account settings: email and deleting** (S12.5, S12.6; design boards "Account:
   settings, email removed", "Account: delete account", "Account: delete account during a
   game"). **Large.**
+  - Done (2026-11-10), Q114 has the details: `screens/account/` `EmailSetting` (with
+    `EmailAddressLine`, `EmailNote`), `ChangeEmailDialog` (change and add, human check),
+    `DeleteAccountDialog` (`DeleteAccountWarning`; during a game "Leave the game and delete"),
+    `AccountChangeDialog`; settings load `/api/account` once (`useAccountDetails`, replacing
+    `useUsernameWait`). Store: `EmailAccountStore.changeEmail` and `deleteAccount` (forgets the
+    login on success). `AccountBinding` gained `isInGame` (game running without a result),
+    `onChangeEmail`, `onSendConfirmationAgain`, `onDeleteAccount`. Unit tests
+    `screens/account/accountEmailSettings.test.tsx`; browser test `e2e/accountSettings.spec.ts`
+    (screens `change-email`, `account-settings-email`, `account-settings-email-removed`,
+    `delete-account`, `delete-account-during-a-game`); e2e helpers `signUpInLobby`,
+    `newestLinkSentTo`, `openLink` taken out of `emailLinks.spec.ts`. No protocol change.
+  - Differs: the removed address is not named and the address is text, not a field
+    (`screens.md` S17, Q114). Guests get no **Delete account** (A1.15).
+  - For later items: item 7 links the privacy notice from `AccountSettingsDialog` (and signup).
+    The `TextInput` error colour (#ef4444 on the modal) fails axe contrast, so screenshots with
+    axe must be taken without a field error showing (the delete dialog clears its error on
+    typing).
   - Settings show the address with its confirmation, a pending change, **Change email address**
     (dialog with the human check), **Send it again** for an unconfirmed address, the removed
     address explained with **Add an email address**; **Delete account** asks for the password,
