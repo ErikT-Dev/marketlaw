@@ -464,7 +464,26 @@ These 15 scenarios are added to `harness/required.yaml` in this phase, by file a
     - For the second finisher run: one `npm run check` failed B11 (computing time, measured 12
       of 10 ms) while nothing in the room code had changed; the next run passed. The measure is
       wall-clock time under load.
-- [ ] Second finisher run.
+- [x] Second finisher run.
+  - Done (2026-11-10). B11's failure was the measurement, not the code (Q118): the room
+    scenarios send 55 messages, so the 99th percentile was the slowest one, timed by the wall
+    clock. Alone the slowest took 1.2 to 2.6 ms; beside the full test suite single messages took
+    up to 6.8 ms while the next slowest stayed under 2 ms. The harness now runs the room
+    scenarios three times and keeps each message's fastest time
+    (`tools/harness-runner/buildSteadyScenarioRuns.ts`, unit tests); limit, percentile and
+    required list unchanged; `budgets.yaml` says how it is measured (`HARNESS:` commit);
+    proposed-rules.md's B11 entry and `docs/enforcement.md` updated.
+  - `npm run check` green (114 test files, 650 tests; B14 157.5 kB of 300; B11 room messages
+    2 ms). `npm run harness` green: 458 scenarios, 383 pass, 0 fail, 75 not yet (none
+    required); 1,000 simulated games; every budget passes, B11 9 (room messages 1, password
+    hash 9), B18 3,846 of 5,000.
+  - Browser tests (`--workers=2`, five parts, after `npm run db:migrate:local`, one dev server):
+    shard 1/2 75 passed, 1 failed; shard 2/2 70 passed, 1 failed; two, three and four players
+    3 passed each. Rerun alone with one worker, both passed at all three sizes (6 of 6): the
+    accounts signup test (Sign up dialog not shown within 5 s, the shard's first test) and the
+    three-player abandon vote at 2560 (game screen not shown within 5 s); load. Dev server
+    stopped by its process, nothing on 8787. Every screenshot restored: nothing under
+    `src/client` or `e2e` changed since the last screenshot commit (115617f).
 - [ ] Release.
 
 ### Helper log
