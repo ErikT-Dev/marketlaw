@@ -185,4 +185,24 @@ describe("the account routes refuse hostile requests", () => {
       expect(await post("/api/password-resets", confirmAsReset)).toEqual(LINK_EXPIRED);
     });
   });
+
+  it("refuses deleting an account with a malformed body, a forged login, a guest login or a wrong password", async () => {
+    await expectNothingChangedBy(async () => {
+      expect(await post("/api/account-deletions", MALFORMED)).toEqual(MALFORMED_MESSAGE);
+      const forged = { token: UNKNOWN_TOKEN, password: PASSWORD };
+      expect(await post("/api/account-deletions", forged)).toEqual(INVALID_TOKEN);
+      const expired = { token: tokens.expiredRegistered, password: PASSWORD };
+      expect(await post("/api/account-deletions", expired)).toEqual(INVALID_TOKEN);
+      const asGuest = { token: tokens.guest, password: PASSWORD };
+      expect(await post("/api/account-deletions", asGuest)).toEqual({
+        status: 400,
+        body: { isOk: false, reason: "not_registered" },
+      });
+      const wrongPassword = { token: tokens.registered, password: "wrong-password-1" };
+      expect(await post("/api/account-deletions", wrongPassword)).toEqual({
+        status: 400,
+        body: { isOk: false, reason: "password_wrong" },
+      });
+    });
+  });
 });

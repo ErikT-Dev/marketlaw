@@ -91,6 +91,7 @@ export const REJECTION_MESSAGES: Readonly<Record<ReasonCode, IconText>> = {
   not_registered: "Sign up first.",
   email_not_confirmed: "No account has confirmed this email address.",
   link_expired: "This link no longer works.",
+  password_wrong: "Wrong password.",
   no_free_room_code: "No room could be created right now. Try again.",
   no_answer: "The server did not answer. Try again.",
   busy_elsewhere: "You are already in a room, the ranked queue or a game. Leave it first.",

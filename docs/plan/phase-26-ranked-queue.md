@@ -27,6 +27,8 @@ Phase 25.
    UTC, a 20-second confirmation without names, failure handling, the 2-minute rejoin wait.
 2. **Ranked games** started in a new room; no abandon vote.
 3. **Screens** for the above. The busy-day simulator adds queue use (B18).
+4. Deleting an account (A1.15) leaves the ranked queue too: add it to
+   `src/server/api/accountDeletionRoute.ts` (phase 24, Q111).
 
 ## Known gaps after this phase
 

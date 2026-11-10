@@ -20,6 +20,7 @@ import { confirmEmailInLobby } from "./confirmEmailInLobby.ts";
 import { requestResetInLobby } from "./requestResetInLobby.ts";
 import { setNewPasswordInLobby } from "./setNewPasswordInLobby.ts";
 import { changeEmailInLobby } from "./changeEmailInLobby.ts";
+import { deleteAccountInLobby } from "./deleteAccountInLobby.ts";
 
 const ROOM_ACTIONS = [
   "change_size",
@@ -118,6 +119,8 @@ async function runStep(session: LobbySession, step: ScenarioStep): Promise<void>
     confirmEmailInLobby(session, textOf(step["player"]));
   } else if (step["action"] === "change_email") {
     changeEmailInLobby(session, textOf(step["player"]), step);
+  } else if (step["action"] === "delete_account") {
+    deleteAccountInLobby(session, textOf(step["player"]), step);
   } else if (step["action"] === "change_username") {
     await changeUsernameInLobby(session, textOf(step["player"]), textOf(step["username"]));
   } else {
@@ -201,6 +204,7 @@ export const LOBBY_DRIVER: ScenarioDriver = {
     "change_username",
     "confirm_email",
     "change_email",
+    "delete_account",
     "reset_password",
     "set_new_password",
     "wait_ms",

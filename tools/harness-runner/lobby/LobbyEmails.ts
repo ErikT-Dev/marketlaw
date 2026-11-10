@@ -81,6 +81,15 @@ export class LobbyEmails {
     return stored.expiresMs > now;
   }
 
+  removeLinksOf(playerId: PlayerId): void {
+    for (const kind of ["confirm", "change_confirm", "reset"] as const) {
+      this.links.delete(linkKeyOf(playerId, kind));
+    }
+    if (this.newestReset?.playerId === playerId) {
+      this.newestReset = null;
+    }
+  }
+
   private addLink(playerId: PlayerId, kind: LinkedEmailKind, now: number): number {
     this.serials += 1;
     this.links.set(linkKeyOf(playerId, kind), {

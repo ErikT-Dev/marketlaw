@@ -1,6 +1,7 @@
 import * as v from "valibot";
 import { EpochMs } from "../shared/EpochMs";
 import { RoomCode } from "../shared/RoomCode";
+import { accountDeletionRoute } from "./api/accountDeletionRoute";
 import { accountRoute } from "./api/accountRoute";
 import { confirmEmailRoute } from "./api/confirmEmailRoute";
 import { createGuestRoute } from "./api/createGuestRoute";
@@ -55,6 +56,7 @@ async function routeRoom(request: Request, env: Env, path: RegExpExecArray): Pro
 
 const POST_ROUTES: Readonly<Record<string, (request: Request, env: Env) => Promise<Response>>> = {
   "/api/account": accountRoute,
+  "/api/account-deletions": accountDeletionRoute,
   "/api/guests": createGuestRoute,
   "/api/logins": loginRoute,
   "/api/logout": logoutRoute,

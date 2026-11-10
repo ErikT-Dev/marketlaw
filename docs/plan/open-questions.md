@@ -2320,3 +2320,35 @@ file.
   email did, and the account's own removed mark is the only way the settings can explain A1.11
   without telling who confirmed the address.
 - **Implemented:** phase 24, item 3.
+
+## Q111. What does deleting an account remove, and how does it leave rooms (A1.15, M6.10)?
+
+- **Phase:** 24, item 4 (A1.15, M6.10, A2.3; Q107).
+- **Question:** the spec does not say in which order the route checks and acts, whether the
+  account row stays as a marker for phase 25's "Deleted player", what happens to the account's
+  open sockets in other browsers, or what the answer looks like.
+- **Options:** keep the account row as a deleted marker (name cleared, kind `deleted`), or remove
+  it and show "Deleted player" for any player id without an account; leave rooms before or after
+  removing the rows.
+- **Solution:**
+  - `POST /api/account-deletions` `{ token, password }`, answered like the email routes
+    (`EmailResponse`): the login (`invalid_token`, 401), a guest gets `not_registered`, then one
+    password hash (Q90; `password_wrong`, nothing changes). Then the account leaves every room the
+    Lobby knows it in, as a logged-out guest does (`leaveAsLoggedOutGuest`: during a game it
+    leaves the game, M6.10, then the room; waiting in a room it leaves the room), and every socket
+    of the account in those rooms is closed as logged out, whichever login opened it. If a room
+    does not answer, the answer is 503 and the account stays. Last, one batch deletes the account
+    row, every login and every email link. OK `{ isOk: true }`.
+  - The account row is removed, not kept as a marker: its email, pending email, removed mark,
+    password hash and username go with it, and the username is free at once. Phase 25 shows
+    "Deleted player" for a record's player id that has no account row, the same rule as for
+    guests removed after 90 days (item 5). Per-address email counts stay (A1.9); the account's
+    own count rows expire with the daily cron as before.
+  - The ranked queue does not exist yet; phase 26 adds leaving it to the deletion route.
+  - `PROTOCOL_VERSION` 14 (`password_wrong`). B18 counts 5 deletions on the busy day, 10 rows
+    each (the account and its name and email index entries, two logins with their index entries,
+    a link with its token index and leaving a room).
+- **Why:** removing the row is the simplest way to be sure no personal data stays (A12.1), and
+  the same "no account, Deleted player" rule then covers removed guests; leaving the rooms first
+  means a failure leaves a working account that can try again.
+- **Implemented:** phase 24, item 4.

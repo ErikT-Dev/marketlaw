@@ -13,4 +13,5 @@ export const BUSY_DAY_ACCOUNT_ACTIONS = {
   sendAgainEmail: { perDay: 10, rowsWritten: 5 },
   oldEmailCountDelete: { perDay: 60, rowsWritten: 1 },
   expiredEmailLinkDelete: { perDay: 30, rowsWritten: 2 },
+  accountDeletion: { perDay: 5, rowsWritten: 10 },
 } as const satisfies Readonly<Record<string, BusyDayAccountAction>>;

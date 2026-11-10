@@ -135,8 +135,10 @@ async function runRoomStep(
   if (step === "start_game") {
     throw new Error("the room driver cannot start a game");
   }
-  if (step["action"] === "log_out" && typeof step["player"] === "string") {
-    await logOutInRoom(session, step["player"], registeredNames.includes(step["player"]));
+  const isLoggingOut = step["action"] === "log_out" || step["action"] === "delete_account";
+  if (isLoggingOut && typeof step["player"] === "string") {
+    const isStaying = step["action"] === "log_out" && registeredNames.includes(step["player"]);
+    await logOutInRoom(session, step["player"], isStaying);
     return;
   }
   if (step["action"] === "open_game" && typeof step["player"] === "string") {
@@ -233,6 +235,7 @@ export const ROOM_DRIVER: ScenarioDriver = {
     "call_vote",
     "vote",
     "log_out",
+    "delete_account",
   ]),
   thenFields: new Set([...ENGINE_FIELDS.thenFields, "message_to", "connected_tab", "room"]),
   nestedFields: new Map([

@@ -16,8 +16,12 @@ function leaveAsGuest(session: LobbySession, name: string, stepsLeft: number): v
   leaveAsGuest(session, name, stepsLeft - 1);
 }
 
-export function logOutPlayer(session: LobbySession, name: string): void {
-  if (session.accounts.get(name)?.registration === null) {
+export function logOutPlayer(
+  session: LobbySession,
+  name: string,
+  isLeaving: boolean = session.accounts.get(name)?.registration === null,
+): void {
+  if (isLeaving) {
     leaveAsGuest(session, name, GUEST_LOG_OUT_STEPS);
   }
   if (session.loggedIn?.["as"] === name) {

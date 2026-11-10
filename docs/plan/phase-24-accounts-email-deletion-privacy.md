@@ -234,8 +234,23 @@ These 15 scenarios are added to `harness/required.yaml` in this phase, by file a
     shows the address, whether it is confirmed, the pending address and whether it was removed,
     to the account holder only (A6.3).
 
-- [ ] 4. **Deleting an account** (A1.15, M6.10, A2.3; Q107; scenarios `connections-and-leaving`
+- [x] 4. **Deleting an account** (A1.15, M6.10, A2.3; Q107; scenarios `connections-and-leaving`
   #16, `accounts` #45; #21 stays "not yet" until records exist in phase 25). **Large.**
+  - Done (2026-11-10), Q111 has the details: `POST /api/account-deletions` `{ token, password }`
+    (`src/server/api/accountDeletionRoute.ts`, `src/server/deletion/`), reason `password_wrong`,
+    `PROTOCOL_VERSION` 14. Leaving rooms is shared with logout (`src/server/logOutOfRooms.ts`;
+    `GameRoom.logOut` takes `isLeaving` and `isEndingEveryLogin`, `RoomSockets.closeLogins`).
+    `GameRoom.ts` was split (`applyRoomAlarm.ts`), now 269 lines. Lobby driver step
+    `delete_account` (`deleteAccountInLobby.ts`), room driver step `delete_account`.
+    `connections-and-leaving` #16 and `accounts` #45 pass when added to `required.yaml`
+    locally; #21 is "not yet" (`record_usernames`). Route tests in `roomLogout.test.ts` (during
+    a game, waiting in a room) and `hostileAccountRoutes.test.ts`. B18 measures 3,446.
+  - Differs: the account row is removed, not kept as a marker (Q111); phase 25 and 26 files
+    have notes. `LobbySession.ts` was not touched.
+  - For later items: item 6b calls `/api/account-deletions` (`EmailResponse`; 503 if a room did
+    not answer); after it every socket of the account closes with the logged-out code. Item 8:
+    add `/api/account-deletions` to the log check. Item 5 removes guest rows the same way
+    (`players`, `logins`; guests have no links).
   - Route: registered users only, the account's password (`password_wrong`, one hash as in
     Q90). Removes email, pending email, password hash, every login and every link; frees the
     username (the account row becomes a deleted marker or is removed; whatever phase 25 needs to
