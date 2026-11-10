@@ -430,3 +430,8 @@ these, the spec is followed:
 - **The room after the game** shows the room size control and a free place. A room takes no
   new players and cannot change its size once its game has started (M1.4, M1.6), so neither is
   shown (S11.4).
+- **The email screens** show the address on "Account: email confirmed", "Go to the lobby" on it and
+  on "Account: link expired", "Send a new link" on "Account: link expired" and "Save and log in"
+  on "Account: set a new password". Email confirmed shows no address and closes with OK; link
+  expired offers Close and **Send it again** or **Forgot password** (S12.4); the new password is
+  saved with **Set password** (S12.4, Q113).

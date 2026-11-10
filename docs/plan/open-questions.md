@@ -2376,3 +2376,34 @@ file.
 - **Why:** reusing the login's expiry keeps one rule for "unused"; counting a logged-out guest
   from its creation errs on keeping it, never on removing it early, without a new column.
 - **Implemented:** phase 24, item 5.
+
+## Q113. How do the email screens open, and what do their buttons say (S12.3, S12.4)?
+
+- **Phase:** 24, item 6a (S12.2, S12.3, S12.4; Q108, Q109).
+- **Question:** S12.4 does not say over which screen an email link opens, what the email
+  confirmed and link expired screens close with, what the set-new-password form does with two
+  different passwords, or what happens to a game this browser is in when a reset logs it in. The
+  boards show the address on "email confirmed" (the confirm route does not return it), "Go to the
+  lobby" buttons, "Send a new link" on "link expired" and "Save and log in" on "set a new
+  password".
+- **Options:** open the link screens as their own page, or as dialogs over whatever the browser
+  shows; return the address from the confirm route, or leave it out.
+- **Solution:**
+  - The client reads `#confirm=`, `#reset=` and `#forgot-password` once at load, removes the
+    fragment from the address, and shows the screens as dialogs over the current screen (the
+    lobby, a waiting room or a game, which go on behind). The "check your email" notice of S12.3
+    opens after every successful signup, from the lobby or the user menu, with the address typed.
+  - Email confirmed: no address (the confirm route answers only OK or `link_expired`, so a link
+    tells nothing about the account), closed with **OK**. Link expired: **Close**, and **Send it
+    again** to a logged-in player whose address is unconfirmed (from `/api/account`), else
+    **Forgot password**, as S12.4. Set a new password: **Set password**, as S12.4; two different
+    passwords are caught in the browser ("The two passwords are not the same.") and nothing is
+    sent; `password_invalid` leaves the link working (Q109); `link_expired` opens the link expired
+    screen. After **Set password** the browser holds the new login and shows the lobby, leaving a
+    room it was in (the old login has ended, A1.7).
+  - A network failure while confirming shows a notice to open the link again instead of the link
+    expired screen.
+  - `screens.md` S17 lists the board differences.
+- **Why:** dialogs keep a game in another part of the page running and reuse the modal pattern
+  of every other account screen; the spec's button names win over the boards'.
+- **Implemented:** `screens.md` S17; phase 24, item 6a.
