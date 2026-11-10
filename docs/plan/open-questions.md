@@ -2084,3 +2084,118 @@ file.
   player is in, so refusing costs almost nothing, while two equal names in one room would make
   "accepted so far", chat and mutes ambiguous. (b) was turned down in Q96.
 - **Implemented:** phase 23, finding R3.
+
+## Q104. Which email provider sends the account emails (O3)?
+
+- **Phase:** 24, starter (O3, `accounts.md` open question 1, A1.3, A1.4, A1.7, A1.9, A1.10).
+- **Question:** confirmation, email-change, reset and "already in use" emails need an outside
+  service with a secret key. Which one fits A1.9 and the Cloudflare Free plan?
+- **Need:** A1.9 allows 3 emails per account and per address a day. The busy day of B18 has 30
+  signups; with resends, resets and address changes a busy day sends about 50 emails, so a free
+  tier of 100 a day is enough. Sending must be a plain HTTPS call from the Worker (one
+  subrequest; the Free plan allows 50 per request).
+- **Options (checked 2026-11-10):**
+  - (a) **Cloudflare Email Service**: sending to any address needs the Workers Paid plan
+    (https://developers.cloudflare.com/email-service/platform/pricing/: "Workers Free: outbound
+    sending is not available"; only sends to the account's own verified addresses are free). Not
+    allowed (`rules/cloudflare.md`, Free-plan features only).
+  - (b) **MailChannels** for Workers: its free Workers service has ended (end-of-life notice on
+    support.mailchannels.com); the remaining free tier needs an account and a domain like the
+    others.
+  - (c) **Resend**: free plan 3,000 emails a month, at most 100 a day, one sending domain; JSON
+    HTTPS API (`POST https://api.resend.com/emails`, bearer key), no SDK needed. Needs a domain
+    the owner controls, verified with DNS records (SPF and DKIM).
+  - (d) **Brevo**: free plan about 300 emails a day, HTTPS API; can send from a single verified
+    sender address without a domain of one's own, but then mail is not signed for the sender's
+    domain and is likely to land in spam or be refused under Gmail's and Yahoo's sender rules.
+  - (e) Others (Mailjet, MailerSend, SMTP2GO, Postmark): similar or smaller free tiers, all
+    needing a verified domain; nothing better than (c) for this use.
+- **Solution:** (c) Resend, called with `fetch` from `src/server/`, so no npm dependency and
+  nothing in the client bundle. The sender sits behind a small interface with a test double (an
+  outbox that the scenarios, unit tests, `wrangler dev` and the browser tests read), so all
+  behaviour is built and tested without the key; only the live send needs it. The key is the
+  secret `RESEND_API_KEY` (`wrangler secret put`); the sender address and the privacy contact
+  address are plain `vars` in `wrangler.jsonc`. To stay inside Resend's 100 a day and 3,000 a
+  month (90 x 31 = 2,790), the site sends at most 90 emails a day (A9.6, `site_daily_cap`). If
+  the owner prefers not to have a domain, (d) Brevo fits behind the same interface with one
+  changed sender file, at the cost of delivery.
+- **Why:** the only free option with good delivery and a plain HTTPS API; its daily cap is above
+  the busy day's need, and the site-wide cap keeps a burst of signups from going over it.
+- **Needs the owner:** a domain, the Resend account, the verified domain and the API key (phase
+  24, "Waiting for the owner"). **Status: waiting for the owner** (the live send only).
+- **Implemented:** `decisions.md` O3 moved to Decided as D30; `accounts.md` open question 1
+  removed, A9.6's email cap; phase 24, items 1 and 9.
+
+## Q105. What does the privacy notice say, and where is it (O7)?
+
+- **Phase:** 24, starter (O7).
+- **Question:** O7 asks for a short notice of what is stored, why, how long, and how to delete
+  it, drafted into the spec.
+- **Options:** a rule in `accounts.md` with the notice's content, shown as a page (S12.8); or the
+  text only in the client, outside the spec.
+- **Solution:** a new section A12 in `accounts.md` gives the notice's parts and facts: who runs
+  the site (a contact address, set by the owner as a `wrangler.jsonc` var), what is stored and
+  why (account, email, password hash, logins as one-way codes, failed logins, daily counts with
+  the address only as a one-way code, chat, replays, game records and ratings), how long (from
+  A1.1, A1.14, A1.13, M4.3, M8.2, and a new retention of 2 days for daily counts), who else
+  handles data (Cloudflare and Turnstile see the IP address, which MarketLaw does not store;
+  Workers logs are kept 3 days on the Free plan,
+  https://developers.cloudflare.com/workers/observability/logs/workers-logs/; the email service
+  sees the address), and the choices (account settings, deleting, the contact address). S12.8 is
+  the page, open to everyone, linked from signup and account settings (S12.5). A12.1 is page
+  text, so a coverage exception (`instead`: a browser test finds each part by its heading)
+  replaces a scenario.
+- **Why:** the spec is the owner's view; the notice states facts the spec already fixes, so it
+  stays true as long as the spec does. The legal wording is the owner's to review with version 1.
+- **Implemented:** `accounts.md` A12.1; `screens.md` S12.5, S12.8; `coverage-exceptions.yaml`;
+  `decisions.md` O7 moved to Decided as D31; phase 24, item 7.
+
+## Q106. Email links, resending, limits and failed sends (A1.4, A1.7, A1.9, A1.10, A9.6)?
+
+- **Phase:** 24, starter.
+- **Question:** the spec does not say how long links work, whether older links still work,
+  whether **Send it again** needs the human check, what counts toward A1.9, what a reset does to
+  other logins, what a reset for an address nobody has confirmed answers, what happens when the
+  new address of a change is confirmed elsewhere, or what happens when an email cannot be sent.
+- **Options:** for expiry, 24 hours to 7 days for confirmation and 15 minutes to 24 hours for
+  resets; older links valid until expiry, or replaced; resending with or without the human
+  check; failed sends refusing the action or not.
+- **Solution:** new rule A1.16: links work once; confirmation (also of a new address) 24 hours,
+  reset 1 hour; a newer link of the same kind replaces the older; an expired, replaced or used
+  link, or one whose address another account has confirmed, gives `link_expired`. A1.4: Send it
+  again without the human check, under A1.9; a signup whose email cannot be sent still succeeds.
+  A1.7: an address nobody has confirmed gives `email_not_confirmed` whether or not an account
+  entered it; setting a new password ends every login of the account, clears failed logins and
+  logs the player in in that browser. A1.9: "already in use" emails count; addresses compared as
+  in A1.11; refused actions change nothing; failed sends do not count; per-address counts survive
+  deleting the account (kept as a one-way code for 2 days, A12.1). A9.6: at most 90 emails a day
+  site-wide (Q104), `site_daily_cap`. A1.10: a newer change replaces a pending one; a new address
+  confirmed elsewhere looks the same and gets the "already in use" email. New messages in
+  `screens.md`'s table: `email_not_confirmed`, `email_limit_reached`, `password_wrong`,
+  `link_expired`, `not_registered`. Scenarios `accounts` #43 "a confirmation link no longer works
+  after 24 hours", #44 "a reset link sets a new password" and #46 "at most 90 emails a day are
+  sent on the whole site"; `HARNESS.md` gains `set_new_password`, `site_counts_today.emails` and
+  the codes `password_wrong` and `link_expired`.
+- **Why:** short reset links limit the window of a stolen mailbox; one live link per kind keeps an
+  old email from being used; the limits already stop resend abuse, so a human check there only
+  adds friction; treating an unknown address like an unconfirmed one keeps unconfirmed addresses
+  from being probed; ending all logins on reset is what a player resetting after a break-in needs.
+- **Implemented:** `accounts.md` A1.4, A1.7, A1.9, A1.10, A1.16, A9.6; `screens.md` S12.4,
+  S12.5, message table; phase 24, items 1 to 3.
+
+## Q107. Deleting an account: password, logins, rooms and guests (A1.15, M6.10, S12.6)?
+
+- **Phase:** 24, starter (A1.15, S12.6).
+- **Question:** S12.6 asks for the password before deleting, but A1.15 says nothing about a wrong
+  password, the account's other logins, its links, a waiting room or the ranked queue, or guests.
+- **Options:** a wrong password reuses `login_failed` or gets its own code; guests may delete or
+  not.
+- **Solution:** written into A1.15: a wrong password is `password_wrong` ("Wrong password.") and
+  changes nothing; deleting ends every login and every link, and leaves a waiting room and the
+  ranked queue as well as a game (M6.10); guests cannot delete (`not_registered`), they are
+  removed after 90 days unused (A1.1). Scenario `accounts` #45 "deleting an account needs its
+  password"; `delete_account` without `password` in a scenario gives the account's own
+  (`HARNESS.md`).
+- **Why:** `login_failed` names username and email, which this form does not ask for; a guest
+  has no password to confirm with.
+- **Implemented:** `accounts.md` A1.15; `HARNESS.md`; phase 24, item 4.
