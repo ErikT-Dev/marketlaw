@@ -673,6 +673,9 @@ themselves (D1).
 6. Log out in one browser: the other browser stays logged in. As a guest, **Log out** first
    shows the warning.
 
+Owner check (2026-11-10): signing up, logging out and logging in again work on the live site, and
+the browser offered to save the password and remembered it.
+
 **Checks.** The second finisher run: `npm run check` green (594 tests), `npm run harness` green
 (453 scenarios, 367 required pass, 0 fail), B11 8 of 10 ms (room messages 2, password hash 8),
 B18 3,066 of 5,000 rows. Two browser tests timed out locally under two workers and passed alone,
