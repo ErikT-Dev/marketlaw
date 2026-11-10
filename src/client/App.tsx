@@ -1,6 +1,7 @@
 import { useSyncExternalStore } from "react";
 import styles from "./App.module.css";
 import { CurrentScreen } from "./CurrentScreen";
+import { EmailDialogIfOpen } from "./screens/email/EmailDialogIfOpen";
 import { RoomNotFoundDialog } from "./screens/lobby/RoomNotFoundDialog";
 import type { ClientStore } from "./store/ClientStore";
 
@@ -27,6 +28,7 @@ export function App({ store }: Props) {
         )}
         <CurrentScreen store={store} />
         {goneRoomCode === null ? null : <RoomNotFoundDialog onClose={store.dismissRemoval} />}
+        <EmailDialogIfOpen store={store} />
       </div>
     </>
   );

@@ -12,10 +12,11 @@ import { useLoginAttempts } from "./useLoginAttempts";
 type Props = {
   readonly onSubmit: (login: LoginRequest) => Promise<ReasonCode | null>;
   readonly onSignUp: () => void;
+  readonly onForgotPassword: () => void;
   readonly onCancel: () => void;
 };
 
-export function LogInDialog({ onSubmit, onSignUp, onCancel }: Props) {
+export function LogInDialog({ onSubmit, onSignUp, onForgotPassword, onCancel }: Props) {
   const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
   const attempts = useLoginAttempts(onSubmit);
@@ -46,6 +47,9 @@ export function LogInDialog({ onSubmit, onSignUp, onCancel }: Props) {
           error={problem === null ? null : REJECTION_MESSAGES[problem]}
         />
         <div className={styles["accountLinks"]}>
+          <button type="button" className={styles["linkButton"]} onClick={onForgotPassword}>
+            Forgot your password?
+          </button>
           <button type="button" className={styles["linkButton"]} onClick={onSignUp}>
             No account yet? Sign up
           </button>

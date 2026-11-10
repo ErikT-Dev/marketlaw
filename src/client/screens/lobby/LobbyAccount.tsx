@@ -12,9 +12,10 @@ type Props = {
   readonly account: AccountBinding | null;
   readonly onLogIn: (login: LoginRequest) => Promise<ReasonCode | null>;
   readonly onSignUp: (signup: Omit<SignupRequest, "token">) => Promise<ReasonCode | null>;
+  readonly onForgotPassword: () => void;
 };
 
-export function LobbyAccount({ account, onLogIn, onSignUp }: Props) {
+export function LobbyAccount({ account, onLogIn, onSignUp, onForgotPassword }: Props) {
   const dialogs = useAccountDialogs();
   return (
     <>
@@ -26,7 +27,12 @@ export function LobbyAccount({ account, onLogIn, onSignUp }: Props) {
         )}
       </LobbyTopBar>
       {account === null ? (
-        <AccountDialogIfOpen dialogs={dialogs} onLogIn={onLogIn} onSignUp={onSignUp} />
+        <AccountDialogIfOpen
+          dialogs={dialogs}
+          onLogIn={onLogIn}
+          onSignUp={onSignUp}
+          onForgotPassword={onForgotPassword}
+        />
       ) : null}
     </>
   );

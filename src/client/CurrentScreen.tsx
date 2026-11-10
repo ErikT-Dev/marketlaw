@@ -24,6 +24,7 @@ export function CurrentScreen({ store }: Props) {
         onStartAsGuest={store.startAsGuest}
         onLogIn={store.logIn}
         onSignUp={store.signUp}
+        onForgotPassword={store.openForgotPassword}
         onDismissRemoval={store.dismissRemoval}
         publicRooms={state.publicRooms}
       />

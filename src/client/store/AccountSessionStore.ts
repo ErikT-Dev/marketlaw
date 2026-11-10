@@ -50,7 +50,11 @@ export abstract class AccountSessionStore extends ObservableState<ClientState> {
   readonly signUp = async (signup: Omit<SignupRequest, "token">): Promise<ReasonCode | null> => {
     const guest = this.state.session?.isGuest === true ? this.state.session : null;
     const token = guest === null ? {} : { token: guest.token };
-    return this.startSession(await requestSignup({ ...signup, ...token }), false);
+    const problem = this.startSession(await requestSignup({ ...signup, ...token }), false);
+    if (problem === null) {
+      this.change({ emailDialog: { kind: "check_email", address: signup.email } });
+    }
+    return problem;
   };
 
   readonly changeUsername = async (username: string): Promise<ReasonCode | null> => {

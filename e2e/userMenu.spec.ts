@@ -28,6 +28,10 @@ async function signUpFromMenu(page: Page, email: string, testInfo: TestInfo) {
   await expectScreenFits(page, "sign-up-during-a-game", testInfo, true);
   await send.click();
   await expect(signUp).toBeHidden({ timeout: HUMAN_CHECK_MS });
+  const checkEmail = page.getByRole("dialog", { name: "Check your email" });
+  await expect(checkEmail).toContainText(email);
+  await checkEmail.getByRole("button", { name: "OK" }).click();
+  await expect(checkEmail).toBeHidden();
 }
 
 test("a guest signs up during a game, keeps the seat, logs out and logs back in", async ({

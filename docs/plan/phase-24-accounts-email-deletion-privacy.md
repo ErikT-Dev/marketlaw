@@ -275,9 +275,25 @@ These 15 scenarios are added to `harness/required.yaml` in this phase, by file a
     statements, no per-row loop in the Worker. `accounts` #20 stays "not yet" (records, phase
     25); test it with a unit or route test.
 
-- [ ] 6a. **Email screens: check your email, forgotten password, email links** (S12.2, S12.3,
+- [x] 6a. **Email screens: check your email, forgotten password, email links** (S12.2, S12.3,
   S12.4; design boards "Account: check your email", "Account: forgot password", "Account: email
   confirmed", "Account: set a new password", "Account: link expired"). **Large.**
+  - Done (2026-11-10), Q113 has the details: `src/client/screens/email/` (`EmailDialogIfOpen`
+    rendered by `App`, one dialog per screen, `useEmailRequest`), `store/EmailAccountStore.ts`
+    (between `AccountSessionStore` and `ClientStore`; `ClientState.emailDialog`),
+    `store/emailLinkFrom.ts` read in `main.tsx`, `api/requestEmailAction.ts` (parses an
+    `EmailResponse` into a reason code or null). Signup opens "check your email"; Log in has
+    **Forgot your password?**. Unit tests `screens/email/emailScreens.test.tsx`,
+    `store/emailLinkFrom.test.tsx`; browser test `e2e/emailLinks.spec.ts` (screens
+    `check-your-email`, `email-confirmed`, `link-expired`, `forgot-password`, `set-new-password`
+    at the three sizes, axe and 24 px targets). No protocol change.
+  - Differs: the boards' address on "email confirmed", "Go to the lobby", "Send a new link" and
+    "Save and log in" are not used (`screens.md` S17, Q113).
+  - For later items: after signing up in a browser test, close "Check your email" (**OK**)
+    before clicking anything behind it (`e2e/userMenu.spec.ts` does). The local D1 needed
+    `npm run db:migrate:local` for migrations 0010 and 0011 before the browser tests (signup
+    answered "The server did not answer" without them); item 6b reuses `EmailProblem`,
+    `useEmailRequest` and `store.sendConfirmationAgain` for Send it again in the settings.
   - After signup the notice of S12.3 with **Send it again**; the Log in form's forgotten
     password link opens the request form with the human check; opening an email link shows the
     confirmed, set a new password or link expired screen (S12.4), and a set password logs the
