@@ -452,7 +452,7 @@ These 20 scenarios are added to `harness/required.yaml` in this phase, by file a
     GitHub judges the full suite. `docs/enforcement.md`: the account browser tests, the lobby
     driver's account steps, B11's password hash, B18's account actions and the route test that
     keeps tokens, passwords and email addresses out of the logs.
-- [ ] Phase review (2026-11-09, `phase-reviewer`): not ready; 1 blocker, 5 should fix, 4
+- [x] Phase review (2026-11-09, `phase-reviewer`): not ready; 1 blocker, 5 should fix, 4
   suggestions, 1 note. Fixer groups: A = R1, R10, R11; B = R2, R4, R6, R7; C = R3, R5, R9.
 - [x] R1. Blocker (group A). B11 goes over its limit inside `npm run check` (measured 20 and 11
   of 10 ms; 8 alone): `tools/harness-runner/measurePasswordHashCpuMs.ts`, `highestMeasured.ts`,
@@ -638,6 +638,7 @@ are each helper's conversation size at its end.
 | Fixer, live hash CPU (10,000 iterations) | 4 | 82k | 16 | done |
 | Releaser, second time | 23 | 79k | 26 | partial (branch check green after a rerun) |
 | Releaser, third time | 13 | 88k | 41 | partial (merged and deployed; live CPU not yet measured) |
+| Releaser, fourth time | 25 | 102k | 54 | done (live CPU 2-9 ms at 10,000; merged, deployed, phase done) |
 
 ## Report
 
