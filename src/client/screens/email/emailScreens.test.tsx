@@ -87,6 +87,7 @@ describe("check your email", () => {
     await act(async () => store.signUp({ ...signup, humanCheck: "passed" }));
     const dialog = screen.getByRole("dialog", { name: "Check your email" });
     expect(dialog.textContent).toContain("We sent a link to bea@example.com.");
+    expect(dialog.textContent).toContain("Check your spam folder");
     fireEvent.click(within(dialog).getByRole("button", { name: "Send it again" }));
     expect(await within(dialog).findByText("We sent the link again.")).toBeDefined();
     expect(sent.at(-1)).toEqual({ path: "/api/confirmation-emails", body: { token: "bea-token" } });
