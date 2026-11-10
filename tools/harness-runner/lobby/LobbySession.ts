@@ -51,6 +51,8 @@ import type { LobbyRegistration } from "./LobbyRegistration.ts";
 import type { FailedLogins } from "../../../src/server/accounts/FailedLogins.ts";
 import { registrationFromGiven } from "./registrationFromGiven.ts";
 import { scriptedGeneratedName } from "./scriptedGeneratedName.ts";
+import { LobbyEmails } from "./LobbyEmails.ts";
+import { LobbyHistory } from "./LobbyHistory.ts";
 
 export class LobbySession {
   record: RoomRecord | null;
@@ -71,6 +73,8 @@ export class LobbySession {
   private namesAsked = 0;
   private readonly random: ScriptedRandom;
   readonly chat: LobbyChat;
+  readonly emails: LobbyEmails;
+  readonly history: LobbyHistory;
   private readonly storage: RoomStorage = chatTrackingStorage(
     {
       read: () => this.record ?? undefined,
@@ -96,6 +100,8 @@ export class LobbySession {
       this.addAccount(account.name, account.last_used_ms ?? 0, registration, usernameChangedMs);
     }
     this.lobby = { ...EMPTY_LOBBY, today: countsTodayFromGiven(given, this.now, this) };
+    this.emails = new LobbyEmails(given, (name) => this.identityNamed(name));
+    this.history = new LobbyHistory(given, (name) => this.identityNamed(name));
     this.chat = new LobbyChat(chatFromGiven(given, (name) => this.identityNamed(name), this.now));
     this.record =
       given.room === undefined || given.room.players.length === 0

@@ -150,7 +150,7 @@ function startSession(rawGiven: Readonly<Record<string, unknown>>, random: Scrip
             free_places: room.size - room.playerNames.length,
           }));
         case "message_to":
-          return lobbyMessageThen(session.messagesTo, expected);
+          return lobbyMessageThen(session.messagesTo, expected, session.emails.noticesTo);
         default:
           return CHAT_THEN_FIELDS.includes(field)
             ? lobbyChatThen(session, field, expected)
@@ -169,6 +169,8 @@ export const LOBBY_DRIVER: ScenarioDriver = {
     "clock_ms",
     "site_games_today",
     "site_counts_today",
+    "email_counts",
+    "seats",
     "accounts",
     "room",
     "other_rooms",
@@ -202,6 +204,8 @@ export const LOBBY_DRIVER: ScenarioDriver = {
     "logged_in",
     "lobby_rooms",
     "replay_record",
+    "emails_sent",
+    "seats",
     ...CHAT_THEN_FIELDS,
   ]),
   nestedFields: new Map([
@@ -217,6 +221,8 @@ export const LOBBY_DRIVER: ScenarioDriver = {
         "last_username_change_ms",
         "actions_today",
         "games_started_today",
+        "emails_today",
+        "games",
       ]),
     ],
     [
@@ -251,8 +257,11 @@ export const LOBBY_DRIVER: ScenarioDriver = {
       ]),
     ],
     ["then.game", new Set(["kind", "turn", "seats"])],
-    ["then.message_to", new Set(["player", "contains", "text", "hides"])],
-    ["then.accounts", new Set(["name", "kind", "email", "email_confirmed"])],
+    ["then.message_to", new Set(["player", "contains", "text", "hides", "notice"])],
+    ["then.accounts", new Set(["name", "kind", "email", "email_confirmed", "games"])],
+    ["given.seats", new Set(["seat", "player"])],
+    ["then.seats", new Set(["seat", "player"])],
+    ["then.emails_sent", new Set(["to", "kind"])],
     ["then.generated_name", new Set(["taken", "max_length", "not"])],
     ["then.logged_in", new Set(["visitor", "as"])],
   ]),

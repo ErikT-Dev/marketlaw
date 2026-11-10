@@ -2199,3 +2199,56 @@ file.
 - **Why:** `login_failed` names username and email, which this form does not ask for; a guest
   has no password to confirm with.
 - **Implemented:** `accounts.md` A1.15; `HARNESS.md`; phase 24, item 4.
+
+## Q108. How are emails sent, counted and tested before there is a live sender (A1.4, A1.9, A9.6)?
+
+- **Phase:** 24, item 1 (A1.3, A1.4, A1.9, A1.11, A9.6; Q104, Q106).
+- **Question:** the spec and Q106 do not say in which order the limits are checked and counted
+  when one signup touches D1 and the Lobby, what **Send it again** does for an account with no
+  unconfirmed address (A1.3: the signup with an address confirmed elsewhere leaves the account
+  without one, `accounts` #6), what the test double does on the live site before item 10, or what
+  the links look like.
+- **Options:** count before sending and give back on failure, or count only after a sent email;
+  **Send it again** without an address refused with a reason code, or answered like a send;
+  the test outbox always on, or only where the test room secret is set.
+- **Solution:**
+  - Order: the request's own checks (human check, fields) first; then the counts per account and
+    per address for today (`email_limit_reached`), then the Lobby takes one email of the site's 90
+    (`site_daily_cap`); only then is anything written. The site email is given back when the email
+    cannot be sent or the signup loses its username to a concurrent one. After a sent email, the
+    link and both counts are written in one D1 batch. The D1 counts are read, not reserved, so two
+    requests at the same moment can send a fourth email; the Lobby's count is exact, so the
+    site-wide cap, which protects Resend's 100 a day, cannot be passed.
+  - Counts per account (`account:<id>`) and per address (`address:<SHA-256 of the email key>`) in
+    `email_counts` by UTC day; the daily cron deletes counts older than yesterday and expired
+    links. Links are stored only as SHA-256 hashes, one per account and kind.
+  - **Send it again** (`POST /api/confirmation-emails`, the login's token): a guest gets
+    `not_registered`; an account with no unconfirmed address (none entered, removed by A1.11, or
+    already confirmed) gets the same OK as a sent email and nothing is sent or counted, so the
+    answer does not tell that the address belongs to another account (A1.3). An unconfirmed
+    address confirmed elsewhere meanwhile gets the "already in use" email. Over a limit: HTTP 429
+    with the reason code, as signup.
+  - The sender is chosen in one place (`emailSenderOf`). Until item 9 it is always the test
+    outbox: a D1 table `test_outbox` written only when `TEST_ROOM_SECRET` is set (locally and on
+    GitHub); without it the send fails, so the live site stores no address or link and counts
+    nothing, and signups still succeed (A1.4). The browser tests read it with
+    `POST /api/test-outbox` (`{ to }`, the test room secret header), newest first.
+  - Links use the request's origin and a fragment: `/#confirm=<token>` for a confirmation (also of
+    a new address), `/#reset=<token>` for a reset, `/#forgot-password` in the "already in use"
+    email.
+  - The browser tests sign up far more than 90 accounts a day on one local server: like the chat
+    cap (Q101), a server whose environment sets `TEST_SITE_EMAILS_PER_DAY` uses that number
+    (`.dev.vars` locally and in `check.yml` and `deploy.yml`).
+  - Scenarios: the lobby driver keeps the emails sent (`emails_sent`), the counts of `email_counts`
+    and `emails_today`, and the site count of `site_counts_today.emails` with the server's own
+    limit functions. For `accounts` #4 it keeps the given seats and game counts by player id, so
+    they show the signed-up account only if signup kept the guest's player id. The "check your
+    email" notice of S12.3 is `message_to.notice: signup_done_confirm_email` after a signup.
+  - B18: the busy day's 30 signup emails (the link with its token index and two counts, 4 rows,
+    plus the Lobby's count), 10 resends (the link and its token index replaced and two counts, 5
+    rows, plus the Lobby's count) and the daily delete of 60 counts and 30 links (2 rows each):
+    330 rows; the day measures 3,396 of 5,000.
+- **Why:** taking the site email first in the Lobby is the only way to keep the cap exact without
+  a second write per email; storing nothing on the live site until the real sender exists keeps
+  addresses out of a table nobody reads.
+- **Implemented:** phase 24, item 1.

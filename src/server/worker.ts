@@ -1,4 +1,5 @@
 import * as v from "valibot";
+import { EpochMs } from "../shared/EpochMs";
 import { RoomCode } from "../shared/RoomCode";
 import { accountRoute } from "./api/accountRoute";
 import { createGuestRoute } from "./api/createGuestRoute";
@@ -11,13 +12,16 @@ import { logoutRoute } from "./api/logoutRoute";
 import { replayExportRoute } from "./api/replayExportRoute";
 import { roomJson } from "./api/roomJson";
 import { sessionRoute } from "./api/sessionRoute";
+import { sendAgainRoute } from "./api/sendAgainRoute";
 import { signupRoute } from "./api/signupRoute";
 import { usernameChangeRoute } from "./api/usernameChangeRoute";
+import { removeOldEmailRecords } from "./email/removeOldEmailRecords";
 import { lobbyOf } from "./lobbyOf";
 import { removeForgottenLoginFailures } from "./removeForgottenLoginFailures";
 import { removeOldReplayRecords } from "./replays/removeOldReplayRecords";
 import { confirmTestSeat } from "./testRooms/confirmTestSeat";
 import { createTestRoom } from "./testRooms/createTestRoom";
+import { readTestOutbox } from "./testRooms/readTestOutbox";
 import { restartTestRoom } from "./testRooms/restartTestRoom";
 import { setTestDailyCounts } from "./testRooms/setTestDailyCounts";
 
@@ -52,12 +56,14 @@ const POST_ROUTES: Readonly<Record<string, (request: Request, env: Env) => Promi
   "/api/logout": logoutRoute,
   "/api/rooms": createRoomRoute,
   "/api/signups": signupRoute,
+  "/api/confirmation-emails": sendAgainRoute,
   "/api/username-changes": usernameChangeRoute,
   "/api/session": sessionRoute,
   "/api/test-rooms": createTestRoom,
   "/api/test-room-seats": confirmTestSeat,
   "/api/test-room-restarts": restartTestRoom,
   "/api/test-daily-counts": setTestDailyCounts,
+  "/api/test-outbox": readTestOutbox,
 };
 
 async function route(request: Request, env: Env): Promise<Response> {
@@ -86,5 +92,6 @@ export default {
   async scheduled(controller, env) {
     await removeOldReplayRecords(env.DB, controller.scheduledTime);
     await removeForgottenLoginFailures(env.DB, controller.scheduledTime);
+    await removeOldEmailRecords(env.DB, v.parse(EpochMs, controller.scheduledTime));
   },
 } satisfies ExportedHandler<Env>;

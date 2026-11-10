@@ -129,8 +129,30 @@ These 15 scenarios are added to `harness/required.yaml` in this phase, by file a
     player (exit criteria, A6.3). Emails go to the address only; the reply to the browser never
     says whether an address is confirmed elsewhere (A1.3).
 
-- [ ] 1. **Sending emails and the signup confirmation** (A1.3, A1.4, A1.8, A1.9, A1.11, A9.6;
+- [x] 1. **Sending emails and the signup confirmation** (A1.3, A1.4, A1.8, A1.9, A1.11, A9.6;
   Q104, Q106; scenarios `accounts` #4, #6, #18, #28, #29, #46). **Large.**
+  - Done (2026-11-10), Q108 has the details: `src/server/email/` (`EmailSender`, `emailSenderOf`,
+    `testOutboxSender`, `accountEmailOf`, `reserveAccountEmail`, `sendAccountEmail`,
+    `findEmailAccount`, `removeOldEmailRecords`), migration `0010_email_links_and_counts.sql`
+    (`email_links`, `email_counts`, `test_outbox`), the Lobby's `takeEmailQuota` and
+    `returnEmailQuota` (`siteEmails` in its daily counts), `POST /api/confirmation-emails`
+    (Send it again) and `POST /api/test-outbox`. `PROTOCOL_VERSION` 11 (`email_limit_reached`,
+    `not_registered`). The six scenarios pass with them added to `required.yaml` locally.
+    Route test `tools/route-tests/emailRoutes.test.ts`. B18 measures 3,396.
+  - Differs: the test outbox stores only where `TEST_ROOM_SECRET` is set; elsewhere (the live
+    site until item 9) every send fails, so nothing is stored or counted. Send it again for an
+    account with no unconfirmed address answers OK and sends nothing (Q108).
+  - For later items: send an email with `reserveAccountEmail` (before writing anything) then
+    `sendAccountEmail` (kinds `confirm`, `change_confirm`, `reset`, `already_in_use`); give the
+    site email back with `lobbyOf(env).returnEmailQuota(now)` if the action then fails. Links are
+    in `email_links` by (`player_id`, `kind`), `token_hash` = `sha256Hex(token)`, `address` set
+    only for `change_confirm`, `expires_ms`; replacing is automatic. Fragments: `#confirm=`,
+    `#reset=`, `#forgot-password` (client, item 6a). Browser tests read emails with
+    `POST /api/test-outbox` `{ to }` and the test room secret header (route test helper
+    `tools/route-tests/readTestOutbox.ts`); `.dev.vars` needs `TEST_SITE_EMAILS_PER_DAY=1000000`
+    (added locally and in both workflows). Item 9 adds the Resend branch to `emailSenderOf`.
+    The lobby driver's email state is `LobbyEmails` (`session.emails`); `LobbySession.ts` is at
+    294 of 300 lines, add to the helper classes instead. `GameRoom.ts` was not touched.
   - An `EmailSender` interface in `src/server/` (send one email: to, subject, text, and a
     result that says sent or failed) and a test double that keeps what was sent, readable by the
     lobby driver (`emails_sent`), unit tests and, through a test route guarded by

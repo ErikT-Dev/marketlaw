@@ -18,6 +18,9 @@ import type { LobbyRecord } from "./lobby/LobbyRecord";
 import { publicRoomsOf } from "./lobby/publicRoomsOf";
 import { releasePlayer } from "./lobby/releasePlayer";
 import { siteChatLimitOf } from "./lobby/siteChatLimitOf";
+import { siteEmailLimitOf } from "./lobby/siteEmailLimitOf";
+import { returnSiteEmail } from "./lobby/returnSiteEmail";
+import { takeSiteEmail } from "./lobby/takeSiteEmail";
 import { siteGameLimitOf } from "./lobby/siteGameLimitOf";
 import type { PlayedActions } from "./lobby/PlayedActions";
 import type { PlayerCountsToday } from "./lobby/PlayerCountsToday";
@@ -66,6 +69,20 @@ export class Lobby extends DurableObject<Env> {
       return grant.record;
     });
     return granted;
+  }
+
+  async takeEmailQuota(now: EpochMs): Promise<boolean> {
+    let isTaken = false;
+    await this.change((record) => {
+      const taken = takeSiteEmail(record, { now, siteEmailsPerDay: siteEmailLimitOf(this.env) });
+      isTaken = taken.isTaken;
+      return taken.record;
+    });
+    return isTaken;
+  }
+
+  async returnEmailQuota(now: EpochMs): Promise<void> {
+    await this.change((record) => returnSiteEmail(record, now));
   }
 
   busyRoomOf(playerId: PlayerId): RoomCode | null {

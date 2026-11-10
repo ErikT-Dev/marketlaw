@@ -2,6 +2,9 @@ import { emailKeyOf } from "../../../src/server/accounts/emailKeyOf.ts";
 import { nameKeyOf } from "../../../src/server/accounts/nameKeyOf.ts";
 import { NO_FAILED_LOGINS } from "../../../src/server/accounts/NO_FAILED_LOGINS.ts";
 import { signupProblem } from "../../../src/server/accounts/signupProblem.ts";
+import { siteEmailLimitOf } from "../../../src/server/lobby/siteEmailLimitOf.ts";
+import { takeSiteEmail } from "../../../src/server/lobby/takeSiteEmail.ts";
+import type { ReasonCode } from "../../../src/shared/ReasonCode.ts";
 import type { LobbyAccount } from "./LobbyAccount.ts";
 import type { LobbyRegistration } from "./LobbyRegistration.ts";
 import type { LobbySession } from "./LobbySession.ts";
@@ -31,6 +34,23 @@ function registrationOf(session: LobbySession, step: Readonly<Record<string, unk
     failedLogins: NO_FAILED_LOGINS,
   };
   return registration;
+}
+
+function emailRejection(session: LobbySession, guest: LobbyAccount | null, email: string) {
+  const overLimit = session.emails.limitRejection(guest?.identity.playerId ?? null, email);
+  if (overLimit !== null) {
+    return overLimit;
+  }
+  const siteEmailsPerDay = siteEmailLimitOf({});
+  const taken = takeSiteEmail(session.lobby, { now: session.now, siteEmailsPerDay });
+  session.lobby = taken.record;
+  return taken.isTaken ? null : "site_daily_cap";
+}
+
+function sendSignupEmail(session: LobbySession, name: string, email: string, isElsewhere: boolean) {
+  const kind = isElsewhere ? "already_in_use" : "confirm";
+  session.emails.send(session.identityNamed(name).playerId, { to: email, kind });
+  session.emails.noticesTo.set(name, "signup_done_confirm_email");
 }
 
 function guestOf(session: LobbySession, by: SignUpBy): LobbyAccount | null {
@@ -71,17 +91,21 @@ export async function signUpInLobby(
     return;
   }
   const name = textOf(step["username"] ?? guest?.identity.name ?? session.generatedName);
-  session.rejected = await signupProblem(
-    { name, email: textOf(step["email"]), password: textOf(step["password"]) },
+  const email = textOf(step["email"]);
+  const problem: ReasonCode | null = await signupProblem(
+    { name, email, password: textOf(step["password"]) },
     {
       isHuman: () => Promise.resolve(step["human_check"] === "passed"),
       isTaken: (wanted) => Promise.resolve(isTakenByOther(session, wanted, guest)),
     },
   );
+  session.rejected = problem ?? emailRejection(session, guest, email);
   if (session.rejected !== null) {
     return;
   }
+  const isElsewhere = isConfirmedElsewhere(session, email);
   saveSignup(session, { name, guest }, step);
+  sendSignupEmail(session, name, email, isElsewhere);
   if ("visitor" in by) {
     session.visitorLogins.set(by.visitor, name);
   }

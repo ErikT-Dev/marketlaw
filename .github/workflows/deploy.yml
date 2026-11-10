@@ -116,13 +116,14 @@ jobs:
       - name: Prepare the local database
         run: npm run db:migrate:local
 
-      - name: Make a test room secret, Turnstile test keys and the test site game and chat limits for the local server
+      - name: Make a test room secret, Turnstile test keys and the test site game, chat and email limits for the local server
         run: |
           echo "TEST_ROOM_SECRET=$(openssl rand -hex 24)" > .dev.vars
           echo "TURNSTILE_SITE_KEY=1x00000000000000000000AA" >> .dev.vars
           echo "TURNSTILE_SECRET_KEY=1x0000000000000000000000000000000AA" >> .dev.vars
           echo "TEST_SITE_GAMES_PER_DAY=1000000" >> .dev.vars
           echo "TEST_SITE_CHAT_MESSAGES_PER_DAY=1000000" >> .dev.vars
+          echo "TEST_SITE_EMAILS_PER_DAY=1000000" >> .dev.vars
 
       - name: Browser tests
         timeout-minutes: 15

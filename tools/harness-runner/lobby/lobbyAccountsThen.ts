@@ -18,6 +18,16 @@ export function lobbyAccountsThen(session: LobbySession, field: string, expected
         kind: registration === null ? "guest" : "registered",
         email: registration?.email ?? null,
         email_confirmed: registration?.isEmailConfirmed ?? false,
+        games: session.history.gamesOf(identity.playerId),
+      }));
+    case "emails_sent":
+      return session.emails.sent;
+    case "seats":
+      return session.history.seats.map(({ seat, playerId }) => ({
+        seat,
+        player: [...session.accounts.values()].find(
+          ({ identity }) => identity.playerId === playerId,
+        )?.identity.name,
       }));
     case "generated_name": {
       const name = session.generatedName ?? "";

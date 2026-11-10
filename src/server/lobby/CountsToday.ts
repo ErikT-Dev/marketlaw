@@ -5,4 +5,5 @@ export type CountsToday = {
   readonly players: ReadonlyArray<PlayerCountsToday>;
   readonly siteGameStarts: number;
   readonly siteChatMessages: number;
+  readonly siteEmails: number;
 };

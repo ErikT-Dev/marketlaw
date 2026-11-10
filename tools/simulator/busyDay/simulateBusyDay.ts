@@ -27,6 +27,7 @@ import { ROOM_CODE_CHARACTERS } from "../../../src/shared/ROOM_CODE_CHARACTERS.t
 import { RoomCode } from "../../../src/shared/RoomCode.ts";
 import { BUSY_DAY } from "./BUSY_DAY.ts";
 import { busyDayAccountRows } from "./busyDayAccountRows.ts";
+import { BUSY_DAY_ACCOUNT_ACTIONS } from "./BUSY_DAY_ACCOUNT_ACTIONS.ts";
 import { BusyDayCounter } from "./BusyDayCounter.ts";
 import type { BusyDayCount } from "./BusyDayCount.ts";
 import { busyDayChatContext } from "./busyDayChatContext.ts";
@@ -275,5 +276,7 @@ export function simulateBusyDay(): BusyDayCount {
       BUSY_DAY.returningPlayers * BUSY_DAY.rowsPerReturningPlayer +
       busyDayAccountRows(),
   );
+  const { signupEmail, sendAgainEmail } = BUSY_DAY_ACCOUNT_ACTIONS;
+  day.counter.count("lobby", signupEmail.perDay + sendAgainEmail.perDay);
   return day.counter.total();
 }

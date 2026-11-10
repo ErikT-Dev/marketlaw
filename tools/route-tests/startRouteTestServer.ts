@@ -1,5 +1,6 @@
 import { mkdirSync } from "node:fs";
 import { createTestHarness, type TestHarness } from "wrangler";
+import { ROUTE_TEST_ROOM_SECRET } from "./ROUTE_TEST_ROOM_SECRET.ts";
 
 const ALWAYS_PASSING_TURNSTILE_SECRET = "1x0000000000000000000000000000000AA";
 const CLIENT_ASSETS_DIRECTORY = "./dist/client";
@@ -10,7 +11,10 @@ export async function startRouteTestServer(): Promise<TestHarness> {
     workers: [
       {
         configPath: "./wrangler.jsonc",
-        secrets: { TURNSTILE_SECRET_KEY: ALWAYS_PASSING_TURNSTILE_SECRET },
+        secrets: {
+          TURNSTILE_SECRET_KEY: ALWAYS_PASSING_TURNSTILE_SECRET,
+          TEST_ROOM_SECRET: ROUTE_TEST_ROOM_SECRET,
+        },
       },
     ],
   });
