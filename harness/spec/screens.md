@@ -320,12 +320,24 @@ None yet.
 - **S13.1** **Match history** lists games newest first: date, casual or ranked, result, place
   ("2nd of 4"), score, winner and winner's score, number of players and turns. Clicking a game opens
   its record; clicking a username opens that player's match history. With no games, it says so.
+  It shows the 50 newest games, and **Show older games** adds the next 50. A match history whose
+  account no longer exists says so: "This player's account no longer exists." Dates are the
+  date the game ended, in the viewer's local time.
 - **S13.2** The **game record** shows when the game started and ended, how long it took, the turns,
   the winner, the bonus types and casual or ranked, and a column per player with every value of
-  A3.2. Deleted accounts show "Deleted player".
+  A3.2. Deleted accounts show "Deleted player". A player who left shows the turn they left in
+  ("left (turn 20)"), with their values at that moment (A3.3). Times are the viewer's local time.
 - **S13.3** The **ELO ranking** shows 50 players per page with place, username, rating and ranked
   games, page buttons, and **Jump to me** with your row highlighted. Players not in the table see
   why, and Jump to me is disabled.
+- **S13.4** Match histories and game records open as pages over the current screen, each with
+  **Back** to where the player came from; during a game nothing pauses (C1.3). A username opens
+  that player's match history wherever it stands on its own: the player badges (S2.2), the
+  opponents overview and boards (S3), the room's player list (S11), the end-of-game table (S9),
+  chat (S7.3), the public rooms (S10.3), match histories and game records. Clicking an opponent
+  card's username opens the match history; clicking the rest of the card opens the board (S3.2).
+  Usernames inside sentences (the draw log, messages, dialogs) and your own user box (S12.7) do
+  not open a match history.
 
 ## S14. Game menu, rules and card set
 

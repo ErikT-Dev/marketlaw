@@ -2535,3 +2535,94 @@ file.
 - **Why:** a budget that fails on load teaches everyone to rerun past it, which hides a real
   regression; three runs of the room scenarios add about a second to the harness.
 - **Implemented:** phase 24, second finisher run (`tools/harness-runner/buildSteadyScenarioRuns.ts`).
+
+## Q119. How are game records stored, written and counted (A3.1, A3.2, M8.3, B8)?
+
+- **Phase:** 25, start (A3, A4, M8.3, B8; Q62 for the replay record, Q111, Q112).
+- **Question:** the spec says what a record holds and that it is kept for good, but not where it
+  lives, when it is written, which endings write one, how usernames stay current (A3.5), or how
+  B8 is measured.
+- **Options:** one D1 row per game with every player inside it; one row per player only; a row
+  per game plus a row per player for the match history lookup. Usernames stored in the record
+  and rewritten on every change, or looked up when the record is read.
+- **Solution:**
+  - Two new D1 tables, both `WITHOUT ROWID` and with no other index, so each row written is one
+    row: `game_records` (`id` a random UUID, `ended_ms`, `record` as JSON) and
+    `game_record_players` (`player_id`, `ended_ms`, `game_id`, the primary key of all three, so a
+    player's games read newest first straight from the key).
+  - The values come from the engine: a pure function in `src/rules/` builds the record from the
+    ended `SavedGame` by seat (places, results, scores and every value of A3.2, combo gains and
+    type counts included); the room adds the seats' player ids, the kind (casual until phase 26)
+    and the start time (`setup.startedAt`). No rules in the server.
+  - Written once, in one `batch`, when the room has saved a game that has just ended, at the same
+    two places that write the replay record (`GameRoom` and `applyRoomAlarm`), for every ending
+    except the abandoned ones (`isAbandoned`: `everyone_left`, `paused_too_long`,
+    `abandoned_by_vote`). Test-room games save records too: their seats are guest users (C5.2)
+    and the owner can try match histories with them. A failed write is logged without tokens or
+    addresses and not retried, as for the replay record.
+  - Records hold player ids, never usernames. Reading a record or a history joins `players` and
+    shows the current username (A3.5); a player id with no account row is "Deleted player", for
+    deleted accounts (Q111) and removed guests (Q112) alike. Deleting an account leaves its
+    `game_record_players` rows: the records are kept for good (A3.2) and name nobody.
+  - B8 counts, per finished simulated game, the D1 rows the record write makes: 1 plus one per
+    player, at most 5 of 12, which leaves 7 for phase 27's ratings. The harness measures it
+    (`BUDGET_CHECKS` B8 by harness). A record of a 4-player game is a few kilobytes; at 50 games a
+    day that is well under 1 GB a year of the 5 GB cap.
+- **Why:** the per-player rows make the match history one key range read without an index
+  (indexes cost a row written each, Q62); looking usernames up at read time makes A3.5, A1.1 and
+  A1.15 true with no writes at all.
+- **Implemented:** phase 25, items 1 and 2.
+
+## Q120. What does a player who left hold in the record (A3.3)?
+
+- **Phase:** 25, start (A3.3, A3.4, R21.4, R21.8).
+- **Question:** leaving empties the player's hand into the holding pile or discard (M6), and the
+  result is scored at the end with the final turn number, so a player who left was recorded
+  with no cards in hand and scored with the wrong turn.
+- **Options:** keep a copy of the seat's values at the moment of leaving; or keep only what
+  leaving changes (the cards in hand) and the turn.
+- **Solution:** when a seat leaves, the engine keeps the turn number and the number of cards in
+  hand at that moment. Its other values no longer change after leaving (no income, bonus,
+  influence or first-completion funds reach a seat that left), so they are taken as they are.
+  The score of a player who left uses those values and that turn (A3.3), on the end-of-game table
+  (S9) too, since it shows the same result. The record shows the turn they left in ("left
+  (turn 20)", as the design does). Spec A3.3 and S13.2 say so. The place result in the view
+  changes shape, so `PROTOCOL_VERSION` is raised. A new scenario covers a player who left in an
+  earlier turn than the last one.
+- **Why:** only the hand and the turn change after leaving; copying the whole seat would double
+  the saved state for nothing (B13).
+- **Implemented:** phase 25, item 1.
+
+## Q121. How are match histories opened, by whom, and where do usernames link to them (A4, A6.1, S13)?
+
+- **Phase:** 25, start (A4.1, A4.2, A6.1, S10.1, S12.7, S13.1, S13.2).
+- **Question:** A6.1 says clicking a username anywhere opens that player's match history, but not
+  which places count, how the history opens during a game, whether a logged-out visitor may
+  open one, how a long history is shown, or what a history of a deleted account shows. The
+  views carry only names, and a name inside a room can be an old one that another player has
+  taken since (A2.4), so a name cannot identify the player.
+- **Options:** links by username, or by player id; a full screen replacing the game, or a page
+  over it; one long list, or pages.
+- **Solution:**
+  - Links use the player id, which becomes a public identifier like a room code: it is never
+    proof of identity (only the session token is, `rules/multiplayer.md`). The views add each
+    player's id where a username stands on its own, which raises `PROTOCOL_VERSION`.
+  - Match history and game record open as pages over the current screen, by link
+    (`#history/<player id>`, `#record/<game id>`), like the privacy notice (S12.8), each with
+    **Back**; during a game nothing pauses (C1.3). They are opened from **My match history** in
+    the user menu (S12.7) and in the lobby's top bar when logged in (S10.1), and from usernames.
+  - Anyone can open them, also when not logged in (A6.1: every player; they are reads only, with
+    no names of hidden things). "Deleted player" is never a link.
+  - The places a username opens the history: the player badges, the opponents overview and
+    boards, the room's player list, the end-of-game table, chat, the public rooms, match
+    histories and game records. Usernames inside sentences (the draw log, messages, dialogs) and
+    your own user box do not. On an opponent card the username opens the history and the rest of
+    the card the board (S3.2).
+  - The list shows the 50 newest games and **Show older games** adds the next 50. A history whose
+    account no longer exists says "This player's account no longer exists." Dates are the date
+    the game ended, times the viewer's local time.
+  - Written into A6.1, S13.1, S13.2 and the new S13.4.
+- **Why:** a player id cannot point to the wrong player after a username change; a page over the
+  screen keeps the game and its clock as they are, as the rules viewer will (C1.3); 50 at a time
+  keeps a read small for a player with many games.
+- **Implemented:** phase 25, items 3 to 5.
