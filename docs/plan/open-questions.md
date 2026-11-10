@@ -2121,13 +2121,31 @@ file.
   changed sender file, at the cost of delivery.
 - **Why:** the only free option with good delivery and a plain HTTPS API; its daily cap is above
   the busy day's need, and the site-wide cap keeps a burst of signups from going over it.
-- **Needs the owner:** a domain, the Resend account, the verified domain and the API key (phase
-  24, "Waiting for the owner"). **Status: waiting for the owner** (the live send only).
+- **Owner's choice (2026-11-10), replaces the solution above:** the owner has no domain and
+  wants to stay at $0, so the provider is (d) **Brevo** (free plan, about 300 emails a day),
+  sending from a Gmail address the owner made for the game, `mlaw.support@gmail.com`, verified
+  as a Brevo sender. `POST https://api.brevo.com/v3/smtp/email` with the header `api-key` and
+  JSON `{ sender: { name, email }, to: [{ email }], subject, textContent }`; success is 201
+  (format checked against Brevo's API reference, developers.brevo.com/reference/sendtransacemail,
+  2026-11-10). Still plain `fetch`, no npm package. The secret is `BREVO_API_KEY` (set by the
+  owner on the live Worker); `EMAIL_FROM` (the sender address, sender name "MarketLaw") and
+  `PRIVACY_CONTACT` are both `mlaw.support@gmail.com` in `wrangler.jsonc` `vars`. The owner
+  has turned off Brevo's IP blocking (Authorised IPs), which Workers' changing IP addresses
+  would trip. The site cap of 90 a day (A9.6) stays: well under Brevo's 300, and the scenarios
+  and budgets are built on it. Known drawbacks: mail from a Gmail address sent through Brevo is
+  not signed for gmail.com, so it may land in spam or be refused by some receivers; and
+  free-plan emails carry a Brevo footer. Because of the spam risk the spec now says the notices
+  after signup and after Forgot password tell the player to look in the spam folder (A1.4,
+  S12.3, S12.4; the client already said so). `accounts.md` A12.1 names no provider ("the
+  email service"), so no spec text named Resend.
+- **Needs the owner:** nothing more; the live test send is done after release (phase 24, item
+  10). **Status: decided** (the live send is checked at release).
 - **Implemented:** `decisions.md` O3 moved to Decided as D30; `accounts.md` open question 1
-  removed, A9.6's email cap; phase 24, items 1 and 9. Item 9 (2026-11-10):
-  `src/server/email/resendSenderOf.ts` posts with plain `fetch`, no npm package; it is used only
-  when both `RESEND_API_KEY` and `EMAIL_FROM` are set, otherwise `emailSenderOf` keeps the
-  test outbox (which fails every send without `TEST_ROOM_SECRET`).
+  removed, A9.6's email cap; phase 24, items 1, 9 and 10. Item 9 (2026-11-10), changed to Brevo
+  the same day: `src/server/email/brevoSenderOf.ts` posts with plain `fetch`, no npm package; it
+  is used only when both `BREVO_API_KEY` and `EMAIL_FROM` are set, otherwise `emailSenderOf`
+  keeps the test outbox (which fails every send without `TEST_ROOM_SECRET`). Spec: A1.4, S12.3,
+  S12.4 (spam folder), in its own `HARNESS:` commit.
 
 ## Q105. What does the privacy notice say, and where is it (O7)?
 
