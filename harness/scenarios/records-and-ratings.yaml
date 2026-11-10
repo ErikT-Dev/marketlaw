@@ -50,6 +50,38 @@
         - {username: Cat, result: left, place: 2}
         - {username: Bea, result: left, place: 3, score: 684, funds_plus_hand: 4}
 
+- name: a player who left in an earlier turn is scored with the turn they left
+  covers: [A3.3, R21.4]
+  given:
+    players: 3
+    turn: 39
+    seats:
+      - seat: 1
+        player: Ann
+      - seat: 2
+        player: Bea
+        stats: {income: 6, funds: 3}
+        hand: [Pub, Library]
+      - seat: 3
+        player: Cat
+    marketplace: [{place: residential, card: Row House}, {place: industry, card: Metal Mining}, {place: service, card: Liquor Shop}, {place: public_quality, card: Fire Station}, {place: public_satisfaction, card: Public Playground}, {place: open_1, card: Dentist}, {place: open_2, card: Apparel Store}, {place: open_3, card: Forest Plantation}]
+    quests: [{quest: Trading post}, {quest: Farmland}, {quest: Sports town}, {quest: Mining town}, {quest: Countryside}]
+  when:
+    - {seat: 2, action: leave_game}
+    - {seat: 1, action: end_turn}
+    - {seat: 3, action: end_turn}
+    - {raw: {seat: 1, message: {action: turn_draw, choice: {option: B, sector: Service}}}}
+    - {raw: {seat: 3, message: {action: turn_draw, choice: {option: B, sector: Service}}}}
+    - {seat: 1, action: end_turn}
+    - {seat: 3, action: end_turn}
+  then:
+    record:
+      turns: 40
+      players:
+        - {username: Ann, result: won, place: 1}
+        - {username: Cat, result: lost, place: 2}
+        - {username: Bea, result: left, place: 3, left_in_turn: 39, score: -40, funds_plus_hand: 5}
+
 - name: an abandoned game saves no game record
   covers: [A3.1]
   given:
