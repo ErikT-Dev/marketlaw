@@ -366,7 +366,18 @@ These 15 scenarios are added to `harness/required.yaml` in this phase, by file a
     an address, a password or a link token. Check the leak test or a room test: no view or
     message to another player carries an address.
 
-- [ ] 9. **The Resend sender** (Q104, D30). **Small.**
+- [x] 9. **The Resend sender** (Q104, D30). **Small.**
+  - Done (2026-11-10): `src/server/email/resendSenderOf.ts` (keys parsed by `resendKeysOf.ts`
+    from `RESEND_API_KEY` and `EMAIL_FROM`); `emailSenderOf` uses it when both are set, else the
+    test outbox as before, so nothing changes live yet. A non-2xx answer logs
+    "Sending an email failed: Resend answered <status>", a network error "... Resend could not be
+    reached"; both are `"failed"` (not counted, the site email given back). Unit tests
+    `resendSenderOf.test.ts` against a fake `fetch`: request shape, 422 and offline fail, and no
+    log line holds an `@`, the key, the link token or a URL. No protocol change.
+  - Differs: nothing from the phase file.
+  - For later items: item 10 adds `EMAIL_FROM` to `wrangler.jsonc` `vars` (then `wrangler types`
+    adds it to `Env`) and sets the secret with `wrangler secret put RESEND_API_KEY`; the sender
+    needs both. Live, `TEST_ROOM_SECRET` is unset, so before that every send still fails.
   - `fetch` to `https://api.resend.com/emails` with `Authorization: Bearer <RESEND_API_KEY>`,
     JSON `{ from, to, subject, text }`; `from` from the `EMAIL_FROM` var. Any non-2xx or network
     error is a failed send (not counted, A1.9) and is logged by status only, never with the

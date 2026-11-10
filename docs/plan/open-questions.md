@@ -2124,7 +2124,10 @@ file.
 - **Needs the owner:** a domain, the Resend account, the verified domain and the API key (phase
   24, "Waiting for the owner"). **Status: waiting for the owner** (the live send only).
 - **Implemented:** `decisions.md` O3 moved to Decided as D30; `accounts.md` open question 1
-  removed, A9.6's email cap; phase 24, items 1 and 9.
+  removed, A9.6's email cap; phase 24, items 1 and 9. Item 9 (2026-11-10):
+  `src/server/email/resendSenderOf.ts` posts with plain `fetch`, no npm package; it is used only
+  when both `RESEND_API_KEY` and `EMAIL_FROM` are set, otherwise `emailSenderOf` keeps the
+  test outbox (which fails every send without `TEST_ROOM_SECRET`).
 
 ## Q105. What does the privacy notice say, and where is it (O7)?
 
