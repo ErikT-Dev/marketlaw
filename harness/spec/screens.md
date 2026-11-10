@@ -295,12 +295,12 @@ None yet.
   and sign up. After repeated failures it shows the human check and why (A1.13).
 - **S12.3** **Sign up** asks for username (prefilled), email and password, with the human check,
   and says what is kept (A1.3). Afterwards a notice asks the player to confirm their email, with
-  **Send it again**.
+  **Send it again**, and says to look in the spam folder if no email arrives (A1.4).
 - **S12.4** Email links open: email confirmed, set a new password (password twice, with **Set
   password**; afterwards the player is logged in), or link expired (A1.16), which offers **Send
   it again** to a logged-in player whose address is still unconfirmed and **Forgot password** to
   everyone else. **Forgot password** (from Log in, S12.2) asks for the email address with the
-  human check, then says to check that email (A1.7).
+  human check, then says to check that email and its spam folder (A1.7).
 - **S12.5** **Account settings** shows the username (disabled with the next allowed date during the
   7-day wait), the email address with its confirmation, a pending change, **Change email address**,
   **Log out** and **Delete account**. Guests see **Sign up** instead of email. A removed email

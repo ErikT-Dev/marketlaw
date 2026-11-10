@@ -49,7 +49,9 @@ None.
   password. The player can ask for the link again (**Send it again**, S12.3) without the human
   check; A1.9's limits apply. When the address is already confirmed on another account, the email
   sent instead says it is already in use (A1.3). If an email cannot be sent, signup still
-  succeeds and the player can send it again.
+  succeeds and the player can send it again. Emails may land in the spam folder (they are sent
+  from a plain mail address, not a domain of the site's own), so the notices after signup (S12.3)
+  and after Forgot password (S12.4) say to look there too.
 - **A1.5** **Logging in:** a registered user logs in with their username or email address, plus
   their password. An email address finds the account that has confirmed it (A1.11); while no
   account has, it finds the account that entered it first. Logging in is offered to players who
