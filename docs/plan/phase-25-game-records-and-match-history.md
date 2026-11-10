@@ -177,3 +177,12 @@ These 10 scenarios are added to `harness/required.yaml` in this phase, by file a
 
 - [ ] 6. **Finish.** Finisher (first run adds the 10 scenarios to `harness/required.yaml`),
   review, fixes, finisher again, release.
+
+### Helper log
+
+Filled in by the coordinator afterwards, from the helpers' completion notices (Q73). Tokens are
+each helper's conversation size at its end.
+
+| Job | Minutes | Tokens | Tool calls | Result |
+|---|---|---|---|---|
+| Starter | 9 | 153k | 79 | done |
