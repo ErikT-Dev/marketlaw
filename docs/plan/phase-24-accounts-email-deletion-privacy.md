@@ -412,7 +412,28 @@ These 15 scenarios are added to `harness/required.yaml` in this phase, by file a
     `account-link`, `guest-log-out`, `guest-note`) are in `tokens.css` only, not in
     `BOARD_VALUES.ts`, so `npm run design:tokens` would drop them.
   - `docs/enforcement.md`: no new check applies.
-- [ ] Phase review.
+- [x] Phase review (phase-reviewer, 2026-11-10): ready after fixes. Findings:
+  - [ ] R1 (blocker). The per-account and per-address limits of 3 emails a day are not atomic
+    (`reserveAccountEmail.ts:11` reads, `sendAccountEmail.ts:57-59` writes after the send);
+    parallel Send it again requests bypass them and can use up the site's 90-a-day cap. Take
+    the counts atomically before sending and give them back on a failed send; route test with
+    about 5 parallel requests expecting exactly 2 more emails. Fixer group A.
+  - [ ] R2. A password reset does not close the account's room sockets (A1.7); call
+    `logOutOfRooms` with `isEndingEveryLogin: true` after `setPasswordWithLink`; route test in
+    `roomLogout.test.ts`. Fixer group A.
+  - [ ] R3. The log check's email regex in `tools/route-tests/accountRoutes.test.ts:23` lost its
+    backslashes; use `/[^s@"'<>]+@[^s@"'<>]+.[a-z]{2,}/iu`. Fixer group B.
+  - [ ] R4. After signing up with an address confirmed elsewhere, Account settings show no
+    address and Add an email address, unlike a free address (A1.3 "looks exactly the same").
+    Decide, record in open-questions.md, and implement. Fixer group B.
+  - [ ] R5. Seven tokens in `src/client/tokens.css` are missing from
+    `tools/design-export/BOARD_VALUES.ts` (email-pending, -pending-text, -removed,
+    -removed-text, account-link, guest-log-out, guest-note); add them. Fixer group B.
+  - [ ] R6 (suggestion). Account deletion allows unlimited password guesses with a session
+    token; count failures as logins do, or record that it is accepted. Fixer group A.
+  - [ ] R7 (suggestion). Changing the email to the account's own confirmed address sends
+    "already in use" and leaves a pending change that never confirms; treat it as no change or
+    refuse it, and record the decision. Fixer group B.
 - [ ] Second finisher run.
 - [ ] Release.
 
