@@ -418,3 +418,4 @@ each helper's conversation size at its end.
 | Builder, item 6a | 19 | 191k | 74 | done |
 | Builder, item 6b | 37 | 184k | 85 | done |
 | Builder, items 7 and 8 (stopped once by the usage limit, resumed) | 17 | 153k | 49 | done |
+| Builder, item 9 | 5 | 80k | 15 | done |
