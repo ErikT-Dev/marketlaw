@@ -5,6 +5,7 @@ import { accountRoute } from "./api/accountRoute";
 import { confirmEmailRoute } from "./api/confirmEmailRoute";
 import { createGuestRoute } from "./api/createGuestRoute";
 import { createRoomRoute } from "./api/createRoomRoute";
+import { emailChangeRoute } from "./api/emailChangeRoute";
 import { generatedNameRoute } from "./api/generatedNameRoute";
 import { humanCheckRoute } from "./api/humanCheckRoute";
 import { joinRoomRoute } from "./api/joinRoomRoute";
@@ -61,6 +62,7 @@ const POST_ROUTES: Readonly<Record<string, (request: Request, env: Env) => Promi
   "/api/signups": signupRoute,
   "/api/confirmation-emails": sendAgainRoute,
   "/api/email-confirmations": confirmEmailRoute,
+  "/api/email-changes": emailChangeRoute,
   "/api/reset-emails": resetEmailRoute,
   "/api/password-resets": newPasswordRoute,
   "/api/username-changes": usernameChangeRoute,

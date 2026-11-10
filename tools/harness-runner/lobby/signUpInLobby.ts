@@ -20,6 +20,7 @@ function registrationOf(session: LobbySession, step: Readonly<Record<string, unk
     password: textOf(step["password"]),
     email: accountConfirmingEmail(session, email) !== null ? null : email,
     isEmailConfirmed: false,
+    pendingEmail: null,
     emailEnteredMs: session.now,
     failedLogins: NO_FAILED_LOGINS,
   };

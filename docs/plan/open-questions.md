@@ -2284,3 +2284,39 @@ file.
 - **Why:** a typo in the new password should not cost the player a new email out of three a day;
   one batch keeps a link to one use without a second read.
 - **Implemented:** phase 24, item 2.
+
+## Q110. Changing and adding an email address (A1.10, A1.11, A1.16)?
+
+- **Phase:** 24, item 3 (A1.10, A1.11, A1.12, A1.16; Q106, Q108, Q109).
+- **Question:** the spec does not say where a pending address is kept, whether a change whose
+  address is confirmed elsewhere shows as pending, what happens to a pending change when another
+  account confirms that address, how an account knows its address was removed (A1.11), in which
+  order the change is checked, or what the account view shows.
+- **Options:** keep the pending address only in the link, or on the account; show a pending
+  change only when a link was sent, or always; leave other accounts' pending changes, or drop them.
+- **Solution:**
+  - `POST /api/email-changes` `{ token, email, humanCheck }`: the login (`invalid_token`), a guest
+    gets `not_registered`, the address (A1.3, `email_invalid`), the human check, then the limits
+    of Q108 (per account and per new address); then the account's `pending_email` (with its email
+    key) is written and its older `change_confirm` link deleted in one batch, so a newer change
+    always replaces the pending one even when its email cannot be sent. It sends `change_confirm`,
+    or `already_in_use` when any account has confirmed the address (it is still stored as pending,
+    so the change looks the same). OK whatever the send's outcome, as signup (A1.4).
+  - Confirming (`POST /api/email-confirmations`, one batch as Q109) also opens a `change_confirm`
+    link: the address comes from `email_links.address` and must still be the pending one; while
+    no other account has confirmed it, it replaces the account's address as confirmed and clears
+    the pending change and the removed mark. A1.11 then removes the address from every other
+    unconfirmed account with the same email key and marks it removed (`is_email_removed`), and
+    drops other accounts' pending changes to that address.
+  - `POST /api/account` adds `email` (null for a guest): `address`, `isConfirmed`,
+    `pendingAddress` and `wasRemoved`, to the account holder only. Migration
+    `0011_pending_and_removed_email.sql`; `PROTOCOL_VERSION` 13.
+  - **Send it again** stays for the unconfirmed address of the account; a pending change that did
+    not arrive is sent again by changing again (with the human check).
+  - Scenarios: the lobby driver's `change_email` step; `confirm_email` opens the newer of the
+    account's confirmation and change links; `emails_sent` shows a change email as kind
+    `confirm`, as `accounts` #16 expects.
+- **Why:** keeping the pending address on the account lets the settings show it whatever the
+  email did, and the account's own removed mark is the only way the settings can explain A1.11
+  without telling who confirmed the address.
+- **Implemented:** phase 24, item 3.

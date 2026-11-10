@@ -168,6 +168,16 @@ describe("the account routes refuse hostile requests", () => {
       expect(await post("/api/email-confirmations", MALFORMED)).toEqual(MALFORMED_MESSAGE);
       expect(await post("/api/reset-emails", MALFORMED)).toEqual(MALFORMED_MESSAGE);
       expect(await post("/api/password-resets", MALFORMED)).toEqual(MALFORMED_MESSAGE);
+      expect(await post("/api/email-changes", MALFORMED)).toEqual(MALFORMED_MESSAGE);
+      const forgedChange = { token: UNKNOWN_TOKEN, email: "x@example.com", humanCheck: "" };
+      expect(await post("/api/email-changes", forgedChange)).toEqual(INVALID_TOKEN);
+      const expiredChange = { ...forgedChange, token: tokens.expiredRegistered };
+      expect(await post("/api/email-changes", expiredChange)).toEqual(INVALID_TOKEN);
+      const badAddress = { ...forgedChange, token: tokens.registered, email: "no-at-sign" };
+      expect(await post("/api/email-changes", badAddress)).toEqual({
+        status: 400,
+        body: { isOk: false, reason: "email_invalid" },
+      });
       expect(await post("/api/email-confirmations", { link: UNKNOWN_TOKEN })).toEqual(LINK_EXPIRED);
       const forgedReset = { link: UNKNOWN_TOKEN, password: PASSWORD };
       expect(await post("/api/password-resets", forgedReset)).toEqual(LINK_EXPIRED);

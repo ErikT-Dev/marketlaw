@@ -4,6 +4,7 @@ export type LobbyRegistration = {
   readonly password: string | null;
   readonly email: string | null;
   readonly isEmailConfirmed: boolean;
+  readonly pendingEmail: string | null;
   readonly emailEnteredMs: number;
   readonly failedLogins: FailedLogins;
 };

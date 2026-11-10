@@ -19,6 +19,7 @@ import { changeUsernameInLobby } from "./changeUsernameInLobby.ts";
 import { confirmEmailInLobby } from "./confirmEmailInLobby.ts";
 import { requestResetInLobby } from "./requestResetInLobby.ts";
 import { setNewPasswordInLobby } from "./setNewPasswordInLobby.ts";
+import { changeEmailInLobby } from "./changeEmailInLobby.ts";
 
 const ROOM_ACTIONS = [
   "change_size",
@@ -115,6 +116,8 @@ async function runStep(session: LobbySession, step: ScenarioStep): Promise<void>
     await signUpInLobby(session, { player: textOf(step["player"]) }, step);
   } else if (step["action"] === "confirm_email") {
     confirmEmailInLobby(session, textOf(step["player"]));
+  } else if (step["action"] === "change_email") {
+    changeEmailInLobby(session, textOf(step["player"]), step);
   } else if (step["action"] === "change_username") {
     await changeUsernameInLobby(session, textOf(step["player"]), textOf(step["username"]));
   } else {
@@ -197,6 +200,7 @@ export const LOBBY_DRIVER: ScenarioDriver = {
     "sign_up",
     "change_username",
     "confirm_email",
+    "change_email",
     "reset_password",
     "set_new_password",
     "wait_ms",
@@ -272,7 +276,10 @@ export const LOBBY_DRIVER: ScenarioDriver = {
     ],
     ["then.game", new Set(["kind", "turn", "seats"])],
     ["then.message_to", new Set(["player", "contains", "text", "hides", "notice"])],
-    ["then.accounts", new Set(["name", "kind", "email", "email_confirmed", "games"])],
+    [
+      "then.accounts",
+      new Set(["name", "kind", "email", "email_confirmed", "pending_email", "games"]),
+    ],
     ["given.seats", new Set(["seat", "player"])],
     ["then.seats", new Set(["seat", "player"])],
     ["then.emails_sent", new Set(["to", "kind"])],

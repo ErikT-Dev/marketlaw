@@ -13,6 +13,7 @@ export function registrationFromGiven(
         password: account.password ?? null,
         email: account.email ?? null,
         isEmailConfirmed: account.email_confirmed ?? false,
+        pendingEmail: null,
         emailEnteredMs: now,
         failedLogins: NO_FAILED_LOGINS,
       }

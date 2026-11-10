@@ -1,12 +1,11 @@
 import type { EmailResponse } from "../../shared/api/EmailResponse";
 import { SessionRequest } from "../../shared/api/SessionRequest";
-import { findEmailAccount } from "../email/findEmailAccount";
 import { reserveAccountEmail } from "../email/reserveAccountEmail";
 import { sendAccountEmail } from "../email/sendAccountEmail";
 import { nowMs } from "../nowMs";
-import { sha256Hex } from "../sha256Hex";
 import { unclaimedEmailOf } from "../unclaimedEmailOf";
 import { bodyOf } from "./bodyOf";
+import { registeredEmailAccountOf } from "./registeredEmailAccountOf";
 
 function json(body: EmailResponse, status: number): Response {
   return Response.json(body, { status });
@@ -18,12 +17,9 @@ export async function sendAgainRoute(request: Request, env: Env): Promise<Respon
     return json({ isOk: false, reason: "malformed_message" }, 400);
   }
   const now = nowMs();
-  const account = await findEmailAccount(env.DB, await sha256Hex(body.token), now);
-  if (account === null) {
-    return json({ isOk: false, reason: "invalid_token" }, 401);
-  }
-  if (account.isGuest) {
-    return json({ isOk: false, reason: "not_registered" }, 400);
+  const account = await registeredEmailAccountOf(env.DB, body.token, now);
+  if (account instanceof Response) {
+    return account;
   }
   const to = account.unconfirmedEmail;
   if (to === null) {

@@ -252,3 +252,60 @@ describe("the email link routes", () => {
     STARTING_MS,
   );
 });
+
+describe("the email change route", () => {
+  it(
+    "keeps the old address until the new one is confirmed and removes it from the other account",
+    async () => {
+      const token = await confirmedSignup("Emailchanger", "old.address@example.com");
+      const otherToken = tokenOf(await signUp("Otherenterer", "New.Address+x@example.com"));
+      const change = { token, email: "new.address@example.com", humanCheck: DUMMY_HUMAN_CHECK };
+      expect(await post("/api/email-changes", { ...change, humanCheck: "" })).toEqual({
+        status: 400,
+        body: { isOk: false, reason: "human_check_failed" },
+      });
+      await post("/api/email-changes", { ...change, email: "replaced.address@example.com" });
+      const replacedLink = await newestLinkTo("replaced.address@example.com");
+      expect(await post("/api/email-changes", change)).toEqual(OK);
+      const pending = await post("/api/account", { token });
+      expect(pending.body).toMatchObject({
+        email: {
+          address: "old.address@example.com",
+          isConfirmed: true,
+          pendingAddress: "new.address@example.com",
+          wasRemoved: false,
+        },
+      });
+      expect(await post("/api/email-confirmations", { link: replacedLink })).toEqual(LINK_EXPIRED);
+      const changeLink = await newestLinkTo("new.address@example.com");
+      expect(await post("/api/email-confirmations", { link: changeLink })).toEqual(OK);
+      expect((await post("/api/account", { token })).body).toMatchObject({
+        email: { address: "new.address@example.com", isConfirmed: true, pendingAddress: null },
+      });
+      expect((await post("/api/account", { token: otherToken })).body).toMatchObject({
+        email: { address: null, isConfirmed: false, pendingAddress: null, wasRemoved: true },
+      });
+      const readded = { token: otherToken, email: "own.address@example.com" };
+      expect(
+        await post("/api/email-changes", { ...readded, humanCheck: DUMMY_HUMAN_CHECK }),
+      ).toEqual(OK);
+    },
+    STARTING_MS,
+  );
+
+  it(
+    "refuses an email change to a guest",
+    async () => {
+      const guest = await post("/api/guests", {
+        name: "Changeguest",
+        humanCheck: DUMMY_HUMAN_CHECK,
+      });
+      const change = { email: "guest.change@example.com", humanCheck: DUMMY_HUMAN_CHECK };
+      expect(await post("/api/email-changes", { ...change, token: tokenOf(guest) })).toEqual({
+        status: 400,
+        body: { isOk: false, reason: "not_registered" },
+      });
+    },
+    STARTING_MS,
+  );
+});

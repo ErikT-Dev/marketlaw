@@ -210,8 +210,23 @@ These 15 scenarios are added to `harness/required.yaml` in this phase, by file a
   - Hostile tests for the new routes next to `tools/route-tests/hostileAccountRoutes.test.ts`
     (forged and reused link tokens, malformed bodies).
 
-- [ ] 3. **Changing and adding an email address** (A1.10, A1.11, A1.12, A1.16; Q106; scenario
+- [x] 3. **Changing and adding an email address** (A1.10, A1.11, A1.12, A1.16; Q106; scenario
   `accounts` #16). **Small.**
+  - Done (2026-11-10), Q110 has the details: `POST /api/email-changes` `{ token, email, humanCheck }`
+    (`src/server/api/emailChangeRoute.ts`, `email/savePendingEmail.ts`), `confirmEmailWithLink`
+    opens `change_confirm` links too, migration `0011_pending_and_removed_email.sql`
+    (`pending_email`, `pending_email_key`, `is_email_removed`), `/api/account` answers `email`
+    (`shared/api/AccountEmail.ts`, `email/accountEmailDetailsOf.ts`), `PROTOCOL_VERSION` 13. Lobby
+    driver step `change_email` (`changeEmailInLobby.ts`). `accounts` #16 (and #17, #43 and the
+    other email scenarios) pass when added to `required.yaml` locally. Route tests in
+    `emailRoutes.test.ts` and `hostileAccountRoutes.test.ts`.
+  - Differs: nothing from the phase file. B18 does not count changes (the phase file asks for
+    none). `GameRoom.ts` and `LobbySession.ts` were not touched.
+  - For later items: deleting an account (item 4) must also clear `pending_email`,
+    `pending_email_key` and `is_email_removed`. Item 6b reads `AccountResponse.email` (null for
+    guests) and calls `/api/email-changes` (`EmailResponse`, 429 over a limit); Send it again
+    covers only the unconfirmed address, not a pending change (Q110). Item 8: add
+    `/api/email-changes` to the log check.
   - Route with the human check, registered users only (`not_registered`): stores the pending
     address (a newer change replaces it), sends `change_confirm` or `already_in_use`, under the
     limits. Confirming replaces the old address and applies A1.11 to the new one. A user whose

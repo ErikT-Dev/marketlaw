@@ -133,7 +133,8 @@ describe("account settings", () => {
   it("disables the username with the next allowed date during the 7 days", async () => {
     const usernameWait = v.parse(UsernameWait, { changedAt: OCTOBER_20, allowedAt: OCTOBER_27 });
     userAccount({
-      onLoadAccount: async () => Promise.resolve({ isLoggedIn: true, name: "Bea", usernameWait }),
+      onLoadAccount: async () =>
+        Promise.resolve({ isLoggedIn: true, name: "Bea", usernameWait, email: null }),
     });
     const settings = openSettings();
     expect(
