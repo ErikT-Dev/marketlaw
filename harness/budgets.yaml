@@ -98,9 +98,10 @@
   limit: 10
   unit: milliseconds of CPU time, 99th percentile
   measured: >
-    simulator and browser tests, per handled message; a login or signup by its one password
-    hash, the iteration count times the CPU time per iteration measured on the live Free plan
-    Worker
+    simulator and browser tests, per handled message, each message the fastest of three runs of
+    the room scenarios (wall-clock time includes other programs' load); a login or signup by its
+    one password hash, the iteration count times the CPU time per iteration measured on the live
+    Free plan Worker
   why: >
     The Workers Free plan stops a request after 10 ms of CPU time.
 
