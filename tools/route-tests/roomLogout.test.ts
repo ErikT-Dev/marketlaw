@@ -3,6 +3,7 @@ import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import type { TestHarness } from "wrangler";
 import { LOGGED_OUT_CLOSE_CODE } from "../../src/shared/LOGGED_OUT_CLOSE_CODE.ts";
 import { postToRoute } from "./postToRoute.ts";
+import { readTestOutbox } from "./readTestOutbox.ts";
 import type { RouteTestDatabase } from "./RouteTestDatabase.ts";
 import { routeTestDatabaseOf } from "./routeTestDatabaseOf.ts";
 import { RoomSocket } from "./RoomSocket.ts";
@@ -13,6 +14,7 @@ const DUMMY_HUMAN_CHECK = "XXXX.DUMMY.TOKEN.XXXX";
 const PASSWORD = "harbour-lights-58";
 const STARTING_MS = 30_000;
 const WAITING_MS = 10_000;
+const LINK_TOKEN = /#(?:confirm|reset)=([0-9a-f]{64})/u;
 
 let server: TestHarness;
 let serverUrl: URL;
@@ -88,6 +90,10 @@ async function rowCountsOf(playerId: string): Promise<unknown> {
   return results[0];
 }
 
+async function newestLinkTo(email: string): Promise<string> {
+  return LINK_TOKEN.exec((await readTestOutbox(server, email)).emails[0]?.text ?? "")?.[1] ?? "";
+}
+
 async function deleteAccount(token: string) {
   return post("/api/account-deletions", { token, password: PASSWORD });
 }
@@ -137,6 +143,40 @@ describe("logging out of a room as a registered user", () => {
       }, WAITING_MS);
       expect(watcher.closeCode).toBeNull();
       expect(watcher.latestUpdate()?.room.playerNames).toContain("Roomlogout");
+    },
+    STARTING_MS,
+  );
+});
+
+describe("resetting the password in a room", () => {
+  it(
+    "closes every login's sockets and keeps the seat",
+    async () => {
+      const [firstLogin, secondLogin] = await registeredTokens("Roomresetter");
+      const email = "Roomresetter@example.com";
+      await post("/api/email-confirmations", { link: await newestLinkTo(email) });
+      const otherPlayer = await newGuestToken("Resetwatcher");
+      const code = await roomCodeOf(firstLogin, otherPlayer);
+      const firstBrowser = await socketTo(code, firstLogin);
+      const secondBrowser = await socketTo(code, secondLogin);
+      const watcher = await socketTo(code, otherPlayer);
+      await startGame(watcher, [firstBrowser, watcher]);
+
+      await post("/api/reset-emails", { email, humanCheck: DUMMY_HUMAN_CHECK });
+      const reset = await post("/api/password-resets", {
+        link: await newestLinkTo(email),
+        password: "new-harbour-lights-58",
+      });
+      expect(reset.status).toBe(200);
+      await vi.waitFor(() => {
+        expect(firstBrowser.closeCode).toBe(LOGGED_OUT_CLOSE_CODE);
+        expect(secondBrowser.closeCode).toBe(LOGGED_OUT_CLOSE_CODE);
+        const update = watcher.latestUpdate();
+        const resettingSeat = (update?.room.playerNames ?? []).indexOf("Roomresetter") + 1;
+        expect(update?.game?.awaySeats).toEqual([resettingSeat]);
+      }, WAITING_MS);
+      expect(watcher.closeCode).toBeNull();
+      expect(watcher.latestUpdate()?.room.playerNames).toContain("Roomresetter");
     },
     STARTING_MS,
   );

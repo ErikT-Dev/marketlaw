@@ -4,6 +4,7 @@ import { hashPassword } from "../accounts/hashPassword";
 import { passwordProblem } from "../accounts/passwordProblem";
 import { resetLinkAccountOf } from "../email/resetLinkAccountOf";
 import { setPasswordWithLink } from "../email/setPasswordWithLink";
+import { logOutOfRooms } from "../logOutOfRooms";
 import { nowMs } from "../nowMs";
 import { sha256Hex } from "../sha256Hex";
 import { bodyOf } from "./bodyOf";
@@ -29,7 +30,14 @@ export async function newPasswordRoute(request: Request, env: Env): Promise<Resp
   const { playerId, name } = identity;
   const passwordHash = await hashPassword(body.password);
   const token = await setPasswordWithLink(env.DB, { ...link, playerId, passwordHash });
-  return token === null
-    ? json({ isOk: false, reason: "link_expired" }, 400)
-    : json({ isOk: true, token, playerId, name }, 200);
+  if (token === null) {
+    return json({ isOk: false, reason: "link_expired" }, 400);
+  }
+  await logOutOfRooms(env, {
+    sender: { identity, tokenHash: await sha256Hex(token) },
+    token,
+    isLeaving: false,
+    isEndingEveryLogin: true,
+  });
+  return json({ isOk: true, token, playerId, name }, 200);
 }

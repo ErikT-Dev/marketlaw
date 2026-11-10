@@ -413,14 +413,25 @@ These 15 scenarios are added to `harness/required.yaml` in this phase, by file a
     `BOARD_VALUES.ts`, so `npm run design:tokens` would drop them.
   - `docs/enforcement.md`: no new check applies.
 - [x] Phase review (phase-reviewer, 2026-11-10): ready after fixes. Findings:
-  - [ ] R1 (blocker). The per-account and per-address limits of 3 emails a day are not atomic
+  - [x] R1 (blocker). The per-account and per-address limits of 3 emails a day are not atomic
     (`reserveAccountEmail.ts:11` reads, `sendAccountEmail.ts:57-59` writes after the send);
     parallel Send it again requests bypass them and can use up the site's 90-a-day cap. Take
     the counts atomically before sending and give them back on a failed send; route test with
     about 5 parallel requests expecting exactly 2 more emails. Fixer group A.
-  - [ ] R2. A password reset does not close the account's room sockets (A1.7); call
+    - Fixed: `reserveAccountEmail` takes the counts with one D1 batch of conditional upserts
+      (`takeEmailCounts`, raised only while below 3, checked by `meta.changes`) before the
+      Lobby's site email; a partly taken reservation, a site cap refusal, a failed send and a
+      lost username give them back (`returnEmailCounts`, `returnAccountEmail`). A signup without
+      a guest counts the new account after the send, with the link. Route test
+      `tools/route-tests/emailLimitRace.test.ts` (5 parallel Send it again: 2 sent, 3 refused,
+      3 emails in all). Q108 updated.
+  - [x] R2. A password reset does not close the account's room sockets (A1.7); call
     `logOutOfRooms` with `isEndingEveryLogin: true` after `setPasswordWithLink`; route test in
     `roomLogout.test.ts`. Fixer group A.
+    - Fixed: `newPasswordRoute` calls `logOutOfRooms` (`isEndingEveryLogin: true`, not leaving)
+      after the new password is saved; the logins are already gone from D1, so a room that does
+      not answer does not fail the reset. Route test "resetting the password in a room" in
+      `roomLogout.test.ts` (both logins' sockets closed, the seat kept and shown away).
   - [ ] R3. The log check's email regex in `tools/route-tests/accountRoutes.test.ts:23` lost its
     backslashes; use `/[^s@"'<>]+@[^s@"'<>]+.[a-z]{2,}/iu`. Fixer group B.
   - [ ] R4. After signing up with an address confirmed elsewhere, Account settings show no
@@ -429,8 +440,10 @@ These 15 scenarios are added to `harness/required.yaml` in this phase, by file a
   - [ ] R5. Seven tokens in `src/client/tokens.css` are missing from
     `tools/design-export/BOARD_VALUES.ts` (email-pending, -pending-text, -removed,
     -removed-text, account-link, guest-log-out, guest-note); add them. Fixer group B.
-  - [ ] R6 (suggestion). Account deletion allows unlimited password guesses with a session
+  - [x] R6 (suggestion). Account deletion allows unlimited password guesses with a session
     token; count failures as logins do, or record that it is accepted. Fixer group A.
+    - Answered: accepted, recorded as Q115 (the login token already opens everything the
+      password would; counting would break A1.15 "changes nothing").
   - [ ] R7 (suggestion). Changing the email to the account's own confirmed address sends
     "already in use" and leaves a pending change that never confirms; treat it as no change or
     refuse it, and record the decision. Fixer group B.
