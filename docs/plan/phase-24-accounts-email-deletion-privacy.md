@@ -334,3 +334,4 @@ each helper's conversation size at its end.
 | Builder, item 1 | 23 | 206k | 104 | done |
 | Builder, item 2 | 14 | 170k | 73 | done |
 | Builder, item 3 | 13 | 152k | 61 | done |
+| Builder, item 4 | 14 | 165k | 93 | done |
