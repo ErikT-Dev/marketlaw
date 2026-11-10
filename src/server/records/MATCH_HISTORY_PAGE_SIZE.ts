@@ -1,0 +1,1 @@
+export const MATCH_HISTORY_PAGE_SIZE = 50;

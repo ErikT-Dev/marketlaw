@@ -156,10 +156,36 @@ These 10 scenarios are added to `harness/required.yaml` in this phase, by file a
   - Add the new tables to the route tests' D1 schema if they read it
     (`tools/route-tests/accountTablesOf.ts`).
 
-- [ ] 3. **Reading match histories and records with current usernames** (A3.5, A4.1 to A4.3,
+- [x] 3. **Reading match histories and records with current usernames** (A3.5, A4.1 to A4.3,
   A6.1, A1.1, A1.15; Q119, Q121; scenarios `records-and-ratings` #4, #5, `accounts` "a guest
   account not used for 90 days is deleted and shows as Deleted player" and "deleting a
   registered account frees the username and shows Deleted player in records"). **Large.**
+  - Done (2026-11-10). `GET /api/players/<player id>/history[?before_ms=&before_game=]` and
+    `GET /api/records/<game id>` (`src/server/api/recordRoute.ts`, `matchHistoryRoute.ts`,
+    `gameRecordRoute.ts`). Answers in `src/shared/api/`: `MatchHistoryResponse` (`found` with
+    `username`, `games: MatchHistoryEntry[]`, `older: HistoryCursor | null`; or `account_gone`,
+    404) and `GameRecordResponse` (`found` with `record: GameRecordView`, seats
+    `GameRecordSeat` = `RecordedSeat` plus `player`; or `not_found`, 404). Every username is a
+    `RecordName`: `{kind: "player", playerId, username}` or `{kind: "deleted"}` (no id). A
+    malformed id answers like an unknown one (404); a bad cursor is a plain 400; other methods
+    405. The logic is in `src/server/records/` (`matchHistoryOf`, `gameRecordResponseOf`, with a
+    `UsernameLookup`; `readUsernames` is the D1 one), so the lobby driver runs the same code on
+    its in-memory store with names from its accounts. One read of 51 rows tells whether older
+    games exist.
+  - Differs: the guest scenario waits 91 days and 1 second, not 90 days (Q122, spec A1.1: Q112
+    deletes after more than 91 days of noted last use). The lobby driver now deletes expired
+    guests after every `wait_ms` (`removeUnusedGuestsInLobby.ts`). `given.accounts[].games`
+    now saves that many real 2-player records (the account wins at seat 1 against an id with no
+    account), and `then.accounts[].games` counts the history; `record_usernames` is the
+    username each of those records shows for that account's seat. Route tests are a second
+    `describe` in `accountRoutes.test.ts` (now 293 non-blank lines, full). `LOBBY_DRIVER.ts`
+    is 248 lines (nested fields moved to `LOBBY_NESTED_FIELDS.ts`).
+  - For later items: the client fetches the two routes and parses with the schemas above;
+    "Show older games" sends `before_ms=older.endedAt&before_game=older.gameId`. Ordinal places
+    ("2nd of 3") and the date are formatted in the client (the driver's `matchHistoryThen.ts`
+    does the same for the scenario). "Deleted player" is `RESERVED_USERNAME` on the server;
+    the client needs its own text. Fixture records for tests: `fixtureGameRecordOf` in
+    `tools/harness-runner/lobby/`.
   - Two GET routes in `src/server/api/`, registered in `src/server/worker.ts`: a player's
     history (newest first, 50 at a time, with a cursor for **Show older games**; each entry the
     overview of A4.1 and the game id) and one record (every player, A4.2). No login needed

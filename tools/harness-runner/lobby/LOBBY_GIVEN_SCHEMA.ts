@@ -13,6 +13,19 @@ const GIVEN_ROOM = v.strictObject({
   messages_sent: v.optional(v.record(v.string(), v.number())),
 });
 
+const GIVEN_RECORD = v.strictObject({
+  date: v.string(),
+  turns: v.number(),
+  players: v.array(
+    v.strictObject({
+      username: v.string(),
+      place: v.number(),
+      score: v.number(),
+      result: v.picklist(["won", "lost", "left"]),
+    }),
+  ),
+});
+
 export const LOBBY_GIVEN_SCHEMA = v.strictObject({
   clock_ms: v.optional(v.number()),
   site_games_today: v.optional(v.number()),
@@ -44,6 +57,7 @@ export const LOBBY_GIVEN_SCHEMA = v.strictObject({
   ),
   room: v.optional(GIVEN_ROOM),
   other_rooms: v.optional(v.array(GIVEN_ROOM)),
+  records: v.optional(v.array(GIVEN_RECORD)),
 });
 
 export type LobbyGiven = v.InferOutput<typeof LOBBY_GIVEN_SCHEMA>;

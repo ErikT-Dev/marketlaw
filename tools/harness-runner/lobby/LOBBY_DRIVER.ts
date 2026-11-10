@@ -22,6 +22,9 @@ import { requestResetInLobby } from "./requestResetInLobby.ts";
 import { setNewPasswordInLobby } from "./setNewPasswordInLobby.ts";
 import { changeEmailInLobby } from "./changeEmailInLobby.ts";
 import { deleteAccountInLobby } from "./deleteAccountInLobby.ts";
+import { LOBBY_NESTED_FIELDS } from "./LOBBY_NESTED_FIELDS.ts";
+import { matchHistoryThen } from "./matchHistoryThen.ts";
+import { removeUnusedGuestsInLobby } from "./removeUnusedGuestsInLobby.ts";
 
 const ROOM_ACTIONS = [
   "change_size",
@@ -108,6 +111,7 @@ async function runStep(session: LobbySession, step: ScenarioStep): Promise<void>
   session.rejected = null;
   if (typeof step["wait_ms"] === "number") {
     session.wait(step["wait_ms"]);
+    removeUnusedGuestsInLobby(session);
   } else if (typeof step["disconnect"] === "string") {
     session.setConnected(step["disconnect"], false);
   } else if (typeof step["reconnect"] === "string") {
@@ -122,6 +126,11 @@ async function runStep(session: LobbySession, step: ScenarioStep): Promise<void>
     changeEmailInLobby(session, textOf(step["player"]), step);
   } else if (step["action"] === "delete_account") {
     deleteAccountInLobby(session, textOf(step["player"]), step);
+  } else if (step["action"] === "open_match_history") {
+    const of =
+      session.accounts.get(textOf(step["of"]))?.identity ??
+      session.identityNamed(textOf(step["of"]));
+    await session.history.open(session.accounts, of.playerId);
   } else if (step["action"] === "change_username") {
     await changeUsernameInLobby(session, textOf(step["player"]), textOf(step["username"]));
   } else {
@@ -169,6 +178,10 @@ function startSession(rawGiven: Readonly<Record<string, unknown>>, random: Scrip
             players: room.playerNames,
             free_places: room.size - room.playerNames.length,
           }));
+        case "match_history":
+          return matchHistoryThen(session.history.opened);
+        case "record_usernames":
+          return session.history.accountGameUsernames(session.accounts);
         case "message_to":
           return lobbyMessageThen(session.messagesTo, expected, session.emails.noticesTo);
         default:
@@ -194,6 +207,7 @@ export const LOBBY_DRIVER: ScenarioDriver = {
     "accounts",
     "room",
     "other_rooms",
+    "records",
   ]),
   steps: new Set([
     "create_room",
@@ -210,6 +224,7 @@ export const LOBBY_DRIVER: ScenarioDriver = {
     "delete_account",
     "reset_password",
     "set_new_password",
+    "open_match_history",
     "wait_ms",
     "disconnect",
     "reconnect",
@@ -230,69 +245,12 @@ export const LOBBY_DRIVER: ScenarioDriver = {
     "lobby_rooms",
     "replay_record",
     "record",
+    "match_history",
+    "record_usernames",
     "emails_sent",
     "seats",
     ...CHAT_THEN_FIELDS,
   ]),
-  nestedFields: new Map([
-    [
-      "given.accounts",
-      new Set([
-        "name",
-        "kind",
-        "email",
-        "email_confirmed",
-        "password",
-        "last_used_ms",
-        "last_username_change_ms",
-        "actions_today",
-        "games_started_today",
-        "emails_today",
-        "games",
-      ]),
-    ],
-    [
-      "given.room",
-      new Set([
-        "code",
-        "size",
-        "public",
-        "owner",
-        "players",
-        "state",
-        "ended_ms",
-        "kind",
-        "chat",
-        "messages_sent",
-      ]),
-    ],
-    ["given.other_rooms", new Set(["code", "size", "public", "owner", "players", "state"])],
-    ["then.lobby_rooms", new Set(["owner", "players", "free_places"])],
-    [
-      "then.room",
-      new Set([
-        "size",
-        "public",
-        "owner",
-        "players",
-        "state",
-        "accepted",
-        "code_format",
-        "chat_last",
-        "chat",
-      ]),
-    ],
-    ["then.game", new Set(["kind", "turn", "seats"])],
-    ["then.message_to", new Set(["player", "contains", "text", "hides", "notice"])],
-    [
-      "then.accounts",
-      new Set(["name", "kind", "email", "email_confirmed", "pending_email", "games"]),
-    ],
-    ["given.seats", new Set(["seat", "player"])],
-    ["then.seats", new Set(["seat", "player"])],
-    ["then.emails_sent", new Set(["to", "kind"])],
-    ["then.generated_name", new Set(["taken", "max_length", "not"])],
-    ["then.logged_in", new Set(["visitor", "as"])],
-  ]),
+  nestedFields: LOBBY_NESTED_FIELDS,
   startSession,
 };
