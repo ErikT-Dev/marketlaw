@@ -348,8 +348,19 @@ These 15 scenarios are added to `harness/required.yaml` in this phase, by file a
     bundle (`harness/budgets.yaml`). The browser test of the coverage exception finds each part
     by its heading.
 
-- [ ] 8. **No email address in logs or other players' messages** (exit criteria, A1.8, A6.3).
+- [x] 8. **No email address in logs or other players' messages** (exit criteria, A1.8, A6.3).
   **Small.**
+  - Done (2026-11-10): `tools/route-tests/accountRoutes.test.ts` has a test that calls send again,
+    confirm (signup and change links), reset request, set password, change email and delete, then
+    fails on any logged line with one of their tokens, passwords, link tokens or addresses, or with
+    anything shaped like an email address (checked by adding a log of the address to the reset
+    route: the test failed). `tools/route-tests/roomLogout.test.ts` has a room test: two
+    registered players, one with a pending change, play a game; no message to either socket holds
+    an `@`. No product code changed.
+  - Differs: nothing from the phase file. The three addresses differ before the `+` and `@`,
+    since plus-addresses share one daily email count (A1.9, A1.11).
+  - For later items: item 9's Resend sender logs failures by status only; this log test does not
+    reach it (the route tests use the test outbox), so item 9's unit tests check its log lines.
   - Extend `tools/route-tests/accountRoutes.test.ts` to every new route (send again, confirm,
     reset request, set password, change email, delete) and fail on any console line containing
     an address, a password or a link token. Check the leak test or a room test: no view or

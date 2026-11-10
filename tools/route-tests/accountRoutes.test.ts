@@ -3,6 +3,7 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import type { TestHarness } from "wrangler";
 import { LOGIN_TIMES } from "../../src/server/accounts/LOGIN_TIMES.ts";
 import { postToRoute } from "./postToRoute.ts";
+import { readTestOutbox } from "./readTestOutbox.ts";
 import type { RouteTestDatabase } from "./RouteTestDatabase.ts";
 import { routeTestDatabaseOf } from "./routeTestDatabaseOf.ts";
 import { startRouteTestServer } from "./startRouteTestServer.ts";
@@ -15,6 +16,12 @@ const EMAIL = "Route.Tester+logs@example.com";
 const STARTING_MS = 30_000;
 const ONE_MINUTE_MS = 60_000;
 const LOGGED_LINE = v.looseObject({ message: v.string() });
+const NEW_PASSWORD = "still-harbour-93";
+const FIRST_EMAIL = "First.Logger@example.com";
+const SECOND_EMAIL = "Second.Logger@example.com";
+const RESENT_EMAIL = "Resent.Logger@example.com";
+const ANY_EMAIL_ADDRESS = /[^s@"'<>]+@[^s@"'<>]+.[a-z]{2,}/iu;
+const LINK_TOKEN = /#(?:confirm|reset)=([0-9a-f]{64})/u;
 
 let server: TestHarness;
 
@@ -22,12 +29,35 @@ async function post(path: string, body: Readonly<Record<string, unknown>>) {
   return postToRoute(server, path, body);
 }
 
+function loggedMessages(): ReadonlyArray<string> {
+  const logs: ReadonlyArray<unknown> = server.getLogs();
+  return logs.map((log) => v.parse(LOGGED_LINE, log).message);
+}
+
 function logsShowing(secrets: ReadonlyArray<string>): ReadonlyArray<string> {
   const lowerCaseSecrets = secrets.map((secret) => secret.toLowerCase());
-  const logs: ReadonlyArray<unknown> = server.getLogs();
-  return logs
-    .map((log) => v.parse(LOGGED_LINE, log).message)
-    .filter((message) => lowerCaseSecrets.some((secret) => message.toLowerCase().includes(secret)));
+  return loggedMessages().filter((message) =>
+    lowerCaseSecrets.some((secret) => message.toLowerCase().includes(secret)),
+  );
+}
+
+async function signUpWith(username: string, email: string): Promise<string> {
+  const signup = await post("/api/signups", {
+    username,
+    email,
+    password: PASSWORD,
+    humanCheck: DUMMY_HUMAN_CHECK,
+  });
+  return tokenOf(signup);
+}
+
+async function newestLinkTokenTo(email: string): Promise<string> {
+  const text = (await readTestOutbox(server, email)).emails[0]?.text ?? "";
+  const linkToken = LINK_TOKEN.exec(text)?.[1];
+  if (linkToken === undefined) {
+    throw new Error("No link in the newest email");
+  }
+  return linkToken;
 }
 
 async function lastUsedAt(db: RouteTestDatabase, name: string, lastUsedMs: number) {
@@ -53,6 +83,46 @@ afterAll(async () => {
 });
 
 describe("the account routes", () => {
+  it(
+    "send again, confirm, reset, set a password, change the address and delete without logging a token, password, link or email address",
+    async () => {
+      const resenderToken = await signUpWith("Emailresender", RESENT_EMAIL);
+      expect(await post("/api/confirmation-emails", { token: resenderToken })).toMatchObject({
+        status: 200,
+      });
+      const resentLink = await newestLinkTokenTo(RESENT_EMAIL);
+      const signupToken = await signUpWith("Emaillogger", FIRST_EMAIL);
+      const confirmLink = await newestLinkTokenTo(FIRST_EMAIL);
+      expect(await post("/api/email-confirmations", { link: confirmLink })).toMatchObject({
+        status: 200,
+      });
+      const resetRequest = { email: FIRST_EMAIL, humanCheck: DUMMY_HUMAN_CHECK };
+      expect(await post("/api/reset-emails", resetRequest)).toMatchObject({ status: 200 });
+      const resetLink = await newestLinkTokenTo(FIRST_EMAIL);
+      const reset = await post("/api/password-resets", { link: resetLink, password: NEW_PASSWORD });
+      const resetToken = tokenOf(reset);
+      const change = await post("/api/email-changes", {
+        token: resetToken,
+        email: SECOND_EMAIL,
+        humanCheck: DUMMY_HUMAN_CHECK,
+      });
+      expect(change).toMatchObject({ status: 200 });
+      const changeLink = await newestLinkTokenTo(SECOND_EMAIL);
+      expect(await post("/api/email-confirmations", { link: changeLink })).toMatchObject({
+        status: 200,
+      });
+      const deletion = { token: resetToken, password: NEW_PASSWORD };
+      expect(await post("/api/account-deletions", deletion)).toMatchObject({ status: 200 });
+      const tokens = [resenderToken, signupToken, resetToken];
+      const links = [resentLink, confirmLink, resetLink, changeLink];
+      const passwords = [PASSWORD, NEW_PASSWORD];
+      const addresses = [RESENT_EMAIL, FIRST_EMAIL, SECOND_EMAIL];
+      expect(logsShowing([...tokens, ...links, ...passwords, ...addresses])).toEqual([]);
+      expect(loggedMessages().filter((message) => ANY_EMAIL_ADDRESS.test(message))).toEqual([]);
+    },
+    STARTING_MS,
+  );
+
   it(
     "sign up, log in, fail a login, rename and log out without logging a token, password or email address",
     async () => {

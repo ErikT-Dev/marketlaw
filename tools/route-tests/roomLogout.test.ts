@@ -201,3 +201,29 @@ describe("deleting an account in a room", () => {
     STARTING_MS,
   );
 });
+
+describe("email addresses in room messages", () => {
+  it(
+    "sends no email address to any player in a room, not even a pending one",
+    async () => {
+      const [owner] = await registeredTokens("Addressowner");
+      const [joiner] = await registeredTokens("Addressjoiner");
+      await post("/api/email-changes", {
+        token: owner,
+        email: "Addressowner-pending@example.com",
+        humanCheck: DUMMY_HUMAN_CHECK,
+      });
+      const code = await roomCodeOf(owner, joiner);
+      const ownerBrowser = await socketTo(code, owner);
+      const joinerBrowser = await socketTo(code, joiner);
+      await startGame(joinerBrowser, [ownerBrowser, joinerBrowser]);
+      await vi.waitFor(() => {
+        expect(ownerBrowser.latestUpdate()?.game).not.toBeNull();
+      }, WAITING_MS);
+      for (const browser of [ownerBrowser, joinerBrowser]) {
+        expect(JSON.stringify(browser.messages)).not.toContain("@");
+      }
+    },
+    STARTING_MS,
+  );
+});
