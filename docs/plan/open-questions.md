@@ -2407,3 +2407,31 @@ file.
 - **Why:** dialogs keep a game in another part of the page running and reuse the modal pattern
   of every other account screen; the spec's button names win over the boards'.
 - **Implemented:** `screens.md` S17; phase 24, item 6a.
+
+## Q114. What do the email and delete parts of account settings show (S12.5, S12.6)?
+
+- **Phase:** 24, item 6b (S12.5, S12.6; Q110, Q111).
+- **Question:** no board shows the dialog for **Change email address** or **Add an email
+  address**, or an unconfirmed address. The board "Account: settings, email removed" names the
+  removed address, which `/api/account` no longer has (Q110). S12.6 does not say when a player
+  counts as "during a game", or where a deleted player ends up.
+- **Options:** name the removed address (keep it on the account) or explain without it; a page or
+  a dialog for the change.
+- **Solution:**
+  - Settings show the address as text with "✓ confirmed" or "not confirmed"; an unconfirmed one
+    has **Send it again** (the confirmation route, Q108; a pending change is not resent, Q110). A
+    pending change shows "Waiting for confirmation: …". A removed address is explained without
+    naming it, with **Add an email address**. Guests see neither the email part nor **Delete
+    account** (A1.15, `not_registered`).
+  - **Change email address** and **Add an email address** open a dialog with the new address and
+    the human check, **Send link**; when it is sent, settings open again and show the pending
+    change. A refusal (`email_limit_reached`, `site_daily_cap`, ...) shows in the dialog.
+  - **Delete account** asks for the password. "During a game" means the room's game is running
+    and has no result yet; then the dialog is "Delete your account during a game?" with **Leave
+    the game and delete**, as the board. `password_wrong` and a server that did not answer (503,
+    "The server did not answer. Try again.") keep the account and the dialog. After deleting, the
+    browser forgets the login and shows the lobby logged out.
+  - `screens.md` S17 lists the board differences.
+- **Why:** the account view tells only what the account holds (A6.3); the dialogs reuse the
+  forgotten-password form's pattern.
+- **Implemented:** `screens.md` S17; phase 24, item 6b.

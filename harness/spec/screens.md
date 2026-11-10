@@ -435,3 +435,7 @@ these, the spec is followed:
   on "Account: set a new password". Email confirmed shows no address and closes with OK; link
   expired offers Close and **Send it again** or **Forgot password** (S12.4); the new password is
   saved with **Set password** (S12.4, Q113).
+- **Account settings** on "Account: settings, email removed" names the removed address, and the
+  boards show the address in a text field. The removed address is explained without naming it
+  (the account no longer holds it, A1.11), and the address is shown as text with its
+  confirmation (Q114).
