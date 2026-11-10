@@ -378,7 +378,7 @@ These 15 scenarios are added to `harness/required.yaml` in this phase, by file a
     address. Unit tests against a fake `fetch`. No npm package (record in Q104 if that changes).
     Without the key it is not used (item 1's test double), so nothing changes live yet.
 
-- [ ] 10. **Live sending** (Q104, D30). **Small.**
+- [x] 10. **Live sending** (Q104, D30). **Small.**
   - Done before release (2026-11-10): `wrangler.jsonc` `vars` has `EMAIL_FROM` and
     `PRIVACY_CONTACT`, both `mlaw.support@gmail.com` (the owner's address for the game);
     `e2e/privacyNotice.spec.ts` expects that address. The secret `BREVO_API_KEY` is set on the
@@ -399,6 +399,9 @@ These 15 scenarios are added to `harness/required.yaml` in this phase, by file a
     ("Email confirmed"), then ask for a reset with **Forgot your password?** and open that link.
     If no email comes, the Worker's log (Cloudflare dashboard, Workers, marketlaw, Logs) has
     "Sending an email failed: Brevo answered <status>", and Brevo's transactional log says why.
+  - Owner (2026-11-10): tested live with their account Mainer: received the confirmation
+    email through Brevo, opened the link and confirmed the address; changing the username then
+    worked. The password reset email was not tried live.
 
 ### Finish
 
