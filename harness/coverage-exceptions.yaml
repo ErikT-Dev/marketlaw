@@ -57,3 +57,8 @@
   kind: instead
   how: "Client tests that a seat link asks before replacing a different account and does nothing when the answer is no."
   approved: 2026-10-28
+
+- rule: A12.1
+  kind: instead
+  how: "The privacy notice is page text, not behaviour: a browser test opens the page from signup and from account settings and finds each part of A12.1 by its heading."
+  approved: 2026-11-10

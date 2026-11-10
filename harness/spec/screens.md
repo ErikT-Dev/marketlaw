@@ -263,6 +263,11 @@ None yet.
   | `email_invalid` | Enter a whole email address, such as name@example.com. |
   | `password_invalid` | Use 8 to 64 characters for the password. |
   | `username_change_too_soon` | You can change your username once every 7 days. |
+  | `email_not_confirmed` | No account has confirmed this email address. |
+  | `email_limit_reached` | No more emails can be sent for this account or to this address today. Try again after 00:00 UTC. |
+  | `password_wrong` | Wrong password. |
+  | `link_expired` | This link no longer works. |
+  | `not_registered` | Sign up first. |
   | `no_free_room_code` | No room could be created right now. Try again. |
   | `no_answer` | The server did not answer. Try again. |
 
@@ -291,17 +296,24 @@ None yet.
 - **S12.3** **Sign up** asks for username (prefilled), email and password, with the human check,
   and says what is kept (A1.3). Afterwards a notice asks the player to confirm their email, with
   **Send it again**.
-- **S12.4** Email links open: email confirmed, set a new password, or link expired.
+- **S12.4** Email links open: email confirmed, set a new password (password twice, with **Set
+  password**; afterwards the player is logged in), or link expired (A1.16), which offers **Send
+  it again** to a logged-in player whose address is still unconfirmed and **Forgot password** to
+  everyone else. **Forgot password** (from Log in, S12.2) asks for the email address with the
+  human check, then says to check that email (A1.7).
 - **S12.5** **Account settings** shows the username (disabled with the next allowed date during the
   7-day wait), the email address with its confirmation, a pending change, **Change email address**,
   **Log out** and **Delete account**. Guests see **Sign up** instead of email. A removed email
-  address is explained, with **Add an email address** (A1.11).
+  address is explained, with **Add an email address** (A1.11). An unconfirmed address offers
+  **Send it again**. Signup and account settings link to the privacy notice (S12.8).
 - **S12.6** Warnings before: a guest logs out (cannot log back in; leaves a game in progress);
   deleting an account (with password); deleting during a game (counts as leaving).
 - **S12.7** The user menu holds Account settings, My match history and Log out, and for guests
   **Sign up to keep your account** first. It is the same in the lobby, a waiting room and a game.
   Opening it, or anything in it, during a game does not pause anything (C1.3); a guest who logs
   out gets the warning of S12.6 first.
+- **S12.8** The **privacy notice** page shows the text of A12.1 with the contact address, and a
+  way back to where the player came from. Anyone can open it, also when not logged in.
 
 ## S13. Records
 

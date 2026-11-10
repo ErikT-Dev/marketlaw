@@ -17,10 +17,7 @@ ranked queue, daily limits and chat. How the game itself is played is in `game-r
 
 ## Open questions
 
-1. **Email provider** (A1.3–A1.10). Currently: confirmation and password-reset emails are sent
-   to any address. This needs an outside email-sending service with a secret key, which is a new
-   dependency. Alternative: a different provider, or leaving email confirmation and password
-   reset out until one is chosen. To be decided before accounts are built.
+None.
 
 ## A1. Accounts
 
@@ -49,7 +46,10 @@ ranked queue, daily limits and chat. How the game itself is played is in `game-r
   both sides.
 - **A1.4** **Email verification:** after signup the player is sent a link to confirm their email
   address. Until they confirm it they can play and log in as normal, but cannot reset their
-  password.
+  password. The player can ask for the link again (**Send it again**, S12.3) without the human
+  check; A1.9's limits apply. When the address is already confirmed on another account, the email
+  sent instead says it is already in use (A1.3). If an email cannot be sent, signup still
+  succeeds and the player can send it again.
 - **A1.5** **Logging in:** a registered user logs in with their username or email address, plus
   their password. An email address finds the account that has confirmed it (A1.11); while no
   account has, it finds the account that entered it first. Logging in is offered to players who
@@ -57,15 +57,24 @@ ranked queue, daily limits and chat. How the game itself is played is in `game-r
   A failed login says only that the login failed, whether the account exists or not.
 - **A1.6** **Passwords:** a password is 8 to 64 characters.
 - **A1.7** **Forgotten password:** a registered user with a confirmed email address can ask for a
-  reset link, which is sent to that address. The request needs the human check.
+  reset link, which is sent to that address. The request needs the human check. An address that no
+  account has confirmed is refused with `email_not_confirmed`, whether an account entered it or
+  not. The link lets the player set a new password (A1.6): it ends every login of the account,
+  clears its failed logins (A1.13) and logs the player in in the browser that opened the link.
 - **A1.8** **Use of email addresses:** an email address is used only for confirming it and for
   password resets. Email addresses are hidden information: never shown to other players.
 - **A1.9** **Email limits:** at most 3 emails per day are sent for each account, and at most 3 per
-  day to each address, counting confirmation, email-change and reset emails together.
+  day to each address, counting confirmation, email-change, reset and "already in use" emails
+  together. Addresses count as the same as in A1.11, and days as in A9.1. An action whose email
+  would go over a limit is refused with `email_limit_reached` and changes nothing; the site-wide
+  cap of A9.6 is refused with `site_daily_cap`. An email that could not be sent does not count.
+  The per-address count stays when an account is deleted.
 - **A1.10** **Changing email address:** a registered user can change their email address. The new
   address must be confirmed; until it is, the old address stays on the account. The change needs
   the human check. A registered user whose address was removed (A1.11) can add a new one the same
-  way.
+  way. A newer change replaces a pending one. If the new address is already confirmed on another
+  account, the change looks the same and the email says it is already in use (A1.3). Confirming
+  the new address replaces the old one on the account, with A1.11 applied to the new one.
 - **A1.11** **One account per email address:** an unconfirmed email address reserves nothing. The
   first account to confirm an address keeps it, and the address is removed from any other account
   that entered it. Two addresses count as the same if they differ only in capital letters or in a
@@ -92,7 +101,16 @@ ranked queue, daily limits and chat. How the game itself is played is in `game-r
   registered user's logins in other browsers go on.
 - **A1.15** **Deleting an account:** a registered user can delete their account. Their email
   address and password are removed, their username becomes free, and their game records show
-  "Deleted player". Deleting an account during a game counts as leaving it (M6).
+  "Deleted player". Deleting an account during a game counts as leaving it (M6). Deleting asks for
+  the account's password (S12.6); a wrong one is refused with `password_wrong` and changes
+  nothing. Deleting ends every login of the account and every link sent for it; a player waiting
+  in a room leaves the room, and one in the ranked queue leaves the queue. A guest user cannot
+  delete their account (`not_registered`); it is removed after 90 days without use (A1.1).
+- **A1.16** **Email links:** a link in an email works once. A confirmation link (also for a new
+  address, A1.10) works for 24 hours, a reset link (A1.7) for 1 hour. A newer link of the same
+  kind for the same account replaces the older one, which stops working. A link that has expired,
+  was replaced or used, or whose address has meanwhile been confirmed by another account (A1.11)
+  opens the "link expired" screen (S12.4), reason `link_expired`.
 
 ## A2. Usernames
 
@@ -247,10 +265,11 @@ ranked queue, daily limits and chat. How the game itself is played is in `game-r
   next time it becomes full. The ranked queue makes no matches until 00:00 UTC; players can join
   it, stay in it and leave it as normal, and everyone in it sees the same message.
 - **A9.5** The tutorial does not count toward A9.2–A9.4 (C4.6).
-- **A9.6** **Site-wide caps:** at most **100 tutorials can start per day** and at most **2,000 chat
-  messages can be sent per day** on the whole site. Once a cap is reached, players are told
+- **A9.6** **Site-wide caps:** at most **100 tutorials can start per day**, at most **2,000 chat
+  messages can be sent per day** and at most **90 emails can be sent per day** (A1.9) on the whole
+  site. Once a cap is reached, players are told
   "Daily limit reached, try again after 00:00 UTC"; tutorials and chats already going on are not
-  ended, but no more tutorials start and no more messages are sent until the next day.
+  ended, but no more tutorials start and no more messages or emails are sent until the next day.
 
 ## A10. ELO rating
 
@@ -324,3 +343,35 @@ ranked queue, daily limits and chat. How the game itself is played is in `game-r
   muting a player already muted, or unmuting one who is not, changes nothing.
 - **A11.8** **Saving:** every message is saved before it is shown to other players.
 - **A11.9** A room's chat history is deleted together with the room (M8.2).
+
+## A12. Privacy notice
+
+- **A12.1** The site has a **privacy notice** page (S12.8), linked from signup and account
+  settings, and open to everyone, logged in or not. It says, in this order:
+  - **Who runs MarketLaw:** the person who runs the site, reachable at the contact address shown
+    on the page.
+  - **What is stored and why:**
+    - Your username and account, to know who is playing.
+    - For registered users: your email address (and a new one waiting for confirmation), only to
+      confirm it and to send password resets (A1.8), and a one-way hash of your password, to log
+      you in. Your password itself is never stored.
+    - A one-way code for each browser you are logged in in, with its last day of use, to keep you
+      logged in (A1.14). Your browser keeps the login itself; the site sets no tracking cookies,
+      shows no adverts and uses no analytics.
+    - The times of failed logins, to ask for the human check (A1.13).
+    - How many emails were sent today for your account and to your address (the address kept only
+      as a one-way code), for the limits of A1.9; and your counts of actions and game starts
+      today, for A9.
+    - Your games: the room's chat, the moves of every game (to replay it, M4) and the game records
+      and ratings shown in match histories and the ranking table (A3-A5, A10).
+  - **How long:** an account until it is deleted, a guest account until it has not been used for
+    90 days (A1.1); a login until 90 days without use or logging out; failed logins for
+    15 minutes; daily counts for 2 days; email links until they expire (A1.16); room chat until
+    the room is deleted (M8.2, A11.9); the moves of a game for 30 days (M4.3); game records and
+    ratings for good, showing "Deleted player" once the account is deleted.
+  - **Who else handles it:** Cloudflare runs the site and the human check (Turnstile), which sees
+    your IP address; MarketLaw does not store it. Cloudflare keeps request logs for at most
+    3 days. The email service sends the emails and sees your email address.
+  - **Your choices:** see and change your username and email address in account settings, and
+    delete your account there (A1.15): your email address and password hash are removed at once.
+    For anything else, write to the contact address.
