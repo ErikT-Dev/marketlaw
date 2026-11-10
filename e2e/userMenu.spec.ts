@@ -68,7 +68,7 @@ test("a guest signs up during a game, keeps the seat, logs out and logs back in"
   await expectScreenFits(ann.page, "account-settings", testInfo);
   const newName = `${ann.name} B`;
   await settings.getByLabel("Username").fill(newName);
-  await settings.getByRole("button", { name: "Change" }).click();
+  await settings.getByRole("button", { name: "Change", exact: true }).click();
   await expect(settings).toContainText(/You changed it on \d+ \w+\. You can change it again on/);
   await expect(settings.getByLabel("Username")).toBeDisabled();
   await settings.getByRole("button", { name: "Close" }).click();
