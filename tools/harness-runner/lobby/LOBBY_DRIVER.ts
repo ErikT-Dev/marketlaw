@@ -16,6 +16,9 @@ import { logInVisitor } from "./logInVisitor.ts";
 import { logOutPlayer } from "./logOutPlayer.ts";
 import { signUpInLobby } from "./signUpInLobby.ts";
 import { changeUsernameInLobby } from "./changeUsernameInLobby.ts";
+import { confirmEmailInLobby } from "./confirmEmailInLobby.ts";
+import { requestResetInLobby } from "./requestResetInLobby.ts";
+import { setNewPasswordInLobby } from "./setNewPasswordInLobby.ts";
 
 const ROOM_ACTIONS = [
   "change_size",
@@ -84,6 +87,12 @@ async function runVisitorStep(
     case "ask_generated_name":
       session.askGeneratedName();
       return;
+    case "reset_password":
+      requestResetInLobby(session, step);
+      return;
+    case "set_new_password":
+      setNewPasswordInLobby(session, visitor, step);
+      return;
     default:
       throw new Error(`the lobby driver has no visitor step ${textOf(step["action"])}`);
   }
@@ -104,6 +113,8 @@ async function runStep(session: LobbySession, step: ScenarioStep): Promise<void>
     await runVisitorStep(session, step["visitor"], step);
   } else if (step["action"] === "sign_up") {
     await signUpInLobby(session, { player: textOf(step["player"]) }, step);
+  } else if (step["action"] === "confirm_email") {
+    confirmEmailInLobby(session, textOf(step["player"]));
   } else if (step["action"] === "change_username") {
     await changeUsernameInLobby(session, textOf(step["player"]), textOf(step["username"]));
   } else {
@@ -185,6 +196,9 @@ export const LOBBY_DRIVER: ScenarioDriver = {
     "log_out",
     "sign_up",
     "change_username",
+    "confirm_email",
+    "reset_password",
+    "set_new_password",
     "wait_ms",
     "disconnect",
     "reconnect",

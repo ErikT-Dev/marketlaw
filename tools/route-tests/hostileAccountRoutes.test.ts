@@ -3,6 +3,7 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import type { TestHarness } from "wrangler";
 import { accountTablesOf } from "./accountTablesOf.ts";
 import { postToRoute } from "./postToRoute.ts";
+import { readTestOutbox } from "./readTestOutbox.ts";
 import type { RouteTestDatabase } from "./RouteTestDatabase.ts";
 import { routeTestDatabaseOf } from "./routeTestDatabaseOf.ts";
 import { startRouteTestServer } from "./startRouteTestServer.ts";
@@ -17,6 +18,8 @@ const INVALID_TOKEN = { status: 401, body: { isOk: false, reason: "invalid_token
 const LOGGED_OUT = { status: 200, body: { isLoggedIn: false } };
 const LOGIN_FAILED = { status: 400, body: { isOk: false, reason: "login_failed" } };
 const MINUTE_MS = 60_000;
+const LINK_EXPIRED = { status: 400, body: { isOk: false, reason: "link_expired" } };
+const MALFORMED_MESSAGE = { status: 400, body: { isOk: false, reason: "malformed_message" } };
 
 let server: TestHarness;
 let db: RouteTestDatabase;
@@ -155,5 +158,21 @@ describe("the account routes refuse hostile requests", () => {
     const scheduledTime = new Date(Date.now() + 16 * MINUTE_MS);
     await server.getWorker().scheduled({ cron: "17 3 * * *", scheduledTime });
     expect((await accountTablesOf(db)).unknownLoginFailures).toEqual([]);
+  });
+
+  it("refuses forged, malformed and wrong kinds of email links and changes nothing", async () => {
+    const outbox = await readTestOutbox(server, "Hostileuser@example.com");
+    const confirmLink = /#confirm=([0-9a-f]{64})/u.exec(outbox.emails[0]?.text ?? "")?.[1] ?? "";
+    expect(confirmLink).not.toBe("");
+    await expectNothingChangedBy(async () => {
+      expect(await post("/api/email-confirmations", MALFORMED)).toEqual(MALFORMED_MESSAGE);
+      expect(await post("/api/reset-emails", MALFORMED)).toEqual(MALFORMED_MESSAGE);
+      expect(await post("/api/password-resets", MALFORMED)).toEqual(MALFORMED_MESSAGE);
+      expect(await post("/api/email-confirmations", { link: UNKNOWN_TOKEN })).toEqual(LINK_EXPIRED);
+      const forgedReset = { link: UNKNOWN_TOKEN, password: PASSWORD };
+      expect(await post("/api/password-resets", forgedReset)).toEqual(LINK_EXPIRED);
+      const confirmAsReset = { link: confirmLink, password: PASSWORD };
+      expect(await post("/api/password-resets", confirmAsReset)).toEqual(LINK_EXPIRED);
+    });
   });
 });

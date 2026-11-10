@@ -177,8 +177,27 @@ These 15 scenarios are added to `harness/required.yaml` in this phase, by file a
   - B18: count the rows written by the busy day's emails (links, counts) in the busy-day
     simulator (Q102's pattern).
 
-- [ ] 2. **Confirming an address and resetting a password** (A1.4, A1.7, A1.11, A1.12, A1.16;
+- [x] 2. **Confirming an address and resetting a password** (A1.4, A1.7, A1.11, A1.12, A1.16;
   Q106; scenarios `accounts` #9, #10, #15, #17, #43, #44). **Large.**
+  - Done (2026-11-10), Q109 has the details: `POST /api/email-confirmations` `{ link }`,
+    `POST /api/reset-emails` `{ email, humanCheck }`, `POST /api/password-resets`
+    `{ link, password }` (`src/server/api/confirmEmailRoute.ts`, `resetEmailRoute.ts`,
+    `newPasswordRoute.ts`; `src/server/email/confirmEmailWithLink.ts`, `confirmedAccountOf.ts`,
+    `resetLinkAccountOf.ts`, `setPasswordWithLink.ts`). Reason codes `email_not_confirmed` and
+    `link_expired`, `PROTOCOL_VERSION` 12. Lobby driver steps `confirm_email`,
+    `reset_password`, `set_new_password` (`confirmEmailInLobby.ts`, `requestResetInLobby.ts`,
+    `setNewPasswordInLobby.ts`; links in `LobbyEmails`). The six scenarios pass when added to
+    `required.yaml` locally. Route tests in `tools/route-tests/emailRoutes.test.ts`, hostile ones
+    in `hostileAccountRoutes.test.ts` (added to the existing files, no new wrangler server).
+  - Differs: nothing from the phase file. B18 does not count confirmations or resets (the phase
+    file asks for none); the finisher can add them if the busy day should.
+  - For later items: the confirm route handles only kind `confirm`; item 3 extends
+    `confirmEmailWithLink` to `change_confirm` (the address comes from `email_links.address`)
+    and must record "removed" for the A1.11 removal there (`REMOVE_FROM_OTHER_ACCOUNTS`, no
+    column for it yet). The lobby driver's `LobbyEmails.send(playerId, email, now)` now makes the
+    link; `lobbyEmailRejection.ts` and `accountConfirmingEmail.ts` are shared by the driver's
+    email steps. Item 6a's client calls the three routes above; the set-password answer is a
+    `GuestResponse` like login.
   - Confirm route: opens a confirmation link; the first account to confirm keeps the address,
     and it is removed from every other account with the same email key (#17); a used, expired,
     replaced or meanwhile-claimed link gives `link_expired` (#43).

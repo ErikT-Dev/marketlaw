@@ -2252,3 +2252,35 @@ file.
   a second write per email; storing nothing on the live site until the real sender exists keeps
   addresses out of a table nobody reads.
 - **Implemented:** phase 24, item 1.
+
+## Q109. Opening confirmation and reset links (A1.7, A1.11, A1.16)?
+
+- **Phase:** 24, item 2 (A1.4, A1.7, A1.11, A1.16; Q106).
+- **Question:** the spec does not say whether a refused new password uses up the reset link, to
+  which address a reset requested with a variant of the address (`Name+x@...`) is sent, what
+  happens to the other browsers' open connections when a reset ends every login, or how the
+  scenarios open a confirmation link for an account that is given unconfirmed.
+- **Options:** check the password before or after the link; send to the typed or the confirmed
+  address; close the other connections or let them run out.
+- **Solution:**
+  - Routes: `POST /api/email-confirmations` `{ link }` (OK or `link_expired`),
+    `POST /api/reset-emails` `{ email, humanCheck }` (the human check, then
+    `email_not_confirmed`, then the limits of Q108; OK) and `POST /api/password-resets`
+    `{ link, password }` (the answer of a login: token, player id, name).
+  - A new password is checked (A1.6) before the link, so a refused password leaves the link
+    working. The link, the password, ending the logins, clearing failed logins and the new login
+    are one D1 batch whose statements all require the live link, so a link used twice at the same
+    moment sets the password once.
+  - Confirming is one D1 batch: the account is confirmed only while no account has confirmed the
+    address (A1.11), the address is removed from every other account with the same email key, and
+    the link is used up whatever the outcome.
+  - The reset email goes to the address as the confirming account stored it, counted per account
+    and per address as in Q108.
+  - Ending every login deletes the account's logins; a connection already open in another browser
+    is not closed, it fails at its next login check (a reconnect or a route).
+  - Scenarios: an account given as registered with an unconfirmed address has a live
+    confirmation link from the scenario's start; `set_new_password` opens the newest reset link
+    sent on the site.
+- **Why:** a typo in the new password should not cost the player a new email out of three a day;
+  one batch keeps a link to one use without a second read.
+- **Implemented:** phase 24, item 2.

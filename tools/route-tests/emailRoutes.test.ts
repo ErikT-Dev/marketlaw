@@ -13,6 +13,9 @@ const PASSWORD = "bright-quay-58";
 const STARTING_MS = 30_000;
 const LOGGED_LINE = v.looseObject({ message: v.string() });
 const CONFIRM_LINK = /#confirm=([0-9a-f]{64})/u;
+const RESET_LINK = /#reset=([0-9a-f]{64})/u;
+const LINK_EXPIRED = { status: 400, body: { isOk: false, reason: "link_expired" } };
+const OK = { status: 200, body: { isOk: true } };
 
 let server: TestHarness;
 let db: RouteTestDatabase;
@@ -30,8 +33,38 @@ async function signUp(username: string, email: string) {
   });
 }
 
-function linkTokenOf(text: string | undefined): string {
-  return CONFIRM_LINK.exec(text ?? "")?.[1] ?? "";
+function linkTokenOf(text: string | undefined, link = CONFIRM_LINK): string {
+  return link.exec(text ?? "")?.[1] ?? "";
+}
+
+async function newestLinkTo(email: string, link = CONFIRM_LINK): Promise<string> {
+  return linkTokenOf((await readTestOutbox(server, email)).emails[0]?.text, link);
+}
+
+async function confirmedSignup(username: string, email: string): Promise<string> {
+  const token = tokenOf(await signUp(username, email));
+  await post("/api/email-confirmations", { link: await newestLinkTo(email) });
+  return token;
+}
+
+async function emailOf(username: string): Promise<unknown> {
+  const { results } = await db
+    .prepare("SELECT email, is_email_confirmed FROM players WHERE name = ?")
+    .bind(username)
+    .all();
+  return results[0];
+}
+
+async function requestReset(email: string, humanCheck = DUMMY_HUMAN_CHECK) {
+  return post("/api/reset-emails", { email, humanCheck });
+}
+
+async function setPasswordWith(link: string, password: string) {
+  return post("/api/password-resets", { link, password });
+}
+
+async function logIn(login: string, password: string) {
+  return post("/api/logins", { login, password });
 }
 
 function loggedLines(): ReadonlyArray<string> {
@@ -124,6 +157,97 @@ describe("the email routes", () => {
         status: 400,
         body: { isOk: false, reason: "malformed_message" },
       });
+    },
+    STARTING_MS,
+  );
+});
+
+describe("the email link routes", () => {
+  it(
+    "confirms an address once and removes it from the other account that entered it",
+    async () => {
+      await signUp("Firstenter", "shared.address@example.com");
+      await signUp("Secondenter", "Shared.Address+games@example.com");
+      const firstLink = await newestLinkTo("shared.address@example.com");
+      const secondLink = await newestLinkTo("Shared.Address+games@example.com");
+      expect(await post("/api/email-confirmations", { link: secondLink })).toEqual(OK);
+      expect(await post("/api/email-confirmations", { link: secondLink })).toEqual(LINK_EXPIRED);
+      expect(await post("/api/email-confirmations", { link: firstLink })).toEqual(LINK_EXPIRED);
+      expect(await emailOf("Firstenter")).toEqual({ email: null, is_email_confirmed: 0 });
+      expect(await emailOf("Secondenter")).toEqual({
+        email: "Shared.Address+games@example.com",
+        is_email_confirmed: 1,
+      });
+    },
+    STARTING_MS,
+  );
+
+  it(
+    "refuses a confirmation link that was replaced or has expired",
+    async () => {
+      const email = "late.confirmer@example.com";
+      const token = tokenOf(await signUp("Lateconfirmer", email));
+      const replacedLink = await newestLinkTo(email);
+      await post("/api/confirmation-emails", { token });
+      const newestLink = await newestLinkTo(email);
+      expect(await post("/api/email-confirmations", { link: replacedLink })).toEqual(LINK_EXPIRED);
+      await db.prepare("UPDATE email_links SET expires_ms = 0 WHERE kind = 'confirm'").run();
+      expect(await post("/api/email-confirmations", { link: newestLink })).toEqual(LINK_EXPIRED);
+      expect(await emailOf("Lateconfirmer")).toEqual({ email, is_email_confirmed: 0 });
+    },
+    STARTING_MS,
+  );
+
+  it(
+    "sends a reset link only for a confirmed address and sets a new password with it",
+    async () => {
+      const email = "reset.player@example.com";
+      const firstLogin = await confirmedSignup("Resetplayer", email);
+      await signUp("Neverconfirmed", "never.confirmed@example.com");
+      expect(await requestReset("RESET.player+x@example.com", "")).toEqual({
+        status: 400,
+        body: { isOk: false, reason: "human_check_failed" },
+      });
+      expect(await requestReset("never.confirmed@example.com")).toEqual({
+        status: 400,
+        body: { isOk: false, reason: "email_not_confirmed" },
+      });
+      expect(await requestReset("RESET.player+x@example.com")).toEqual(OK);
+      const resetLink = await newestLinkTo(email, RESET_LINK);
+      const newPassword = "quiet-harbour-77";
+      expect(await setPasswordWith(resetLink, "short")).toEqual({
+        status: 400,
+        body: { isOk: false, reason: "password_invalid" },
+      });
+      const answer = await setPasswordWith(resetLink, newPassword);
+      expect(answer).toMatchObject({ status: 200, body: { isOk: true, name: "Resetplayer" } });
+      const newLogin = tokenOf(answer);
+      expect(await setPasswordWith(resetLink, newPassword)).toEqual(LINK_EXPIRED);
+      expect(await post("/api/confirmation-emails", { token: firstLogin })).toMatchObject({
+        status: 401,
+      });
+      expect(await post("/api/confirmation-emails", { token: newLogin })).toEqual(OK);
+      expect(await logIn("Resetplayer", PASSWORD)).toMatchObject({ status: 400 });
+      expect(await logIn("Resetplayer", newPassword)).toMatchObject({ status: 200 });
+      const secrets = [resetLink, newPassword, newLogin, email];
+      expect(
+        loggedLines().filter((line) => secrets.some((secret) => line.includes(secret))),
+      ).toEqual([]);
+    },
+    STARTING_MS,
+  );
+
+  it(
+    "refuses a reset link that has expired",
+    async () => {
+      const email = "slow.resetter@example.com";
+      await confirmedSignup("Slowresetter", email);
+      await post("/api/reset-emails", { email, humanCheck: DUMMY_HUMAN_CHECK });
+      await db.prepare("UPDATE email_links SET expires_ms = 0 WHERE kind = 'reset'").run();
+      const link = await newestLinkTo(email, RESET_LINK);
+      expect(await post("/api/password-resets", { link, password: "fresh-meadow-12" })).toEqual(
+        LINK_EXPIRED,
+      );
     },
     STARTING_MS,
   );

@@ -2,6 +2,7 @@ import * as v from "valibot";
 import { EpochMs } from "../shared/EpochMs";
 import { RoomCode } from "../shared/RoomCode";
 import { accountRoute } from "./api/accountRoute";
+import { confirmEmailRoute } from "./api/confirmEmailRoute";
 import { createGuestRoute } from "./api/createGuestRoute";
 import { createRoomRoute } from "./api/createRoomRoute";
 import { generatedNameRoute } from "./api/generatedNameRoute";
@@ -9,7 +10,9 @@ import { humanCheckRoute } from "./api/humanCheckRoute";
 import { joinRoomRoute } from "./api/joinRoomRoute";
 import { loginRoute } from "./api/loginRoute";
 import { logoutRoute } from "./api/logoutRoute";
+import { newPasswordRoute } from "./api/newPasswordRoute";
 import { replayExportRoute } from "./api/replayExportRoute";
+import { resetEmailRoute } from "./api/resetEmailRoute";
 import { roomJson } from "./api/roomJson";
 import { sessionRoute } from "./api/sessionRoute";
 import { sendAgainRoute } from "./api/sendAgainRoute";
@@ -57,6 +60,9 @@ const POST_ROUTES: Readonly<Record<string, (request: Request, env: Env) => Promi
   "/api/rooms": createRoomRoute,
   "/api/signups": signupRoute,
   "/api/confirmation-emails": sendAgainRoute,
+  "/api/email-confirmations": confirmEmailRoute,
+  "/api/reset-emails": resetEmailRoute,
+  "/api/password-resets": newPasswordRoute,
   "/api/username-changes": usernameChangeRoute,
   "/api/session": sessionRoute,
   "/api/test-rooms": createTestRoom,

@@ -1,11 +1,10 @@
-import { emailKeyOf } from "../../../src/server/accounts/emailKeyOf.ts";
 import { nameKeyOf } from "../../../src/server/accounts/nameKeyOf.ts";
 import { NO_FAILED_LOGINS } from "../../../src/server/accounts/NO_FAILED_LOGINS.ts";
 import { signupProblem } from "../../../src/server/accounts/signupProblem.ts";
-import { siteEmailLimitOf } from "../../../src/server/lobby/siteEmailLimitOf.ts";
-import { takeSiteEmail } from "../../../src/server/lobby/takeSiteEmail.ts";
 import type { ReasonCode } from "../../../src/shared/ReasonCode.ts";
 import type { LobbyAccount } from "./LobbyAccount.ts";
+import { accountConfirmingEmail } from "./accountConfirmingEmail.ts";
+import { lobbyEmailRejection } from "./lobbyEmailRejection.ts";
 import type { LobbyRegistration } from "./LobbyRegistration.ts";
 import type { LobbySession } from "./LobbySession.ts";
 
@@ -15,20 +14,11 @@ function textOf(value: unknown): string {
   return typeof value === "string" ? value : "";
 }
 
-function isConfirmedElsewhere(session: LobbySession, email: string): boolean {
-  return [...session.accounts.values()].some(
-    ({ registration }) =>
-      registration?.isEmailConfirmed === true &&
-      registration.email !== null &&
-      emailKeyOf(registration.email) === emailKeyOf(email),
-  );
-}
-
 function registrationOf(session: LobbySession, step: Readonly<Record<string, unknown>>) {
   const email = textOf(step["email"]);
   const registration: LobbyRegistration = {
     password: textOf(step["password"]),
-    email: isConfirmedElsewhere(session, email) ? null : email,
+    email: accountConfirmingEmail(session, email) !== null ? null : email,
     isEmailConfirmed: false,
     emailEnteredMs: session.now,
     failedLogins: NO_FAILED_LOGINS,
@@ -36,20 +26,9 @@ function registrationOf(session: LobbySession, step: Readonly<Record<string, unk
   return registration;
 }
 
-function emailRejection(session: LobbySession, guest: LobbyAccount | null, email: string) {
-  const overLimit = session.emails.limitRejection(guest?.identity.playerId ?? null, email);
-  if (overLimit !== null) {
-    return overLimit;
-  }
-  const siteEmailsPerDay = siteEmailLimitOf({});
-  const taken = takeSiteEmail(session.lobby, { now: session.now, siteEmailsPerDay });
-  session.lobby = taken.record;
-  return taken.isTaken ? null : "site_daily_cap";
-}
-
 function sendSignupEmail(session: LobbySession, name: string, email: string, isElsewhere: boolean) {
   const kind = isElsewhere ? "already_in_use" : "confirm";
-  session.emails.send(session.identityNamed(name).playerId, { to: email, kind });
+  session.emails.send(session.identityNamed(name).playerId, { to: email, kind }, session.now);
   session.emails.noticesTo.set(name, "signup_done_confirm_email");
 }
 
@@ -99,11 +78,12 @@ export async function signUpInLobby(
       isTaken: (wanted) => Promise.resolve(isTakenByOther(session, wanted, guest)),
     },
   );
-  session.rejected = problem ?? emailRejection(session, guest, email);
+  session.rejected =
+    problem ?? lobbyEmailRejection(session, guest?.identity.playerId ?? null, email);
   if (session.rejected !== null) {
     return;
   }
-  const isElsewhere = isConfirmedElsewhere(session, email);
+  const isElsewhere = accountConfirmingEmail(session, email) !== null;
   saveSignup(session, { name, guest }, step);
   sendSignupEmail(session, name, email, isElsewhere);
   if ("visitor" in by) {
