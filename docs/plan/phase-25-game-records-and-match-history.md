@@ -1,6 +1,6 @@
 # Phase 25: Game records and match history
 
-Status: approved
+Status: in progress
 Milestone: 5 Accounts and ranking
 
 ## Goal
@@ -47,7 +47,7 @@ see theirs.
 
 ## Required scenarios
 
-These 9 scenarios are added to `harness/required.yaml` in this phase, by file and number:
+These 10 scenarios are added to `harness/required.yaml` in this phase, by file and number:
 
 - `accounts` #20: a guest account not used for 90 days is deleted and shows as Deleted player
 - `accounts` #21: deleting a registered account frees the username and shows Deleted player in records
@@ -58,3 +58,122 @@ These 9 scenarios are added to `harness/required.yaml` in this phase, by file an
 - `records-and-ratings` #4: game records always show the current username
 - `records-and-ratings` #5: the match history lists games newest first with a short overview
 - `rooms` #21: after a game the room stays and is deleted 24 hours after the game ended
+- `records-and-ratings`, new (Q120): a player who left in an earlier turn is scored with the turn
+  they left
+
+## Progress
+
+- [x] 0. Start (2026-11-10): branch `phase-25-game-records-and-match-history` from master
+  `b43762f`. Spec gaps decided and written into the spec first (commit `45f5af6 HARNESS: Game
+  records, leaving values and opening match histories (Q119-Q121)`): Q119 (D1 tables, when a
+  record is written, current usernames, B8), Q120 (a left player's hand and turn, A3.3) and Q121
+  (how histories open, who can open them, which usernames link, paging; A6.1, S13.1, S13.2, new
+  S13.4). Read Q119 to Q121 before building any item; they are the design. One new scenario joins
+  the phase's list (10 in all).
+  - Scenario numbers in the list above are by the phase plan; the names are what counts. By
+    position in `accounts.yaml` the two account scenarios are the 21st and 22nd.
+  - A6.2 (ELO ranking table) and S10.1's **ELO ranking** button come with phase 27; ranked games,
+    `ranked: true` and ratings in records with phases 26 and 27. This phase records every game
+    as casual.
+  - All items: scenarios become required only in the finisher's first run; until then check them
+    by adding them to `harness/required.yaml` locally without committing.
+  - Every message shape change raises `PROTOCOL_VERSION` (now 14) once per item that changes it
+    (`proposed-rules.md`); a new room record shape raises `ROOM_SCHEMA_VERSION` (D1). New D1
+    tables go in a new migration, `migrations/0012_...sql`.
+  - Files near the line limit (300 non-blank lines): `tools/harness-runner/lobby/LOBBY_DRIVER.ts`
+    (286), `src/server/GameRoom.ts` (271), `tools/harness-runner/room/RoomSession.ts` (256),
+    `src/client/store/ClientStore.ts` (254), `tools/harness-runner/room/ROOM_DRIVER.ts` (244).
+    Split them, do not grow them past the limit.
+  - Stats and types are always icons, names only on hover (S1.6), also in the record's type
+    counts and values; the design's text labels are a visual reference only.
+
+- [ ] 1. **The game record in the engine** (A3.1 to A3.4, R21.4, R21.8, M6.8; Q119, Q120;
+  scenarios `records-and-ratings` #1, #2, #3 and the new one, `connections-and-leaving` #11).
+  **Large.**
+  - Leaving (`src/rules/leaveGame.ts`) keeps the seat's turn and cards in hand at that moment
+    (Q120); `gameResultOf.ts` scores a seat that left with them, so the end-of-game table (S9)
+    changes too. `PlaceResult` (`src/shared/`) gains what the view needs (the turn they left):
+    raise `PROTOCOL_VERSION`. The seat state changes shape, so raise `SAVE_SCHEMA_VERSION` (15,
+    `src/rules/`; D1: older rooms close themselves).
+  - A pure function in `src/rules/` builds the record by seat from the ended `SavedGame`: turns
+    (`state.turn`), winner, `bonusTypes`, and per seat result (won, lost, left), place, score,
+    reached end goal, income, funds plus hand, workforce, quality, satisfaction, product,
+    distribution, influence, bonus-type points, completed projects, quests completed, workforce,
+    quality and satisfaction gained from combos (from `combosClaimed` and the catalogue's combo
+    rewards; reuse what `claimAll.ts` applies) and type counts (`typeCountsOf.ts`). It returns
+    nothing for the abandoned endings (`src/shared/isAbandoned.ts`). The record type goes in
+    `src/shared/` (the client shows it in item 4).
+  - The scenario driver learns the `record` then-key (`record: none`, the full record,
+    `record: {results: ...}`), for the engine or room driver, whichever runs these scenarios
+    now (`tools/harness-runner/DRIVERS.ts`).
+  - Add the new scenario (Q120) to `harness/scenarios/records-and-ratings.yaml` in a `HARNESS:`
+    commit: a player leaves, the game goes on at least one more turn, and the record shows that
+    player's score with the turn they left and their cards in hand then. Raise the count in
+    `tools/harness-runner/harness.test.ts` (458).
+
+- [ ] 2. **Saving game records in D1** (A3.1, A3.2, M8.3, B8; Q119; scenario `rooms` #21).
+  **Large.**
+  - Migration `0012` with `game_records` and `game_record_players`, both `WITHOUT ROWID`, no
+    other index (Q119).
+  - Write in one `batch` next to `saveReplayRecordIfEnded` (`src/server/replays/`), called from
+    `src/server/GameRoom.ts` and `src/server/applyRoomAlarm.ts`; reuse `endedGameOf.ts`. Player
+    ids from `RoomGame.seats` (`SeatPlayer`), kind from `RoomGame.kind`, start from
+    `saved.setup.startedAt`, end from `saved.state.clockStartedAt` (as the replay record does).
+    Catch and log a failure as `saveReplayRecordIfEnded` does; never log tokens or addresses.
+  - The lobby driver's in-memory D1 for replay records (`memoryReplayRecordDatabase.ts`,
+    `MemoryReplayRecords.ts`) is the pattern for an in-memory game record store; `rooms` #21's
+    `record: kept` reads it after the room is deleted.
+  - B8: count the rows of the record write per finished simulated game in the harness and set
+    `tools/harness-runner/BUDGET_CHECKS.ts` B8 to `by: "harness"` with where it is measured.
+    Expect at most 5.
+  - Add the new tables to the route tests' D1 schema if they read it
+    (`tools/route-tests/accountTablesOf.ts`).
+
+- [ ] 3. **Reading match histories and records with current usernames** (A3.5, A4.1 to A4.3,
+  A6.1, A1.1, A1.15; Q119, Q121; scenarios `records-and-ratings` #4, #5, `accounts` "a guest
+  account not used for 90 days is deleted and shows as Deleted player" and "deleting a
+  registered account frees the username and shows Deleted player in records"). **Large.**
+  - Two GET routes in `src/server/api/`, registered in `src/server/worker.ts`: a player's
+    history (newest first, 50 at a time, with a cursor for **Show older games**; each entry the
+    overview of A4.1 and the game id) and one record (every player, A4.2). No login needed
+    (Q121). Usernames joined from `players` at read; no row is "Deleted player" and has no
+    player id in the answer. A history of an id with no account row answers so (the page says
+    "This player's account no longer exists.").
+  - Response types and their valibot schemas in `src/shared/api/`, like the other routes.
+  - The lobby driver learns `given.records`, `given.accounts[].games`, the
+    `open_match_history` step and the `match_history` and `record_usernames` then-keys.
+    Account deletion and the 90-day guest removal (`src/server/deletion/`) need no change: they
+    already remove the account row (Q111, Q112).
+  - Route tests for both routes beside `tools/route-tests/accountRoutes.test.ts`, with bad ids
+    and a deleted player.
+
+- [ ] 4. **Match history and game record pages** (S13.1, S13.2, S13.4, S10.1, S12.7; Q121;
+  design boards "Records: match history", "Records: game record", "Records: match history
+  empty", "Records: another player's match history"). **Large.**
+  - Pages over the current screen by link (`#history/<player id>`, `#record/<game id>`), lazy
+    loaded, with **Back**: reuse the privacy notice's pattern (`src/client/screens/privacy/`,
+    `usePrivacyNoticeOpen.ts`, `keepPrivacyNoticeInsideApp.ts`, `LazyPrivacyNoticePage.tsx`,
+    `App.tsx` making the app `inert` under it).
+  - Enable **My match history** in `src/client/screens/account/UserMenuItems.tsx` (now disabled)
+    and add it to `src/client/screens/lobby/LobbyTopBar.tsx` when logged in (S10.1).
+  - Usernames in the pages are links to the history; "Deleted player" is plain text. The
+    viewer's own column may be marked "(you)" as in the design; winners show their username.
+  - Unit tests by role, a browser test that finishes a game (reuse the fastest existing
+    full-game or test-room path) and opens the history and the record, screenshots to
+    `harness/screens/`, axe.
+
+- [ ] 5. **Usernames open match histories everywhere** (A6.1, S13.4; Q121). **Large.**
+  - Views gain each player's id where a username stands on its own: room players and seats, the
+    game's player badges and opponents, the end-of-game result, chat senders, public rooms.
+    Built only by `viewFor` and the room's view code; raise `PROTOCOL_VERSION`. The leak test
+    is about card ids and is unchanged; player ids are not secret (Q121).
+  - One shared link component for a username, used by `PlayerBadge.tsx` (top bar),
+    `OpponentCard.tsx` (the username its own button; the rest of the card still opens
+    `OpponentBoardDialog.tsx`, S3.2), the board, `GameOverTable.tsx`, `ChatEntryItem.tsx`,
+    `PublicRoomsList.tsx`, the waiting room and room-after-game player lists, and item 4's
+    pages. Not the user box, not names inside sentences.
+  - Unit tests by role for each place; one browser test that clicks an opponent's name in a
+    game.
+
+- [ ] 6. **Finish.** Finisher (first run adds the 10 scenarios to `harness/required.yaml`),
+  review, fixes, finisher again, release.
