@@ -393,11 +393,27 @@ These 15 scenarios are added to `harness/required.yaml` in this phase, by file a
 
 ### Finish
 
-- [ ] First finisher run: the 15 scenarios onto `harness/required.yaml`; full check, harness,
+- [x] First finisher run: the 15 scenarios onto `harness/required.yaml`; full check, harness,
   browser tests, budgets.
-  - Note from item 6b: the `TextInput` field error colour (#ef4444 on the modal background) fails
-    axe contrast. It predates this phase; screenshots with axe are taken without a field error
-    showing. Decide whether to fix it here or record it as a known gap.
+  - Done (2026-11-10): the 15 scenarios are required (`HARNESS:` commit). `npm run check` green
+    (111 test files, 643 tests; B14 157.5 kB of 300). `npm run harness` green: 457 scenarios, 382
+    pass, 0 fail, 75 not yet (none required); 1,000 simulated games; every budget passes, B18
+    measures 3,846 of 5,000. Browser tests (`--workers=2`, five parts): shard 1/2 73 passed and
+    3 failed, shard 2/2 71 passed, two and three players 3 passed each, four players 2 passed and
+    1 failed. Rerun alone: `bigCardSwitch` and `accountSettings` passed at all three sizes (load);
+    four players passed (3 of 3); `userMenu.spec.ts` had a real failure, fixed below, and then
+    passed at all three sizes (one 2560 run dropped a connection on logout, "Network connection
+    lost", and passed on its own).
+  - Fixed: `e2e/userMenu.spec.ts` clicked `Change` in Account settings, which since item 6b also
+    matches **Change email address**; it now matches the name exactly.
+  - Item 6b's note, decided: fixed here. Field errors (`TextInput`) use a new token
+    `--color-board-field-error-text` (#fca5a5, about 6.9:1 on the dialog's #392a4a, the light red
+    the other error texts on boards use) instead of #ef4444 (about 3.5:1). The token is in
+    `tools/design-export/BOARD_VALUES.ts` and `tokens.css`. For the reviewer: item 6b's
+    `--color-board-email-pending*` and `--color-board-email-removed*` (and earlier phases'
+    `account-link`, `guest-log-out`, `guest-note`) are in `tokens.css` only, not in
+    `BOARD_VALUES.ts`, so `npm run design:tokens` would drop them.
+  - `docs/enforcement.md`: no new check applies.
 - [ ] Phase review.
 - [ ] Second finisher run.
 - [ ] Release.
