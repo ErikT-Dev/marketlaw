@@ -15,7 +15,7 @@ export const GAME_RESULT_SCHEMA = v.object({
       seat: SEAT_NUMBER_SCHEMA,
       score: v.number(),
       bonusTypePoints: v.number(),
-      hasLeft: v.boolean(),
+      leftInTurn: v.nullable(v.number()),
       hasReachedEndGoal: v.boolean(),
       income: v.number(),
       fundsAndHand: v.number(),

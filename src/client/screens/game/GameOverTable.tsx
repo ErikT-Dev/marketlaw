@@ -43,7 +43,7 @@ export function GameOverTable({ result, viewer, playerNames }: Props) {
               <th scope="row">
                 {place.seat === viewer ? "You" : playerNameOf(playerNames, place.seat)}
               </th>
-              <td>{place.hasLeft ? "left" : index === 0 ? "won" : "lost"}</td>
+              <td>{place.leftInTurn !== null ? "left" : index === 0 ? "won" : "lost"}</td>
               <td>{place.score}</td>
               <td>{place.hasReachedEndGoal ? "yes" : "no"}</td>
               <td>{place.income}</td>
@@ -53,7 +53,7 @@ export function GameOverTable({ result, viewer, playerNames }: Props) {
           ))}
         </tbody>
       </table>
-      {result.places.some((place) => place.hasLeft) ? (
+      {result.places.some((place) => place.leftInTurn !== null) ? (
         <p className={styles["note"]}>
           Players who left are placed by when they left: the one who left first is last.
         </p>

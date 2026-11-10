@@ -1,4 +1,5 @@
 import type { CardName } from "../shared/catalogue/CardName";
+import type { Departure } from "./Departure";
 import type { ClaimedCombo } from "../shared/ClaimedCombo";
 import type { InfluenceUses } from "../shared/InfluenceUses";
 import type { QuestName } from "../shared/catalogue/QuestName";
@@ -29,6 +30,7 @@ export type SeatState = {
   readonly actionsThisTurn: number;
   readonly isDone: boolean;
   readonly hasLeft: boolean;
+  readonly departure: Departure | null;
   readonly timeBankMs: number;
   readonly timeoutsInARow: number;
   readonly undoPoints: ReadonlyArray<SeatState>;

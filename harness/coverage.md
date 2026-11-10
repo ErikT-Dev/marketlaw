@@ -136,7 +136,7 @@ it by hand.
 | R21.1 | end-of-game (3), hostile-client (1) | Covered |
 | R21.2 | end-of-game (2) | Covered |
 | R21.3 | end-of-game (1) | Covered |
-| R21.4 | end-of-game (2) | Covered |
+| R21.4 | end-of-game (2), records-and-ratings (1) | Covered |
 | R21.5 | end-of-game (1) | Covered |
 | R21.6 | setup (1) | Covered |
 | R21.7 | end-of-game (2) | Covered |
@@ -231,7 +231,7 @@ it by hand.
 | A2.4 | accounts (5) | Covered |
 | A3.1 | connections-and-leaving (1), records-and-ratings (2) | Covered |
 | A3.2 | records-and-ratings (2) | Covered |
-| A3.3 | records-and-ratings (1) | Covered |
+| A3.3 | records-and-ratings (2) | Covered |
 | A3.4 | connections-and-leaving (1), end-of-game (1), records-and-ratings (1) | Covered |
 | A3.5 | accounts (2), records-and-ratings (1) | Covered |
 | A4.1 | records-and-ratings (1) | Covered |
@@ -350,6 +350,6 @@ it by hand.
 ## Summary
 
 - Rules: 313
-- Scenarios: 458
+- Scenarios: 459
 - Gaps: 0
 - Checked another way or also checked another way: R3.2, R3.5, R17.10, R19.2, M3.1, M3.6, M4.2, A6.4, A10.6, C5.1, C5.2, C5.3, A12.1

@@ -44,6 +44,7 @@ export function leaveGame(
     ...updateSeat(state, seat, (current) => ({
       ...current,
       hasLeft: true,
+      departure: { turn: state.turn, cardsInHand: current.hand.length },
       isDone: true,
       hand: [],
       knownInHand: [],

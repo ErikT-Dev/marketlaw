@@ -10,6 +10,7 @@ export function undoLatest(seat: SeatState): SeatState {
     actionsThisTurn: seat.actionsThisTurn + 1,
     isDone: seat.isDone,
     hasLeft: seat.hasLeft,
+    departure: seat.departure,
     timeBankMs: seat.timeBankMs,
     undoPoints: seat.undoPoints.slice(0, -1),
     isUndoBlocked: seat.isUndoBlocked,

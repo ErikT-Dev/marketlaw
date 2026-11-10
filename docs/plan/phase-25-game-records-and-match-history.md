@@ -87,9 +87,22 @@ These 10 scenarios are added to `harness/required.yaml` in this phase, by file a
   - Stats and types are always icons, names only on hover (S1.6), also in the record's type
     counts and values; the design's text labels are a visual reference only.
 
-- [ ] 1. **The game record in the engine** (A3.1 to A3.4, R21.4, R21.8, M6.8; Q119, Q120;
+- [x] 1. **The game record in the engine** (A3.1 to A3.4, R21.4, R21.8, M6.8; Q119, Q120;
   scenarios `records-and-ratings` #1, #2, #3 and the new one, `connections-and-leaving` #11).
   **Large.**
+  - Done (2026-11-10). `SeatState` keeps `hasLeft` and gains `departure: {turn, cardsInHand} |
+    null`, set by `leaveGame`; `scoreOf`, `gameResultOf` and invariant I22 use it.
+    `PlaceResult.hasLeft` is replaced by `leftInTurn: number | null` (the S9 table still shows
+    "left"). `PROTOCOL_VERSION` 15, `SAVE_SCHEMA_VERSION` 16. `gameRecordOf(saved)` in
+    `src/rules/` returns `GameRecord | null` (`src/shared/records/`: `GameRecord`, `SeatRecord`,
+    `RecordResult`, `ComboGains`), seats in place order; combo gains by `comboGainsOf`. The room
+    driver reads `record` (`tools/harness-runner/room/recordThen.ts`, usernames from seat names,
+    `ranked` from `RoomGame.kind`) and takes `given.kind: casual`. The new scenario is
+    `records-and-ratings` #3 by position ("a player who left in an earlier turn is scored with the
+    turn they left"), so the abandoned one is now #4 and the later ones move down by one.
+  - For later items: the record has seats, not player ids or usernames; item 2 adds player ids
+    (`RoomGame.seats`), kind and the start and end times around `gameRecordOf`. `rooms` #21 still
+    needs `record: kept` in the lobby driver. `ROOM_DRIVER.ts` is now 259 non-blank lines.
   - Leaving (`src/rules/leaveGame.ts`) keeps the seat's turn and cards in hand at that moment
     (Q120); `gameResultOf.ts` scores a seat that left with them, so the end-of-game table (S9)
     changes too. `PlaceResult` (`src/shared/`) gains what the view needs (the turn they left):

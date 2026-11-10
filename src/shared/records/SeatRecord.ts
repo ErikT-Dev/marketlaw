@@ -1,0 +1,27 @@
+import type { ProjectName } from "../ProjectName";
+import type { SeatNumber } from "../SeatNumber";
+import type { SeatTypeCounts } from "../SeatTypeCounts";
+import type { ComboGains } from "./ComboGains";
+import type { RecordResult } from "./RecordResult";
+
+export type SeatRecord = {
+  readonly seat: SeatNumber;
+  readonly result: RecordResult;
+  readonly place: number;
+  readonly leftInTurn: number | null;
+  readonly score: number;
+  readonly hasReachedEndGoal: boolean;
+  readonly income: number;
+  readonly fundsAndHand: number;
+  readonly workforce: number;
+  readonly quality: number;
+  readonly satisfaction: number;
+  readonly product: number;
+  readonly distribution: number;
+  readonly influence: number;
+  readonly bonusTypePoints: number;
+  readonly projects: ReadonlyArray<ProjectName>;
+  readonly questsCompleted: number;
+  readonly comboGains: ComboGains;
+  readonly typeCounts: SeatTypeCounts;
+};

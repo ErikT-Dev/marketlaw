@@ -1,6 +1,7 @@
 import type { GameEnding } from "../shared/GameEnding";
 import type { GameResult } from "../shared/GameResult";
 import type { PlaceResult } from "../shared/PlaceResult";
+import { cardsInHandScoredOf } from "./cardsInHandScoredOf";
 import { bonusTypePointsOf } from "./bonusTypePointsOf";
 import type { GameState } from "./GameState";
 import { hasReachedEndGoal } from "./hasReachedEndGoal";
@@ -11,7 +12,7 @@ function rankOf(state: GameState, place: PlaceResult): ReadonlyArray<number> {
   const doneIndex = state.doneOrder.indexOf(place.seat);
   const orderIndex = playerOrderOf(state).indexOf(place.seat);
   return [
-    place.hasLeft ? 1 : 0,
+    place.leftInTurn === null ? 0 : 1,
     -state.leaveOrder.indexOf(place.seat),
     -place.score,
     doneIndex === -1 ? state.seats.length : doneIndex,
@@ -32,10 +33,10 @@ export function gameResultOf(state: GameState, endedBy: GameEnding): GameResult 
       seat: seat.seat,
       score: scoreOf(seat, state.turn, bonusTypePoints),
       bonusTypePoints,
-      hasLeft: seat.hasLeft,
+      leftInTurn: seat.departure?.turn ?? null,
       hasReachedEndGoal: hasReachedEndGoal(seat),
       income: seat.stats.income,
-      fundsAndHand: seat.stats.funds + seat.hand.length,
+      fundsAndHand: seat.stats.funds + cardsInHandScoredOf(seat),
     };
   });
   return {

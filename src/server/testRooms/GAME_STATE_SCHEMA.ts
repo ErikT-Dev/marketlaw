@@ -34,6 +34,7 @@ const SEAT_STATE = v.object({
   actionsThisTurn: v.number(),
   isDone: v.boolean(),
   hasLeft: v.boolean(),
+  departure: v.nullable(v.object({ turn: v.number(), cardsInHand: v.number() })),
   timeBankMs: v.number(),
   timeoutsInARow: v.number(),
   undoPoints: v.tuple([]),

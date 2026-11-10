@@ -15,7 +15,7 @@ const RESULT: GameResult = {
     seat,
     score: 600 - seat * 50,
     bonusTypePoints: 4,
-    hasLeft: false,
+    leftInTurn: null,
     hasReachedEndGoal: seat === 2,
     income: 22,
     fundsAndHand: 10,

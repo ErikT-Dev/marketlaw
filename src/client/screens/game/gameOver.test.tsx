@@ -15,7 +15,7 @@ function place(
     seat,
     score,
     bonusTypePoints: 6,
-    hasLeft: false,
+    leftInTurn: null,
     hasReachedEndGoal: false,
     income: 15,
     fundsAndHand: 20,
@@ -29,7 +29,7 @@ const END_GOAL: GameResult = {
     place(3, 512, { hasReachedEndGoal: true, income: 23 }),
     place(2, 487),
     place(4, 455),
-    place(1, 301, { hasLeft: true }),
+    place(1, 301, { leftInTurn: 12 }),
   ],
 };
 
