@@ -38,7 +38,8 @@ None.
   username or change it; a change made during signup does not count toward the limit on changing
   usernames (A2.4). Signup needs the human check. If the address is already confirmed on another
   account, signup looks exactly the same as with a free address; only the email sent to that
-  address says it is already in use. Their account becomes a registered user, keeping everything
+  address says it is already in use. The address is kept on the account as not confirmed, like a
+  free one, so the account settings look the same too. Their account becomes a registered user, keeping everything
   they have done as a guest, including their seat in a game in progress. A player who is not
   logged in can sign up too: this creates their account as a registered user at once, with a
   username as in A1.2 and one human check. An email address is at most 254 characters, with no
@@ -77,6 +78,8 @@ None.
   way. A newer change replaces a pending one. If the new address is already confirmed on another
   account, the change looks the same and the email says it is already in use (A1.3). Confirming
   the new address replaces the old one on the account, with A1.11 applied to the new one.
+  Changing to the address the account has already confirmed is no change: nothing is sent or
+  counted, and a pending change is dropped.
 - **A1.11** **One account per email address:** an unconfirmed email address reserves nothing. The
   first account to confirm an address keeps it, and the address is removed from any other account
   that entered it. Two addresses count as the same if they differ only in capital letters or in a

@@ -2477,3 +2477,38 @@ file.
   Each guess costs a slow password hash, so the route is not cheaper to hammer than a login.
 - **Why:** the limit would protect nothing the token does not already open.
 - **Implemented:** no change; phase 24, review R6.
+
+## Q116. What does an account hold after signing up with an address confirmed elsewhere (A1.3)?
+
+- **Phase:** 24, phase review R4 (A1.3, A1.4, A1.11; Q108, Q114).
+- **Question:** signup stored no address when another account had confirmed it, so Account
+  settings showed no address and **Add an email address**, unlike a free address. That breaks
+  A1.3 ("looks exactly the same") and tells the player the address belongs to an account.
+- **Options:** keep the address on the account as not confirmed, like a free one; or keep
+  storing nothing and make the settings pretend.
+- **Solution:** the address is kept on the account as not confirmed (an unconfirmed address
+  reserves nothing, A1.11; a login by email finds the confirming account first, A1.5). Settings
+  show it with "not confirmed" and **Send it again**, which sends the "already in use" email again
+  while the other account holds it, through the same limits (`reserveAccountEmail`), and the
+  confirmation email once the address is free. Spec A1.3 says so; scenario `accounts` "signing up
+  with an address already confirmed elsewhere looks the same" now expects the address, not
+  confirmed (it contradicted A1.3).
+- **Why:** the only place the difference may show is the email sent to the address.
+- **Implemented:** phase 24, review R4.
+
+## Q117. What does changing the email to the account's own confirmed address do (A1.10)?
+
+- **Phase:** 24, phase review R7 (A1.9, A1.10; Q110).
+- **Question:** a change to the address the account has already confirmed found it "confirmed
+  elsewhere", sent the "already in use" email and left a pending change that could never be
+  confirmed.
+- **Options:** refuse it with a reason code; or treat it as no change.
+- **Solution:** no change. After the login, the address and the human check, a new address with
+  the same email key (A1.11) as the account's confirmed address sends nothing and counts nothing
+  (A1.9: no email, so no limit), drops a pending change and its link (a newer change replaces a
+  pending one), and answers OK. Spec A1.10 says so; new scenario `accounts` "changing the email
+  address to the confirmed one already on the account changes nothing" (required).
+- **Why:** the player gets what they asked for, their current address, without a new reason code
+  or a message on the screens; refusing would need one in `screens.md` for a case that only
+  needs nothing to happen.
+- **Implemented:** phase 24, review R7.

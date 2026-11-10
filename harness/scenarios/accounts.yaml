@@ -61,7 +61,7 @@
     - {player: Ann, action: sign_up, email: player@example.com, password: "correct horse", human_check: passed}
   then:
     message_to: {player: Ann, notice: signup_done_confirm_email}
-    accounts: [{name: Bea, email: player@example.com, email_confirmed: true}, {name: Ann, kind: registered, email: null}]
+    accounts: [{name: Bea, email: player@example.com, email_confirmed: true}, {name: Ann, kind: registered, email: player@example.com, email_confirmed: false}]
     emails_sent: [{to: player@example.com, kind: already_in_use}]
 
 - name: signup needs the human check
@@ -162,6 +162,17 @@
     - {player: Ann, action: change_email, email: player2@example.com, human_check: passed}
   then:
     accounts: [{name: Ann, email: player@example.com, pending_email: player2@example.com}]
+    emails_sent: [{to: player2@example.com, kind: confirm}]
+
+- name: changing the email address to the confirmed one already on the account changes nothing
+  covers: [A1.10]
+  given:
+    accounts: [{name: Ann, kind: registered, email: player@example.com, email_confirmed: true}]
+  when:
+    - {player: Ann, action: change_email, email: player2@example.com, human_check: passed}
+    - {player: Ann, action: change_email, email: Player+1@example.com, human_check: passed}
+  then:
+    accounts: [{name: Ann, email: player@example.com, email_confirmed: true, pending_email: null}]
     emails_sent: [{to: player2@example.com, kind: confirm}]
 
 - name: the first account to confirm an address keeps it and it is removed from the other

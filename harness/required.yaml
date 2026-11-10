@@ -313,6 +313,7 @@ scenarios:
     - an unconfirmed address cannot be used to reset the password
     - at most 3 emails a day are sent for one account
     - changing the email address keeps the old one until the new one is confirmed
+    - changing the email address to the confirmed one already on the account changes nothing
     - the first account to confirm an address keeps it and it is removed from the other
     - dots in gmail addresses do not make a different address
     - at most 3 emails a day are sent to one address

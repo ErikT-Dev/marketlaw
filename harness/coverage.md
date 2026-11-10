@@ -218,7 +218,7 @@ it by hand.
 | A1.7 | accounts (3) | Covered |
 | A1.8 | accounts (1) | Covered |
 | A1.9 | accounts (3) | Covered |
-| A1.10 | accounts (1) | Covered |
+| A1.10 | accounts (2) | Covered |
 | A1.11 | accounts (4) | Covered |
 | A1.12 | accounts (4), rooms (1) | Covered |
 | A1.13 | accounts (6) | Covered |
@@ -350,6 +350,6 @@ it by hand.
 ## Summary
 
 - Rules: 313
-- Scenarios: 457
+- Scenarios: 458
 - Gaps: 0
 - Checked another way or also checked another way: R3.2, R3.5, R17.10, R19.2, M3.1, M3.6, M4.2, A6.4, A10.6, C5.1, C5.2, C5.3, A12.1
