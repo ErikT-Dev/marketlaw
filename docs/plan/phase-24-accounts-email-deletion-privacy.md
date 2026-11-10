@@ -434,3 +434,4 @@ each helper's conversation size at its end.
 | Builder, items 7 and 8 (stopped once by the usage limit, resumed) | 17 | 153k | 49 | done |
 | Builder, item 9 | 5 | 80k | 15 | done |
 | Finisher, first run | 44 | 113k | 57 | done |
+| Builder, switch to Brevo (owner's choice) | 6 | 87k | 28 | done |
