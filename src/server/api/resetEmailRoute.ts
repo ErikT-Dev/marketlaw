@@ -25,11 +25,18 @@ export async function resetEmailRoute(request: Request, env: Env): Promise<Respo
   }
   const now = nowMs();
   const { playerId, email: to } = account;
-  const overLimit = await reserveAccountEmail(env, { playerId, address: to, now });
-  if (overLimit !== null) {
-    return json({ isOk: false, reason: overLimit }, 429);
+  const reservation = await reserveAccountEmail(env, { playerId, address: to, now });
+  if (!reservation.isOk) {
+    return json({ isOk: false, reason: reservation.reason }, 429);
   }
   const siteUrl = new URL(request.url).origin;
-  await sendAccountEmail(env, { playerId, kind: "reset", to, siteUrl, now });
+  await sendAccountEmail(env, {
+    playerId,
+    kind: "reset",
+    to,
+    siteUrl,
+    now,
+    countedKeys: reservation.countedKeys,
+  });
   return json({ isOk: true }, 200);
 }

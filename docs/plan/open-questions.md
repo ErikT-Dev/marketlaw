@@ -2237,9 +2237,14 @@ file.
     per address for today (`email_limit_reached`), then the Lobby takes one email of the site's 90
     (`site_daily_cap`); only then is anything written. The site email is given back when the email
     cannot be sent or the signup loses its username to a concurrent one. After a sent email, the
-    link and both counts are written in one D1 batch. The D1 counts are read, not reserved, so two
-    requests at the same moment can send a fourth email; the Lobby's count is exact, so the
-    site-wide cap, which protects Resend's 100 a day, cannot be passed.
+    link is written.
+  - Changed after the phase review (R1): the D1 counts are taken, not only read, before sending:
+    one D1 batch of conditional upserts that raise each count only while it is below 3, so
+    requests at the same moment cannot pass a limit. If one count is full, the other is given
+    back and the request gets `email_limit_reached`; when the site cap refuses, the email cannot
+    be sent, or the signup loses its username, the counts and the site email are given back. A
+    signup without a guest takes only the address count; the new account's count is written
+    with the link after the email is sent.
   - Counts per account (`account:<id>`) and per address (`address:<SHA-256 of the email key>`) in
     `email_counts` by UTC day; the daily cron deletes counts older than yesterday and expired
     links. Links are stored only as SHA-256 hashes, one per account and kind.
@@ -2456,3 +2461,19 @@ file.
 - **Why:** the account view tells only what the account holds (A6.3); the dialogs reuse the
   forgotten-password form's pattern.
 - **Implemented:** `screens.md` S17; phase 24, item 6b.
+
+## Q115. Does deleting an account limit wrong password guesses (A1.13, A1.15)?
+
+- **Phase:** 24, phase review R6 (A1.13, A1.15; Q107, Q111).
+- **Question:** the delete route checks the password with a session token, and A1.13 counts
+  only failed logins. Should wrong passwords on deletion count, or ask for the human check?
+- **Options:** count them as failed logins and ask for the human check in the delete dialog
+  after 3; or accept unlimited guesses there.
+- **Solution:** accepted, nothing is counted. A guess needs a live login token of the account,
+  and that token already gives everything the password would: the account stays logged in for
+  90 days and can change the email address and reset the password through it. The password on
+  deletion only guards against deleting by mistake or from a borrowed browser. Counting would
+  also break A1.15 ("a wrong one ... changes nothing") and need the human check in S12.6.
+  Each guess costs a slow password hash, so the route is not cheaper to hammer than a login.
+- **Why:** the limit would protect nothing the token does not already open.
+- **Implemented:** no change; phase 24, review R6.

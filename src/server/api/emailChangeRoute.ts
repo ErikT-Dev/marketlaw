@@ -32,14 +32,21 @@ export async function emailChangeRoute(request: Request, env: Env): Promise<Resp
     return json({ isOk: false, reason: "human_check_failed" }, 400);
   }
   const { playerId } = account;
-  const overLimit = await reserveAccountEmail(env, { playerId, address: body.email, now });
-  if (overLimit !== null) {
-    return json({ isOk: false, reason: overLimit }, 429);
+  const reservation = await reserveAccountEmail(env, { playerId, address: body.email, now });
+  if (!reservation.isOk) {
+    return json({ isOk: false, reason: reservation.reason }, 429);
   }
   await savePendingEmail(env.DB, { playerId, email: body.email });
   const isUnclaimed = (await unclaimedEmailOf(env.DB, body.email)) !== null;
   const kind = isUnclaimed ? "change_confirm" : "already_in_use";
   const siteUrl = new URL(request.url).origin;
-  await sendAccountEmail(env, { playerId, kind, to: body.email, siteUrl, now });
+  await sendAccountEmail(env, {
+    playerId,
+    kind,
+    to: body.email,
+    siteUrl,
+    now,
+    countedKeys: reservation.countedKeys,
+  });
   return json({ isOk: true }, 200);
 }

@@ -26,12 +26,14 @@ export async function sendAgainRoute(request: Request, env: Env): Promise<Respon
     return json({ isOk: true }, 200);
   }
   const { playerId } = account;
-  const overLimit = await reserveAccountEmail(env, { playerId, address: to, now });
-  if (overLimit !== null) {
-    return json({ isOk: false, reason: overLimit }, 429);
+  const reservation = await reserveAccountEmail(env, { playerId, address: to, now });
+  if (!reservation.isOk) {
+    return json({ isOk: false, reason: reservation.reason }, 429);
   }
   const isUnclaimed = (await unclaimedEmailOf(env.DB, to)) !== null;
   const kind = isUnclaimed ? "confirm" : "already_in_use";
-  await sendAccountEmail(env, { playerId, kind, to, siteUrl: new URL(request.url).origin, now });
+  const siteUrl = new URL(request.url).origin;
+  const { countedKeys } = reservation;
+  await sendAccountEmail(env, { playerId, kind, to, siteUrl, now, countedKeys });
   return json({ isOk: true }, 200);
 }

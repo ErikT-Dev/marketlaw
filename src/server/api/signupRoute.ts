@@ -13,7 +13,7 @@ import { unclaimedEmailOf } from "../unclaimedEmailOf";
 import { verifyHumanCheck } from "../verifyHumanCheck";
 import { reserveAccountEmail } from "../email/reserveAccountEmail";
 import { sendAccountEmail } from "../email/sendAccountEmail";
-import { lobbyOf } from "../lobbyOf";
+import { returnAccountEmail } from "../email/returnAccountEmail";
 import { nowMs } from "../nowMs";
 import type { EpochMs } from "../../shared/EpochMs";
 import { bodyOf } from "./bodyOf";
@@ -85,18 +85,18 @@ async function signUpAndSendEmail(
   signup: Omit<Signup, "email">,
 ): Promise<Response> {
   const { body, guest, name, now } = signup;
-  const overLimit = await reserveAccountEmail(env, {
+  const reservation = await reserveAccountEmail(env, {
     playerId: guest?.identity.playerId ?? null,
     address: body.email,
     now,
   });
-  if (overLimit !== null) {
-    return json({ isOk: false, reason: overLimit }, 429);
+  if (!reservation.isOk) {
+    return json({ isOk: false, reason: reservation.reason }, 429);
   }
   const email = await unclaimedEmailOf(env.DB, body.email);
   const account = await signedUp(env, { ...signup, email });
   if (account === null) {
-    await lobbyOf(env).returnEmailQuota(now);
+    await returnAccountEmail(env, reservation.countedKeys, now);
     return json({ isOk: false, reason: "username_taken" }, 409);
   }
   const { playerId } = account.identity;
@@ -106,6 +106,7 @@ async function signUpAndSendEmail(
     to: body.email,
     siteUrl: new URL(request.url).origin,
     now,
+    countedKeys: reservation.countedKeys,
   });
   return json({ isOk: true, token: account.token, playerId, name }, 200);
 }

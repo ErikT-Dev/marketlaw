@@ -1,16 +1,15 @@
 import type { EpochMs } from "../../shared/EpochMs";
 import type { PlayerId } from "../../shared/PlayerId";
 import { dayOf } from "../lobby/dayOf";
-import { lobbyOf } from "../lobbyOf";
 import { newSessionToken } from "../newSessionToken";
 import { sha256Hex } from "../sha256Hex";
 import type { AccountEmailKind } from "./AccountEmailKind";
 import type { AccountEmailMessage } from "./AccountEmailMessage";
 import { accountCountKeyOf } from "./accountCountKeyOf";
 import { accountEmailOf } from "./accountEmailOf";
-import { addressCountKeyOf } from "./addressCountKeyOf";
 import { EMAIL_LINK_LIFETIME_MS } from "./EMAIL_LINK_LIFETIME_MS";
 import { emailSenderOf } from "./emailSenderOf";
+import { returnAccountEmail } from "./returnAccountEmail";
 
 type AccountEmail = {
   readonly playerId: PlayerId;
@@ -18,9 +17,10 @@ type AccountEmail = {
   readonly to: string;
   readonly siteUrl: string;
   readonly now: EpochMs;
+  readonly countedKeys: ReadonlyArray<string>;
 };
 
-const COUNT_EMAIL =
+const COUNT_NEW_ACCOUNT_EMAIL =
   "INSERT INTO email_counts (counted_key, day, emails) VALUES (?, ?, 1) ON CONFLICT (counted_key, day) DO UPDATE SET emails = emails + 1";
 
 const SAVE_LINK =
@@ -33,9 +33,10 @@ function messageOf(email: AccountEmail, token: string): AccountEmailMessage {
 }
 
 async function recordSent(env: Env, email: AccountEmail, token: string): Promise<void> {
-  const day = dayOf(email.now);
-  const keys = [accountCountKeyOf(email.playerId), await addressCountKeyOf(email.to)];
-  const counts = keys.map((key) => env.DB.prepare(COUNT_EMAIL).bind(key, day));
+  const accountKey = accountCountKeyOf(email.playerId);
+  const accountCounts = email.countedKeys.includes(accountKey)
+    ? []
+    : [env.DB.prepare(COUNT_NEW_ACCOUNT_EMAIL).bind(accountKey, dayOf(email.now))];
   const links =
     email.kind === "already_in_use"
       ? []
@@ -48,7 +49,10 @@ async function recordSent(env: Env, email: AccountEmail, token: string): Promise
             email.now + EMAIL_LINK_LIFETIME_MS[email.kind],
           ),
         ];
-  await env.DB.batch([...links, ...counts]);
+  const writes = [...links, ...accountCounts];
+  if (writes.length > 0) {
+    await env.DB.batch(writes);
+  }
 }
 
 export async function sendAccountEmail(env: Env, email: AccountEmail): Promise<void> {
@@ -58,6 +62,6 @@ export async function sendAccountEmail(env: Env, email: AccountEmail): Promise<v
   if (result === "sent") {
     await recordSent(env, email, token);
   } else {
-    await lobbyOf(env).returnEmailQuota(email.now);
+    await returnAccountEmail(env, email.countedKeys, email.now);
   }
 }
