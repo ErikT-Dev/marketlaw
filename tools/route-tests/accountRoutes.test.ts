@@ -20,7 +20,7 @@ const NEW_PASSWORD = "still-harbour-93";
 const FIRST_EMAIL = "First.Logger@example.com";
 const SECOND_EMAIL = "Second.Logger@example.com";
 const RESENT_EMAIL = "Resent.Logger@example.com";
-const ANY_EMAIL_ADDRESS = /[^s@"'<>]+@[^s@"'<>]+.[a-z]{2,}/iu;
+const ANY_EMAIL_ADDRESS = /[^\s@"'<>]+@[^\s@"'<>]+\.[a-z]{2,}/iu;
 const LINK_TOKEN = /#(?:confirm|reset)=([0-9a-f]{64})/u;
 
 let server: TestHarness;
