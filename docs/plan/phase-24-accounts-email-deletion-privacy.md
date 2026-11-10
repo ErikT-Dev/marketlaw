@@ -261,7 +261,14 @@ These 15 scenarios are added to `harness/required.yaml` in this phase, by file a
     not exist yet (phase 26): note it there.
   - B18: a few deletions on the busy day.
 
-- [ ] 5. **Removing unused guests** (A1.1, A1.14; D27). **Small.**
+- [x] 5. **Removing unused guests** (A1.1, A1.14; D27). **Small.**
+  - Done (2026-11-10), Q112 has the details: `src/server/deletion/removeUnusedGuests.ts` (one D1
+    batch, two statements) runs in `worker.ts` `scheduled`. A guest goes when its newest login
+    is expired (more than 91 days, `LOGIN_TIMES`); a logged-out guest counts from its creation.
+    Route test in `tools/route-tests/accountRoutes.test.ts` (dispatches the scheduled event).
+    B18 counts 100 removals a day, measures 3,846.
+  - Differs: nothing from the phase file.
+  - For later items: nothing new; `accounts` #20 stays "not yet" (phase 25).
   - The daily Cron Trigger (`worker.ts` `scheduled`) deletes guest accounts whose logins have all
     gone unused for 90 days (`LOGIN_TIMES.ts`, Q55: last use is noted at most once a day), with
     their logins, so the username is free. Within the cron's 10 ms CPU: one or a few D1

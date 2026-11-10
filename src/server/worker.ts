@@ -20,6 +20,7 @@ import { sessionRoute } from "./api/sessionRoute";
 import { sendAgainRoute } from "./api/sendAgainRoute";
 import { signupRoute } from "./api/signupRoute";
 import { usernameChangeRoute } from "./api/usernameChangeRoute";
+import { removeUnusedGuests } from "./deletion/removeUnusedGuests";
 import { removeOldEmailRecords } from "./email/removeOldEmailRecords";
 import { lobbyOf } from "./lobbyOf";
 import { removeForgottenLoginFailures } from "./removeForgottenLoginFailures";
@@ -102,6 +103,8 @@ export default {
   async scheduled(controller, env) {
     await removeOldReplayRecords(env.DB, controller.scheduledTime);
     await removeForgottenLoginFailures(env.DB, controller.scheduledTime);
-    await removeOldEmailRecords(env.DB, v.parse(EpochMs, controller.scheduledTime));
+    const now = v.parse(EpochMs, controller.scheduledTime);
+    await removeOldEmailRecords(env.DB, now);
+    await removeUnusedGuests(env.DB, now);
   },
 } satisfies ExportedHandler<Env>;

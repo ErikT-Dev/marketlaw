@@ -2352,3 +2352,27 @@ file.
   the same "no account, Deleted player" rule then covers removed guests; leaving the rooms first
   means a failure leaves a working account that can try again.
 - **Implemented:** phase 24, item 4.
+
+## Q112. When is a guest "not used for 90 days", and how is it removed (A1.1, A1.14)?
+
+- **Phase:** 24, item 5 (A1.1, A1.14; D27, Q55).
+- **Question:** a guest's last use is noted per login, at most once a day (Q55), and a guest who
+  logged out has no login left, so its last use is no longer stored. The spec does not say from
+  which time the 90 days count then, nor what removing the guest removes.
+- **Options:** count a logged-out guest from its creation time; remove it at the next daily run;
+  or store a last-use time on the account.
+- **Solution:**
+  - The daily Cron Trigger removes a guest account when its newest login's noted last use is more
+    than 91 days old (`LOGIN_TIMES.expireAfterMs`), the same moment its login ends (Q55), so a
+    guest is never removed before 90 days without use. A guest with no login left counts from the
+    time it was made.
+  - `removeUnusedGuests` is one D1 batch of two statements (the guests' logins, then the guest
+    rows), so the Worker loops over no rows and stays within the cron's 10 ms CPU. The username is
+    free at once; phase 25 shows "Deleted player" for a record whose player id has no account row
+    (Q111). Guests have no email links or email counts of their own. Registered users are never
+    removed by it.
+  - B18 counts 100 removals a day (as many as the busy day makes guests), 4 rows each (the
+    account, its name index entry, its login and the login's index entry): 3,846.
+- **Why:** reusing the login's expiry keeps one rule for "unused"; counting a logged-out guest
+  from its creation errs on keeping it, never on removing it early, without a new column.
+- **Implemented:** phase 24, item 5.
