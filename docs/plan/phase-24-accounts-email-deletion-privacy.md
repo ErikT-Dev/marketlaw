@@ -508,3 +508,4 @@ each helper's conversation size at its end.
 | Phase reviewer | 28 | 157k | 48 | ready after fixes (R1-R7) |
 | Fixer, group A (R1, R2, R6) | 9 | 115k | 43 | done |
 | Fixer, group B (R3, R4, R5, R7) | 14 | 110k | 51 | done (ticks added by the coordinator) |
+| Finisher, second run | 43 | 119k | 80 | done |
