@@ -37,7 +37,8 @@ Phase 23. Decisions O3 (email provider) and O7 (privacy notice text in the spec)
 
 - No game records yet, so "Deleted player" appears from phase 25. `accounts` #20 and #21 (guest
   removal and deletion shown in records) stay "not yet" until then.
-- Until the owner has done "Waiting for the owner", the live site sends no emails (item 10).
+- Emails are sent from a Gmail address through Brevo's free plan, so they may land in spam and
+  carry a Brevo footer (Q104, D30).
 
 ## What you can see when it's done
 
@@ -54,25 +55,10 @@ privacy notice.
 
 ## Waiting for the owner
 
-Everything except the live sending (item 10) is built and tested without these. Only you can do
-them, because they need an account with an outside service and a secret.
-
-1. **A domain to send email from.** Emails must come from a domain you control (the site's
-   `workers.dev` address cannot be used). If you have none, register one (a yearly payment,
-   your choice of registrar; Cloudflare Registrar sells at cost) and add it to your Cloudflare
-   account (free DNS). If you would rather not have a domain, say so: Claude then switches to
-   Brevo with a single sender address, which needs no domain but whose emails often land in
-   spam (Q104).
-2. **A free Resend account.** Sign up at https://resend.com (Free plan, no card). Under
-   **Domains**, add a sending subdomain such as `mail.<your domain>` and add the DNS records
-   Resend shows (with Cloudflare DNS, Resend offers to add them for you). Wait until the domain
-   shows **Verified**.
-3. **The API key.** Under **API Keys**, create a key with **Sending access**, limited to that
-   domain. In the project folder run `npx wrangler secret put RESEND_API_KEY` and paste the key.
-   Do not paste it into the chat or any file.
-4. **Two addresses, not secret:** tell Claude in the chat (a) the sender, for example
-   `MarketLaw <noreply@mail.<your domain>>`, and (b) the contact address for the privacy notice
-   (A12.1), which players may write to.
+Nothing. The owner chose Brevo with the game's Gmail address `mlaw.support@gmail.com` (Q104,
+D30, 2026-11-10), verified it as a Brevo sender, set the secret `BREVO_API_KEY` on the live
+Worker and turned off Brevo's IP blocking (Authorised IPs). The live test send is done by the
+releaser after the merge (item 10).
 
 ## Required scenarios
 
@@ -366,7 +352,15 @@ These 15 scenarios are added to `harness/required.yaml` in this phase, by file a
     an address, a password or a link token. Check the leak test or a room test: no view or
     message to another player carries an address.
 
-- [x] 9. **The Resend sender** (Q104, D30). **Small.**
+- [x] 9. **The Brevo sender** (Q104, D30; was Resend). **Small.**
+  - Changed to Brevo (2026-11-10, owner's choice: no domain, $0): `brevoSenderOf.ts` and
+    `brevoKeysOf.ts` replace the Resend files. `POST https://api.brevo.com/v3/smtp/email`,
+    header `api-key: <BREVO_API_KEY>`, JSON `{ sender: { name: "MarketLaw", email: EMAIL_FROM },
+    to: [{ email }], subject, textContent }` (checked against Brevo's API reference). Used only
+    when `BREVO_API_KEY` and `EMAIL_FROM` are both set, else the test outbox. Logs "Sending an
+    email failed: Brevo answered <status>" or "... Brevo could not be reached", nothing else.
+    `brevoSenderOf.test.ts` on a fake `fetch` as before. The notes below are the Resend
+    version, kept as history.
   - Done (2026-11-10): `src/server/email/resendSenderOf.ts` (keys parsed by `resendKeysOf.ts`
     from `RESEND_API_KEY` and `EMAIL_FROM`); `emailSenderOf` uses it when both are set, else the
     test outbox as before, so nothing changes live yet. A non-2xx answer logs
@@ -384,12 +378,16 @@ These 15 scenarios are added to `harness/required.yaml` in this phase, by file a
     address. Unit tests against a fake `fetch`. No npm package (record in Q104 if that changes).
     Without the key it is not used (item 1's test double), so nothing changes live yet.
 
-- [ ] 10. **Live sending** (waits for the owner: "Waiting for the owner" 1 to 4). **Small.**
-  - When the owner has set `RESEND_API_KEY` and given the two addresses: put `EMAIL_FROM` and
-    `PRIVACY_CONTACT` into `wrangler.jsonc` `vars`, deploy with the phase, and on the live site
-    sign up with a test address the owner names, receive the confirmation, open the link, and
-    request a reset. Record the result here and in Q104. If the owner has not done it when
-    everything else is done, the phase is **waiting for the owner**.
+- [ ] 10. **Live sending** (Q104, D30). **Small.**
+  - Done before release (2026-11-10): `wrangler.jsonc` `vars` has `EMAIL_FROM` and
+    `PRIVACY_CONTACT`, both `mlaw.support@gmail.com` (the owner's address for the game);
+    `e2e/privacyNotice.spec.ts` expects that address. The secret `BREVO_API_KEY` is set on the
+    live Worker by the owner. Locally and in the browser tests `BREVO_API_KEY` is not set, so
+    the test outbox still sends.
+  - Left, for the releaser after the merge: on the live site sign up with a test address,
+    receive the confirmation (look in spam too), open the link, and request a reset. Record the
+    result here and in Q104. If the send fails, read the Worker log line ("Brevo answered
+    <status>") and Brevo's transactional log.
 
 ### Finish
 

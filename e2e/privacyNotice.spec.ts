@@ -14,9 +14,7 @@ const PARTS = [
 async function expectEveryPart(page: Page) {
   const notice = page.getByRole("dialog", { name: "Privacy notice" });
   await expect(notice.getByRole("heading", { level: 2 })).toHaveText(PARTS);
-  await expect(notice).toContainText(
-    "PLACEHOLDER: the owner has not given the contact address yet",
-  );
+  await expect(notice).toContainText("mlaw.support@gmail.com");
   return notice;
 }
 
