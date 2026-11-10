@@ -2084,3 +2084,452 @@ file.
   player is in, so refusing costs almost nothing, while two equal names in one room would make
   "accepted so far", chat and mutes ambiguous. (b) was turned down in Q96.
 - **Implemented:** phase 23, finding R3.
+
+## Q104. Which email provider sends the account emails (O3)?
+
+- **Phase:** 24, starter (O3, `accounts.md` open question 1, A1.3, A1.4, A1.7, A1.9, A1.10).
+- **Question:** confirmation, email-change, reset and "already in use" emails need an outside
+  service with a secret key. Which one fits A1.9 and the Cloudflare Free plan?
+- **Need:** A1.9 allows 3 emails per account and per address a day. The busy day of B18 has 30
+  signups; with resends, resets and address changes a busy day sends about 50 emails, so a free
+  tier of 100 a day is enough. Sending must be a plain HTTPS call from the Worker (one
+  subrequest; the Free plan allows 50 per request).
+- **Options (checked 2026-11-10):**
+  - (a) **Cloudflare Email Service**: sending to any address needs the Workers Paid plan
+    (https://developers.cloudflare.com/email-service/platform/pricing/: "Workers Free: outbound
+    sending is not available"; only sends to the account's own verified addresses are free). Not
+    allowed (`rules/cloudflare.md`, Free-plan features only).
+  - (b) **MailChannels** for Workers: its free Workers service has ended (end-of-life notice on
+    support.mailchannels.com); the remaining free tier needs an account and a domain like the
+    others.
+  - (c) **Resend**: free plan 3,000 emails a month, at most 100 a day, one sending domain; JSON
+    HTTPS API (`POST https://api.resend.com/emails`, bearer key), no SDK needed. Needs a domain
+    the owner controls, verified with DNS records (SPF and DKIM).
+  - (d) **Brevo**: free plan about 300 emails a day, HTTPS API; can send from a single verified
+    sender address without a domain of one's own, but then mail is not signed for the sender's
+    domain and is likely to land in spam or be refused under Gmail's and Yahoo's sender rules.
+  - (e) Others (Mailjet, MailerSend, SMTP2GO, Postmark): similar or smaller free tiers, all
+    needing a verified domain; nothing better than (c) for this use.
+- **Solution:** (c) Resend, called with `fetch` from `src/server/`, so no npm dependency and
+  nothing in the client bundle. The sender sits behind a small interface with a test double (an
+  outbox that the scenarios, unit tests, `wrangler dev` and the browser tests read), so all
+  behaviour is built and tested without the key; only the live send needs it. The key is the
+  secret `RESEND_API_KEY` (`wrangler secret put`); the sender address and the privacy contact
+  address are plain `vars` in `wrangler.jsonc`. To stay inside Resend's 100 a day and 3,000 a
+  month (90 x 31 = 2,790), the site sends at most 90 emails a day (A9.6, `site_daily_cap`). If
+  the owner prefers not to have a domain, (d) Brevo fits behind the same interface with one
+  changed sender file, at the cost of delivery.
+- **Why:** the only free option with good delivery and a plain HTTPS API; its daily cap is above
+  the busy day's need, and the site-wide cap keeps a burst of signups from going over it.
+- **Owner's choice (2026-11-10), replaces the solution above:** the owner has no domain and
+  wants to stay at $0, so the provider is (d) **Brevo** (free plan, about 300 emails a day),
+  sending from a Gmail address the owner made for the game, `mlaw.support@gmail.com`, verified
+  as a Brevo sender. `POST https://api.brevo.com/v3/smtp/email` with the header `api-key` and
+  JSON `{ sender: { name, email }, to: [{ email }], subject, textContent }`; success is 201
+  (format checked against Brevo's API reference, developers.brevo.com/reference/sendtransacemail,
+  2026-11-10). Still plain `fetch`, no npm package. The secret is `BREVO_API_KEY` (set by the
+  owner on the live Worker); `EMAIL_FROM` (the sender address, sender name "MarketLaw") and
+  `PRIVACY_CONTACT` are both `mlaw.support@gmail.com` in `wrangler.jsonc` `vars`. The owner
+  has turned off Brevo's IP blocking (Authorised IPs), which Workers' changing IP addresses
+  would trip. The site cap of 90 a day (A9.6) stays: well under Brevo's 300, and the scenarios
+  and budgets are built on it. Known drawbacks: mail from a Gmail address sent through Brevo is
+  not signed for gmail.com, so it may land in spam or be refused by some receivers; and
+  free-plan emails carry a Brevo footer. Because of the spam risk the spec now says the notices
+  after signup and after Forgot password tell the player to look in the spam folder (A1.4,
+  S12.3, S12.4; the client already said so). `accounts.md` A12.1 names no provider ("the
+  email service"), so no spec text named Resend.
+- **Needs the owner:** nothing more; the live test send is done after release (phase 24, item
+  10). **Status: decided** (the live send is checked at release).
+- **Implemented:** `decisions.md` O3 moved to Decided as D30; `accounts.md` open question 1
+  removed, A9.6's email cap; phase 24, items 1, 9 and 10. Item 9 (2026-11-10), changed to Brevo
+  the same day: `src/server/email/brevoSenderOf.ts` posts with plain `fetch`, no npm package; it
+  is used only when both `BREVO_API_KEY` and `EMAIL_FROM` are set, otherwise `emailSenderOf`
+  keeps the test outbox (which fails every send without `TEST_ROOM_SECRET`). Spec: A1.4, S12.3,
+  S12.4 (spam folder), in its own `HARNESS:` commit.
+
+## Q105. What does the privacy notice say, and where is it (O7)?
+
+- **Phase:** 24, starter (O7).
+- **Question:** O7 asks for a short notice of what is stored, why, how long, and how to delete
+  it, drafted into the spec.
+- **Options:** a rule in `accounts.md` with the notice's content, shown as a page (S12.8); or the
+  text only in the client, outside the spec.
+- **Solution:** a new section A12 in `accounts.md` gives the notice's parts and facts: who runs
+  the site (a contact address, set by the owner as a `wrangler.jsonc` var), what is stored and
+  why (account, email, password hash, logins as one-way codes, failed logins, daily counts with
+  the address only as a one-way code, chat, replays, game records and ratings), how long (from
+  A1.1, A1.14, A1.13, M4.3, M8.2, and a new retention of 2 days for daily counts), who else
+  handles data (Cloudflare and Turnstile see the IP address, which MarketLaw does not store;
+  Workers logs are kept 3 days on the Free plan,
+  https://developers.cloudflare.com/workers/observability/logs/workers-logs/; the email service
+  sees the address), and the choices (account settings, deleting, the contact address). S12.8 is
+  the page, open to everyone, linked from signup and account settings (S12.5). A12.1 is page
+  text, so a coverage exception (`instead`: a browser test finds each part by its heading)
+  replaces a scenario.
+- **Why:** the spec is the owner's view; the notice states facts the spec already fixes, so it
+  stays true as long as the spec does. The legal wording is the owner's to review with version 1.
+- **Implemented:** `accounts.md` A12.1; `screens.md` S12.5, S12.8; `coverage-exceptions.yaml`;
+  `decisions.md` O7 moved to Decided as D31; phase 24, item 7.
+
+## Q106. Email links, resending, limits and failed sends (A1.4, A1.7, A1.9, A1.10, A9.6)?
+
+- **Phase:** 24, starter.
+- **Question:** the spec does not say how long links work, whether older links still work,
+  whether **Send it again** needs the human check, what counts toward A1.9, what a reset does to
+  other logins, what a reset for an address nobody has confirmed answers, what happens when the
+  new address of a change is confirmed elsewhere, or what happens when an email cannot be sent.
+- **Options:** for expiry, 24 hours to 7 days for confirmation and 15 minutes to 24 hours for
+  resets; older links valid until expiry, or replaced; resending with or without the human
+  check; failed sends refusing the action or not.
+- **Solution:** new rule A1.16: links work once; confirmation (also of a new address) 24 hours,
+  reset 1 hour; a newer link of the same kind replaces the older; an expired, replaced or used
+  link, or one whose address another account has confirmed, gives `link_expired`. A1.4: Send it
+  again without the human check, under A1.9; a signup whose email cannot be sent still succeeds.
+  A1.7: an address nobody has confirmed gives `email_not_confirmed` whether or not an account
+  entered it; setting a new password ends every login of the account, clears failed logins and
+  logs the player in in that browser. A1.9: "already in use" emails count; addresses compared as
+  in A1.11; refused actions change nothing; failed sends do not count; per-address counts survive
+  deleting the account (kept as a one-way code for 2 days, A12.1). A9.6: at most 90 emails a day
+  site-wide (Q104), `site_daily_cap`. A1.10: a newer change replaces a pending one; a new address
+  confirmed elsewhere looks the same and gets the "already in use" email. New messages in
+  `screens.md`'s table: `email_not_confirmed`, `email_limit_reached`, `password_wrong`,
+  `link_expired`, `not_registered`. Scenarios `accounts` #43 "a confirmation link no longer works
+  after 24 hours", #44 "a reset link sets a new password" and #46 "at most 90 emails a day are
+  sent on the whole site"; `HARNESS.md` gains `set_new_password`, `site_counts_today.emails` and
+  the codes `password_wrong` and `link_expired`.
+- **Why:** short reset links limit the window of a stolen mailbox; one live link per kind keeps an
+  old email from being used; the limits already stop resend abuse, so a human check there only
+  adds friction; treating an unknown address like an unconfirmed one keeps unconfirmed addresses
+  from being probed; ending all logins on reset is what a player resetting after a break-in needs.
+- **Implemented:** `accounts.md` A1.4, A1.7, A1.9, A1.10, A1.16, A9.6; `screens.md` S12.4,
+  S12.5, message table; phase 24, items 1 to 3.
+
+## Q107. Deleting an account: password, logins, rooms and guests (A1.15, M6.10, S12.6)?
+
+- **Phase:** 24, starter (A1.15, S12.6).
+- **Question:** S12.6 asks for the password before deleting, but A1.15 says nothing about a wrong
+  password, the account's other logins, its links, a waiting room or the ranked queue, or guests.
+- **Options:** a wrong password reuses `login_failed` or gets its own code; guests may delete or
+  not.
+- **Solution:** written into A1.15: a wrong password is `password_wrong` ("Wrong password.") and
+  changes nothing; deleting ends every login and every link, and leaves a waiting room and the
+  ranked queue as well as a game (M6.10); guests cannot delete (`not_registered`), they are
+  removed after 90 days unused (A1.1). Scenario `accounts` #45 "deleting an account needs its
+  password"; `delete_account` without `password` in a scenario gives the account's own
+  (`HARNESS.md`).
+- **Why:** `login_failed` names username and email, which this form does not ask for; a guest
+  has no password to confirm with.
+- **Implemented:** `accounts.md` A1.15; `HARNESS.md`; phase 24, item 4.
+
+## Q108. How are emails sent, counted and tested before there is a live sender (A1.4, A1.9, A9.6)?
+
+- **Phase:** 24, item 1 (A1.3, A1.4, A1.9, A1.11, A9.6; Q104, Q106).
+- **Question:** the spec and Q106 do not say in which order the limits are checked and counted
+  when one signup touches D1 and the Lobby, what **Send it again** does for an account with no
+  unconfirmed address (A1.3: the signup with an address confirmed elsewhere leaves the account
+  without one, `accounts` #6), what the test double does on the live site before item 10, or what
+  the links look like.
+- **Options:** count before sending and give back on failure, or count only after a sent email;
+  **Send it again** without an address refused with a reason code, or answered like a send;
+  the test outbox always on, or only where the test room secret is set.
+- **Solution:**
+  - Order: the request's own checks (human check, fields) first; then the counts per account and
+    per address for today (`email_limit_reached`), then the Lobby takes one email of the site's 90
+    (`site_daily_cap`); only then is anything written. The site email is given back when the email
+    cannot be sent or the signup loses its username to a concurrent one. After a sent email, the
+    link is written.
+  - Changed after the phase review (R1): the D1 counts are taken, not only read, before sending:
+    one D1 batch of conditional upserts that raise each count only while it is below 3, so
+    requests at the same moment cannot pass a limit. If one count is full, the other is given
+    back and the request gets `email_limit_reached`; when the site cap refuses, the email cannot
+    be sent, or the signup loses its username, the counts and the site email are given back. A
+    signup without a guest takes only the address count; the new account's count is written
+    with the link after the email is sent.
+  - Counts per account (`account:<id>`) and per address (`address:<SHA-256 of the email key>`) in
+    `email_counts` by UTC day; the daily cron deletes counts older than yesterday and expired
+    links. Links are stored only as SHA-256 hashes, one per account and kind.
+  - **Send it again** (`POST /api/confirmation-emails`, the login's token): a guest gets
+    `not_registered`; an account with no unconfirmed address (none entered, removed by A1.11, or
+    already confirmed) gets the same OK as a sent email and nothing is sent or counted, so the
+    answer does not tell that the address belongs to another account (A1.3). An unconfirmed
+    address confirmed elsewhere meanwhile gets the "already in use" email. Over a limit: HTTP 429
+    with the reason code, as signup.
+  - The sender is chosen in one place (`emailSenderOf`). Until item 9 it is always the test
+    outbox: a D1 table `test_outbox` written only when `TEST_ROOM_SECRET` is set (locally and on
+    GitHub); without it the send fails, so the live site stores no address or link and counts
+    nothing, and signups still succeed (A1.4). The browser tests read it with
+    `POST /api/test-outbox` (`{ to }`, the test room secret header), newest first.
+  - Links use the request's origin and a fragment: `/#confirm=<token>` for a confirmation (also of
+    a new address), `/#reset=<token>` for a reset, `/#forgot-password` in the "already in use"
+    email.
+  - The browser tests sign up far more than 90 accounts a day on one local server: like the chat
+    cap (Q101), a server whose environment sets `TEST_SITE_EMAILS_PER_DAY` uses that number
+    (`.dev.vars` locally and in `check.yml` and `deploy.yml`).
+  - Scenarios: the lobby driver keeps the emails sent (`emails_sent`), the counts of `email_counts`
+    and `emails_today`, and the site count of `site_counts_today.emails` with the server's own
+    limit functions. For `accounts` #4 it keeps the given seats and game counts by player id, so
+    they show the signed-up account only if signup kept the guest's player id. The "check your
+    email" notice of S12.3 is `message_to.notice: signup_done_confirm_email` after a signup.
+  - B18: the busy day's 30 signup emails (the link with its token index and two counts, 4 rows,
+    plus the Lobby's count), 10 resends (the link and its token index replaced and two counts, 5
+    rows, plus the Lobby's count) and the daily delete of 60 counts and 30 links (2 rows each):
+    330 rows; the day measures 3,396 of 5,000.
+- **Why:** taking the site email first in the Lobby is the only way to keep the cap exact without
+  a second write per email; storing nothing on the live site until the real sender exists keeps
+  addresses out of a table nobody reads.
+- **Implemented:** phase 24, item 1.
+
+## Q109. Opening confirmation and reset links (A1.7, A1.11, A1.16)?
+
+- **Phase:** 24, item 2 (A1.4, A1.7, A1.11, A1.16; Q106).
+- **Question:** the spec does not say whether a refused new password uses up the reset link, to
+  which address a reset requested with a variant of the address (`Name+x@...`) is sent, what
+  happens to the other browsers' open connections when a reset ends every login, or how the
+  scenarios open a confirmation link for an account that is given unconfirmed.
+- **Options:** check the password before or after the link; send to the typed or the confirmed
+  address; close the other connections or let them run out.
+- **Solution:**
+  - Routes: `POST /api/email-confirmations` `{ link }` (OK or `link_expired`),
+    `POST /api/reset-emails` `{ email, humanCheck }` (the human check, then
+    `email_not_confirmed`, then the limits of Q108; OK) and `POST /api/password-resets`
+    `{ link, password }` (the answer of a login: token, player id, name).
+  - A new password is checked (A1.6) before the link, so a refused password leaves the link
+    working. The link, the password, ending the logins, clearing failed logins and the new login
+    are one D1 batch whose statements all require the live link, so a link used twice at the same
+    moment sets the password once.
+  - Confirming is one D1 batch: the account is confirmed only while no account has confirmed the
+    address (A1.11), the address is removed from every other account with the same email key, and
+    the link is used up whatever the outcome.
+  - The reset email goes to the address as the confirming account stored it, counted per account
+    and per address as in Q108.
+  - Ending every login deletes the account's logins; a connection already open in another browser
+    is not closed, it fails at its next login check (a reconnect or a route).
+  - Scenarios: an account given as registered with an unconfirmed address has a live
+    confirmation link from the scenario's start; `set_new_password` opens the newest reset link
+    sent on the site.
+- **Why:** a typo in the new password should not cost the player a new email out of three a day;
+  one batch keeps a link to one use without a second read.
+- **Implemented:** phase 24, item 2.
+
+## Q110. Changing and adding an email address (A1.10, A1.11, A1.16)?
+
+- **Phase:** 24, item 3 (A1.10, A1.11, A1.12, A1.16; Q106, Q108, Q109).
+- **Question:** the spec does not say where a pending address is kept, whether a change whose
+  address is confirmed elsewhere shows as pending, what happens to a pending change when another
+  account confirms that address, how an account knows its address was removed (A1.11), in which
+  order the change is checked, or what the account view shows.
+- **Options:** keep the pending address only in the link, or on the account; show a pending
+  change only when a link was sent, or always; leave other accounts' pending changes, or drop them.
+- **Solution:**
+  - `POST /api/email-changes` `{ token, email, humanCheck }`: the login (`invalid_token`), a guest
+    gets `not_registered`, the address (A1.3, `email_invalid`), the human check, then the limits
+    of Q108 (per account and per new address); then the account's `pending_email` (with its email
+    key) is written and its older `change_confirm` link deleted in one batch, so a newer change
+    always replaces the pending one even when its email cannot be sent. It sends `change_confirm`,
+    or `already_in_use` when any account has confirmed the address (it is still stored as pending,
+    so the change looks the same). OK whatever the send's outcome, as signup (A1.4).
+  - Confirming (`POST /api/email-confirmations`, one batch as Q109) also opens a `change_confirm`
+    link: the address comes from `email_links.address` and must still be the pending one; while
+    no other account has confirmed it, it replaces the account's address as confirmed and clears
+    the pending change and the removed mark. A1.11 then removes the address from every other
+    unconfirmed account with the same email key and marks it removed (`is_email_removed`), and
+    drops other accounts' pending changes to that address.
+  - `POST /api/account` adds `email` (null for a guest): `address`, `isConfirmed`,
+    `pendingAddress` and `wasRemoved`, to the account holder only. Migration
+    `0011_pending_and_removed_email.sql`; `PROTOCOL_VERSION` 13.
+  - **Send it again** stays for the unconfirmed address of the account; a pending change that did
+    not arrive is sent again by changing again (with the human check).
+  - Scenarios: the lobby driver's `change_email` step; `confirm_email` opens the newer of the
+    account's confirmation and change links; `emails_sent` shows a change email as kind
+    `confirm`, as `accounts` #16 expects.
+- **Why:** keeping the pending address on the account lets the settings show it whatever the
+  email did, and the account's own removed mark is the only way the settings can explain A1.11
+  without telling who confirmed the address.
+- **Implemented:** phase 24, item 3.
+
+## Q111. What does deleting an account remove, and how does it leave rooms (A1.15, M6.10)?
+
+- **Phase:** 24, item 4 (A1.15, M6.10, A2.3; Q107).
+- **Question:** the spec does not say in which order the route checks and acts, whether the
+  account row stays as a marker for phase 25's "Deleted player", what happens to the account's
+  open sockets in other browsers, or what the answer looks like.
+- **Options:** keep the account row as a deleted marker (name cleared, kind `deleted`), or remove
+  it and show "Deleted player" for any player id without an account; leave rooms before or after
+  removing the rows.
+- **Solution:**
+  - `POST /api/account-deletions` `{ token, password }`, answered like the email routes
+    (`EmailResponse`): the login (`invalid_token`, 401), a guest gets `not_registered`, then one
+    password hash (Q90; `password_wrong`, nothing changes). Then the account leaves every room the
+    Lobby knows it in, as a logged-out guest does (`leaveAsLoggedOutGuest`: during a game it
+    leaves the game, M6.10, then the room; waiting in a room it leaves the room), and every socket
+    of the account in those rooms is closed as logged out, whichever login opened it. If a room
+    does not answer, the answer is 503 and the account stays. Last, one batch deletes the account
+    row, every login and every email link. OK `{ isOk: true }`.
+  - The account row is removed, not kept as a marker: its email, pending email, removed mark,
+    password hash and username go with it, and the username is free at once. Phase 25 shows
+    "Deleted player" for a record's player id that has no account row, the same rule as for
+    guests removed after 90 days (item 5). Per-address email counts stay (A1.9); the account's
+    own count rows expire with the daily cron as before.
+  - The ranked queue does not exist yet; phase 26 adds leaving it to the deletion route.
+  - `PROTOCOL_VERSION` 14 (`password_wrong`). B18 counts 5 deletions on the busy day, 10 rows
+    each (the account and its name and email index entries, two logins with their index entries,
+    a link with its token index and leaving a room).
+- **Why:** removing the row is the simplest way to be sure no personal data stays (A12.1), and
+  the same "no account, Deleted player" rule then covers removed guests; leaving the rooms first
+  means a failure leaves a working account that can try again.
+- **Implemented:** phase 24, item 4.
+
+## Q112. When is a guest "not used for 90 days", and how is it removed (A1.1, A1.14)?
+
+- **Phase:** 24, item 5 (A1.1, A1.14; D27, Q55).
+- **Question:** a guest's last use is noted per login, at most once a day (Q55), and a guest who
+  logged out has no login left, so its last use is no longer stored. The spec does not say from
+  which time the 90 days count then, nor what removing the guest removes.
+- **Options:** count a logged-out guest from its creation time; remove it at the next daily run;
+  or store a last-use time on the account.
+- **Solution:**
+  - The daily Cron Trigger removes a guest account when its newest login's noted last use is more
+    than 91 days old (`LOGIN_TIMES.expireAfterMs`), the same moment its login ends (Q55), so a
+    guest is never removed before 90 days without use. A guest with no login left counts from the
+    time it was made.
+  - `removeUnusedGuests` is one D1 batch of two statements (the guests' logins, then the guest
+    rows), so the Worker loops over no rows and stays within the cron's 10 ms CPU. The username is
+    free at once; phase 25 shows "Deleted player" for a record whose player id has no account row
+    (Q111). Guests have no email links or email counts of their own. Registered users are never
+    removed by it.
+  - B18 counts 100 removals a day (as many as the busy day makes guests), 4 rows each (the
+    account, its name index entry, its login and the login's index entry): 3,846.
+- **Why:** reusing the login's expiry keeps one rule for "unused"; counting a logged-out guest
+  from its creation errs on keeping it, never on removing it early, without a new column.
+- **Implemented:** phase 24, item 5.
+
+## Q113. How do the email screens open, and what do their buttons say (S12.3, S12.4)?
+
+- **Phase:** 24, item 6a (S12.2, S12.3, S12.4; Q108, Q109).
+- **Question:** S12.4 does not say over which screen an email link opens, what the email
+  confirmed and link expired screens close with, what the set-new-password form does with two
+  different passwords, or what happens to a game this browser is in when a reset logs it in. The
+  boards show the address on "email confirmed" (the confirm route does not return it), "Go to the
+  lobby" buttons, "Send a new link" on "link expired" and "Save and log in" on "set a new
+  password".
+- **Options:** open the link screens as their own page, or as dialogs over whatever the browser
+  shows; return the address from the confirm route, or leave it out.
+- **Solution:**
+  - The client reads `#confirm=`, `#reset=` and `#forgot-password` once at load, removes the
+    fragment from the address, and shows the screens as dialogs over the current screen (the
+    lobby, a waiting room or a game, which go on behind). The "check your email" notice of S12.3
+    opens after every successful signup, from the lobby or the user menu, with the address typed.
+  - Email confirmed: no address (the confirm route answers only OK or `link_expired`, so a link
+    tells nothing about the account), closed with **OK**. Link expired: **Close**, and **Send it
+    again** to a logged-in player whose address is unconfirmed (from `/api/account`), else
+    **Forgot password**, as S12.4. Set a new password: **Set password**, as S12.4; two different
+    passwords are caught in the browser ("The two passwords are not the same.") and nothing is
+    sent; `password_invalid` leaves the link working (Q109); `link_expired` opens the link expired
+    screen. After **Set password** the browser holds the new login and shows the lobby, leaving a
+    room it was in (the old login has ended, A1.7).
+  - A network failure while confirming shows a notice to open the link again instead of the link
+    expired screen.
+  - `screens.md` S17 lists the board differences.
+- **Why:** dialogs keep a game in another part of the page running and reuse the modal pattern
+  of every other account screen; the spec's button names win over the boards'.
+- **Implemented:** `screens.md` S17; phase 24, item 6a.
+
+## Q114. What do the email and delete parts of account settings show (S12.5, S12.6)?
+
+- **Phase:** 24, item 6b (S12.5, S12.6; Q110, Q111).
+- **Question:** no board shows the dialog for **Change email address** or **Add an email
+  address**, or an unconfirmed address. The board "Account: settings, email removed" names the
+  removed address, which `/api/account` no longer has (Q110). S12.6 does not say when a player
+  counts as "during a game", or where a deleted player ends up.
+- **Options:** name the removed address (keep it on the account) or explain without it; a page or
+  a dialog for the change.
+- **Solution:**
+  - Settings show the address as text with "✓ confirmed" or "not confirmed"; an unconfirmed one
+    has **Send it again** (the confirmation route, Q108; a pending change is not resent, Q110). A
+    pending change shows "Waiting for confirmation: …". A removed address is explained without
+    naming it, with **Add an email address**. Guests see neither the email part nor **Delete
+    account** (A1.15, `not_registered`).
+  - **Change email address** and **Add an email address** open a dialog with the new address and
+    the human check, **Send link**; when it is sent, settings open again and show the pending
+    change. A refusal (`email_limit_reached`, `site_daily_cap`, ...) shows in the dialog.
+  - **Delete account** asks for the password. "During a game" means the room's game is running
+    and has no result yet; then the dialog is "Delete your account during a game?" with **Leave
+    the game and delete**, as the board. `password_wrong` and a server that did not answer (503,
+    "The server did not answer. Try again.") keep the account and the dialog. After deleting, the
+    browser forgets the login and shows the lobby logged out.
+  - `screens.md` S17 lists the board differences.
+- **Why:** the account view tells only what the account holds (A6.3); the dialogs reuse the
+  forgotten-password form's pattern.
+- **Implemented:** `screens.md` S17; phase 24, item 6b.
+
+## Q115. Does deleting an account limit wrong password guesses (A1.13, A1.15)?
+
+- **Phase:** 24, phase review R6 (A1.13, A1.15; Q107, Q111).
+- **Question:** the delete route checks the password with a session token, and A1.13 counts
+  only failed logins. Should wrong passwords on deletion count, or ask for the human check?
+- **Options:** count them as failed logins and ask for the human check in the delete dialog
+  after 3; or accept unlimited guesses there.
+- **Solution:** accepted, nothing is counted. A guess needs a live login token of the account,
+  and that token already gives everything the password would: the account stays logged in for
+  90 days and can change the email address and reset the password through it. The password on
+  deletion only guards against deleting by mistake or from a borrowed browser. Counting would
+  also break A1.15 ("a wrong one ... changes nothing") and need the human check in S12.6.
+  Each guess costs a slow password hash, so the route is not cheaper to hammer than a login.
+- **Why:** the limit would protect nothing the token does not already open.
+- **Implemented:** no change; phase 24, review R6.
+
+## Q116. What does an account hold after signing up with an address confirmed elsewhere (A1.3)?
+
+- **Phase:** 24, phase review R4 (A1.3, A1.4, A1.11; Q108, Q114).
+- **Question:** signup stored no address when another account had confirmed it, so Account
+  settings showed no address and **Add an email address**, unlike a free address. That breaks
+  A1.3 ("looks exactly the same") and tells the player the address belongs to an account.
+- **Options:** keep the address on the account as not confirmed, like a free one; or keep
+  storing nothing and make the settings pretend.
+- **Solution:** the address is kept on the account as not confirmed (an unconfirmed address
+  reserves nothing, A1.11; a login by email finds the confirming account first, A1.5). Settings
+  show it with "not confirmed" and **Send it again**, which sends the "already in use" email again
+  while the other account holds it, through the same limits (`reserveAccountEmail`), and the
+  confirmation email once the address is free. Spec A1.3 says so; scenario `accounts` "signing up
+  with an address already confirmed elsewhere looks the same" now expects the address, not
+  confirmed (it contradicted A1.3).
+- **Why:** the only place the difference may show is the email sent to the address.
+- **Implemented:** phase 24, review R4.
+
+## Q117. What does changing the email to the account's own confirmed address do (A1.10)?
+
+- **Phase:** 24, phase review R7 (A1.9, A1.10; Q110).
+- **Question:** a change to the address the account has already confirmed found it "confirmed
+  elsewhere", sent the "already in use" email and left a pending change that could never be
+  confirmed.
+- **Options:** refuse it with a reason code; or treat it as no change.
+- **Solution:** no change. After the login, the address and the human check, a new address with
+  the same email key (A1.11) as the account's confirmed address sends nothing and counts nothing
+  (A1.9: no email, so no limit), drops a pending change and its link (a newer change replaces a
+  pending one), and answers OK. Spec A1.10 says so; new scenario `accounts` "changing the email
+  address to the confirmed one already on the account changes nothing" (required).
+- **Why:** the player gets what they asked for, their current address, without a new reason code
+  or a message on the screens; refusing would need one in `screens.md` for a case that only
+  needs nothing to happen.
+- **Implemented:** phase 24, review R7.
+
+## Q118. Why did B11 fail `npm run check` under load, and how is it measured reliably?
+
+- **Phase:** 24, second finisher run (B11; Q102, phase 20 finisher).
+- **Question:** one `npm run check` failed B11 at 12 ms of 10 with no room code changed, and the
+  next run passed. Is it a regression or the load, and how does the check stop depending on it?
+- **Finding:** the measurement. The room scenarios send 55 messages, and the 99th percentile of 55
+  values is the largest one, so one message decides B11, as it did before phase 20 moved to the
+  percentile. The time is the wall clock, which counts the time the operating system gives to
+  the other test processes of `npm run check`. Measured alone, the slowest message took 1.2 to
+  2.6 ms; with the full test suite running beside it, single messages took up to 6.8 ms while
+  the second slowest stayed under 2 ms. Thread CPU time is no fix: on Windows it is counted in
+  steps of about 15.6 ms.
+- **Solution:** the harness runs the room scenarios three times, one after the other, and keeps
+  for each message the fastest of its three times; the results, the other measurements and the
+  report come from the first run. A message slowed by the load in one run is measured by another;
+  a message that is really slow is slow in all three and still fails. The limit (10 ms), the
+  percentile and the required list are unchanged. `budgets.yaml` says how B11 is measured.
+- **Why:** a budget that fails on load teaches everyone to rerun past it, which hides a real
+  regression; three runs of the room scenarios add about a second to the harness.
+- **Implemented:** phase 24, second finisher run (`tools/harness-runner/buildSteadyScenarioRuns.ts`).

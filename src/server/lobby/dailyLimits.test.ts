@@ -26,6 +26,7 @@ function lobbyWith(actions: number, gameStarts: number): LobbyRecord {
       players: [{ playerId: ANN, actions, gameStarts }],
       siteGameStarts: 0,
       siteChatMessages: 0,
+      siteEmails: 0,
     },
   };
 }
@@ -76,6 +77,7 @@ describe("counting a game start", () => {
       ],
       siteGameStarts: 1,
       siteChatMessages: 0,
+      siteEmails: 0,
     });
   });
 
@@ -123,6 +125,7 @@ describe("setting a player's counts for a browser test", () => {
       ],
       siteGameStarts: 7,
       siteChatMessages: 0,
+      siteEmails: 0,
     });
     expect(claimPlayer(set, BEA, CODE, MIDNIGHT)).toEqual({
       isOk: false,

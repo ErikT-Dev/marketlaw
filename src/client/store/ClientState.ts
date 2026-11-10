@@ -1,4 +1,5 @@
 import type { ConnectionStatus } from "../../shared/ConnectionStatus";
+import type { EmailDialog } from "./EmailDialog";
 import type { Notice } from "../../shared/Notice";
 import type { PublicRoomView } from "../../shared/protocol/PublicRoomView";
 import type { RoomUpdate } from "../../shared/protocol/RoomUpdate";
@@ -24,4 +25,5 @@ export type ClientState = {
   readonly goneRoomCode: string | null;
   readonly publicRooms: ReadonlyArray<PublicRoomView>;
   readonly isOutdated: boolean;
+  readonly emailDialog: EmailDialog | null;
 };

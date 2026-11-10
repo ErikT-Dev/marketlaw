@@ -25,6 +25,8 @@ Phases 22 (abandoned games save no record) and 24 (deleted accounts).
 1. **Game records in D1,** written once when a game finishes or the last player is left.
 2. **Match history** pages and the full record view.
 3. **Current usernames** in records; "Deleted player" for deleted accounts and removed guests.
+   Deleting an account (phase 24, Q111) and removing a guest remove the account row, so a
+   record's player id without an account row is "Deleted player".
 
 ## Known gaps after this phase
 

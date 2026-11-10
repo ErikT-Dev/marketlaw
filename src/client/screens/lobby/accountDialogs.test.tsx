@@ -15,6 +15,7 @@ function lobbyLoggedOut(answers: Answers = {}) {
   const onSignUp = vi.fn(async () =>
     Promise.resolve(signUps[onSignUp.mock.calls.length - 1] ?? null),
   );
+  const onForgotPassword = vi.fn();
   render(
     <LobbyPage
       account={null}
@@ -25,11 +26,12 @@ function lobbyLoggedOut(answers: Answers = {}) {
       onStartAsGuest={async () => Promise.resolve(null)}
       onLogIn={onLogIn}
       onSignUp={onSignUp}
+      onForgotPassword={onForgotPassword}
       onDismissRemoval={vi.fn()}
       publicRooms={[]}
     />,
   );
-  return { onLogIn, onSignUp };
+  return { onLogIn, onSignUp, onForgotPassword };
 }
 
 function type(container: HTMLElement, label: string, value: string): void {
@@ -119,6 +121,15 @@ describe("log in and sign up", () => {
     fireEvent.click(within(logIn).getByRole("button", { name: "No account yet? Sign up" }));
     const signUp = await screen.findByRole("dialog", { name: "Sign up" });
     expect(within(signUp).getByLabelText("Username")).toHaveProperty("value", "Quiet River Baron");
+    expect(screen.queryByRole("dialog", { name: "Log in" })).toBeNull();
+  });
+
+  it("goes from log in to the forgotten password form", async () => {
+    const { onForgotPassword } = lobbyLoggedOut();
+    fireEvent.click(screen.getByRole("button", { name: "Log in" }));
+    const logIn = await screen.findByRole("dialog", { name: "Log in" });
+    fireEvent.click(within(logIn).getByRole("button", { name: "Forgot your password?" }));
+    expect(onForgotPassword).toHaveBeenCalledOnce();
     expect(screen.queryByRole("dialog", { name: "Log in" })).toBeNull();
   });
 

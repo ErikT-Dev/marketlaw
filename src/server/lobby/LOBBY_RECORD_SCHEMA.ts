@@ -25,6 +25,7 @@ export const LOBBY_RECORD_SCHEMA = v.object({
       players: v.array(v.object({ playerId: PlayerId, actions: COUNT, gameStarts: COUNT })),
       siteGameStarts: COUNT,
       siteChatMessages: v.optional(COUNT, 0),
+      siteEmails: v.optional(COUNT, 0),
     }),
     EMPTY_LOBBY.today,
   ),

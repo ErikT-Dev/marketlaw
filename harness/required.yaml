@@ -307,6 +307,21 @@ scenarios:
     - a new account can change its username at once
     - a username change keeps the old name inside the room the player is in
     - a freed username cannot join the room where the old holder still shows it
+    - a guest user can sign up during a game and keeps their seat and history
+    - signing up with an address already confirmed elsewhere looks the same
+    - confirming the email address lets a registered user reset their password
+    - an unconfirmed address cannot be used to reset the password
+    - at most 3 emails a day are sent for one account
+    - changing the email address keeps the old one until the new one is confirmed
+    - changing the email address to the confirmed one already on the account changes nothing
+    - the first account to confirm an address keeps it and it is removed from the other
+    - dots in gmail addresses do not make a different address
+    - at most 3 emails a day are sent to one address
+    - googlemail addresses count as gmail addresses
+    - a confirmation link no longer works after 24 hours
+    - a reset link sets a new password
+    - deleting an account needs its password
+    - at most 90 emails a day are sent on the whole site
   rooms:
     - a player creates a public room with a chosen size and becomes its owner
     - a private room is not listed in the lobby but can be joined with its code
@@ -364,6 +379,7 @@ scenarios:
     - a vote goes on when the player who called it leaves
     - a guest who logs out during a game leaves it
     - a registered user who logs out during a game keeps their seat
+    - deleting the account during a game counts as leaving it
   lobby-queue-and-limits:
     - a player who started 10 games today cannot start another
     - after 50 games start on the site today no more games start

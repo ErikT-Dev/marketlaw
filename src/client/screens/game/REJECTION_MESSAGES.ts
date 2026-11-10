@@ -86,6 +86,12 @@ export const REJECTION_MESSAGES: Readonly<Record<ReasonCode, IconText>> = {
   email_invalid: "Enter a whole email address, such as name@example.com.",
   password_invalid: "Use 8 to 64 characters for the password.",
   username_change_too_soon: "You can change your username once every 7 days.",
+  email_limit_reached:
+    "No more emails can be sent for this account or to this address today. Try again after 00:00 UTC.",
+  not_registered: "Sign up first.",
+  email_not_confirmed: "No account has confirmed this email address.",
+  link_expired: "This link no longer works.",
+  password_wrong: "Wrong password.",
   no_free_room_code: "No room could be created right now. Try again.",
   no_answer: "The server did not answer. Try again.",
   busy_elsewhere: "You are already in a room, the ranked queue or a game. Leave it first.",

@@ -1,8 +1,10 @@
-import { emailKeyOf } from "../../../src/server/accounts/emailKeyOf.ts";
 import { nameKeyOf } from "../../../src/server/accounts/nameKeyOf.ts";
 import { NO_FAILED_LOGINS } from "../../../src/server/accounts/NO_FAILED_LOGINS.ts";
 import { signupProblem } from "../../../src/server/accounts/signupProblem.ts";
+import type { ReasonCode } from "../../../src/shared/ReasonCode.ts";
 import type { LobbyAccount } from "./LobbyAccount.ts";
+import { accountConfirmingEmail } from "./accountConfirmingEmail.ts";
+import { lobbyEmailRejection } from "./lobbyEmailRejection.ts";
 import type { LobbyRegistration } from "./LobbyRegistration.ts";
 import type { LobbySession } from "./LobbySession.ts";
 
@@ -12,25 +14,23 @@ function textOf(value: unknown): string {
   return typeof value === "string" ? value : "";
 }
 
-function isConfirmedElsewhere(session: LobbySession, email: string): boolean {
-  return [...session.accounts.values()].some(
-    ({ registration }) =>
-      registration?.isEmailConfirmed === true &&
-      registration.email !== null &&
-      emailKeyOf(registration.email) === emailKeyOf(email),
-  );
-}
-
 function registrationOf(session: LobbySession, step: Readonly<Record<string, unknown>>) {
   const email = textOf(step["email"]);
   const registration: LobbyRegistration = {
     password: textOf(step["password"]),
-    email: isConfirmedElsewhere(session, email) ? null : email,
+    email,
     isEmailConfirmed: false,
+    pendingEmail: null,
     emailEnteredMs: session.now,
     failedLogins: NO_FAILED_LOGINS,
   };
   return registration;
+}
+
+function sendSignupEmail(session: LobbySession, name: string, email: string, isElsewhere: boolean) {
+  const kind = isElsewhere ? "already_in_use" : "confirm";
+  session.emails.send(session.identityNamed(name).playerId, { to: email, kind }, session.now);
+  session.emails.noticesTo.set(name, "signup_done_confirm_email");
 }
 
 function guestOf(session: LobbySession, by: SignUpBy): LobbyAccount | null {
@@ -71,17 +71,22 @@ export async function signUpInLobby(
     return;
   }
   const name = textOf(step["username"] ?? guest?.identity.name ?? session.generatedName);
-  session.rejected = await signupProblem(
-    { name, email: textOf(step["email"]), password: textOf(step["password"]) },
+  const email = textOf(step["email"]);
+  const problem: ReasonCode | null = await signupProblem(
+    { name, email, password: textOf(step["password"]) },
     {
       isHuman: () => Promise.resolve(step["human_check"] === "passed"),
       isTaken: (wanted) => Promise.resolve(isTakenByOther(session, wanted, guest)),
     },
   );
+  session.rejected =
+    problem ?? lobbyEmailRejection(session, guest?.identity.playerId ?? null, email);
   if (session.rejected !== null) {
     return;
   }
+  const isElsewhere = accountConfirmingEmail(session, email) !== null;
   saveSignup(session, { name, guest }, step);
+  sendSignupEmail(session, name, email, isElsewhere);
   if ("visitor" in by) {
     session.visitorLogins.set(by.visitor, name);
   }

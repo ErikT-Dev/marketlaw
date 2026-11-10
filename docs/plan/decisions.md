@@ -234,14 +234,29 @@ held off by the human check (A1.13). Hashes stored at 20,000 keep their count an
 iteration (the highest call, other work included), 9 ms of 10 (Q90, Q102).
 *Effect:* `open-questions.md` Q90; `accounts.md` open question 2 removed; built in phase 23.
 
+**D30. Account emails through Brevo's free plan from a Gmail sender, at most 90 a day (was
+O3).** (2026-11-10, Claude under D19, phase 24; provider chosen by the owner the same day)
+Claude first chose Resend, which needs a domain. The owner has no domain and wants to stay at
+$0, so the emails go through Brevo's HTTPS API (free, about 300 emails a day), called with
+`fetch` from the Worker (no npm package), from the owner's Gmail address for the game, verified
+as a Brevo sender. Cloudflare's own Email Service cannot send to other people's addresses on the
+Workers Free plan, and MailChannels' free Workers service has ended. The site sends at most 90
+emails a day (A9.6). A test double stands in for the sender everywhere but the live site. Known
+drawbacks: the emails may land in spam (so the screens say to look there, A1.4), and free-plan
+emails carry a Brevo footer.
+*Effect:* `open-questions.md` Q104; `accounts.md` open question 1 removed, A1.4, A9.6;
+`screens.md` S12.3, S12.4; phase 24.
+
+**D31. The privacy notice is rule A12.1 and page S12.8 (was O7).** (2026-11-10, Claude under
+D19, phase 24)
+What is stored, why, how long, who else handles it and how to delete it, from facts the spec
+already fixes, on a page open to everyone and linked from signup and account settings. The
+contact address is set by the owner. The owner reviews the wording with version 1.
+*Effect:* `open-questions.md` Q105; `accounts.md` A12; `screens.md` S12.8; phase 24.
+
 ## Open
 
 From D19 on, Claude solves these itself when the phase that needs them starts, records the
 solution in `open-questions.md`, and moves the point to Decided.
 
-**O3. Email provider.** Needed before phase 24. (`accounts.md` open question 1)
-*Recommendation:* compare free tiers against A1.9 at the start of phase 24.
-
-**O7. Privacy notice.** Needed before phase 24.
-A short notice: what is stored (username, email, password hash, game records), why, how long,
-and how to delete it. Drafted into the spec (owner's approval) before phase 24 builds it.
+None open at the moment.

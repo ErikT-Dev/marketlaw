@@ -4,6 +4,7 @@ import type { ReasonCode } from "../../../shared/ReasonCode";
 import type { IconText } from "../../components/IconText";
 import { Modal } from "../../components/Modal";
 import { TextWithIcons } from "../../components/TextWithIcons";
+import { PrivacyNoticeLink } from "../privacy/PrivacyNoticeLink";
 import { DialogButtons } from "./DialogButtons";
 import { HumanCheck } from "./HumanCheck";
 import styles from "./Lobby.module.css";
@@ -60,6 +61,7 @@ export function SignUpDialog({ prefilledName, isGuest, onSubmit, onCancel }: Pro
           onEmailChange={setEmail}
           onPasswordChange={setPassword}
         />
+        <PrivacyNoticeLink />
         <HumanCheck containerRef={containerRef} isUnavailable={isUnavailable} />
         {formError === null ? null : (
           <p role="alert" className={styles["error"]}>

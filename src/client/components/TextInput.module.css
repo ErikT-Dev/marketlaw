@@ -26,6 +26,6 @@
   font-size: var(--font-size-sm);
 }
 .error {
-  color: var(--color-toast-error);
+  color: var(--color-board-field-error-text);
   font-size: var(--font-size-sm);
 }

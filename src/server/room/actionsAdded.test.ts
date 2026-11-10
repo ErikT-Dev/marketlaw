@@ -190,6 +190,7 @@ describe("adding actions to the lobby's counts", () => {
       players: [{ playerId: annId, actions: 1990, gameStarts: 2 }],
       siteGameStarts: 5,
       siteChatMessages: 0,
+      siteEmails: 0,
     },
   };
 
@@ -210,6 +211,7 @@ describe("adding actions to the lobby's counts", () => {
       ],
       siteGameStarts: 5,
       siteChatMessages: 0,
+      siteEmails: 0,
     });
   });
 
@@ -220,6 +222,7 @@ describe("adding actions to the lobby's counts", () => {
       players: [{ playerId: annId, actions: 15, gameStarts: 0 }],
       siteGameStarts: 0,
       siteChatMessages: 0,
+      siteEmails: 0,
     });
   });
 

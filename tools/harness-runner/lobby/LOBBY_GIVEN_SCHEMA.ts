@@ -17,8 +17,14 @@ export const LOBBY_GIVEN_SCHEMA = v.strictObject({
   clock_ms: v.optional(v.number()),
   site_games_today: v.optional(v.number()),
   site_counts_today: v.optional(
-    v.strictObject({ tutorials: v.optional(v.number()), chat_messages: v.optional(v.number()) }),
+    v.strictObject({
+      tutorials: v.optional(v.number()),
+      chat_messages: v.optional(v.number()),
+      emails: v.optional(v.number()),
+    }),
   ),
+  email_counts: v.optional(v.record(v.string(), v.number())),
+  seats: v.optional(v.array(v.strictObject({ seat: v.number(), player: v.string() }))),
   accounts: v.optional(
     v.array(
       v.strictObject({
@@ -31,6 +37,8 @@ export const LOBBY_GIVEN_SCHEMA = v.strictObject({
         last_username_change_ms: v.optional(v.number()),
         actions_today: v.optional(v.number()),
         games_started_today: v.optional(v.number()),
+        emails_today: v.optional(v.number()),
+        games: v.optional(v.number()),
       }),
     ),
   ),

@@ -37,6 +37,7 @@ export function countGameStart(
         players: [...others, ...started],
         siteGameStarts: counts.siteGameStarts + 1,
         siteChatMessages: counts.siteChatMessages,
+        siteEmails: counts.siteEmails,
       },
     },
   };

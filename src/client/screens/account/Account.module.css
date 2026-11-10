@@ -154,3 +154,85 @@
   justify-content: flex-end;
   gap: var(--space-sm);
 }
+
+.setting {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.settingTitle {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  text-transform: uppercase;
+}
+
+.emailAddress {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.emailConfirmed {
+  color: var(--color-text-secondary);
+}
+
+.emailUnconfirmed {
+  color: var(--color-board-email-pending-text);
+}
+
+.emailHint {
+  margin: var(--space-xs) 0 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+}
+
+.emailRemoved,
+.emailPending {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-md);
+  overflow-wrap: anywhere;
+}
+
+.emailRemoved {
+  background: var(--color-board-email-removed);
+  color: var(--color-board-email-removed-text);
+}
+
+.emailPending {
+  background: var(--color-board-email-pending);
+  color: var(--color-board-email-pending-text);
+  font-weight: var(--font-weight-bold);
+}
+
+.emailNoteTitle {
+  margin: 0;
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-bold);
+}
+
+.emailNoteText {
+  margin: 0;
+  font-size: var(--font-size-panel-title);
+}
+
+.settingButtons {
+  display: flex;
+  gap: 10px;
+}
+
+.deleteForm {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.leavingWarning {
+  margin: 0;
+  color: var(--color-board-email-removed-text);
+  font-weight: var(--font-weight-bold);
+}

@@ -16,6 +16,11 @@ import { logInVisitor } from "./logInVisitor.ts";
 import { logOutPlayer } from "./logOutPlayer.ts";
 import { signUpInLobby } from "./signUpInLobby.ts";
 import { changeUsernameInLobby } from "./changeUsernameInLobby.ts";
+import { confirmEmailInLobby } from "./confirmEmailInLobby.ts";
+import { requestResetInLobby } from "./requestResetInLobby.ts";
+import { setNewPasswordInLobby } from "./setNewPasswordInLobby.ts";
+import { changeEmailInLobby } from "./changeEmailInLobby.ts";
+import { deleteAccountInLobby } from "./deleteAccountInLobby.ts";
 
 const ROOM_ACTIONS = [
   "change_size",
@@ -84,6 +89,12 @@ async function runVisitorStep(
     case "ask_generated_name":
       session.askGeneratedName();
       return;
+    case "reset_password":
+      requestResetInLobby(session, step);
+      return;
+    case "set_new_password":
+      setNewPasswordInLobby(session, visitor, step);
+      return;
     default:
       throw new Error(`the lobby driver has no visitor step ${textOf(step["action"])}`);
   }
@@ -104,6 +115,12 @@ async function runStep(session: LobbySession, step: ScenarioStep): Promise<void>
     await runVisitorStep(session, step["visitor"], step);
   } else if (step["action"] === "sign_up") {
     await signUpInLobby(session, { player: textOf(step["player"]) }, step);
+  } else if (step["action"] === "confirm_email") {
+    confirmEmailInLobby(session, textOf(step["player"]));
+  } else if (step["action"] === "change_email") {
+    changeEmailInLobby(session, textOf(step["player"]), step);
+  } else if (step["action"] === "delete_account") {
+    deleteAccountInLobby(session, textOf(step["player"]), step);
   } else if (step["action"] === "change_username") {
     await changeUsernameInLobby(session, textOf(step["player"]), textOf(step["username"]));
   } else {
@@ -150,7 +167,7 @@ function startSession(rawGiven: Readonly<Record<string, unknown>>, random: Scrip
             free_places: room.size - room.playerNames.length,
           }));
         case "message_to":
-          return lobbyMessageThen(session.messagesTo, expected);
+          return lobbyMessageThen(session.messagesTo, expected, session.emails.noticesTo);
         default:
           return CHAT_THEN_FIELDS.includes(field)
             ? lobbyChatThen(session, field, expected)
@@ -169,6 +186,8 @@ export const LOBBY_DRIVER: ScenarioDriver = {
     "clock_ms",
     "site_games_today",
     "site_counts_today",
+    "email_counts",
+    "seats",
     "accounts",
     "room",
     "other_rooms",
@@ -183,6 +202,11 @@ export const LOBBY_DRIVER: ScenarioDriver = {
     "log_out",
     "sign_up",
     "change_username",
+    "confirm_email",
+    "change_email",
+    "delete_account",
+    "reset_password",
+    "set_new_password",
     "wait_ms",
     "disconnect",
     "reconnect",
@@ -202,6 +226,8 @@ export const LOBBY_DRIVER: ScenarioDriver = {
     "logged_in",
     "lobby_rooms",
     "replay_record",
+    "emails_sent",
+    "seats",
     ...CHAT_THEN_FIELDS,
   ]),
   nestedFields: new Map([
@@ -217,6 +243,8 @@ export const LOBBY_DRIVER: ScenarioDriver = {
         "last_username_change_ms",
         "actions_today",
         "games_started_today",
+        "emails_today",
+        "games",
       ]),
     ],
     [
@@ -251,8 +279,14 @@ export const LOBBY_DRIVER: ScenarioDriver = {
       ]),
     ],
     ["then.game", new Set(["kind", "turn", "seats"])],
-    ["then.message_to", new Set(["player", "contains", "text", "hides"])],
-    ["then.accounts", new Set(["name", "kind", "email", "email_confirmed"])],
+    ["then.message_to", new Set(["player", "contains", "text", "hides", "notice"])],
+    [
+      "then.accounts",
+      new Set(["name", "kind", "email", "email_confirmed", "pending_email", "games"]),
+    ],
+    ["given.seats", new Set(["seat", "player"])],
+    ["then.seats", new Set(["seat", "player"])],
+    ["then.emails_sent", new Set(["to", "kind"])],
     ["then.generated_name", new Set(["taken", "max_length", "not"])],
     ["then.logged_in", new Set(["visitor", "as"])],
   ]),

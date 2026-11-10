@@ -9,6 +9,7 @@ type Props = {
   readonly dialogs: AccountDialogs;
   readonly onLogIn: (login: LoginRequest) => Promise<ReasonCode | null>;
   readonly onSignUp: (signup: Omit<SignupRequest, "token">) => Promise<ReasonCode | null>;
+  readonly onForgotPassword: () => void;
 };
 
 function closingOnSuccess<Request>(
@@ -24,7 +25,7 @@ function closingOnSuccess<Request>(
   };
 }
 
-export function AccountDialogIfOpen({ dialogs, onLogIn, onSignUp }: Props) {
+export function AccountDialogIfOpen({ dialogs, onLogIn, onSignUp, onForgotPassword }: Props) {
   const { dialog, close } = dialogs;
   if (dialog === null) {
     return null;
@@ -34,6 +35,10 @@ export function AccountDialogIfOpen({ dialogs, onLogIn, onSignUp }: Props) {
       <LogInDialog
         onSubmit={closingOnSuccess(onLogIn, close)}
         onSignUp={() => void dialogs.openSignUp()}
+        onForgotPassword={() => {
+          close();
+          onForgotPassword();
+        }}
         onCancel={close}
       />
     );

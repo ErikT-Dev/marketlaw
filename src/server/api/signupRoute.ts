@@ -11,6 +11,11 @@ import { registerGuest } from "../registerGuest";
 import { sha256Hex } from "../sha256Hex";
 import { unclaimedEmailOf } from "../unclaimedEmailOf";
 import { verifyHumanCheck } from "../verifyHumanCheck";
+import { reserveAccountEmail } from "../email/reserveAccountEmail";
+import { sendAccountEmail } from "../email/sendAccountEmail";
+import { returnAccountEmail } from "../email/returnAccountEmail";
+import { nowMs } from "../nowMs";
+import type { EpochMs } from "../../shared/EpochMs";
 import { bodyOf } from "./bodyOf";
 import { takenNameKeys } from "./takenNameKeys";
 
@@ -30,13 +35,17 @@ async function guestOf(
     : null;
 }
 
-async function signedUp(env: Env, body: SignupRequest, guest: LogoutAccount | null, name: string) {
-  const account = {
-    name,
-    passwordHash: await hashPassword(body.password),
-    email: await unclaimedEmailOf(env.DB, body.email),
-    now: Date.now(),
-  };
+type Signup = {
+  readonly body: SignupRequest;
+  readonly guest: LogoutAccount | null;
+  readonly name: string;
+  readonly now: EpochMs;
+};
+
+async function signedUp(env: Env, signup: Signup) {
+  const { body, guest, name, now } = signup;
+  const passwordHash = await hashPassword(body.password);
+  const account = { name, passwordHash, email: body.email, now };
   if (guest === null || body.token === undefined) {
     return insertRegisteredUser(env.DB, account);
   }
@@ -67,8 +76,33 @@ export async function signupRoute(request: Request, env: Env): Promise<Response>
   if (problem !== null) {
     return json({ isOk: false, reason: problem }, 400);
   }
-  const account = await signedUp(env, body, guest, name);
-  return account === null
-    ? json({ isOk: false, reason: "username_taken" }, 409)
-    : json({ isOk: true, token: account.token, playerId: account.identity.playerId, name }, 200);
+  return signUpAndSendEmail(request, env, { body, guest, name, now: nowMs() });
+}
+
+async function signUpAndSendEmail(request: Request, env: Env, signup: Signup): Promise<Response> {
+  const { body, guest, name, now } = signup;
+  const reservation = await reserveAccountEmail(env, {
+    playerId: guest?.identity.playerId ?? null,
+    address: body.email,
+    now,
+  });
+  if (!reservation.isOk) {
+    return json({ isOk: false, reason: reservation.reason }, 429);
+  }
+  const isUnclaimed = (await unclaimedEmailOf(env.DB, body.email)) !== null;
+  const account = await signedUp(env, signup);
+  if (account === null) {
+    await returnAccountEmail(env, reservation.countedKeys, now);
+    return json({ isOk: false, reason: "username_taken" }, 409);
+  }
+  const { playerId } = account.identity;
+  await sendAccountEmail(env, {
+    playerId,
+    kind: isUnclaimed ? "confirm" : "already_in_use",
+    to: body.email,
+    siteUrl: new URL(request.url).origin,
+    now,
+    countedKeys: reservation.countedKeys,
+  });
+  return json({ isOk: true, token: account.token, playerId, name }, 200);
 }

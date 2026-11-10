@@ -30,6 +30,11 @@
   --color-board-chat-sender: #93c5fd;
   --color-board-draw-kind: #2e2442;
   --color-board-draw: #6d28d9;
+  --color-board-email-pending-text: #fde68a;
+  --color-board-email-pending: #3b2f0b;
+  --color-board-email-removed-text: #fca5a5;
+  --color-board-email-removed: #4c1414;
+  --color-board-field-error-text: #fca5a5;
   --color-board-guest-log-out: #fca5a5;
   --color-board-guest-note: #2e2442;
   --color-board-market-phase-text: #1c1206;

@@ -1,7 +1,6 @@
 import { DurableObject } from "cloudflare:workers";
 import { acceptedSocketResponse } from "./acceptedSocketResponse";
 import type { GameState } from "../rules/GameState";
-import { randomForNextAction } from "../rules/randomForNextAction";
 import type { PlayerId } from "../shared/PlayerId";
 import { parseClientMessage } from "../shared/protocol/parseClientMessage";
 import type { RoomCode } from "../shared/RoomCode";
@@ -16,17 +15,14 @@ import type { ReplayRecord } from "./replays/ReplayRecord";
 import { replayRecordOfRoom } from "./replays/replayRecordOfRoom";
 import { CompressedRoomStore } from "./room/CompressedRoomStore";
 import { createRoomIn } from "./room/createRoomIn";
-import { fireRoomAlarm } from "./room/fireRoomAlarm";
 import type { Identity } from "./room/Identity";
 import type { JoinRejection } from "./room/JoinRejection";
 import { joinRejectionIn } from "./room/joinRejectionIn";
 import { joinRoomIn } from "./room/joinRoomIn";
 import { loadRoom } from "./room/loadRoom";
-import { playersWhoseUpdateChanged } from "./room/playersWhoseUpdateChanged";
 import { receiveAskingLobbyFor } from "./receiveAskingLobbyFor";
 import type { RoomRecord } from "./room/RoomRecord";
 import { startTestRoomIn } from "./room/startTestRoomIn";
-import { timeOutNoticesBetween } from "./room/timeOutNoticesBetween";
 import { withConnection } from "./room/withConnection";
 import { reportToLobby } from "./reportToLobby";
 import { saveReplayRecordIfEnded } from "./replays/saveReplayRecordIfEnded";
@@ -44,6 +40,7 @@ import type { ReplySocket } from "./ReplySocket";
 import type { ClientMessage } from "../shared/protocol/ClientMessage";
 import { leaveAsLoggedOutGuest } from "./leaveAsLoggedOutGuest";
 import { UNHEARD_REPLIES } from "./UNHEARD_REPLIES";
+import { applyRoomAlarm } from "./applyRoomAlarm";
 
 export class GameRoom extends DurableObject<Env> {
   private readonly sockets = new RoomSockets(this.ctx);
@@ -118,7 +115,8 @@ export class GameRoom extends DurableObject<Env> {
   async logOut(login: {
     readonly sender: Sender;
     readonly token: string;
-    readonly isGuest: boolean;
+    readonly isLeaving: boolean;
+    readonly isEndingEveryLogin: boolean;
   }): Promise<void> {
     const { identity, tokenHash } = login.sender;
     const reply = {
@@ -126,7 +124,7 @@ export class GameRoom extends DurableObject<Env> {
       attachment: { identity, tokenHash, rejectionTimes: [] },
     };
     await this.inTurn(async () => {
-      if (login.isGuest) {
+      if (login.isLeaving) {
         const receive = async (message: ClientMessage) =>
           this.receive(reply, { isOk: true, value: message }, login.sender);
         await leaveAsLoggedOutGuest(
@@ -134,7 +132,9 @@ export class GameRoom extends DurableObject<Env> {
           { playerId: identity.playerId, token: login.token },
         );
       }
-      this.sockets.closeLogin(tokenHash);
+      this.sockets.closeLogins(
+        login.isEndingEveryLogin ? { playerId: identity.playerId } : { tokenHash },
+      );
       if (!this.sockets.livePlayers().includes(identity.playerId)) {
         await this.markDisconnected(identity.playerId, null);
       }
@@ -184,41 +184,11 @@ export class GameRoom extends DurableObject<Env> {
     await this.inTurn(async () => {
       const record = loadRoom(this.storage);
       if (record !== null) {
-        await this.applyAlarm(record);
+        await applyRoomAlarm(this.publishing, this.env.DB, { record, now: nowMs() });
       }
       await this.syncAlarm(true);
       await this.reportToLobby(record);
     });
-  }
-
-  private async applyAlarm(record: RoomRecord): Promise<void> {
-    const { record: fired, removals } = fireRoomAlarm(
-      record,
-      nowMs(),
-      randomForNextAction,
-      this.sockets.livePlayers(),
-    );
-    if (fired === null) {
-      this.sockets.sendRemovals(removals);
-      this.storage.remove();
-      return;
-    }
-    if (fired === record) {
-      return;
-    }
-    this.storage.write(fired);
-    await this.rooms.save();
-    this.sockets.sendRemovals(removals);
-    this.sockets.updatePlayers(
-      fired,
-      fired.game === null
-        ? fired.players.map(({ playerId }) => playerId)
-        : playersWhoseUpdateChanged(record, fired),
-      null,
-    );
-    this.sockets.sendNotices(timeOutNoticesBetween(record, fired));
-    sendChatSince(this.publishing, { record, messageCount: this.rooms.chat.messages().length });
-    await saveReplayRecordIfEnded(this.env.DB, record, fired);
   }
 
   override async webSocketClose(socket: WebSocket): Promise<void> {

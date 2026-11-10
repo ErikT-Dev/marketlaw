@@ -152,7 +152,7 @@ describe("logging out and changing the username", () => {
 
   it("loads the account details with the token", async () => {
     writeSession(IN_ROOM);
-    const details = { isLoggedIn: true, name: "Ann", usernameWait: null };
+    const details = { isLoggedIn: true, name: "Ann", usernameWait: null, email: null };
     const sent = serverAnswers((path) =>
       path === "/api/account" ? details : loggedInAnswer(path),
     );

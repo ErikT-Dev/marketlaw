@@ -18,5 +18,6 @@ export function initialClientState(session: StoredSession | null): ClientState {
     goneRoomCode: null,
     publicRooms: [],
     isOutdated: false,
+    emailDialog: null,
   };
 }

@@ -215,15 +215,16 @@ it by hand.
 | A1.4 | accounts (2) | Covered |
 | A1.5 | accounts (6) | Covered |
 | A1.6 | accounts (1) | Covered |
-| A1.7 | accounts (2) | Covered |
+| A1.7 | accounts (3) | Covered |
 | A1.8 | accounts (1) | Covered |
-| A1.9 | accounts (2) | Covered |
-| A1.10 | accounts (1) | Covered |
+| A1.9 | accounts (3) | Covered |
+| A1.10 | accounts (2) | Covered |
 | A1.11 | accounts (4) | Covered |
 | A1.12 | accounts (4), rooms (1) | Covered |
 | A1.13 | accounts (6) | Covered |
 | A1.14 | accounts (3), connections-and-leaving (2) | Covered |
-| A1.15 | accounts (1), connections-and-leaving (1) | Covered |
+| A1.15 | accounts (2), connections-and-leaving (1) | Covered |
+| A1.16 | accounts (2) | Covered |
 | A2.1 | accounts (3) | Covered |
 | A2.2 | accounts (1) | Covered |
 | A2.3 | accounts (1) | Covered |
@@ -263,7 +264,7 @@ it by hand.
 | A9.3 | lobby-queue-and-limits (2) | Covered |
 | A9.4 | lobby-queue-and-limits (3) | Covered |
 | A9.5 | lobby-queue-and-limits (1) | Covered |
-| A9.6 | lobby-queue-and-limits (2) | Covered |
+| A9.6 | accounts (1), lobby-queue-and-limits (2) | Covered |
 | A10.1 | records-and-ratings (1) | Covered |
 | A10.2 | records-and-ratings (1) | Covered |
 | A10.3 | records-and-ratings (3) | Covered |
@@ -285,6 +286,7 @@ it by hand.
 | A11.7 | chat (2) | Covered |
 | A11.8 | chat (1) | Covered |
 | A11.9 | chat (1) | Covered |
+| A12.1 | – | Checked another way: The privacy notice is page text, not behaviour: a browser test opens the page from signup and from account settings and finds each part of A12.1 by its heading. *(approved by the owner, 2026-11-10)* |
 
 ## Client (C)
 
@@ -347,7 +349,7 @@ it by hand.
 
 ## Summary
 
-- Rules: 311
-- Scenarios: 453
+- Rules: 313
+- Scenarios: 458
 - Gaps: 0
-- Checked another way or also checked another way: R3.2, R3.5, R17.10, R19.2, M3.1, M3.6, M4.2, A6.4, A10.6, C5.1, C5.2, C5.3
+- Checked another way or also checked another way: R3.2, R3.5, R17.10, R19.2, M3.1, M3.6, M4.2, A6.4, A10.6, C5.1, C5.2, C5.3, A12.1

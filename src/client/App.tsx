@@ -1,6 +1,9 @@
 import { useSyncExternalStore } from "react";
 import styles from "./App.module.css";
 import { CurrentScreen } from "./CurrentScreen";
+import { EmailDialogIfOpen } from "./screens/email/EmailDialogIfOpen";
+import { LazyPrivacyNoticePage } from "./screens/privacy/LazyPrivacyNoticePage";
+import { usePrivacyNoticeOpen } from "./screens/privacy/usePrivacyNoticeOpen";
 import { RoomNotFoundDialog } from "./screens/lobby/RoomNotFoundDialog";
 import type { ClientStore } from "./store/ClientStore";
 
@@ -14,12 +17,13 @@ export function App({ store }: Props) {
     store.subscribe,
     () => store.getSnapshot().goneRoomCode,
   );
+  const isPrivacyNoticeOpen = usePrivacyNoticeOpen();
   return (
     <>
       <p className={styles["tooSmall"]}>
         Please use a larger screen: MarketLaw needs at least 1280 pixels of width.
       </p>
-      <div className={styles["app"]}>
+      <div className={styles["app"]} inert={isPrivacyNoticeOpen}>
         {notice === null ? null : (
           <p role="alert" className={styles["notice"]}>
             {notice}
@@ -27,7 +31,9 @@ export function App({ store }: Props) {
         )}
         <CurrentScreen store={store} />
         {goneRoomCode === null ? null : <RoomNotFoundDialog onClose={store.dismissRemoval} />}
+        <EmailDialogIfOpen store={store} />
       </div>
+      {isPrivacyNoticeOpen ? <LazyPrivacyNoticePage /> : null}
     </>
   );
 }

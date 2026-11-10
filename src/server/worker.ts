@@ -1,23 +1,34 @@
 import * as v from "valibot";
+import { EpochMs } from "../shared/EpochMs";
 import { RoomCode } from "../shared/RoomCode";
+import { accountDeletionRoute } from "./api/accountDeletionRoute";
 import { accountRoute } from "./api/accountRoute";
+import { confirmEmailRoute } from "./api/confirmEmailRoute";
 import { createGuestRoute } from "./api/createGuestRoute";
 import { createRoomRoute } from "./api/createRoomRoute";
+import { emailChangeRoute } from "./api/emailChangeRoute";
 import { generatedNameRoute } from "./api/generatedNameRoute";
 import { humanCheckRoute } from "./api/humanCheckRoute";
 import { joinRoomRoute } from "./api/joinRoomRoute";
 import { loginRoute } from "./api/loginRoute";
 import { logoutRoute } from "./api/logoutRoute";
+import { newPasswordRoute } from "./api/newPasswordRoute";
+import { privacyContactRoute } from "./api/privacyContactRoute";
 import { replayExportRoute } from "./api/replayExportRoute";
+import { resetEmailRoute } from "./api/resetEmailRoute";
 import { roomJson } from "./api/roomJson";
 import { sessionRoute } from "./api/sessionRoute";
+import { sendAgainRoute } from "./api/sendAgainRoute";
 import { signupRoute } from "./api/signupRoute";
 import { usernameChangeRoute } from "./api/usernameChangeRoute";
+import { removeUnusedGuests } from "./deletion/removeUnusedGuests";
+import { removeOldEmailRecords } from "./email/removeOldEmailRecords";
 import { lobbyOf } from "./lobbyOf";
 import { removeForgottenLoginFailures } from "./removeForgottenLoginFailures";
 import { removeOldReplayRecords } from "./replays/removeOldReplayRecords";
 import { confirmTestSeat } from "./testRooms/confirmTestSeat";
 import { createTestRoom } from "./testRooms/createTestRoom";
+import { readTestOutbox } from "./testRooms/readTestOutbox";
 import { restartTestRoom } from "./testRooms/restartTestRoom";
 import { setTestDailyCounts } from "./testRooms/setTestDailyCounts";
 
@@ -47,17 +58,24 @@ async function routeRoom(request: Request, env: Env, path: RegExpExecArray): Pro
 
 const POST_ROUTES: Readonly<Record<string, (request: Request, env: Env) => Promise<Response>>> = {
   "/api/account": accountRoute,
+  "/api/account-deletions": accountDeletionRoute,
   "/api/guests": createGuestRoute,
   "/api/logins": loginRoute,
   "/api/logout": logoutRoute,
   "/api/rooms": createRoomRoute,
   "/api/signups": signupRoute,
+  "/api/confirmation-emails": sendAgainRoute,
+  "/api/email-confirmations": confirmEmailRoute,
+  "/api/email-changes": emailChangeRoute,
+  "/api/reset-emails": resetEmailRoute,
+  "/api/password-resets": newPasswordRoute,
   "/api/username-changes": usernameChangeRoute,
   "/api/session": sessionRoute,
   "/api/test-rooms": createTestRoom,
   "/api/test-room-seats": confirmTestSeat,
   "/api/test-room-restarts": restartTestRoom,
   "/api/test-daily-counts": setTestDailyCounts,
+  "/api/test-outbox": readTestOutbox,
 };
 
 async function route(request: Request, env: Env): Promise<Response> {
@@ -75,6 +93,9 @@ async function route(request: Request, env: Env): Promise<Response> {
   if (request.method === "GET" && pathname === "/api/human-check") {
     return humanCheckRoute(env);
   }
+  if (request.method === "GET" && pathname === "/api/privacy-contact") {
+    return privacyContactRoute(env);
+  }
   const postRoute = request.method === "POST" ? POST_ROUTES[pathname] : undefined;
   return postRoute === undefined
     ? new Response("Not found", { status: 404 })
@@ -86,5 +107,8 @@ export default {
   async scheduled(controller, env) {
     await removeOldReplayRecords(env.DB, controller.scheduledTime);
     await removeForgottenLoginFailures(env.DB, controller.scheduledTime);
+    const now = v.parse(EpochMs, controller.scheduledTime);
+    await removeOldEmailRecords(env.DB, now);
+    await removeUnusedGuests(env.DB, now);
   },
 } satisfies ExportedHandler<Env>;

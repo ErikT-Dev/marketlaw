@@ -16,7 +16,7 @@ export function CurrentScreen({ store }: Props) {
   if (session?.roomCode === null || session === null) {
     return (
       <LobbyPage
-        account={session === null ? null : accountBindingOf(store, session)}
+        account={session === null ? null : accountBindingOf(store, session, false)}
         joinError={state.joinError}
         removal={state.removal}
         onJoin={(code) => void store.joinRoom(code)}
@@ -24,6 +24,7 @@ export function CurrentScreen({ store }: Props) {
         onStartAsGuest={store.startAsGuest}
         onLogIn={store.logIn}
         onSignUp={store.signUp}
+        onForgotPassword={store.openForgotPassword}
         onDismissRemoval={store.dismissRemoval}
         publicRooms={state.publicRooms}
       />
@@ -32,7 +33,11 @@ export function CurrentScreen({ store }: Props) {
   if (update === null) {
     return <WaitingPage connection={state.connection} />;
   }
-  const account = accountBindingOf(store, session);
+  const account = accountBindingOf(
+    store,
+    session,
+    update.game !== null && update.game.view.result === null,
+  );
   const { myName } = update.room;
   if (update.game === null) {
     return (

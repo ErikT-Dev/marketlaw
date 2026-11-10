@@ -12,7 +12,7 @@ import type { RemovalReason } from "../../shared/protocol/RemovalReason";
 import type { RoomIntent } from "../../shared/protocol/RoomIntent";
 import type { NewRoom } from "./NewRoom";
 import { requestTestSeat } from "../api/requestTestSeat";
-import { AccountSessionStore } from "./AccountSessionStore";
+import { EmailAccountStore } from "./EmailAccountStore";
 import { chatAfterRefusal } from "./chatAfterRefusal";
 import { chatAfterSending } from "./chatAfterSending";
 import { CODES_THAT_RELOAD_THE_GAME } from "./CODES_THAT_RELOAD_THE_GAME";
@@ -26,7 +26,7 @@ import { writeSession } from "./writeSession";
 
 type OpenHost = (code: RoomCode, token: string) => GameHost;
 
-export class ClientStore extends AccountSessionStore {
+export class ClientStore extends EmailAccountStore {
   private host: GameHost | null = null;
   private readonly openHost: OpenHost;
   private readonly openLobby: OpenLobbyFeed;

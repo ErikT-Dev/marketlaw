@@ -25,6 +25,7 @@ function lobby(changes: Partial<Parameters<typeof LobbyPage>[0]> = {}) {
       onStartAsGuest={succeed}
       onLogIn={succeed}
       onSignUp={succeed}
+      onForgotPassword={vi.fn()}
       onDismissRemoval={vi.fn()}
       publicRooms={[]}
       {...changes}

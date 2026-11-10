@@ -27,6 +27,7 @@ type Props = {
   readonly onStartAsGuest: (name: string, humanCheck: string) => Promise<ReasonCode | null>;
   readonly onLogIn: (login: LoginRequest) => Promise<ReasonCode | null>;
   readonly onSignUp: (signup: Omit<SignupRequest, "token">) => Promise<ReasonCode | null>;
+  readonly onForgotPassword: () => void;
   readonly onDismissRemoval: () => void;
   readonly publicRooms: ReadonlyArray<PublicRoomView>;
 };
@@ -38,7 +39,12 @@ export function LobbyPage(props: Props) {
   const flow = useLobbyFlow(account !== null, onJoin);
   return (
     <div className={styles["page"]}>
-      <LobbyAccount account={account} onLogIn={props.onLogIn} onSignUp={props.onSignUp} />
+      <LobbyAccount
+        account={account}
+        onLogIn={props.onLogIn}
+        onSignUp={props.onSignUp}
+        onForgotPassword={props.onForgotPassword}
+      />
       <main className={styles["columns"]}>
         <section className={styles["panel"]} aria-labelledby="rooms-heading">
           <div className={styles["panelHeader"]}>

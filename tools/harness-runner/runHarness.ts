@@ -5,7 +5,7 @@ import { HARNESS_PATHS } from "../harness-check/HARNESS_PATHS.ts";
 import { loadHarnessFiles } from "../harness-check/loadHarnessFiles.ts";
 import { readCoverageExceptions } from "../harness-check/readCoverageExceptions.ts";
 import { buildReport } from "./buildReport.ts";
-import { buildScenarioRuns } from "./buildScenarioRuns.ts";
+import { buildSteadyScenarioRuns } from "./buildSteadyScenarioRuns.ts";
 import { checkCardData } from "./checkCardData.ts";
 import { simulateBusyDay } from "../simulator/busyDay/simulateBusyDay.ts";
 import { simulateInParallel } from "../simulator/simulateInParallel.ts";
@@ -40,7 +40,7 @@ export async function runHarness(
   const budgets = readBudgetEntries(files.budgets);
   const run: HarnessRun = {
     required,
-    runs: await buildScenarioRuns(files.scenarioFiles, required, drivers),
+    runs: await buildSteadyScenarioRuns(files.scenarioFiles, required, drivers),
     invariantIds: invariants.map(({ id }) => id),
     budgetIds: budgets.map(({ id }) => id),
     cardDataProblems: checkCardData(files.cards),

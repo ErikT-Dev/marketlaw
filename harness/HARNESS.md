@@ -77,7 +77,7 @@ Every scenario file is a list of scenarios. Every scenario has exactly these par
 | `tutorial` | A player in the tutorial, at the start of a step; the state is the one `tutorial.md` gives for that step | none |
 | `site_games_today` | Games started on the site today (A9.4) | 0 |
 | `ranked_accounts`, `records` | How many accounts are in the ranking table (A5.4); saved game records (A3) | none |
-| `site_counts_today` | Site-wide counts for today: `tutorials`, `chat_messages` (A9.6) | 0 |
+| `site_counts_today` | Site-wide counts for today: `tutorials`, `chat_messages`, `emails` (A9.6) | 0 |
 
 Cards are always named exactly as in `cards.json`. Stats are written as numbers, for example
 `stats: {funds: 10, workforce: -1}`; the stat names are `funds`, `income`, `influence`, `workforce`,
@@ -179,7 +179,7 @@ is compared whole, in order and with its length; `seats` lists only the seats it
 | `call_vote`, `vote` | `vote`: `yes` or `no` | M7 |
 | `create_room`, `join_room`, `leave_room`, `change_size`, `accept_game`, `decline_game`, `ask_rematch` | room details | M1, M8 |
 | `join_queue`, `change_sizes`, `leave_queue`, `confirm_match`, `decline_match` | `sizes` for joining and changing: a list of 2, 3 and 4 (joining without it means 3 only) | A8 |
-| `create_guest`, `sign_up`, `confirm_email`, `log_in`, `log_out`, `reset_password`, `change_email`, `change_username`, `delete_account` | account details | A1, A2 |
+| `create_guest`, `sign_up`, `confirm_email`, `log_in`, `log_out`, `reset_password`, `set_new_password`, `change_email`, `change_username`, `delete_account` | account details. `confirm_email` opens the newest confirmation link sent for the player; `set_new_password` opens the newest reset link in that visitor's browser and sets `password`; `delete_account` without `password` gives the account's own | A1, A2 |
 | `send_chat`, `mute`, `unmute` | `text`, `player_to_mute`, `player_to_unmute` | A11 |
 | `start_tutorial`, `leave_tutorial`, `continue` | | C4, T |
 | `open_site`, `open_lobby`, `open_game`, `open_menu`, `open_rules`, `open_card_set`, `open_card`, `filter_cards`, `search_cards`, `open_match_history`, `open_ranking`, `ask_generated_name` | screen details: `from` (where the menu is opened), `tab`, `card`, `sector`, `tier`, `type`, `text`, `of` (whose history), `jump_to_me` | A4–A7, C1–C3, M5.1 |
@@ -304,7 +304,7 @@ A repeated action id is not rejected: it returns the original result again.
 | `daily_action_limit` | The player reached 2,000 actions today (A9.2) |
 | `daily_game_start_limit` | The player started 10 games today (A9.3) |
 | `site_game_limit` | 50 games started on the site today (A9.4) |
-| `site_daily_cap` | A site-wide daily cap on tutorials or chat messages is reached (A9.6) |
+| `site_daily_cap` | A site-wide daily cap on tutorials, chat messages or emails is reached (A9.6) |
 | `human_check_failed` | The human check is missing or failed (A1.12) |
 | `username_taken` | The username is in use |
 | `username_invalid` | The username breaks A2.1 |
@@ -316,6 +316,8 @@ A repeated action id is not rejected: it returns the original result again.
 | `email_not_confirmed` | The action needs a confirmed email address |
 | `email_limit_reached` | 3 emails today for this account or address (A1.9) |
 | `not_registered` | The action needs a registered user |
+| `password_wrong` | Deleting an account with a password that is not the account's (A1.15) |
+| `link_expired` | An email link that expired, was replaced or used, or whose address another account confirmed (A1.16) |
 | `message_empty` | An empty chat message |
 | `message_too_long` | Over 200 characters or 800 bytes |
 | `chat_too_fast` | Within 2 seconds of the player's last message |

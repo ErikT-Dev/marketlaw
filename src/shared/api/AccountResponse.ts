@@ -1,4 +1,5 @@
 import * as v from "valibot";
+import { AccountEmail } from "./AccountEmail";
 import { UsernameWait } from "./UsernameWait";
 
 export const AccountResponse = v.variant("isLoggedIn", [
@@ -6,6 +7,7 @@ export const AccountResponse = v.variant("isLoggedIn", [
     isLoggedIn: v.literal(true),
     name: v.string(),
     usernameWait: v.nullable(UsernameWait),
+    email: v.nullable(AccountEmail),
   }),
   v.strictObject({ isLoggedIn: v.literal(false) }),
 ]);
