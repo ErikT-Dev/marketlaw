@@ -469,4 +469,5 @@ each helper's conversation size at its end.
 | Builder, item 9 | 5 | 80k | 15 | done |
 | Finisher, first run | 44 | 113k | 57 | done |
 | Builder, switch to Brevo (owner's choice) | 6 | 87k | 28 | done |
-| Phase reviewer | 19 | 153k | 47 | ready after fixes (R1-R7) |
+| Phase reviewer | 28 | 157k | 48 | ready after fixes (R1-R7) |
+| Fixer, group A (R1, R2, R6) | 9 | 115k | 43 | done |
