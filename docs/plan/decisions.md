@@ -230,7 +230,8 @@ request, and now counts 700 ns per iteration: 7 ms of hash, about 8 ms with the 
 work (about 1 ms). The trade-off: if the database leaks, each password is half as costly to
 guess as at 20,000, and about 60 times cheaper than OWASP's 600,000; online guessing is still
 held off by the human check (A1.13). Hashes stored at 20,000 keep their count and still verify
-(Q90).
+(Q90). Measured live at 10,000: 2-9 ms per login, 99th percentile 8 ms; B11 now counts 900 ns per
+iteration (the highest call, other work included), 9 ms of 10 (Q90, Q102).
 *Effect:* `open-questions.md` Q90; `accounts.md` open question 2 removed; built in phase 23.
 
 ## Open
