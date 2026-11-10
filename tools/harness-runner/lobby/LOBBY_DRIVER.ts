@@ -9,6 +9,7 @@ import { lobbyMessageThen } from "./lobbyMessageThen.ts";
 import { lobbyGameThen, lobbyRoomThen } from "./lobbyRoomThen.ts";
 import { LobbySession } from "./LobbySession.ts";
 import { replayRecordThen } from "./replayRecordThen.ts";
+import { gameRecordThen } from "./gameRecordThen.ts";
 import { lobbyChatThen } from "./lobbyChatThen.ts";
 import { chatTextOfStep } from "./chatTextOfStep.ts";
 import { publicRoomsOf } from "../../../src/server/lobby/publicRoomsOf.ts";
@@ -156,6 +157,8 @@ function startSession(rawGiven: Readonly<Record<string, unknown>>, random: Scrip
                 messages: session.chat.storage.messages(),
                 atStart: chatAtStart,
               });
+        case "record":
+          return gameRecordThen(session.endedRoom);
         case "replay_record":
           return replayRecordThen(session.endedRoom, session.now);
         case "game":
@@ -226,6 +229,7 @@ export const LOBBY_DRIVER: ScenarioDriver = {
     "logged_in",
     "lobby_rooms",
     "replay_record",
+    "record",
     "emails_sent",
     "seats",
     ...CHAT_THEN_FIELDS,

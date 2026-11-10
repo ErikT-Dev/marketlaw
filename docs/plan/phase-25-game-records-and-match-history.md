@@ -124,8 +124,22 @@ These 10 scenarios are added to `harness/required.yaml` in this phase, by file a
     player's score with the turn they left and their cards in hand then. Raise the count in
     `tools/harness-runner/harness.test.ts` (458).
 
-- [ ] 2. **Saving game records in D1** (A3.1, A3.2, M8.3, B8; Q119; scenario `rooms` #21).
+- [x] 2. **Saving game records in D1** (A3.1, A3.2, M8.3, B8; Q119; scenario `rooms` #21).
   **Large.**
+  - Done (2026-11-10). `migrations/0012_game_records.sql`. `src/server/records/`:
+    `storedGameRecordOf(RoomGame)` gives `StoredGameRecord` (the `GameRecord` plus `kind`,
+    `startedMs`, `endedMs` and `players: {seat, playerId}[]` in seat order; no usernames),
+    `gameRecordRowsOf` the insert rows, `saveGameRecord` one `batch`, `saveGameRecordIfEnded` with
+    a new `GameId` (`src/shared/GameId.ts`, a UUID). `GameRoom` and `applyRoomAlarm` call
+    `saveRecordsIfEnded` (replay and game record), so neither file grew. The lobby driver reads
+    `record: kept` (`gameRecordThen.ts`, in-memory `memoryGameRecordDatabase.ts`; the statement
+    helper is now shared, `memoryStatementOf.ts`). B8 is measured by the simulator
+    (`gameRecordRows`, 5 in 4-player games). The route tests' `accountTablesOf` reads no record
+    tables, so it is unchanged. `LOBBY_DRIVER.ts` is now 290 non-blank lines.
+  - For later items: read records with `SELECT record FROM game_records WHERE id = ?` and a
+    history with `SELECT game_id, ended_ms FROM game_record_players WHERE player_id = ? ORDER BY
+    ended_ms DESC, game_id DESC` (the key order); `memoryGameRecordDatabase.ts` is the harness
+    store to extend for `given.records`.
   - Migration `0012` with `game_records` and `game_record_players`, both `WITHOUT ROWID`, no
     other index (Q119).
   - Write in one `batch` next to `saveReplayRecordIfEnded` (`src/server/replays/`), called from

@@ -24,7 +24,11 @@ export const BUDGET_CHECKS: Readonly<Record<string, BudgetCheck>> = {
     where:
       "lobby scenarios (chat), the most rows one accepted chat message, mute or unmute wrote: the room record and the newest chat block",
   },
-  B8: { by: "not built", where: "phase 25, game records" },
+  B8: {
+    by: "harness",
+    where:
+      "simulator, the most D1 rows the game record write makes in a finished legal-bot game: the record and one row per player",
+  },
   B9: { by: "harness", where: LEGAL_THREE_PLAYER_AVERAGE },
   B10: {
     by: "other check",
