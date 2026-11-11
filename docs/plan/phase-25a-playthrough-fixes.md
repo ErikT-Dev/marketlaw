@@ -421,3 +421,13 @@ These 24 required scenarios now assert the new rules (Q126) and must pass again:
   review, fixes, finisher again, release.
 
 ### Finish
+
+### Helper log
+
+Filled in by the coordinator afterwards, from the helpers' completion notices (Q73). Tokens are
+each helper's conversation size at its end.
+
+| Job | Minutes | Tokens | Tool calls | Result |
+|---|---|---|---|---|
+| Planner (findings into the spec, phase file; Q126) | 34 | 292k | 133 | done |
+| Starter | 7 | 130k | 53 | done |
