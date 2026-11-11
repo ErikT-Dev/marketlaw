@@ -1,6 +1,6 @@
 # Phase 25a: Playthrough fixes
 
-Status: approved
+Status: in progress
 Milestone: 5 Accounts and ranking
 
 ## Goal
@@ -217,3 +217,207 @@ These 24 required scenarios now assert the new rules (Q126) and must pass again:
 - `end-of-game`: players made done at the same moment in the final turn are placed in player
   order
 - `quests`: a quest nobody completed in 5 turns goes back into the quest list
+
+## Progress
+
+- [x] 0. Start (2026-11-11): the branch already held the spec and harness changes (Q126). The
+  starter found two contradictions and solved them in one `HARNESS:` commit (Q127): R9.6 now
+  tells a turn draw sent for a go that has ended (rejected) from the turn draw left open
+  (R18.16), and invariant I24 follows each player's own main phase. No other question is open.
+  - Until items 1 to 5 are all built, `npm run check` fails in `harness.test.ts` on required
+    scenarios that need later items; a builder reports which still fail and why, not a failure
+    of its own item. Each builder checks that its own item's scenarios pass (adding them to the
+    required list locally, not committed) and fail without the change.
+  - **One raise each for the phase**, done by item 1 (the first shape change) and not again:
+    `PROTOCOL_VERSION` 16 to 17 (`src/shared/PROTOCOL_VERSION.ts`, Q75) and
+    `SAVE_SCHEMA_VERSION` 16 to 17 (`src/rules/SAVE_SCHEMA_VERSION.ts`; rooms saved before
+    close on load, D1). Later items change shapes under the same versions, since the phase ships
+    together.
+  - Items 1, 2a, 2b, 3 and 4 touch the same clock and phase code: build them in that order. 5, 7
+    and 8 are independent. 6 needs 2b (what is revealed when the main phase ends). 9 needs 1 to
+    3; 11 builds its own view field; 10 and 12 are client only.
+  - Scenarios per item (for the local required-list check): `turns-and-time` new and renamed,
+    `connections-and-leaving` (except the market-go one), `end-of-game`, and `visibility` "an
+    opponent's out of time status is shown live" belong to 1; `marketplace` "a player who has
+    had their market go plays a card ...", "rejects a main-phase action from a player still
+    waiting ...", "a player's main-phase time starts when their own market go ends" and
+    `visibility` "a main-phase action is hidden from a player still waiting ..." to 2; the
+    `marketplace` time-out scenarios (no draw, sector later, `out_of_market`, at the action
+    limit, "takes option B with a random sector"), `connections-and-leaving` "an away player's
+    time runs out on a market go ..." and `visibility` "a turn draw left open is shown ..." to
+    3; `combos-and-income` (3) to 4; `quests` "goes back into the quest list" and "cannot fill a
+    place in the refill" to 5; the 4 `visibility` log scenarios to 6; `quests` "the quests
+    completed in the turn before ..." to 7; `accounts` (3) to 8.
+
+- [ ] 1. **Time per turn and players out of time** (R9.1, R9.2, R9.4, R9.6, R9.10, R9.11, R9.13,
+  R8.4, M5.3, M5.4, M6.10). **Large.**
+  - Times: `src/rules/TIME_RULES.ts` (main free time 75 s; one go limit of 40 s replacing
+    `firstGoLimitMs` and `goLimitMs`; main limit 210 to 330 s), `mainPhaseLimitMs.ts`. The
+    free time again after a pause is the new main free time (R9.13, `ClockGrace.ts`).
+  - Out of time: a seat field, set by `timeOut.ts` in the main phase instead of making the seat
+    done; `dueTimeOuts.ts` and `earliestDeadline.ts` skip seats out of time. After each accepted
+    action and time-out, seats out of time are made done, in player order, once no other seat
+    still in the game is playing with time left (a seat still waiting for its market go counts
+    as playing). Reuse `endMainPhaseIfAllDone.ts` and the done-order code (R8.4).
+  - `receiveAction.ts`: a message that triggers its own seat's time-out is rejected
+    `out_of_time` only on a market go; in the main phase the time-out is applied and the action
+    then taken as normal (R9.6; `caughtUp` keeps the time-out, I27). `hasTimedOutThisDecision.ts`
+    no longer blocks main-phase actions (item 3 handles the turn draw left open, Q127).
+  - Game kind: the engine needs it (the 3-time-outs rule is ranked only). Add `kind: "casual" |
+    "ranked"` to `GameSetup.ts`; the room passes `RoomGame.kind` (every live game is casual until
+    phase 26); the engine driver reads the scenario's `kind`. In casual games `timeoutsInARow`
+    is not counted. Ending the turn after running out does not reset the count; only ending in
+    time does (R9.11).
+  - Notice: the `timed_out` notice (`src/shared/Notice.ts`) gets its casual form
+    (`keep_playing`); `timeOutText.ts` for both forms (S9.4 wording; the rest of the screen is
+    item 9).
+  - View: each seat's out-of-time status, public and live (`seatShownTo.ts`, the server message
+    schema). Runner: seat and view `out_of_time`, `kind` in engine-driven scenarios, notice
+    `keep_playing` (`tools/harness-runner/engine/GIVEN_SCHEMA.ts`, `seatFromGiven.ts`,
+    `seatThen.ts`, `viewThen.ts`); `harness.test.ts` counts 486 scenarios.
+  - Bots and simulator: a bot out of time keeps acting or ends its turn; B3 must still hold.
+  - Browser tests that wait for the old times: `e2e/clocks.spec.ts`, `e2e/leaving.spec.ts`
+    (`FREE_TIME_MS` 75 000; leaving after 3 time-outs is ranked only now, so a casual test of it
+    becomes "keeps playing"), `e2e/playMarketPhase.ts` (`LONGEST_GO_WAIT_MS` 40 000),
+    `e2e/timeMove.ts`.
+
+- [ ] 2a. **Each player's own main phase: clocks and phases** (R4.1, R18.15, R9.1, R9.4, R17.7).
+  **Large.**
+  - The scenarios keep the game's `phase: market` while earlier players already act; the game
+    phase becomes `main` when the last go ends. A seat is in its main phase once it has had its
+    market go (`hasHadMarketGo`, R18.15); main-phase actions before that are rejected
+    `wrong_phase` (`turnRejectionOf.ts`). In turn 1 every seat starts at once.
+  - Each seat has its own main-phase start time, replacing the shared `clockStartedAt` for
+    main-phase clocks: `decisionClockOf.ts`, `mainPhaseLimitMs.ts`, `dueTimeOuts.ts`,
+    `earliestDeadline.ts`, `PausedClock.ts`, `pauseGame.ts`, `resumeGame.ts`. Still one room
+    alarm, at the earliest deadline (B3: market goes + players + 2 per turn).
+  - Cards sold in a seat's main phase go to the holding pile while market goes still draw from
+    the real deck and discard pile (R17.7, R18.15). Invariant I2 (holding pile empty outside the
+    main phase) then means outside every seat's main phase.
+  - Bots act in their main phase as soon as their go ends (`src/bots/legalBot.ts`,
+    `chaosBot.ts`, `ownSeatOf.ts`; they read the view, so the view says the seat's own phase).
+  - The view's phase for the viewer (S2.1, the top bar shows your own phase; the screen is
+    item 9).
+
+- [ ] 2b. **Each player's own main phase: what each seat sees** (R5.4, R5.5, R17.7, R17.8, M3.2,
+  M3.3; invariants I23 and I24 as reworded in Q127). **Large.**
+  - `MainPhaseStart.ts` and `withMainPhaseStart.ts` become per seat: each seat's snapshot at its
+    own main-phase start, and the piles as at the turn's first main-phase start. A seat on or
+    before its go is shown live (`seatShownTo.ts`).
+  - Piles (`pilesShownTo.ts`, `kindTiersLeftAsSeenBy.ts`): from the viewer's own start, minus
+    later market-go draws, plus own draws and shuffles, plus market-go shuffles; a waiting seat
+    sees the turn's first main-phase start plus the goes since (R5.5). Market-go draws and their
+    shuffles are public at once in the draw log, also to seats in their main phase.
+  - Simulator checks: `tools/simulator/shownPilesViolations.ts`, `whatSeatsSeeViolations.ts`,
+    `shownPiles.test.ts`; the leak test (I23) with players in their main phase while others
+    still have their go. I25: a seat's state version moves with the market-go draws it sees.
+
+- [ ] 3. **Turn draw left open** (R18.11, R18.16, R8.5, M3.3, R9.6 as in Q127). **Large.**
+  - A time-out on a market go draws nothing (`timeOut.ts`, which today takes option B with a
+    random sector through `takeTurnDraw.ts`); the go passes on (`marketGoOf.ts`), the seat's
+    main phase starts (item 2a), and a seat field marks the turn draw open (runner: seat
+    `turn_draw_pending`).
+  - `turn_draw` option B is accepted in that seat's main phase while open: not counted in
+    `actionsThisTurn`, allowed at `ACTION_LIMIT`, cannot be undone (draws block undo,
+    `withUndoHistory.ts`), hidden from others until the main phase ends like a main-phase draw
+    (its shuffle as R17.8 says). Option A is rejected `out_of_market`.
+  - Q127: a turn draw that itself triggers the go's time-out stays `out_of_time`; one based on a
+    state version from before a time-out the alarm applied is `stale_state` in the room
+    (`src/server/room/handleMessage.ts`); no engine change is needed for that.
+  - When the seat becomes done with it still open (End turn or made done), it is drawn with a
+    random sector at that moment, before item 4's combos; not for a seat that leaves. Put the
+    "on becoming done" steps in one helper that item 4 extends.
+  - Bots take an open turn draw in their main phase.
+
+- [ ] 4. **Combos claimed on ending** (R8.5, R12.6, R13). **Small.**
+  - In item 3's "on becoming done" helper, after the open turn draw: every ready combo claimed as
+    by claim all (`claimAll.ts`, `readyCombosOf.ts`), with its income (`takeIncome.ts`); no
+    action counted, also at the limit; never for a seat that leaves (`leaveGame.ts`). Both End
+    turn (`endTurn.ts`) and being made done (item 1).
+
+- [ ] 5. **Expired quests not drawn straight back** (R19.7, R10.2, R11.2). **Small.**
+  - `endMainPhase.ts` calls `refillQuests(endTurnForQuests(state), ...)`, and
+    `endTurnForQuests.ts` puts expired quests into `questList` before the refill. Return them
+    after `refillQuests` instead. Both happen in one transition, so I15 (each quest in one
+    place) holds after every action; in the final turn the game ends instead of starting a new
+    turn, so no quest is left nowhere.
+
+- [ ] 6. **The game log** (M3.7, R5.7, S7.1, S7.2). **Large.**
+  - State: new log entry kinds beside `src/shared/DrawLogEntry.ts` (card played, quest
+    completed, project completed, influence action: trade, build pass or skip build), each with
+    turn and seat, written per seat in player order when the main phase ends
+    (`endMainPhase.ts`), so undone actions never appear (from the turn's accepted actions minus
+    the undone ones, or from the seat's changes since its main-phase start). Draw actions stay
+    draws.
+  - View: the entries are written when the main phase ends, so nobody sees them before. Runner:
+    log items `played`, `completed_quest`, `completed_project`, `influence`
+    (`tools/harness-runner/engine/matchingLogEntries.ts`, `absentLogItems.ts`).
+  - Client: the tab is **Log**, the panel the **game log** (`DrawLogAndChatPanel.tsx`,
+    `DrawLogList.tsx`, `drawLogRows.ts`, `drawLogText.ts`), stats as icons (S1.6).
+    `e2e/drawLog.spec.ts` follows the rename.
+  - Budgets: B13 (saved room size) and B11 must still pass; Q126 measured about 4 KB more.
+
+- [ ] 7. **Quests completed last turn** (R19.6, M3.5, S5.5). **Small.**
+  - At the end of each turn the state keeps the quests completed that turn, with tier and the
+    seats that completed them (read before `endTurnForQuests.ts` removes them); the view carries
+    it as is (public). Runner: view `quests_completed_last_turn`.
+  - Client: a small table next to `QuestsPanel.tsx`, shown only when the list is not empty.
+
+- [ ] 8. **Four username changes in 7 days** (A2.4, S12.5, S16.3). **Small.**
+  - D1 migration `migrations/0013_...sql` replacing `players.username_changed_ms` with the times
+    of the recent changes, in the same row (for example a JSON text column of at most the last 4
+    times), so a change is still one row written. `src/server/renamePlayer.ts` (its conditional
+    `UPDATE` becomes "fewer than 4 in the 7 days before"), `findRenameAccount.ts`,
+    `RenameAccount.ts`, `api/usernameChangeRoute.ts`, `api/accountRoute.ts` (`usernameWaitOf`:
+    the next allowed date only after 4 changes).
+  - Runner: account `username_changes_ms` replaces `last_username_change_ms`
+    (`tools/harness-runner/lobby/LOBBY_GIVEN_SCHEMA.ts`, `LOBBY_NESTED_FIELDS.ts`,
+    `LobbySession.ts`). Client: account settings (S12.5) and the `username_change_too_soon`
+    text (S16.3); `e2e/usernames.spec.ts` and `e2e/accountSettings.spec.ts` follow.
+
+- [ ] 9. **Market phase screens** (S2.1, S2.2, S2.3, S4.3, S4.4, S4.5, S4.6, S6.7, S9.4).
+  **Large.**
+  - `MarketPhaseBanner.tsx` and `GameTopBar.tsx` (phase green on your go, your own phase);
+    `MarketplacePanel.tsx`, `MarketSlot.tsx`, `MarketGoPanel.tsx`: a click selects, **Draw**
+    under the selected card takes it (S4.3); `ActionsPanel.tsx` and the city open when your go
+    ends (S4.4); the open turn draw's sector buttons and text (S4.6, reuse `SectorButtons.tsx`);
+    `YourClock.tsx`, `orderBadgesOf.ts`, `OpponentCard.tsx` for out of time (S2.2, S2.3, S3.1,
+    S6.7); `timeOutText.ts` and `GameNotices.tsx` for the ranked and casual notices (S9.4).
+    `e2e/marketPhase.spec.ts` and `e2e/playMarketPhase.ts` click **Draw**.
+  - Screenshots: the market banner on your go, a marketplace card selected with **Draw**, the
+    open turn draw, a player out of time.
+
+- [ ] 10. **Every card in the big card** (S4.1, S6.5, S3.2, S14.3). **Large.**
+  - Marketplace cards, your city and another player's board open the big card (base cost and
+    Close only; inside `OpponentBoardDialog.tsx` for another city). Reuse phase 20a's big card
+    switch (`SelectedCardPanel.tsx`, `BigCard.tsx`, `HandSwitch.ts`, `bigCardSwitch.test.tsx`);
+    it must stay within its 100 ms browser budget (`e2e/bigCardSwitch.spec.ts`).
+  - A doubled type (`doubleType1` in the card data) shown as its icon twice, on the big card and
+    in the card set (S6.5). Screenshot: the big card showing a city card with a doubled type.
+
+- [ ] 11. **Opponents and quests** (S3.1, S3.2, S5.1, R19.4). **Large.**
+  - View: per quest place, which other seats could complete it now, decided on the server from
+    the same check as `questRejection.ts` (in `questPlacesShownTo.ts`, beside
+    `completeRejection`), judged on what the viewer may see of them (their shown state, R5.4).
+  - Client: `OpponentCard.tsx` orange **Q** box and influence; `OpponentBoardDialog.tsx` indigo
+    **T** (types of their cards in play, a doubled type twice, not quest-gained types; Q126) and
+    green **C** (combos claimed, each claim of an infinite combo counts), the five basic stats
+    with the workforce, quality and satisfaction table red while any is negative;
+    `QuestsPanel.tsx` and `QuestProgressLine.tsx`: another player's negative stat only when the
+    quest names it (your own line unchanged, Q126), bold orange names of the players who could
+    complete it.
+  - Screenshots: an opponent's board with the new boxes and stats, the quests panel with an
+    orange name.
+
+- [ ] 12. **End turn highlight and income notice** (S6.6, S16.4). **Small.**
+  - End turn highlighted once you have played a card this turn (`hasPlayedThisTurn` in the
+    view) until you end the turn. "Your [income icon] has increased!" with a close button,
+    closing after 3 seconds, whenever your income rises between views (in the store or a hook,
+    as `useFailedVoteNotice.ts` does). Screenshots: the income notice, and the
+    completed-last-turn table (item 7) and the game log (item 6) if those items did not take
+    them.
+
+- [ ] 13. **Finish.** Finisher (first run adds the 27 scenarios to `harness/required.yaml`),
+  review, fixes, finisher again, release.
+
+### Finish
