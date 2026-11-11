@@ -6,6 +6,7 @@ import { RecordName } from "./RecordName";
 export const MatchHistoryEntry = v.strictObject({
   gameId: GameId,
   endedAt: EpochMs,
+  kind: v.picklist(["casual", "ranked"]),
   result: v.picklist(["won", "lost", "left"]),
   place: v.number(),
   players: v.number(),

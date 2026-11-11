@@ -27,6 +27,7 @@ export function historyEntryOf(
   return v.parse(MatchHistoryEntry, {
     gameId,
     endedAt: record.endedMs,
+    kind: record.kind,
     result: own.result,
     place: own.place,
     players: record.seats.length,

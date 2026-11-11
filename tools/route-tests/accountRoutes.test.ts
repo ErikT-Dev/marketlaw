@@ -266,7 +266,12 @@ describe("the match history and game record routes", () => {
       const first = await historyAt(`/api/players/${ann}/history`);
       expect(first.history).toMatchObject({ kind: "found", username: "Historyann" });
       expect(first.page?.games).toHaveLength(50);
-      expect(first.page?.games[0]).toMatchObject({ result: "lost", place: 2, players: 2 });
+      expect(first.page?.games[0]).toMatchObject({
+        kind: "casual",
+        result: "lost",
+        place: 2,
+        players: 2,
+      });
       expect(first.page?.games[0]?.winner).toEqual({
         kind: "player",
         playerId: bea,
