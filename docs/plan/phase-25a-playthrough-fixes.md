@@ -429,7 +429,11 @@ These 24 required scenarios now assert the new rules (Q126) and must pass again:
     "on becoming done" steps in one helper that item 4 extends.
   - Bots take an open turn draw in their main phase.
 
-- [ ] 4. **Combos claimed on ending** (R8.5, R12.6, R13). **Small.**
+- [x] 4. **Combos claimed on ending** (R8.5, R12.6, R13). **Small.**
+  - Done (2026-11-11). The 3 `combos-and-income` R8.5 scenarios pass (checked on the required
+    list locally) and fail without the change. `settleBeforeDone.ts` claims the ready combos
+    after the open turn draw, through `claimAll` with the seat's `actionsThisTurn` kept, then
+    `takeIncome`; nothing when no combo is ready. Nothing differs from the phase file.
   - In item 3's "on becoming done" helper, after the open turn draw: every ready combo claimed as
     by claim all (`claimAll.ts`, `readyCombosOf.ts`), with its income (`takeIncome.ts`); no
     action counted, also at the limit; never for a seat that leaves (`leaveGame.ts`). Both End
