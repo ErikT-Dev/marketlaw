@@ -326,6 +326,14 @@ These 10 scenarios are added to `harness/required.yaml` in this phase, by file a
     `accountSettings.spec.ts` and `bigCardSwitch.spec.ts` 9 of 9 passed. All failures were
     load; GitHub judges the full suite. No new check, so `docs/enforcement.md` is unchanged.
     Screenshots from these runs committed.
+  - GitHub run 43014962411 (`57d8f75`): check and six browser jobs green; "other tests 3 of 3"
+    failed in all three attempts at 2560x1440: twice `dailyLimits.spec.ts` (axe: the Create
+    room button's white text on the disabled grey, 2.53:1) and once `bigCardSwitch.spec.ts`
+    (109 ms against 100, a timing miss). The daily limit failure is a race in the test: after the
+    rejection the dialog starts a new human check, so the button is disabled and then enabled
+    again with a 120 ms background transition, and the screen check could land mid-transition.
+    The test now waits for the button to be enabled and for transitions to end before the screen
+    check (`BUG FIX` commit, no product change); it passes locally at all three sizes.
 - [ ] Release.
 
 ### Helper log
