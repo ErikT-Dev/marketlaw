@@ -1,6 +1,6 @@
 # Phase 25: Game records and match history
 
-Status: in progress
+Status: waiting for the owner
 Milestone: 5 Accounts and ranking
 
 ## Goal
@@ -60,6 +60,15 @@ These 10 scenarios are added to `harness/required.yaml` in this phase, by file a
 - `rooms` #21: after a game the room stays and is deleted 24 hours after the game ended
 - `records-and-ratings`, new (Q120): a player who left in an earlier turn is scored with the turn
   they left
+
+## Waiting for the owner
+
+- **GitHub's browser jobs cannot install Chromium** (2026-11-11, Q124). Since 14:39 UTC every
+  browser job fails at "Install Chromium": GitHub's runners cannot resolve Ubuntu's package
+  mirrors, on both `ubuntu-26.04` and `ubuntu-24.04`. Not caused by the project; the code passes
+  every check locally and the GitHub "check" job is green. The owner stopped the retries. To go
+  on, the owner either waits for GitHub and says continue, or approves changing the install step
+  so Chromium is downloaded without Ubuntu's packages (a change to how the checks run).
 
 ## Progress
 
