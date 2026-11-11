@@ -77,18 +77,26 @@ None yet.
     cards (R17.8)
   - which marketplace card a player took. That card is then known to be in their hand until they
     play or sell it.
-  - the option and sector a player chose for their turn draw (R18.8)
+  - the option and sector a player chose for their turn draw (R18.8); a turn draw left open
+    after a time-out on the market go (R18.16) is revealed when the main phase ends
 - **M3.4** Which card a player got from the deck is hidden. Because of the public information in
   M3.3, the sectors and tiers of the cards in every hand can largely be worked out, and a fallback
   draw (R17.4) can show that another player drew the last cards of a tier during the main phase.
   Both are part of the game; what stays hidden is which exact cards are in a hand.
 - **M3.5** **Everything else is public** and available to every player, including each player's
   stats, cards in play, type counts, combos, influence action uses, build passes, completed
-  projects and quests, time bank, whether they are away (M5.2) and whether they are done with the
-  turn; the marketplace, the quests table, the bonus types, and the number of cards in the discard
+  projects and quests, time bank, whether they are away (M5.2), whether they have had their
+  market go, whether they are out of time (R9.10) and whether they are done with the turn; which
+  quests were completed in the turn before and by whom (R19.6); the marketplace, the quests table, the bonus types, and the number of cards in the discard
   pile and left in the deck (during the main phase, as described in R5.5). How this is shown on
   screen is described in `screens.md`.
 - **M3.6** Hidden information outside a game is listed in A6.
+- **M3.7** **The game log:** when the main phase ends, the log (S7.2) gets, for each player in
+  player order, what they did in that main phase: each card they played, each quest and each
+  project they completed, and each influence action they used (trades, build passes and skip
+  build), all with the turn number. Actions they undid are not in it (R5.7), and draw actions
+  appear as draws (M3.3). Until the main phase ends nobody sees these entries, the player's own
+  included. They are kept with the room's state and need no row written of their own.
 
 ## M4. Replays
 
@@ -104,10 +112,9 @@ None yet.
   somewhere else.
 - **M5.2** **Away:** a player who is not connected is **away**, and every player can see this.
 - **M5.3** While away, a player keeps their seat and their time runs as normal (R9): in the market
-  phase their time runs out as described in R18.11, and in the main phase they are made done when
-  their time runs out (R9.10).
-- **M5.4** A player whose time runs out in the main phase in 3 turns in a row is treated as having
-  left the game (R9.11, M6).
+  phase their time runs out as described in R18.11, and in the main phase as described in R9.10.
+- **M5.4** In a ranked game, a player whose time runs out in the main phase in 3 turns in a row is
+  treated as having left the game (R9.11, M6).
 - **M5.5** **Everyone away:** the game is paused, as described in R9.12–R9.14.
 
 ## M6. Leaving the game
@@ -131,8 +138,8 @@ None yet.
   themselves they leave in player order (R4.5), which sets their places (A3.4). If no player is
   left, the game is abandoned: it ends with no winner, and ratings stay the same.
 - **M6.10** These also count as leaving the game: deleting your account during a game (A1.15), a
-  guest user logging out during a game (A1.14), and running out of time in the main phase in
-  3 turns in a row (M5.4).
+  guest user logging out during a game (A1.14), and, in a ranked game, running out of time in the
+  main phase in 3 turns in a row (M5.4).
 
 ## M7. Abandon by vote
 

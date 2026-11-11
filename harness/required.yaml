@@ -98,9 +98,9 @@ scenarios:
     - the market phase follows the start-of-turn steps
     - a 5th quest place is added and filled at the start of turn 20
     - players made done at the same moment become done in player order
-    - the main-phase time limit in turn 10 is 3 minutes 57 seconds
+    - the main-phase time limit in turn 10 is 4 minutes 27 seconds
     - reaching the main-phase limit makes the player done
-    - the first 45 seconds of a main phase do not use the time bank
+    - the first 75 seconds of a main phase do not use the time bank
     - the time bank runs after the free time until the player ends their turn
     - with an empty bank a player only has the free time
     - a message received at the deadline is rejected and the time-out is applied
@@ -109,8 +109,8 @@ scenarios:
     - "every player sees every other player's bank counting down during the main phase"
     - a player whose time runs out is told how many time-outs in a row out of 3
     - ending the turn in time resets the time-out count
-    - "the first player's market go has 45 seconds"
-    - other market goes have 30 seconds
+    - "the first player's market go has 40 seconds"
+    - every later market go also has 40 seconds
     - a deadline while nobody is connected pauses the game instead
     - a paused game goes on when a player reconnects and the timed-out player gets free time again
     - after the extra free time the paused player times out as normal
@@ -293,7 +293,7 @@ scenarios:
     - a wrong password is rejected
     - after 3 failed logins in 15 minutes further logins need the human check but the account is not locked
     - after 3 failed logins a login without the human check is rejected
-    - a username can be changed at most once every 7 days
+    - a username can be changed at most 4 times in 7 days
     - a successful login clears the failed logins
     - the human check after failed logins ends 15 minutes after the latest failed attempt
     - a login with an unknown username fails like a wrong password

@@ -125,14 +125,15 @@ None.
 - **A2.2** Uniqueness ignores capital letters ("Mayor" and "mayor" are the same name).
 - **A2.3** "Deleted player" is reserved and cannot be used.
 - **A2.4** **Changing username:** any player, guest or registered, can change their username to
-  another username that is not taken, at most once every 7 days. The 7 days run from the last
-  change; a new account can change its username at once, and the username chosen when the
-  account was made, or during signup (A1.3), does not start them. Inside a room the player
+  another username that is not taken, at most **4 times in any 7 days**: a change is allowed only
+  while fewer than 4 changes were made in the 7 days before it. A new account can change its
+  username at once, and the username chosen when the account was made, or during signup (A1.3),
+  is not a change. Inside a room the player
   keeps the name they had when they joined it (their seat, the player list and chat); the new
   name shows everywhere else at once, and in every room they join afterwards. While the old name
   still shows in a room, a player who takes it cannot join that room (M1.6). A new name that
-  differs only in capital letters is a change; the same name exactly changes nothing and does
-  not start the 7 days. A change is checked in this order: the name itself (A2.1, A2.3), the
+  differs only in capital letters is a change; the same name exactly changes nothing and is not
+  counted. A change is checked in this order: the name itself (A2.1, A2.3), the 4 changes in
   7 days (`username_change_too_soon`), then whether it is taken.
 
 ## A3. Game records

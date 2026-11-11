@@ -27,7 +27,7 @@
   when:
     - {player: Ann, action: open_menu, from: game}
     - {player: Ann, action: open_rules}
-    - wait_ms: 60000
+    - wait_ms: 90000
   then:
     seats:
       - seat: 1

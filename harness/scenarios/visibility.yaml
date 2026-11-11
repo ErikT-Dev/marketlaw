@@ -186,3 +186,113 @@
     discard: [Cottage, Pub]
   then:
     view: {seat: 1, discard_count: 2, hides: [discard_cards]}
+
+- name: the log shows the cards each player played once the main phase ends
+  covers: [M3.7]
+  given:
+    marketplace: [{place: residential, card: Row House}, {place: industry, card: Metal Mining}, {place: service, card: Liquor Shop}, {place: public_quality, card: Fire Station}, {place: public_satisfaction, card: Public Playground}, {place: open_1, card: Dentist}, {place: open_2, card: Apparel Store}, {place: open_3, card: Forest Plantation}]
+    quests: [{quest: Farmland}, {quest: Sports town}, {quest: Trading post}, {quest: Mining town}]
+    seats:
+      - seat: 1
+        hand: [Row House]
+  when:
+    - {seat: 1, action: play_card, card: Row House}
+    - {seat: 1, action: end_turn}
+    - {seat: 2, action: end_turn}
+  then:
+    view: {seat: 2, log_contains: [{seat: 1, turn: 1, played: Row House}]}
+
+- name: a card played in the main phase is not in the log before the main phase ends
+  covers: [M3.7, M3.2]
+  given:
+    seats:
+      - seat: 1
+        hand: [Row House]
+  when:
+    - {seat: 1, action: play_card, card: Row House}
+    - {seat: 1, action: end_turn}
+  then:
+    view: {seat: 2, log_excludes: [{seat: 1, played: Row House}]}
+
+- name: an undone card play never appears in the log
+  covers: [M3.7, R5.7]
+  given:
+    marketplace: [{place: residential, card: Row House}, {place: industry, card: Metal Mining}, {place: service, card: Liquor Shop}, {place: public_quality, card: Fire Station}, {place: public_satisfaction, card: Public Playground}, {place: open_1, card: Dentist}, {place: open_2, card: Apparel Store}, {place: open_3, card: Forest Plantation}]
+    quests: [{quest: Farmland}, {quest: Sports town}, {quest: Trading post}, {quest: Mining town}]
+    seats:
+      - seat: 1
+        hand: [Row House]
+  when:
+    - {seat: 1, action: play_card, card: Row House}
+    - {seat: 1, action: undo}
+    - {seat: 1, action: end_turn}
+    - {seat: 2, action: end_turn}
+  then:
+    view: {seat: 2, log_excludes: [{seat: 1, played: Row House}]}
+
+- name: the log shows the quests completed and influence actions used once the main phase ends
+  covers: [M3.7]
+  given:
+    turn: 3
+    marketplace: [{place: residential, card: Row House}, {place: industry, card: Metal Mining}, {place: service, card: Liquor Shop}, {place: public_quality, card: Fire Station}, {place: public_satisfaction, card: Public Playground}, {place: open_1, card: Dentist}, {place: open_2, card: Apparel Store}, {place: open_3, card: Forest Plantation}]
+    quests: [{quest: Trading post}, {quest: Farmland}, {quest: Sports town}, {quest: Mining town}]
+    seats:
+      - seat: 1
+        stats: {income: 4, influence: 4}
+        city: [Liquor Shop]
+    random: [{tier: 1}, {quest: Countryside}]
+  when:
+    - {seat: 1, action: complete_quest, quest: Trading post}
+    - {seat: 1, action: influence, trade: influence_to_funds}
+    - {seat: 1, action: end_turn}
+    - {seat: 2, action: end_turn}
+  then:
+    view: {seat: 2, log_contains: [{seat: 1, turn: 3, completed_quest: Trading post}, {seat: 1, turn: 3, influence: influence_to_funds}]}
+
+- name: a main-phase action is hidden from a player still waiting for their market go
+  covers: [R5.4, R18.15, M3.2]
+  given:
+    players: 3
+    turn: 2
+    phase: market
+    first_player: 2
+    market_go: {seat: 3}
+    marketplace: [{place: residential, card: Row House}]
+    seats:
+      - seat: 2
+        market: out
+        hand: [Liquor Shop]
+  when:
+    - {seat: 2, action: play_card, card: Liquor Shop}
+  then:
+    view: {seat: 3, of_seat: 2, city: [], hand_count: 1}
+
+- name: a turn draw left open is shown to other players when the main phase ends
+  covers: [M3.3, R18.16]
+  given:
+    players: 3
+    turn: 2
+    phase: market
+    first_player: 2
+    market_go: {seat: 3}
+    marketplace: [{place: residential, card: Row House}]
+    seats:
+      - seat: 2
+        market: out
+        turn_draw_pending: true
+    random: [{tier: 1}, {tier: 1}]
+  when:
+    - {seat: 2, action: turn_draw, option: B, sector: Service}
+  then:
+    view: {seat: 3, log_excludes: [{seat: 2, turn_draw: B, sector: Service}], hides: [Fast Food Restaurant, Pub]}
+
+- name: an opponent's out of time status is shown live
+  covers: [R5.4, M3.5]
+  given:
+    seats:
+      - seat: 1
+        time_bank_ms: 0
+  when:
+    - wait_ms: 75000
+  then:
+    view: {seat: 2, of_seat: 1, out_of_time: true}

@@ -27,10 +27,10 @@ None yet.
   (`rules/frontend.md`, decision D21).
 - **S1.2** The game screen shows everything on one table, without tabs or toggles: a top bar
   across the full width, then three columns.
-  - Left: the opponents overview (S3), and under it the draw log and chat (S7).
+  - Left: the opponents overview (S3), and under it the game log and chat (S7).
   - Middle: the marketplace (S4), the quests table (S5), and your city and combos (S6).
   - Right: your stats and projects, your hand, and the action buttons (S6).
-- **S1.3** Panels that can hold more than fits (your hand, your city, combos, the draw log, chat,
+- **S1.3** Panels that can hold more than fits (your hand, your city, combos, the game log, chat,
   player lists) scroll, and show a scroll bar when they do.
 - **S1.4** Pop-ups open over a darkened screen. During a game, pop-ups never stop the clock
   (C1.3); a pop-up that hides the clock repeats the time left.
@@ -49,57 +49,79 @@ None yet.
 ## S2. Game screen: top bar
 
 - **S2.1** The top bar shows: the **Menu** button (game menu, S14), the **turn number** "Turn 21 of
-  40", the **phase** (market phase, main phase or game over), and the **player order** as player
-  badges from the first player of the turn, with the first player marked "first player".
+  40", the **phase** (market phase, main phase or game over; it says main phase as soon as your
+  own main phase starts, R18.15), and the **player order** as player badges from the first player
+  of the turn, with the first player marked "first player".
 - **S2.2** Each badge in the top bar shows the player's username, your own too, and, during the
-  main phase, whether they are **done**, **away** or have **left** (R5.4). Players who left are not
+  main phase, whether they are **done**, **out of time** (R9.10), **away** or have **left**
+  (R5.4). Players who left are not
   in the player order (R4.5); their badges come after it, by seat number.
 - **S2.3** On the right: the **user box** with your username, which opens the user menu (S12.7),
-  then your own clock, and **Leave game**. In the main phase the clock shows your
-  main-phase time left and your time bank; in the market phase it shows whose go it is and how
-  long they have left ("Your go 0:24", "Go: Ann 0:12"), and your time bank.
+  then your own clock, and **Leave game**. In your main phase the clock shows your main-phase time
+  left, or **Out of time** once it has run out (R9.10), and your time bank; while other players
+  still have their market go, it also shows whose go it is. Before your main phase it shows whose
+  go it is and how long they have left ("Your go 0:24", "Go: Ann 0:12"), and your time bank.
 
 ## S3. Opponents
 
 - **S3.1** The **opponents overview** shows one card per other player: username, status (done,
-  away, left), time bank counting down, funds, income, number of cards in hand, cards played per
-  sector, and progress on each of the 3 projects. During the main phase it shows them as at the
+  out of time, away, left), time bank counting down, funds, income, influence with its icon,
+  number of cards in hand, cards played per sector, progress on each of the 3 projects, and the
+  number of quests they have completed, shown as a bold orange **Q** in a bordered dark grey box
+  next to the number. During the main phase it shows them as at the
   start of the main phase, except status and time bank, which are live (R5.4).
 - **S3.2** Clicking an opponent card opens their **board**: stats, influence, time bank, cards in
   play by sector, type counts with the bonus types first, combos claimed and what they gained,
   influence actions used, build passes and the price of the next bought pass, completed projects
   and quests, whether they are done, and the number of cards in their hand. It says that it shows
-  them as at the start of the main phase.
+  them as at the start of the main phase. It also shows, each in a bordered dark grey box like the
+  **Q** of S3.1: the total number of types of the cards in their city, as a bold indigo **T** (a
+  type a card counts twice counts 2), and the number of combos they have claimed, as a bold green
+  **C** (each claim of an infinite combo counts). Their five basic stats are shown together:
+  workforce, quality and satisfaction in a small table of their own, whose background is red
+  while any of the three is negative and neutral otherwise, and product and distribution next to
+  it. Clicking a card in their city shows it in a big card (S6.5) inside the board.
 
 ## S4. Marketplace and market phase
 
 - **S4.1** The **marketplace** panel shows the 8 places in the order of R18.5, each with its place
   name. A filled place shows the card's tier and name; an emptied place shows
-  "Empty until next turn".
+  "Empty until next turn". Clicking a marketplace card, at any time, shows it in the big card
+  (S6.5) and never takes it.
 - **S4.2** The marketplace header also shows the **bonus types** with their point values, the
   number of cards left in the **deck**, and the number of cards in the **discard pile** (R5.5),
   without which cards they are or anything else about them (M3.2).
 - **S4.3** In the market phase, the area of your city shows the **market go panel**:
-  - on your market go: option A (click a marketplace card) and option B (one button per sector),
+  - on your market go: option A (select a marketplace card, then press the **Draw** button that
+    appears under the selected card in the marketplace) and option B (one button per sector),
     with what each does, and what happens if your time runs out (R18.11); the marketplace is
     highlighted
   - before your go: whose go it is and how many players go before you
-  - after your go: that you have had your go this turn, and that the main phase starts when
-    everyone has had theirs
   - when the marketplace is empty: that your turn draw is option B, with the sector buttons
-- **S4.4** In the market phase the main-phase actions are not shown; the action area says they open
-  when the market phase ends. Quests cannot be completed (R19.5).
-- **S4.5** **Market phase banner:** during the market phase, a banner across the top of the
-  middle column, above the marketplace, reads **MARKET PHASE** in large letters on a strong
-  background, with whose go it is ("Your go" or "Ann's go"). The phase in the top bar (S2.1) is
-  highlighted the same way. Both go back to normal when the main phase starts.
+- **S4.4** Before your market go ends, the main-phase actions are not shown; the action area says
+  they open when your market go ends, and quests cannot be completed (R18.15). As soon as your go
+  ends, your city and the main-phase actions are shown, and you can play while later players
+  still have their go.
+- **S4.5** **Market phase banner:** until your own main phase starts, a banner across the top of
+  the middle column, above the marketplace, reads **MARKET PHASE** in large letters with whose go
+  it is: on your go it reads "Your go" on a **green** background; on another player's go it
+  reads "Ann's go" on the strong background. The phase in the top bar (S2.1) is highlighted the
+  same way. Both go back to normal when your own main phase starts.
+- **S4.6** **Turn draw left open:** after a time-out on your market go, the action area shows
+  "Your time ran out on your market go. Choose a sector for your 2 cards." with one button per
+  sector, until you take it, and says that a random sector is used if you end your turn without
+  choosing (R18.16).
 
 ## S5. Quests and projects
 
 - **S5.1** Each quest on the table shows its name, tier, turns left, requirement and reward, and
   for every player a line with their progress on each part ("income 3 of 4 · Retail 1 of 1"), or
-  "completed". A negative workforce, quality or satisfaction is shown in that line as a part
-  not yet met (R19.4). In requirements, sector names are written in their sector colour (S1.5).
+  "completed". In your own line, a negative workforce, quality or satisfaction is shown as a
+  part not yet met (R19.4). In another player's line it is shown only when the quest's
+  requirement names that stat; their stats are in the opponents overview and board (S3). The
+  username of every other player who could complete the quest now, as you see them (R5.4), is
+  written in bold orange in its line; the view says who can. In requirements, sector names are
+  written in their sector colour (S1.5).
 - **S5.2** A quest you can complete now has a **Complete** button and a green border; a quest you
   completed is shaded green.
 - **S5.3** The quests panel has room for 5 quests (R19.1) with 4 players and three-part
@@ -113,6 +135,10 @@ None yet.
   > all be 0 or more. Each player can complete each quest once, and several players can complete
   > the same quest in the same turn. A completed quest leaves the table at the end of the turn;
   > a quest nobody completes leaves after 5 turns.
+- **S5.5** **Completed last turn:** next to the quests panel, a small table lists the quests that
+  were completed in the turn before, each with its name, its tier and the usernames of the
+  players who completed it (R19.6). It is shown only when at least one quest was completed in
+  the turn before.
 
 ## S6. Your city, stats, hand and actions
 
@@ -140,8 +166,11 @@ None yet.
   Cards you cannot play are marked unplayable.
 - **S6.5** Selecting a hand card opens the **big card** next to the hand, with what it costs and
   why ("Base cost 4, plus 3 for the 3 Residential tier 1 cards already in your city"), and
-  **Play card** and **Close**. The big card's title bar has its sector colour as background
-  (S1.5). Selecting another hand card shows that card in full, with its own photo, within 100 ms
+  **Play card** and **Close**. Selecting a marketplace card (S4.1) or a card in your city opens
+  the big card in the same place with the card's base cost and **Close** only; selecting a card in
+  another player's city shows it the same way inside their board (S3.2). The big card's title bar
+  has its sector colour as background (S1.5). A type that the card counts twice (R12.1) is shown
+  as its icon twice, in every place that shows a card's types (also the card set, S14.3). Selecting another hand card shows that card in full, with its own photo, within 100 ms
   of the click: the photos of the cards in your hand are loaded in the background. The selection
   in the hand, the big card and Play card change together, only once the new card's photo is
   ready, so a card is never shown with a blank or another card's photo; until then the card
@@ -149,21 +178,28 @@ None yet.
   300 ms, the card is shown anyway, with its sector colour where the photo goes until the photo
   arrives. Nothing else waits for a photo, and there is no loading screen.
 - **S6.6** The action buttons are: Play card, Undo, Sell cards, Claim all (with the number ready),
-  Use influence, Projects and End turn. Buttons for actions you cannot take are disabled.
+  Use influence, Projects and End turn. Buttons for actions you cannot take are disabled. Once
+  you have played a card this turn, **End turn** is highlighted until you end your turn. Ending
+  your turn claims your ready combos for you first (R8.5).
   Projects and Use influence always open their pop-ups (S8.2, S8.3), where each action is disabled
   when you cannot take it (Q32).
 - **S6.7** After **End turn**, the action area says you are done and which players the turn is
-  waiting for.
+  waiting for. While you are out of time (R9.10), it says so, and that you can keep playing until
+  the other players are done.
 - **S6.8** A move waiting for the server is shown faded with "Waiting for the server…". If it is
   rejected it is rolled back and an error message gives the reason (S16.3).
 
-## S7. Draw log and chat in a game
+## S7. Game log and chat in a game
 
-- **S7.1** The draw log and the room chat share one panel with two tabs. The Chat tab shows the
+- **S7.1** The game log and the room chat share one panel with two tabs, **Log** and **Chat**. The
+  Chat tab shows the
   number of unread messages.
-- **S7.2** The **draw log** lists every public draw event of M3.3, newest first, each with its turn
+- **S7.2** The **game log** lists every public draw event of M3.3, newest first, each with its turn
   number: who drew, how many, and the sector or kind and tier; turn draws, with the option chosen,
-  the marketplace card taken or the sector chosen; and discard shuffles.
+  the marketplace card taken or the sector chosen; and discard shuffles. Once each main phase
+  ends, it also lists what each player did in it (M3.7): the cards they played, by name, the
+  quests and projects they completed, and the influence actions they used, with stats as icons
+  (S1.6).
 - **S7.3** **Chat** shows the messages since you joined, each with the sender, time and a **Mute**
   link; your own messages are highlighted; joins, leaves and similar events appear as grey lines:
   a player joined the room, left the room or left the game (also after 3 time-outs, R9.11), and
@@ -207,8 +243,9 @@ None yet.
   players get a dialog with the time left to answer; every player still in the game sees how many
   players have answered so far, as "1 of 2 players answered" (M7.5); when the vote fails, a
   message says the game goes on and when the next vote is possible.
-- **S9.4** Messages: your time ran out in the main phase (made done; R9.10), with how many
-  time-outs in a row you have had out of 3, as "This was 1 of 3" (R9.11); the game continues
+- **S9.4** Messages: your time ran out in the main phase (R9.10): in a ranked game with how many
+  time-outs in a row you have had out of 3, as "This was 1 of 3" (R9.11), and in a casual game
+  that you can keep playing until the other players are done; the game continues
   after a pause, and who gets free time (R9.13).
 - **S9.5** The **end-of-game screen** has a version for each ending: end goal reached, turn limit,
   last player left (M6.8), and abandoned. It shows the winner and why the game ended, and a table
@@ -262,7 +299,7 @@ None yet.
   | `login_failed` | Wrong username, email or password. |
   | `email_invalid` | Enter a whole email address, such as name@example.com. |
   | `password_invalid` | Use 8 to 64 characters for the password. |
-  | `username_change_too_soon` | You can change your username once every 7 days. |
+  | `username_change_too_soon` | You can change your username at most 4 times in 7 days. |
   | `email_not_confirmed` | No account has confirmed this email address. |
   | `email_limit_reached` | No more emails can be sent for this account or to this address today. Try again after 00:00 UTC. |
   | `password_wrong` | Wrong password. |
@@ -301,8 +338,8 @@ None yet.
   it again** to a logged-in player whose address is still unconfirmed and **Forgot password** to
   everyone else. **Forgot password** (from Log in, S12.2) asks for the email address with the
   human check, then says to check that email and its spam folder (A1.7).
-- **S12.5** **Account settings** shows the username (disabled with the next allowed date during the
-  7-day wait), the email address with its confirmation, a pending change, **Change email address**,
+- **S12.5** **Account settings** shows the username (disabled, with the next allowed date, after
+  4 changes in 7 days, A2.4), the email address with its confirmation, a pending change, **Change email address**,
   **Log out** and **Delete account**. Guests see **Sign up** instead of email. A removed email
   address is explained, with **Add an email address** (A1.11). An unconfirmed address offers
   **Send it again**. Signup and account settings link to the privacy notice (S12.8).
@@ -405,7 +442,7 @@ None yet.
   | `quest_needs_not_met` | You do not meet this quest's requirement yet, or workforce, quality or satisfaction is negative. |
   | `nothing_to_undo` | There is nothing to undo. |
   | `cannot_undo` | That action cannot be undone, because it drew a card or came after one that did. |
-  | `out_of_market` | You already had your market go this turn. |
+  | `out_of_market` | Your market go is over for this turn. |
   | `card_not_in_marketplace` | That card was just taken. |
   | `marketplace_empty` | The marketplace is empty: choose a sector. |
   | `vote_not_allowed` | Ranked games cannot be abandoned. |
@@ -418,6 +455,9 @@ None yet.
   | `invalid_token` | Your guest session has ended. Enter your name again. (The start page opens.) |
   | `malformed_message`, `unknown_action`, and any other code a game move cannot get (`room_not_found`, `room_full`, `room_not_waiting`, `invalid_room_size`) | Something went wrong. The page reloads your game. |
   | `wrong_protocol_version` | A new version is available: reload. |
+- **S16.4** **Income notice:** whenever your income goes up (R13, R16), a notice reads "Your
+  [income icon] has increased!" (S1.6), with a close button. It closes by itself after
+  3 seconds.
 
 ## S17. Known differences in the design
 

@@ -204,3 +204,57 @@
       - seat: 1
         hand: [Landfill]
         new_cards: [Landfill]
+
+- name: ending the turn claims every ready combo first
+  covers: [R8.5, R12.6]
+  given:
+    players: 3
+    seats:
+      - seat: 1
+        city: [Fast Food Restaurant]
+        hand: [Row House]
+  when:
+    - {seat: 1, action: play_card, card: Row House}
+    - {seat: 1, action: end_turn}
+  then:
+    seats:
+      - seat: 1
+        done: true
+        stats: {workforce: 4, quality: -2, satisfaction: 0}
+        combos_claimed: [{card: Row House, combo: Fast Food Restaurant, times: 1}]
+
+- name: ready combos are claimed at the end of the turn even at the action limit
+  covers: [R8.5, R5.3]
+  given:
+    players: 3
+    seats:
+      - seat: 1
+        city: [Fast Food Restaurant, Row House]
+        actions_this_turn: 50
+  when:
+    - {seat: 1, action: end_turn}
+  then:
+    seats:
+      - seat: 1
+        done: true
+        combos_claimed: [{card: Row House, combo: Fast Food Restaurant, times: 1}]
+        actions_this_turn: 50
+
+- name: a player made done when time runs out also gets their ready combos claimed
+  covers: [R8.5, R9.10]
+  given:
+    marketplace: [{place: residential, card: Row House}, {place: industry, card: Metal Mining}, {place: service, card: Liquor Shop}, {place: public_quality, card: Fire Station}, {place: public_satisfaction, card: Public Playground}, {place: open_1, card: Dentist}, {place: open_2, card: Apparel Store}, {place: open_3, card: Forest Plantation}]
+    quests: [{quest: Farmland}, {quest: Sports town}, {quest: Trading post}, {quest: Mining town}]
+    seats:
+      - seat: 1
+        time_bank_ms: 0
+        city: [Fast Food Restaurant, Row House]
+      - seat: 2
+        time_bank_ms: 0
+  when:
+    - wait_ms: 75000
+  then:
+    turn: 2
+    seats:
+      - seat: 1
+        combos_claimed: [{card: Row House, combo: Fast Food Restaurant, times: 1}]

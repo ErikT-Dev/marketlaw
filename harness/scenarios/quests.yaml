@@ -120,13 +120,47 @@
     marketplace: [{place: residential, card: Row House}, {place: industry, card: Metal Mining}, {place: service, card: Liquor Shop}, {place: public_quality, card: Fire Station}, {place: public_satisfaction, card: Public Playground}, {place: open_1, card: Dentist}, {place: open_2, card: Apparel Store}, {place: open_3, card: Forest Plantation}]
     quests: [{quest: Trading post, turns_on_table: 5}, {quest: Farmland}, {quest: Sports town}, {quest: Mining town}]
     quest_list: [Countryside]
-    random: [{tier: 1}, {quest: Trading post}]
+    random: [{tier: 1}, {quest: Countryside}]
   when:
     - {seat: 1, action: end_turn}
     - {seat: 2, action: end_turn}
   then:
-    quests: [{quest: Trading post, turns_on_table: 1}, {quest: Farmland}, {quest: Sports town}, {quest: Mining town}]
-    quest_list: [Countryside]
+    quests: [{quest: Countryside, turns_on_table: 1}, {quest: Farmland}, {quest: Sports town}, {quest: Mining town}]
+    quest_list: [Trading post]
+
+- name: a quest that leaves after 5 turns cannot fill a place in the refill straight after
+  covers: [R19.7, R11.2]
+  given:
+    turn: 6
+    marketplace: [{place: residential, card: Row House}, {place: industry, card: Metal Mining}, {place: service, card: Liquor Shop}, {place: public_quality, card: Fire Station}, {place: public_satisfaction, card: Public Playground}, {place: open_1, card: Dentist}, {place: open_2, card: Apparel Store}, {place: open_3, card: Forest Plantation}]
+    quests: [{quest: Trading post, turns_on_table: 5}, {quest: Farmland}, {quest: Sports town}, {quest: Mining town}]
+    quest_list: []
+  when:
+    - {seat: 1, action: end_turn}
+    - {seat: 2, action: end_turn}
+  then:
+    turn: 7
+    quests: [{quest: null}, {quest: Farmland}, {quest: Sports town}, {quest: Mining town}]
+    quest_list: [Trading post]
+
+- name: the quests completed in the turn before can be seen during the next turn
+  covers: [R19.6, M3.5]
+  given:
+    turn: 3
+    marketplace: [{place: residential, card: Row House}, {place: industry, card: Metal Mining}, {place: service, card: Liquor Shop}, {place: public_quality, card: Fire Station}, {place: public_satisfaction, card: Public Playground}, {place: open_1, card: Dentist}, {place: open_2, card: Apparel Store}, {place: open_3, card: Forest Plantation}]
+    quests: [{quest: Trading post}, {quest: Farmland}, {quest: Sports town}, {quest: Mining town}]
+    seats:
+      - seat: 1
+        stats: {income: 4}
+        city: [Liquor Shop]
+    random: [{tier: 1}, {quest: Countryside}]
+  when:
+    - {seat: 1, action: complete_quest, quest: Trading post}
+    - {seat: 1, action: end_turn}
+    - {seat: 2, action: end_turn}
+  then:
+    turn: 4
+    view: {seat: 2, quests_completed_last_turn: [{quest: Trading post, seats: [1]}]}
 
 - name: a tier 2 quest picked before turn 5 is replaced by a tier 1 quest
   covers: [R19.8]

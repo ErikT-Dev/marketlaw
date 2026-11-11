@@ -128,8 +128,9 @@
         market: out
 
 - name: a time-out on the market go takes option B with a random sector
-  covers: [R18.11, R9.10]
+  covers: [R18.11, R18.16, R8.5]
   given:
+    players: 3
     turn: 2
     phase: market
     first_player: 2
@@ -140,11 +141,158 @@
     random: [{sector: Service}, {tier: 1}, {tier: 1}]
   when:
     - wait_ms: 5000
+    - {seat: 2, action: end_turn}
   then:
     seats:
       - seat: 2
         hand: [Fast Food Restaurant, Pub]
         market: out
+        turn_draw_pending: false
+        done: true
+
+- name: a time-out on the market go passes the go to the next player without a draw
+  covers: [R18.11, R18.16]
+  given:
+    players: 3
+    turn: 2
+    phase: market
+    first_player: 2
+    marketplace: [{place: residential, card: Row House}]
+    seats:
+      - seat: 2
+        time_bank_ms: 0
+  when:
+    - wait_ms: 5000
+  then:
+    market_go: {seat: 3}
+    marketplace: [{place: residential, card: Row House}]
+    seats:
+      - seat: 2
+        hand: []
+        market: out
+        turn_draw_pending: true
+
+- name: a player whose market go timed out chooses a sector later and draws 2 cards
+  covers: [R18.16]
+  given:
+    players: 3
+    turn: 2
+    phase: market
+    first_player: 2
+    market_go: {seat: 3}
+    marketplace: [{place: residential, card: Row House}]
+    seats:
+      - seat: 2
+        market: out
+        turn_draw_pending: true
+    random: [{tier: 1}, {tier: 1}]
+  when:
+    - {seat: 2, action: turn_draw, option: B, sector: Service}
+  then:
+    market_go: {seat: 3}
+    seats:
+      - seat: 2
+        hand: [Fast Food Restaurant, Pub]
+        turn_draw_pending: false
+
+- name: rejects taking a marketplace card after the market go timed out
+  covers: [R18.16]
+  given:
+    players: 3
+    turn: 2
+    phase: market
+    first_player: 2
+    market_go: {seat: 3}
+    marketplace: [{place: residential, card: Row House}]
+    seats:
+      - seat: 2
+        market: out
+        turn_draw_pending: true
+  when:
+    - {seat: 2, action: turn_draw, option: A, card: Row House}
+  then:
+    rejected: out_of_market
+    unchanged: true
+
+- name: a turn draw left open is allowed at the action limit and is not an action
+  covers: [R18.16, R5.3]
+  given:
+    players: 3
+    turn: 2
+    phase: market
+    first_player: 2
+    market_go: {seat: 3}
+    marketplace: [{place: residential, card: Row House}]
+    seats:
+      - seat: 2
+        market: out
+        turn_draw_pending: true
+        actions_this_turn: 50
+    random: [{tier: 1}, {tier: 1}]
+  when:
+    - {seat: 2, action: turn_draw, option: B, sector: Service}
+  then:
+    seats:
+      - seat: 2
+        hand: [Fast Food Restaurant, Pub]
+        actions_this_turn: 50
+
+- name: a player who has had their market go plays a card while later players still have their go
+  covers: [R18.15, R4.1]
+  given:
+    players: 3
+    turn: 2
+    phase: market
+    first_player: 2
+    market_go: {seat: 3}
+    marketplace: [{place: residential, card: Row House}]
+    seats:
+      - seat: 2
+        market: out
+        hand: [Liquor Shop]
+  when:
+    - {seat: 2, action: play_card, card: Liquor Shop}
+  then:
+    phase: market
+    market_go: {seat: 3}
+    seats:
+      - seat: 2
+        city: [Liquor Shop]
+
+- name: rejects a main-phase action from a player still waiting for their market go
+  covers: [R18.15]
+  given:
+    players: 3
+    turn: 2
+    phase: market
+    first_player: 2
+    marketplace: [{place: residential, card: Row House}]
+    seats:
+      - seat: 3
+        hand: [Liquor Shop]
+  when:
+    - {seat: 3, action: play_card, card: Liquor Shop}
+  then:
+    rejected: wrong_phase
+    unchanged: true
+
+- name: a player's main-phase time starts when their own market go ends
+  covers: [R18.15, R9.4, R9.1]
+  given:
+    turn: 2
+    phase: market
+    first_player: 2
+    marketplace: [{place: residential, card: Row House}]
+    random: [{tier: 1}, {tier: 1}]
+  when:
+    - wait_ms: 10000
+    - {seat: 2, action: turn_draw, option: B, sector: Service}
+    - wait_ms: 76000
+    - {seat: 2, action: end_turn}
+  then:
+    seats:
+      - seat: 2
+        time_bank_ms: 894000
 
 - name: the market time beyond the first 5 seconds of a go comes from the bank
   covers: [R18.11, R9.4]

@@ -254,15 +254,37 @@
   then:
     rejected: username_reserved
 
-- name: a username can be changed at most once every 7 days
+- name: a username can be changed at most 4 times in 7 days
   covers: [A2.4, A3.5]
   given:
-    accounts: [{name: Ann, kind: guest, last_username_change_ms: 0}]
+    accounts: [{name: Ann, kind: guest, username_changes_ms: [0, 1000, 2000, 3000]}]
   when:
     - wait_ms: 604799000
     - {player: Ann, action: change_username, username: Ann City}
   then:
     rejected: username_change_too_soon
+
+- name: a username can be changed 4 times in a row
+  covers: [A2.4]
+  given:
+    accounts: [{name: Ann, kind: guest}]
+  when:
+    - {player: Ann, action: change_username, username: Ann City}
+    - {player: Ann City, action: change_username, username: Ann Town}
+    - {player: Ann Town, action: change_username, username: Ann Village}
+    - {player: Ann Village, action: change_username, username: Ann Harbour}
+  then:
+    accounts: [{name: Ann Harbour, kind: guest}]
+
+- name: a fifth username change is allowed once the first of the last 4 is 7 days old
+  covers: [A2.4]
+  given:
+    accounts: [{name: Ann, kind: guest, username_changes_ms: [0, 1000, 2000, 3000]}]
+  when:
+    - wait_ms: 604800000
+    - {player: Ann, action: change_username, username: Ann City}
+  then:
+    accounts: [{name: Ann City, kind: guest}]
 
 - name: rejects a username with two spaces in a row
   covers: [A2.1]
