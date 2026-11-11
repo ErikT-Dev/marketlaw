@@ -297,3 +297,4 @@ each helper's conversation size at its end.
 | Builder, item 4 | 3 | 118k | 34 | stopped by the owner before building |
 | Builder, item 4 (again) | 29 | 220k | 116 | done |
 | Builder, item 5 | 29 | 199k | 132 | done |
+| Finisher | 69 | 102k | 51 | done |
