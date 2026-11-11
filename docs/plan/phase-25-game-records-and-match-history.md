@@ -417,6 +417,7 @@ each helper's conversation size at its end.
 | Finisher, third run | 79 | 89k | 39 | failed: GitHub runners could not install Chromium (DNS) |
 | Coordinator: runner pin (undone), install step without `--with-deps` (Q124, Q125) | 60 | - | - | GitHub green |
 | Releaser | 15 | 85k | 21 | partial: report written; branch check green after one rerun; not merged |
+| Releaser, merge and deploy | 10 | 69k | 30 | done |
 
 ## Report
 
