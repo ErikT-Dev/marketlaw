@@ -315,7 +315,7 @@ These 10 scenarios are added to `harness/required.yaml` in this phase, by file a
      version change: `departure` came in this phase with save version 16, not yet deployed.
 - [x] Fixes: one fixer, findings 1 to 4 (2026-11-11). `npm run check` green;
   `e2e/matchHistory.spec.ts` passes at all three sizes with `--workers=1`.
-- [x] Second finisher run.
+- [ ] Second finisher run.
   - Done (2026-11-11): `npm run check` green (119 test files, 673 tests; B14 158.5 kB of 300).
     `npm run harness` green: 459 scenarios, 393 pass, 0 fail, 66 not yet (none required); 1,000
     simulated games; every budget passes, B8 measures 5 of 12, B18 3,846 of 5,000. Browser tests
@@ -341,6 +341,14 @@ These 10 scenarios are added to `harness/required.yaml` in this phase, by file a
     `npm run check` is green. `bigCardSwitch` at 2560x1440 on GitHub missed 100 ms in three of
     six job attempts this phase (107, 109, 115.7 ms; it passes locally); the release should
     watch it, and if it keeps failing, check whether phase 25 slowed the hand card switch.
+  - GitHub run 43024546881 (`38ae6f4`): no contrast failure any more; check, the three full
+    game jobs and "other tests 1 of 3" green; `bigCardSwitch.spec.ts` failed in both other jobs
+    (1920x1080 exactly 100 ms, 2560x1440 over 100 ms). It now misses its 100 ms limit (screens.md,
+    the selected card) on GitHub in four of eight job attempts this phase, now at two sizes.
+    Next: a fixer finds out whether phase 25 slowed the hand card switch (item 5's
+    name buttons and the records code touch the game screen; compare the click-to-render time on
+    master and on the branch, for example with React's profiler or a rerendering count) and
+    fixes the code; never raise the 100 ms limit. Second finisher run not finished until then.
 - [ ] Release.
 
 ### Helper log
