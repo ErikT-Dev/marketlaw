@@ -315,7 +315,17 @@ These 10 scenarios are added to `harness/required.yaml` in this phase, by file a
      version change: `departure` came in this phase with save version 16, not yet deployed.
 - [x] Fixes: one fixer, findings 1 to 4 (2026-11-11). `npm run check` green;
   `e2e/matchHistory.spec.ts` passes at all three sizes with `--workers=1`.
-- [ ] Second finisher run.
+- [x] Second finisher run.
+  - Done (2026-11-11): `npm run check` green (119 test files, 673 tests; B14 158.5 kB of 300).
+    `npm run harness` green: 459 scenarios, 393 pass, 0 fail, 66 not yet (none required); 1,000
+    simulated games; every budget passes, B8 measures 5 of 12, B18 3,846 of 5,000. Browser tests
+    (`--workers=2`, five parts): shard 1/2 76 passed and 3 failed at 1920x1080
+    (`accountSettings` twice, `bigCardSwitch`), shard 2/2 77 passed, three and four players 3
+    passed each, two players 1 passed and 2 failed (1280x720 and 1920x1080, the room heading not
+    shown within 5 s after Create room). Rerun with `--workers=1`: two players 3 of 3 passed;
+    `accountSettings.spec.ts` and `bigCardSwitch.spec.ts` 9 of 9 passed. All failures were
+    load; GitHub judges the full suite. No new check, so `docs/enforcement.md` is unchanged.
+    Screenshots from these runs committed.
 - [ ] Release.
 
 ### Helper log
