@@ -1,6 +1,6 @@
 # Phase 25: Game records and match history
 
-Status: in progress
+Status: done
 Milestone: 5 Accounts and ranking
 
 ## Goal
@@ -386,7 +386,14 @@ These 10 scenarios are added to `harness/required.yaml` in this phase, by file a
     same way, undone; Q124), then, with the owner's approval, dropped `--with-deps` from the
     Chromium install (Q125). GitHub run 43058508095 (`1b7161d`): check and all six browser jobs
     green on the first attempt, `bigCardSwitch` included. Second finisher run done.
-- [ ] Release.
+- [x] Release. Merged as `cfc8b2d` (2026-11-11). Deploy run 43062294866: conclusion success,
+  every job green (check, six browser jobs, Chromium installed without `--with-deps`, Q125);
+  live Worker version `e797c75c` at 100%. Live check: the page loads (200) and its lazy
+  `RecordsPage` chunk contains the new record texts ("Place and result", "Reached the end
+  goal"); `/api/players/<unknown>/history` answers `account_gone` and `/api/records/<unknown>`
+  answers `not_found`, so the new routes and their D1 reads are live. The full "What to try"
+  playthrough (finish a game, open the record) was left to the owner: it needs a finished live
+  game.
 
 ### Helper log
 
