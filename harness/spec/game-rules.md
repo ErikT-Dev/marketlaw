@@ -233,7 +233,9 @@ chat are in `accounts.md` (rules `A…`). The card data is `cards.json`.
 - **R9.6** All time is measured by the server, at the moment it receives a player's message. A
   time-out is applied at the player's deadline; a message received at or after the deadline is
   handled after the time-out. On a market go, a turn draw received at or after the deadline is
-  rejected as out of time (`out_of_time`). In the main phase a time-out does not end the
+  rejected as out of time (`out_of_time`): it was sent for the go that has ended. A turn draw
+  the player sends after being shown the time-out is their turn draw left open (R18.16). In the
+  main phase a time-out does not end the
   player's turn (R9.10), so their action is then taken as normal. Every time-out is recorded in
   the game's action log.
 - **R9.7** Banks are kept in milliseconds and shown rounded down to whole seconds.

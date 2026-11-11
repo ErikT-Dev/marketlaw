@@ -2813,3 +2813,32 @@ file.
   `accounts.yaml`, `end-of-game.yaml`, `client.yaml`, `records-and-ratings.yaml`;
   `harness/scenario-format.yaml`, `harness/HARNESS.md`, `harness/required.yaml` (the 5 renames);
   `docs/plan/phase-25a-playthrough-fixes.md`, `docs/plan/README.md`, phase files 26 and 28.
+
+## Q127. Which questions did the start of phase 25a leave, and how are they solved?
+
+- **Phase:** 25a, the starter's read of the spec and harness changes of Q126.
+- **Question:** (1) R9.6 rejects "a turn draw received at or after the deadline" of a market go
+  as `out_of_time`, while R18.16 lets the player take their turn draw left open at any time after
+  that time-out: which one holds for a turn draw that arrives after the deadline? (2) Invariant
+  I24 still described one shared main phase: everyone shown as at "the start of the phase", with
+  only done, away, left and the time bank live. Since R5.4, R5.5 and R18.15 (Q126) each player
+  has their own main-phase start, market goes go on during it, and out of time and "has had
+  their market go" are live; I24 contradicts the spec.
+- **Options for (1):** reject every turn draw after the deadline (makes R18.16 impossible);
+  accept any turn draw after the time-out as the open draw (a draw the player sent for the go
+  would then be taken as option B, or answered `out_of_market` where R9.6 and the required
+  scenario "a message received at the deadline is rejected and the time-out is applied" expect
+  `out_of_time`); or tell them apart by what the player had seen when sending.
+- **Solution:** (1) A turn draw sent for the go that has ended is rejected: when it is the
+  message that applies the time-out, as `out_of_time` (R9.6, as the engine does now); when the
+  alarm applied the time-out first, it is based on a state version from before the time-out and
+  is rejected as `stale_state` (M9.4). A turn draw sent after the player
+  was shown the time-out is the turn draw left open (R18.16): option B is taken, option A is
+  rejected as `out_of_market`. R9.6 now says so in one sentence. Either way nothing the player
+  sent for the go is taken as a draw they did not choose. (2) I24 is reworded to R5.4 and R5.5:
+  it holds from the start of the turn's first main phase until the main phase ends; another
+  player is shown live while they wait for or take their go and as at the start of their own
+  main phase after it, with market go, done, out of time, away, left and the time bank live; the
+  piles follow R5.5, market-go draws and shuffles included.
+- **Implemented:** `harness/spec/game-rules.md` R9.6, `harness/invariants.yaml` I24 (one
+  `HARNESS:` commit); phase 25a items 1 to 3.

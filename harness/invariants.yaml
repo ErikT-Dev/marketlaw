@@ -179,15 +179,18 @@
 
 - id: I24
   name: other players' main-phase actions stay hidden until the phase ends
-  covers: [R5.4, R5.5, R5.7]
-  when: for every message sent to a player during a main phase
+  covers: [R5.4, R5.5, R5.7, R18.15]
+  when: for every message sent to a player from the moment the turn's first main phase starts until the main phase ends
   holds: >
-    During a main phase, everything a player is shown about another player equals that player's
-    state at the start of the phase, except whether they are done, away or have left, and their
-    time bank. The deck
-    and discard pile shown equal their state at the start of the phase, changed only by the
-    viewer's own draws and the discard shuffles the viewer caused, as R5.5 says; the deck count
-    shown is never below 0 and no card is shown both in the viewer's hand and in the discard pile.
+    Everything a player is shown about another player equals that player's live state while they
+    wait for or take their market go, and after it their state when their own main phase started,
+    except whether they have had their market go, are done, are out of time, are away or have
+    left, and their time bank. The deck and discard pile shown equal their state when the
+    viewer's own main phase started (for a viewer still waiting for their market go, when the
+    turn's first main phase started), changed only by the draws and discard shuffles of later
+    market goes, the viewer's own draws and the discard shuffles the viewer caused, as R5.5 says;
+    the deck count shown is never below 0 and no card is shown both in the viewer's hand and in
+    the discard pile.
 
 - id: I25
   name: a player's state version only moves with what they may see
