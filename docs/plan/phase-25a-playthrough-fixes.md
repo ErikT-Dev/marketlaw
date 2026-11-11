@@ -485,3 +485,4 @@ each helper's conversation size at its end.
 | Planner (findings into the spec, phase file; Q126) | 34 | 292k | 133 | done |
 | Starter | 7 | 130k | 53 | done |
 | Builder, item 1 | 26 | 211k | 100 | done |
+| Builder, item 2a | 51 | 202k | 85 | done |
