@@ -2794,7 +2794,7 @@ file.
     of time where a player must be made done). Five required names could not stay true, because
     the owner's findings 1, 7 and 9 change exactly the numbers they name; they are **renamed** in
     the scenario files and in `harness/required.yaml` together, so the same requirement stays on
-    the list under the new rule and none is dropped. For the owner to confirm:
+    the list under the new rule and none is dropped. The owner approved them on 2026-11-11:
     "the main-phase time limit in turn 10 is 3 minutes 57 seconds" → "… 4 minutes 27 seconds";
     "the first 45 seconds of a main phase do not use the time bank" → "the first 75 seconds …";
     "the first player's market go has 45 seconds" → "… 40 seconds"; "other market goes have

@@ -156,10 +156,7 @@ an expired quest no longer comes straight back; you can change your username 4 t
 
 ## Waiting for the owner
 
-- **Confirm the 5 renamed required scenarios (Q126).** Findings 1, 7 and 9 change the numbers
-  their names contained, so they were renamed together in the scenario files and in
-  `harness/required.yaml`; the requirement itself stays. Nothing in this phase waits for the
-  answer; if you disagree, say so and the names go back with the scenarios adjusted.
+- None. The owner approved the 5 renamed required scenarios (Q126) on 2026-11-11.
 
 ## Required scenarios
 
