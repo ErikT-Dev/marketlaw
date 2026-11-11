@@ -11,12 +11,6 @@ import { SIGNING_IN_TEST_MS } from "./SIGNING_IN_TEST_MS";
 
 const STORED_TOKEN = v.object({ token: v.string() });
 
-async function waitForTransitionsToEnd(page: Page) {
-  await page.waitForFunction(() =>
-    document.getAnimations().every((animation) => animation.playState !== "running"),
-  );
-}
-
 async function tokenOf(page: Page): Promise<string> {
   const stored = await page.evaluate((key) => localStorage.getItem(key), SESSION_KEY);
   return v.parse(STORED_TOKEN, JSON.parse(stored ?? "null")).token;
@@ -46,7 +40,6 @@ test("a player who started 10 games today is told so when creating a room", asyn
     "You have started 10 games today, the most per day. Try again after 00:00 UTC.",
   );
   await expect(create).toBeEnabled({ timeout: HUMAN_CHECK_MS });
-  await waitForTransitionsToEnd(page);
   await expectScreenFits(page, "daily-limit", testInfo, true);
   await page.context().close();
 });

@@ -332,8 +332,15 @@ These 10 scenarios are added to `harness/required.yaml` in this phase, by file a
     (109 ms against 100, a timing miss). The daily limit failure is a race in the test: after the
     rejection the dialog starts a new human check, so the button is disabled and then enabled
     again with a 120 ms background transition, and the screen check could land mid-transition.
-    The test now waits for the button to be enabled and for transitions to end before the screen
-    check (`BUG FIX` commit, no product change); it passes locally at all three sizes.
+    The test now waits for the button to be enabled again (`BUG FIX` commit, no product change).
+  - GitHub run 43021506649 (`17ba5e5`): the daily limit test passed; "other tests 3 of 3"
+    failed at 2560x1440 on `bigCardSwitch.spec.ts` (115.7 ms) and on `userMenu.spec.ts` (the same
+    grey button mid-transition after a human check). Every screen check
+    (`e2e/expectScreenFits.ts`) now waits for running CSS transitions to end before axe
+    (`BUG FIX` commit); `dailyLimits` and `userMenu` pass locally at all three sizes and
+    `npm run check` is green. `bigCardSwitch` at 2560x1440 on GitHub missed 100 ms in three of
+    six job attempts this phase (107, 109, 115.7 ms; it passes locally); the release should
+    watch it, and if it keeps failing, check whether phase 25 slowed the hand card switch.
 - [ ] Release.
 
 ### Helper log

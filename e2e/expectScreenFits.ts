@@ -13,6 +13,16 @@ async function targetsSmallerThanMinimum(page: Page): Promise<ReadonlyArray<stri
   }, MINIMUM_TARGET_PX);
 }
 
+async function waitForTransitionsToEnd(page: Page) {
+  await page.waitForFunction(() =>
+    document
+      .getAnimations()
+      .every(
+        (animation) => !(animation instanceof CSSTransition) || animation.playState !== "running",
+      ),
+  );
+}
+
 export async function expectScreenFits(
   page: Page,
   screen: string,
@@ -30,5 +40,6 @@ export async function expectScreenFits(
     false,
   );
   expect(await targetsSmallerThanMinimum(page)).toEqual([]);
+  await waitForTransitionsToEnd(page);
   expect(await new AxeBuilder({ page }).analyze()).toHaveProperty("violations", []);
 }
