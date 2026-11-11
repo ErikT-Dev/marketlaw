@@ -2644,3 +2644,19 @@ file.
 - **Why:** a guest must never lose its account before 90 days without use; the scenario's point
   is that a deleted guest shows as "Deleted player".
 - **Implemented:** phase 25, item 3.
+
+## Q123. What happens when the private repository runs out of GitHub Actions minutes?
+
+- **Phase:** 25, second finisher run (asked by the owner, 2026-11-11).
+- **Question:** GitHub told the owner that the free Actions minutes of the private repository
+  were used up. The branch check and the deploy both run on Actions, so no phase could pass its
+  GitHub check or deploy (README, "What every phase must meet").
+- **Options:** pause until the owner adds a spending limit or the minutes reset; run the checks
+  locally and deploy from this machine with wrangler (GitHub no longer the judge); make the
+  repository public, which gives unlimited free minutes.
+- **Solution:** the owner chose to make the repository public, after being told that the commit
+  history carries their author email address. Claude scanned the whole history for secrets
+  first (none found) and changed the visibility with `gh repo edit`. The checks and the deploy
+  are unchanged.
+- **Why:** keeps GitHub as the judge of every phase at no cost.
+- **Implemented:** phase 25 (repository setting, no code change). Decided by the owner.
