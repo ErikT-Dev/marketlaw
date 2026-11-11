@@ -84,15 +84,10 @@
   color: color-mix(in srgb, var(--color-toast-warning) 45%, white);
 }
 
-.usernameLink,
 .gameLink {
   display: inline-block;
   min-height: 24px;
   line-height: 24px;
-  color: var(--color-board-account-link);
-}
-
-.gameLink {
   color: inherit;
   font-weight: var(--font-weight-bold);
 }

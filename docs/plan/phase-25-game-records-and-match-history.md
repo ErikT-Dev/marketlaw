@@ -232,7 +232,21 @@ These 10 scenarios are added to `harness/required.yaml` in this phase, by file a
     full-game or test-room path) and opens the history and the record, screenshots to
     `harness/screens/`, axe.
 
-- [ ] 5. **Usernames open match histories everywhere** (A6.1, S13.4; Q121). **Large.**
+- [x] 5. **Usernames open match histories everywhere** (A6.1, S13.4; Q121). **Large.**
+  - Done (2026-11-11). `PROTOCOL_VERSION` 16. `RoomView` gains `playerIds` (by seat, beside
+    `playerNames`) and `idsInRoom` (beside `namesInRoom`), `PublicRoomView` `playerIds`, a chat
+    message `fromId`; all built by `updateFor`, `publicRoomsOf` and `chatEntriesFor`. The player
+    view (`viewFor`) has no names, so it is unchanged. `UsernameLink` and `matchHistoryHash`
+    moved to `src/client/components/`; `PlayerNameLink` shows a link or, without an id, the plain
+    name. Links in `PlayerBadge` (top bar order and opponent cards), `OpponentBoardDialog` (a
+    username link at the top of the stats box), `GameOverTable`, `ChatEntryItem`,
+    `PublicRoomsList` and `WaitingPlayers`; "You" is never a link. The opponent card keeps its
+    **See X's board** button for the board. Unit tests `src/client/screens/usernameLinks.test.tsx`;
+    browser test in `e2e/matchHistory.spec.ts` clicks an opponent's name in a game and comes back.
+  - For later items: locally, `e2e/chat.spec.ts` "players chat in the waiting room and in the
+    game" failed twice at 1920x1080 in a run of several files with "dropped connection to the
+    UserWorker" warnings, and passed when run alone; the finisher should rerun it and let GitHub
+    judge.
   - Views gain each player's id where a username stands on its own: room players and seats, the
     game's player badges and opponents, the end-of-game result, chat senders, public rooms.
     Built only by `viewFor` and the room's view code; raise `PROTOCOL_VERSION`. The leak test

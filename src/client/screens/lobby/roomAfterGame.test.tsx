@@ -8,6 +8,7 @@ import { RoomCode } from "../../../shared/RoomCode";
 import { NO_ROOM_CHAT } from "../../store/NO_ROOM_CHAT";
 import { testAccount } from "../../testing/testAccount";
 import { RoomAfterGamePage } from "./RoomAfterGamePage";
+import { testPlayerIdOf } from "../../testing/testPlayerIdOf";
 
 const RESULT: GameResult = {
   endedBy: "end_goal",
@@ -29,7 +30,9 @@ function endedRoom(changes: Partial<RoomView> = {}): RoomView {
     isPublic: true,
     ownerName: "Ann",
     playerNames: ["Ann", "Bea", "Cy"],
+    playerIds: [1, 2, 3].map(testPlayerIdOf),
     namesInRoom: ["Ann", "Bea"],
+    idsInRoom: [1, 2].map(testPlayerIdOf),
     myName: "Ann",
     mySeat: 1,
     asking: null,

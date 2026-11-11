@@ -1,3 +1,6 @@
+import { playerIdOf } from "./playerIdOf";
+import { PlayerNameLink } from "../../components/PlayerNameLink";
+import type { PlayerId } from "../../../shared/PlayerId";
 import type { GameResult } from "../../../shared/GameResult";
 import type { SeatNumber } from "../../../shared/SeatNumber";
 import type { IconText } from "../../components/IconText";
@@ -10,6 +13,7 @@ type Props = {
   readonly result: GameResult;
   readonly viewer: SeatNumber;
   readonly playerNames: ReadonlyArray<string>;
+  readonly playerIds: ReadonlyArray<PlayerId>;
 };
 
 const COLUMNS: ReadonlyArray<IconText> = [
@@ -23,7 +27,7 @@ const COLUMNS: ReadonlyArray<IconText> = [
   "Bonus-type pts",
 ];
 
-export function GameOverTable({ result, viewer, playerNames }: Props) {
+export function GameOverTable({ result, viewer, playerNames, playerIds }: Props) {
   return (
     <>
       <table className={styles["table"]}>
@@ -41,7 +45,14 @@ export function GameOverTable({ result, viewer, playerNames }: Props) {
             <tr key={place.seat} className={index === 0 ? styles["winner"] : undefined}>
               <td>{placeOrdinal(index)}</td>
               <th scope="row">
-                {place.seat === viewer ? "You" : playerNameOf(playerNames, place.seat)}
+                {place.seat === viewer ? (
+                  "You"
+                ) : (
+                  <PlayerNameLink
+                    name={playerNameOf(playerNames, place.seat)}
+                    playerId={playerIdOf(playerIds, place.seat)}
+                  />
+                )}
               </th>
               <td>{place.leftInTurn !== null ? "left" : index === 0 ? "won" : "lost"}</td>
               <td>{place.score}</td>

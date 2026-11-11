@@ -1,3 +1,5 @@
+import { playerIdOf } from "./playerIdOf";
+import type { PlayerId } from "../../../shared/PlayerId";
 import { useState } from "react";
 import type { PlayerView } from "../../../shared/PlayerView";
 import type { SeatNumber } from "../../../shared/SeatNumber";
@@ -10,9 +12,10 @@ import { playerNameOf } from "./playerNameOf";
 type Props = {
   readonly view: PlayerView;
   readonly playerNames: ReadonlyArray<string>;
+  readonly playerIds: ReadonlyArray<PlayerId>;
 };
 
-export function OpponentsPanel({ view, playerNames }: Props) {
+export function OpponentsPanel({ view, playerNames, playerIds }: Props) {
   const [openSeat, setOpenSeat] = useState<SeatNumber | null>(null);
   const others = view.seats.flatMap((seat) => (seat.kind === "other" ? [seat] : []));
   const opened = others.find((seat) => seat.seat === openSeat);
@@ -24,6 +27,7 @@ export function OpponentsPanel({ view, playerNames }: Props) {
             key={seat.seat}
             seat={seat}
             name={playerNameOf(playerNames, seat.seat)}
+            playerId={playerIdOf(playerIds, seat.seat)}
             onOpen={() => {
               setOpenSeat(seat.seat);
             }}
@@ -34,6 +38,7 @@ export function OpponentsPanel({ view, playerNames }: Props) {
         <OpponentBoardDialog
           seat={opened}
           name={playerNameOf(playerNames, opened.seat)}
+          playerId={playerIdOf(playerIds, opened.seat)}
           phase={view.phase}
           onClose={() => {
             setOpenSeat(null);

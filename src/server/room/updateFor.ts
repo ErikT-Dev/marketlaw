@@ -2,6 +2,7 @@ import { viewFor } from "../../rules/viewFor";
 import type { PlayerId } from "../../shared/PlayerId";
 import type { RoomUpdate } from "../../shared/protocol/RoomUpdate";
 import { endedRoomDeletionAt } from "./endedRoomDeletionAt";
+import type { Identity } from "./Identity";
 import type { RoomRecord } from "./RoomRecord";
 
 const UPDATES_BY_RECORD = new WeakMap<
@@ -13,12 +14,10 @@ function nameOf(record: RoomRecord, playerId: PlayerId): string {
   return record.players.find((player) => player.playerId === playerId)?.name ?? "";
 }
 
-function playerNamesOf(record: RoomRecord): ReadonlyArray<string> {
+function seatPlayersOf(record: RoomRecord): ReadonlyArray<Identity> {
   return record.game === null
-    ? record.players.map(({ name }) => name)
-    : [...record.game.seats]
-        .sort((first, second) => first.seat - second.seat)
-        .map(({ name }) => name);
+    ? record.players
+    : [...record.game.seats].sort((first, second) => first.seat - second.seat);
 }
 
 function buildUpdate(record: RoomRecord, playerId: PlayerId): RoomUpdate {
@@ -30,8 +29,10 @@ function buildUpdate(record: RoomRecord, playerId: PlayerId): RoomUpdate {
       size: record.size,
       isPublic: record.isPublic,
       ownerName: record.players[0]?.name ?? "",
-      playerNames: playerNamesOf(record),
+      playerNames: seatPlayersOf(record).map(({ name }) => name),
+      playerIds: seatPlayersOf(record).map(({ playerId }) => playerId),
       namesInRoom: record.players.map(({ name }) => name),
+      idsInRoom: record.players.map(({ playerId }) => playerId),
       myName: nameOf(record, playerId),
       mySeat: seat?.seat ?? null,
       asking:

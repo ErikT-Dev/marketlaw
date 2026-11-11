@@ -1,3 +1,4 @@
+import type { PlayerId } from "../../../shared/PlayerId";
 import type { GameResult } from "../../../shared/GameResult";
 import type { SeatNumber } from "../../../shared/SeatNumber";
 import { Button } from "../../components/Button";
@@ -11,6 +12,7 @@ type Props = {
   readonly turn: number;
   readonly viewer: SeatNumber;
   readonly playerNames: ReadonlyArray<string>;
+  readonly playerIds: ReadonlyArray<PlayerId>;
   readonly onExitToLobby: () => void;
   readonly onCloseResult: () => void;
   readonly onAskRematch: (() => void) | null;
@@ -45,6 +47,7 @@ export function LeftGamePage(props: Props) {
           turn={turn}
           viewer={viewer}
           playerNames={playerNames}
+          playerIds={props.playerIds}
           onExitToLobby={onExitToLobby}
           onClose={props.onCloseResult}
           onAskRematch={props.onAskRematch}

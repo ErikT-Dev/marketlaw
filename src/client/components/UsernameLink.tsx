@@ -1,6 +1,6 @@
-import type { PlayerId } from "../../../shared/PlayerId";
+import type { PlayerId } from "../../shared/PlayerId";
 import { matchHistoryHash } from "./matchHistoryHash";
-import styles from "./Records.module.css";
+import styles from "./UsernameLink.module.css";
 
 type Props = {
   readonly playerId: PlayerId;

@@ -1,3 +1,4 @@
+import type { PlayerId } from "../../../shared/PlayerId";
 import { useContext } from "react";
 import type { OtherSeatView } from "../../../shared/OtherSeatView";
 import { PlayerBadge } from "../../components/PlayerBadge";
@@ -11,6 +12,7 @@ import { LiveBankChip } from "./LiveBankChip";
 type Props = {
   readonly seat: OtherSeatView;
   readonly name: string;
+  readonly playerId: PlayerId | null;
   readonly onOpen: () => void;
 };
 
@@ -24,13 +26,13 @@ function statusOf(seat: OtherSeatView, isAway: boolean) {
   return seat.isDone ? "done" : "none";
 }
 
-export function OpponentCard({ seat, name, onOpen }: Props) {
+export function OpponentCard({ seat, name, playerId, onOpen }: Props) {
   const isAway = useContext(AwaySeats).includes(seat.seat);
   return (
     <li className={styles["item"]}>
       <article className={styles["card"]} aria-label={name}>
         <div className={styles["header"]}>
-          <PlayerBadge name={name} status={statusOf(seat, isAway)} />
+          <PlayerBadge name={name} playerId={playerId} status={statusOf(seat, isAway)} />
           <LiveBankChip timeBankMs={seat.timeBankMs} clock={seat.clock} label="Bank" />
         </div>
         <div className={styles["stats"]}>

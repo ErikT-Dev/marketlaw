@@ -74,7 +74,9 @@ const ROOM_UPDATE_TEXT = JSON.stringify({
       isPublic: true,
       ownerName: "Ann",
       playerNames: ["Ann"],
+      playerIds: ["5b0f6a52-3d5e-4f7c-8a41-6c2b9e0d7f13"],
       namesInRoom: ["Ann"],
+      idsInRoom: ["5b0f6a52-3d5e-4f7c-8a41-6c2b9e0d7f13"],
       myName: "Ann",
       mySeat: null,
       asking: null,
@@ -149,7 +151,14 @@ describe("RemoteGameHost", () => {
 
   it("passes on chat entries with the player's own mute list", () => {
     const network = connectedHost();
-    const entry = { kind: "message", from: "Bea", text: "Hi", at: 7000, isOwn: false };
+    const entry = {
+      kind: "message",
+      from: "Bea",
+      fromId: "7d0c7f1e-4b7a-4c5e-9a39-2f4d9c1b8e10",
+      text: "Hi",
+      at: 7000,
+      isOwn: false,
+    };
     network.handlers().onMessage(
       JSON.stringify({
         type: "chat",

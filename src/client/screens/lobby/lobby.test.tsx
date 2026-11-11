@@ -8,6 +8,7 @@ import { LobbyPage } from "./LobbyPage";
 import { NO_ROOM_CHAT } from "../../store/NO_ROOM_CHAT";
 import { testAccount } from "../../testing/testAccount";
 import { WaitingRoomPage } from "./WaitingRoomPage";
+import { testPlayerIdOf } from "../../testing/testPlayerIdOf";
 
 async function succeed() {
   return Promise.resolve(null);
@@ -41,7 +42,9 @@ function room(changes: Partial<RoomView> = {}): RoomView {
     isPublic: true,
     ownerName: "Quiet River Baron",
     playerNames: ["Quiet River Baron", "Ann", "Bea"],
+    playerIds: [1, 2, 3].map(testPlayerIdOf),
     namesInRoom: ["Quiet River Baron", "Ann", "Bea"],
+    idsInRoom: [1, 2, 3].map(testPlayerIdOf),
     myName: "Ann",
     mySeat: null,
     asking: null,
@@ -180,8 +183,15 @@ describe("the public room list", () => {
       size: 4,
       ownerName: "Quiet River Baron",
       playerNames: ["Quiet River Baron", "Bea"],
+      playerIds: [1, 3].map(testPlayerIdOf),
     },
-    { code: v.parse(RoomCode, "M4TX9C"), size: 2, ownerName: "Oli", playerNames: ["Oli", "Sam"] },
+    {
+      code: v.parse(RoomCode, "M4TX9C"),
+      size: 2,
+      ownerName: "Oli",
+      playerNames: ["Oli", "Sam"],
+      playerIds: [4, 5].map(testPlayerIdOf),
+    },
   ];
 
   it("lists each public room with its players and free places, joined with one click", () => {

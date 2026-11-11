@@ -11,6 +11,7 @@ import { roomUpdateWith } from "../testing/roomUpdateWith";
 import { ClientStore } from "./ClientStore";
 import { NO_ROOM_CHAT } from "./NO_ROOM_CHAT";
 import { writeSession } from "./writeSession";
+import { chatMessageEntryOf as chatMessage } from "../testing/chatMessageEntryOf";
 
 type FakeHost = {
   readonly store: ClientStore;
@@ -188,10 +189,6 @@ describe("client store moves", () => {
     expect(fake.resyncs()).toBe(1);
   });
 });
-
-function chatMessage(from: string, isOwn = false) {
-  return { kind: "message" as const, from, text: "Hi", at: v.parse(EpochMs, 7000), isOwn };
-}
 
 describe("the room chat in the store", () => {
   it("adds new entries, counts others' messages as unread until read, and keeps the mute list", () => {

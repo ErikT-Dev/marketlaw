@@ -1,3 +1,4 @@
+import { UsernameLink } from "../../components/UsernameLink";
 import type { ChatEntry } from "../../../shared/protocol/ChatEntry";
 import styles from "./RoomChatPanel.module.css";
 import { chatLineText } from "./chatLineText";
@@ -16,7 +17,7 @@ export function ChatEntryItem({ entry, onMute }: Props) {
     <li className={entry.isOwn ? styles["ownMessage"] : styles["message"]}>
       <div className={styles["header"]}>
         <span className={entry.isOwn ? styles["ownSender"] : styles["sender"]}>
-          {entry.isOwn ? "You" : entry.from}
+          {entry.isOwn ? "You" : <UsernameLink playerId={entry.fromId} username={entry.from} />}
         </span>
         <time className={styles["time"]} dateTime={new Date(entry.at).toISOString()}>
           {chatTimeText(entry.at)}

@@ -33,6 +33,7 @@ export function chatEntriesFor(
       entry: {
         kind: "message" as const,
         from: message.name,
+        fromId: message.from,
         text: message.text,
         at: message.at,
         isOwn: message.from === playerId,

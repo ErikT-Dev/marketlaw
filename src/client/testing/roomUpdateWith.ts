@@ -6,6 +6,7 @@ import type { RoomUpdate } from "../../shared/protocol/RoomUpdate";
 import { RoomCode } from "../../shared/RoomCode";
 import type { SeatNumber } from "../../shared/SeatNumber";
 import { OWN_SEAT_VIEW } from "../../shared/testing/OWN_SEAT_VIEW";
+import { testPlayerIdOf } from "./testPlayerIdOf";
 
 const STATS = {
   funds: 7,
@@ -91,7 +92,9 @@ export function roomUpdateWith(
       isPublic: false,
       ownerName: "Ann",
       playerNames: ["Ann", "Bea", "Cy", "Di"],
+      playerIds: [1, 2, 3, 4].map(testPlayerIdOf),
       namesInRoom: ["Ann", "Bea", "Cy", "Di"],
+      idsInRoom: [1, 2, 3, 4].map(testPlayerIdOf),
       myName: "Bea",
       mySeat: 2,
       asking: null,

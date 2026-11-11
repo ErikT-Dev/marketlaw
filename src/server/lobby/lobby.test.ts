@@ -94,7 +94,13 @@ describe("the lobby", () => {
       summary({ code: v.parse(RoomCode, "Z2Z2Z2"), isWaiting: false, players: [] }),
     ].reduce((record, room) => withRoomSummary(record, room.code, room), EMPTY_LOBBY);
     expect(publicRoomsOf(lobby)).toEqual([
-      { code: FIRST, size: 3, ownerName: "Ann", playerNames: ["Ann", "Bea"] },
+      {
+        code: FIRST,
+        size: 3,
+        ownerName: "Ann",
+        playerNames: ["Ann", "Bea"],
+        playerIds: [ANN, BEA],
+      },
     ]);
   });
 });

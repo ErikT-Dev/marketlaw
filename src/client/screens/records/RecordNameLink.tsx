@@ -1,6 +1,6 @@
 import type { RecordName } from "../../../shared/api/RecordName";
 import styles from "./Records.module.css";
-import { UsernameLink } from "./UsernameLink";
+import { UsernameLink } from "../../components/UsernameLink";
 
 type Props = {
   readonly name: RecordName;

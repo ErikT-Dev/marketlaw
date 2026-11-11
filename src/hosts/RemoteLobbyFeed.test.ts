@@ -28,7 +28,15 @@ function openFeed() {
   return { feed, opened, received, delays };
 }
 
-const ROOMS = [{ code: "K7QR2P", size: 3, ownerName: "Ann", playerNames: ["Ann"] }];
+const ROOMS = [
+  {
+    code: "K7QR2P",
+    size: 3,
+    ownerName: "Ann",
+    playerNames: ["Ann"],
+    playerIds: ["5b0f6a52-3d5e-4f7c-8a41-6c2b9e0d7f13"],
+  },
+];
 
 describe("RemoteLobbyFeed", () => {
   it("passes on each public room list and ignores messages it cannot read", () => {

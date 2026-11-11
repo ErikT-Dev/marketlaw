@@ -28,12 +28,18 @@ export function GameBoard(props: Props) {
             view={view}
             seat={mine}
             playerNames={playerNames}
+            playerIds={update.room.playerIds}
             onAction={props.onAction}
             account={props.account}
             isConnected={props.connection === "open"}
           />
           <main className={styles["table"]} inert={props.connection !== "open" || props.isOutdated}>
-            <LeftColumn view={view} playerNames={playerNames} chat={props.chat} />
+            <LeftColumn
+              view={view}
+              playerNames={playerNames}
+              playerIds={update.room.playerIds}
+              chat={props.chat}
+            />
             <MiddleColumn
               view={view}
               seat={mine}
@@ -55,6 +61,7 @@ export function GameBoard(props: Props) {
               turn={view.turn}
               viewer={view.seat}
               playerNames={playerNames}
+              playerIds={update.room.playerIds}
               onExitToLobby={props.onExitToLobby}
               onClose={props.onCloseResult}
               onAskRematch={props.onAskRematch}

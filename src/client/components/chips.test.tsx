@@ -40,14 +40,14 @@ describe("TimerChip", () => {
 
 describe("PlayerBadge", () => {
   it("shows the name, the status and the first player mark", () => {
-    render(<PlayerBadge name="Ann" status="away" isFirstPlayer />);
+    render(<PlayerBadge name="Ann" playerId={null} status="away" isFirstPlayer />);
     expect(screen.getByText("Ann")).toBeDefined();
     expect(screen.getByText("away")).toBeDefined();
     expect(screen.getByText("first player")).toBeDefined();
   });
 
   it("shows no status text when there is none and the rating when given", () => {
-    render(<PlayerBadge name="Bo" status="none" rating={1212} />);
+    render(<PlayerBadge name="Bo" playerId={null} status="none" rating={1212} />);
     expect(screen.getByText("1212")).toBeDefined();
     expect(screen.queryByText("online")).toBeNull();
   });
