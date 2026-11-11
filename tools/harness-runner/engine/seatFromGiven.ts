@@ -65,7 +65,6 @@ export function seatFromGiven(
     actionsThisTurn: given.actions_this_turn ?? start.actionsThisTurn,
     timeoutsInARow: given.timeouts_in_a_row ?? start.timeoutsInARow,
     isDone: given.done ?? start.isDone,
-    hasLeft: given.left ?? start.hasLeft,
     departure: given.left === true ? { turn, cardsInHand: (given.hand ?? []).length } : null,
     timeBankMs: given.time_bank_ms ?? start.timeBankMs,
     undoPoints: start.undoPoints,

@@ -18,7 +18,7 @@ function limitsOf(state: GameState, seat: SeatNumber) {
 
 function isDeciding(state: GameState, seatNumber: SeatNumber): boolean {
   const seat = seatOf(state, seatNumber);
-  if (seat === undefined || seat.hasLeft) {
+  if (seat === undefined || seat.departure !== null) {
     return false;
   }
   switch (state.phase) {

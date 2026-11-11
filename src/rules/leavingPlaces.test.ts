@@ -25,7 +25,7 @@ describe("places when players left", () => {
       {
         ...three,
         leaveOrder: [2, 3],
-        seats: three.seats.map((seat) => (seat.seat === 1 ? seat : { ...seat, hasLeft: true, departure: LEFT_IN_TURN_1 })),
+        seats: three.seats.map((seat) => (seat.seat === 1 ? seat : { ...seat, departure: LEFT_IN_TURN_1 })),
       },
       0,
       "last_player",
@@ -46,7 +46,7 @@ describe("places when players left", () => {
     const everyoneLeft = {
       ...START,
       leaveOrder: [1, 2] as const,
-      seats: START.seats.map((seat) => ({ ...seat, hasLeft: true, departure: LEFT_IN_TURN_1 })),
+      seats: START.seats.map((seat) => ({ ...seat, departure: LEFT_IN_TURN_1 })),
     };
     expect(endingViolations(endGame(everyoneLeft, 0, "everyone_left"))).toEqual([]);
     expect(endingViolations(endGame(everyoneLeft, 0, "last_player"))).toEqual([

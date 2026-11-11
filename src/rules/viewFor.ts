@@ -53,7 +53,7 @@ function ownSeatView(state: GameState, seat: SeatState): OwnSeatView {
       (state.marketplace.every(({ card }) => card === null) ? "marketplace_empty" : null),
     actionsThisTurn: seat.actionsThisTurn,
     isDone: seat.isDone,
-    hasLeft: seat.hasLeft,
+    hasLeft: seat.departure !== null,
     timeBankMs: seat.timeBankMs,
     clock: decisionClockOf(state, seat.seat),
   };
@@ -76,7 +76,7 @@ function otherSeatView(state: GameState, seat: SeatState, viewer: SeatNumber): O
     city: shown.city,
     buildPasses: shown.buildPasses,
     isDone: seat.isDone,
-    hasLeft: seat.hasLeft,
+    hasLeft: seat.departure !== null,
     timeBankMs: seat.timeBankMs,
     clock: decisionClockOf(state, seat.seat),
   };

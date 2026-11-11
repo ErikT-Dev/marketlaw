@@ -3,7 +3,7 @@ import type { SeatState } from "./SeatState";
 
 export function hasReachedEndGoal(seat: SeatState): boolean {
   return (
-    !seat.hasLeft &&
+    seat.departure === null &&
     seat.stats.income >= END_GOAL.income &&
     seat.projects.length >= END_GOAL.projects
   );

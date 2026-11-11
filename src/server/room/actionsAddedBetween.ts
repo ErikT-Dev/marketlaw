@@ -8,7 +8,7 @@ function seatsInGame(record: RoomRecord | null): ReadonlyArray<SeatNumber> {
   if (state === undefined || state.phase === "ended") {
     return [];
   }
-  return state.seats.filter((seat) => !seat.hasLeft).map(({ seat }) => seat);
+  return state.seats.filter((seat) => seat.departure === null).map(({ seat }) => seat);
 }
 
 export function actionsAddedBetween(

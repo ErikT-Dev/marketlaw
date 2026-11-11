@@ -9,7 +9,7 @@ export function busyPlayersOf(record: RoomRecord): ReadonlyArray<Identity> {
   if (game.saved.state.phase === "ended") {
     return [];
   }
-  const seatsThatLeft = game.saved.state.seats.filter((seat) => seat.hasLeft);
+  const seatsThatLeft = game.saved.state.seats.filter((seat) => seat.departure !== null);
   return record.players.filter(({ playerId }) => {
     const seat = game.seats.find((candidate) => candidate.playerId === playerId)?.seat;
     return !seatsThatLeft.some((left) => left.seat === seat);

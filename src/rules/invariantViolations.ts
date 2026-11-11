@@ -16,7 +16,7 @@ function seatsAfter(fromSeat: number, toSeat: number, count: number): number {
 function expectedFirstSeat(state: GameState): number {
   const count = state.seats.length;
   const rotationSeat = ((state.turn - 1) % count) + 1;
-  const stillIn = state.seats.filter((seat) => !seat.hasLeft).map((seat) => seat.seat);
+  const stillIn = state.seats.filter((seat) => seat.departure === null).map((seat) => seat.seat);
   const byRotation = [...stillIn].sort(
     (first, second) => seatsAfter(rotationSeat, first, count) - seatsAfter(rotationSeat, second, count),
   );
@@ -58,7 +58,7 @@ function actorViolations({ before, action }: Transition): ReadonlyArray<string> 
   const isActorOut =
     action.type !== "close_vote" &&
     seat !== undefined &&
-    (seat.hasLeft || (seat.isDone && !isOutOfTurnAllowed));
+    (seat.departure !== null || (seat.isDone && !isOutOfTurnAllowed));
   return isActorOut ? [`I18: seat ${action.seat} took an action while done or after leaving`] : [];
 }
 

@@ -5,7 +5,7 @@ import { isFinalTurn } from "./isFinalTurn";
 import type { Random } from "./Random";
 
 export function endMainPhaseIfAllDone(state: GameState, random: Random, at: number): GameState {
-  const isEveryoneDone = state.seats.every((seat) => seat.hasLeft || seat.isDone);
+  const isEveryoneDone = state.seats.every((seat) => seat.departure !== null || seat.isDone);
   if (!isEveryoneDone) {
     return state;
   }

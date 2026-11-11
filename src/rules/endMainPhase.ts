@@ -33,7 +33,7 @@ function seatAtTurnStart(seat: SeatState, firsts: ReadonlyArray<ProjectName>): S
     undoPoints: [],
     isUndoBlocked: false,
   };
-  return seat.hasLeft ? started : { ...started, isDone: false, actionsThisTurn: 0 };
+  return seat.departure !== null ? started : { ...started, isDone: false, actionsThisTurn: 0 };
 }
 
 export function endMainPhase(state: GameState, random: Random, at: number): GameState {

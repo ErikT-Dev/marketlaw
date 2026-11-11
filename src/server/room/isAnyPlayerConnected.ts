@@ -5,6 +5,6 @@ export function isAnyPlayerConnected(game: RoomGame, livePlayers: ReadonlyArray<
   return game.seats.some(
     (seat) =>
       livePlayers.includes(seat.playerId) &&
-      game.saved.state.seats.some((state) => state.seat === seat.seat && !state.hasLeft),
+      game.saved.state.seats.some((state) => state.seat === seat.seat && state.departure === null),
   );
 }

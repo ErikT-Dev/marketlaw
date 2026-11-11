@@ -6,7 +6,7 @@ import { seatOf } from "./seatOf";
 
 export function voteShownTo(state: GameState, viewer: SeatNumber): VoteView | null {
   const { vote } = state;
-  if (vote === null || seatOf(state, viewer)?.hasLeft !== false) {
+  if (vote === null || seatOf(state, viewer)?.departure !== null) {
     return null;
   }
   return {

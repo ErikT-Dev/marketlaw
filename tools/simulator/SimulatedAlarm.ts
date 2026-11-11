@@ -15,7 +15,7 @@ export class SimulatedAlarm {
       this.closeTurn();
       this.turn = state.turn;
     }
-    const playersInGame = state?.seats.filter((seat) => !seat.hasLeft).length ?? 0;
+    const playersInGame = state?.seats.filter((seat) => seat.departure === null).length ?? 0;
     const marketGoes = this.turn === 1 ? 0 : playersInGame;
     this.allowanceThisTurn = Math.max(this.allowanceThisTurn, marketGoes + playersInGame + 2);
     const change = alarmChangeFor(this.at, record);
