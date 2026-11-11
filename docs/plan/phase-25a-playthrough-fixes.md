@@ -511,3 +511,4 @@ each helper's conversation size at its end.
 | Starter | 7 | 130k | 53 | done |
 | Builder, item 1 | 26 | 211k | 100 | done |
 | Builder, item 2a | 51 | 202k | 85 | done |
+| Builder, item 2b | 27 | 182k | 81 | done |
