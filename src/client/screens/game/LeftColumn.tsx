@@ -1,7 +1,7 @@
 import type { PlayerId } from "../../../shared/PlayerId";
 import type { PlayerView } from "../../../shared/PlayerView";
 import type { ChatBinding } from "../chat/ChatBinding";
-import { DrawLogAndChatPanel } from "./DrawLogAndChatPanel";
+import { GameLogAndChatPanel } from "./GameLogAndChatPanel";
 import styles from "./GamePage.module.css";
 import { OpponentsPanel } from "./OpponentsPanel";
 
@@ -16,7 +16,12 @@ export function LeftColumn({ view, playerNames, playerIds, chat }: Props) {
   return (
     <div className={styles["left"]}>
       <OpponentsPanel view={view} playerNames={playerNames} playerIds={playerIds} />
-      <DrawLogAndChatPanel drawLog={view.drawLog} playerNames={playerNames} chat={chat} />
+      <GameLogAndChatPanel
+        drawLog={view.drawLog}
+        mainPhaseLog={view.mainPhaseLog}
+        playerNames={playerNames}
+        chat={chat}
+      />
     </div>
   );
 }

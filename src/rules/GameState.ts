@@ -2,6 +2,7 @@ import type { CardName } from "../shared/catalogue/CardName";
 import type { QuestName } from "../shared/catalogue/QuestName";
 import type { TypeName } from "../shared/catalogue/TypeName";
 import type { DrawLogEntry } from "../shared/DrawLogEntry";
+import type { MainPhaseLogEntry } from "../shared/MainPhaseLogEntry";
 import type { GameKind } from "../shared/GameKind";
 import type { GamePhase } from "../shared/GamePhase";
 import type { GameResult } from "../shared/GameResult";
@@ -32,6 +33,7 @@ export type GameState = {
   readonly leaveOrder: ReadonlyArray<SeatNumber>;
   readonly firstCompletions: ReadonlyArray<ProjectName>;
   readonly drawLog: ReadonlyArray<DrawLogEntry>;
+  readonly mainPhaseLog: ReadonlyArray<MainPhaseLogEntry>;
   readonly mainPhaseStart: MainPhaseStart;
   readonly clockStartedAt: number;
   readonly pause: PausedClock | null;

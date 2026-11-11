@@ -33,6 +33,7 @@ import { useDrawAction } from "./useDrawAction";
 import { useTrade } from "./useTrade";
 import type { VoteAction } from "./VoteAction";
 import { voteDeadlineOf } from "./voteDeadlineOf";
+import { withMainPhaseLogEntry } from "./withMainPhaseLogEntry";
 import { withUndoHistory } from "./withUndoHistory";
 
 function acceptedSystemAction(
@@ -159,6 +160,9 @@ export function apply(
   if (code !== undefined) {
     return { isOk: false, error: { code } };
   }
-  const next = withGraceKept(state, accepted(state, action, random, at));
+  const next = withGraceKept(
+    state,
+    withMainPhaseLogEntry(action, accepted(state, action, random, at)),
+  );
   return { isOk: true, value: withUndoHistory(state, action, next) };
 }

@@ -13,6 +13,7 @@ import { TradeName } from "../TradeName";
 import { RemovalReason } from "./RemovalReason";
 import { CHAT_ENTRY_SCHEMA } from "./CHAT_ENTRY_SCHEMA";
 import { DRAW_LOG_ENTRY_SCHEMA } from "./DRAW_LOG_ENTRY_SCHEMA";
+import { MAIN_PHASE_LOG_ENTRY_SCHEMA } from "./MAIN_PHASE_LOG_ENTRY_SCHEMA";
 import { MARKETPLACE_SLOT_SCHEMA } from "./MARKETPLACE_SLOT_SCHEMA";
 import { GAME_RESULT_SCHEMA } from "./GAME_RESULT_SCHEMA";
 import { QUEST_PLACE_VIEW_SCHEMA } from "./QUEST_PLACE_VIEW_SCHEMA";
@@ -109,6 +110,7 @@ const PLAYER_VIEW = v.object({
   doneOrder: v.array(SEAT),
   playerOrder: v.array(SEAT),
   drawLog: v.array(DRAW_LOG_ENTRY_SCHEMA),
+  mainPhaseLog: v.array(MAIN_PHASE_LOG_ENTRY_SCHEMA),
   firstCompletions: PROJECTS,
   vote: v.nullable(
     v.object({

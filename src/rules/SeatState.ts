@@ -1,6 +1,7 @@
 import type { CardName } from "../shared/catalogue/CardName";
 import type { Departure } from "./Departure";
 import type { ClaimedCombo } from "../shared/ClaimedCombo";
+import type { MainPhaseLogEntry } from "../shared/MainPhaseLogEntry";
 import type { InfluenceUses } from "../shared/InfluenceUses";
 import type { QuestName } from "../shared/catalogue/QuestName";
 import type { ProjectName } from "../shared/ProjectName";
@@ -32,6 +33,7 @@ export type SeatState = {
   readonly isDone: boolean;
   readonly isOutOfTime: boolean;
   readonly isTurnDrawOpen: boolean;
+  readonly logEntriesThisMainPhase: ReadonlyArray<MainPhaseLogEntry>;
   readonly departure: Departure | null;
   readonly timeBankMs: number;
   readonly timeoutsInARow: number;

@@ -20,7 +20,7 @@ test("the test room endpoint answers 404 without the right secret", async ({ req
   expect(wrong.status()).toBe(404);
 });
 
-test("income happens by itself in a test room and shows in the draw log", async ({
+test("income happens by itself in a test room and shows in the game log", async ({
   browser,
   viewport,
   request,
@@ -39,7 +39,7 @@ test("income happens by itself in a test room and shows in the draw log", async 
     .getByRole("button", { name: "Play card" })
     .click();
   await expect(
-    page.getByRole("list", { name: "Draw log entries" }).getByRole("listitem"),
+    page.getByRole("list", { name: "Game log entries" }).getByRole("listitem"),
   ).toHaveText([/Turn 1: Seat 1 drew 1 card: \w+, tier 1 \(Income\)$/]);
   await expect(page.getByRole("img", { name: "Income 4" })).toBeVisible();
   await expectScreenFits(page, "income-draw", testInfo);

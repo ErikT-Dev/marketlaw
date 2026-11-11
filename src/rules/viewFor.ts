@@ -105,6 +105,7 @@ export function viewFor(state: GameState, viewer: SeatNumber): PlayerView {
     doneOrder: state.doneOrder,
     playerOrder: playerOrderOf(state),
     drawLog: piles.drawLog,
+    mainPhaseLog: state.mainPhaseLog,
     firstCompletions: state.firstCompletions,
     vote: voteShownTo(state, viewer),
     nextVoteTurn: nextVoteTurnOf(state),

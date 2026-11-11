@@ -5,6 +5,7 @@ import { isFinalTurn } from "./isFinalTurn";
 import { playerOrderOf } from "./playerOrderOf";
 import type { Random } from "./Random";
 import { settleBeforeDone } from "./settleBeforeDone";
+import { withMainPhaseLogWritten } from "./withMainPhaseLogWritten";
 
 function withOutOfTimeSeatsDone(state: GameState, random: Random, at: number): GameState {
   const isAnyonePlayingInTime = state.seats.some(
@@ -35,5 +36,6 @@ export function endMainPhaseIfAllDone(state: GameState, random: Random, at: numb
   if (!isEveryoneDone) {
     return settled;
   }
-  return isFinalTurn(settled) ? endGame(settled, at) : endMainPhase(settled, random, at);
+  const logged = withMainPhaseLogWritten(settled);
+  return isFinalTurn(logged) ? endGame(logged, at) : endMainPhase(logged, random, at);
 }

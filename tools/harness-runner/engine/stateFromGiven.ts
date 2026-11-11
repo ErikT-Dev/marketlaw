@@ -103,6 +103,7 @@ export function stateFromGiven(given: Given): GameState {
     discard,
     holdingPile: [],
     drawLog: [],
+    mainPhaseLog: [],
     marketplace,
     quests,
     questList: given.quest_list ?? questListLeftBy(quests, seats),

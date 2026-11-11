@@ -451,7 +451,26 @@ These 24 required scenarios now assert the new rules (Q126) and must pass again:
     place) holds after every action; in the final turn the game ends instead of starting a new
     turn, so no quest is left nowhere.
 
-- [ ] 6. **The game log** (M3.7, R5.7, S7.1, S7.2). **Large.**
+- [x] 6. **The game log** (M3.7, R5.7, S7.1, S7.2). **Large.**
+  - Done (2026-11-11). The 4 `visibility` log scenarios pass (checked on the required list
+    locally); the two that expect entries fail without the change, the two that expect none
+    are also covered by `src/rules/mainPhaseLog.test.ts` (player order, nobody sees entries
+    before the main phase ends, the player included, an undone trade left out, a project, the
+    final turn). Budgets: B13 23 KB (limit 100), B11 9 ms (room messages 3), B3 1 row per
+    action, B4 734 and B5 963 rows a game, B9 556 messages; versions stay at 17.
+  - As built: a separate list, not new kinds in `drawLog`, so `pilesShownTo` and the
+    simulator's pile checks are untouched. Each seat collects `logEntriesThisMainPhase`
+    (`MainPhaseLogEntry`, `src/shared/`) as `apply` accepts play card, complete quest,
+    complete project or influence (`withMainPhaseLogEntry`); undo restores the seat snapshot,
+    so undone entries go with it. `endMainPhaseIfAllDone` writes them in player order (left
+    seats included) into `state.mainPhaseLog` (`withMainPhaseLogWritten`) before
+    `endMainPhase` or `endGame`; the view copies it as `mainPhaseLog`. Runner:
+    `gameLogOf` reads both lists. Client: `GameLogAndChatPanel` (tab **Log**, panel
+    "Game log"), `GameLogList` merges both lists by turn (a turn's main-phase entries after
+    its draws, `gameLogRows`), `mainPhaseLogText` with stat icons; a bought build pass is
+    shown as funds to a build pass, without the price. `e2e/drawLog.spec.ts` is now
+    `e2e/gameLog.spec.ts`, screenshots `harness/screens/game-log/` (`draw-log/` removed).
+  - Differs from the phase file: nothing.
   - State: new log entry kinds beside `src/shared/DrawLogEntry.ts` (card played, quest
     completed, project completed, influence action: trade, build pass or skip build), each with
     turn and seat, written per seat in player order when the main phase ends

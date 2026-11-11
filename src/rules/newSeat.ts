@@ -28,6 +28,7 @@ export function newSeat(seat: SeatNumber): SeatState {
     isDone: false,
     isOutOfTime: false,
     isTurnDrawOpen: false,
+    logEntriesThisMainPhase: [],
     departure: null,
     timeBankMs: TIME_BANK_MS,
     timeoutsInARow: 0,

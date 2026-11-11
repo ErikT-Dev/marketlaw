@@ -7,6 +7,7 @@ import { ProjectName } from "../../shared/ProjectName";
 import { TradeName } from "../../shared/TradeName";
 import { GAME_RESULT_SCHEMA } from "../../shared/protocol/GAME_RESULT_SCHEMA";
 import { DRAW_LOG_ENTRY_SCHEMA } from "../../shared/protocol/DRAW_LOG_ENTRY_SCHEMA";
+import { MAIN_PHASE_LOG_ENTRY_SCHEMA } from "../../shared/protocol/MAIN_PHASE_LOG_ENTRY_SCHEMA";
 import { MARKETPLACE_SLOT_SCHEMA } from "../../shared/protocol/MARKETPLACE_SLOT_SCHEMA";
 import { SEAT_NUMBER_SCHEMA } from "../../shared/protocol/SEAT_NUMBER_SCHEMA";
 import { STATS_SCHEMA } from "../../shared/protocol/STATS_SCHEMA";
@@ -36,6 +37,7 @@ const SEAT_STATE = v.object({
   isDone: v.boolean(),
   isOutOfTime: v.optional(v.boolean(), false),
   isTurnDrawOpen: v.optional(v.boolean(), false),
+  logEntriesThisMainPhase: v.optional(v.array(MAIN_PHASE_LOG_ENTRY_SCHEMA), []),
   departure: v.nullable(v.object({ turn: v.number(), cardsInHand: v.number() })),
   timeBankMs: v.number(),
   timeoutsInARow: v.number(),
@@ -59,6 +61,7 @@ export const GAME_STATE_SCHEMA = v.object({
   doneOrder: v.array(SEAT_NUMBER_SCHEMA),
   leaveOrder: v.array(SEAT_NUMBER_SCHEMA),
   drawLog: v.array(DRAW_LOG_ENTRY_SCHEMA),
+  mainPhaseLog: v.optional(v.array(MAIN_PHASE_LOG_ENTRY_SCHEMA), []),
   firstCompletions: v.array(ProjectName),
   clockStartedAt: EpochMs,
   pause: v.optional(v.null(), null),

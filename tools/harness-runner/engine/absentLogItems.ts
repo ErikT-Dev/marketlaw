@@ -1,8 +1,8 @@
-import type { DrawLogEntry } from "../../../src/shared/DrawLogEntry.ts";
+import type { GameLogEntry } from "./GameLogEntry.ts";
 import { matchingLogEntries } from "./matchingLogEntries.ts";
 
 export function absentLogItems(
-  log: ReadonlyArray<DrawLogEntry>,
+  log: ReadonlyArray<GameLogEntry>,
   expected: unknown,
 ): ReadonlyArray<unknown> {
   const text = JSON.stringify(log);

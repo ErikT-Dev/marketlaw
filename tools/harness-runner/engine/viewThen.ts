@@ -6,6 +6,7 @@ import type { SeatClock } from "../../../src/shared/SeatClock.ts";
 import type { SeatNumber } from "../../../src/shared/SeatNumber.ts";
 import { isRecord } from "../../harness-check/isRecord.ts";
 import { absentLogItems } from "./absentLogItems.ts";
+import { gameLogOf } from "./gameLogOf.ts";
 import { matchingLogEntries } from "./matchingLogEntries.ts";
 
 const SEAT_NUMBERS: ReadonlyArray<SeatNumber> = [1, 2, 3, 4];
@@ -77,8 +78,8 @@ export function viewThen(
     discard_count: view.discardCount,
     contains: namesOf(asked["contains"]).filter((name) => text.includes(JSON.stringify(name))),
     hides: namesOf(asked["hides"]).filter((name) => isHidden(name, text, state)),
-    log_contains: matchingLogEntries(view.drawLog, asked["log_contains"]),
-    log_excludes: absentLogItems(view.drawLog, asked["log_excludes"]),
+    log_contains: matchingLogEntries(gameLogOf(view), asked["log_contains"]),
+    log_excludes: absentLogItems(gameLogOf(view), asked["log_excludes"]),
     vote_answers: view.vote === null ? null : { answered: view.vote.answered, of: view.vote.of },
     ...seatFields,
   };

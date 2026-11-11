@@ -153,7 +153,7 @@ describe("the chat tab in a game", () => {
   it("shows the unread count until the chat tab is opened", () => {
     const chat = binding(ENTRIES, 2);
     render(<GamePage {...gamePageProps(roomUpdateWith({}))} chat={chat} />);
-    expect(screen.getByRole("tabpanel", { name: "Draw log" })).toBeTruthy();
+    expect(screen.getByRole("tabpanel", { name: "Game log" })).toBeTruthy();
     expect(chat.onSeen).not.toHaveBeenCalled();
     fireEvent.click(screen.getByRole("tab", { name: "Chat, 2 new" }));
     expect(screen.getByRole("tab", { name: "Chat" }).getAttribute("aria-selected")).toBe("true");

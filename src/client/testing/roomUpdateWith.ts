@@ -80,6 +80,7 @@ export function roomUpdateWith(
     doneOrder: [3],
     playerOrder: [3, 4, 2],
     drawLog: [],
+    mainPhaseLog: [],
     firstCompletions: [],
     vote: null,
     nextVoteTurn: 1,

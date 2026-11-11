@@ -42,6 +42,7 @@ export function botViewWith(own: Partial<OwnSeatView>): PlayerView {
     doneOrder: [],
     playerOrder: [1],
     drawLog: [],
+    mainPhaseLog: [],
     firstCompletions: [],
     vote: null,
     nextVoteTurn: 1,
