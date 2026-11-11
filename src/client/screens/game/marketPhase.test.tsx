@@ -61,7 +61,8 @@ describe("the marketplace", () => {
         .getAllByRole("img")
         .map((icon) => icon.getAttribute("alt")),
     ).toEqual(["quality", "satisfaction"]);
-    expect(marketplace().queryAllByRole("button")).toEqual([]);
+    fireEvent.click(marketplace().getByRole("button", { name: "Law Firm" }));
+    expect(marketplace().queryByRole("button", { name: "Draw" })).toBeNull();
   });
 
   it("shows the bonus types with their points, the deck and the discard pile", () => {
@@ -141,7 +142,8 @@ describe("the market go panel", () => {
     expect(screen.getByRole("button", { name: "Play card" })).toBeDefined();
     expect(screen.getByRole("region", { name: "Your city · 0 cards" })).toBeDefined();
     expect(screen.getByText("Main phase")).toBeDefined();
-    expect(marketplace().queryAllByRole("button")).toEqual([]);
+    fireEvent.click(marketplace().getByRole("button", { name: "Law Firm" }));
+    expect(marketplace().queryByRole("button", { name: "Draw" })).toBeNull();
   });
 
   it("hides the main-phase actions and the city in the market phase", () => {
@@ -187,7 +189,8 @@ describe("a turn draw left open", () => {
     expect(screen.getByRole("group", { name: "Turn draw left open" }).textContent).toContain(
       "Your time ran out on your market go. Choose a sector for your 2 cards. If you end your turn without choosing, a random sector is used.",
     );
-    expect(marketplace().queryAllByRole("button")).toEqual([]);
+    fireEvent.click(marketplace().getByRole("button", { name: "Law Firm" }));
+    expect(marketplace().queryByRole("button", { name: "Draw" })).toBeNull();
     fireEvent.click(group.getByRole("button", { name: "Public" }));
     expect(onAction).toHaveBeenLastCalledWith({
       type: "turn_draw",

@@ -562,7 +562,26 @@ These 24 required scenarios now assert the new rules (Q126) and must pass again:
   - Screenshots: the market banner on your go, a marketplace card selected with **Draw**, the
     open turn draw, a player out of time.
 
-- [ ] 10. **Every card in the big card** (S4.1, S6.5, S3.2, S14.3). **Large.**
+- [x] 10. **Every card in the big card** (S4.1, S6.5, S3.2, S14.3). **Large.**
+  - Done (2026-11-11). Client only; unit tests (`lookingAtCards.test.tsx`) and the browser test
+    `e2e/lookingAtCards.spec.ts` (a test room with Lake Park in both cities) at all three sizes.
+  - As built: `GameTable.tsx` (the three columns, split out of `GameBoard`) holds the card being
+    looked at (`LookedAtCard`: card and place, marketplace or city). Every marketplace card is a
+    button at any time (`MarketSlot` always uses `SelectableMarketCard`); a click shows it in
+    the big card and, on your go, also selects it for **Draw** (Draw closes the big card). Your
+    city's cards are buttons (`PlayedCard`; the unused `CityCard` is removed).
+    `LookedAtCardPanel` shows the big card with "Base cost" and **Close** only, in the hand's big
+    card place (`BigCardBesideHand`). A hand card and a looked-at card are shown one at a time:
+    selecting a hand card closes the looked-at card, and looking at a card clears the hand
+    selection (`useHandBesideLookedAt`; sell mode is kept). In another player's board a city card
+    replaces the stats box with the big card until Close (`OpponentStatsBox.tsx` split out). The
+    big card shows a doubled type as its icon twice.
+  - Screenshots: `big-card-city-doubled-type`, `opponent-board-big-card`.
+  - Differs from the phase file: the card set (S14.3) does not exist yet; phase 28 builds it.
+  - For later items: item 11 changes the board's stats box in `OpponentStatsBox.tsx`. Phase 28's
+    card detail should reuse `BigCard`, which already shows a doubled type twice. Card buttons
+    named by the card now also exist in the marketplace and your city, so browser tests find hand
+    cards inside "Your hand".
   - Marketplace cards, your city and another player's board open the big card (base cost and
     Close only; inside `OpponentBoardDialog.tsx` for another city). Reuse phase 20a's big card
     switch (`SelectedCardPanel.tsx`, `BigCard.tsx`, `HandSwitch.ts`, `bigCardSwitch.test.tsx`);

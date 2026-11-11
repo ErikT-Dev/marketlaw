@@ -10,7 +10,7 @@ type Props = {
   readonly view: PlayerView;
   readonly isYourGo: boolean;
   readonly selected: CardName | null;
-  readonly onSelect: ((card: CardName) => void) | null;
+  readonly onSelect: (card: CardName) => void;
   readonly onDraw: ((card: CardName) => void) | null;
 };
 

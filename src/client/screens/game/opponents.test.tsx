@@ -68,7 +68,7 @@ describe("opponent's board", () => {
     expect(board.getByRole("img", { name: "Build passes 2" })).toBeDefined();
     const residential = within(board.getByRole("region", { name: "Residential cards of Di" }));
     expect(
-      residential.getAllByRole("listitem").map((item) => item.getAttribute("aria-label")),
+      residential.getAllByRole("button").map((item) => item.getAttribute("aria-label")),
     ).toEqual(["Cottage", "Loft"]);
     expect(board.getByText("This turn: playing, not done yet")).toBeDefined();
   });

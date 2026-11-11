@@ -1,10 +1,10 @@
-import { useState } from "react";
 import type { CardName } from "../../../shared/catalogue/CardName";
 import type { OwnSeatView } from "../../../shared/OwnSeatView";
 import type { PlayerView } from "../../../shared/PlayerView";
 import type { ActionIntent } from "../../../shared/protocol/ActionIntent";
 import { CityPanel } from "./CityPanel";
 import { CombosPanel } from "./CombosPanel";
+import type { LookedAtCard } from "./LookedAtCard";
 import styles from "./GamePage.module.css";
 import { MarketGoPanel } from "./MarketGoPanel";
 import { marketGoStateOf } from "./marketGoStateOf";
@@ -18,13 +18,23 @@ type Props = {
   readonly seat: OwnSeatView;
   readonly playerNames: ReadonlyArray<string>;
   readonly isBusy: boolean;
+  readonly lookedAt: LookedAtCard | null;
+  readonly onLookAt: (lookedAt: LookedAtCard | null) => void;
   readonly onAction: (action: ActionIntent) => void;
 };
 
-export function MiddleColumn({ view, seat, playerNames, isBusy, onAction }: Props) {
-  const [selected, setSelected] = useState<CardName | null>(null);
+function lookedAtIn(lookedAt: LookedAtCard | null, place: LookedAtCard["place"]) {
+  return lookedAt !== null && lookedAt.place === place ? lookedAt.card : null;
+}
+
+export function MiddleColumn(props: Props) {
+  const { view, seat, playerNames, isBusy, lookedAt, onLookAt, onAction } = props;
   const canTakeMarketCard = seat.marketCardRejection === null;
   const isYourGo = seat.turnDrawRejection === null && !seat.hasHadMarketGo;
+  function drawMarketCard(card: CardName) {
+    onLookAt(null);
+    onAction({ type: "turn_draw", choice: { option: "A", card } });
+  }
   return (
     <div className={styles[view.phase === "market" ? "middleInMarketPhase" : "middle"]}>
       {view.phase === "market" ? (
@@ -36,15 +46,11 @@ export function MiddleColumn({ view, seat, playerNames, isBusy, onAction }: Prop
       <MarketplacePanel
         view={view}
         isYourGo={isYourGo}
-        selected={canTakeMarketCard ? selected : null}
-        onSelect={canTakeMarketCard ? setSelected : null}
-        onDraw={
-          canTakeMarketCard && !isBusy
-            ? (card) => {
-                onAction({ type: "turn_draw", choice: { option: "A", card } });
-              }
-            : null
-        }
+        selected={lookedAtIn(lookedAt, "marketplace")}
+        onSelect={(card) => {
+          onLookAt({ card, place: "marketplace" });
+        }}
+        onDraw={canTakeMarketCard && !isBusy ? drawMarketCard : null}
       />
       <QuestsPanel
         quests={view.quests}
@@ -66,7 +72,13 @@ export function MiddleColumn({ view, seat, playerNames, isBusy, onAction }: Prop
         />
       ) : (
         <div className={styles["cityRow"]}>
-          <CityPanel city={seat.city} />
+          <CityPanel
+            city={seat.city}
+            selected={lookedAtIn(lookedAt, "city")}
+            onSelect={(card) => {
+              onLookAt({ card, place: "city" });
+            }}
+          />
           <CombosPanel combos={seat.combos} />
         </div>
       )}

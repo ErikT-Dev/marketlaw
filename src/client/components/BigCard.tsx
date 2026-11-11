@@ -1,4 +1,5 @@
 import type { Card } from "../../shared/catalogue/Card";
+import type { TypeName } from "../../shared/catalogue/TypeName";
 import { iconUrl } from "../icons/iconUrl";
 import { photoUrl } from "../icons/photoUrl";
 import { STAT_ICONS } from "../icons/STAT_ICONS";
@@ -26,6 +27,17 @@ function stripStats(
       ({ value }) => value > 0,
     ),
   ];
+}
+
+function typeIcons(card: Card): ReadonlyArray<{ type: TypeName; key: string }> {
+  return card.types.flatMap(({ type, count }) =>
+    count === 2
+      ? [
+          { type, key: type },
+          { type, key: `${type} again` },
+        ]
+      : [{ type, key: type }],
+  );
 }
 
 export function BigCard({ card, realCost }: Props) {
@@ -68,8 +80,8 @@ export function BigCard({ card, realCost }: Props) {
         ))}
       </div>
       <div className={styles["types"]}>
-        {card.types.map(({ type, count }) => (
-          <TypeChip key={type} type={type} count={count === 2 ? 2 : undefined} />
+        {typeIcons(card).map(({ type, key }) => (
+          <TypeChip key={key} type={type} />
         ))}
       </div>
       <div className={styles["combos"]}>

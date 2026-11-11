@@ -6,10 +6,8 @@ import { GameNotices } from "./GameNotices";
 import { GameOverDialog } from "./GameOverDialog";
 import styles from "./GamePage.module.css";
 import type { GamePageProps } from "./GamePageProps";
+import { GameTable } from "./GameTable";
 import { GameTopBar } from "./GameTopBar";
-import { LeftColumn } from "./LeftColumn";
-import { MiddleColumn } from "./MiddleColumn";
-import { RightColumn } from "./RightColumn";
 import { ServerClockOffset } from "./ServerClockOffset";
 
 type Props = GamePageProps & {
@@ -33,28 +31,7 @@ export function GameBoard(props: Props) {
             account={props.account}
             isConnected={props.connection === "open"}
           />
-          <main className={styles["table"]} inert={props.connection !== "open" || props.isOutdated}>
-            <LeftColumn
-              view={view}
-              playerNames={playerNames}
-              playerIds={update.room.playerIds}
-              chat={props.chat}
-            />
-            <MiddleColumn
-              view={view}
-              seat={mine}
-              playerNames={playerNames}
-              isBusy={props.pendingActions.length > 0}
-              onAction={props.onAction}
-            />
-            <RightColumn
-              view={view}
-              seat={mine}
-              playerNames={playerNames}
-              pendingActions={props.pendingActions}
-              onAction={props.onAction}
-            />
-          </main>
+          <GameTable {...props} />
           {view.result === null ? null : (
             <GameOverDialog
               result={view.result}

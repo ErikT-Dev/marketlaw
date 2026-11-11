@@ -160,9 +160,13 @@ test("a player whose market go timed out chooses the sector of their turn draw i
   );
   await expectMainPhase(page);
   await expect(page.getByRole("region", { name: "MARKET PHASE" })).toHaveCount(0);
-  await expect(
-    page.getByRole("list", { name: "Marketplace places" }).getByRole("button"),
-  ).toHaveCount(0);
+  const marketplace = page.getByRole("list", { name: "Marketplace places" });
+  await marketplace.getByRole("button", { name: "Dentist" }).click();
+  await expect(marketplace.getByRole("button", { name: "Draw" })).toHaveCount(0);
+  await page
+    .getByRole("region", { name: "Selected card: Dentist" })
+    .getByRole("button", { name: "Close" })
+    .click();
   await expectScreenFits(page, "market-open-turn-draw", testInfo);
   await openDraw.getByRole("button", { name: "Residential" }).click();
   await expect(openDraw).toHaveCount(0);
