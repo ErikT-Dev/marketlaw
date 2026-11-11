@@ -1,6 +1,6 @@
 # Phase 25: Game records and match history
 
-Status: waiting for the owner
+Status: in progress
 Milestone: 5 Accounts and ranking
 
 ## Goal
@@ -60,15 +60,6 @@ These 10 scenarios are added to `harness/required.yaml` in this phase, by file a
 - `rooms` #21: after a game the room stays and is deleted 24 hours after the game ended
 - `records-and-ratings`, new (Q120): a player who left in an earlier turn is scored with the turn
   they left
-
-## Waiting for the owner
-
-- **GitHub's browser jobs cannot install Chromium** (2026-11-11, Q124). Since 14:39 UTC every
-  browser job fails at "Install Chromium": GitHub's runners cannot resolve Ubuntu's package
-  mirrors, on both `ubuntu-26.04` and `ubuntu-24.04`. Not caused by the project; the code passes
-  every check locally and the GitHub "check" job is green. The owner stopped the retries. To go
-  on, the owner either waits for GitHub and says continue, or approves changing the install step
-  so Chromium is downloaded without Ubuntu's packages (a change to how the checks run).
 
 ## Progress
 
@@ -324,7 +315,7 @@ These 10 scenarios are added to `harness/required.yaml` in this phase, by file a
      version change: `departure` came in this phase with save version 16, not yet deployed.
 - [x] Fixes: one fixer, findings 1 to 4 (2026-11-11). `npm run check` green;
   `e2e/matchHistory.spec.ts` passes at all three sizes with `--workers=1`.
-- [ ] Second finisher run.
+- [x] Second finisher run.
   - Done (2026-11-11): `npm run check` green (119 test files, 673 tests; B14 158.5 kB of 300).
     `npm run harness` green: 459 scenarios, 393 pass, 0 fail, 66 not yet (none required); 1,000
     simulated games; every budget passes, B8 measures 5 of 12, B18 3,846 of 5,000. Browser tests
@@ -391,6 +382,10 @@ These 10 scenarios are added to `harness/required.yaml` in this phase, by file a
     code and not Actions minutes; `bigCardSwitch` has not run on GitHub since the fix. Next: rerun
     the failed jobs once GitHub's runners resolve the Ubuntu mirrors again (or, if it persists,
     look at the Chromium install step with the owner); second finisher run not finished until then.
+  - The coordinator tried pinning the runners to `ubuntu-24.04` (run 43049006328, failed the
+    same way, undone; Q124), then, with the owner's approval, dropped `--with-deps` from the
+    Chromium install (Q125). GitHub run 43058508095 (`1b7161d`): check and all six browser jobs
+    green on the first attempt, `bigCardSwitch` included. Second finisher run done.
 - [ ] Release.
 
 ### Helper log
@@ -413,3 +408,4 @@ each helper's conversation size at its end.
 | Finisher, second run | 121 | 126k | 106 | failed: big card switch over 100 ms on GitHub |
 | Fixer, big card switch timing | 46 | 186k | 101 | done |
 | Finisher, third run | 79 | 89k | 39 | failed: GitHub runners could not install Chromium (DNS) |
+| Coordinator: runner pin (undone), install step without `--with-deps` (Q124, Q125) | 60 | - | - | GitHub green |
