@@ -2667,11 +2667,11 @@ file.
 - **Question:** from 2026-11-11 afternoon every browser job failed at "Install Chromium" with
   "Temporary failure resolving 'archive.ubuntu.com'" (runs 43039971864, three attempts, and
   43046665820). The morning's green run 43001983089 ran on image `ubuntu-24.04`; the failing
-  runs ran on `ubuntu-26.04`, because `ubuntu-latest` moved to it in between.
-- **Options:** wait for GitHub to fix the new image; install Chromium without system packages;
-  pin the runners to `ubuntu-24.04`.
-- **Solution:** every job in `check.yml` and `deploy.yml` runs on `ubuntu-24.04`. No check
-  changes. Moving to a newer image is a later, deliberate change.
-- **Why:** the checks and the deploy need a runner that works today; a pinned image also stops
-  a silent image change from breaking a phase again.
-- **Implemented:** phase 25, commit "INFRA: GitHub jobs run on Ubuntu 24.04".
+  runs ran on `ubuntu-26.04`, because `ubuntu-latest` had moved to it.
+- **Options:** pin the runners to `ubuntu-24.04`; install Chromium without system packages
+  (a change to the install step, for the owner); wait and rerun.
+- **Solution:** pinning was tried first (run 43049006328) and failed the same way on 24.04, so the
+  image was not the cause: GitHub's runners could not resolve the Ubuntu package mirrors at all,
+  with no incident on githubstatus.com. The pin was undone; the failed jobs are rerun later.
+- **Why:** no check changes for an outage outside the project.
+- **Implemented:** phase 25; commits "INFRA: GitHub jobs run on Ubuntu 24.04" and its undo.

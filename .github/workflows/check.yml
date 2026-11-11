@@ -11,7 +11,7 @@ concurrency:
 
 jobs:
   check:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions:
       contents: read
@@ -57,7 +57,7 @@ jobs:
             tests: --grep-invert "play a whole game from the lobby" --shard=2/3
           - part: other tests 3 of 3
             tests: --grep-invert "play a whole game from the lobby" --shard=3/3
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions:
       contents: read
