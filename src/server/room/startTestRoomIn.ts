@@ -1,5 +1,6 @@
 import type { GameState } from "../../rules/GameState";
 import { SAVE_SCHEMA_VERSION } from "../../rules/SAVE_SCHEMA_VERSION";
+import { withClocksStartedAt } from "../../rules/withClocksStartedAt";
 import type { EpochMs } from "../../shared/EpochMs";
 import type { RoomCode } from "../../shared/RoomCode";
 import type { Identity } from "./Identity";
@@ -18,7 +19,7 @@ export function startTestRoomIn(
   players: ReadonlyArray<Identity>,
   given: GameState,
 ): boolean {
-  const state = { ...given, clockStartedAt: room.now };
+  const state = withClocksStartedAt(given, room.now);
   const playerCount = PLAYER_COUNTS.find((count) => count === state.seats.length);
   const size = ROOM_SIZES.find((candidate) => candidate === Math.max(2, state.seats.length));
   const isOnePlayerPerSeat = players.length === state.seats.length;

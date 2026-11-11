@@ -94,6 +94,8 @@ export function takeTurnDraw(
     ...updateSeat(drawFromDeck(taken, seat, choice, random), seat, (current) => ({
       ...current,
       hasHadMarketGo: true,
+      mainPhaseStartedAt: at,
+      drawnThisPhase: [],
       timeBankMs: clock === null ? current.timeBankMs : bankLeftAt(clock, at),
     })),
     clockStartedAt: at,

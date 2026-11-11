@@ -10,6 +10,7 @@ import { decisionClockOf } from "./decisionClockOf";
 import { drawActionStatusesOf } from "./drawActionStatusesOf";
 import { tradeCostsOf } from "./tradeCostsOf";
 import { tradeStatusesOf } from "./tradeStatusesOf";
+import { phaseShownTo } from "./phaseShownTo";
 import { pilesShownTo } from "./pilesShownTo";
 import { projectRejectionsOf } from "./projectRejectionsOf";
 import { rejectionOf } from "./rejectionOf";
@@ -89,7 +90,7 @@ export function viewFor(state: GameState, viewer: SeatNumber): PlayerView {
   return {
     seat: viewer,
     turn: state.turn,
-    phase: state.phase,
+    phase: phaseShownTo(state, viewer),
     firstPlayer: state.firstPlayer,
     marketGo: marketGoOf(state),
     seats: state.seats.map((seat) =>

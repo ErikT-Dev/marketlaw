@@ -4,6 +4,7 @@ import { endGame } from "./endGame";
 import { endMainPhaseIfAllDone } from "./endMainPhaseIfAllDone";
 import { endMarketPhase } from "./endMarketPhase";
 import type { GameState } from "./GameState";
+import { isInOwnMainPhase } from "./isInOwnMainPhase";
 import { marketGoOf } from "./marketGoOf";
 import type { Random } from "./Random";
 import { seatOf } from "./seatOf";
@@ -15,7 +16,9 @@ function goOnWithoutLeaver(state: GameState, random: Random, at: number): GameSt
     case "main":
       return endMainPhaseIfAllDone(state, random, at);
     case "market":
-      return marketGoOf(state) === null ? endMarketPhase(state, at) : state;
+      return marketGoOf(state) === null
+        ? endMainPhaseIfAllDone(endMarketPhase(state, at), random, at)
+        : state;
     case "ended":
       return state;
   }
@@ -38,8 +41,9 @@ export function leaveGame(
   random: Random,
   at: number,
 ): GameState {
-  const hand = seatOf(state, seat)?.hand ?? [];
-  const isMainPhase = state.phase === "main";
+  const leaver = seatOf(state, seat);
+  const hand = leaver?.hand ?? [];
+  const isMainPhase = leaver !== undefined && isInOwnMainPhase(state, leaver);
   const left = {
     ...updateSeat(state, seat, (current) => ({
       ...current,

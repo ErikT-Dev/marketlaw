@@ -13,6 +13,7 @@ export function newSeat(seat: SeatNumber): SeatState {
     newCards: [],
     knownInHand: [],
     hasHadMarketGo: false,
+    mainPhaseStartedAt: null,
     gainedTypes: {},
     combosClaimed: [],
     projects: [],

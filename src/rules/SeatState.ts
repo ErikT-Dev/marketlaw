@@ -17,6 +17,7 @@ export type SeatState = {
   readonly newCards: ReadonlyArray<CardName>;
   readonly knownInHand: ReadonlyArray<CardName>;
   readonly hasHadMarketGo: boolean;
+  readonly mainPhaseStartedAt: number | null;
   readonly gainedTypes: TypeCounts;
   readonly combosClaimed: ReadonlyArray<ClaimedCombo>;
   readonly projects: ReadonlyArray<ProjectName>;

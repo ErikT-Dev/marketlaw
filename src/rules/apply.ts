@@ -7,6 +7,8 @@ import { closeVote } from "./closeVote";
 import { claimAll } from "./claimAll";
 import { completeProject } from "./completeProject";
 import { completeQuest } from "./completeQuest";
+import type { SeatNumber } from "../shared/SeatNumber";
+import { decisionOf } from "./decisionOf";
 import { dueTimeOuts } from "./dueTimeOuts";
 import { endTurn } from "./endTurn";
 import type { GameAction } from "./GameAction";
@@ -130,9 +132,17 @@ function systemRejectionOf(state: GameState, action: SystemAction, at: number) {
   return isSystemActionDue(state, action, at) ? undefined : "not_this_step";
 }
 
+function isSameDecision(before: GameState, after: GameState, seat: SeatNumber): boolean {
+  const startedAt = decisionOf(after, seat)?.startedAt;
+  return startedAt !== undefined && startedAt === decisionOf(before, seat)?.startedAt;
+}
+
 function withGraceKept(before: GameState, after: GameState): GameState {
-  const isSameClock = after.clockStartedAt === before.clockStartedAt || before.pause !== null;
-  return after.grace.length === 0 || isSameClock ? after : { ...after, grace: [] };
+  if (before.pause !== null) {
+    return after;
+  }
+  const grace = after.grace.filter(({ seat }) => isSameDecision(before, after, seat));
+  return grace.length === after.grace.length ? after : { ...after, grace };
 }
 
 export function apply(

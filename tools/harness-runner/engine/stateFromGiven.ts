@@ -6,6 +6,7 @@ import type { GameState } from "../../../src/rules/GameState.ts";
 import { marketGoOf } from "../../../src/rules/marketGoOf.ts";
 import { MARKETPLACE_PLACE_ORDER } from "../../../src/rules/MARKETPLACE_PLACE_ORDER.ts";
 import { SEAT_NUMBERS } from "../../../src/rules/SEAT_NUMBERS.ts";
+import { withClocksStartedAt } from "../../../src/rules/withClocksStartedAt.ts";
 import { withMainPhaseStart } from "../../../src/rules/withMainPhaseStart.ts";
 import { CARD_NAMES } from "../../../src/shared/catalogue/CARD_NAMES.ts";
 import { QUESTS } from "../../../src/shared/catalogue/QUESTS.ts";
@@ -92,7 +93,7 @@ export function stateFromGiven(given: Given): GameState {
     ...marketplace.flatMap(({ card }) => (card === null ? [] : [card])),
     ...discard,
   ];
-  const started = withMainPhaseStart({
+  const unclocked = withMainPhaseStart({
     kind: given.kind ?? "casual",
     turn,
     phase: phaseOf(given),
@@ -116,5 +117,6 @@ export function stateFromGiven(given: Given): GameState {
     grace: [],
     result: null,
   });
+  const started = withClocksStartedAt(unclocked, unclocked.clockStartedAt);
   return withGivenPause(withCheckedMarketGo(started, given), given.paused === true);
 }

@@ -4,6 +4,7 @@ import { decisionClockOf } from "./decisionClockOf";
 import { endMainPhaseIfAllDone } from "./endMainPhaseIfAllDone";
 import type { GameState } from "./GameState";
 import { leaveGame } from "./leaveGame";
+import { marketGoOf } from "./marketGoOf";
 import type { Random } from "./Random";
 import { seatsLeavingAt } from "./seatsLeavingAt";
 import { takeTurnDraw } from "./takeTurnDraw";
@@ -25,7 +26,7 @@ export function timeOut(
   random: Random,
   at: number,
 ): GameState {
-  if (state.phase === "market") {
+  if (marketGoOf(state) === seat) {
     const choice = { option: "B", sector: random.pickSector() } as const;
     return takeTurnDraw(state, { type: "turn_draw", seat, choice }, random, at);
   }

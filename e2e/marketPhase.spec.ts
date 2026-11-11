@@ -74,9 +74,7 @@ test("one player takes a marketplace card while the other waits, then both play 
   await expectScreenFits(one.page, "market-phase-banner", testInfo);
 
   await two.page.getByRole("button", { name: "Take Row House" }).click();
-  await expect(
-    two.page.getByRole("heading", { name: "You have had your go this turn" }),
-  ).toBeVisible();
+  await expectMainPhase(two.page);
   const twoHand = two.page.getByRole("list", { name: "Your hand" });
   await expect(twoHand.getByRole("button")).toHaveCount(3);
   await expect(twoHand.getByRole("button", { name: "Row House" })).toHaveAccessibleDescription(
@@ -127,5 +125,5 @@ test("a player whose go comes with an empty marketplace chooses a sector", async
   await expect(page.getByRole("heading", { name: "The marketplace is empty" })).toBeVisible();
   await expectScreenFits(page, "market-marketplace-empty", testInfo);
   await page.getByRole("button", { name: "Industry" }).click();
-  await expect(page.getByRole("heading", { name: "You have had your go this turn" })).toBeVisible();
+  await expectMainPhase(page);
 });

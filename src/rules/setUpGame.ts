@@ -20,7 +20,8 @@ function dealSeats(setup: GameSetup, piles: Piles, random: Random): SeatsDealt {
   return SEAT_NUMBERS.slice(0, setup.players).reduce<SeatsDealt>(
     (soFar, seat) => {
       const deal = dealStartingHand(soFar.piles, random);
-      return { seats: [...soFar.seats, { ...newSeat(seat), hand: deal.hand }], piles: deal.piles };
+      const dealtSeat = { ...newSeat(seat), hand: deal.hand, mainPhaseStartedAt: setup.startedAt };
+      return { seats: [...soFar.seats, dealtSeat], piles: deal.piles };
     },
     { seats: [], piles },
   );

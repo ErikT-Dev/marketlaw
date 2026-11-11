@@ -60,6 +60,7 @@ export function seatFromGiven(
     newCards: given.new_cards ?? start.newCards,
     knownInHand: start.knownInHand,
     hasHadMarketGo: given.market === "out",
+    mainPhaseStartedAt: start.mainPhaseStartedAt,
     ...progressFromGiven(given),
     ...buildFromGiven(given, start),
     actionsThisTurn: given.actions_this_turn ?? start.actionsThisTurn,

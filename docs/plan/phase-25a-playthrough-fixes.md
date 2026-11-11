@@ -301,8 +301,41 @@ These 24 required scenarios now assert the new rules (Q126) and must pass again:
     becomes "keeps playing"), `e2e/playMarketPhase.ts` (`LONGEST_GO_WAIT_MS` 40 000),
     `e2e/timeMove.ts`.
 
-- [ ] 2a. **Each player's own main phase: clocks and phases** (R4.1, R18.15, R9.1, R9.4, R17.7).
+- [x] 2a. **Each player's own main phase: clocks and phases** (R4.1, R18.15, R9.1, R9.4, R17.7).
   **Large.**
+  - Done (2026-11-11). `marketplace` "a player who has had their market go plays a card ..." and
+    "rejects a main-phase action from a player still waiting ..." pass. "a player's main-phase
+    time starts when their own market go ends" needs item 3: seat 1's go times out during the
+    76 seconds and today still draws (random sector and tiers the scenario does not list); with
+    those three random values added locally it passes, so the clock part is right.
+  - As built: seat field `mainPhaseStartedAt` (`number | null`; set by `setUpGame` in turn 1 and
+    by `takeTurnDraw` when the seat's go ends, null at the turn start). `isInOwnMainPhase.ts`
+    (game phase `main`, or `market` and `hasHadMarketGo`); `decisionOf.ts` gives each seat's
+    current decision (start, free time, limit), used by `decisionClockOf.ts`, by `resumeGame.ts`
+    (moves every seat's start by the pause; free time again per seat's decision) and by
+    `apply.ts` (a grace entry is kept while that seat's decision is the same, no longer cleared
+    for everyone when the go changes). `timeOut.ts` and `seatsLeavingAt.ts` treat only the seat
+    on its go as a market go. `turnRejectionOf.ts` accepts main-phase actions after the go.
+    `leaveGame.ts`: a seat in its own main phase leaving puts its hand in the holding pile; the
+    last seat leaving on its go ends the main phase if everyone else is done. I2 now means
+    outside every seat's main phase. `viewFor` shows `phase: main` to a seat in its own main
+    phase (`phaseShownTo.ts`); the client already opens the main-phase screen from that (S4.4),
+    so `e2e/marketPhase.spec.ts` now expects the main phase right after the go.
+    `hasTimedOutThisDecision.ts` no longer blocks a seat in its own main phase. `takeTurnDraw`
+    empties the seat's `drawnThisPhase` at its go's end (an undo after the go would otherwise
+    bring back the turn draw cards); `endMarketPhase` still empties it for everyone.
+  - Scenario runner and test rooms: `withClocksStartedAt.ts` sets `clockStartedAt` and the start
+    of every seat already in its main phase (`stateFromGiven.ts`, `startTestRoomIn.ts`);
+    `GAME_STATE_SCHEMA` reads an optional `mainPhaseStartedAt`.
+  - Differs from the phase file: **bots still wait until the market phase is over**
+    (`legalBot` decides by `view.marketGo`). With them acting at once, the simulator broke I23
+    (a waiting seat was sent a hidden card) and I24, because views during the market phase are
+    still live; that is item 2b's work.
+  - For later items: 2b switches `legalBot` back to `view.phase` once views follow R5.4/R5.5,
+    and should then rerun the simulator. The `resumed` notice still carries one free time by
+    game phase (`resumeNoticesBetween.ts`), wrong only when a pause catches a go and a main
+    phase together. The market-phase screen for a seat after its go ("You have had your go this
+    turn") is no longer reached; item 9 owns the screens.
   - The scenarios keep the game's `phase: market` while earlier players already act; the game
     phase becomes `main` when the last go ends. A seat is in its main phase once it has had its
     market go (`hasHadMarketGo`, R18.15); main-phase actions before that are rejected

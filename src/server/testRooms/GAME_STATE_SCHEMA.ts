@@ -21,6 +21,7 @@ const SEAT_STATE = v.object({
   newCards: CARDS,
   knownInHand: CARDS,
   hasHadMarketGo: v.boolean(),
+  mainPhaseStartedAt: v.optional(v.nullable(v.number()), null),
   gainedTypes: v.record(TypeName, v.number()),
   combosClaimed: v.array(v.object({ card: CardName, combo: v.number(), times: v.number() })),
   projects: v.array(ProjectName),

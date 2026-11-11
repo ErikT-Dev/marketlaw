@@ -17,7 +17,7 @@ function phaseRejectionOf(
     return isTurnDraw ? "wrong_phase" : undefined;
   }
   if (!isTurnDraw) {
-    return "wrong_phase";
+    return seat.hasHadMarketGo ? undefined : "wrong_phase";
   }
   if (seat.hasHadMarketGo) {
     return "out_of_market";
