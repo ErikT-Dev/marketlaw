@@ -375,6 +375,13 @@ These 10 scenarios are added to `harness/required.yaml` in this phase, by file a
     (`ERR_EMPTY_RESPONSE` loading the page). Rerun with `--workers=1`: `accountSettings` and
     `bigCardSwitch` 9 of 9, two players 3 of 3. All failures were load; GitHub judges the full
     suite. `docs/enforcement.md` unchanged. Screenshots from these runs committed.
+  - GitHub run 43039971864 (`6546522`): check green; all six browser jobs failed in all three
+    attempts at "Install Chromium", before any test ran: the runners could not resolve
+    `security.ubuntu.com` and the Ubuntu mirrors ("Temporary failure resolving"), then the next
+    try found the dpkg lock held by the timed-out `apt-get`. A runner network problem, not the
+    code and not Actions minutes; `bigCardSwitch` has not run on GitHub since the fix. Next: rerun
+    the failed jobs once GitHub's runners resolve the Ubuntu mirrors again (or, if it persists,
+    look at the Chromium install step with the owner); second finisher run not finished until then.
 - [ ] Release.
 
 ### Helper log
