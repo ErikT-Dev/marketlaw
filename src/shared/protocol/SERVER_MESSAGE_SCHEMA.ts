@@ -111,6 +111,7 @@ const PLAYER_VIEW = v.object({
   playerOrder: v.array(SEAT),
   drawLog: v.array(DRAW_LOG_ENTRY_SCHEMA),
   mainPhaseLog: v.array(MAIN_PHASE_LOG_ENTRY_SCHEMA),
+  questsCompletedLastTurn: v.array(v.object({ quest: QuestName, seats: v.array(SEAT) })),
   firstCompletions: PROJECTS,
   vote: v.nullable(
     v.object({

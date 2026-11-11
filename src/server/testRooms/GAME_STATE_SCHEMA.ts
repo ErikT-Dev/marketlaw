@@ -62,6 +62,10 @@ export const GAME_STATE_SCHEMA = v.object({
   leaveOrder: v.array(SEAT_NUMBER_SCHEMA),
   drawLog: v.array(DRAW_LOG_ENTRY_SCHEMA),
   mainPhaseLog: v.optional(v.array(MAIN_PHASE_LOG_ENTRY_SCHEMA), []),
+  questsCompletedLastTurn: v.optional(
+    v.array(v.object({ quest: QuestName, seats: v.array(SEAT_NUMBER_SCHEMA) })),
+    [],
+  ),
   firstCompletions: v.array(ProjectName),
   clockStartedAt: EpochMs,
   pause: v.optional(v.null(), null),

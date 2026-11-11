@@ -118,6 +118,7 @@ export const ENGINE_FIELDS = {
         "log_contains",
         "log_excludes",
         "vote_answers",
+        "quests_completed_last_turn",
       ]),
     ],
   ]),

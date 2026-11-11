@@ -81,6 +81,7 @@ export function roomUpdateWith(
     playerOrder: [3, 4, 2],
     drawLog: [],
     mainPhaseLog: [],
+    questsCompletedLastTurn: [],
     firstCompletions: [],
     vote: null,
     nextVoteTurn: 1,

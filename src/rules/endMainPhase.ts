@@ -11,6 +11,7 @@ import { firstPlayerOf } from "./firstPlayerOf";
 import type { GameState } from "./GameState";
 import { MARKET_PHASES_SHOWN } from "./MARKET_PHASES_SHOWN";
 import { marketGoOf } from "./marketGoOf";
+import { questsCompletedThisTurnOf } from "./questsCompletedThisTurnOf";
 import type { Random } from "./Random";
 import type { SeatState } from "./SeatState";
 import { withMainPhaseStart } from "./withMainPhaseStart";
@@ -68,6 +69,7 @@ export function endMainPhase(state: GameState, random: Random, at: number): Game
     questList: questTable.questList,
     doneOrder: [],
     firstCompletions: [...state.firstCompletions, ...firsts],
+    questsCompletedLastTurn: questsCompletedThisTurnOf(state),
     drawLog: [...state.drawLog, ...refillShuffles],
     clockStartedAt: at,
   });

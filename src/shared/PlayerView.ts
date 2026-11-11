@@ -8,6 +8,7 @@ import type { MarketplaceSlot } from "./MarketplaceSlot";
 import type { OtherSeatView } from "./OtherSeatView";
 import type { OwnSeatView } from "./OwnSeatView";
 import type { QuestPlaceView } from "./QuestPlaceView";
+import type { QuestCompletedLastTurn } from "./QuestCompletedLastTurn";
 import type { SeatNumber } from "./SeatNumber";
 import type { VoteView } from "./VoteView";
 
@@ -27,6 +28,7 @@ export type PlayerView = {
   readonly playerOrder: ReadonlyArray<SeatNumber>;
   readonly drawLog: ReadonlyArray<DrawLogEntry>;
   readonly mainPhaseLog: ReadonlyArray<MainPhaseLogEntry>;
+  readonly questsCompletedLastTurn: ReadonlyArray<QuestCompletedLastTurn>;
   readonly firstCompletions: ReadonlyArray<ProjectName>;
   readonly vote: VoteView | null;
   readonly nextVoteTurn: number;

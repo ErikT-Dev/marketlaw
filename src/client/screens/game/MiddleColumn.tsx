@@ -39,6 +39,7 @@ export function MiddleColumn({ view, seat, playerNames, isBusy, onAction }: Prop
       />
       <QuestsPanel
         quests={view.quests}
+        completedLastTurn={view.questsCompletedLastTurn}
         viewer={view.seat}
         playerNames={playerNames}
         isBusy={isBusy}

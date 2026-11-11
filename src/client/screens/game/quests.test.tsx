@@ -130,4 +130,31 @@ describe("quests panel", () => {
     expect(within(card).getByRole("img", { name: "Satisfaction -2 of 0" })).toBeDefined();
     expect(within(card).queryByRole("img", { name: /^quality/ })).toBeNull();
   });
+
+  it("lists the quests completed in the turn before with tier and who completed them", () => {
+    render(
+      <GamePage
+        {...gamePageProps(
+          roomUpdateWith({
+            quests: [TRADING_POST],
+            questsCompletedLastTurn: [
+              { quest: "Growing suburbs", seats: [1, 3] },
+              { quest: "Working district", seats: [2] },
+            ],
+          }),
+        )}
+      />,
+    );
+    const table = screen.getByRole("table", { name: "Completed last turn" });
+    expect(
+      within(table)
+        .getAllByRole("row")
+        .map((row) => row.textContent),
+    ).toEqual(["QuestTierCompleted by", "Growing suburbs2Ann, Cy", "Working district1Bea"]);
+  });
+
+  it("shows no completed last turn table when no quest was completed in the turn before", () => {
+    showQuests([TRADING_POST]);
+    expect(screen.queryByRole("table", { name: "Completed last turn" })).toBeNull();
+  });
 });

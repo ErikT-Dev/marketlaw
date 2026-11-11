@@ -485,7 +485,16 @@ These 24 required scenarios now assert the new rules (Q126) and must pass again:
     `e2e/drawLog.spec.ts` follows the rename.
   - Budgets: B13 (saved room size) and B11 must still pass; Q126 measured about 4 KB more.
 
-- [ ] 7. **Quests completed last turn** (R19.6, M3.5, S5.5). **Small.**
+- [x] 7. **Quests completed last turn** (R19.6, M3.5, S5.5). **Small.**
+  - Done (2026-11-11). `quests` "the quests completed in the turn before can be seen during
+    the next turn" passes (checked on the required list locally); before, it could not run.
+    As built: state and view field `questsCompletedLastTurn` (`QuestCompletedLastTurn`,
+    `{ quest, seats }` in `src/shared/`), set by `endMainPhase` from
+    `questsCompletedThisTurnOf` before the quests leave; the tier is not stored, the client
+    reads it from `QUESTS`. Client: `QuestsCompletedLastTurnTable` beside the quests table
+    inside `QuestsPanel`, only when the list is not empty (`quests.test.tsx`). Nothing differs
+    from the phase file.
+  - For later items: no screenshot of the table yet; item 12 (or the finisher) takes it.
   - At the end of each turn the state keeps the quests completed that turn, with tier and the
     seats that completed them (read before `endTurnForQuests.ts` removes them); the view carries
     it as is (public). Runner: view `quests_completed_last_turn`.
