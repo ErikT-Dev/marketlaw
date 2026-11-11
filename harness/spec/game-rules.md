@@ -152,8 +152,9 @@ chat are in `accounts.md` (rules `A…`). The card data is `cards.json`.
   such a shuffle moves the cards it takes from the discard pile shown to you into the deck shown
   to you. A player still waiting for their market go after the turn's first main phase has
   started sees them as they were when that first main phase started, minus the cards drawn on
-  market goes since, plus the discard shuffles those goes caused. A card you drew that is still shown in the discard pile (because another player shuffled
-  it into the deck) is taken off the discard pile shown to you, not off the deck.
+  market goes since, plus the discard shuffles those goes caused. A card you drew, or a card
+  drawn on a later market go, that is still shown in the discard pile (because another player
+  shuffled it into the deck) is taken off the discard pile shown to you, not off the deck.
 - **R5.6** Every player's time bank is shown live during the main phase (R9.9).
 - **R5.7** Only the final result of each player's main phase is revealed; actions they undid are
   never shown.

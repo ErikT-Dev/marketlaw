@@ -2842,3 +2842,20 @@ file.
   piles follow R5.5, market-go draws and shuffles included.
 - **Implemented:** `harness/spec/game-rules.md` R9.6, `harness/invariants.yaml` I24 (one
   `HARNESS:` commit); phase 25a items 1 to 3.
+
+## Q128. Where does a market-go draw of a card still shown in the discard pile come off?
+
+- **Phase:** 25a, item 2b (what each seat sees during each player's own main phase).
+- **Question:** R5.5 takes a card *you* drew that is still shown in your discard pile (another
+  player shuffled it into the deck during their main phase, hidden from you) off the discard
+  pile shown to you, not off the deck. Since market goes now draw while some players are in
+  their main phase (R18.15), a market go can draw such a card too. R5.5 does not say where that
+  draw comes off; taken off the deck shown, the deck count shown can fall below 0 and the card
+  stays counted in the discard pile, against I24.
+- **Options:** take every market-go draw off the deck shown (simple, can show a negative deck);
+  or treat it like your own draw.
+- **Solution:** like your own draw: a card drawn on a later market go that is still shown in your
+  discard pile is taken off the discard pile shown to you. It shows nothing hidden: the view
+  carries only the two counts, and their sum stays what was really drawn.
+- **Implemented:** `harness/spec/game-rules.md` R5.5 (`HARNESS:` commit); phase 25a item 2b
+  (`src/rules/pilesShownTo.ts`, `tools/simulator/shownPilesViolations.ts`).
