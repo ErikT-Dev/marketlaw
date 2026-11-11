@@ -366,6 +366,15 @@ These 10 scenarios are added to `harness/required.yaml` in this phase, by file a
     decides on the next push.
   - For later items: never remove a `git worktree` whose `node_modules` is a junction to the
     main one; `git worktree remove --force` empties the main `node_modules` (needed `npm ci`).
+  - Rerun after the fix (2026-11-11, `17a80af`): `npm run check` green (119 test files, 673
+    tests; B14 158.6 kB of 300). `npm run harness` green: 459 scenarios, 393 pass, 0 fail, 66 not
+    yet; every budget passes, B8 5 of 12. Browser tests (`--workers=2`): shard 1/2 79 passed,
+    shard 2/2 75 passed and 2 failed at 2560x1440 (`accountSettings`, the settings dialog not
+    shown within 5 s; `bigCardSwitch`, the card photos not loaded within 5 s, before any timing),
+    three and four players 3 passed each, two players 2 passed and 1 failed at 1920x1080
+    (`ERR_EMPTY_RESPONSE` loading the page). Rerun with `--workers=1`: `accountSettings` and
+    `bigCardSwitch` 9 of 9, two players 3 of 3. All failures were load; GitHub judges the full
+    suite. `docs/enforcement.md` unchanged. Screenshots from these runs committed.
 - [ ] Release.
 
 ### Helper log
