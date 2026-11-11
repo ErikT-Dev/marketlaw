@@ -439,7 +439,12 @@ These 24 required scenarios now assert the new rules (Q126) and must pass again:
     action counted, also at the limit; never for a seat that leaves (`leaveGame.ts`). Both End
     turn (`endTurn.ts`) and being made done (item 1).
 
-- [ ] 5. **Expired quests not drawn straight back** (R19.7, R10.2, R11.2). **Small.**
+- [x] 5. **Expired quests not drawn straight back** (R19.7, R10.2, R11.2). **Small.**
+  - Done (2026-11-11). Both `quests` scenarios pass (checked on the required list locally); "a
+    quest that leaves after 5 turns cannot fill a place in the refill straight after" fails
+    without the change. `endTurnForQuests.ts` now takes the turn and the random source, refills
+    the places itself (`refillQuests`) and only then adds the expired quests to the list;
+    `endMainPhase.ts` calls it alone. Nothing differs from the phase file.
   - `endMainPhase.ts` calls `refillQuests(endTurnForQuests(state), ...)`, and
     `endTurnForQuests.ts` puts expired quests into `questList` before the refill. Return them
     after `refillQuests` instead. Both happen in one transition, so I15 (each quest in one

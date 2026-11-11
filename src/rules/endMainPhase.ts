@@ -12,7 +12,6 @@ import type { GameState } from "./GameState";
 import { MARKET_PHASES_SHOWN } from "./MARKET_PHASES_SHOWN";
 import { marketGoOf } from "./marketGoOf";
 import type { Random } from "./Random";
-import { refillQuests } from "./refillQuests";
 import type { SeatState } from "./SeatState";
 import { withMainPhaseStart } from "./withMainPhaseStart";
 
@@ -52,7 +51,7 @@ export function endMainPhase(state: GameState, random: Random, at: number): Game
   const refillShuffles = refilled.shuffles.map(
     (shuffle): DrawLogEntry => ({ kind: "shuffle", turn, seat: null, ...shuffle }),
   );
-  const questTable = refillQuests(endTurnForQuests(state), turn, random);
+  const questTable = endTurnForQuests(state, turn, random);
   const firsts = firstCompletionsOf(state);
   const seats = state.seats.map((seat) => seatAtTurnStart(seat, firsts));
   const started = withMainPhaseStart({
