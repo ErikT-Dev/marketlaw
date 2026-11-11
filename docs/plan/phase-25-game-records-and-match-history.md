@@ -386,3 +386,4 @@ each helper's conversation size at its end.
 | Phase reviewer | 10 | 195k | 87 | done: ready after fixes, 2 should fix, 2 suggestions |
 | Fixer, findings 1 to 4 | 14 | 115k | 61 | done |
 | Finisher, second run | 121 | 126k | 106 | failed: big card switch over 100 ms on GitHub |
+| Fixer, big card switch timing | 46 | 186k | 101 | done |
