@@ -262,6 +262,24 @@ These 10 scenarios are added to `harness/required.yaml` in this phase, by file a
 - [ ] 6. **Finish.** Finisher (first run adds the 10 scenarios to `harness/required.yaml`),
   review, fixes, finisher again, release.
 
+### Finish
+
+- [x] First finisher run: the 10 scenarios onto `harness/required.yaml`; full check, harness,
+  browser tests, budgets.
+  - Done (2026-11-11): the 10 scenarios are required, in a new `records-and-ratings` section for
+    six of them, and B8 joins the required budgets (an exit criterion, measured since item 2; one
+    `HARNESS:` commit). `npm run check` green (119 test files, 673 tests; B14 158.5 kB of 300).
+    `npm run harness` green: 459 scenarios, 393 pass, 0 fail, 66 not yet (none required); 1,000
+    simulated games; every budget passes, B8 measures 5 of 12, B18 3,846 of 5,000. Browser tests
+    (`--workers=2`, five parts): shard 1/2 76 passed and 2 failed (`bigCardSwitch`,
+    `accountSettings` at 1920x1080), shard 2/2 75 passed, two and four players 3 passed each,
+    three players 2 passed and 1 failed (1920x1080, Turn 1 heading not shown within 5 s at the
+    start). Rerun with `--workers=1`: `bigCardSwitch`, `accountSettings` and `chat.spec.ts`
+    (item 5's note) 15 of 15 passed at all three sizes; three players at 1920x1080 passed. All
+    failures were load; GitHub judges the full suite.
+  - `docs/enforcement.md` lists the lobby driver's record and match history checks and B8.
+    Screenshots from these runs committed.
+
 ### Helper log
 
 Filled in by the coordinator afterwards, from the helpers' completion notices (Q73). Tokens are
