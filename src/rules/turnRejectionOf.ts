@@ -31,7 +31,7 @@ export function turnRejectionOf(
   actionType: GameAction["type"],
 ): ReasonCode | undefined {
   const seat = seatOf(state, seatNumber);
-  if (seat === undefined || seat.hasLeft) {
+  if (seat === undefined || seat.departure !== null) {
     return "not_in_game";
   }
   if (state.phase === "ended") {

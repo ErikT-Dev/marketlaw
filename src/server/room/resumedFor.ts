@@ -14,7 +14,7 @@ export function resumedFor(
   const { game } = record;
   const seat = game?.seats.find((candidate) => candidate.playerId === playerId);
   const isInGame = game?.saved.state.seats.some(
-    (state) => state.seat === seat?.seat && !state.hasLeft,
+    (state) => state.seat === seat?.seat && state.departure === null,
   );
   if (game === null || seat === undefined || isInGame !== true || game.saved.state.pause === null) {
     return record;

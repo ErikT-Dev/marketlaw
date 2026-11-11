@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import type { CardName } from "../../../shared/catalogue/CardName";
 import type { HandChoice } from "./HandChoice";
 import type { HandSwitch } from "./HandSwitch";
@@ -62,14 +62,18 @@ export function useHandChoice(hand: ReadonlyArray<CardName>) {
       );
     });
   }, [loader, wanted]);
-  return {
-    choice: stillInHand(settled(handSwitch, ready), hand),
-    pressCard: (card: CardName) => {
+  const pressCard = useCallback(
+    (card: CardName) => {
       setHandSwitch((current) => {
         const from = stillInHand(settled(current, ready), hand);
         return switchedTo(pressed(from, card), from, ready);
       });
     },
+    [ready, hand],
+  );
+  return {
+    choice: stillInHand(settled(handSwitch, ready), hand),
+    pressCard,
     startSelling: () => {
       setHandSwitch({ ...NOTHING_SWITCHING, shown: { mode: "selling", marked: [] } });
     },

@@ -41,7 +41,11 @@ function buildFromGiven(given: GivenSeat, start: SeatState) {
   };
 }
 
-export function seatFromGiven(seat: SeatNumber, given: GivenSeat | undefined): SeatState {
+export function seatFromGiven(
+  seat: SeatNumber,
+  given: GivenSeat | undefined,
+  turn: number,
+): SeatState {
   const start = newSeat(seat);
   if (given === undefined) {
     return start;
@@ -61,7 +65,7 @@ export function seatFromGiven(seat: SeatNumber, given: GivenSeat | undefined): S
     actionsThisTurn: given.actions_this_turn ?? start.actionsThisTurn,
     timeoutsInARow: given.timeouts_in_a_row ?? start.timeoutsInARow,
     isDone: given.done ?? start.isDone,
-    hasLeft: given.left ?? start.hasLeft,
+    departure: given.left === true ? { turn, cardsInHand: (given.hand ?? []).length } : null,
     timeBankMs: given.time_bank_ms ?? start.timeBankMs,
     undoPoints: start.undoPoints,
     isUndoBlocked: start.isUndoBlocked,

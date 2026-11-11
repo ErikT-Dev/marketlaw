@@ -50,6 +50,7 @@ export function RoomAfterGamePage(props: Props) {
           turn={props.turn}
           viewer={viewer}
           playerNames={room.playerNames}
+          playerIds={room.playerIds}
           onExitToLobby={props.onLeave}
           onClose={() => {
             setIsResultShown(false);

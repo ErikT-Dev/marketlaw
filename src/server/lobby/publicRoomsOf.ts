@@ -9,5 +9,6 @@ export function publicRoomsOf(record: LobbyRecord): ReadonlyArray<PublicRoomView
       size: room.size,
       ownerName: room.players[0]?.name ?? "",
       playerNames: room.players.map(({ name }) => name),
+      playerIds: room.players.map(({ playerId }) => playerId),
     }));
 }

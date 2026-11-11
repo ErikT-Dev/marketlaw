@@ -25,7 +25,7 @@ import type { RoomRecord } from "./room/RoomRecord";
 import { startTestRoomIn } from "./room/startTestRoomIn";
 import { withConnection } from "./room/withConnection";
 import { reportToLobby } from "./reportToLobby";
-import { saveReplayRecordIfEnded } from "./replays/saveReplayRecordIfEnded";
+import { saveRecordsIfEnded } from "./records/saveRecordsIfEnded";
 import { RoomSockets } from "./RoomSockets";
 import { chatTrackingStorage } from "./room/chatTrackingStorage";
 import type { RoomRemoval } from "./room/RoomRemoval";
@@ -278,7 +278,7 @@ export class GameRoom extends DurableObject<Env> {
     );
     await this.syncAlarm();
     if (recordAfter !== null) {
-      await saveReplayRecordIfEnded(this.env.DB, recordBefore, recordAfter);
+      await saveRecordsIfEnded(this.env.DB, recordBefore, recordAfter);
     }
     await this.reportToLobby(recordBefore);
   }

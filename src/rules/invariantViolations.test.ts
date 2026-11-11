@@ -211,7 +211,7 @@ describe("invariantViolations", () => {
     const leftSeat2 = {
       ...START,
       turn: 2,
-      seats: START.seats.map((seat) => (seat.seat === 2 ? { ...seat, hasLeft: true } : seat)),
+      seats: START.seats.map((seat) => (seat.seat === 2 ? { ...seat, departure: { turn: 1, cardsInHand: 0 } } : seat)),
     };
     const [seat1First, seat2First] = ([1, 2] as const).map((firstPlayer) =>
       invariantViolations(

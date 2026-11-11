@@ -1,3 +1,5 @@
+import { playerIdOf } from "./playerIdOf";
+import type { PlayerId } from "../../../shared/PlayerId";
 import { useContext } from "react";
 import { Fragment } from "react";
 import type { GamePhase } from "../../../shared/GamePhase";
@@ -19,6 +21,7 @@ type Props = {
   readonly view: PlayerView;
   readonly seat: OwnSeatView;
   readonly playerNames: ReadonlyArray<string>;
+  readonly playerIds: ReadonlyArray<PlayerId>;
   readonly onAction: (action: ActionIntent) => void;
   readonly isConnected: boolean;
   readonly account: AccountBinding;
@@ -54,6 +57,7 @@ export function GameTopBar(props: Props) {
             <li>
               <PlayerBadge
                 name={badge.name}
+                playerId={playerIdOf(props.playerIds, badge.seat)}
                 status={badge.status}
                 isFirstPlayer={badge.isFirstPlayer}
               />

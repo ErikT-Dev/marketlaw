@@ -19,7 +19,8 @@ function isPlaying(record: RoomRecord): boolean {
 
 function hasLeftGame(record: RoomRecord, seat: SeatNumber): boolean {
   return (
-    record.game?.saved.state.seats.find((candidate) => candidate.seat === seat)?.hasLeft === true
+    (record.game?.saved.state.seats.find((candidate) => candidate.seat === seat)?.departure ??
+      null) !== null
   );
 }
 

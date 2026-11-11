@@ -39,6 +39,7 @@ test("a player who started 10 games today is told so when creating a room", asyn
   await expect(dialog.getByRole("alert")).toHaveText(
     "You have started 10 games today, the most per day. Try again after 00:00 UTC.",
   );
+  await expect(create).toBeEnabled({ timeout: HUMAN_CHECK_MS });
   await expectScreenFits(page, "daily-limit", testInfo, true);
   await page.context().close();
 });

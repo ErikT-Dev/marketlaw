@@ -6,6 +6,7 @@ import { AccountSettingsDialog } from "./AccountSettingsDialog";
 import { GuestLogOutWarning } from "./GuestLogOutWarning";
 import type { UserAccountDialog } from "./UserAccountDialog";
 import { UserMenu } from "./UserMenu";
+import { matchHistoryOpenerOf } from "../records/matchHistoryOpenerOf";
 
 type Props = {
   readonly account: AccountBinding;
@@ -36,6 +37,7 @@ export function UserAccount({ account }: Props) {
         isGuest={account.isGuest}
         onSignUp={openSignUp}
         onOpenSettings={openSettings}
+        onOpenMatchHistory={matchHistoryOpenerOf(account.playerId)}
         onLogOut={logOut}
       />
       {dialog === "settings" ? (

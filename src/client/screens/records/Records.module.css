@@ -1,0 +1,103 @@
+.page {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  overflow-y: auto;
+  background: var(--color-background-game-window);
+  color: var(--color-text-primary);
+  outline: none;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  margin: var(--space-lg) var(--space-xl);
+  padding: var(--space-xl);
+  border: 1px solid var(--color-panel-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-panel-base);
+}
+
+.panel h1 {
+  margin: 0;
+  font-size: var(--font-size-xl);
+}
+
+.empty h2 {
+  margin: 0 0 var(--space-sm);
+  font-size: var(--font-size-lg);
+}
+
+.intro,
+.note {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.note {
+  font-size: var(--font-size-xs);
+}
+
+.table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 var(--space-xs);
+  text-align: left;
+  font-size: var(--font-size-sm);
+}
+
+.table th,
+.table td {
+  padding: var(--space-sm) var(--space-md);
+}
+
+.table thead th {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+}
+
+.table tbody tr {
+  background: var(--color-panel-raised);
+}
+
+.table tbody th {
+  font-weight: var(--font-weight-bold);
+}
+
+.won {
+  color: color-mix(in srgb, var(--color-toast-success) 45%, white);
+  font-weight: var(--font-weight-bold);
+}
+
+.left {
+  color: color-mix(in srgb, var(--color-button-danger-base) 45%, white);
+  font-weight: var(--font-weight-bold);
+}
+
+.lost {
+  font-weight: var(--font-weight-bold);
+}
+
+.ranked {
+  color: color-mix(in srgb, var(--color-toast-warning) 45%, white);
+}
+
+.gameLink {
+  display: inline-block;
+  min-height: 24px;
+  line-height: 24px;
+  color: inherit;
+  font-weight: var(--font-weight-bold);
+}
+
+.deletedPlayer {
+  color: var(--color-text-muted);
+}
+
+@media (max-width: 1279px) {
+  .page {
+    display: none;
+  }
+}

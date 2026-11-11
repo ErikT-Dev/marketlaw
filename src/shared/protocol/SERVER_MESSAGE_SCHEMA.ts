@@ -7,6 +7,7 @@ import { TypeName } from "../catalogue/TypeName";
 import { ProjectName } from "../ProjectName";
 import { QuestName } from "../catalogue/QuestName";
 import { ReasonCode } from "../ReasonCode";
+import { PlayerId } from "../PlayerId";
 import { RoomCode } from "../RoomCode";
 import { TradeName } from "../TradeName";
 import { RemovalReason } from "./RemovalReason";
@@ -133,7 +134,9 @@ export const SERVER_MESSAGE_SCHEMA = v.variant("type", [
         isPublic: v.boolean(),
         ownerName: v.string(),
         playerNames: v.array(v.string()),
+        playerIds: v.array(PlayerId),
         namesInRoom: v.array(v.string()),
+        idsInRoom: v.array(PlayerId),
         myName: v.string(),
         mySeat: v.nullable(SEAT),
         asking: v.nullable(

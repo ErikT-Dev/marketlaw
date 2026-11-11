@@ -9,6 +9,20 @@ function busyDayReadsPerGame(run: HarnessRun): number {
   return run.busyDay === null ? 0 : Math.ceil(run.busyDay.rowsRead / BUSY_DAY.games);
 }
 
+function largestMeasured(run: HarnessRun, budget: string): ReadonlyArray<number> {
+  const { largestMeasures } = run.simulation;
+  switch (budget) {
+    case "B8":
+      return [largestMeasures["gameRecordRows"] ?? 0];
+    case "B13":
+      return [Math.ceil((largestMeasures["savedBytes"] ?? 0) / 1024)];
+    case "B17":
+      return [Math.ceil((largestMeasures["replayBytes"] ?? 0) / 1024)];
+    default:
+      return [];
+  }
+}
+
 function simulated(run: HarnessRun, budget: string): ReadonlyArray<number> {
   if (run.simulation.games === 0) {
     return [];
@@ -30,12 +44,8 @@ function simulated(run: HarnessRun, budget: string): ReadonlyArray<number> {
       return [legalGameAverage(run.simulation, "messages", 3)];
     case "B16":
       return [legalGameAverage(run.simulation, "rowsRead", 3) + busyDayReadsPerGame(run)];
-    case "B13":
-      return [Math.ceil((run.simulation.largestMeasures["savedBytes"] ?? 0) / 1024)];
-    case "B17":
-      return [Math.ceil((run.simulation.largestMeasures["replayBytes"] ?? 0) / 1024)];
     default:
-      return [];
+      return largestMeasured(run, budget);
   }
 }
 

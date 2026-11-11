@@ -178,3 +178,10 @@ creates the folder first (`tools/route-tests/startRouteTestServer.ts`).
 **Why:** found at the phase 23 release: the route tests passed in every local run and failed on
 the first branch check, which ran only at the release because the branch was first pushed then.
 **Enforced by:** GitHub's branch check.
+
+### Never force-remove a worktree that shares node_modules
+A git worktree whose `node_modules` is a junction to the main checkout's must have the junction
+removed first; `git worktree remove --force` follows it and empties the main `node_modules`
+(including `node_modules/.cache/marketlaw/`). Restore with `npm ci`.
+**Why:** found in the phase 25 timing fix, which compared master and the branch in a worktree.
+**Enforced by:** judgment.

@@ -1,4 +1,5 @@
 import * as v from "valibot";
+import { PlayerId } from "../PlayerId";
 import { RoomCode } from "../RoomCode";
 
 export const LobbyMessage = v.object({
@@ -10,6 +11,7 @@ export const LobbyMessage = v.object({
       size: v.number(),
       ownerName: v.string(),
       playerNames: v.array(v.string()),
+      playerIds: v.array(PlayerId),
     }),
   ),
 });

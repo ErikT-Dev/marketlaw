@@ -1,3 +1,4 @@
+import type { PlayerId } from "../PlayerId";
 import type { RoomCode } from "../RoomCode";
 
 export type PublicRoomView = {
@@ -5,4 +6,5 @@ export type PublicRoomView = {
   readonly size: number;
   readonly ownerName: string;
   readonly playerNames: ReadonlyArray<string>;
+  readonly playerIds: ReadonlyArray<PlayerId>;
 };

@@ -1,12 +1,6 @@
 import { useSyncExternalStore } from "react";
+import { subscribeToHash } from "../../components/subscribeToHash";
 import { PRIVACY_NOTICE_HASH } from "./PRIVACY_NOTICE_HASH";
-
-function subscribeToHash(onChange: () => void): () => void {
-  window.addEventListener("hashchange", onChange);
-  return () => {
-    window.removeEventListener("hashchange", onChange);
-  };
-}
 
 function isPrivacyNoticeHash(): boolean {
   return window.location.hash === PRIVACY_NOTICE_HASH;

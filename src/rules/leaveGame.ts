@@ -22,7 +22,7 @@ function goOnWithoutLeaver(state: GameState, random: Random, at: number): GameSt
 }
 
 function afterLeaving(state: GameState, random: Random, at: number): GameState {
-  const stillIn = state.seats.filter((seat) => !seat.hasLeft);
+  const stillIn = state.seats.filter((seat) => seat.departure === null);
   if (stillIn.length === 0) {
     return endGame(state, at, "everyone_left");
   }
@@ -43,7 +43,7 @@ export function leaveGame(
   const left = {
     ...updateSeat(state, seat, (current) => ({
       ...current,
-      hasLeft: true,
+      departure: { turn: state.turn, cardsInHand: current.hand.length },
       isDone: true,
       hand: [],
       knownInHand: [],

@@ -1,3 +1,5 @@
+import { PlayerNameLink } from "../../components/PlayerNameLink";
+import type { PlayerId } from "../../../shared/PlayerId";
 import { useEffect, useRef } from "react";
 import type { GamePhase } from "../../../shared/GamePhase";
 import type { OtherSeatView } from "../../../shared/OtherSeatView";
@@ -14,6 +16,7 @@ import { LiveBankChip } from "./LiveBankChip";
 type Props = {
   readonly seat: OtherSeatView;
   readonly name: string;
+  readonly playerId: PlayerId | null;
   readonly phase: GamePhase;
   readonly onClose: () => void;
 };
@@ -37,7 +40,7 @@ function turnStatus(seat: OtherSeatView): string {
   return seat.isDone ? "done this turn" : "playing, not done yet";
 }
 
-export function OpponentBoardDialog({ seat, name, phase, onClose }: Props) {
+export function OpponentBoardDialog({ seat, name, playerId, phase, onClose }: Props) {
   const closeArea = useRef<HTMLDivElement>(null);
   useEffect(() => {
     closeArea.current?.querySelector("button")?.focus();
@@ -52,6 +55,7 @@ export function OpponentBoardDialog({ seat, name, phase, onClose }: Props) {
       </p>
       <div className={styles["board"]}>
         <section className={styles["box"]} aria-label={`Stats of ${name}`}>
+          <PlayerNameLink name={name} playerId={playerId} />
           <ul className={styles["stats"]}>
             {BOARD_STATS.map((stat) => (
               <li key={stat}>

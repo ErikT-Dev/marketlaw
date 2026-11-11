@@ -1,6 +1,7 @@
 import type { AccountResponse } from "../../shared/api/AccountResponse";
 import type { GuestResponse } from "../../shared/api/GuestResponse";
 import type { LoginRequest } from "../../shared/api/LoginRequest";
+import type { SessionResponse } from "../../shared/api/SessionResponse";
 import type { SignupRequest } from "../../shared/api/SignupRequest";
 import type { ReasonCode } from "../../shared/ReasonCode";
 import { requestAccountDetails } from "../api/requestAccountDetails";
@@ -24,18 +25,24 @@ export abstract class AccountSessionStore extends ObservableState<ClientState> {
       this.leaveRoom("Your login has ended. Choose a username to play again.", null);
     }
     if (answer?.isLoggedIn === true) {
-      this.takeCheckedAccount(session, answer.name, answer.isGuest);
+      this.takeCheckedAccount(session, answer);
     }
   }
 
-  private takeCheckedAccount(checked: StoredSession, name: string, isGuest: boolean): void {
+  private takeCheckedAccount(
+    checked: StoredSession,
+    { playerId, name, isGuest }: Extract<SessionResponse, { isLoggedIn: true }>,
+  ): void {
     const current = this.state.session;
     const isUnchangedSinceCheck =
       current?.token === checked.token &&
       current.name === checked.name &&
       current.isGuest === checked.isGuest;
-    if (isUnchangedSinceCheck && (current.name !== name || current.isGuest !== isGuest)) {
-      const session = { ...current, name, isGuest };
+    if (!isUnchangedSinceCheck) {
+      return;
+    }
+    if (current.playerId !== playerId || current.name !== name || current.isGuest !== isGuest) {
+      const session = { ...current, playerId, name, isGuest };
       writeSession(session);
       this.change({ session });
     }
@@ -94,7 +101,13 @@ export abstract class AccountSessionStore extends ObservableState<ClientState> {
     }
     const current = this.state.session;
     const roomCode = current?.token === answer.token ? current.roomCode : null;
-    const session = { token: answer.token, name: answer.name, isGuest, roomCode };
+    const session = {
+      token: answer.token,
+      playerId: answer.playerId,
+      name: answer.name,
+      isGuest,
+      roomCode,
+    };
     writeSession(session);
     this.change({ session, notice: null });
     return null;

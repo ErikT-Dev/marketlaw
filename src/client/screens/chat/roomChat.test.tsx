@@ -10,13 +10,28 @@ import { roomUpdateWith } from "../../testing/roomUpdateWith";
 import { GamePage } from "../GamePage";
 import type { ChatBinding } from "./ChatBinding";
 import { RoomChatSection } from "./RoomChatSection";
+import { testPlayerIdOf } from "../../testing/testPlayerIdOf";
 
 const AT = v.parse(EpochMs, Date.UTC(2026, 10, 6, 14, 2));
 
 const ENTRIES: ReadonlyArray<ChatEntry> = [
   { kind: "player_line", event: "joined_room", name: "Bea", at: AT },
-  { kind: "message", from: "Bea", text: "Hello all", at: AT, isOwn: false },
-  { kind: "message", from: "Ann", text: "Income first for me.", at: AT, isOwn: true },
+  {
+    kind: "message",
+    from: "Bea",
+    fromId: testPlayerIdOf(2),
+    text: "Hello all",
+    at: AT,
+    isOwn: false,
+  },
+  {
+    kind: "message",
+    from: "Ann",
+    fromId: testPlayerIdOf(1),
+    text: "Income first for me.",
+    at: AT,
+    isOwn: true,
+  },
   { kind: "game_line", event: "game_started", at: AT },
 ];
 

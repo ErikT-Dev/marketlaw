@@ -12,6 +12,7 @@ import { averageFundsOf } from "./averageFundsOf.ts";
 import { gameLengthMeasuresOf } from "./gameLengthMeasuresOf.ts";
 import { seededChooser } from "./seededChooser.ts";
 import { replayRecordOf } from "../../src/server/replays/replayRecordOf.ts";
+import { gameRecordRowCountOf } from "./gameRecordRowCountOf.ts";
 import type { SimulatedSeat } from "./SimulatedSeat.ts";
 import type { SimulatedGame } from "./SimulatedGame.ts";
 
@@ -68,6 +69,7 @@ function measuresOf(
     messages: simulation.messages.length,
     savedBytes: deflateRawSync(JSON.stringify(simulation.record)).length,
     replayBytes: replay.length,
+    gameRecordRows: gameRecordRowCountOf(simulation.record),
     ...(saved === undefined ? {} : gameLengthMeasuresOf(saved, fundsAtTurnStart)),
   };
 }

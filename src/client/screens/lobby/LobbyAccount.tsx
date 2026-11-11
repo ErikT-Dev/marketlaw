@@ -2,10 +2,10 @@ import type { LoginRequest } from "../../../shared/api/LoginRequest";
 import type { SignupRequest } from "../../../shared/api/SignupRequest";
 import type { ReasonCode } from "../../../shared/ReasonCode";
 import type { AccountBinding } from "../account/AccountBinding";
-import { UserAccount } from "../account/UserAccount";
 import { AccountButtons } from "./AccountButtons";
 import { AccountDialogIfOpen } from "./AccountDialogIfOpen";
 import { LobbyTopBar } from "./LobbyTopBar";
+import { LoggedInLobbyBar } from "./LoggedInLobbyBar";
 import { useAccountDialogs } from "./useAccountDialogs";
 
 type Props = {
@@ -23,7 +23,7 @@ export function LobbyAccount({ account, onLogIn, onSignUp, onForgotPassword }: P
         {account === null ? (
           <AccountButtons onLogIn={dialogs.openLogIn} onSignUp={() => void dialogs.openSignUp()} />
         ) : (
-          <UserAccount account={account} />
+          <LoggedInLobbyBar account={account} />
         )}
       </LobbyTopBar>
       {account === null ? (

@@ -33,6 +33,7 @@ import type { ScriptedRandom } from "../ScriptedRandom.ts";
 import type { LobbyAccount } from "./LobbyAccount.ts";
 import type { LobbyGiven } from "./LOBBY_GIVEN_SCHEMA.ts";
 import { endedRoomFromGiven } from "./endedRoomFromGiven.ts";
+import { EndedRoomRecords } from "./EndedRoomRecords.ts";
 import { lobbyRoomFromGiven } from "./lobbyRoomFromGiven.ts";
 import { otherRoomStorage } from "./otherRoomStorage.ts";
 import { countsTodayFromGiven } from "./countsTodayFromGiven.ts";
@@ -57,7 +58,7 @@ import { LobbyHistory } from "./LobbyHistory.ts";
 export class LobbySession {
   record: RoomRecord | null;
   goneAs: "closed" | "deleted" = "closed";
-  readonly endedRoom: RoomRecord | null;
+  readonly endedRoom: EndedRoomRecords;
   now: EpochMs;
   readonly accounts = new Map<string, LobbyAccount>();
   readonly messagesTo = new Map<string, ServerMessage[]>();
@@ -107,7 +108,9 @@ export class LobbySession {
       given.room === undefined || given.room.players.length === 0
         ? null
         : lobbyRoomFromGiven(given.room, (name) => this.identityNamed(name), this.now);
-    this.endedRoom = endedRoomFromGiven(given, (name) => this.identityNamed(name), this.now);
+    this.endedRoom = new EndedRoomRecords(
+      endedRoomFromGiven(given, (name) => this.identityNamed(name), this.now),
+    );
     this.otherRooms = (given.other_rooms ?? []).map((room) =>
       lobbyRoomFromGiven(room, (name) => this.identityNamed(name), this.now),
     );

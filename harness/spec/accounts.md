@@ -26,7 +26,8 @@ None.
   - A **guest user** is any account that has not completed the signup flow. It has a username
     but no password, and only works in the browser where it was made. A guest account that has
     not been used for 90 days is deleted, its username becomes free, and its game records show
-    "Deleted player".
+    "Deleted player". Its last use is noted at most once a day (A1.14) and deleting runs once a
+    day, so it is deleted up to two days later than 90 days without use, never sooner.
   - A **registered user** has completed the signup flow, and can log in from any browser.
 - **A1.2** **Joining without being logged in:** a player who is not logged in is asked for a
   username when they join a game. The field is prefilled with a randomly generated descriptive
@@ -160,7 +161,9 @@ None.
     - their type counts
 - **A3.3** For a player who left, the record holds their values at the moment they left, and their
   score is the score formula (R21.4) applied to those values, using the turn number at the moment
-  they left.
+  they left. Leaving empties their hand (M6), so their funds plus cards in hand count the cards
+  they held when they left; their values do not change after they left. The record also holds
+  the turn in which they left.
 - **A3.4** **Places:** players who stayed are ranked by score (R21.8, R21.9), and players who left
   come after them, the one who left first last.
 - **A3.5** Usernames in game records always show the player's current username, so a username
@@ -193,7 +196,8 @@ None.
 
 - **A6.1** Every player can see every player's match history, and every game record opened from
   it. Clicking a username anywhere on the site opens that player's match history. A game record
-  includes every player in that game.
+  includes every player in that game. Match histories and game records can be opened by anyone,
+  also without logging in. "Deleted player" opens nothing.
 - **A6.2** Every player can see the ELO ranking table.
 - **A6.3** **Hidden information outside a game:** email addresses (never shown), who is in the
   ranked queue (A8.4), and who you are matched with while confirming a ranked match (A8.7).

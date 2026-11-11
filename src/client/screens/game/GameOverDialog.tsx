@@ -1,3 +1,4 @@
+import type { PlayerId } from "../../../shared/PlayerId";
 import type { GameResult } from "../../../shared/GameResult";
 import { isAbandoned } from "../../../shared/isAbandoned";
 import type { SeatNumber } from "../../../shared/SeatNumber";
@@ -14,6 +15,7 @@ type Props = {
   readonly turn: number;
   readonly viewer: SeatNumber;
   readonly playerNames: ReadonlyArray<string>;
+  readonly playerIds: ReadonlyArray<PlayerId>;
   readonly onExitToLobby: () => void;
   readonly onClose: () => void;
   readonly onAskRematch: (() => void) | null;
@@ -34,7 +36,12 @@ export function GameOverDialog(props: Props) {
         <TextWithIcons text={why} />
       </p>
       {hasTable ? (
-        <GameOverTable result={result} viewer={viewer} playerNames={playerNames} />
+        <GameOverTable
+          result={result}
+          viewer={viewer}
+          playerNames={playerNames}
+          playerIds={props.playerIds}
+        />
       ) : null}
       <div className={styles["buttons"]}>
         <Button look="secondary" onClick={props.onExitToLobby}>

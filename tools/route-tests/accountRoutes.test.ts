@@ -2,6 +2,13 @@ import * as v from "valibot";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import type { TestHarness } from "wrangler";
 import { LOGIN_TIMES } from "../../src/server/accounts/LOGIN_TIMES.ts";
+import { gameRecordRowsOf } from "../../src/server/records/gameRecordRowsOf.ts";
+import { GameRecordResponse } from "../../src/shared/api/GameRecordResponse.ts";
+import { MatchHistoryResponse } from "../../src/shared/api/MatchHistoryResponse.ts";
+import { GameId } from "../../src/shared/GameId.ts";
+import { PlayerId } from "../../src/shared/PlayerId.ts";
+import { fixtureGameRecordOf } from "../harness-runner/lobby/fixtureGameRecordOf.ts";
+import { getFromRoute } from "./getFromRoute.ts";
 import { postToRoute } from "./postToRoute.ts";
 import { readTestOutbox } from "./readTestOutbox.ts";
 import type { RouteTestDatabase } from "./RouteTestDatabase.ts";
@@ -72,6 +79,35 @@ async function lastUsedAt(db: RouteTestDatabase, name: string, lastUsedMs: numbe
 
 async function accountRowsNamed(db: RouteTestDatabase, name: string) {
   return (await db.prepare("SELECT id FROM players WHERE name = ?").bind(name).all()).results;
+}
+
+async function guestPlayerId(db: RouteTestDatabase, name: string): Promise<PlayerId> {
+  await post("/api/guests", { name, humanCheck: DUMMY_HUMAN_CHECK });
+  return v.parse(v.tuple([v.object({ id: PlayerId })]), await accountRowsNamed(db, name))[0].id;
+}
+
+async function saveGames(db: RouteTestDatabase, winner: PlayerId, loser: PlayerId) {
+  const ids = Array.from({ length: 52 }, () => v.parse(GameId, crypto.randomUUID()));
+  for (const [index, id] of ids.entries()) {
+    const endedMs = 1_000_000 + Math.min(index, 49) * ONE_MINUTE_MS;
+    const record = fixtureGameRecordOf(endedMs, 25, [
+      { playerId: winner, place: 1, score: 800 + index, result: "won" },
+      { playerId: loser, place: 2, score: 700, result: "lost" },
+    ]);
+    for (const { query, values } of gameRecordRowsOf(id, record)) {
+      await db
+        .prepare(query)
+        .bind(...values)
+        .run();
+    }
+  }
+  return ids;
+}
+
+async function historyAt(path: string) {
+  const { status, body } = await getFromRoute(server, path);
+  const history = v.parse(MatchHistoryResponse, body);
+  return { status, page: history.kind === "found" ? history : null, history };
 }
 
 beforeAll(async () => {
@@ -217,4 +253,66 @@ describe("the account routes", () => {
     },
     STARTING_MS,
   );
+});
+
+describe("the match history and game record routes", () => {
+  it(
+    "list a player's games newest first 50 at a time and show a deleted player as Deleted player",
+    async () => {
+      const db = await routeTestDatabaseOf(server);
+      const ann = await guestPlayerId(db, "Historyann");
+      const bea = await guestPlayerId(db, "Historybea");
+      const games = await saveGames(db, bea, ann);
+      const first = await historyAt(`/api/players/${ann}/history`);
+      expect(first.history).toMatchObject({ kind: "found", username: "Historyann" });
+      expect(first.page?.games).toHaveLength(50);
+      expect(first.page?.games[0]).toMatchObject({
+        kind: "casual",
+        result: "lost",
+        place: 2,
+        players: 2,
+      });
+      expect(first.page?.games[0]?.winner).toEqual({
+        kind: "player",
+        playerId: bea,
+        username: "Historybea",
+      });
+      const older = first.page?.older;
+      const cursor = `before_ms=${String(older?.endedAt)}&before_game=${String(older?.gameId)}`;
+      const second = await historyAt(`/api/players/${ann}/history?${cursor}`);
+      expect(second.page?.older).toBeNull();
+      const listed = [...(first.page?.games ?? []), ...(second.page?.games ?? [])];
+      expect(listed.map(({ gameId }) => gameId).sort()).toEqual([...games].sort());
+      const endings = listed.map(({ endedAt }) => endedAt);
+      expect(endings).toEqual([...endings].sort((a, b) => b - a));
+      await db.prepare("DELETE FROM logins WHERE player_id = ?").bind(bea).run();
+      await db.prepare("DELETE FROM players WHERE id = ?").bind(bea).run();
+      const record = await getFromRoute(server, `/api/records/${String(games[0])}`);
+      const found = v.parse(GameRecordResponse, record.body);
+      expect(found.kind === "found" ? found.record.seats.map(({ player }) => player) : []).toEqual([
+        { kind: "deleted" },
+        { kind: "player", playerId: ann, username: "Historyann" },
+      ]);
+      const gone = await historyAt(`/api/players/${bea}/history`);
+      expect(gone).toMatchObject({ status: 404, history: { kind: "account_gone" } });
+    },
+    STARTING_MS,
+  );
+
+  it("answers bad and unknown ids as not found and refuses a bad cursor", async () => {
+    const badPlayer = await getFromRoute(server, "/api/players/not-a-player/history");
+    expect(badPlayer).toEqual({ status: 404, body: { kind: "account_gone" } });
+    const badGame = await getFromRoute(server, "/api/records/not-a-game");
+    expect(badGame).toEqual({ status: 404, body: { kind: "not_found" } });
+    const unknownGame = await getFromRoute(server, `/api/records/${crypto.randomUUID()}`);
+    expect(unknownGame).toEqual({ status: 404, body: { kind: "not_found" } });
+    const history = `/api/players/${crypto.randomUUID()}/history?`;
+    const game = `before_game=${crypto.randomUUID()}`;
+    const badCursors = ["before_ms=soon", game, `before_ms=&${game}`, "before_ms=1&before_game="];
+    const answers = await Promise.all(
+      badCursors.map(async (at) => getFromRoute(server, history + at)),
+    );
+    expect(answers.map(({ status }) => status)).toEqual([400, 400, 400, 400]);
+    expect((await post(`/api/records/${crypto.randomUUID()}`, {})).status).toBe(405);
+  });
 });

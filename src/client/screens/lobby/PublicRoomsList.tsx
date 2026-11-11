@@ -1,3 +1,4 @@
+import { PlayerNameLink } from "../../components/PlayerNameLink";
 import type { PublicRoomView } from "../../../shared/protocol/PublicRoomView";
 import { Button } from "../../components/Button";
 import styles from "./Lobby.module.css";
@@ -27,9 +28,9 @@ export function PublicRoomsList({ rooms, onJoin }: Props) {
         return (
           <li key={room.code} className={styles["roomRow"]} aria-label={`${room.ownerName}'s room`}>
             <span className={styles["roomPlayers"]}>
-              {room.playerNames.map((name) => (
+              {room.playerNames.map((name, index) => (
                 <span key={name} className={styles["playerChip"]}>
-                  {name}
+                  <PlayerNameLink name={name} playerId={room.playerIds[index] ?? null} />
                 </span>
               ))}
               {Array.from({ length: free }, (unused, index) => (

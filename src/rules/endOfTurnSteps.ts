@@ -2,7 +2,7 @@ import { BONUS_PER_FUND } from "./BONUS_PER_FUND";
 import type { SeatState } from "./SeatState";
 
 export function endOfTurnSteps(seat: SeatState): SeatState {
-  if (seat.hasLeft) {
+  if (seat.departure !== null) {
     return seat;
   }
   const { stats } = seat;

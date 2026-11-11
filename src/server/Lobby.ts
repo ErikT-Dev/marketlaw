@@ -155,6 +155,7 @@ export class Lobby extends DurableObject<Env> {
       publicRooms: publicRoomsOf(record).map((room) => ({
         ...room,
         playerNames: [...room.playerNames],
+        playerIds: [...room.playerIds],
       })),
     };
   }

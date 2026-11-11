@@ -1,5 +1,6 @@
-import { useEffect, useRef } from "react";
 import { Button } from "../../components/Button";
+import { goBack } from "../../components/goBack";
+import { useOverlayPage } from "../../components/useOverlayPage";
 import type { PrivacyContact } from "./PrivacyContact";
 import styles from "./PrivacyNotice.module.css";
 import { PrivacyNoticeParts } from "./PrivacyNoticeParts";
@@ -16,27 +17,9 @@ function contactTextOf(contact: PrivacyContact): string {
   }
 }
 
-function goBack(): void {
-  window.history.back();
-}
-
-function goBackOnEscape(event: KeyboardEvent): void {
-  if (event.key === "Escape") {
-    event.stopPropagation();
-    goBack();
-  }
-}
-
 export function PrivacyNoticePage() {
   const contact = usePrivacyContact();
-  const pageRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    pageRef.current?.focus();
-    document.addEventListener("keydown", goBackOnEscape, { capture: true });
-    return () => {
-      document.removeEventListener("keydown", goBackOnEscape, { capture: true });
-    };
-  }, []);
+  const pageRef = useOverlayPage();
   return (
     <div
       ref={pageRef}

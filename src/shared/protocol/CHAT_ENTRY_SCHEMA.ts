@@ -1,10 +1,12 @@
 import * as v from "valibot";
 import { EpochMs } from "../EpochMs";
+import { PlayerId } from "../PlayerId";
 
 export const CHAT_ENTRY_SCHEMA = v.variant("kind", [
   v.object({
     kind: v.literal("message"),
     from: v.string(),
+    fromId: PlayerId,
     text: v.string(),
     at: EpochMs,
     isOwn: v.boolean(),

@@ -4,6 +4,7 @@ import { App } from "./App";
 import { openLobbyFeed } from "./openLobbyFeed";
 import { openRoomHost } from "./openRoomHost";
 import { keepPrivacyNoticeInsideApp } from "./screens/privacy/keepPrivacyNoticeInsideApp";
+import { keepRecordPageInsideApp } from "./screens/records/keepRecordPageInsideApp";
 import { ClientStore } from "./store/ClientStore";
 import { emailLinkFrom } from "./store/emailLinkFrom";
 import { sessionFromLink } from "./store/sessionFromLink";
@@ -15,6 +16,7 @@ if (linkedSession !== null || emailLink !== null) {
   window.history.replaceState(null, "", window.location.pathname);
 }
 keepPrivacyNoticeInsideApp();
+keepRecordPageInsideApp();
 const store = new ClientStore(openRoomHost, openLobbyFeed);
 if (linkedSession !== null) {
   void store.startFromSeatLink(linkedSession, () =>

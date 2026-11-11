@@ -5,7 +5,7 @@ import { VOTE_RULES } from "./VOTE_RULES";
 
 export function callVote(state: GameState, caller: SeatNumber, at: number): GameState {
   const asked = state.seats
-    .filter((seat) => !seat.hasLeft && seat.seat !== caller)
+    .filter((seat) => seat.departure === null && seat.seat !== caller)
     .map(({ seat }) => seat);
   const called = {
     ...state,

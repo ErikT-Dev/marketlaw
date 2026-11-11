@@ -1,7 +1,17 @@
 .page {
+  position: relative;
+  isolation: isolate;
   display: flex;
   flex-direction: column;
   height: 100vh;
+}
+
+.page::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  will-change: transform;
   background:
     linear-gradient(var(--color-board-page-dim), var(--color-board-page-dim)),
     url("../../assets/backgrounds/game.webp") center / cover,

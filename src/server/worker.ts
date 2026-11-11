@@ -14,6 +14,7 @@ import { loginRoute } from "./api/loginRoute";
 import { logoutRoute } from "./api/logoutRoute";
 import { newPasswordRoute } from "./api/newPasswordRoute";
 import { privacyContactRoute } from "./api/privacyContactRoute";
+import { recordRoute } from "./api/recordRoute";
 import { replayExportRoute } from "./api/replayExportRoute";
 import { resetEmailRoute } from "./api/resetEmailRoute";
 import { roomJson } from "./api/roomJson";
@@ -83,6 +84,10 @@ async function route(request: Request, env: Env): Promise<Response> {
   const roomPath = ROOM_PATH.exec(pathname);
   if (roomPath !== null) {
     return routeRoom(request, env, roomPath);
+  }
+  const recordAnswer = recordRoute(request, env, pathname);
+  if (recordAnswer !== null) {
+    return recordAnswer;
   }
   if (pathname === "/api/lobby/socket") {
     return lobbyOf(env).fetch(request);

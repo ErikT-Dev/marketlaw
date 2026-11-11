@@ -9,7 +9,7 @@ function gameAt(players: 2 | 3 | 4, turn: number, seatsThatLeft: ReadonlyArray<n
   const state = startSavedGame({ players, startedAt: GAME_STARTED_AT }, 5).state;
   const seats = state.seats.map((seat) => ({
     ...seat,
-    hasLeft: seatsThatLeft.includes(seat.seat),
+    departure: seatsThatLeft.includes(seat.seat) ? { turn: 1, cardsInHand: 0 } : null,
   }));
   return { ...state, turn, firstPlayer: firstPlayerOf(turn, seats), seats };
 }

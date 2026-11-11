@@ -2,7 +2,7 @@ import { randomForNextAction } from "../rules/randomForNextAction";
 import type { EpochMs } from "../shared/EpochMs";
 import type { PublishingRoom } from "./PublishingRoom";
 import type { ReplySocket } from "./ReplySocket";
-import { saveReplayRecordIfEnded } from "./replays/saveReplayRecordIfEnded";
+import { saveRecordsIfEnded } from "./records/saveRecordsIfEnded";
 import { fireRoomAlarm } from "./room/fireRoomAlarm";
 import { playersWhoseUpdateChanged } from "./room/playersWhoseUpdateChanged";
 import type { RoomRecord } from "./room/RoomRecord";
@@ -41,5 +41,5 @@ export async function applyRoomAlarm(
   );
   sockets.sendNotices(timeOutNoticesBetween(record, fired));
   sendChatSince(room, { record, messageCount: rooms.chat.messages().length });
-  await saveReplayRecordIfEnded(db, record, fired);
+  await saveRecordsIfEnded(db, record, fired);
 }

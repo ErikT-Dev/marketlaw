@@ -56,7 +56,7 @@ function type(container: HTMLElement, label: string, value: string): void {
 }
 
 function logInAsBea(): void {
-  writeSession({ token: "bea-token", name: "Bea", isGuest: false, roomCode: null });
+  writeSession({ token: "bea-token", playerId: null, name: "Bea", isGuest: false, roomCode: null });
 }
 
 beforeEach(() => {
@@ -188,7 +188,13 @@ describe("set a new password", () => {
       path: "/api/password-resets",
       body: { link: "reset-1", password: "long enough" },
     });
-    const session = { token: "bea-token", name: "Bea", isGuest: false, roomCode: null };
+    const session = {
+      token: "bea-token",
+      playerId: BEA.playerId,
+      name: "Bea",
+      isGuest: false,
+      roomCode: null,
+    };
     expect(readSession()).toEqual(session);
     expect(screen.getByLabelText("Your account").textContent).toContain("Bea");
   });

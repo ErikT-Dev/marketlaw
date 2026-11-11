@@ -51,7 +51,17 @@ describe("the user menu", () => {
       "My match history",
       "Log out",
     ]);
-    expect(items[2]).toHaveProperty("disabled", true);
+    expect(items[2]).toHaveProperty("disabled", false);
+  });
+
+  it("opens the own match history from the menu, and only once the player id is known", () => {
+    const account = testAccount();
+    const { unmount } = render(<UserAccount account={account} />);
+    fireEvent.click(menuItem("My match history"));
+    expect(window.location.hash).toBe(`#history/${String(account.playerId)}`);
+    unmount();
+    userAccount({ playerId: null });
+    expect(menuItem("My match history")).toHaveProperty("disabled", true);
   });
 
   it("shows a registered user without the guest mark and without signing up", () => {

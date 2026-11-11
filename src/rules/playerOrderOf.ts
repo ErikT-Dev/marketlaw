@@ -7,6 +7,6 @@ export function playerOrderOf(state: GameState): ReadonlyArray<SeatNumber> {
     state.seats.findIndex((seat) => seat.seat === state.firstPlayer),
   );
   return [...state.seats.slice(first), ...state.seats.slice(0, first)]
-    .filter((seat) => !seat.hasLeft)
+    .filter((seat) => seat.departure === null)
     .map((seat) => seat.seat);
 }

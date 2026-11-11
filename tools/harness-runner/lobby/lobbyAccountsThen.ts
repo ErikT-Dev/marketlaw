@@ -13,14 +13,16 @@ export function lobbyAccountsThen(session: LobbySession, field: string, expected
   const asked = isRecord(expected) ? expected : {};
   switch (field) {
     case "accounts":
-      return [...session.accounts.values()].map(({ identity, registration }) => ({
-        name: identity.name,
-        kind: registration === null ? "guest" : "registered",
-        email: registration?.email ?? null,
-        email_confirmed: registration?.isEmailConfirmed ?? false,
-        pending_email: registration?.pendingEmail ?? null,
-        games: session.history.gamesOf(identity.playerId),
-      }));
+      return Promise.all(
+        [...session.accounts.values()].map(async ({ identity, registration }) => ({
+          name: identity.name,
+          kind: registration === null ? "guest" : "registered",
+          email: registration?.email ?? null,
+          email_confirmed: registration?.isEmailConfirmed ?? false,
+          pending_email: registration?.pendingEmail ?? null,
+          games: await session.history.gamesOf(identity.playerId),
+        })),
+      );
     case "emails_sent":
       return session.emails.sent.map(({ to, kind }) => ({
         to,

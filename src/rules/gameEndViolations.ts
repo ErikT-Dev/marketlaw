@@ -20,13 +20,17 @@ function expectedScore(state: GameState, seatNumber: number): number | undefined
   }
   const parts = [
     870,
-    -25 * (state.turn - 1),
+    -25 * ((seat.departure?.turn ?? state.turn) - 1),
     ...FORMULA.map(([stat, weight]) => weight * seat.stats[stat]),
-    0.2 * (seat.stats.funds + seat.hand.length),
+    0.2 * (seat.stats.funds + (seat.departure?.cardsInHand ?? seat.hand.length)),
     bonusTypePointsOf(seat, state.bonusTypes),
   ];
   const hundredths = parts.reduce((sum, part) => sum + Math.round(part * 100), 0);
   return Math.floor(hundredths / 100);
+}
+
+function hasLeft(place: PlaceResult): boolean {
+  return place.leftInTurn !== null;
 }
 
 function tieBreakOf(state: GameState, place: PlaceResult): readonly [number, number] {
@@ -38,14 +42,14 @@ function tieBreakOf(state: GameState, place: PlaceResult): readonly [number, num
 }
 
 function isPlacedBefore(state: GameState, place: PlaceResult, next: PlaceResult): boolean {
-  if (place.hasLeft) {
-    return next.hasLeft && state.leaveOrder.indexOf(place.seat) > state.leaveOrder.indexOf(next.seat);
+  if (hasLeft(place)) {
+    return hasLeft(next) && state.leaveOrder.indexOf(place.seat) > state.leaveOrder.indexOf(next.seat);
   }
-  return next.hasLeft || place.score >= next.score;
+  return hasLeft(next) || place.score >= next.score;
 }
 
 function isTieBrokenInOrder(state: GameState, place: PlaceResult, next: PlaceResult): boolean {
-  if (place.hasLeft || next.hasLeft || place.score !== next.score) {
+  if (hasLeft(place) || hasLeft(next) || place.score !== next.score) {
     return true;
   }
   const [placeDone, placeOrder] = tieBreakOf(state, place);
@@ -81,7 +85,7 @@ export function gameEndViolations(before: GameState, after: GameState): Readonly
     ...(isTieBroken
       ? []
       : ["I22: equal scores are not placed by the done order and then the player order"]),
-    ...((after.result !== null && isAbandoned(after.result.endedBy)) || places[0]?.hasLeft === false
+    ...((after.result !== null && isAbandoned(after.result.endedBy)) || places[0]?.leftInTurn === null
       ? []
       : ["I22: the winner has left or there is none"]),
   ];

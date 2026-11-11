@@ -48,10 +48,12 @@ export function stateFromGiven(given: Given): GameState {
   if (extraSeat !== undefined) {
     throw new Error(`given seat ${extraSeat.seat} is above the ${players} players`);
   }
+  const turn = given.turn ?? 1;
   const seats = SEAT_NUMBERS.slice(0, players).map((seat) =>
     seatFromGiven(
       seat,
       given.seats?.find((entry) => entry.seat === seat),
+      turn,
     ),
   );
   const marketplace = MARKETPLACE_PLACE_ORDER.map((place) => {
@@ -67,7 +69,6 @@ export function stateFromGiven(given: Given): GameState {
     ...marketplace.flatMap(({ card }) => (card === null ? [] : [card])),
     ...discard,
   ];
-  const turn = given.turn ?? 1;
   const started = withMainPhaseStart({
     turn,
     phase: phaseOf(given),
@@ -88,7 +89,7 @@ export function stateFromGiven(given: Given): GameState {
       ),
     bonusTypes: given.bonus_types ?? TYPE_NAMES.slice(0, 2),
     doneOrder: seats.filter((seat) => seat.isDone).map((seat) => seat.seat),
-    leaveOrder: seats.filter((seat) => seat.hasLeft).map((seat) => seat.seat),
+    leaveOrder: seats.filter((seat) => seat.departure !== null).map((seat) => seat.seat),
     firstCompletions: given.first_completions ?? [],
     clockStartedAt: v.parse(EpochMs, given.clock_ms ?? 0),
     pause: null,

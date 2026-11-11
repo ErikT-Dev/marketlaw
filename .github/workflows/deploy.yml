@@ -106,7 +106,7 @@ jobs:
         timeout-minutes: 13
         run: |
           for attempt in 1 2 3; do
-            if timeout --kill-after=10s 4m npx playwright install --with-deps chromium; then
+            if timeout --kill-after=10s 4m npx playwright install chromium; then
               exit 0
             fi
             echo "Chromium install try $attempt did not finish"

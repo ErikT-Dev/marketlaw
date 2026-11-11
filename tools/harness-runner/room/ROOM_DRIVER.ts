@@ -18,6 +18,7 @@ import { ROOM_GIVEN_SCHEMA } from "./ROOM_GIVEN_SCHEMA.ts";
 import { roomMessageContains } from "./roomMessageContains.ts";
 import { RoomSession } from "./RoomSession.ts";
 import { logOutInRoom } from "./logOutInRoom.ts";
+import { recordThen } from "./recordThen.ts";
 
 const ROOM_SEAT_FIELDS = ["state_version", "connected", "player"];
 
@@ -35,7 +36,7 @@ function engineGivenOf(rawGiven: Readonly<Record<string, unknown>>): unknown {
   return {
     ...playerCountOf(rawGiven),
     ...Object.fromEntries(
-      Object.entries(rawGiven).filter(([field]) => field !== "room" && field !== "accounts"),
+      Object.entries(rawGiven).filter(([field]) => !["room", "accounts", "kind"].includes(field)),
     ),
     ...(rawGiven["seats"] === undefined
       ? {}
@@ -186,6 +187,8 @@ function readRoomThen(session: RoomSession, field: string, expected: unknown): u
         messages: [],
         atStart: { messageCount: 0, lineCount: 0 },
       });
+    case "record":
+      return recordThen(game, session.seatNames);
     case "connected_tab":
       return connectedTab(session, expected);
     case "view":
@@ -221,7 +224,7 @@ const SEAT_FIELDS = ENGINE_FIELDS.nestedFields.get("given.seats") ?? new Set<str
 
 export const ROOM_DRIVER: ScenarioDriver = {
   name: "room",
-  givenFields: new Set([...ENGINE_FIELDS.givenFields, "room", "accounts"]),
+  givenFields: new Set([...ENGINE_FIELDS.givenFields, "room", "accounts", "kind"]),
   steps: new Set([
     "raw",
     "play_card",
@@ -237,7 +240,13 @@ export const ROOM_DRIVER: ScenarioDriver = {
     "log_out",
     "delete_account",
   ]),
-  thenFields: new Set([...ENGINE_FIELDS.thenFields, "message_to", "connected_tab", "room"]),
+  thenFields: new Set([
+    ...ENGINE_FIELDS.thenFields,
+    "message_to",
+    "connected_tab",
+    "room",
+    "record",
+  ]),
   nestedFields: new Map([
     ...ENGINE_FIELDS.nestedFields,
     ["given.seats", new Set([...SEAT_FIELDS, ...ROOM_SEAT_FIELDS])],
@@ -247,12 +256,18 @@ export const ROOM_DRIVER: ScenarioDriver = {
     ["then.view", new Set([...(ENGINE_FIELDS.nestedFields.get("then.view") ?? []), "away"])],
     ["then.connected_tab", new Set(["player", "tab"])],
     ["then.room", new Set(["state", "players"])],
+    ["then.record", new Set(["turns", "winner", "bonus_types", "ranked", "players", "results"])],
   ]),
   unhandledGivenValues: (given) => {
     const state = isRecord(given["room"]) ? given["room"]["state"] : undefined;
-    return state === undefined || state === "playing"
-      ? []
-      : [`given room.state ${JSON.stringify(state)}`];
+    return [
+      ...(state === undefined || state === "playing"
+        ? []
+        : [`given room.state ${JSON.stringify(state)}`]),
+      ...(given["kind"] === undefined || given["kind"] === "casual"
+        ? []
+        : [`given kind ${JSON.stringify(given["kind"])}`]),
+    ];
   },
   startSession,
 };

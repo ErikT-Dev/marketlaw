@@ -108,7 +108,14 @@ describe("the room chat", () => {
     joinRoomIn(room.storage, BEA, START, EVERYONE);
     expect(shownTo(room, BEA)).toEqual([line("joined_room", "Bea")]);
     expect(shownTo(room, ANN)).toEqual([
-      { kind: "message", from: "Ann", text: "anyone?", at: START, isOwn: true },
+      {
+        kind: "message",
+        from: "Ann",
+        fromId: ANN.playerId,
+        text: "anyone?",
+        at: START,
+        isOwn: true,
+      },
       line("joined_room", "Bea"),
     ]);
   });
@@ -120,8 +127,32 @@ describe("the room chat", () => {
     room.say(BEA, "hello");
     const deliveries = chatDeliveriesBetween(before, room.record(), room.messages());
     expect(deliveries.map(({ playerId, message }) => [playerId, message.entries])).toEqual([
-      [ANN.playerId, [{ kind: "message", from: "Bea", text: "hello", at: START, isOwn: false }]],
-      [BEA.playerId, [{ kind: "message", from: "Bea", text: "hello", at: START, isOwn: true }]],
+      [
+        ANN.playerId,
+        [
+          {
+            kind: "message",
+            from: "Bea",
+            fromId: BEA.playerId,
+            text: "hello",
+            at: START,
+            isOwn: false,
+          },
+        ],
+      ],
+      [
+        BEA.playerId,
+        [
+          {
+            kind: "message",
+            from: "Bea",
+            fromId: BEA.playerId,
+            text: "hello",
+            at: START,
+            isOwn: true,
+          },
+        ],
+      ],
     ]);
   });
 
@@ -133,7 +164,14 @@ describe("the room chat", () => {
     room.say(renamedBea, "hello");
     expect(shownTo(room, ANN)).toEqual([
       line("joined_room", "Bea"),
-      { kind: "message", from: "Bea", text: "hello", at: START, isOwn: false },
+      {
+        kind: "message",
+        from: "Bea",
+        fromId: BEA.playerId,
+        text: "hello",
+        at: START,
+        isOwn: false,
+      },
     ]);
     expect(room.record()?.players.map(({ name }) => name)).toEqual(["Ann", "Bea"]);
   });
