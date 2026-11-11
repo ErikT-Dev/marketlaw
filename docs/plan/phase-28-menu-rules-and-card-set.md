@@ -10,7 +10,7 @@ set.
 
 ## Depends on
 
-Phase 20a.
+Phases 20a and 25a.
 
 Stats and types in the rulebook's prose, the card set and card details are shown as icons, never
 as words (S1.6, owner's rule of 2026-11-06, Q74).
