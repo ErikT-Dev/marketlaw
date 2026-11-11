@@ -2660,3 +2660,18 @@ file.
   are unchanged.
 - **Why:** keeps GitHub as the judge of every phase at no cost.
 - **Implemented:** phase 25 (repository setting, no code change). Decided by the owner.
+
+## Q124. Why can GitHub's browser jobs no longer install Chromium?
+
+- **Phase:** 25, second finisher run.
+- **Question:** from 2026-11-11 afternoon every browser job failed at "Install Chromium" with
+  "Temporary failure resolving 'archive.ubuntu.com'" (runs 43039971864, three attempts, and
+  43046665820). The morning's green run 43001983089 ran on image `ubuntu-24.04`; the failing
+  runs ran on `ubuntu-26.04`, because `ubuntu-latest` moved to it in between.
+- **Options:** wait for GitHub to fix the new image; install Chromium without system packages;
+  pin the runners to `ubuntu-24.04`.
+- **Solution:** every job in `check.yml` and `deploy.yml` runs on `ubuntu-24.04`. No check
+  changes. Moving to a newer image is a later, deliberate change.
+- **Why:** the checks and the deploy need a runner that works today; a pinned image also stops
+  a silent image change from breaking a phase again.
+- **Implemented:** phase 25, commit "INFRA: GitHub jobs run on Ubuntu 24.04".
