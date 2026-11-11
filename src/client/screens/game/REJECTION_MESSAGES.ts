@@ -56,7 +56,7 @@ export const REJECTION_MESSAGES: Readonly<Record<ReasonCode, IconText>> = {
   vote_already_open: "A vote is already open.",
   no_vote_open: "There is no vote to answer.",
   vote_already_answered: "You already answered this vote.",
-  out_of_market: "You already had your market go this turn.",
+  out_of_market: "Your market go is over for this turn.",
   card_not_in_marketplace: "That card was just taken.",
   marketplace_empty: "The marketplace is empty: choose a sector.",
   not_this_step: "Not this step.",

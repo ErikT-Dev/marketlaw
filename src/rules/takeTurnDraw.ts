@@ -3,21 +3,17 @@ import { cardOf } from "../shared/catalogue/cardOf";
 import type { Sector } from "../shared/catalogue/Sector";
 import type { Tier } from "../shared/catalogue/Tier";
 import type { DrawLogEntry } from "../shared/DrawLogEntry";
-import { bankLeftAt } from "../shared/bankLeftAt";
-import { decisionClockOf } from "./decisionClockOf";
 import type { SeatNumber } from "../shared/SeatNumber";
 import type { TurnDrawChoice } from "../shared/TurnDrawChoice";
 import { cardsIntoHand } from "./cardsIntoHand";
-import { endMarketPhase } from "./endMarketPhase";
+import { endOwnMarketGo } from "./endOwnMarketGo";
 import type { GameAction } from "./GameAction";
 import type { GameState } from "./GameState";
-import { marketGoOf } from "./marketGoOf";
 import { pickTier } from "./pickTier";
 import { seatOf } from "./seatOf";
 import type { Random } from "./Random";
 import { tierChancesByTurn } from "./tierChancesByTurn";
 import { updateSeat } from "./updateSeat";
-import { withOwnMainPhaseStart } from "./withOwnMainPhaseStart";
 
 type TurnDraw = Extract<GameAction, { readonly type: "turn_draw" }>;
 type TierDraw = { readonly tier: Tier; readonly count: number };
@@ -93,6 +89,16 @@ function drawFromDeck(
   return { ...drawn.state, drawLog: [...drawn.state.drawLog, ...entries] };
 }
 
+function takeOpenTurnDraw(
+  state: GameState,
+  seat: SeatNumber,
+  sector: Sector,
+  random: Random,
+): GameState {
+  const drawn = drawFromDeck(state, seat, { option: "B", sector }, random);
+  return updateSeat(drawn, seat, (current) => ({ ...current, isTurnDrawOpen: false }));
+}
+
 export function takeTurnDraw(
   state: GameState,
   action: TurnDraw,
@@ -100,19 +106,10 @@ export function takeTurnDraw(
   at: number,
 ): GameState {
   const { seat, choice } = action;
-  const clock = decisionClockOf(state, seat);
+  if (seatOf(state, seat)?.isTurnDrawOpen === true) {
+    return takeOpenTurnDraw(state, seat, sectorOf(choice), random);
+  }
   const taken = choice.option === "A" ? withMarketCard(state, seat, choice.card) : state;
   const recorded = withMarketGoRecorded(taken, drawFromDeck(taken, seat, choice, random), seat);
-  const ended = {
-    ...updateSeat(recorded, seat, (current) => ({
-      ...current,
-      hasHadMarketGo: true,
-      mainPhaseStartedAt: at,
-      drawnThisPhase: [],
-      timeBankMs: clock === null ? current.timeBankMs : bankLeftAt(clock, at),
-    })),
-    clockStartedAt: at,
-  };
-  const started = withOwnMainPhaseStart(ended, seat);
-  return marketGoOf(started) === null ? endMarketPhase(started, at) : started;
+  return endOwnMarketGo(recorded, seat, false, at);
 }

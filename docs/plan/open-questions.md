@@ -2859,3 +2859,18 @@ file.
   carries only the two counts, and their sum stays what was really drawn.
 - **Implemented:** `harness/spec/game-rules.md` R5.5 (`HARNESS:` commit); phase 25a item 2b
   (`src/rules/pilesShownTo.ts`, `tools/simulator/shownPilesViolations.ts`).
+
+## Q129. How does the scenario runner read a `then.marketplace` that lists only some places?
+
+- **Phase:** 25a, item 3 (turn draw left open).
+- **Question:** two scenarios of item 3 ("a message received at the deadline is rejected and the
+  time-out is applied", "a time-out on the market go passes the go to the next player without a
+  draw") expect `marketplace: [{place: residential, card: Row House}]` after the step, while the
+  runner compared `then.marketplace` with all 8 places, so no partial list could ever match.
+  `HARNESS.md` says unlisted places in `given.marketplace` are empty, and says nothing for `then`.
+- **Options:** list all 8 places in the two scenarios; or read `then.marketplace` like
+  `given.marketplace`.
+- **Solution:** like `given`: the places listed must match, and every place not listed must be
+  empty. A full list of 8 places is checked exactly as before; a shorter list is no weaker,
+  because a card in any unlisted place fails the scenario. No scenario changes.
+- **Implemented:** `tools/harness-runner/engine/readEngineThen.ts`.

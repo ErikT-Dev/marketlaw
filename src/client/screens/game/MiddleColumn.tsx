@@ -28,7 +28,7 @@ export function MiddleColumn({ view, seat, playerNames, isBusy, onAction }: Prop
       ) : null}
       <MarketplacePanel
         view={view}
-        isYourGo={seat.turnDrawRejection === null}
+        isYourGo={seat.turnDrawRejection === null && !seat.hasHadMarketGo}
         onTake={
           canTakeMarketCard
             ? (card) => {

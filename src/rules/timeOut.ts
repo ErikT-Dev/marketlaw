@@ -1,13 +1,13 @@
 import type { SeatNumber } from "../shared/SeatNumber";
 import { bankLeftAt } from "../shared/bankLeftAt";
 import { decisionClockOf } from "./decisionClockOf";
+import { endOwnMarketGo } from "./endOwnMarketGo";
 import { endMainPhaseIfAllDone } from "./endMainPhaseIfAllDone";
 import type { GameState } from "./GameState";
 import { leaveGame } from "./leaveGame";
 import { marketGoOf } from "./marketGoOf";
 import type { Random } from "./Random";
 import { seatsLeavingAt } from "./seatsLeavingAt";
-import { takeTurnDraw } from "./takeTurnDraw";
 import { updateSeat } from "./updateSeat";
 
 function withMainPhaseTimeOutCounted(state: GameState, seat: SeatNumber, at: number): GameState {
@@ -27,8 +27,7 @@ export function timeOut(
   at: number,
 ): GameState {
   if (marketGoOf(state) === seat) {
-    const choice = { option: "B", sector: random.pickSector() } as const;
-    return takeTurnDraw(state, { type: "turn_draw", seat, choice }, random, at);
+    return endOwnMarketGo(state, seat, true, at);
   }
   const counted = withMainPhaseTimeOutCounted(state, seat, at);
   if (seatsLeavingAt(state, at).includes(seat)) {

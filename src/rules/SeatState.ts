@@ -31,6 +31,7 @@ export type SeatState = {
   readonly actionsThisTurn: number;
   readonly isDone: boolean;
   readonly isOutOfTime: boolean;
+  readonly isTurnDrawOpen: boolean;
   readonly departure: Departure | null;
   readonly timeBankMs: number;
   readonly timeoutsInARow: number;

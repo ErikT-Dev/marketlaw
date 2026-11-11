@@ -49,9 +49,10 @@ function ownSeatView(state: GameState, seat: SeatState): OwnSeatView {
     undoRejection: rejectionOf(state, { type: "undo", seat: seat.seat }) ?? null,
     hasHadMarketGo: seat.hasHadMarketGo,
     turnDrawRejection: turnRejectionOf(state, seat.seat, "turn_draw") ?? null,
-    marketCardRejection:
-      turnRejectionOf(state, seat.seat, "turn_draw") ??
-      (state.marketplace.every(({ card }) => card === null) ? "marketplace_empty" : null),
+    marketCardRejection: seat.isTurnDrawOpen
+      ? "out_of_market"
+      : (turnRejectionOf(state, seat.seat, "turn_draw") ??
+        (state.marketplace.every(({ card }) => card === null) ? "marketplace_empty" : null)),
     actionsThisTurn: seat.actionsThisTurn,
     isDone: seat.isDone,
     isOutOfTime: seat.isOutOfTime,

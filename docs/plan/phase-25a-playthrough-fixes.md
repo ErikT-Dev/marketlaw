@@ -390,7 +390,29 @@ These 24 required scenarios now assert the new rules (Q126) and must pass again:
     `shownPiles.test.ts`; the leak test (I23) with players in their main phase while others
     still have their go. I25: a seat's state version moves with the market-go draws it sees.
 
-- [ ] 3. **Turn draw left open** (R18.11, R18.16, R8.5, M3.3, R9.6 as in Q127). **Large.**
+- [x] 3. **Turn draw left open** (R18.11, R18.16, R8.5, M3.3, R9.6 as in Q127). **Large.**
+  - Done (2026-11-11). Every item-3 scenario passes (checked with them on the required list
+    locally), as do `marketplace` "a player's main-phase time starts when their own market go
+    ends" and `turns-and-time` "a message received at the deadline ..."; they failed without the
+    change. Only `accounts` "at most 4 times in 7 days" (item 8) still fails in
+    `harness.test.ts`.
+  - As built: seat field `isTurnDrawOpen` (runner: `turn_draw_pending`; reset at the turn
+    start). `endOwnMarketGo.ts` ends a seat's go (shared by `takeTurnDraw` and the go time-out in
+    `timeOut.ts`, which draws nothing and opens the draw). `takeTurnDraw` takes an open draw as a
+    plain option-B deck draw (no go recorded, no clock change, kept in `drawnThisPhase`).
+    `turnRejectionOf` accepts `turn_draw` while open, in any phase and at the action limit;
+    `rejectionOf` answers option A `out_of_market`. `withUndoHistory` blocks undo after an open
+    draw. The view needs no new field: the own seat's `turnDrawRejection` is null while the draw
+    is open and `marketCardRejection` is `out_of_market`; `legalBot` takes it first in its main
+    phase. `MiddleColumn` highlights the marketplace only before the go. The `out_of_market`
+    text follows S16.3.
+  - "On becoming done": `settleBeforeDone.ts` (open draw with a random sector), called by
+    `endTurn` and for each seat made done in `endMainPhaseIfAllDone` (player order). Item 4 adds
+    the combos there, after the draw.
+  - Differs from the phase file: the runner read `then.marketplace` as all 8 places, so two
+    item-3 scenarios that list one place could not match; it now reads it like `given` (Q129).
+  - For later items: item 9's open-turn-draw screen (S4.6) can use `hasHadMarketGo` together
+    with `turnDrawRejection === null`.
   - A time-out on a market go draws nothing (`timeOut.ts`, which today takes option B with a
     random sector through `takeTurnDraw.ts`); the go passes on (`marketGoOf.ts`), the seat's
     main phase starts (item 2a), and a seat field marks the turn draw open (runner: seat

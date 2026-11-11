@@ -41,6 +41,16 @@ function buildFromGiven(given: GivenSeat, start: SeatState) {
   };
 }
 
+function turnStatusFromGiven(given: GivenSeat, start: SeatState) {
+  return {
+    actionsThisTurn: given.actions_this_turn ?? start.actionsThisTurn,
+    timeoutsInARow: given.timeouts_in_a_row ?? start.timeoutsInARow,
+    isDone: given.done ?? start.isDone,
+    isOutOfTime: given.out_of_time ?? start.isOutOfTime,
+    isTurnDrawOpen: given.turn_draw_pending ?? start.isTurnDrawOpen,
+  };
+}
+
 export function seatFromGiven(
   seat: SeatNumber,
   given: GivenSeat | undefined,
@@ -63,10 +73,7 @@ export function seatFromGiven(
     mainPhaseStartedAt: start.mainPhaseStartedAt,
     ...progressFromGiven(given),
     ...buildFromGiven(given, start),
-    actionsThisTurn: given.actions_this_turn ?? start.actionsThisTurn,
-    timeoutsInARow: given.timeouts_in_a_row ?? start.timeoutsInARow,
-    isDone: given.done ?? start.isDone,
-    isOutOfTime: given.out_of_time ?? start.isOutOfTime,
+    ...turnStatusFromGiven(given, start),
     departure: given.left === true ? { turn, cardsInHand: (given.hand ?? []).length } : null,
     timeBankMs: given.time_bank_ms ?? start.timeBankMs,
     undoPoints: start.undoPoints,

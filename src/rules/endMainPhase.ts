@@ -31,6 +31,7 @@ function seatAtTurnStart(seat: SeatState, firsts: ReadonlyArray<ProjectName>): S
     hasHadMarketGo: false,
     mainPhaseStartedAt: null,
     isOutOfTime: false,
+    isTurnDrawOpen: false,
     projectsThisTurn: [],
     undoPoints: [],
     isUndoBlocked: false,

@@ -17,6 +17,14 @@ function seatsThen(state: GameState, expected: unknown, now: number): ReadonlyAr
   });
 }
 
+function marketplaceThen(state: GameState, expected: unknown): ReadonlyArray<unknown> {
+  const asked: ReadonlyArray<unknown> = Array.isArray(expected) ? expected : [];
+  const listed = asked.flatMap((entry) => (isRecord(entry) ? [entry["place"]] : []));
+  return state.marketplace
+    .filter(({ place, card }) => card !== null || listed.includes(place))
+    .map(({ place, card, phasesShown }) => ({ place, card, phases_shown: phasesShown }));
+}
+
 function endedThen(state: GameState): unknown {
   const places = state.result?.places;
   return places === undefined
@@ -61,12 +69,7 @@ export function readEngineThen(
     deck_count: () => state.deck.length,
     discard: () => state.discard,
     holding_pile: () => state.holdingPile,
-    marketplace: () =>
-      state.marketplace.map(({ place, card, phasesShown }) => ({
-        place,
-        card,
-        phases_shown: phasesShown,
-      })),
+    marketplace: () => marketplaceThen(state, expected),
     quests: () =>
       state.quests.map((place) =>
         place === null

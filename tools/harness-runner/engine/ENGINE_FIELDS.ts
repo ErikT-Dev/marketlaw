@@ -12,6 +12,7 @@ const SEAT_FIELDS = [
   "actions_this_turn",
   "done",
   "out_of_time",
+  "turn_draw_pending",
   "left",
   "time_bank_ms",
   "timeouts_in_a_row",

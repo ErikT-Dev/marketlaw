@@ -29,7 +29,7 @@ export function withUndoHistory(before: GameState, action: GameAction, after: Ga
   const seatBefore = seatOf(before, action.seat);
   if (action.type === "undo" ||
     action.type === "end_turn" ||
-    action.type === "turn_draw" ||
+    (action.type === "turn_draw" && seatBefore?.isTurnDrawOpen !== true) ||
     action.type === "time_out" ||
     action.type === "leave_game" ||
     action.type === "call_vote" ||

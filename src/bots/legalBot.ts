@@ -54,6 +54,9 @@ function mainPhaseMove(view: PlayerView, chooser: BotChooser): ActionIntent | nu
   if (seat.endTurnRejection !== null) {
     return null;
   }
+  if (seat.turnDrawRejection === null) {
+    return turnDrawMove(view, chooser);
+  }
   const progress = progressMove(view);
   if (progress !== null) {
     return progress;

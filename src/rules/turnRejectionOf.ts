@@ -13,6 +13,9 @@ function phaseRejectionOf(
   actionType: GameAction["type"],
 ): ReasonCode | undefined {
   const isTurnDraw = actionType === "turn_draw";
+  if (isTurnDraw && seat.isTurnDrawOpen) {
+    return undefined;
+  }
   if (state.phase !== "market") {
     return isTurnDraw ? "wrong_phase" : undefined;
   }
@@ -47,7 +50,8 @@ export function turnRejectionOf(
   if (seat.isDone) {
     return "already_done";
   }
-  return actionType !== "end_turn" && seat.actionsThisTurn >= ACTION_LIMIT
+  const isOpenTurnDraw = actionType === "turn_draw" && seat.isTurnDrawOpen;
+  return actionType !== "end_turn" && !isOpenTurnDraw && seat.actionsThisTurn >= ACTION_LIMIT
     ? "action_limit_reached"
     : undefined;
 }
