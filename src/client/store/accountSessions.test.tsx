@@ -57,7 +57,13 @@ describe("logging in and signing up", () => {
     expect(sent).toEqual([
       { path: "/api/logins", body: { login: "Bea", password: "long enough" } },
     ]);
-    const session = { token: "new-token", name: "Bea", isGuest: false, roomCode: null };
+    const session = {
+      token: "new-token",
+      playerId: ACCOUNT.playerId,
+      name: "Bea",
+      isGuest: false,
+      roomCode: null,
+    };
     expect(store.getSnapshot().session).toEqual(session);
     expect(readSession()).toEqual(session);
   });
@@ -80,7 +86,7 @@ describe("logging in and signing up", () => {
 
   it("signs up a guest with their token and keeps the room they are in", async () => {
     const roomCode = v.parse(RoomCode, "ABCDEF");
-    writeSession({ token: "guest-token", name: "Ann", isGuest: true, roomCode });
+    writeSession({ token: "guest-token", playerId: null, name: "Ann", isGuest: true, roomCode });
     const sent = serverAnswers({ ...ACCOUNT, token: "guest-token" });
     const store = new ClientStore(() => fakeHost());
     expect(await store.signUp(SIGNUP)).toBeNull();
@@ -90,6 +96,7 @@ describe("logging in and signing up", () => {
     });
     expect(store.getSnapshot().session).toEqual({
       token: "guest-token",
+      playerId: ACCOUNT.playerId,
       name: "Bea",
       isGuest: false,
       roomCode,
@@ -98,6 +105,12 @@ describe("logging in and signing up", () => {
 
   it("reads a session stored before registered users as a guest", () => {
     localStorage.setItem(SESSION_KEY, JSON.stringify({ token: "t", name: "Ann", roomCode: null }));
-    expect(readSession()).toEqual({ token: "t", name: "Ann", isGuest: true, roomCode: null });
+    expect(readSession()).toEqual({
+      token: "t",
+      playerId: null,
+      name: "Ann",
+      isGuest: true,
+      roomCode: null,
+    });
   });
 });

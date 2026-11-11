@@ -2,6 +2,7 @@ import * as v from "valibot";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { GameHost } from "../../shared/GameHost";
 import type { HostEvent } from "../../shared/HostEvent";
+import { PlayerId } from "../../shared/PlayerId";
 import { RoomCode } from "../../shared/RoomCode";
 import { ClientStore } from "./ClientStore";
 import { readSession } from "./readSession";
@@ -10,7 +11,14 @@ import { writeSession } from "./writeSession";
 type SentRequest = { readonly path: string; readonly body: unknown };
 
 const ROOM_CODE = v.parse(RoomCode, "ABCDEF");
-const IN_ROOM = { token: "guest-token", name: "Ann", isGuest: true, roomCode: ROOM_CODE };
+const PLAYER_ID = v.parse(PlayerId, "7d0c7f1e-4b7a-4c5e-9a39-2f4d9c1b8e10");
+const IN_ROOM = {
+  token: "guest-token",
+  playerId: PLAYER_ID,
+  name: "Ann",
+  isGuest: true,
+  roomCode: ROOM_CODE,
+};
 
 function hostWithEvents() {
   let listener: ((event: HostEvent) => void) | null = null;
@@ -65,8 +73,8 @@ afterEach(() => {
 });
 
 describe("checking the session", () => {
-  it("takes the account kind and name from the session answer", async () => {
-    writeSession(IN_ROOM);
+  it("takes the player id, account kind and name from the session answer", async () => {
+    writeSession({ ...IN_ROOM, playerId: null });
     serverAnswers(() => ({
       isLoggedIn: true,
       playerId: "7d0c7f1e-4b7a-4c5e-9a39-2f4d9c1b8e10",

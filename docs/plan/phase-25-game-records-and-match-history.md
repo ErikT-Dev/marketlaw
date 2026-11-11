@@ -200,15 +200,26 @@ These 10 scenarios are added to `harness/required.yaml` in this phase, by file a
   - Route tests for both routes beside `tools/route-tests/accountRoutes.test.ts`, with bad ids
     and a deleted player.
 
-- [ ] 4. **Match history and game record pages** (S13.1, S13.2, S13.4, S10.1, S12.7; Q121;
+- [x] 4. **Match history and game record pages** (S13.1, S13.2, S13.4, S10.1, S12.7; Q121;
   design boards "Records: match history", "Records: game record", "Records: match history
   empty", "Records: another player's match history"). **Large.**
-  - Stopped (2026-11-10): done so far: reading only, no code. Next: start the item from the
-    top. Findings for the builder: `MatchHistoryEntry` has no `kind`, but S13.1 shows casual or
-    ranked per game (add it in `historyEntryOf.ts`); `StoredSession` and `AccountBinding` carry
-    no player id, which **My match history** and "(you)" need (every account answer and the
-    session check carry `playerId`; older stored sessions need a default of none until the
-    check). Uncommitted changes: no (only this note).
+  - Stopped once (2026-11-10) before any code, by the owner.
+  - Done (2026-11-11). `MatchHistoryEntry` gains `kind`. `StoredSession` and `AccountBinding`
+    gain `playerId: PlayerId | null` (from every account answer and the session check; older
+    stored sessions and seat links start with none, and a seat link now runs the session check
+    after entering the room). Pages in `src/client/screens/records/`: `#history/<id>` and
+    `#record/<id>` (`recordPageOf`, `useRecordPage`, `keepRecordPageInsideApp` in `main.tsx`),
+    `LazyRecordsPage` in `App.tsx` keyed by the hash (the app is `inert` under it), `RecordsPage`
+    with **Back** and Escape. The privacy notice now shares `goBack`, `useOverlayPage` and
+    `subscribeToHash` (`src/client/components/`). **My match history** works in the user menu
+    and in the lobby's top bar when logged in (`LoggedInLobbyBar.tsx`); it is disabled while the
+    player id is unknown. Record rows use stat icons (S1.6); "(you)" marks the viewer's column;
+    winners show their username. Browser test `e2e/matchHistory.spec.ts` (a 2-player test room,
+    one leaves), screenshots `match-history` and `game-record`.
+  - For later items: `UsernameLink` (`src/client/screens/records/UsernameLink.tsx`, a link to
+    `#history/<player id>`) and `RecordNameLink` (adds "Deleted player" as plain text) are the
+    shared username link for item 5. Local browser tests need `npm run db:migrate:local` once for
+    migration 0012, or saving records fails with "no such table: game_records".
   - Pages over the current screen by link (`#history/<player id>`, `#record/<game id>`), lazy
     loaded, with **Back**: reuse the privacy notice's pattern (`src/client/screens/privacy/`,
     `usePrivacyNoticeOpen.ts`, `keepPrivacyNoticeInsideApp.ts`, `LazyPrivacyNoticePage.tsx`,

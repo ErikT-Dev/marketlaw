@@ -5,6 +5,7 @@ describe("sessionFromLink", () => {
   it("reads a seat link from a test room", () => {
     expect(sessionFromLink("#session=abc123&name=Ann&room=K7QR2P")).toEqual({
       token: "abc123",
+      playerId: null,
       name: "Ann",
       isGuest: true,
       roomCode: "K7QR2P",

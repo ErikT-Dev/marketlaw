@@ -87,6 +87,7 @@ export abstract class EmailAccountStore extends AccountSessionStore {
     }
     this.leaveRoom(null, {
       token: answer.token,
+      playerId: answer.playerId,
       name: answer.name,
       isGuest: false,
       roomCode: null,

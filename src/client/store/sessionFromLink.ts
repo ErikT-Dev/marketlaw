@@ -15,6 +15,7 @@ export function sessionFromLink(hash: string): StoredSession | null {
   return parsed.success
     ? {
         token: parsed.output.session,
+        playerId: null,
         name: parsed.output.name,
         isGuest: true,
         roomCode: parsed.output.room,

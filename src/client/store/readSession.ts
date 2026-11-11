@@ -1,10 +1,12 @@
 import * as v from "valibot";
+import { PlayerId } from "../../shared/PlayerId";
 import { RoomCode } from "../../shared/RoomCode";
 import { SESSION_KEY } from "./SESSION_KEY";
 import type { StoredSession } from "./StoredSession";
 
 const STORED_SESSION = v.object({
   token: v.string(),
+  playerId: v.optional(v.nullable(PlayerId), null),
   name: v.string(),
   isGuest: v.optional(v.boolean(), true),
   roomCode: v.nullable(RoomCode),

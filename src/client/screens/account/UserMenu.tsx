@@ -6,12 +6,14 @@ import { UserMenuItems } from "./UserMenuItems";
 type Props = {
   readonly name: string;
   readonly isGuest: boolean;
+  readonly onOpenMatchHistory: (() => void) | null;
   readonly onSignUp: () => void;
   readonly onOpenSettings: () => void;
   readonly onLogOut: () => void;
 };
 
-export function UserMenu({ name, isGuest, onSignUp, onOpenSettings, onLogOut }: Props) {
+export function UserMenu(props: Props) {
+  const { name, isGuest, onSignUp, onOpenSettings, onOpenMatchHistory, onLogOut } = props;
   const menuId = useId();
   const containerRef = useRef<HTMLDivElement>(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -51,6 +53,7 @@ export function UserMenu({ name, isGuest, onSignUp, onOpenSettings, onLogOut }: 
           isGuest={isGuest}
           onSignUp={choose(onSignUp)}
           onOpenSettings={choose(onOpenSettings)}
+          onOpenMatchHistory={onOpenMatchHistory === null ? null : choose(onOpenMatchHistory)}
           onLogOut={choose(onLogOut)}
         />
       ) : null}

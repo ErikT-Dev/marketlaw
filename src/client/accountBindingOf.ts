@@ -8,6 +8,7 @@ export function accountBindingOf(
   isInGame: boolean,
 ): AccountBinding {
   return {
+    playerId: session.playerId,
     name: session.name,
     isGuest: session.isGuest,
     isInGame,

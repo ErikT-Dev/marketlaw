@@ -3,12 +3,14 @@ import styles from "./Account.module.css";
 type Props = {
   readonly id: string;
   readonly isGuest: boolean;
+  readonly onOpenMatchHistory: (() => void) | null;
   readonly onSignUp: () => void;
   readonly onOpenSettings: () => void;
   readonly onLogOut: () => void;
 };
 
-export function UserMenuItems({ id, isGuest, onSignUp, onOpenSettings, onLogOut }: Props) {
+export function UserMenuItems(props: Props) {
+  const { id, isGuest, onSignUp, onOpenSettings, onOpenMatchHistory, onLogOut } = props;
   return (
     <ul id={id} className={styles["userMenu"]} aria-label="User menu">
       {isGuest ? (
@@ -24,7 +26,12 @@ export function UserMenuItems({ id, isGuest, onSignUp, onOpenSettings, onLogOut 
         </button>
       </li>
       <li>
-        <button type="button" className={styles["menuItem"]} disabled>
+        <button
+          type="button"
+          className={styles["menuItem"]}
+          disabled={onOpenMatchHistory === null}
+          onClick={onOpenMatchHistory ?? undefined}
+        >
           My match history
         </button>
       </li>

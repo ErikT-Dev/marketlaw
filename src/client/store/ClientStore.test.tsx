@@ -22,6 +22,7 @@ type FakeHost = {
 function storeInRoom(): FakeHost {
   writeSession({
     token: "token",
+    playerId: null,
     name: "Ann",
     isGuest: true,
     roomCode: v.parse(RoomCode, "ABCDEF"),
@@ -82,13 +83,24 @@ afterEach(() => {
 
 const SEAT_LINK = {
   token: "seat-token",
+  playerId: null,
   name: "Seat 1",
   isGuest: true,
   roomCode: v.parse(RoomCode, "K7QR2P"),
 };
 
+const SEAT_PLAYER = "3e7a1c9d-2b4f-4d6e-8a0c-5f1b7d3e9a26";
+
 function serverSaysTestSeat(isTestRoomSeat: boolean): void {
-  vi.stubGlobal("fetch", () => Promise.resolve(Response.json({ isTestRoomSeat })));
+  vi.stubGlobal("fetch", async (path: string) =>
+    Promise.resolve(
+      Response.json(
+        path === "/api/session"
+          ? { isLoggedIn: true, playerId: SEAT_PLAYER, name: "Seat 1", isGuest: true }
+          : { isTestRoomSeat },
+      ),
+    ),
+  );
 }
 
 describe("client store moves", () => {
@@ -294,11 +306,11 @@ describe("seat links", () => {
     );
   });
 
-  it("signs in to a confirmed seat when the browser has no account", async () => {
+  it("signs in to a confirmed seat when the browser has no account and learns its player id", async () => {
     serverSaysTestSeat(true);
     const store = new ClientStore(() => fakeHost());
     await store.startFromSeatLink(SEAT_LINK, () => false);
-    expect(store.getSnapshot().session).toEqual(SEAT_LINK);
+    expect(store.getSnapshot().session).toEqual({ ...SEAT_LINK, playerId: SEAT_PLAYER });
   });
 
   it("keeps a different account when the player says no, and switches when they say yes", async () => {
@@ -307,6 +319,6 @@ describe("seat links", () => {
     await store.startFromSeatLink(SEAT_LINK, () => false);
     expect(store.getSnapshot().session?.token).toBe("token");
     await store.startFromSeatLink(SEAT_LINK, () => true);
-    expect(store.getSnapshot().session).toEqual(SEAT_LINK);
+    expect(store.getSnapshot().session).toEqual({ ...SEAT_LINK, playerId: SEAT_PLAYER });
   });
 });

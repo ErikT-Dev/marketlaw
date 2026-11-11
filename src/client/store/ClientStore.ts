@@ -69,6 +69,7 @@ export class ClientStore extends EmailAccountStore {
       return;
     }
     this.enterRoom(linked, linked.roomCode);
+    await this.checkSession(linked);
   };
 
   readonly createRoom = async (room: NewRoom): Promise<ReasonCode | null> => {

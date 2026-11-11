@@ -1,8 +1,11 @@
+import * as v from "valibot";
 import { vi } from "vitest";
+import { PlayerId } from "../../shared/PlayerId";
 import type { AccountBinding } from "../screens/account/AccountBinding";
 
 export function testAccount(changes: Partial<AccountBinding> = {}): AccountBinding {
   return {
+    playerId: v.parse(PlayerId, "5b0f6a52-3d5e-4f7c-8a41-6c2b9e0d7f13"),
     name: "Bea",
     isGuest: true,
     isInGame: false,
