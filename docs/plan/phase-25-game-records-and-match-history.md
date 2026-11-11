@@ -349,6 +349,23 @@ These 10 scenarios are added to `harness/required.yaml` in this phase, by file a
     name buttons and the records code touch the game screen; compare the click-to-render time on
     master and on the branch, for example with React's profiler or a rerendering count) and
     fixes the code; never raise the 100 ms limit. Second finisher run not finished until then.
+  - Fixer (big card switch): no slowdown from phase 25. Phase 25 changed nothing on the path
+    of a hand card click: the selection is local state in `RightColumn`, and the name links and
+    `playerIds` sit outside it. Master and the branch measured the same at 2560x1440 with 6x CPU
+    throttling (21 clicks each: 19-59 ms on the branch, 24-78 ms on master). The test already
+    missed in phase 24 (161 ms). The GitHub traces show the misses on the first click (three
+    runs: 107, 109, 115.7 ms) or the third (100, 108.9 ms), with the other clicks at 30-54 ms,
+    so it is spikes from a busy 2-core runner, not one slow step. A click costs the React
+    re-render of the whole right column and a repaint of the right column's tiles, and each
+    repaint also redrew the scaled game background photo (one big layer for the whole page).
+    Fixes: the background photo is on its own layer (`.page::before`, `will-change`), so a
+    switch no longer redraws it; hand cards (`HandPanelCard`, `memo`, stable `pressCard`) and
+    the stats panel (`memo`) do not re-render on a switch. Measured with the browser limited to
+    1 CPU core and 3x throttling, 32 clicks each: median 18.9 to 11.0 ms, 90th percentile 41.9
+    to 32.4 ms, slowest 77.6 to 43.4 ms. The 100 ms limit and the test are unchanged; GitHub
+    decides on the next push.
+  - For later items: never remove a `git worktree` whose `node_modules` is a junction to the
+    main one; `git worktree remove --force` empties the main `node_modules` (needed `npm ci`).
 - [ ] Release.
 
 ### Helper log
