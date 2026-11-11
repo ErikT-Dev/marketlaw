@@ -334,3 +334,4 @@ each helper's conversation size at its end.
 | Builder, item 5 | 29 | 199k | 132 | done |
 | Finisher | 69 | 102k | 51 | done |
 | Phase reviewer | 10 | 195k | 87 | done: ready after fixes, 2 should fix, 2 suggestions |
+| Fixer, findings 1 to 4 | 14 | 115k | 61 | done |
