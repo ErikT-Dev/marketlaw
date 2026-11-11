@@ -13,6 +13,9 @@ function cursorOf(params: URLSearchParams): HistoryCursor | null | "bad" {
   if (endedAt === null && gameId === null) {
     return null;
   }
+  if (endedAt === null || endedAt === "" || gameId === null || gameId === "") {
+    return "bad";
+  }
   const cursor = v.safeParse(HistoryCursor, { endedAt: Number(endedAt), gameId });
   return cursor.success ? cursor.output : "bad";
 }

@@ -300,18 +300,19 @@ describe("the match history and game record routes", () => {
   );
 
   it("answers bad and unknown ids as not found and refuses a bad cursor", async () => {
-    expect(await getFromRoute(server, "/api/players/not-a-player/history")).toEqual({
-      status: 404,
-      body: { kind: "account_gone" },
-    });
-    expect(await getFromRoute(server, "/api/records/not-a-game")).toEqual({
-      status: 404,
-      body: { kind: "not_found" },
-    });
+    const badPlayer = await getFromRoute(server, "/api/players/not-a-player/history");
+    expect(badPlayer).toEqual({ status: 404, body: { kind: "account_gone" } });
+    const badGame = await getFromRoute(server, "/api/records/not-a-game");
+    expect(badGame).toEqual({ status: 404, body: { kind: "not_found" } });
     const unknownGame = await getFromRoute(server, `/api/records/${crypto.randomUUID()}`);
     expect(unknownGame).toEqual({ status: 404, body: { kind: "not_found" } });
-    const badCursor = `/api/players/${crypto.randomUUID()}/history?before_ms=soon`;
-    expect((await getFromRoute(server, badCursor)).status).toBe(400);
+    const history = `/api/players/${crypto.randomUUID()}/history?`;
+    const game = `before_game=${crypto.randomUUID()}`;
+    const badCursors = ["before_ms=soon", game, `before_ms=&${game}`, "before_ms=1&before_game="];
+    const answers = await Promise.all(
+      badCursors.map(async (at) => getFromRoute(server, history + at)),
+    );
+    expect(answers.map(({ status }) => status)).toEqual([400, 400, 400, 400]);
     expect((await post(`/api/records/${crypto.randomUUID()}`, {})).status).toBe(405);
   });
 });
