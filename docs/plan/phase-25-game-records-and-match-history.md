@@ -409,3 +409,61 @@ each helper's conversation size at its end.
 | Fixer, big card switch timing | 46 | 186k | 101 | done |
 | Finisher, third run | 79 | 89k | 39 | failed: GitHub runners could not install Chromium (DNS) |
 | Coordinator: runner pin (undone), install step without `--with-deps` (Q124, Q125) | 60 | - | - | GitHub green |
+
+## Report
+
+**Built.** Every finished game now saves a game record in D1, once, when the game ends or the
+last player is left (A3, Q119): every player's result (won, lost, left), place, score, whether
+they reached the end goal, and every value of A3.2, combo gains and type counts included. An
+abandoned game saves no record. A player who left is recorded and scored with the turn they left
+and the cards they held then, on the end-of-game table too (Q120). Records hold player ids, not
+usernames: every record and history shows the current username, and a deleted account or a
+removed guest shows as "Deleted player" (A3.5). The record write is 1 row plus one per player,
+5 of the 12 allowed (B8). Match histories open as pages over the current screen
+(`#history/<player id>`, `#record/<game id>`) with **Back**, from **My match history** in the user
+menu and in the lobby's top bar when logged in, and from usernames everywhere a name stands on
+its own: player badges, opponent cards and boards, the room's player list, the end-of-game table,
+chat, public rooms, histories and records (Q121). Anyone can open them, also logged out. A
+history lists the 50 newest games, newest first, with **Show older games**. Two new API routes,
+one D1 migration (0012). `PROTOCOL_VERSION` is 16, so a tab with the old client is told to reload.
+
+**What to try.** On the live site:
+1. Finish a game (a test room is fastest), then open **My match history** in the user menu: the
+   game is at the top with your place, score and the date.
+2. Click the game: the record shows every player with their values as icons; your column says
+   "(you)".
+3. Click another player's name in the record, in a game or in chat: their match history opens.
+   **Back** returns you where you were, and a game keeps running behind the page.
+4. Leave a game that goes on: your history shows it with "left" and the turn you left.
+
+**Checks.** The second finisher run: `npm run check` green (119 test files, 673 tests),
+`npm run harness` green (459 scenarios, 393 pass, 0 fail, 66 not yet, none required; 1,000
+simulated games), B8 5 of 12, B14 158.6 of 300 kB, B18 3,846 of 5,000 rows. Local browser tests
+that timed out under two workers passed alone (the known load problem). GitHub run 43058508095
+on `1b7161d`: check and all six browser jobs green on the first attempt. The phase's 10 scenarios
+are required.
+
+**Differences from the phase file.** The guest scenario waits 91 days and 1 second, not 90 days
+(Q122). The big card switch test missed its 100 ms limit on GitHub several times; a fixer found
+no slowdown from this phase and made the switch cheaper (the background photo on its own layer,
+hand cards and the stats panel no longer re-render); the limit is unchanged. Two flaky browser
+tests were fixed in the tests, with no product change: the screen check now waits for CSS
+transitions before axe. From this phase on the repository is public, and GitHub installs
+Chromium without Ubuntu's packages (Q123, Q125).
+
+**Decisions.** Q119: game records in two D1 tables, written once, usernames read at view time,
+B8 measured by the harness. Q120: a player who left keeps their turn and cards in hand. Q121:
+match histories by player id, as pages over the screen, open to anyone, 50 at a time. Q122: when
+the scenario sees an unused guest deleted. Q123 (the owner's decision): the repository is public,
+since its free GitHub Actions minutes were used up; the history was scanned for secrets first
+(none). Q124: pinning the runners to Ubuntu 24.04 did not help with GitHub's mirror outage and
+was undone. Q125 (the owner's approval): Chromium installs on GitHub without `--with-deps`, in
+the check and the deploy.
+
+**Review findings and what happened to each.**
+1. No browser check of another player's history or an empty history: fixed, with screenshots
+   `match-history-other-player`, `match-history-from-game` and `match-history-empty`.
+2. `record: kept` built the record at check time: fixed, the record is saved when the ended room
+   is set up and read back after the room's deletion.
+3. A half-given history cursor answered 200: fixed, 400 unless both parts are given.
+4. `SeatState` kept `hasLeft` and `departure`: fixed, "has left" comes from `departure`.
