@@ -85,7 +85,7 @@ export const REJECTION_MESSAGES: Readonly<Record<ReasonCode, IconText>> = {
   login_failed: "Wrong username, email or password.",
   email_invalid: "Enter a whole email address, such as name@example.com.",
   password_invalid: "Use 8 to 64 characters for the password.",
-  username_change_too_soon: "You can change your username once every 7 days.",
+  username_change_too_soon: "You can change your username at most 4 times in 7 days.",
   email_limit_reached:
     "No more emails can be sent for this account or to this address today. Try again after 00:00 UTC.",
   not_registered: "Sign up first.",

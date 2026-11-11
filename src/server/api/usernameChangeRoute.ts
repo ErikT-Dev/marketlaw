@@ -22,7 +22,7 @@ export async function usernameChangeRoute(request: Request, env: Env): Promise<R
     return json({ isOk: false, reason: "invalid_token" }, 401);
   }
   const { playerId, name: currentName } = account.identity;
-  const change = { currentName, wantedName: body.username, changedMs: account.usernameChangedMs };
+  const change = { currentName, wantedName: body.username, changesMs: account.usernameChangesMs };
   const decision = await decideUsernameChange(
     { ...change, now },
     async (wanted) => (await takenNameKeys(env.DB, [wanted])).length > 0,
@@ -32,7 +32,11 @@ export async function usernameChangeRoute(request: Request, env: Env): Promise<R
   }
   const isRenamed =
     decision.kind === "unchanged" ||
-    (await renamePlayer(env.DB, playerId, { name: body.username, now }));
+    (await renamePlayer(env.DB, playerId, {
+      name: body.username,
+      now,
+      changesMs: account.usernameChangesMs,
+    }));
   return isRenamed
     ? json({ isOk: true, token: body.token, playerId, name: body.username }, 200)
     : json({ isOk: false, reason: "username_taken" }, 409);

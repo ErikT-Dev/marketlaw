@@ -47,7 +47,7 @@ export const LOBBY_GIVEN_SCHEMA = v.strictObject({
         email_confirmed: v.optional(v.boolean()),
         password: v.optional(v.string()),
         last_used_ms: v.optional(v.number()),
-        last_username_change_ms: v.optional(v.number()),
+        username_changes_ms: v.optional(v.array(v.number())),
         actions_today: v.optional(v.number()),
         games_started_today: v.optional(v.number()),
         emails_today: v.optional(v.number()),

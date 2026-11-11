@@ -7,7 +7,7 @@ const RENAME_ROW = v.object({
   id: PlayerId,
   name: v.string(),
   last_used_ms: v.number(),
-  username_changed_ms: v.nullable(v.number()),
+  username_changes_ms: v.pipe(v.string(), v.parseJson(), v.array(v.number())),
 });
 
 export async function findRenameAccount(
@@ -17,7 +17,7 @@ export async function findRenameAccount(
 ): Promise<RenameAccount | null> {
   const row = await db
     .prepare(
-      "SELECT players.id AS id, players.name AS name, logins.last_used_ms AS last_used_ms, players.username_changed_ms AS username_changed_ms FROM logins JOIN players ON players.id = logins.player_id WHERE logins.token_hash = ?",
+      "SELECT players.id AS id, players.name AS name, logins.last_used_ms AS last_used_ms, players.username_changes_ms AS username_changes_ms FROM logins JOIN players ON players.id = logins.player_id WHERE logins.token_hash = ?",
     )
     .bind(tokenHash)
     .first();
@@ -25,6 +25,6 @@ export async function findRenameAccount(
   if (!parsed.success || loginStateOf(parsed.output.last_used_ms, now) === "expired") {
     return null;
   }
-  const { id, name, username_changed_ms: usernameChangedMs } = parsed.output;
-  return { identity: { playerId: id, name }, usernameChangedMs };
+  const { id, name, username_changes_ms: usernameChangesMs } = parsed.output;
+  return { identity: { playerId: id, name }, usernameChangesMs };
 }

@@ -1,5 +1,6 @@
 import { decideUsernameChange } from "../../../src/server/accounts/decideUsernameChange.ts";
 import { nameKeyOf } from "../../../src/server/accounts/nameKeyOf.ts";
+import { usernameChangesWith } from "../../../src/server/accounts/usernameChangesWith.ts";
 import type { LobbySession } from "./LobbySession.ts";
 
 function isNameTaken(session: LobbySession, wanted: string): boolean {
@@ -16,7 +17,7 @@ export async function changeUsernameInLobby(
     session.rejected = "invalid_token";
     return;
   }
-  const change = { currentName: name, wantedName, changedMs: account.usernameChangedMs };
+  const change = { currentName: name, wantedName, changesMs: account.usernameChangesMs };
   const decision = await decideUsernameChange({ ...change, now: session.now }, (wanted) =>
     Promise.resolve(isNameTaken(session, wanted)),
   );
@@ -29,7 +30,7 @@ export async function changeUsernameInLobby(
     session.accounts.set(wantedName, {
       ...account,
       identity: { ...account.identity, name: wantedName },
-      usernameChangedMs: session.now,
+      usernameChangesMs: usernameChangesWith(account.usernameChangesMs, session.now),
     });
   }
 }

@@ -110,6 +110,23 @@ describe("the account routes refuse hostile requests", () => {
     });
   });
 
+  it("allows 4 username changes and refuses a fifth within 7 days", async () => {
+    const token = await newGuestToken("Renamerzero");
+    for (const username of ["Renamerone", "Renamertwo", "Renamerthree", "Renamerfour"]) {
+      const renamed = await post("/api/username-changes", { token, username });
+      expect(renamed).toMatchObject({ status: 200, body: { isOk: true, name: username } });
+    }
+    const account = await post("/api/account", { token });
+    expect(account.body).toHaveProperty("usernameWait.allowedAt");
+    await expectNothingChangedBy(async () => {
+      const fifth = await post("/api/username-changes", { token, username: "Renamerfive" });
+      expect(fifth).toEqual({
+        status: 400,
+        body: { isOk: false, reason: "username_change_too_soon" },
+      });
+    });
+  });
+
   it("answers logged out for the account of an unknown or expired login", async () => {
     await expectNothingChangedBy(async () => {
       expect(await post("/api/account", { token: UNKNOWN_TOKEN })).toEqual(LOGGED_OUT);

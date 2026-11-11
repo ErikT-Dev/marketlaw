@@ -97,8 +97,8 @@ export class LobbySession {
     this.now = v.parse(EpochMs, given.clock_ms ?? 0);
     for (const account of given.accounts ?? []) {
       const registration = registrationFromGiven(account, this.now);
-      const usernameChangedMs = account.last_username_change_ms ?? null;
-      this.addAccount(account.name, account.last_used_ms ?? 0, registration, usernameChangedMs);
+      const usernameChangesMs = account.username_changes_ms ?? [];
+      this.addAccount(account.name, account.last_used_ms ?? 0, registration, usernameChangesMs);
     }
     this.lobby = { ...EMPTY_LOBBY, today: countsTodayFromGiven(given, this.now, this) };
     this.emails = new LobbyEmails(given, (name) => this.identityNamed(name));
@@ -309,11 +309,11 @@ export class LobbySession {
     name: string,
     lastUsedMs: number,
     registration: LobbyRegistration | null = null,
-    usernameChangedMs: number | null = null,
+    usernameChangesMs: ReadonlyArray<number> = [],
   ): LobbyAccount {
     const playerId = v.parse(PlayerId, randomUUID());
     const identity = { playerId, name };
-    const account: LobbyAccount = { identity, lastUsedMs, registration, usernameChangedMs };
+    const account: LobbyAccount = { identity, lastUsedMs, registration, usernameChangesMs };
     this.accounts.set(name, account);
     return account;
   }

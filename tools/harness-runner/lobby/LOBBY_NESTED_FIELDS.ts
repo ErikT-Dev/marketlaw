@@ -8,7 +8,7 @@ export const LOBBY_NESTED_FIELDS: ReadonlyMap<string, ReadonlySet<string>> = new
       "email_confirmed",
       "password",
       "last_used_ms",
-      "last_username_change_ms",
+      "username_changes_ms",
       "actions_today",
       "games_started_today",
       "emails_today",

@@ -500,7 +500,20 @@ These 24 required scenarios now assert the new rules (Q126) and must pass again:
     it as is (public). Runner: view `quests_completed_last_turn`.
   - Client: a small table next to `QuestsPanel.tsx`, shown only when the list is not empty.
 
-- [ ] 8. **Four username changes in 7 days** (A2.4, S12.5, S16.3). **Small.**
+- [x] 8. **Four username changes in 7 days** (A2.4, S12.5, S16.3). **Small.**
+  - Done (2026-11-11). The 3 `accounts` scenarios pass (the two new ones checked on the
+    required list locally); before, two could not run and "4 times in a row" failed.
+    As built: migration `0013_username_changes.sql` replaces `players.username_changed_ms` with
+    `username_changes_ms` (JSON text, at most the last 4 times, as `failed_logins_ms`);
+    `usernameChangesWith` keeps the changes of the 7 days before, at most 3, plus the new one;
+    `renamePlayer`'s conditional `UPDATE` counts them with `json_each` (still one row written).
+    `usernameChangeAllowedAt` gives the time 7 days after the first of the last 4, or null.
+    `UsernameWait` is now `{ allowedAt }` only (the hint no longer names a last change date):
+    "You can change it 4 times in 7 days." / "You have changed it 4 times in 7 days. You can
+    change it again on …". Route test: 4 changes, a fifth refused
+    (`hostileAccountRoutes.test.ts`); `e2e/userMenu.spec.ts` expects the field still open after
+    one change. Nothing else differs from the phase file.
+  - For later items: local browser tests need `npm run db:migrate:local` once (migration 0013).
   - D1 migration `migrations/0013_...sql` replacing `players.username_changed_ms` with the times
     of the recent changes, in the same row (for example a JSON text column of at most the last 4
     times), so a change is still one row written. `src/server/renamePlayer.ts` (its conditional

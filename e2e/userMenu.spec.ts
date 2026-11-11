@@ -64,13 +64,14 @@ test("a guest signs up during a game, keeps the seat, logs out and logs back in"
   await expectScreenFits(ann.page, "user-menu", testInfo);
   await userMenuOf(ann.page).getByRole("button", { name: "Account settings" }).click();
   const settings = ann.page.getByRole("dialog", { name: "Account settings" });
-  await expect(settings).toContainText("You can change it once every 7 days.");
+  await expect(settings).toContainText("You can change it 4 times in 7 days.");
   await expectScreenFits(ann.page, "account-settings", testInfo);
   const newName = `${ann.name} B`;
   await settings.getByLabel("Username").fill(newName);
   await settings.getByRole("button", { name: "Change", exact: true }).click();
-  await expect(settings).toContainText(/You changed it on \d+ \w+\. You can change it again on/);
-  await expect(settings.getByLabel("Username")).toBeDisabled();
+  await expect(settings.getByRole("button", { name: "Change", exact: true })).toBeDisabled();
+  await expect(settings).toContainText("You can change it 4 times in 7 days.");
+  await expect(settings.getByLabel("Username")).toBeEnabled();
   await settings.getByRole("button", { name: "Close" }).click();
   await expect(annBox).toContainText(newName);
   await expect(ann.page.getByRole("list", { name: "Player order" })).not.toContainText(newName);

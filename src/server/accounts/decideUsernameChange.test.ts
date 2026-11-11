@@ -2,7 +2,8 @@ import { describe, expect, it } from "vitest";
 import { decideUsernameChange } from "./decideUsernameChange";
 import { USERNAME_CHANGE_WAIT_MS } from "./USERNAME_CHANGE_WAIT_MS";
 
-const CHANGE = { currentName: "Ann", wantedName: "Ann City", changedMs: null, now: 1_000 };
+const CHANGE = { currentName: "Ann", wantedName: "Ann City", changesMs: [], now: 1_000 };
+const FOUR_CHANGES = [0, 1, 2, 3];
 
 function takenAs(isTaken: boolean) {
   return () => Promise.resolve(isTaken);
@@ -13,21 +14,26 @@ describe("decideUsernameChange", () => {
     expect(await decideUsernameChange(CHANGE, takenAs(false))).toEqual({ kind: "renamed" });
   });
 
-  it("refuses a change within 7 days of the last one", async () => {
-    const tooSoon = { ...CHANGE, changedMs: 0, now: USERNAME_CHANGE_WAIT_MS - 1 };
+  it("allows a fourth change within 7 days", async () => {
+    const fourth = { ...CHANGE, changesMs: [0, 1, 2], now: 3 };
+    expect(await decideUsernameChange(fourth, takenAs(false))).toEqual({ kind: "renamed" });
+  });
+
+  it("refuses a fifth change within 7 days of the first of the last 4", async () => {
+    const tooSoon = { ...CHANGE, changesMs: FOUR_CHANGES, now: USERNAME_CHANGE_WAIT_MS - 1 };
     expect(await decideUsernameChange(tooSoon, takenAs(false))).toEqual({
       kind: "refused",
       reason: "username_change_too_soon",
     });
   });
 
-  it("allows a change exactly 7 days after the last one", async () => {
-    const onTime = { ...CHANGE, changedMs: 0, now: USERNAME_CHANGE_WAIT_MS };
+  it("allows a fifth change exactly 7 days after the first of the last 4", async () => {
+    const onTime = { ...CHANGE, changesMs: FOUR_CHANGES, now: USERNAME_CHANGE_WAIT_MS };
     expect(await decideUsernameChange(onTime, takenAs(false))).toEqual({ kind: "renamed" });
   });
 
   it("checks the name itself before the 7 days and the 7 days before taken", async () => {
-    const tooSoon = { ...CHANGE, changedMs: 0, now: 1 };
+    const tooSoon = { ...CHANGE, changesMs: FOUR_CHANGES, now: 4 };
     expect(await decideUsernameChange({ ...tooSoon, wantedName: "A" }, takenAs(true))).toEqual({
       kind: "refused",
       reason: "username_invalid",
@@ -51,7 +57,7 @@ describe("decideUsernameChange", () => {
   });
 
   it("changes nothing for the same name even within the 7 days", async () => {
-    const same = { ...CHANGE, wantedName: "Ann", changedMs: 0, now: 1 };
+    const same = { ...CHANGE, wantedName: "Ann", changesMs: FOUR_CHANGES, now: 4 };
     expect(await decideUsernameChange(same, takenAs(true))).toEqual({ kind: "unchanged" });
   });
 
