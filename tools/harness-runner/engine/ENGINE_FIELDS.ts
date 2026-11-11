@@ -11,6 +11,7 @@ const SEAT_FIELDS = [
   "influence_uses",
   "actions_this_turn",
   "done",
+  "out_of_time",
   "left",
   "time_bank_ms",
   "timeouts_in_a_row",
@@ -26,6 +27,7 @@ const QUEST_FIELDS = new Set(["quest", "turns_on_table"]);
 
 export const ENGINE_FIELDS = {
   givenFields: new Set([
+    "kind",
     "players",
     "turn",
     "phase",
@@ -101,6 +103,7 @@ export const ENGINE_FIELDS = {
         "city",
         "build_passes",
         "done",
+        "out_of_time",
         "time_bank_ms",
         "time_bank_shown",
         "type_counts",

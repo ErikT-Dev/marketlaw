@@ -67,7 +67,7 @@ describe("simulator", () => {
   });
 
   it("reports a game whose replay differs", () => {
-    const saved = startSavedGame({ players: 2, startedAt: GAME_STARTED_AT }, 3);
+    const saved = startSavedGame({ players: 2, kind: "casual", startedAt: GAME_STARTED_AT }, 3);
     const played = {
       ...saved,
       actionLog: [{ action: { type: "end_turn" as const, seat: 1 as const }, at: GAME_STARTED_AT }],

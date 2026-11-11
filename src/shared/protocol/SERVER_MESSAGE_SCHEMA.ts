@@ -29,6 +29,7 @@ const SEAT_COMMON = {
   city: CARDS,
   buildPasses: COUNT,
   isDone: v.boolean(),
+  isOutOfTime: v.boolean(),
   hasLeft: v.boolean(),
   timeBankMs: COUNT,
   clock: v.nullable(v.object({ bankMs: COUNT, freeUntil: EpochMs, deadline: EpochMs })),
@@ -165,7 +166,15 @@ export const SERVER_MESSAGE_SCHEMA = v.variant("type", [
     type: v.literal("notice"),
     protocolVersion: COUNT,
     notice: v.variant("kind", [
-      v.object({ kind: v.literal("timed_out"), inARow: COUNT, of: COUNT }),
+      v.variant("gameKind", [
+        v.object({
+          kind: v.literal("timed_out"),
+          gameKind: v.literal("ranked"),
+          inARow: COUNT,
+          of: COUNT,
+        }),
+        v.object({ kind: v.literal("timed_out"), gameKind: v.literal("casual") }),
+      ]),
       v.object({ kind: v.literal("resumed"), seats: v.array(SEAT), freeMs: COUNT }),
       v.object({ kind: v.literal("site_game_limit") }),
       v.object({

@@ -14,7 +14,10 @@ import type { RoomKv } from "./RoomKv";
 import type { RoomRecord } from "./RoomRecord";
 
 function startedRoom(): RoomRecord {
-  const saved = startSavedGame({ players: 2, startedAt: v.parse(EpochMs, 1_000_000) }, 3);
+  const saved = startSavedGame(
+    { players: 2, kind: "casual", startedAt: v.parse(EpochMs, 1_000_000) },
+    3,
+  );
   const players = ["Ann", "Bea"].map((name) => ({
     playerId: v.parse(PlayerId, crypto.randomUUID()),
     name,

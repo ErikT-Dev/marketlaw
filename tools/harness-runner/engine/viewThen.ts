@@ -63,6 +63,7 @@ export function viewThen(
           city: ofSeat.city,
           build_passes: ofSeat.buildPasses,
           done: ofSeat.isDone,
+          out_of_time: ofSeat.isOutOfTime,
           time_bank_ms: bankShownAt(ofSeat, now),
           time_bank_shown: Math.floor(bankShownAt(ofSeat, now) / 1000),
           type_counts: ofSeat.typeCounts,

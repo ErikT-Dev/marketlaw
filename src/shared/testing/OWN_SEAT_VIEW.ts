@@ -47,6 +47,7 @@ export const OWN_SEAT_VIEW: OwnSeatView = {
   marketCardRejection: "wrong_phase",
   actionsThisTurn: 0,
   isDone: false,
+  isOutOfTime: false,
   hasLeft: false,
   timeBankMs: 0,
   clock: null,

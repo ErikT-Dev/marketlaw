@@ -71,10 +71,10 @@ describe("clocks", () => {
 });
 
 describe("running out of time", () => {
-  it("says the player was made done and how many time-outs in a row, out of 3", () => {
+  it("says in a ranked game how many time-outs in a row the player has had, out of 3", () => {
     const props = {
       ...gamePageProps(roomUpdateWith({})),
-      timeOutNotice: { kind: "timed_out" as const, inARow: 2, of: 3 },
+      timeOutNotice: { kind: "timed_out" as const, gameKind: "ranked" as const, inARow: 2, of: 3 },
     };
     render(<GamePage {...props} />);
     const toast = screen.getByRole("status");
@@ -82,5 +82,17 @@ describe("running out of time", () => {
     expect(toast.textContent).toContain("This was 2 of 3.");
     fireEvent.click(within(toast).getByRole("button", { name: "Close: Your time ran out" }));
     expect(props.onDismissTimeOutNotice).toHaveBeenCalledTimes(1);
+  });
+
+  it("says in a casual game that the player can keep playing", () => {
+    const props = {
+      ...gamePageProps(roomUpdateWith({})),
+      timeOutNotice: { kind: "timed_out" as const, gameKind: "casual" as const },
+    };
+    render(<GamePage {...props} />);
+    const toast = screen.getByRole("status");
+    expect(toast.textContent).toContain("Your time ran out");
+    expect(toast.textContent).toContain("You can keep playing until the other players are done.");
+    expect(toast.textContent).not.toContain("of 3");
   });
 });

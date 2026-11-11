@@ -24,6 +24,7 @@ const SEAT_COMMON = {
   city: [],
   buildPasses: 2,
   isDone: false,
+  isOutOfTime: false,
   hasLeft: false,
   timeBankMs: 0,
   clock: null,

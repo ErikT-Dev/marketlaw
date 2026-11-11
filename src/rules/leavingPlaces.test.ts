@@ -7,7 +7,7 @@ import { seededRandom } from "./seededRandom";
 import { setUpGame } from "./setUpGame";
 
 const LEFT_IN_TURN_1 = { turn: 1, cardsInHand: 0 };
-const START = setUpGame({ players: 2, startedAt: GAME_STARTED_AT }, seededRandom(21, 0));
+const START = setUpGame({ players: 2, kind: "casual", startedAt: GAME_STARTED_AT }, seededRandom(21, 0));
 
 function endingViolations(after: GameState): ReadonlyArray<string> {
   return invariantViolations({
@@ -20,7 +20,7 @@ function endingViolations(after: GameState): ReadonlyArray<string> {
 
 describe("places when players left", () => {
   it("places players who left last, the first to leave last of all", () => {
-    const three = setUpGame({ players: 3, startedAt: GAME_STARTED_AT }, seededRandom(21, 0));
+    const three = setUpGame({ players: 3, kind: "casual", startedAt: GAME_STARTED_AT }, seededRandom(21, 0));
     const ended = endGame(
       {
         ...three,

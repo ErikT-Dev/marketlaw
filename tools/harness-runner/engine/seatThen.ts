@@ -32,6 +32,7 @@ export function seatThen(
     influence_uses: seat.influenceUses,
     actions_this_turn: seat.actionsThisTurn,
     done: seat.isDone,
+    out_of_time: seat.isOutOfTime,
     left: seat.departure !== null,
     time_bank_ms: clock === null ? seat.timeBankMs : bankLeftAt(clock, now),
     timeouts_in_a_row: seat.timeoutsInARow,

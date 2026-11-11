@@ -6,21 +6,16 @@ import type { GameState } from "./GameState";
 import type { Random } from "./Random";
 import { updateSeat } from "./updateSeat";
 
-export function endTurn(
-  state: GameState,
-  seat: SeatNumber,
-  random: Random,
-  ending: { readonly at: number; readonly isTimeOut: boolean },
-): GameState {
+export function endTurn(state: GameState, seat: SeatNumber, random: Random, at: number): GameState {
   const clock = decisionClockOf(state, seat);
   const done = {
     ...updateSeat(state, seat, (current) => ({
       ...current,
       isDone: true,
-      timeBankMs: clock === null ? current.timeBankMs : bankLeftAt(clock, ending.at),
-      timeoutsInARow: ending.isTimeOut ? current.timeoutsInARow + 1 : 0,
+      timeBankMs: clock === null ? current.timeBankMs : bankLeftAt(clock, at),
+      timeoutsInARow: current.isOutOfTime ? current.timeoutsInARow : 0,
     })),
     doneOrder: [...state.doneOrder, seat],
   };
-  return endMainPhaseIfAllDone(done, random, ending.at);
+  return endMainPhaseIfAllDone(done, random, at);
 }

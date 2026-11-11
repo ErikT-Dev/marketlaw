@@ -2,6 +2,7 @@ import type { CardName } from "../shared/catalogue/CardName";
 import type { QuestName } from "../shared/catalogue/QuestName";
 import type { TypeName } from "../shared/catalogue/TypeName";
 import type { DrawLogEntry } from "../shared/DrawLogEntry";
+import type { GameKind } from "../shared/GameKind";
 import type { GamePhase } from "../shared/GamePhase";
 import type { GameResult } from "../shared/GameResult";
 import type { ProjectName } from "../shared/ProjectName";
@@ -15,6 +16,7 @@ import type { PausedClock } from "./PausedClock";
 import type { SeatState } from "./SeatState";
 
 export type GameState = {
+  readonly kind: GameKind;
   readonly turn: number;
   readonly phase: GamePhase;
   readonly firstPlayer: SeatNumber;

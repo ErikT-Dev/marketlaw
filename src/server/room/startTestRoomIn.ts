@@ -38,11 +38,11 @@ export function startTestRoomIn(
     isPublic: false,
     waiting: NO_WAITING,
     game: {
-      kind: "casual",
+      kind: state.kind,
       saved: {
         schemaVersion: SAVE_SCHEMA_VERSION,
         seed: room.seed,
-        setup: { players: playerCount, startedAt: room.now },
+        setup: { players: playerCount, kind: state.kind, startedAt: room.now },
         startingState: state,
         actionLog: [],
         state,

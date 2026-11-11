@@ -28,7 +28,7 @@ function played(state: GameState, actions: ReadonlyArray<GameAction>): GameState
 
 describe("the quests table at the start of a turn", () => {
   it("leaves a place empty when the list holds only quests of tiers not allowed yet", () => {
-    const start = setUpGame({ players: 2, startedAt: GAME_STARTED_AT }, seededRandom(5, 0));
+    const start = setUpGame({ players: 2, kind: "casual", startedAt: GAME_STARTED_AT }, seededRandom(5, 0));
     const state = withMainPhaseStart({
       ...start,
       turn: 3,

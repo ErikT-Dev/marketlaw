@@ -9,7 +9,7 @@ import { seededRandom } from "./seededRandom";
 import { setUpGame } from "./setUpGame";
 import { STARTING_STATS } from "./STARTING_STATS";
 
-const START = setUpGame({ players: 2, startedAt: GAME_STARTED_AT }, seededRandom(21, 0));
+const START = setUpGame({ players: 2, kind: "casual", startedAt: GAME_STARTED_AT }, seededRandom(21, 0));
 
 function transition(before: GameState, action: GameAction, after: GameState) {
   return {

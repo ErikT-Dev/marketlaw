@@ -16,7 +16,7 @@ function savedWith(state: GameState): SavedGame {
   return {
     schemaVersion: SAVE_SCHEMA_VERSION,
     seed: 25,
-    setup: { players: 2, startedAt: GAME_STARTED_AT },
+    setup: { players: 2, kind: "casual", startedAt: GAME_STARTED_AT },
     startingState: null,
     actionLog: [],
     state,
@@ -24,7 +24,7 @@ function savedWith(state: GameState): SavedGame {
 }
 
 function gameOf(players: 2 | 3, turn: number, changes: Partial<SeatState>): GameState {
-  const started = setUpGame({ players, startedAt: GAME_STARTED_AT }, RANDOM);
+  const started = setUpGame({ players, kind: "casual", startedAt: GAME_STARTED_AT }, RANDOM);
   return {
     ...started,
     turn,

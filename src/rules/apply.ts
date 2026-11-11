@@ -76,7 +76,7 @@ function accepted(state: GameState, action: GameAction, random: Random, at: numb
     case "sell":
       return takeIncome(sellCards(state, action.seat, action.cards), action.seat, random);
     case "end_turn":
-      return endTurn(state, action.seat, random, { at, isTimeOut: false });
+      return endTurn(state, action.seat, random, at);
     case "claim_all":
       return takeIncome(updateSeat(state, action.seat, claimAll), action.seat, random);
     case "complete_project":

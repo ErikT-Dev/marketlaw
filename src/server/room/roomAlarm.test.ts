@@ -20,10 +20,13 @@ import type { RoomStorage } from "./RoomStorage";
 import { NO_CHAT_CONTEXT } from "./NO_CHAT_CONTEXT";
 
 const STARTED_AT = 1_000_000;
-const FIRST_DEADLINE = STARTED_AT + 180_000;
+const FIRST_DEADLINE = STARTED_AT + 210_000;
 
 function playingRoom(): RoomRecord {
-  const saved = startSavedGame({ players: 2, startedAt: v.parse(EpochMs, STARTED_AT) }, 3);
+  const saved = startSavedGame(
+    { players: 2, kind: "casual", startedAt: v.parse(EpochMs, STARTED_AT) },
+    3,
+  );
   const players = [1, 2].map((seat) => ({
     playerId: v.parse(PlayerId, crypto.randomUUID()),
     name: `Seat ${String(seat)}`,

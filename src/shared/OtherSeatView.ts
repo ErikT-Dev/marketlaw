@@ -23,6 +23,7 @@ export type OtherSeatView = {
   readonly city: ReadonlyArray<CardName>;
   readonly buildPasses: number;
   readonly isDone: boolean;
+  readonly isOutOfTime: boolean;
   readonly hasLeft: boolean;
   readonly timeBankMs: number;
   readonly clock: SeatClock | null;

@@ -20,7 +20,7 @@ const PUBLIC_TIER_1: Random = {
 };
 
 function gameWith(deck: ReadonlyArray<CardName>, discard: ReadonlyArray<CardName>): GameState {
-  const state = startSavedGame({ players: 2, startedAt: GAME_STARTED_AT }, 13).state;
+  const state = startSavedGame({ players: 2, kind: "casual", startedAt: GAME_STARTED_AT }, 13).state;
   return withMainPhaseStart({
     ...state,
     deck,

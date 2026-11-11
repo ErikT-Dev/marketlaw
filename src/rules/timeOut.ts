@@ -1,7 +1,7 @@
 import type { SeatNumber } from "../shared/SeatNumber";
 import { bankLeftAt } from "../shared/bankLeftAt";
 import { decisionClockOf } from "./decisionClockOf";
-import { endTurn } from "./endTurn";
+import { endMainPhaseIfAllDone } from "./endMainPhaseIfAllDone";
 import type { GameState } from "./GameState";
 import { leaveGame } from "./leaveGame";
 import type { Random } from "./Random";
@@ -9,14 +9,14 @@ import { seatsLeavingAt } from "./seatsLeavingAt";
 import { takeTurnDraw } from "./takeTurnDraw";
 import { updateSeat } from "./updateSeat";
 
-function timeOutLeaving(state: GameState, seat: SeatNumber, random: Random, at: number): GameState {
+function withMainPhaseTimeOutCounted(state: GameState, seat: SeatNumber, at: number): GameState {
   const clock = decisionClockOf(state, seat);
-  const counted = updateSeat(state, seat, (current) => ({
+  const isCounted = state.kind === "ranked";
+  return updateSeat(state, seat, (current) => ({
     ...current,
     timeBankMs: clock === null ? current.timeBankMs : bankLeftAt(clock, at),
-    timeoutsInARow: current.timeoutsInARow + 1,
+    timeoutsInARow: isCounted ? current.timeoutsInARow + 1 : current.timeoutsInARow,
   }));
-  return leaveGame(counted, seat, random, at);
 }
 
 export function timeOut(
@@ -29,8 +29,10 @@ export function timeOut(
     const choice = { option: "B", sector: random.pickSector() } as const;
     return takeTurnDraw(state, { type: "turn_draw", seat, choice }, random, at);
   }
+  const counted = withMainPhaseTimeOutCounted(state, seat, at);
   if (seatsLeavingAt(state, at).includes(seat)) {
-    return timeOutLeaving(state, seat, random, at);
+    return leaveGame(counted, seat, random, at);
   }
-  return endTurn(state, seat, random, { at, isTimeOut: true });
+  const outOfTime = updateSeat(counted, seat, (current) => ({ ...current, isOutOfTime: true }));
+  return endMainPhaseIfAllDone(outOfTime, random, at);
 }

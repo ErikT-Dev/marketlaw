@@ -85,7 +85,7 @@ export class GameSimulation {
     this.bot = options.bot;
     this.chooser = options.chooser;
     this.stored = options.stored;
-    const saved = startSavedGame({ players, startedAt: v.parse(EpochMs, 0) }, seed);
+    const saved = startSavedGame({ players, kind: "casual", startedAt: v.parse(EpochMs, 0) }, seed);
     const identities: ReadonlyArray<Identity> = saved.state.seats.map((seat) => ({
       playerId: playerIdFor(seed, seat.seat),
       name: `Bot ${String(seat.seat)}`,

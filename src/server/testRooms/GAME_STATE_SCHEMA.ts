@@ -33,6 +33,7 @@ const SEAT_STATE = v.object({
   influenceUses: v.record(TradeName, v.number()),
   actionsThisTurn: v.number(),
   isDone: v.boolean(),
+  isOutOfTime: v.optional(v.boolean(), false),
   departure: v.nullable(v.object({ turn: v.number(), cardsInHand: v.number() })),
   timeBankMs: v.number(),
   timeoutsInARow: v.number(),
@@ -41,6 +42,7 @@ const SEAT_STATE = v.object({
 });
 
 export const GAME_STATE_SCHEMA = v.object({
+  kind: v.optional(v.picklist(["casual", "ranked"]), "casual"),
   turn: v.number(),
   phase: v.picklist(["market", "main", "ended"]),
   firstPlayer: SEAT_NUMBER_SCHEMA,

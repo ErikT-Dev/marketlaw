@@ -29,6 +29,7 @@ export type SeatState = {
   readonly influenceUses: InfluenceUses;
   readonly actionsThisTurn: number;
   readonly isDone: boolean;
+  readonly isOutOfTime: boolean;
   readonly departure: Departure | null;
   readonly timeBankMs: number;
   readonly timeoutsInARow: number;

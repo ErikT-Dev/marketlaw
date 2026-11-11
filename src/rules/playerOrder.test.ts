@@ -6,7 +6,7 @@ import { startSavedGame } from "./startSavedGame";
 import { viewFor } from "./viewFor";
 
 function gameAt(players: 2 | 3 | 4, turn: number, seatsThatLeft: ReadonlyArray<number>): GameState {
-  const state = startSavedGame({ players, startedAt: GAME_STARTED_AT }, 5).state;
+  const state = startSavedGame({ players, kind: "casual", startedAt: GAME_STARTED_AT }, 5).state;
   const seats = state.seats.map((seat) => ({
     ...seat,
     departure: seatsThatLeft.includes(seat.seat) ? { turn: 1, cardsInHand: 0 } : null,

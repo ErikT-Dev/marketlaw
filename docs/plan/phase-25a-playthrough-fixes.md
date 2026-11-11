@@ -249,8 +249,28 @@ These 24 required scenarios now assert the new rules (Q126) and must pass again:
     place in the refill" to 5; the 4 `visibility` log scenarios to 6; `quests` "the quests
     completed in the turn before ..." to 7; `accounts` (3) to 8.
 
-- [ ] 1. **Time per turn and players out of time** (R9.1, R9.2, R9.4, R9.6, R9.10, R9.11, R9.13,
+- [x] 1. **Time per turn and players out of time** (R9.1, R9.2, R9.4, R9.6, R9.10, R9.11, R9.13,
   R8.4, M5.3, M5.4, M6.10). **Large.**
+  - Done (2026-11-11). Every item-1 scenario passes, except two that need item 3's open turn
+    draw (`turns-and-time` "a message received at the deadline ...", which reads seat
+    `turn_draw_pending`) and "a game paused for 24 hours is abandoned" (reads `ratings`, phase
+    26). Still failing required scenarios after item 1: those of items 3 and 8 only.
+  - As built: `GameKind` (`src/shared/GameKind.ts`) is in `GameSetup` and also in `GameState`
+    (`state.kind`, copied by `setUpGame`), because the engine and the scenario runner work on
+    the state. Seat field `isOutOfTime` (reset at the turn start); `endMainPhaseIfAllDone`
+    first makes out-of-time seats done in player order once nobody plays with time left, so End
+    turn, a time-out and leaving all reach it. `endTurn` lost its `isTimeOut` option. The
+    `timed_out` notice is `TimedOutNotice` with `gameKind: "ranked"` (counts) or `"casual"`;
+    the room sends the casual one when a seat becomes out of time. The test room reads an
+    optional `kind` and `isOutOfTime`.
+  - `connections-and-leaving` "ranked games cannot be abandoned by vote" (phase 26, not
+    required) now runs, because the room runner reads `kind: ranked`, and fails instead of
+    "not yet".
+  - Browser tests: `clocks.spec.ts` is now the casual "keeps playing" test; the 3-time-outs
+    abandonment test in `leaving.spec.ts` runs a ranked test room.
+  - For later items: `receiveAction` rejects `out_of_time` only when the sender's own time-out
+    is due on its market go (`marketGoOf`); item 2a must change that test to "the seat is on its
+    go". `hasTimedOutThisDecision` now only blocks in the market phase.
   - Times: `src/rules/TIME_RULES.ts` (main free time 75 s; one go limit of 40 s replacing
     `firstGoLimitMs` and `goLimitMs`; main limit 210 to 330 s), `mainPhaseLimitMs.ts`. The
     free time again after a pause is the new main free time (R9.13, `ClockGrace.ts`).

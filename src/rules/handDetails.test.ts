@@ -8,7 +8,7 @@ import { startSavedGame } from "./startSavedGame";
 import { viewFor } from "./viewFor";
 
 function gameWithSeatOne(turn: number, changes: Partial<SeatState>): GameState {
-  const state = startSavedGame({ players: 2, startedAt: GAME_STARTED_AT }, 3).state;
+  const state = startSavedGame({ players: 2, kind: "casual", startedAt: GAME_STARTED_AT }, 3).state;
   return {
     ...state,
     turn,

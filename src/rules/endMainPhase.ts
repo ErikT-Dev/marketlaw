@@ -29,6 +29,7 @@ function seatAtTurnStart(seat: SeatState, firsts: ReadonlyArray<ProjectName>): S
     drawnThisPhase: [],
     newCards: [],
     hasHadMarketGo: false,
+    isOutOfTime: false,
     projectsThisTurn: [],
     undoPoints: [],
     isUndoBlocked: false,

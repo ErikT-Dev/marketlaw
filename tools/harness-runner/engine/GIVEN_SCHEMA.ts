@@ -41,6 +41,7 @@ const SEAT = v.strictObject({
   influence_uses: v.optional(v.record(TradeName, COUNT)),
   actions_this_turn: v.optional(COUNT),
   done: v.optional(v.boolean()),
+  out_of_time: v.optional(v.boolean()),
   left: v.optional(v.boolean()),
   time_bank_ms: v.optional(COUNT),
   timeouts_in_a_row: v.optional(COUNT),
@@ -64,6 +65,7 @@ const MARKETPLACE_SLOT = v.strictObject({
 });
 
 export const GIVEN_SCHEMA = v.strictObject({
+  kind: v.optional(v.picklist(["casual", "ranked"])),
   players: v.optional(v.picklist([1, 2, 3, 4])),
   turn: v.optional(COUNT),
   phase: v.optional(v.picklist(["new_game", "market", "main", "ended"])),

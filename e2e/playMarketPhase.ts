@@ -7,7 +7,7 @@ const YOUR_GO_TITLES = ["Your go: choose your turn draw", "The marketplace is em
 const YOUR_GO = { selector: "h2", texts: YOUR_GO_TITLES };
 const YOUR_GO_NAME = new RegExp(`^(${YOUR_GO_TITLES.join("|")})$`);
 const FIND_GO_INTERVAL_MS = 50;
-const LONGEST_GO_WAIT_MS = 30_000;
+const LONGEST_GO_WAIT_MS = 40_000;
 
 async function indexWithTheGo(players: ReadonlyArray<Player>): Promise<number> {
   const hasTheGo = await Promise.all(

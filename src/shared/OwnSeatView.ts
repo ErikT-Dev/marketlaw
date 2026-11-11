@@ -40,6 +40,7 @@ export type OwnSeatView = {
   readonly marketCardRejection: ReasonCode | null;
   readonly actionsThisTurn: number;
   readonly isDone: boolean;
+  readonly isOutOfTime: boolean;
   readonly hasLeft: boolean;
   readonly timeBankMs: number;
   readonly clock: SeatClock | null;

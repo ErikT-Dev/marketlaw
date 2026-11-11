@@ -4,7 +4,7 @@ import { readLocalTestRoomSecret } from "../tools/test-room/readLocalTestRoomSec
 import { expectScreenFits } from "./expectScreenFits";
 import { startTestRoom } from "./startTestRoom";
 
-const FREE_TIME_MS = 45_000;
+const FREE_TIME_MS = 75_000;
 
 async function openSeat(
   browser: Browser,
@@ -76,14 +76,14 @@ test("players leave one by one, the last player wins and the room is deleted", a
   await expect(notFound).toBeHidden();
 });
 
-test("when every player times out a third time at once, the game is abandoned", async ({
+test("when every player in a ranked game times out a third time at once, the game is abandoned", async ({
   browser,
   viewport,
   request,
 }, testInfo) => {
   test.setTimeout(FREE_TIME_MS + 60_000);
   const seats = [1, 2].map((seat) => ({ seat, time_bank_ms: 0, timeouts_in_a_row: 2 }));
-  const links = await startTestRoom(request, { players: 2, seats });
+  const links = await startTestRoom(request, { kind: "ranked", players: 2, seats });
   const pages = await Promise.all(links.map(async (link) => openSeat(browser, viewport, link)));
   for (const page of pages) {
     const abandoned = page.getByRole("dialog", { name: "The game was abandoned" });

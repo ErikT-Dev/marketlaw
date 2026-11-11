@@ -36,6 +36,7 @@ export function setUpGame(setup: GameSetup, random: Random): GameState {
   const filled = fillMarketplace(emptyMarketplace, dealt.piles, FIRST_TURN, random);
   const quests = pickStartingQuests(random);
   return withMainPhaseStart({
+    kind: setup.kind,
     turn: FIRST_TURN,
     phase: "main",
     firstPlayer: 1,

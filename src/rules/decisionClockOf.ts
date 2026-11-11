@@ -7,13 +7,11 @@ import { marketGoOf } from "./marketGoOf";
 import { seatOf } from "./seatOf";
 import { TIME_RULES } from "./TIME_RULES";
 
-function limitsOf(state: GameState, seat: SeatNumber) {
+function limitsOf(state: GameState) {
   if (state.phase === "main") {
     return { freeMs: TIME_RULES.mainFreeMs, limitMs: mainPhaseLimitMs(state.turn) };
   }
-  const limitMs =
-    seat === state.firstPlayer ? TIME_RULES.firstGoLimitMs : TIME_RULES.goLimitMs;
-  return { freeMs: TIME_RULES.goFreeMs, limitMs };
+  return { freeMs: TIME_RULES.goFreeMs, limitMs: TIME_RULES.goLimitMs };
 }
 
 function isDeciding(state: GameState, seatNumber: SeatNumber): boolean {
@@ -23,7 +21,7 @@ function isDeciding(state: GameState, seatNumber: SeatNumber): boolean {
   }
   switch (state.phase) {
     case "main":
-      return !seat.isDone;
+      return !seat.isDone && !seat.isOutOfTime;
     case "market":
       return marketGoOf(state) === seatNumber;
     case "ended":
@@ -41,7 +39,7 @@ export function decisionClockOf(state: GameState, seatNumber: SeatNumber): SeatC
     const until = epochMsAfter(grace.until, 0);
     return { bankMs, freeUntil: until, deadline: until };
   }
-  const { freeMs, limitMs } = limitsOf(state, seatNumber);
+  const { freeMs, limitMs } = limitsOf(state);
   return {
     bankMs,
     freeUntil: epochMsAfter(state.clockStartedAt, freeMs),

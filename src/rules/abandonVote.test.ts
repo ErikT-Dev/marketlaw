@@ -27,7 +27,7 @@ function rejectionOfAction(saved: SavedGame, action: GameAction, at = CALLED_AT)
 }
 
 function gameWithVote(players: 2 | 3 | 4 = 3): SavedGame {
-  const started = startSavedGame({ players, startedAt: GAME_STARTED_AT }, 7);
+  const started = startSavedGame({ players, kind: "casual", startedAt: GAME_STARTED_AT }, 7);
   return received(started, { type: "call_vote", seat: 1 });
 }
 
@@ -95,7 +95,7 @@ describe("an abandon vote", () => {
   });
 
   it("keeps the undo of the player who answers", () => {
-    const started = startSavedGame({ players: 3, startedAt: GAME_STARTED_AT }, 7);
+    const started = startSavedGame({ players: 3, kind: "casual", startedAt: GAME_STARTED_AT }, 7);
     const traded = received(started, { type: "influence", seat: 2, trade: "fund_to_influence" });
     const called = received(traded, { type: "call_vote", seat: 1 });
     const answered = received(called, { type: "vote", seat: 2, answer: "no" });
