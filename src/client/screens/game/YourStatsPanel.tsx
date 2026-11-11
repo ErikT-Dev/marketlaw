@@ -1,3 +1,4 @@
+import { memo } from "react";
 import type { OwnSeatView } from "../../../shared/OwnSeatView";
 import type { PlayerView } from "../../../shared/PlayerView";
 import { Panel } from "../../components/Panel";
@@ -30,7 +31,7 @@ function valueOf(seat: OwnSeatView, stat: (typeof SHOWN_STATS)[number]): number 
   return stat === "buildPasses" ? seat.buildPasses : seat.stats[stat];
 }
 
-export function YourStatsPanel({ seat, view, playerNames }: Props) {
+function YourStatsPanelContent({ seat, view, playerNames }: Props) {
   return (
     <Panel title="Your stats">
       <ul className={styles["statGrid"]} aria-label="Stat values">
@@ -49,3 +50,5 @@ export function YourStatsPanel({ seat, view, playerNames }: Props) {
     </Panel>
   );
 }
+
+export const YourStatsPanel = memo(YourStatsPanelContent);

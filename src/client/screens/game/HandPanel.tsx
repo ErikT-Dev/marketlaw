@@ -1,11 +1,10 @@
 import type { CardName } from "../../../shared/catalogue/CardName";
-import { cardOf } from "../../../shared/catalogue/cardOf";
 import type { HandCardDetails } from "../../../shared/HandCardDetails";
-import { HandCard } from "../../components/HandCard";
 import type { HandCardState } from "../../components/HandCardState";
 import { Panel } from "../../components/Panel";
 import type { HandChoice } from "./HandChoice";
 import styles from "./HandPanel.module.css";
+import { HandPanelCard } from "./HandPanelCard";
 
 type Props = {
   readonly handDetails: ReadonlyArray<HandCardDetails>;
@@ -28,16 +27,14 @@ export function HandPanel({ handDetails, newCards, choice, pendingCards, onPress
       <ul className={styles["hand"]} aria-label="Your hand">
         {handDetails.map((details) => (
           <li key={details.card}>
-            <HandCard
-              card={cardOf(details.card)}
+            <HandPanelCard
+              card={details.card}
               realCost={details.realCost}
               isPlayable={details.playRejection === null}
               state={stateOf(choice, details.card)}
               isNew={newCards.includes(details.card)}
               isPending={pendingCards.includes(details.card)}
-              onSelect={() => {
-                onPressCard(details.card);
-              }}
+              onPressCard={onPressCard}
             />
           </li>
         ))}
