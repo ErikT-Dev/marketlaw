@@ -47,6 +47,7 @@ test("a winner opens their match history, the game record and the other player's
   await players.getByRole("link", { name: leaverName }).click();
   const other = winner.getByRole("dialog", { name: `Match history · ${leaverName}` });
   await expect(other.getByRole("row").nth(1)).toContainText("Casualleft2nd of 2");
+  await expectScreenFits(winner, "match-history-other-player", testInfo);
   await other.getByRole("button", { name: "Back" }).click();
   await expect(record).toBeVisible();
   await winner.keyboard.press("Escape");
@@ -60,7 +61,7 @@ test("a player clicks an opponent's name in a game and comes back to the game", 
   browser,
   viewport,
   request,
-}) => {
+}, testInfo) => {
   const [firstLink = "", secondLink = ""] = await startTestRoom(request, { players: 2 });
   const opponentName = nameOf(secondLink);
   const player = await openTestSeat(browser, viewport, firstLink);
@@ -68,8 +69,33 @@ test("a player clicks an opponent's name in a game and comes back to the game", 
   await opponents.getByRole("link", { name: opponentName }).click();
 
   const history = player.getByRole("dialog", { name: `Match history · ${opponentName}` });
-  await expect(history).toBeVisible();
+  await expect(history.getByRole("heading", { name: "No games yet" })).toBeVisible();
+  await expect(history).toContainText("Finished games appear here.");
+  await expectScreenFits(player, "match-history-from-game", testInfo);
   await history.getByRole("button", { name: "Back" }).click();
   await expect(history).toBeHidden();
   await expect(player.getByRole("button", { name: "Leave game" })).toBeVisible();
+});
+
+test("a player who left a game that goes on opens their empty match history", async ({
+  browser,
+  viewport,
+  request,
+}, testInfo) => {
+  const [firstLink = ""] = await startTestRoom(request, { players: 3 });
+  const leaver = await openTestSeat(browser, viewport, firstLink);
+  await leaver.getByRole("button", { name: "Leave game" }).click();
+  await leaver
+    .getByRole("dialog", { name: "Leave the game?" })
+    .getByRole("button", { name: "Leave the game" })
+    .click();
+  await expect(leaver.getByRole("heading", { name: "You left the game" })).toBeVisible();
+  await leaver.getByRole("button", { name: "Exit to lobby" }).click();
+  await leaver.getByRole("button", { name: "My match history" }).click();
+
+  const history = leaver.getByRole("dialog", { name: `Match history · ${nameOf(firstLink)}` });
+  await expect(history.getByRole("heading", { name: "No games yet" })).toBeVisible();
+  await expect(history).toContainText("Games you finish, or leave, appear here.");
+  await expect(history.getByRole("table", { name: "Games" })).toHaveCount(0);
+  await expectScreenFits(leaver, "match-history-empty", testInfo);
 });
