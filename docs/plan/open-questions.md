@@ -2675,3 +2675,17 @@ file.
   with no incident on githubstatus.com. The pin was undone; the failed jobs are rerun later.
 - **Why:** no check changes for an outage outside the project.
 - **Implemented:** phase 25; commits "INFRA: GitHub jobs run on Ubuntu 24.04" and its undo.
+
+## Q125. Chromium on GitHub without Ubuntu's packages
+
+- **Phase:** 25, second finisher run (follows Q124). Decided by the owner, 2026-11-11.
+- **Question:** GitHub's runners could still not reach Ubuntu's package mirrors, so no browser
+  job could install Chromium, and the phase could not pass its GitHub check or deploy.
+- **Options:** keep waiting for GitHub; install Chromium without `--with-deps`, so only the
+  browser is downloaded from Playwright's own servers and the system libraries already on
+  GitHub's Ubuntu images are used.
+- **Solution:** the owner approved dropping `--with-deps` from the Chromium install step in
+  `check.yml` and `deploy.yml`. No test, limit or other check changes. If a library turns out to
+  be missing, the change is undone and the phase waits for GitHub.
+- **Why:** takes an outside service that failed out of every browser job.
+- **Implemented:** phase 25, commit "INFRA: Chromium installs on GitHub without Ubuntu's packages".
