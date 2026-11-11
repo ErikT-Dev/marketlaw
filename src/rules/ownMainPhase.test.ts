@@ -32,6 +32,30 @@ function afterFirstGoOfTurnTwo(): SavedGame {
   );
 }
 
+function afterSeatTwoDrewInItsMainPhase(): SavedGame {
+  const saved = afterFirstGoOfTurnTwo();
+  const rich = {
+    ...saved,
+    state: {
+      ...saved.state,
+      seats: saved.state.seats.map((seat) =>
+        seat.seat === 2 ? { ...seat, stats: { ...seat.stats, influence: 10 } } : seat,
+      ),
+    },
+  };
+  return applied(
+    rich,
+    { type: "draw_action", seat: 2, kind: "Residential", tier: 1 },
+    FIRST_GO_ENDS_AT + 1_000,
+  );
+}
+
+function drawingSeatsShownTo(saved: SavedGame, viewer: 1 | 2 | 3) {
+  return viewFor(saved.state, viewer)
+    .drawLog.filter((entry) => entry.turn === 2 && entry.kind !== "shuffle")
+    .map((entry) => entry.seat);
+}
+
 function clockOf(saved: SavedGame, seat: 1 | 2 | 3) {
   return viewFor(saved.state, seat).seats.find((shown) => shown.seat === seat)?.clock ?? null;
 }
@@ -77,5 +101,30 @@ describe("each player's own main phase", () => {
     );
     const left = applied(done, { type: "leave_game", seat: 1 }, FIRST_GO_ENDS_AT + 3_000);
     expect(left.state.turn).toBe(3);
+  });
+
+  it("hides a main-phase draw from a player still waiting for their market go", () => {
+    const before = afterFirstGoOfTurnTwo();
+    const drew = afterSeatTwoDrewInItsMainPhase();
+    expect(drew.state.deck.length).toBe(before.state.deck.length - 1);
+    expect(viewFor(drew.state, 3).deckCount).toBe(before.state.deck.length);
+    expect(drawingSeatsShownTo(drew, 3)).toEqual([2]);
+    expect(drawingSeatsShownTo(drew, 2)).toEqual([2, 2]);
+  });
+
+  it("shows a later market go's draw at once to a player already in their main phase", () => {
+    const drew = afterSeatTwoDrewInItsMainPhase();
+    const secondGo = applied(
+      drew,
+      { type: "turn_draw", seat: 3, choice: { option: "B", sector: "Public" } },
+      FIRST_GO_ENDS_AT + 2_000,
+    );
+    const realDeck = secondGo.state.deck.length;
+    expect(drawingSeatsShownTo(secondGo, 2)).toEqual([2, 2, 3]);
+    expect(viewFor(secondGo.state, 2).deckCount).toBe(realDeck);
+    expect(drawingSeatsShownTo(secondGo, 3)).toEqual([2, 3]);
+    expect(viewFor(secondGo.state, 3).deckCount).toBe(realDeck);
+    expect(drawingSeatsShownTo(secondGo, 1)).toEqual([2, 3]);
+    expect(viewFor(secondGo.state, 1).deckCount).toBe(realDeck + 1);
   });
 });

@@ -1,4 +1,5 @@
-import { TIME_RULES } from "../../rules/TIME_RULES";
+import { decisionOf } from "../../rules/decisionOf";
+import type { SeatFreeTime } from "../../shared/SeatFreeTime";
 import type { AddressedNotice } from "./AddressedNotice";
 import type { RoomRecord } from "./RoomRecord";
 
@@ -11,9 +12,10 @@ export function resumeNoticesBetween(
   if (pause === null || game === null || game.saved.state.pause !== null) {
     return [];
   }
-  const freeMs = game.saved.state.phase === "main" ? TIME_RULES.mainFreeMs : TIME_RULES.goFreeMs;
-  return game.seats.map(({ playerId }) => ({
-    playerId,
-    notice: { kind: "resumed", seats: pause.seats, freeMs },
-  }));
+  const state = game.saved.state;
+  const seats = pause.seats.flatMap((seat): ReadonlyArray<SeatFreeTime> => {
+    const decision = decisionOf(state, seat);
+    return decision === null ? [] : [{ seat, freeMs: decision.freeMs }];
+  });
+  return game.seats.map(({ playerId }) => ({ playerId, notice: { kind: "resumed", seats } }));
 }

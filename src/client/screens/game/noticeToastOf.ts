@@ -2,7 +2,7 @@ import type { Notice } from "../../../shared/Notice";
 import type { IconText } from "../../components/IconText";
 import type { SeatNumber } from "../../../shared/SeatNumber";
 import { REJECTION_MESSAGES } from "./REJECTION_MESSAGES";
-import { playerNameOf } from "./playerNameOf";
+import { resumedNoticeText } from "./resumedNoticeText";
 import { SITE_GAME_LIMIT_TOAST } from "./SITE_GAME_LIMIT_TOAST";
 import { timeOutText } from "./timeOutText";
 
@@ -20,20 +20,5 @@ export function noticeToastOf(
   if (notice.kind === "daily_limit") {
     return { title: "No rematch", text: REJECTION_MESSAGES[notice.reason] };
   }
-  const seconds = String(Math.round(notice.freeMs / 1000));
-  const others = notice.seats
-    .filter((seat) => seat !== viewer)
-    .map((seat) => playerNameOf(playerNames, seat));
-  const parts = [
-    ...(notice.seats.includes(viewer)
-      ? [`You get ${seconds} seconds of free time before your time runs out.`]
-      : []),
-    ...(others.length === 0
-      ? []
-      : [
-          `${others.join(" and ")} ${others.length === 1 ? "gets" : "get"} ${seconds} seconds of free time before their time runs out.`,
-        ]),
-  ];
-  const who = parts.join(" ");
-  return { title: "Game resumed", text: `Everyone was away, so the game was paused. ${who}` };
+  return { title: "Game resumed", text: resumedNoticeText(notice.seats, viewer, playerNames) };
 }

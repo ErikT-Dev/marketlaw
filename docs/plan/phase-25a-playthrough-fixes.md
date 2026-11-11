@@ -352,8 +352,33 @@ These 24 required scenarios now assert the new rules (Q126) and must pass again:
   - The view's phase for the viewer (S2.1, the top bar shows your own phase; the screen is
     item 9).
 
-- [ ] 2b. **Each player's own main phase: what each seat sees** (R5.4, R5.5, R17.7, R17.8, M3.2,
+- [x] 2b. **Each player's own main phase: what each seat sees** (R5.4, R5.5, R17.7, R17.8, M3.2,
   M3.3; invariants I23 and I24 as reworded in Q127). **Large.**
+  - Done (2026-11-11). `visibility` "a main-phase action is hidden from a player still waiting
+    ..." passes (and fails without the change); the two item-2a `marketplace` scenarios still
+    pass. Bots act in their main phase as soon as their go ends (`legalBot` by `view.phase`);
+    the simulator (50 games in the check, 1,000 in `npm run harness`) finds no violation.
+  - As built: `MainPhaseStart` is `{ seats, piles, marketGos }`: `seats` and `piles`
+    (`SeatPilesAtStart`) hold each seat's state and the real piles when its own main phase
+    started, in start order, so `piles[0]` is the turn's first main-phase start;
+    `marketGos` (`MarketGoDraws`) records each go's draw-log range and the cards it drew.
+    `withOwnMainPhaseStart` adds one seat (`takeTurnDraw` at the go's end; `endMarketPhase`
+    for seats not started yet, such as left seats); `withMainPhaseStart` starts every seat
+    already in its own main phase (empty at a turn's start). `pilesStartShownTo` picks the
+    viewer's own start or else the first; `pilesShownTo`, `kindTiersLeftAsSeenBy` and
+    `cardsDrawnSinceStart` follow R5.5. `endMarketPhase` no longer empties `drawnThisPhase`
+    of seats already in their main phase.
+  - Room: `isChangeVisibleToAll` counts a market-phase change as public only when the market go
+    moves (I25), no longer every market-phase change.
+  - The `resumed` notice carries each paused seat's own free time
+    (`seats: [{ seat, freeMs }]`, `SeatFreeTime`; `resumedNoticeText.ts`).
+  - Differs from the phase file: R5.5 now also says where a market-go draw of a card still shown
+    in the discard pile comes off (Q128, `HARNESS:` commit).
+  - For later items: item 3's time-out on a go that draws nothing must still call
+    `withOwnMainPhaseStart` for the seat (as `takeTurnDraw` does); an open turn draw in the main
+    phase is a `turn_draw` entry outside every `marketGos` range, so it is already hidden from
+    others until the main phase ends. Item 6's log entries can use `mainPhaseStart.seats` as each
+    seat's state at its own start.
   - `MainPhaseStart.ts` and `withMainPhaseStart.ts` become per seat: each seat's snapshot at its
     own main-phase start, and the piles as at the turn's first main-phase start. A seat on or
     before its go is shown live (`seatShownTo.ts`).

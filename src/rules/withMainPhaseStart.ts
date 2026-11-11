@@ -1,15 +1,10 @@
 import type { GameState } from "./GameState";
-import { kindTierCountsOf } from "./kindTierCountsOf";
+import { isInOwnMainPhase } from "./isInOwnMainPhase";
+import { withOwnMainPhaseStart } from "./withOwnMainPhaseStart";
 
 export function withMainPhaseStart(state: Omit<GameState, "mainPhaseStart">): GameState {
-  return {
-    ...state,
-    mainPhaseStart: {
-      seats: state.seats,
-      deckCount: state.deck.length,
-      kindTierCounts: kindTierCountsOf([...state.deck, ...state.discard]),
-      discard: state.discard,
-      drawLogLength: state.drawLog.length,
-    },
-  };
+  const unstarted = { ...state, mainPhaseStart: { seats: [], piles: [], marketGos: [] } };
+  return state.seats
+    .filter((seat) => isInOwnMainPhase(unstarted, seat))
+    .reduce<GameState>((soFar, seat) => withOwnMainPhaseStart(soFar, seat.seat), unstarted);
 }

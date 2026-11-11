@@ -78,5 +78,5 @@ function mainPhaseMove(view: PlayerView, chooser: BotChooser): ActionIntent | nu
 }
 
 export function legalBot(view: PlayerView, chooser: BotChooser): ActionIntent | null {
-  return view.marketGo === null ? mainPhaseMove(view, chooser) : turnDrawMove(view, chooser);
+  return view.phase === "market" ? turnDrawMove(view, chooser) : mainPhaseMove(view, chooser);
 }

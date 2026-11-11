@@ -175,7 +175,10 @@ export const SERVER_MESSAGE_SCHEMA = v.variant("type", [
         }),
         v.object({ kind: v.literal("timed_out"), gameKind: v.literal("casual") }),
       ]),
-      v.object({ kind: v.literal("resumed"), seats: v.array(SEAT), freeMs: COUNT }),
+      v.object({
+        kind: v.literal("resumed"),
+        seats: v.array(v.object({ seat: SEAT, freeMs: COUNT })),
+      }),
       v.object({ kind: v.literal("site_game_limit") }),
       v.object({
         kind: v.literal("daily_limit"),

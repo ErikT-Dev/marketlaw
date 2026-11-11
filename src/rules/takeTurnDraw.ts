@@ -13,9 +13,11 @@ import type { GameAction } from "./GameAction";
 import type { GameState } from "./GameState";
 import { marketGoOf } from "./marketGoOf";
 import { pickTier } from "./pickTier";
+import { seatOf } from "./seatOf";
 import type { Random } from "./Random";
 import { tierChancesByTurn } from "./tierChancesByTurn";
 import { updateSeat } from "./updateSeat";
+import { withOwnMainPhaseStart } from "./withOwnMainPhaseStart";
 
 type TurnDraw = Extract<GameAction, { readonly type: "turn_draw" }>;
 type TierDraw = { readonly tier: Tier; readonly count: number };
@@ -51,6 +53,16 @@ function withTierDraw(
   return last?.tier === tier
     ? [...draws.slice(0, -1), { tier, count: last.count + count }]
     : [...draws, { tier, count }];
+}
+
+function withMarketGoRecorded(before: GameState, after: GameState, seat: SeatNumber): GameState {
+  const start = after.mainPhaseStart;
+  const go = {
+    fromLogLength: before.drawLog.length,
+    toLogLength: after.drawLog.length,
+    drawn: seatOf(after, seat)?.drawnThisPhase ?? [],
+  };
+  return { ...after, mainPhaseStart: { ...start, marketGos: [...start.marketGos, go] } };
 }
 
 function drawFromDeck(
@@ -90,8 +102,9 @@ export function takeTurnDraw(
   const { seat, choice } = action;
   const clock = decisionClockOf(state, seat);
   const taken = choice.option === "A" ? withMarketCard(state, seat, choice.card) : state;
-  const drawn = {
-    ...updateSeat(drawFromDeck(taken, seat, choice, random), seat, (current) => ({
+  const recorded = withMarketGoRecorded(taken, drawFromDeck(taken, seat, choice, random), seat);
+  const ended = {
+    ...updateSeat(recorded, seat, (current) => ({
       ...current,
       hasHadMarketGo: true,
       mainPhaseStartedAt: at,
@@ -100,5 +113,6 @@ export function takeTurnDraw(
     })),
     clockStartedAt: at,
   };
-  return marketGoOf(drawn) === null ? endMarketPhase(drawn, at) : drawn;
+  const started = withOwnMainPhaseStart(ended, seat);
+  return marketGoOf(started) === null ? endMarketPhase(started, at) : started;
 }
