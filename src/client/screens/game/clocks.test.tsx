@@ -68,9 +68,60 @@ describe("clocks", () => {
     expect(within(bar).getByRole("timer", { name: "Go: Cy 2:00" })).toBeDefined();
     expect(within(bar).getByRole("timer", { name: "Bank 5:00" })).toBeDefined();
   });
+
+  it("in my main phase also shows whose market go it is while later players have their go", () => {
+    showWith(
+      { phase: "main", marketGo: 3 },
+      { hasHadMarketGo: true, timeBankMs: 0, clock: clockFrom(0, 75_000, 210_000) },
+    );
+    const bar = screen.getByRole("banner");
+    expect(within(bar).getByRole("timer", { name: "Time left 0:15" })).toBeDefined();
+    expect(within(bar).getByRole("timer", { name: "Go: Cy 2:00" })).toBeDefined();
+  });
 });
 
 describe("running out of time", () => {
+  it("shows Out of time in my clock and says I can keep playing", () => {
+    showWith({}, { isOutOfTime: true, timeBankMs: 0 });
+    const bar = within(screen.getByRole("banner"));
+    expect(bar.getByText("Out of time")).toBeDefined();
+    expect(bar.queryByRole("timer", { name: /^Time left/ })).toBeNull();
+    expect(
+      screen.getByText(
+        "You are out of time. You can keep playing until the other players are done.",
+      ),
+    ).toBeDefined();
+    expect(screen.getByRole("button", { name: "End turn" })).toBeDefined();
+  });
+
+  it("shows another player out of time in the player order and on their card", () => {
+    const update = roomUpdateWith({});
+    const game = update.game;
+    const view =
+      game === null
+        ? null
+        : {
+            ...game.view,
+            seats: game.view.seats.map((seat) =>
+              seat.seat === 4 ? { ...seat, isOutOfTime: true } : seat,
+            ),
+          };
+    render(
+      <GamePage
+        {...gamePageProps(
+          game === null || view === null ? update : { ...update, game: { ...game, view } },
+        )}
+      />,
+    );
+    const order = within(screen.getByRole("list", { name: "Player order" }));
+    expect(
+      order.getAllByRole("listitem").find((item) => item.textContent.includes("Di"))?.textContent,
+    ).toContain("out of time");
+    expect(
+      within(screen.getByRole("article", { name: "Di" })).getByText("out of time"),
+    ).toBeDefined();
+  });
+
   it("says in a ranked game how many time-outs in a row the player has had, out of 3", () => {
     const props = {
       ...gamePageProps(roomUpdateWith({})),

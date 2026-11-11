@@ -19,7 +19,13 @@ function statusOf(
   if (view.phase === "main" && awaySeats.includes(seat)) {
     return "away";
   }
-  return view.phase === "main" && seatView.isDone ? "done" : "none";
+  if (view.phase !== "main") {
+    return "none";
+  }
+  if (seatView.isDone) {
+    return "done";
+  }
+  return seatView.isOutOfTime ? "outOfTime" : "none";
 }
 
 export function orderBadgesOf(

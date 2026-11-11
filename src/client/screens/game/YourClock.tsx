@@ -1,5 +1,6 @@
 import type { OwnSeatView } from "../../../shared/OwnSeatView";
 import type { PlayerView } from "../../../shared/PlayerView";
+import { OutOfTimeChip } from "../../components/OutOfTimeChip";
 import { TimerChip } from "../../components/TimerChip";
 import { LiveBankChip } from "./LiveBankChip";
 import { playerNameOf } from "./playerNameOf";
@@ -12,35 +13,50 @@ type Props = {
   readonly playerNames: ReadonlyArray<string>;
 };
 
+type ShownDecision = { readonly label: string; readonly deadline: number };
+
 const LOW_TIME_MS = 30_000;
 
-function decisionOf(view: PlayerView, seat: OwnSeatView, playerNames: ReadonlyArray<string>) {
-  if (view.phase === "market") {
-    const goSeat = view.seats.find((candidate) => candidate.seat === view.marketGo);
-    const label =
-      goSeat?.seat === seat.seat
-        ? "Your go"
-        : `Go: ${playerNameOf(playerNames, goSeat?.seat ?? 1)}`;
-    return goSeat?.clock === null || goSeat === undefined
-      ? null
-      : { label, deadline: goSeat.clock.deadline };
+function marketGoDecisionOf(
+  view: PlayerView,
+  seat: OwnSeatView,
+  playerNames: ReadonlyArray<string>,
+): ShownDecision | null {
+  const goSeat = view.seats.find((candidate) => candidate.seat === view.marketGo);
+  if (goSeat === undefined || goSeat.clock === null) {
+    return null;
   }
-  return seat.clock === null ? null : { label: "Time left", deadline: seat.clock.deadline };
+  const label =
+    goSeat.seat === seat.seat ? "Your go" : `Go: ${playerNameOf(playerNames, goSeat.seat)}`;
+  return { label, deadline: goSeat.clock.deadline };
+}
+
+function ownDecisionOf(view: PlayerView, seat: OwnSeatView): ShownDecision | null {
+  return view.phase === "market" || seat.clock === null
+    ? null
+    : { label: "Time left", deadline: seat.clock.deadline };
 }
 
 export function YourClock({ view, seat, playerNames }: Props) {
   const now = useServerNow();
-  const decision = decisionOf(view, seat, playerNames);
-  const leftMs = decision === null ? 0 : Math.max(0, decision.deadline - now);
+  const decisions = [ownDecisionOf(view, seat), marketGoDecisionOf(view, seat, playerNames)];
   return (
     <div className={styles["clock"]}>
-      {decision === null ? null : (
-        <TimerChip
-          label={decision.label}
-          ms={leftMs}
-          state={leftMs <= LOW_TIME_MS ? "low" : "normal"}
-        />
-      )}
+      {view.phase !== "market" && seat.isOutOfTime ? <OutOfTimeChip /> : null}
+      {decisions.map((decision) => {
+        if (decision === null) {
+          return null;
+        }
+        const leftMs = Math.max(0, decision.deadline - now);
+        return (
+          <TimerChip
+            key={decision.label}
+            label={decision.label}
+            ms={leftMs}
+            state={leftMs <= LOW_TIME_MS ? "low" : "normal"}
+          />
+        );
+      })}
       <LiveBankChip timeBankMs={seat.timeBankMs} clock={seat.clock} label="Bank" />
     </div>
   );

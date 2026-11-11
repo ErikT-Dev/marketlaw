@@ -77,15 +77,21 @@
   box-sizing: border-box;
 }
 
-.takeable {
+.selectable,
+.selected {
   cursor: pointer;
 }
 
-.takeable:hover {
+.selectable:hover {
   border-color: var(--color-text-primary);
 }
 
-.takeable:focus-visible {
+.selected {
+  border: 2px solid var(--color-card-tile-selected-ring);
+}
+
+.selectable:focus-visible,
+.selected:focus-visible {
   outline: 2px solid var(--color-focus-ring);
 }
 

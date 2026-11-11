@@ -9,10 +9,12 @@ import { MarketSlot } from "./MarketSlot";
 type Props = {
   readonly view: PlayerView;
   readonly isYourGo: boolean;
-  readonly onTake: ((card: CardName) => void) | null;
+  readonly selected: CardName | null;
+  readonly onSelect: ((card: CardName) => void) | null;
+  readonly onDraw: ((card: CardName) => void) | null;
 };
 
-export function MarketplacePanel({ view, isYourGo, onTake }: Props) {
+export function MarketplacePanel({ view, isYourGo, selected, onSelect, onDraw }: Props) {
   return (
     <div className={isYourGo ? styles["highlight"] : styles["plain"]}>
       <Panel
@@ -29,15 +31,9 @@ export function MarketplacePanel({ view, isYourGo, onTake }: Props) {
             <MarketSlot
               key={slot.place}
               slot={slot}
-              onTake={
-                onTake === null || slot.card === null
-                  ? null
-                  : () => {
-                      if (slot.card !== null) {
-                        onTake(slot.card);
-                      }
-                    }
-              }
+              isSelected={slot.card !== null && slot.card === selected}
+              onSelect={onSelect}
+              onDraw={onDraw}
             />
           ))}
         </ul>

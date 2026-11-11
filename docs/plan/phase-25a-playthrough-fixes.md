@@ -525,8 +525,33 @@ These 24 required scenarios now assert the new rules (Q126) and must pass again:
     `LobbySession.ts`). Client: account settings (S12.5) and the `username_change_too_soon`
     text (S16.3); `e2e/usernames.spec.ts` and `e2e/accountSettings.spec.ts` follow.
 
-- [ ] 9. **Market phase screens** (S2.1, S2.2, S2.3, S4.3, S4.4, S4.5, S4.6, S6.7, S9.4).
+- [x] 9. **Market phase screens** (S2.1, S2.2, S2.3, S4.3, S4.4, S4.5, S4.6, S6.7, S9.4).
   **Large.**
+  - Done (2026-11-11). Client only; no scenario covers screens, so unit tests
+    (`marketPhase.test.tsx`, `clocks.test.tsx`) and browser tests (`e2e/marketPhase.spec.ts`,
+    `e2e/clocks.spec.ts`, the two-player full game) at all three sizes check it.
+  - As built: the banner and the top bar's phase chip are green on your go
+    (`--color-board-your-go` and `-text`; `--color-board-out-of-time` for the status; added to
+    `BOARD_VALUES.ts` and `tokens.css`). On your go a marketplace card is a button named by the
+    card (`aria-pressed`, `SelectableMarketCard.tsx`); a click only selects it, and **Draw** under
+    it takes it (`MiddleColumn` keeps the selection). The market go panel's "You have had your go"
+    state is removed (no longer reached); its texts name Draw and the new time-out. The
+    market-phase actions text says they open when your market go ends and quests cannot be
+    completed before then. The open turn draw (`OpenTurnDraw.tsx`, compact `SectorButtons`) and
+    "You are out of time ..." (S6.7) are in `ActionNotices.tsx` above the action buttons;
+    `ActionsPanel` now takes `onAction`. `YourClock` shows **Out of time** (`OutOfTimeChip`) or
+    Time left in your main phase, plus "Go: Ann 0:12" while later players still have their go.
+    Badges and opponent cards show "out of time" (`PlayerStatus` `outOfTime`). The time-out
+    notices (S9.4) were already right from item 1.
+  - Screenshots: `market-phase-banner-your-go`, `market-card-selected`, `market-open-turn-draw`,
+    `game-out-of-time` (now with the clock, badge and actions text); the other `market-*`
+    screenshots changed with the texts.
+  - Differs from the phase file: nothing. At 1280×720 the third top-bar chip (Go: ...) narrows
+    the player badges while later players have their go, as 4 players already do.
+  - For later items: item 10 makes marketplace cards clickable at any time for the big card;
+    `MarketSlot` shows a plain card unless `onSelect` is set, which `MiddleColumn` sets only on
+    your go. `e2e/playMarketPhase.ts` takes a card by clicking the first marketplace button, then
+    **Draw**.
   - `MarketPhaseBanner.tsx` and `GameTopBar.tsx` (phase green on your go, your own phase);
     `MarketplacePanel.tsx`, `MarketSlot.tsx`, `MarketGoPanel.tsx`: a click selects, **Draw**
     under the selected card takes it (S4.3); `ActionsPanel.tsx` and the city open when your go

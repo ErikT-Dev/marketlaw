@@ -1,3 +1,5 @@
+import { useState } from "react";
+import type { CardName } from "../../../shared/catalogue/CardName";
 import type { OwnSeatView } from "../../../shared/OwnSeatView";
 import type { PlayerView } from "../../../shared/PlayerView";
 import type { ActionIntent } from "../../../shared/protocol/ActionIntent";
@@ -20,17 +22,24 @@ type Props = {
 };
 
 export function MiddleColumn({ view, seat, playerNames, isBusy, onAction }: Props) {
-  const canTakeMarketCard = seat.marketCardRejection === null && !isBusy;
+  const [selected, setSelected] = useState<CardName | null>(null);
+  const canTakeMarketCard = seat.marketCardRejection === null;
+  const isYourGo = seat.turnDrawRejection === null && !seat.hasHadMarketGo;
   return (
     <div className={styles[view.phase === "market" ? "middleInMarketPhase" : "middle"]}>
       {view.phase === "market" ? (
-        <MarketPhaseBanner goText={marketGoText(view, seat, playerNames)} />
+        <MarketPhaseBanner
+          goText={marketGoText(view, seat, playerNames)}
+          isYourGo={view.marketGo === view.seat}
+        />
       ) : null}
       <MarketplacePanel
         view={view}
-        isYourGo={seat.turnDrawRejection === null && !seat.hasHadMarketGo}
-        onTake={
-          canTakeMarketCard
+        isYourGo={isYourGo}
+        selected={canTakeMarketCard ? selected : null}
+        onSelect={canTakeMarketCard ? setSelected : null}
+        onDraw={
+          canTakeMarketCard && !isBusy
             ? (card) => {
                 onAction({ type: "turn_draw", choice: { option: "A", card } });
               }

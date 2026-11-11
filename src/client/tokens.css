@@ -39,6 +39,7 @@
   --color-board-guest-note: #2e2442;
   --color-board-market-phase-text: #1c1206;
   --color-board-market-phase: #f59e0b;
+  --color-board-out-of-time: #f87171;
   --color-board-page-dim: rgba(11, 15, 26, 0.78);
   --color-board-pending: rgba(0, 0, 0, 0.6);
   --color-board-phase-chip-text: #ddd6fe;
@@ -55,6 +56,8 @@
   --color-board-trade-status: #ddd6fe;
   --color-board-trade: #4c1d95;
   --color-board-user-menu: #1e1b2e;
+  --color-board-your-go-text: #052e16;
+  --color-board-your-go: #22c55e;
   --color-button-danger-base: #ef4444;
   --color-button-danger-hover: #dc2626;
   --color-button-disabled-base: #9ca3af;

@@ -16,6 +16,7 @@ const STATUS_TEXT: Readonly<Record<PlayerStatus, string>> = {
   inGame: "in a game",
   away: "away",
   done: "done",
+  outOfTime: "out of time",
   left: "left",
   none: "",
 };
@@ -24,6 +25,7 @@ const STATUS_COLOR: Readonly<Record<PlayerStatus, string>> = {
   inGame: "var(--color-status-in-game)",
   away: "var(--color-status-away)",
   done: "var(--color-status-done)",
+  outOfTime: "var(--color-board-out-of-time)",
   left: "var(--color-status-left)",
   none: "var(--color-status-online)",
 };

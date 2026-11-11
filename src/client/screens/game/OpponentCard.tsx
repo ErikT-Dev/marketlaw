@@ -23,7 +23,10 @@ function statusOf(seat: OtherSeatView, isAway: boolean) {
   if (isAway) {
     return "away";
   }
-  return seat.isDone ? "done" : "none";
+  if (seat.isDone) {
+    return "done";
+  }
+  return seat.isOutOfTime ? "outOfTime" : "none";
 }
 
 export function OpponentCard({ seat, name, playerId, onOpen }: Props) {

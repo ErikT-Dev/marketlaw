@@ -52,6 +52,18 @@
   gap: var(--space-sm);
 }
 
+.sectorsCompact {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-xs);
+}
+
+.sectorsCompact .sector {
+  min-height: 28px;
+  padding: 0 var(--space-xs);
+  font-size: var(--font-size-sm);
+}
+
 .sector {
   min-height: 36px;
   padding: 0 var(--space-sm);

@@ -41,5 +41,15 @@ test("clocks count down, and a player out of time in a casual game keeps playing
       .getByRole("listitem")
       .filter({ hasText: "Seat 1" }),
   ).not.toContainText("done");
+  await expect(
+    two
+      .getByRole("list", { name: "Player order" })
+      .getByRole("listitem")
+      .filter({ hasText: "Seat 1" }),
+  ).toContainText("out of time");
+  await expect(one.getByRole("banner").getByText("Out of time", { exact: true })).toBeVisible();
+  await expect(
+    one.getByText("You are out of time. You can keep playing until the other players are done."),
+  ).toBeVisible();
   await expectScreenFits(one, "game-out-of-time", testInfo);
 });

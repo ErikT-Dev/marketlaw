@@ -56,13 +56,8 @@ export function RightColumn(props: Props) {
         isBusy={isBusy}
         onPlaySelected={playSelected}
         onSell={sell}
-        onUndo={() => {
-          onAction({ type: "undo" });
-        }}
-        onEndTurn={() => {
-          onAction({ type: "end_turn" });
-        }}
         onOpenDialog={setDialog}
+        onAction={onAction}
       />
       <ProgressDialogs
         dialog={dialog}

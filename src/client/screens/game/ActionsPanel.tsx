@@ -1,7 +1,8 @@
 import type { OwnSeatView } from "../../../shared/OwnSeatView";
+import type { ActionIntent } from "../../../shared/protocol/ActionIntent";
 import { Button } from "../../components/Button";
 import { Panel } from "../../components/Panel";
-import { TextWithIcons } from "../../components/TextWithIcons";
+import { ActionNotices } from "./ActionNotices";
 import styles from "./ActionsPanel.module.css";
 import { counted } from "./counted";
 import { DoneBanner } from "./DoneBanner";
@@ -9,8 +10,6 @@ import { MarketPhaseNotice } from "./MarketPhaseNotice";
 import type { HandChoice } from "./HandChoice";
 import type { OpenDialog } from "./OpenDialog";
 import { ProgressButtons } from "./ProgressButtons";
-import { REJECTION_MESSAGES } from "./REJECTION_MESSAGES";
-import { SellingNotice } from "./SellingNotice";
 
 type Props = {
   readonly seat: OwnSeatView;
@@ -21,9 +20,8 @@ type Props = {
   readonly isBusy: boolean;
   readonly onPlaySelected: () => void;
   readonly onSell: () => void;
-  readonly onUndo: () => void;
-  readonly onEndTurn: () => void;
   readonly onOpenDialog: (dialog: OpenDialog) => void;
+  readonly onAction: (action: ActionIntent) => void;
 };
 
 function sellLabel(choice: HandChoice): string {
@@ -52,12 +50,7 @@ export function ActionsPanel(props: Props) {
   const marked = choice.mode === "selling" ? choice.marked.length : 0;
   return (
     <Panel title="Actions">
-      {seat.sellRejection === "action_limit_reached" ? (
-        <p className={styles["notice"]}>
-          <TextWithIcons text={REJECTION_MESSAGES.action_limit_reached} />
-        </p>
-      ) : null}
-      {choice.mode === "selling" ? <SellingNotice marked={marked} /> : null}
+      <ActionNotices seat={seat} choice={choice} isBusy={isBusy} onAction={props.onAction} />
       <div className={styles["buttons"]}>
         <Button
           look="menu"
@@ -69,7 +62,9 @@ export function ActionsPanel(props: Props) {
         <Button
           look="menu"
           isDisabled={isBusy || seat.undoRejection !== null}
-          onClick={props.onUndo}
+          onClick={() => {
+            props.onAction({ type: "undo" });
+          }}
         >
           Undo
         </Button>
@@ -87,7 +82,9 @@ export function ActionsPanel(props: Props) {
           look="success"
           isDisabled={isBusy || seat.endTurnRejection !== null}
           loadingLabel={isEndTurnPending ? "Waiting for the server…" : null}
-          onClick={props.onEndTurn}
+          onClick={() => {
+            props.onAction({ type: "end_turn" });
+          }}
         >
           End turn
         </Button>

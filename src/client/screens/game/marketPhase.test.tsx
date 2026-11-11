@@ -74,15 +74,28 @@ describe("the marketplace", () => {
 });
 
 describe("the market go panel", () => {
-  it("on your go takes a marketplace card or draws from a chosen sector", () => {
+  it("on your go takes a selected marketplace card with Draw or draws from a chosen sector", () => {
     const { onAction } = showGame({ marketGo: 2 }, ON_YOUR_GO);
     const panel = within(screen.getByRole("region", { name: "Your go: choose your turn draw" }));
     expect(
       panel.getByText(
-        "Choose one of the two options. If your time runs out, you get option B with a random sector.",
+        "Choose one of the two options. If your time runs out, your go ends without a draw, and you choose a sector for your 2 cards later in your main phase.",
       ),
     ).toBeDefined();
-    fireEvent.click(marketplace().getByRole("button", { name: "Take Law Firm" }));
+    expect(marketplace().queryByRole("button", { name: "Draw" })).toBeNull();
+    fireEvent.click(marketplace().getByRole("button", { name: "Saw Mill" }));
+    fireEvent.click(marketplace().getByRole("button", { name: "Law Firm" }));
+    expect(onAction).not.toHaveBeenCalled();
+    expect(
+      marketplace().getByRole("button", { name: "Law Firm" }).getAttribute("aria-pressed"),
+    ).toBe("true");
+    expect(
+      marketplace().getByRole("button", { name: "Saw Mill" }).getAttribute("aria-pressed"),
+    ).toBe("false");
+    const lawFirm = marketplace()
+      .getAllByRole("listitem")
+      .find((place) => place.textContent.includes("Law Firm"));
+    fireEvent.click(within(lawFirm ?? document.body).getByRole("button", { name: "Draw" }));
     expect(onAction).toHaveBeenLastCalledWith({
       type: "turn_draw",
       choice: { option: "A", card: "Law Firm" },
@@ -119,12 +132,16 @@ describe("the market go panel", () => {
     expect(panel.queryAllByRole("button")).toEqual([]);
   });
 
-  it("after your go says the main phase starts when everyone has had theirs", () => {
-    showGame({ marketGo: 3 }, { hasHadMarketGo: true, turnDrawRejection: "out_of_market" });
-    const panel = within(screen.getByRole("region", { name: "You have had your go this turn" }));
-    expect(
-      panel.getByText("The main phase starts when every player has had their go."),
-    ).toBeDefined();
+  it("after your go shows your city and the main-phase actions while later players have their go", () => {
+    showGame(
+      { phase: "main", marketGo: 4 },
+      { hasHadMarketGo: true, turnDrawRejection: "out_of_market" },
+    );
+    expect(screen.queryByRole("region", { name: "MARKET PHASE" })).toBeNull();
+    expect(screen.getByRole("button", { name: "Play card" })).toBeDefined();
+    expect(screen.getByRole("region", { name: "Your city · 0 cards" })).toBeDefined();
+    expect(screen.getByText("Main phase")).toBeDefined();
+    expect(marketplace().queryAllByRole("button")).toEqual([]);
   });
 
   it("hides the main-phase actions and the city in the market phase", () => {
@@ -133,7 +150,7 @@ describe("the market go panel", () => {
     expect(screen.queryByRole("button", { name: "End turn" })).toBeNull();
     expect(
       screen.getByText(
-        "Market phase: play, sell and the other main-phase actions open when the market phase ends.",
+        "Market phase: play, sell and the other main-phase actions open when your market go ends. Quests cannot be completed before then.",
       ),
     ).toBeDefined();
     expect(screen.getByText("Market phase")).toBeDefined();
@@ -157,6 +174,30 @@ describe("the market phase banner", () => {
     showGame({ phase: "main", marketGo: null });
     expect(screen.queryByRole("region", { name: "MARKET PHASE" })).toBeNull();
     expect(screen.getByText("Main phase")).toBeDefined();
+  });
+});
+
+describe("a turn draw left open", () => {
+  it("offers the sectors for the 2 cards and says a random one is used otherwise", () => {
+    const { onAction } = showGame(
+      { phase: "main", marketGo: 4 },
+      { hasHadMarketGo: true, turnDrawRejection: null, marketCardRejection: "out_of_market" },
+    );
+    const group = within(screen.getByRole("group", { name: "Turn draw left open" }));
+    expect(screen.getByRole("group", { name: "Turn draw left open" }).textContent).toContain(
+      "Your time ran out on your market go. Choose a sector for your 2 cards. If you end your turn without choosing, a random sector is used.",
+    );
+    expect(marketplace().queryAllByRole("button")).toEqual([]);
+    fireEvent.click(group.getByRole("button", { name: "Public" }));
+    expect(onAction).toHaveBeenLastCalledWith({
+      type: "turn_draw",
+      choice: { option: "B", sector: "Public" },
+    });
+  });
+
+  it("is not offered once the turn draw is taken", () => {
+    showGame({ phase: "main" }, { hasHadMarketGo: true, turnDrawRejection: "out_of_market" });
+    expect(screen.queryByRole("group", { name: "Turn draw left open" })).toBeNull();
   });
 });
 

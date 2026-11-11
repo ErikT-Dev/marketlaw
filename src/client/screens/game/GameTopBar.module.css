@@ -23,7 +23,8 @@
 }
 
 .phase,
-.marketPhase {
+.marketPhase,
+.yourGoPhase {
   padding: 3px 10px;
   border-radius: var(--radius-lg);
   background: var(--color-board-phase-chip);
@@ -35,6 +36,12 @@
 .marketPhase {
   background: var(--color-board-market-phase);
   color: var(--color-board-market-phase-text);
+  text-transform: uppercase;
+}
+
+.yourGoPhase {
+  background: var(--color-board-your-go);
+  color: var(--color-board-your-go-text);
   text-transform: uppercase;
 }
 

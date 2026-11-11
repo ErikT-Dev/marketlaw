@@ -11,7 +11,8 @@ type Props = {
   readonly onChooseSector: (sector: Sector) => void;
 };
 
-const TIME_OUT_TEXT = "If your time runs out, you get option B with a random sector.";
+const TIME_OUT_TEXT =
+  "If your time runs out, your go ends without a draw, and you choose a sector for your 2 cards later in your main phase.";
 
 function titleOf(state: MarketGoState): string {
   switch (state.kind) {
@@ -21,8 +22,6 @@ function titleOf(state: MarketGoState): string {
         : "Your go: choose your turn draw";
     case "waiting":
       return `${state.goName}'s go`;
-    case "had_go":
-      return "You have had your go this turn";
   }
 }
 
@@ -38,11 +37,6 @@ function textsOf(state: MarketGoState): ReadonlyArray<string> {
       return [
         `They are choosing their turn draw. Your go comes after ${listedNames(state.namesBefore)}, in player order.`,
         "On your go you take a card from the marketplace or draw 2 cards of one sector from the deck.",
-      ];
-    case "had_go":
-      return [
-        "The main phase starts when every player has had their go.",
-        "Cards you got this turn are marked new in your hand.",
       ];
   }
 }
@@ -71,8 +65,8 @@ export function MarketGoPanel({ state, isBusy, onChooseSector }: Props) {
           <div className={styles["option"]}>
             <h3 className={styles["optionTitle"]}>A · Take a free card</h3>
             <p className={styles["text"]}>
-              Click a card in the marketplace. You also draw 1 card of the same sector from the
-              deck.
+              Select a card in the marketplace, then press Draw under it. You also draw 1 card of
+              the same sector from the deck.
             </p>
           </div>
           <div className={styles["option"]}>

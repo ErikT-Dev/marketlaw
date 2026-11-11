@@ -8,10 +8,7 @@ export function marketGoStateOf(
   seat: OwnSeatView,
   playerNames: ReadonlyArray<string>,
 ): MarketGoState {
-  if (seat.hasHadMarketGo) {
-    return { kind: "had_go" };
-  }
-  if (seat.turnDrawRejection === null) {
+  if (seat.turnDrawRejection === null && !seat.hasHadMarketGo) {
     return {
       kind: "your_go",
       isMarketplaceEmpty: seat.marketCardRejection === "marketplace_empty",
