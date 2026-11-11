@@ -1,9 +1,10 @@
 import type { RoomRecord } from "../room/RoomRecord";
 import { endedGameOf } from "./endedGameOf";
+import type { ReplayRecordDatabase } from "./ReplayRecordDatabase";
 import { saveReplayRecord } from "./saveReplayRecord";
 
 export async function saveReplayRecordIfEnded(
-  db: D1Database,
+  db: ReplayRecordDatabase,
   before: RoomRecord | null,
   after: RoomRecord,
 ): Promise<void> {

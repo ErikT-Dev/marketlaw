@@ -2,11 +2,12 @@ import * as v from "valibot";
 import { GameId } from "../../shared/GameId";
 import { endedGameOf } from "../replays/endedGameOf";
 import type { RoomRecord } from "../room/RoomRecord";
+import type { GameRecordDatabase } from "./GameRecordDatabase";
 import { saveGameRecord } from "./saveGameRecord";
 import { storedGameRecordOf } from "./storedGameRecordOf";
 
 export async function saveGameRecordIfEnded(
-  db: D1Database,
+  db: GameRecordDatabase,
   before: RoomRecord | null,
   after: RoomRecord,
 ): Promise<void> {

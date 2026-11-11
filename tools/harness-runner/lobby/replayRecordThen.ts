@@ -1,18 +1,16 @@
 import { keptReplayRecordText } from "../../../src/server/replays/keptReplayRecordText.ts";
 import { removeOldReplayRecords } from "../../../src/server/replays/removeOldReplayRecords.ts";
-import { saveReplayRecord } from "../../../src/server/replays/saveReplayRecord.ts";
-import type { RoomRecord } from "../../../src/server/room/RoomRecord.ts";
-import { memoryReplayRecordDatabase } from "./memoryReplayRecordDatabase.ts";
+import type { EndedRoomRecords } from "./EndedRoomRecords.ts";
 
-export async function replayRecordThen(endedRoom: RoomRecord | null, now: number): Promise<string> {
-  const saved = endedRoom?.game?.saved;
-  if (endedRoom === null || saved === undefined) {
+export async function replayRecordThen(ended: EndedRoomRecords, now: number): Promise<string> {
+  await ended.saved;
+  const { room } = ended;
+  if (room === null || room.game === null) {
     return "no ended game";
   }
-  const { database, storedCount } = memoryReplayRecordDatabase();
-  await saveReplayRecord(database, endedRoom.code, saved);
+  const { database, storedCount } = ended.replays;
   await removeOldReplayRecords(database, now);
-  const exported = await keptReplayRecordText(database, endedRoom.code, now);
+  const exported = await keptReplayRecordText(database, room.code, now);
   if (exported !== null && storedCount() === 1) {
     return "kept";
   }

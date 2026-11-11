@@ -1,20 +1,22 @@
-import * as v from "valibot";
-import { saveGameRecord } from "../../../src/server/records/saveGameRecord.ts";
-import { storedGameRecordOf } from "../../../src/server/records/storedGameRecordOf.ts";
-import type { RoomRecord } from "../../../src/server/room/RoomRecord.ts";
-import { GameId } from "../../../src/shared/GameId.ts";
-import { memoryGameRecordDatabase } from "./memoryGameRecordDatabase.ts";
+import { readMatchHistoryPage } from "../../../src/server/records/readMatchHistoryPage.ts";
+import { readStoredGameRecord } from "../../../src/server/records/readStoredGameRecord.ts";
+import type { EndedRoomRecords } from "./EndedRoomRecords.ts";
 
-export async function gameRecordThen(endedRoom: RoomRecord | null): Promise<string> {
-  const game = endedRoom?.game ?? null;
-  const record = game === null ? null : storedGameRecordOf(game);
-  if (game === null || record === null) {
+export async function gameRecordThen(ended: EndedRoomRecords): Promise<string> {
+  await ended.saved;
+  const seats = ended.room?.game?.seats ?? [];
+  if (seats.length === 0) {
     return "no ended game";
   }
-  const { database, rowCounts } = memoryGameRecordDatabase();
-  await saveGameRecord(database, v.parse(GameId, crypto.randomUUID()), record);
-  const { records, players } = rowCounts();
-  return records === 1 && players === game.seats.length
+  const { reader } = ended.games;
+  const pages = await Promise.all(
+    seats.map(async ({ playerId }) => readMatchHistoryPage(reader, playerId, null)),
+  );
+  const gameIds = [...new Set(pages.flatMap(({ games }) => games.map(({ gameId }) => gameId)))];
+  const [gameId] = gameIds;
+  const stored = gameId === undefined ? null : await readStoredGameRecord(reader, gameId);
+  const isInEveryHistory = pages.every(({ games }) => games.length === 1);
+  return gameIds.length === 1 && isInEveryHistory && stored !== null
     ? "kept"
-    : `${String(records)} records and ${String(players)} player rows stored`;
+    : `${String(gameIds.length)} records found in the histories of ${String(seats.length)} seats`;
 }
