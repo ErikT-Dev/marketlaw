@@ -289,18 +289,32 @@ These 10 scenarios are added to `harness/required.yaml` in this phase, by file a
      66-71). Add `expectScreenFits` for another player's history (`match-history-other-player`)
      and for the history opened from a name in a game, and a test where a fresh seat opens
      **My match history** before any game ends ("No games yet", `match-history-empty`).
+     Fixed: screenshots `match-history-other-player` and `match-history-from-game` (the
+     opponent's empty history, "Finished games appear here."), and a new test where seat 1 of 3
+     leaves a game that goes on, exits to the lobby and opens **My match history** ("No games
+     yet", "Games you finish, or leave, appear here.", `match-history-empty`).
   2. Should fix: `record: kept` (`tools/harness-runner/lobby/gameRecordThen.ts` 8-20) builds and
      writes the record at check time, so it passes even if no record was saved or the room's
      deletion removed it. Save the record into the session's `memoryGameRecordDatabase` when the
      ended room is set up (`saveGameRecordIfEnded`), and read it back after the wait and the
      deletion (`readStoredGameRecord` or `gameRecordResponseOf`), with every seat's player id.
      The replay check (`replayRecordThen.ts`) has the same pattern.
+     Fixed: `EndedRoomRecords` saves both records through `saveReplayRecordIfEnded` and
+     `saveGameRecordIfEnded` (now typed on the record database, not all of D1) when the session
+     is set up; `record: kept` reads every seat's match history after the wait and needs the same
+     one game in each and `readStoredGameRecord` to find it; `replay_record` only runs the
+     cleanup and reads back.
   3. Suggestion: a half-given history cursor (`before_game` without `before_ms`, or
      `before_ms=`) answers 200 with no games instead of 400 (`src/server/api/matchHistoryRoute.ts`
      16). Refuse unless both are present and non-empty; add the case to "refuses a bad cursor".
+     Fixed: 400 unless both are present and non-empty; the route test checks four bad cursors.
   4. Suggestion: `SeatState` keeps `hasLeft` and `departure`, the same fact twice
      (`src/rules/SeatState.ts` 32-33). Derive "has left" from `departure`.
-- [ ] Fixes: one fixer, findings 1 to 4.
+     Fixed: `SeatState.hasLeft` is gone; the engine, server and harness read
+     `departure !== null`. Views keep `hasLeft` (built from `departure` in `viewFor`). No save
+     version change: `departure` came in this phase with save version 16, not yet deployed.
+- [x] Fixes: one fixer, findings 1 to 4 (2026-11-11). `npm run check` green;
+  `e2e/matchHistory.spec.ts` passes at all three sizes with `--workers=1`.
 - [ ] Second finisher run.
 - [ ] Release.
 
