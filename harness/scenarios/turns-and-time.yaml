@@ -88,7 +88,8 @@
   covers: [R8.4, R9.10]
   given:
     players: 3
-    turn: 3
+    turn: 40
+    first_player: 2
     seats:
       - seat: 1
         time_bank_ms: 0
@@ -99,7 +100,7 @@
   when:
     - wait_ms: 75000
   then:
-    done_order: [3, 1, 2]
+    ended: {places: [2, 3, 1]}
 
 - name: the main-phase time limit in turn 10 is 4 minutes 27 seconds
   covers: [R9.1, R9.5]
