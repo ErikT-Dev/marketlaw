@@ -279,6 +279,9 @@ These 10 scenarios are added to `harness/required.yaml` in this phase, by file a
     failures were load; GitHub judges the full suite.
   - `docs/enforcement.md` lists the lobby driver's record and match history checks and B8.
     Screenshots from these runs committed.
+  - GitHub run 43001983089 (`303973a`): check and six browser jobs green; "other tests 3 of 3"
+    failed once on `bigCardSwitch.spec.ts` at 2560x1440 (107 ms against 100, a timing miss) and
+    passed on the rerun of the failed job, so the run is green.
 
 ### Helper log
 
