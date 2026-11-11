@@ -322,6 +322,8 @@ scenarios:
     - a reset link sets a new password
     - deleting an account needs its password
     - at most 90 emails a day are sent on the whole site
+    - a guest account not used for 90 days is deleted and shows as Deleted player
+    - deleting a registered account frees the username and shows Deleted player in records
   rooms:
     - a player creates a public room with a chosen size and becomes its owner
     - a private room is not listed in the lobby but can be joined with its code
@@ -348,6 +350,7 @@ scenarios:
     - rejects a rematch with fewer than 2 players in the room
     - a declined rematch leaves the room as it was
     - a player leaving the room ends a rematch asking
+    - after a game the room stays and is deleted 24 hours after the game ended
   connections-and-leaving:
     - opening the game in a second tab moves it there
     - a disconnected player is shown as away to everyone
@@ -380,6 +383,7 @@ scenarios:
     - a guest who logs out during a game leaves it
     - a registered user who logs out during a game keeps their seat
     - deleting the account during a game counts as leaving it
+    - when only one player is left the game ends and that player wins
   lobby-queue-and-limits:
     - a player who started 10 games today cannot start another
     - after 50 games start on the site today no more games start
@@ -400,6 +404,13 @@ scenarios:
     - muting hides a player's messages only for the one who muted
     - after unmuting a player their new messages are shown again
     - chat continues after the game and is deleted with the room
+  records-and-ratings:
+    - a finished game saves a game record with every player's result and values
+    - a player who left is recorded with their values when they left
+    - a player who left in an earlier turn is scored with the turn they left
+    - an abandoned game saves no game record
+    - game records always show the current username
+    - the match history lists games newest first with a short overview
 invariants:
   - I1
   - I2
@@ -435,6 +446,7 @@ budgets:
   - B4
   - B5
   - B7
+  - B8
   - B9
   - B11
   - B12
