@@ -283,6 +283,27 @@ These 10 scenarios are added to `harness/required.yaml` in this phase, by file a
     failed once on `bigCardSwitch.spec.ts` at 2560x1440 (107 ms against 100, a timing miss) and
     passed on the rerun of the failed job, so the run is green.
 
+- [x] Phase review (2026-11-11, `phase-reviewer`): ready after fixes, no blockers. Findings:
+  1. Should fix: the boards "Records: another player's match history" and "Records: match
+     history empty" have no browser check or screenshot (`e2e/matchHistory.spec.ts` 48-51,
+     66-71). Add `expectScreenFits` for another player's history (`match-history-other-player`)
+     and for the history opened from a name in a game, and a test where a fresh seat opens
+     **My match history** before any game ends ("No games yet", `match-history-empty`).
+  2. Should fix: `record: kept` (`tools/harness-runner/lobby/gameRecordThen.ts` 8-20) builds and
+     writes the record at check time, so it passes even if no record was saved or the room's
+     deletion removed it. Save the record into the session's `memoryGameRecordDatabase` when the
+     ended room is set up (`saveGameRecordIfEnded`), and read it back after the wait and the
+     deletion (`readStoredGameRecord` or `gameRecordResponseOf`), with every seat's player id.
+     The replay check (`replayRecordThen.ts`) has the same pattern.
+  3. Suggestion: a half-given history cursor (`before_game` without `before_ms`, or
+     `before_ms=`) answers 200 with no games instead of 400 (`src/server/api/matchHistoryRoute.ts`
+     16). Refuse unless both are present and non-empty; add the case to "refuses a bad cursor".
+  4. Suggestion: `SeatState` keeps `hasLeft` and `departure`, the same fact twice
+     (`src/rules/SeatState.ts` 32-33). Derive "has left" from `departure`.
+- [ ] Fixes: one fixer, findings 1 to 4.
+- [ ] Second finisher run.
+- [ ] Release.
+
 ### Helper log
 
 Filled in by the coordinator afterwards, from the helpers' completion notices (Q73). Tokens are
@@ -298,3 +319,4 @@ each helper's conversation size at its end.
 | Builder, item 4 (again) | 29 | 220k | 116 | done |
 | Builder, item 5 | 29 | 199k | 132 | done |
 | Finisher | 69 | 102k | 51 | done |
+| Phase reviewer | 10 | 195k | 87 | done: ready after fixes, 2 should fix, 2 suggestions |
