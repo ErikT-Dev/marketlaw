@@ -75,6 +75,20 @@
   font-weight: var(--font-weight-bold);
 }
 
+.playerWhoCanComplete {
+  color: var(--color-palette-orange);
+  font-weight: var(--font-weight-bold);
+}
+
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
 .part {
   position: relative;
   display: inline-flex;

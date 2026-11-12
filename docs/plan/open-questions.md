@@ -2874,3 +2874,18 @@ file.
   empty. A full list of 8 places is checked exactly as before; a shorter list is no weaker,
   because a card in any unlisted place fails the scenario. No scenario changes.
 - **Implemented:** `tools/harness-runner/engine/readEngineThen.ts`.
+
+## Q130. Who "could complete the quest now" in the quests panel (S5.1)?
+
+- **Phase:** 25a, item 11 (opponents and quests).
+- **Question:** S5.1 writes in bold orange the username of every other player who could complete
+  the quest now, as the viewer sees them (R5.4). It does not say whether a player who left the
+  game, or one who is done this turn, counts.
+- **Options:** the full quest check (R19.4, R19.5: on the table, not completed by them, the
+  requirement met, no negative workforce, quality or satisfaction) only; or also leave out
+  players who left; or also leave out players who are done.
+- **Solution:** the quest check on what the viewer sees of them, leaving out only players who left
+  the game: a player who left can never complete a quest again, while a done player still meets
+  the requirement and the name tells the viewer the quest is within their reach. The server
+  decides it per quest and player (`canCompleteNow` in each progress line of the view).
+- **Implemented:** `src/rules/questPlacesShownTo.ts`, `src/client/screens/game/QuestPlayerName.tsx`.

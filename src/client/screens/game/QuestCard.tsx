@@ -56,6 +56,7 @@ export function QuestCard({ place, viewer, playerNames, isBusy, onComplete }: Pr
             name={progress.seat === viewer ? "You" : playerNameOf(playerNames, progress.seat)}
             progress={progress}
             needs={needs}
+            isViewer={progress.seat === viewer}
           />
         ))}
       </ul>

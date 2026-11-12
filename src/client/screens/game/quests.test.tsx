@@ -10,9 +10,9 @@ const TRADING_POST: QuestPlaceView = {
   turnsLeft: 3,
   completeRejection: null,
   progress: [
-    { seat: 1, isCompleted: false, have: [3, 0], negativeStats: [] },
-    { seat: 2, isCompleted: false, have: [4, 1], negativeStats: [] },
-    { seat: 3, isCompleted: true, have: [5, 2], negativeStats: [] },
+    { seat: 1, isCompleted: false, canCompleteNow: false, have: [3, 0], negativeStats: [] },
+    { seat: 2, isCompleted: false, canCompleteNow: true, have: [4, 1], negativeStats: [] },
+    { seat: 3, isCompleted: true, canCompleteNow: false, have: [5, 2], negativeStats: [] },
   ],
 };
 
@@ -20,7 +20,9 @@ const WORKING_DISTRICT: QuestPlaceView = {
   quest: "Working district",
   turnsLeft: 1,
   completeRejection: "quest_already_completed",
-  progress: [{ seat: 2, isCompleted: true, have: [3, 1], negativeStats: [] }],
+  progress: [
+    { seat: 2, isCompleted: true, canCompleteNow: false, have: [3, 1], negativeStats: [] },
+  ],
 };
 
 function showQuests(quests: ReadonlyArray<QuestPlaceView>) {
@@ -78,7 +80,15 @@ describe("quests panel", () => {
         quest: "Penthouses",
         turnsLeft: 5,
         completeRejection: "quest_needs_not_met",
-        progress: [{ seat: 2, isCompleted: false, have: [2, 0, 1], negativeStats: [] }],
+        progress: [
+          {
+            seat: 2,
+            isCompleted: false,
+            canCompleteNow: false,
+            have: [2, 0, 1],
+            negativeStats: [],
+          },
+        ],
       },
     ]);
     const card = screen.getByRole("region", { name: "Penthouses" });
@@ -95,7 +105,15 @@ describe("quests panel", () => {
         quest: "Penthouses",
         turnsLeft: 5,
         completeRejection: "quest_needs_not_met",
-        progress: [{ seat: 2, isCompleted: false, have: [2, 0, 1], negativeStats: [] }],
+        progress: [
+          {
+            seat: 2,
+            isCompleted: false,
+            canCompleteNow: false,
+            have: [2, 0, 1],
+            negativeStats: [],
+          },
+        ],
       },
     ]);
     const card = screen.getByRole("region", { name: "Penthouses" });
@@ -106,6 +124,47 @@ describe("quests panel", () => {
     );
   });
 
+  it("shows another player's negative stat only when the quest names it", () => {
+    showQuests([
+      {
+        quest: "Workers' housing",
+        turnsLeft: 2,
+        completeRejection: "quest_needs_not_met",
+        progress: [
+          {
+            seat: 1,
+            isCompleted: false,
+            canCompleteNow: false,
+            have: [-1, 0],
+            negativeStats: [
+              { stat: "workforce", value: -1 },
+              { stat: "satisfaction", value: -2 },
+            ],
+          },
+        ],
+      },
+    ]);
+    const card = screen.getByRole("region", { name: "Workers' housing" });
+    expect(within(card).getByRole("img", { name: "Workforce -1 of 0" })).toBeDefined();
+    expect(within(card).queryByRole("img", { name: /^Satisfaction/ })).toBeNull();
+  });
+
+  it("writes the name of another player who could complete the quest now in orange", () => {
+    showQuests([
+      {
+        ...TRADING_POST,
+        progress: [
+          { seat: 1, isCompleted: false, canCompleteNow: true, have: [4, 1], negativeStats: [] },
+          { seat: 2, isCompleted: false, canCompleteNow: true, have: [4, 1], negativeStats: [] },
+        ],
+      },
+    ]);
+    const card = screen.getByRole("region", { name: "Trading post" });
+    expect(within(card).getByText("Ann").className).toContain("playerWhoCanComplete");
+    expect(within(card).getByText("could complete it now")).toBeDefined();
+    expect(within(card).getByText("You").className).not.toContain("playerWhoCanComplete");
+  });
+
   it("shows a negative workforce, quality or satisfaction as a part not yet met", () => {
     showQuests([
       {
@@ -113,8 +172,9 @@ describe("quests panel", () => {
         completeRejection: "quest_needs_not_met",
         progress: [
           {
-            seat: 1,
+            seat: 2,
             isCompleted: false,
+            canCompleteNow: false,
             have: [4, 1],
             negativeStats: [
               { stat: "workforce", value: -1 },

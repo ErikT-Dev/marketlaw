@@ -83,8 +83,20 @@ describe("what other players see during the main phase", () => {
       ),
     });
     const after = played(start, [{ type: "complete_quest", seat: 1, quest: "Trading post" }]);
-    expect(progressOfSeat1(after, 1)).toEqual({ seat: 1, isCompleted: true, have: [4, 1], negativeStats: [] });
-    expect(progressOfSeat1(after, 2)).toEqual({ seat: 1, isCompleted: false, have: [4, 1], negativeStats: [] });
+    expect(progressOfSeat1(after, 1)).toEqual({
+      seat: 1,
+      isCompleted: true,
+      canCompleteNow: false,
+      have: [4, 1],
+      negativeStats: [],
+    });
+    expect(progressOfSeat1(after, 2)).toEqual({
+      seat: 1,
+      isCompleted: false,
+      canCompleteNow: true,
+      have: [4, 1],
+      negativeStats: [],
+    });
     expect(viewFor(after, 1).quests[0]).toHaveProperty("completeRejection", "quest_already_completed");
   });
 
@@ -106,6 +118,7 @@ describe("what other players see during the main phase", () => {
     expect(progressOfSeat1(start, 2)).toEqual({
       seat: 1,
       isCompleted: false,
+      canCompleteNow: false,
       have: [4, 1],
       negativeStats: [
         { stat: "satisfaction", value: -2 },
@@ -113,6 +126,25 @@ describe("what other players see during the main phase", () => {
       ],
     });
     expect(viewFor(start, 1).quests[0]).toHaveProperty("completeRejection", "quest_needs_not_met");
+  });
+
+  it("does not count a player who left among those who could complete a quest", () => {
+    const base = gameWith(["Landfill"], []);
+    const start = withMainPhaseStart({
+      ...base,
+      quests: [{ quest: "Trading post", turnsOnTable: 1 }],
+      seats: base.seats.map((seat) =>
+        seat.seat === 1
+          ? {
+              ...seat,
+              city: ["Apparel Store"],
+              stats: { ...seat.stats, income: 4 },
+              departure: { turn: 1, cardsInHand: 2 },
+            }
+          : seat,
+      ),
+    });
+    expect(progressOfSeat1(start, 2)).toHaveProperty("canCompleteNow", false);
   });
 
   it("hides another player's draws, and the deck change they cause, until the phase ends", () => {

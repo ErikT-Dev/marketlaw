@@ -43,6 +43,7 @@ const VIEW: Partial<PlayerView> = {
         {
           seat: 2,
           isCompleted: false,
+          canCompleteNow: false,
           have: [4, 1],
           negativeStats: [{ stat: "workforce", value: -1 }],
         },
