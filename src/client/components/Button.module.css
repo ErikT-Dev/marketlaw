@@ -59,6 +59,20 @@
   color: var(--color-background-game-window);
 }
 
+.highlighted:enabled {
+  outline: 3px solid var(--color-status-in-game);
+  outline-offset: 2px;
+}
+
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .button {
     transition: background-color 120ms ease;

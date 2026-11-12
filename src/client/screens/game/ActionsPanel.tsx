@@ -82,6 +82,7 @@ export function ActionsPanel(props: Props) {
           look="success"
           isDisabled={isBusy || seat.endTurnRejection !== null}
           loadingLabel={isEndTurnPending ? "Waiting for the server…" : null}
+          highlightReason={seat.hasPlayedThisTurn ? "You have played a card this turn" : null}
           onClick={() => {
             props.onAction({ type: "end_turn" });
           }}

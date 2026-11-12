@@ -74,7 +74,7 @@ test("five quests with three-part requirements and four players can all be reach
 test("a completed quest shows as completed, stays hidden from others until the main phase ends, then leaves", async ({
   browser,
   request,
-}) => {
+}, testInfo) => {
   const [seatOne = "", seatTwo = ""] = await startTestRoom(request, {
     players: 2,
     turn: 3,
@@ -106,5 +106,14 @@ test("a completed quest shows as completed, stays hidden from others until the m
     await expect(page.getByRole("list", { name: "Quests table" }).getByRole("region")).toHaveCount(
       4,
     );
+    await expect(
+      page.getByRole("table", { name: "Completed last turn" }).getByRole("row", {
+        name: /Trading post/,
+      }),
+    ).toBeVisible();
   }
+  const completedLastTurn = one.getByRole("table", { name: "Completed last turn" });
+  await completedLastTurn.scrollIntoViewIfNeeded();
+  await expect(completedLastTurn).toBeInViewport();
+  await expectScreenFits(one, "quests-completed-last-turn", testInfo);
 });

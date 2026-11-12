@@ -21,6 +21,9 @@
   color: var(--color-text-secondary);
   font-size: var(--font-size-sm);
 }
+.titleless {
+  font-weight: var(--font-weight-bold);
+}
 
 .close {
   min-width: 24px;

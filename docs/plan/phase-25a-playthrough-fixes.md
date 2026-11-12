@@ -621,7 +621,19 @@ These 24 required scenarios now assert the new rules (Q126) and must pass again:
   - Screenshots: an opponent's board with the new boxes and stats, the quests panel with an
     orange name.
 
-- [ ] 12. **End turn highlight and income notice** (S6.6, S16.4). **Small.**
+- [x] 12. **End turn highlight and income notice** (S6.6, S16.4). **Small.**
+  - Done (2026-11-12). Client only; unit tests (`endTurnAndIncome.test.tsx`) and the browser
+    test `e2e/incomeNotice.spec.ts` at all three sizes.
+  - As built: `Button` takes `highlightReason` (an outline in `--color-status-in-game`, as the
+    marketplace on your go, and the reason as the button's accessible description); End turn
+    passes "You have played a card this turn" while `hasPlayedThisTurn`. `useIncomeRiseNotice`
+    (as `useFailedVoteNotice`) shows the notice when `stats.income` rises between views and
+    closes it after 3 seconds (a new rise restarts the 3 seconds); `GameToasts` shows it as a
+    success `Toast`, which now takes `title: null` (no title, so the notice reads only "Your
+    [income icon] has increased!"; close button "Close: notice").
+  - Screenshots: `income-notice`, and `quests-completed-last-turn` (item 7's table, taken in
+    `e2e/quests.spec.ts`); item 6 had already taken `game-log`.
+  - Differs from the phase file: nothing.
   - End turn highlighted once you have played a card this turn (`hasPlayedThisTurn` in the
     view) until you end the turn. "Your [income icon] has increased!" with a close button,
     closing after 3 seconds, whenever your income rises between views (in the store or a hook,
