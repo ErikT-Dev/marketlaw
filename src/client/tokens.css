@@ -28,6 +28,8 @@
   --color-board-chat-own-sender: #c4b5fd;
   --color-board-chat-own: #2e2450;
   --color-board-chat-sender: #93c5fd;
+  --color-board-count-box-border: #6b7280;
+  --color-board-count-box: #2b2d33;
   --color-board-draw-kind: #2e2442;
   --color-board-draw: #6d28d9;
   --color-board-email-pending-text: #fde68a;
@@ -39,6 +41,7 @@
   --color-board-guest-note: #2e2442;
   --color-board-market-phase-text: #1c1206;
   --color-board-market-phase: #f59e0b;
+  --color-board-negative-stats: #7f1d1d;
   --color-board-out-of-time: #f87171;
   --color-board-page-dim: rgba(11, 15, 26, 0.78);
   --color-board-pending: rgba(0, 0, 0, 0.6);
@@ -55,6 +58,7 @@
   --color-board-trade-off: #2b2840;
   --color-board-trade-status: #ddd6fe;
   --color-board-trade: #4c1d95;
+  --color-board-type-count: #a5b4fc;
   --color-board-user-menu: #1e1b2e;
   --color-board-your-go-text: #052e16;
   --color-board-your-go: #22c55e;

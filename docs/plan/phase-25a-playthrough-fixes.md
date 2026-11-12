@@ -589,7 +589,25 @@ These 24 required scenarios now assert the new rules (Q126) and must pass again:
   - A doubled type (`doubleType1` in the card data) shown as its icon twice, on the big card and
     in the card set (S6.5). Screenshot: the big card showing a city card with a doubled type.
 
-- [ ] 11. **Opponents and quests** (S3.1, S3.2, S5.1, R19.4). **Large.**
+- [x] 11. **Opponents and quests** (S3.1, S3.2, S5.1, R19.4). **Large.**
+  - Done (2026-11-12). No scenario covers it; unit tests (`hiddenDuringMainPhase.test.ts`,
+    `quests.test.tsx`, `opponents.test.tsx`) and the browser tests `e2e/quests.spec.ts` and
+    `e2e/opponents.spec.ts` at all three sizes.
+  - As built: each quest progress line has `canCompleteNow` (`QuestProgress`, schema): the
+    `questRejection` check on the seat as the viewer sees it, false for a seat that left (Q130).
+    The client writes another player's name bold orange with a hidden "could complete it now"
+    (`QuestPlayerName`), and shows another player's negative stat only when the quest names it
+    (`negativeStatsShownIn`). `CountBox` (Q, T, C in a bordered dark grey box); the overview
+    shows influence and **Q** (quests completed); the board shows funds, income, bonus,
+    influence and build passes, then `OpponentBasicStats` (workforce, quality, satisfaction in a
+    small list, red while any is negative; product and distribution beside it), then **T**
+    (`cityTypeTotalOf`, from the cards in their city only) and **C** (`combosClaimedCountOf`,
+    the sum of claims). New tokens `--color-board-count-box`, `-count-box-border`,
+    `-type-count`, `-negative-stats` (`BOARD_VALUES.ts`, `tokens.css`).
+  - Screenshots: `opponent-board` and `quests-table` (seat 2 orange) changed.
+  - Differs from the phase file: nothing. `npm run design:tokens` drops
+    `--color-board-user-menu`, which is in `tokens.css` but not in `BOARD_VALUES.ts`; it was
+    kept by hand.
   - View: per quest place, which other seats could complete it now, decided on the server from
     the same check as `questRejection.ts` (in `questPlacesShownTo.ts`, beside
     `completeRejection`), judged on what the viewer may see of them (their shown state, R5.4).

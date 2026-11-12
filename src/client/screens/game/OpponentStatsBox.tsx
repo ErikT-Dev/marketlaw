@@ -1,9 +1,13 @@
 import type { OtherSeatView } from "../../../shared/OtherSeatView";
 import type { PlayerId } from "../../../shared/PlayerId";
 import { PlayerNameLink } from "../../components/PlayerNameLink";
+import { CountBox } from "../../components/CountBox";
 import { StatChip } from "../../components/StatChip";
 import type { StatName } from "../../icons/StatName";
+import { cityTypeTotalOf } from "./cityTypeTotalOf";
+import { combosClaimedCountOf } from "./combosClaimedCountOf";
 import { LiveBankChip } from "./LiveBankChip";
+import { OpponentBasicStats } from "./OpponentBasicStats";
 import styles from "./OpponentBoardDialog.module.css";
 
 type Props = {
@@ -15,11 +19,6 @@ type Props = {
 const BOARD_STATS = [
   "funds",
   "income",
-  "workforce",
-  "quality",
-  "satisfaction",
-  "product",
-  "distribution",
   "bonus",
   "influence",
 ] as const satisfies ReadonlyArray<StatName>;
@@ -45,6 +44,15 @@ export function OpponentStatsBox({ seat, name, playerId }: Props) {
           <StatChip stat="buildPasses" value={seat.buildPasses} />
         </li>
       </ul>
+      <OpponentBasicStats stats={seat.stats} name={name} />
+      <div className={styles["counts"]}>
+        <CountBox letter="T" count={cityTypeTotalOf(seat.city)} label="Types in their city" />
+        <CountBox
+          letter="C"
+          count={combosClaimedCountOf(seat.combosClaimed)}
+          label="Combos claimed"
+        />
+      </div>
       <LiveBankChip timeBankMs={seat.timeBankMs} clock={seat.clock} label="Bank" />
       <p className={styles["status"]}>This turn: {turnStatus(seat)}</p>
     </section>
