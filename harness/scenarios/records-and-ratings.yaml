@@ -315,7 +315,7 @@
         time_bank_ms: 0
         timeouts_in_a_row: 2
   when:
-    - wait_ms: 45000
+    - wait_ms: 75000
   then:
     ended: {abandoned: true}
     ratings: unchanged

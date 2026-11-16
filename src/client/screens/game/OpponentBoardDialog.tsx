@@ -1,17 +1,16 @@
-import { PlayerNameLink } from "../../components/PlayerNameLink";
 import type { PlayerId } from "../../../shared/PlayerId";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import type { CardName } from "../../../shared/catalogue/CardName";
 import type { GamePhase } from "../../../shared/GamePhase";
 import type { OtherSeatView } from "../../../shared/OtherSeatView";
 import { Button } from "../../components/Button";
-import { CityCard } from "../../components/CityCard";
 import { Modal } from "../../components/Modal";
-import { StatChip } from "../../components/StatChip";
-import type { StatName } from "../../icons/StatName";
+import { PlayedCard } from "../../components/PlayedCard";
 import { cardsBySector } from "./cardsBySector";
 import { counted } from "./counted";
+import { LookedAtCardPanel } from "./LookedAtCardPanel";
 import styles from "./OpponentBoardDialog.module.css";
-import { LiveBankChip } from "./LiveBankChip";
+import { OpponentStatsBox } from "./OpponentStatsBox";
 
 type Props = {
   readonly seat: OtherSeatView;
@@ -21,30 +20,12 @@ type Props = {
   readonly onClose: () => void;
 };
 
-const BOARD_STATS = [
-  "funds",
-  "income",
-  "workforce",
-  "quality",
-  "satisfaction",
-  "product",
-  "distribution",
-  "bonus",
-  "influence",
-] as const satisfies ReadonlyArray<StatName>;
-
-function turnStatus(seat: OtherSeatView): string {
-  if (seat.hasLeft) {
-    return "left the game";
-  }
-  return seat.isDone ? "done this turn" : "playing, not done yet";
-}
-
 export function OpponentBoardDialog({ seat, name, playerId, phase, onClose }: Props) {
   const closeArea = useRef<HTMLDivElement>(null);
   useEffect(() => {
     closeArea.current?.querySelector("button")?.focus();
   }, []);
+  const [lookedAt, setLookedAt] = useState<CardName | null>(null);
   const hand = `Their hand: ${counted(seat.handCount, "card")}.`;
   return (
     <Modal title={`${name}'s board`} size="extraLarge" onClose={onClose}>
@@ -53,22 +34,18 @@ export function OpponentBoardDialog({ seat, name, playerId, phase, onClose }: Pr
           ? `Shown as at the start of this main phase: what they do in it is revealed when the main phase ends. ${hand}`
           : hand}
       </p>
-      <div className={styles["board"]}>
-        <section className={styles["box"]} aria-label={`Stats of ${name}`}>
-          <PlayerNameLink name={name} playerId={playerId} />
-          <ul className={styles["stats"]}>
-            {BOARD_STATS.map((stat) => (
-              <li key={stat}>
-                <StatChip stat={stat} value={seat.stats[stat]} />
-              </li>
-            ))}
-            <li>
-              <StatChip stat="buildPasses" value={seat.buildPasses} />
-            </li>
-          </ul>
-          <LiveBankChip timeBankMs={seat.timeBankMs} clock={seat.clock} label="Bank" />
-          <p className={styles["status"]}>This turn: {turnStatus(seat)}</p>
-        </section>
+      <div className={styles[lookedAt === null ? "board" : "boardWithCard"]}>
+        {lookedAt === null ? (
+          <OpponentStatsBox seat={seat} name={name} playerId={playerId} />
+        ) : (
+          <LookedAtCardPanel
+            card={lookedAt}
+            className={styles["bigCard"]}
+            onClose={() => {
+              setLookedAt(null);
+            }}
+          />
+        )}
         {cardsBySector(seat.city).map(({ sector, cards }) => (
           <section
             key={sector}
@@ -80,7 +57,15 @@ export function OpponentBoardDialog({ seat, name, playerId, phase, onClose }: Pr
             </h3>
             <ul className={styles["cards"]}>
               {cards.map((card) => (
-                <CityCard key={card.name} card={card} />
+                <li key={card.name}>
+                  <PlayedCard
+                    card={card}
+                    isSelected={card.name === lookedAt}
+                    onSelect={() => {
+                      setLookedAt(card.name);
+                    }}
+                  />
+                </li>
               ))}
             </ul>
           </section>

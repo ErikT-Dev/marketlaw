@@ -10,6 +10,7 @@ import { decisionClockOf } from "./decisionClockOf";
 import { drawActionStatusesOf } from "./drawActionStatusesOf";
 import { tradeCostsOf } from "./tradeCostsOf";
 import { tradeStatusesOf } from "./tradeStatusesOf";
+import { phaseShownTo } from "./phaseShownTo";
 import { pilesShownTo } from "./pilesShownTo";
 import { projectRejectionsOf } from "./projectRejectionsOf";
 import { rejectionOf } from "./rejectionOf";
@@ -48,11 +49,13 @@ function ownSeatView(state: GameState, seat: SeatState): OwnSeatView {
     undoRejection: rejectionOf(state, { type: "undo", seat: seat.seat }) ?? null,
     hasHadMarketGo: seat.hasHadMarketGo,
     turnDrawRejection: turnRejectionOf(state, seat.seat, "turn_draw") ?? null,
-    marketCardRejection:
-      turnRejectionOf(state, seat.seat, "turn_draw") ??
-      (state.marketplace.every(({ card }) => card === null) ? "marketplace_empty" : null),
+    marketCardRejection: seat.isTurnDrawOpen
+      ? "out_of_market"
+      : (turnRejectionOf(state, seat.seat, "turn_draw") ??
+        (state.marketplace.every(({ card }) => card === null) ? "marketplace_empty" : null)),
     actionsThisTurn: seat.actionsThisTurn,
     isDone: seat.isDone,
+    isOutOfTime: seat.isOutOfTime,
     hasLeft: seat.departure !== null,
     timeBankMs: seat.timeBankMs,
     clock: decisionClockOf(state, seat.seat),
@@ -76,6 +79,7 @@ function otherSeatView(state: GameState, seat: SeatState, viewer: SeatNumber): O
     city: shown.city,
     buildPasses: shown.buildPasses,
     isDone: seat.isDone,
+    isOutOfTime: seat.isOutOfTime,
     hasLeft: seat.departure !== null,
     timeBankMs: seat.timeBankMs,
     clock: decisionClockOf(state, seat.seat),
@@ -87,7 +91,7 @@ export function viewFor(state: GameState, viewer: SeatNumber): PlayerView {
   return {
     seat: viewer,
     turn: state.turn,
-    phase: state.phase,
+    phase: phaseShownTo(state, viewer),
     firstPlayer: state.firstPlayer,
     marketGo: marketGoOf(state),
     seats: state.seats.map((seat) =>
@@ -101,6 +105,8 @@ export function viewFor(state: GameState, viewer: SeatNumber): PlayerView {
     doneOrder: state.doneOrder,
     playerOrder: playerOrderOf(state),
     drawLog: piles.drawLog,
+    mainPhaseLog: state.mainPhaseLog,
+    questsCompletedLastTurn: state.questsCompletedLastTurn,
     firstCompletions: state.firstCompletions,
     vote: voteShownTo(state, viewer),
     nextVoteTurn: nextVoteTurnOf(state),

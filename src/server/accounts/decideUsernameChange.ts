@@ -8,7 +8,7 @@ export async function decideUsernameChange(
   change: UsernameChange,
   isTaken: (name: string) => Promise<boolean>,
 ): Promise<UsernameChangeDecision> {
-  const { currentName, wantedName, changedMs, now } = change;
+  const { currentName, wantedName, changesMs, now } = change;
   if (wantedName === currentName) {
     return { kind: "unchanged" };
   }
@@ -16,7 +16,7 @@ export async function decideUsernameChange(
   if (nameProblem !== null) {
     return { kind: "refused", reason: nameProblem };
   }
-  if (usernameChangeAllowedAt(changedMs, now) !== null) {
+  if (usernameChangeAllowedAt(changesMs, now) !== null) {
     return { kind: "refused", reason: "username_change_too_soon" };
   }
   const isOwnName = nameKeyOf(wantedName) === nameKeyOf(currentName);

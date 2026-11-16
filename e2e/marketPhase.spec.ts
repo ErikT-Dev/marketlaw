@@ -72,16 +72,25 @@ test("one player takes a marketplace card while the other waits, then both play 
   await expect(two.page.getByRole("region", { name: "MARKET PHASE" })).toContainText("Your go");
   await expect(one.page.getByRole("region", { name: "MARKET PHASE" })).toContainText("Seat 2's go");
   await expectScreenFits(one.page, "market-phase-banner", testInfo);
+  await expectScreenFits(two.page, "market-phase-banner-your-go", testInfo);
 
-  await two.page.getByRole("button", { name: "Take Row House" }).click();
-  await expect(
-    two.page.getByRole("heading", { name: "You have had your go this turn" }),
-  ).toBeVisible();
+  const twoMarketplace = two.page.getByRole("list", { name: "Marketplace places" });
+  await twoMarketplace.getByRole("button", { name: "Row House" }).click();
+  await expect(twoMarketplace.getByRole("button", { name: "Row House" })).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
+  await expectScreenFits(two.page, "market-card-selected", testInfo);
+  await twoMarketplace.getByRole("button", { name: "Draw", exact: true }).click();
+  await expectMainPhase(two.page);
   const twoHand = two.page.getByRole("list", { name: "Your hand" });
   await expect(twoHand.getByRole("button")).toHaveCount(3);
   await expect(twoHand.getByRole("button", { name: "Row House" })).toHaveAccessibleDescription(
     /new/,
   );
+  await expect(
+    two.page.getByRole("banner").getByRole("timer", { name: /^Go: Seat 1 / }),
+  ).toBeVisible();
   await expectScreenFits(two.page, "market-you-had-your-go", testInfo);
 
   await expect(
@@ -127,5 +136,39 @@ test("a player whose go comes with an empty marketplace chooses a sector", async
   await expect(page.getByRole("heading", { name: "The marketplace is empty" })).toBeVisible();
   await expectScreenFits(page, "market-marketplace-empty", testInfo);
   await page.getByRole("button", { name: "Industry" }).click();
-  await expect(page.getByRole("heading", { name: "You have had your go this turn" })).toBeVisible();
+  await expectMainPhase(page);
+});
+
+test("a player whose market go timed out chooses the sector of their turn draw in the main phase", async ({
+  page,
+  request,
+}, testInfo) => {
+  const [, seatTwo = ""] = await startTestRoom(request, {
+    players: 2,
+    turn: 2,
+    phase: "market",
+    marketplace: FULL_MARKETPLACE,
+    seats: [
+      { seat: 1, hand: ["Pub"] },
+      { seat: 2, hand: ["Dorm"], market: "out", turn_draw_pending: true },
+    ],
+  });
+  await page.goto(seatTwo);
+  const openDraw = page.getByRole("group", { name: "Turn draw left open" });
+  await expect(openDraw).toContainText(
+    "Your time ran out on your market go. Choose a sector for your 2 cards.",
+  );
+  await expectMainPhase(page);
+  await expect(page.getByRole("region", { name: "MARKET PHASE" })).toHaveCount(0);
+  const marketplace = page.getByRole("list", { name: "Marketplace places" });
+  await marketplace.getByRole("button", { name: "Dentist" }).click();
+  await expect(marketplace.getByRole("button", { name: "Draw" })).toHaveCount(0);
+  await page
+    .getByRole("region", { name: "Selected card: Dentist" })
+    .getByRole("button", { name: "Close" })
+    .click();
+  await expectScreenFits(page, "market-open-turn-draw", testInfo);
+  await openDraw.getByRole("button", { name: "Residential" }).click();
+  await expect(openDraw).toHaveCount(0);
+  await expect(page.getByRole("list", { name: "Your hand" }).getByRole("button")).toHaveCount(3);
 });

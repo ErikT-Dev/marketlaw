@@ -1,1 +1,1 @@
-export type PlayerStatus = "online" | "inGame" | "away" | "done" | "left" | "none";
+export type PlayerStatus = "online" | "inGame" | "away" | "done" | "outOfTime" | "left" | "none";

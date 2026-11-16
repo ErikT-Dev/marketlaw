@@ -10,7 +10,7 @@ are matched into 2-, 3- or 4-player ranked games.
 
 ## Depends on
 
-Phase 25.
+Phases 25 and 25a.
 
 ## Covers
 

@@ -6,7 +6,6 @@ import { testAccount } from "../../testing/testAccount";
 import type { AccountBinding } from "./AccountBinding";
 import { UserAccount } from "./UserAccount";
 
-const OCTOBER_20 = Date.UTC(2026, 9, 20, 12);
 const OCTOBER_27 = Date.UTC(2026, 9, 27, 12);
 
 function userAccount(changes: Partial<AccountBinding> = {}): AccountBinding {
@@ -117,7 +116,7 @@ describe("account settings", () => {
     const account = userAccount();
     const settings = openSettings();
     const field = within(settings).getByLabelText("Username");
-    expect(settings.textContent).toContain("You can change it once every 7 days.");
+    expect(settings.textContent).toContain("You can change it 4 times in 7 days.");
     expect(within(settings).getByRole("button", { name: "Change" })).toHaveProperty(
       "disabled",
       true,
@@ -140,8 +139,8 @@ describe("account settings", () => {
     ).toBeDefined();
   });
 
-  it("disables the username with the next allowed date during the 7 days", async () => {
-    const usernameWait = v.parse(UsernameWait, { changedAt: OCTOBER_20, allowedAt: OCTOBER_27 });
+  it("disables the username with the next allowed date after 4 changes in 7 days", async () => {
+    const usernameWait = v.parse(UsernameWait, { allowedAt: OCTOBER_27 });
     userAccount({
       onLoadAccount: async () =>
         Promise.resolve({ isLoggedIn: true, name: "Bea", usernameWait, email: null }),
@@ -149,7 +148,7 @@ describe("account settings", () => {
     const settings = openSettings();
     expect(
       await within(settings).findByText(
-        "You changed it on 20 October. You can change it again on 27 October.",
+        "You have changed it 4 times in 7 days. You can change it again on 27 October.",
       ),
     ).toBeDefined();
     expect(within(settings).getByLabelText("Username")).toHaveProperty("disabled", true);

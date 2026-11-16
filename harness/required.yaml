@@ -30,6 +30,9 @@ scenarios:
     - no income with product but no distribution
     - income repeats as long as it is possible
     - a card drawn in the main phase is marked new
+    - ending the turn claims every ready combo first
+    - ready combos are claimed at the end of the turn even at the action limit
+    - a player made done when time runs out also gets their ready combos claimed
   drawing:
     - if a tier is empty the nearest other tier is used and the lower one first
     - tier 3 falls back to tier 2 before tier 1
@@ -98,9 +101,9 @@ scenarios:
     - the market phase follows the start-of-turn steps
     - a 5th quest place is added and filled at the start of turn 20
     - players made done at the same moment become done in player order
-    - the main-phase time limit in turn 10 is 3 minutes 57 seconds
+    - the main-phase time limit in turn 10 is 4 minutes 27 seconds
     - reaching the main-phase limit makes the player done
-    - the first 45 seconds of a main phase do not use the time bank
+    - the first 75 seconds of a main phase do not use the time bank
     - the time bank runs after the free time until the player ends their turn
     - with an empty bank a player only has the free time
     - a message received at the deadline is rejected and the time-out is applied
@@ -109,8 +112,8 @@ scenarios:
     - "every player sees every other player's bank counting down during the main phase"
     - a player whose time runs out is told how many time-outs in a row out of 3
     - ending the turn in time resets the time-out count
-    - "the first player's market go has 45 seconds"
-    - other market goes have 30 seconds
+    - "the first player's market go has 40 seconds"
+    - every later market go also has 40 seconds
     - a deadline while nobody is connected pauses the game instead
     - a paused game goes on when a player reconnects and the timed-out player gets free time again
     - after the extra free time the paused player times out as normal
@@ -118,6 +121,12 @@ scenarios:
     - when two players' time would run out together while nobody is connected both get their free time again
     - a paused player's bank used before the pause stays used
     - three main-phase time-outs in a row count as leaving the game
+    - a player out of time is not made done while another player still has time
+    - a player out of time is made done once every other player is done
+    - a player out of time is made done when the last player with time left runs out too
+    - a main-phase action after the player's time ran out is accepted while another player is still playing
+    - in a casual game time-outs in a row do not count as leaving the game
+    - in a casual game a player whose time runs out is told they can keep playing
   visibility:
     - other players' hands are shown only as a number of cards
     - a player sees their own hand
@@ -135,6 +144,14 @@ scenarios:
     - the replay record is kept for 30 days after the game ends
     - the replay record is removed after 30 days
     - the discard pile is shown only as a number of cards
+    - the log shows the cards each player played once the main phase ends
+    - the log shows the cards played in a main phase the game ended in
+    - a card played in the main phase is not in the log before the main phase ends
+    - an undone card play never appears in the log
+    - the log shows the quests completed and influence actions used once the main phase ends
+    - a main-phase action is hidden from a player still waiting for their market go
+    - a turn draw left open is shown to other players when the main phase ends
+    - an opponent's out of time status is shown live
   influence:
     - 4 influence buys 2 funds once per game
     - 4 influence buys 1 quality
@@ -197,6 +214,13 @@ scenarios:
     - option A with no cards left of that sector draws the top card of the deck
     - a time-out on the market go takes option B with a random sector
     - the market time beyond the first 5 seconds of a go comes from the bank
+    - a time-out on the market go passes the go to the next player without a draw
+    - a player whose market go timed out chooses a sector later and draws 2 cards
+    - rejects taking a marketplace card after the market go timed out
+    - a turn draw left open is allowed at the action limit and is not an action
+    - a player who has had their market go plays a card while later players still have their go
+    - rejects a main-phase action from a player still waiting for their market go
+    - a player's main-phase time starts when their own market go ends
   quests:
     - rejects a quest whose requirement is not met
     - a requirement means at least that amount and nothing is used up
@@ -265,6 +289,8 @@ scenarios:
     - rejects a quest while workforce is negative
     - rejects a quest while quality is negative
     - rejects a quest while satisfaction is negative
+    - a quest that leaves after 5 turns cannot fill a place in the refill straight after
+    - the quests completed in the turn before can be seen during the next turn
   end-of-game:
     - reaching the end goal ends the game after that main phase without end-of-turn steps
     - the game goes on until the main phase ends after the end goal is reached
@@ -293,7 +319,7 @@ scenarios:
     - a wrong password is rejected
     - after 3 failed logins in 15 minutes further logins need the human check but the account is not locked
     - after 3 failed logins a login without the human check is rejected
-    - a username can be changed at most once every 7 days
+    - a username can be changed at most 4 times in 7 days
     - a successful login clears the failed logins
     - the human check after failed logins ends 15 minutes after the latest failed attempt
     - a login with an unknown username fails like a wrong password
@@ -324,6 +350,8 @@ scenarios:
     - at most 90 emails a day are sent on the whole site
     - a guest account not used for 90 days is deleted and shows as Deleted player
     - deleting a registered account frees the username and shows Deleted player in records
+    - a username can be changed 4 times in a row
+    - a fifth username change is allowed once the first of the last 4 is 7 days old
   rooms:
     - a player creates a public room with a chosen size and becomes its owner
     - a private room is not listed in the lobby but can be joined with its code
@@ -356,6 +384,7 @@ scenarios:
     - a disconnected player is shown as away to everyone
     - an away player keeps their seat and their time runs as normal
     - an away player's time runs out on a market go as for any player
+    - a player who leaves at the deadline of their market go leaves after the time-out
     - a player who leaves is done straight away and keeps their city
     - a player who left cannot act again
     - a leaver's main-phase actions this turn are kept and revealed at the end of the phase

@@ -13,6 +13,7 @@ import { TradeName } from "../TradeName";
 import { RemovalReason } from "./RemovalReason";
 import { CHAT_ENTRY_SCHEMA } from "./CHAT_ENTRY_SCHEMA";
 import { DRAW_LOG_ENTRY_SCHEMA } from "./DRAW_LOG_ENTRY_SCHEMA";
+import { MAIN_PHASE_LOG_ENTRY_SCHEMA } from "./MAIN_PHASE_LOG_ENTRY_SCHEMA";
 import { MARKETPLACE_SLOT_SCHEMA } from "./MARKETPLACE_SLOT_SCHEMA";
 import { GAME_RESULT_SCHEMA } from "./GAME_RESULT_SCHEMA";
 import { QUEST_PLACE_VIEW_SCHEMA } from "./QUEST_PLACE_VIEW_SCHEMA";
@@ -29,6 +30,7 @@ const SEAT_COMMON = {
   city: CARDS,
   buildPasses: COUNT,
   isDone: v.boolean(),
+  isOutOfTime: v.boolean(),
   hasLeft: v.boolean(),
   timeBankMs: COUNT,
   clock: v.nullable(v.object({ bankMs: COUNT, freeUntil: EpochMs, deadline: EpochMs })),
@@ -108,6 +110,8 @@ const PLAYER_VIEW = v.object({
   doneOrder: v.array(SEAT),
   playerOrder: v.array(SEAT),
   drawLog: v.array(DRAW_LOG_ENTRY_SCHEMA),
+  mainPhaseLog: v.array(MAIN_PHASE_LOG_ENTRY_SCHEMA),
+  questsCompletedLastTurn: v.array(v.object({ quest: QuestName, seats: v.array(SEAT) })),
   firstCompletions: PROJECTS,
   vote: v.nullable(
     v.object({
@@ -165,8 +169,19 @@ export const SERVER_MESSAGE_SCHEMA = v.variant("type", [
     type: v.literal("notice"),
     protocolVersion: COUNT,
     notice: v.variant("kind", [
-      v.object({ kind: v.literal("timed_out"), inARow: COUNT, of: COUNT }),
-      v.object({ kind: v.literal("resumed"), seats: v.array(SEAT), freeMs: COUNT }),
+      v.variant("gameKind", [
+        v.object({
+          kind: v.literal("timed_out"),
+          gameKind: v.literal("ranked"),
+          inARow: COUNT,
+          of: COUNT,
+        }),
+        v.object({ kind: v.literal("timed_out"), gameKind: v.literal("casual") }),
+      ]),
+      v.object({
+        kind: v.literal("resumed"),
+        seats: v.array(v.object({ seat: SEAT, freeMs: COUNT })),
+      }),
       v.object({ kind: v.literal("site_game_limit") }),
       v.object({
         kind: v.literal("daily_limit"),

@@ -75,6 +75,20 @@
   font-weight: var(--font-weight-bold);
 }
 
+.playerWhoCanComplete {
+  color: var(--color-palette-orange);
+  font-weight: var(--font-weight-bold);
+}
+
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
 .part {
   position: relative;
   display: inline-flex;
@@ -108,4 +122,31 @@
 .part:hover .tooltip,
 :is(button, a[href]):focus-visible .part .tooltip {
   visibility: visible;
+}
+
+.withCompletedLastTurn {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--space-sm);
+  align-items: start;
+}
+
+.completedLastTurn {
+  border-collapse: collapse;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+}
+
+.completedLastTurn th,
+.completedLastTurn td {
+  padding: 2px 6px;
+  border-bottom: 1px solid var(--color-panel-border);
+  text-align: left;
+}
+
+.completedLastTurnTitle {
+  margin-bottom: var(--space-xs);
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-bold);
+  text-align: left;
 }

@@ -23,7 +23,10 @@ const STARTED_AT = 1_000_000;
 const VOTE_DEADLINE = STARTED_AT + VOTE_RULES.answerMs;
 
 function playingRoom(phase: GamePhase = "main"): RoomRecord {
-  const started = startSavedGame({ players: 3, startedAt: v.parse(EpochMs, STARTED_AT) }, 3);
+  const started = startSavedGame(
+    { players: 3, kind: "casual", startedAt: v.parse(EpochMs, STARTED_AT) },
+    3,
+  );
   const saved = { ...started, state: { ...started.state, phase } };
   const players = [1, 2, 3].map((seat) => ({
     playerId: v.parse(PlayerId, crypto.randomUUID()),

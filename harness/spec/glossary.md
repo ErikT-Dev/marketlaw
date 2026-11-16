@@ -27,7 +27,8 @@ meanings. The rule where each term is defined is given in brackets.
 | End goal | Income of at least 22 and all 3 projects completed (R1.3). |
 | First completion | The extra +2 funds for every player who completes a project in the first turn anyone completes it (R16.6). |
 | First player | The player who goes first in a turn (R4.4). |
-| Free time | The first 45 seconds of a main phase and the first 5 seconds of a market go, which do not use the time bank (R9.4). |
+| Free time | The first 75 seconds of a player's main phase and the first 5 seconds of a market go, which do not use the time bank (R9.4). |
+| Game log | The list of public draws, and, after each main phase, what each player did in it (M3.3, M3.7). |
 | Funds | Money; a stat that pays for cards (R2.1). |
 | Gain a type | A quest reward that adds 1 to a type count without adding a card (R20.6). |
 | Hand | The cards a player holds and has not played. Hidden from other players (M3.2). |
@@ -38,7 +39,7 @@ meanings. The rule where each term is defined is given in brackets.
 | Influence action | One of the optional trades in R15.1. |
 | Kind | One of Residential, Industry, Service, Public quality card, Public satisfaction card (R3.7). |
 | Kind place | One of the 5 marketplace places that always holds a card of its kind (R18.2). |
-| Main phase | The part of a turn in which all players act at the same time (R5). |
+| Main phase | The part of a turn in which all players act at the same time (R5). Each player's own main phase starts when their market go ends (R18.15). |
 | Market go | A player's one go in the market phase each turn, in which they take their turn draw (R18.6). |
 | Market phase | The part of a turn, from turn 2, in which every player takes one market go, one at a time (R18.6). |
 | Marketplace | The shared display of 8 face-up cards (R18.1). |
@@ -64,7 +65,7 @@ meanings. The rule where each term is defined is given in brackets.
 | Tier | 1, 2 or 3; higher tiers are stronger and cost more (R3.3). |
 | Tier by turn | The rule that picks a random tier, with higher tiers more likely in later turns (R17.10). |
 | Time bank | A player's 15 minutes for the whole game, used after the free time (R9.3). |
-| Time-out | A player's time running out (R9.10). |
+| Time-out | A player's time running out (R9.10). In the main phase the player is then out of time: they can keep playing until every other player is done or out of time. |
 | Turn | One round of start of turn, market phase, main phase and end of turn (R4.1). |
 | Turn draw | What a player does on their market go: option A or option B (R18.8). |
 | Turn number | The number of the current turn, starting at 1 (R2.2). |

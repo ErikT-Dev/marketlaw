@@ -110,6 +110,48 @@ describe("the account routes refuse hostile requests", () => {
     });
   });
 
+  it("allows 4 username changes and refuses a fifth within 7 days", async () => {
+    const token = await newGuestToken("Renamerzero");
+    for (const username of ["Renamerone", "Renamertwo", "Renamerthree", "Renamerfour"]) {
+      const renamed = await post("/api/username-changes", { token, username });
+      expect(renamed).toMatchObject({ status: 200, body: { isOk: true, name: username } });
+    }
+    const account = await post("/api/account", { token });
+    expect(account.body).toHaveProperty("usernameWait.allowedAt");
+    await expectNothingChangedBy(async () => {
+      const fifth = await post("/api/username-changes", { token, username: "Renamerfive" });
+      expect(fifth).toEqual({
+        status: 400,
+        body: { isOk: false, reason: "username_change_too_soon" },
+      });
+    });
+  });
+
+  it("allows exactly 4 username changes when 6 are sent at once", async () => {
+    const token = await newGuestToken("Parallelzero");
+    const names = [
+      "Parallelone",
+      "Paralleltwo",
+      "Parallelthree",
+      "Parallelfour",
+      "Parallelfive",
+      "Parallelsix",
+    ];
+    const answers = await Promise.all(
+      names.map(async (username) => post("/api/username-changes", { token, username })),
+    );
+    const statuses = answers.map(({ status }) => status).sort((first, second) => first - second);
+    expect(statuses).toEqual([200, 200, 200, 200, 400, 400]);
+    const tokenHash = createHash("sha256").update(token).digest("hex");
+    const { results } = await db
+      .prepare(
+        "SELECT json_array_length(players.username_changes_ms) AS changes FROM logins JOIN players ON players.id = logins.player_id WHERE logins.token_hash = ?",
+      )
+      .bind(tokenHash)
+      .all();
+    expect(results).toEqual([{ changes: 4 }]);
+  });
+
   it("answers logged out for the account of an unknown or expired login", async () => {
     await expectNothingChangedBy(async () => {
       expect(await post("/api/account", { token: UNKNOWN_TOKEN })).toEqual(LOGGED_OUT);

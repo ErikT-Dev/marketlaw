@@ -1,10 +1,9 @@
-import type { CardName } from "../shared/catalogue/CardName";
+import type { MarketGoDraws } from "./MarketGoDraws";
+import type { SeatPilesAtStart } from "./SeatPilesAtStart";
 import type { SeatState } from "./SeatState";
 
 export type MainPhaseStart = {
   readonly seats: ReadonlyArray<SeatState>;
-  readonly deckCount: number;
-  readonly kindTierCounts: Readonly<Record<string, number>>;
-  readonly discard: ReadonlyArray<CardName>;
-  readonly drawLogLength: number;
+  readonly piles: ReadonlyArray<SeatPilesAtStart>;
+  readonly marketGos: ReadonlyArray<MarketGoDraws>;
 };

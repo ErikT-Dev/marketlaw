@@ -56,7 +56,7 @@ export const REJECTION_MESSAGES: Readonly<Record<ReasonCode, IconText>> = {
   vote_already_open: "A vote is already open.",
   no_vote_open: "There is no vote to answer.",
   vote_already_answered: "You already answered this vote.",
-  out_of_market: "You already had your market go this turn.",
+  out_of_market: "Your market go is over for this turn.",
   card_not_in_marketplace: "That card was just taken.",
   marketplace_empty: "The marketplace is empty: choose a sector.",
   not_this_step: "Not this step.",
@@ -85,7 +85,7 @@ export const REJECTION_MESSAGES: Readonly<Record<ReasonCode, IconText>> = {
   login_failed: "Wrong username, email or password.",
   email_invalid: "Enter a whole email address, such as name@example.com.",
   password_invalid: "Use 8 to 64 characters for the password.",
-  username_change_too_soon: "You can change your username once every 7 days.",
+  username_change_too_soon: "You can change your username at most 4 times in 7 days.",
   email_limit_reached:
     "No more emails can be sent for this account or to this address today. Try again after 00:00 UTC.",
   not_registered: "Sign up first.",

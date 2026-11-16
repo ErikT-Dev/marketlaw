@@ -4,14 +4,15 @@ import type { PlayerView } from "../../../shared/PlayerView";
 import type { PendingAction } from "../../store/PendingAction";
 import { useState } from "react";
 import { ActionsPanel } from "./ActionsPanel";
+import { BigCardBesideHand } from "./BigCardBesideHand";
 import type { OpenDialog } from "./OpenDialog";
 import { ProgressDialogs } from "./ProgressDialogs";
 import styles from "./GamePage.module.css";
 import { HandPanel } from "./HandPanel";
+import type { LookedAtCard } from "./LookedAtCard";
 import { pendingCardsOf } from "./pendingCardsOf";
 import { playerNameOf } from "./playerNameOf";
-import { SelectedCardPanel } from "./SelectedCardPanel";
-import { useHandMoves } from "./useHandMoves";
+import { useHandBesideLookedAt } from "./useHandBesideLookedAt";
 import { YourStatsPanel } from "./YourStatsPanel";
 
 type Props = {
@@ -19,6 +20,8 @@ type Props = {
   readonly seat: OwnSeatView;
   readonly playerNames: ReadonlyArray<string>;
   readonly pendingActions: ReadonlyArray<PendingAction>;
+  readonly lookedAt: LookedAtCard | null;
+  readonly onLookAt: (lookedAt: LookedAtCard | null) => void;
   readonly onAction: (action: ActionIntent) => void;
 };
 
@@ -29,10 +32,12 @@ function namesStillPlaying(view: PlayerView, playerNames: ReadonlyArray<string>)
 }
 
 export function RightColumn(props: Props) {
-  const { view, seat, playerNames, pendingActions, onAction } = props;
-  const { choice, selected, pressCard, clear, playSelected, sell } = useHandMoves(
+  const { view, seat, playerNames, pendingActions, lookedAt, onLookAt, onAction } = props;
+  const { choice, selected, pressCard, clear, playSelected, sell } = useHandBesideLookedAt(
     seat.hand,
     onAction,
+    lookedAt,
+    onLookAt,
   );
   const [dialog, setDialog] = useState<OpenDialog>("none");
   const isBusy = pendingActions.length > 0;
@@ -56,13 +61,8 @@ export function RightColumn(props: Props) {
         isBusy={isBusy}
         onPlaySelected={playSelected}
         onSell={sell}
-        onUndo={() => {
-          onAction({ type: "undo" });
-        }}
-        onEndTurn={() => {
-          onAction({ type: "end_turn" });
-        }}
         onOpenDialog={setDialog}
+        onAction={onAction}
       />
       <ProgressDialogs
         dialog={dialog}
@@ -75,16 +75,17 @@ export function RightColumn(props: Props) {
           setDialog("none");
         }}
       />
-      {selectedDetails === undefined ? null : (
-        <SelectedCardPanel
-          details={selectedDetails}
-          seat={seat}
-          nextVoteTurn={view.nextVoteTurn}
-          isBusy={isBusy}
-          onPlay={playSelected}
-          onClose={clear}
-        />
-      )}
+      <BigCardBesideHand
+        details={selectedDetails}
+        lookedAt={lookedAt}
+        seat={seat}
+        nextVoteTurn={view.nextVoteTurn}
+        isBusy={isBusy}
+        isOverStatsAndHand={view.phase === "market"}
+        onPlay={playSelected}
+        onClose={clear}
+        onLookAt={onLookAt}
+      />
     </div>
   );
 }

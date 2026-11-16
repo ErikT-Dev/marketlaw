@@ -1,12 +1,14 @@
 import type { TypeName } from "./catalogue/TypeName";
 import type { DrawLogEntry } from "./DrawLogEntry";
 import type { ProjectName } from "./ProjectName";
+import type { MainPhaseLogEntry } from "./MainPhaseLogEntry";
 import type { GamePhase } from "./GamePhase";
 import type { GameResult } from "./GameResult";
 import type { MarketplaceSlot } from "./MarketplaceSlot";
 import type { OtherSeatView } from "./OtherSeatView";
 import type { OwnSeatView } from "./OwnSeatView";
 import type { QuestPlaceView } from "./QuestPlaceView";
+import type { QuestCompletedLastTurn } from "./QuestCompletedLastTurn";
 import type { SeatNumber } from "./SeatNumber";
 import type { VoteView } from "./VoteView";
 
@@ -25,6 +27,8 @@ export type PlayerView = {
   readonly doneOrder: ReadonlyArray<SeatNumber>;
   readonly playerOrder: ReadonlyArray<SeatNumber>;
   readonly drawLog: ReadonlyArray<DrawLogEntry>;
+  readonly mainPhaseLog: ReadonlyArray<MainPhaseLogEntry>;
+  readonly questsCompletedLastTurn: ReadonlyArray<QuestCompletedLastTurn>;
   readonly firstCompletions: ReadonlyArray<ProjectName>;
   readonly vote: VoteView | null;
   readonly nextVoteTurn: number;

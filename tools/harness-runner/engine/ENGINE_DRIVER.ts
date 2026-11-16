@@ -1,6 +1,7 @@
 import * as v from "valibot";
 import { applyDueTimeOuts } from "../../../src/rules/applyDueTimeOuts.ts";
 import { earliestDeadline } from "../../../src/rules/earliestDeadline.ts";
+import type { GameSetup } from "../../../src/rules/GameSetup.ts";
 import type { GameState } from "../../../src/rules/GameState.ts";
 import { receiveAction } from "../../../src/rules/receiveAction.ts";
 import type { SavedGame } from "../../../src/rules/SavedGame.ts";
@@ -18,6 +19,7 @@ import { actionFromStep } from "./actionFromStep.ts";
 import { ENGINE_FIELDS } from "./ENGINE_FIELDS.ts";
 import { engineRandom } from "./engineRandom.ts";
 import { GIVEN_SCHEMA } from "./GIVEN_SCHEMA.ts";
+import type { Given } from "./Given.ts";
 import { readEngineThen } from "./readEngineThen.ts";
 import { stateFromGiven } from "./stateFromGiven.ts";
 
@@ -25,11 +27,15 @@ function savedWith(state: GameState): SavedGame {
   return {
     schemaVersion: SAVE_SCHEMA_VERSION,
     seed: 1,
-    setup: { players: 2, startedAt: state.clockStartedAt },
+    setup: { players: 2, kind: state.kind, startedAt: state.clockStartedAt },
     startingState: state,
     actionLog: [],
     state,
   };
+}
+
+function setupOf(given: Given, now: number): GameSetup {
+  return { players: given.players ?? 2, kind: given.kind ?? "casual", startedAt: now };
 }
 
 function waitOf(
@@ -75,7 +81,7 @@ function startSession(
     runStep(step) {
       if (step === "start_game") {
         purpose = "setup";
-        saved = savedWith(setUpGame({ players: given.players ?? 2, startedAt: now }, random));
+        saved = savedWith(setUpGame(setupOf(given, now), random));
         purpose = "play";
         return;
       }

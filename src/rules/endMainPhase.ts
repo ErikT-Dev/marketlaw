@@ -11,8 +11,8 @@ import { firstPlayerOf } from "./firstPlayerOf";
 import type { GameState } from "./GameState";
 import { MARKET_PHASES_SHOWN } from "./MARKET_PHASES_SHOWN";
 import { marketGoOf } from "./marketGoOf";
+import { questsCompletedThisTurnOf } from "./questsCompletedThisTurnOf";
 import type { Random } from "./Random";
-import { refillQuests } from "./refillQuests";
 import type { SeatState } from "./SeatState";
 import { withMainPhaseStart } from "./withMainPhaseStart";
 
@@ -29,6 +29,9 @@ function seatAtTurnStart(seat: SeatState, firsts: ReadonlyArray<ProjectName>): S
     drawnThisPhase: [],
     newCards: [],
     hasHadMarketGo: false,
+    mainPhaseStartedAt: null,
+    isOutOfTime: false,
+    isTurnDrawOpen: false,
     projectsThisTurn: [],
     undoPoints: [],
     isUndoBlocked: false,
@@ -49,7 +52,7 @@ export function endMainPhase(state: GameState, random: Random, at: number): Game
   const refillShuffles = refilled.shuffles.map(
     (shuffle): DrawLogEntry => ({ kind: "shuffle", turn, seat: null, ...shuffle }),
   );
-  const questTable = refillQuests(endTurnForQuests(state), turn, random);
+  const questTable = endTurnForQuests(state, turn, random);
   const firsts = firstCompletionsOf(state);
   const seats = state.seats.map((seat) => seatAtTurnStart(seat, firsts));
   const started = withMainPhaseStart({
@@ -66,6 +69,7 @@ export function endMainPhase(state: GameState, random: Random, at: number): Game
     questList: questTable.questList,
     doneOrder: [],
     firstCompletions: [...state.firstCompletions, ...firsts],
+    questsCompletedLastTurn: questsCompletedThisTurnOf(state),
     drawLog: [...state.drawLog, ...refillShuffles],
     clockStartedAt: at,
   });

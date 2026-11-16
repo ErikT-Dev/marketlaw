@@ -30,7 +30,10 @@ test("five quests with three-part requirements and four players can all be reach
       { quest: "Public institutions" },
       { quest: "Media city" },
     ],
-    seats: [SEAT_ONE_READY_FOR_TRADING_POST],
+    seats: [
+      SEAT_ONE_READY_FOR_TRADING_POST,
+      { seat: 2, city: ["Apparel Store"], stats: { income: 4 } },
+    ],
   });
   const page = await seatPage(browser, seatOne, 20);
   await expect(page.getByRole("list", { name: "Quests table" }).getByRole("region")).toHaveCount(5);
@@ -42,6 +45,7 @@ test("five quests with three-part requirements and four players can all be reach
       .getByRole("list", { name: "Progress on Media city" })
       .getByRole("listitem"),
   ).toHaveCount(4);
+  await expect(questCard(page, "Trading post").getByText("could complete it now")).toHaveCount(1);
   await expectScreenFits(page, "quests-table", testInfo);
   const help = page.getByRole("button", { name: "How quests work" });
   await help.focus();
@@ -70,7 +74,7 @@ test("five quests with three-part requirements and four players can all be reach
 test("a completed quest shows as completed, stays hidden from others until the main phase ends, then leaves", async ({
   browser,
   request,
-}) => {
+}, testInfo) => {
   const [seatOne = "", seatTwo = ""] = await startTestRoom(request, {
     players: 2,
     turn: 3,
@@ -89,7 +93,9 @@ test("a completed quest shows as completed, stays hidden from others until the m
   await expect(
     questCard(one, "Trading post").getByRole("button", { name: "Complete" }),
   ).toHaveCount(0);
-  await expect(questCard(two, "Trading post").getByText("Seat 1", { exact: true })).toBeVisible();
+  await expect(
+    questCard(two, "Trading post").getByText("Seat 1 could complete it now"),
+  ).toBeVisible();
   await expect(questCard(two, "Trading post").getByText("Seat 1 · completed")).toHaveCount(0);
   for (const page of [one, two]) {
     await page.getByRole("button", { name: "End turn" }).click();
@@ -100,5 +106,14 @@ test("a completed quest shows as completed, stays hidden from others until the m
     await expect(page.getByRole("list", { name: "Quests table" }).getByRole("region")).toHaveCount(
       4,
     );
+    await expect(
+      page.getByRole("table", { name: "Completed last turn" }).getByRole("row", {
+        name: /Trading post/,
+      }),
+    ).toBeVisible();
   }
+  const completedLastTurn = one.getByRole("table", { name: "Completed last turn" });
+  await completedLastTurn.scrollIntoViewIfNeeded();
+  await expect(completedLastTurn).toBeInViewport();
+  await expectScreenFits(one, "quests-completed-last-turn", testInfo);
 });

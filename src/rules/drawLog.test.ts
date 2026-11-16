@@ -21,7 +21,7 @@ function readyForIncome(
   discard: ReadonlyArray<CardName>,
   product: number,
 ): GameState {
-  const state = startSavedGame({ players: 2, startedAt: GAME_STARTED_AT }, 9).state;
+  const state = startSavedGame({ players: 2, kind: "casual", startedAt: GAME_STARTED_AT }, 9).state;
   return {
     ...state,
     deck,

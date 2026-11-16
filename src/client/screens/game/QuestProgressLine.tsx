@@ -1,7 +1,9 @@
 import type { QuestNeed } from "../../../shared/catalogue/QuestNeed";
 import type { QuestProgress } from "../../../shared/QuestProgress";
 import { STAT_ICONS } from "../../icons/STAT_ICONS";
+import { negativeStatsShownIn } from "./negativeStatsShownIn";
 import { QuestPart } from "./QuestPart";
+import { QuestPlayerName } from "./QuestPlayerName";
 import { questNeedIconFile } from "./questNeedIconFile";
 import { questNeedLabel } from "./questNeedLabel";
 import { questNeedSector } from "./questNeedSector";
@@ -11,9 +13,10 @@ type Props = {
   readonly name: string;
   readonly progress: QuestProgress;
   readonly needs: ReadonlyArray<QuestNeed>;
+  readonly isViewer: boolean;
 };
 
-export function QuestProgressLine({ name, progress, needs }: Props) {
+export function QuestProgressLine({ name, progress, needs, isViewer }: Props) {
   if (progress.isCompleted) {
     return (
       <li className={styles["progress"]}>
@@ -23,7 +26,7 @@ export function QuestProgressLine({ name, progress, needs }: Props) {
   }
   return (
     <li className={styles["progress"]}>
-      <span className={styles["player"]}>{name}</span>
+      <QuestPlayerName name={name} canCompleteNow={!isViewer && progress.canCompleteNow} />
       <p className={styles["line"]}>
         {needs.map((need, index) => {
           const have = progress.have[index] ?? 0;
@@ -39,7 +42,7 @@ export function QuestProgressLine({ name, progress, needs }: Props) {
             />
           );
         })}
-        {progress.negativeStats.map(({ stat, value }) => {
+        {negativeStatsShownIn(progress.negativeStats, needs, isViewer).map(({ stat, value }) => {
           const label = STAT_ICONS[stat].label;
           return (
             <QuestPart

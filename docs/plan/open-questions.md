@@ -2689,3 +2689,248 @@ file.
   be missing, the change is undone and the phase waits for GitHub.
 - **Why:** takes an outside service that failed out of every browser job.
 - **Implemented:** phase 25, commit "INFRA: Chromium installs on GitHub without Ubuntu's packages".
+
+## Q126. What happens with the findings of the owner's playthrough of 2026-11-10?
+
+- **Phase:** 25 is done; the owner's notes are `docs/playthrough-notes/2026-11-10-playthrough.txt`
+  (12 findings). As Q78 says, the next "continue" plans a fix phase for them before any other
+  phase: **25a, Playthrough fixes**. Phases 26 and 28 now also depend on 25a.
+- **Question:** which findings change the rules, the protocol, the screens or the accounts; what
+  do findings 4 and 8 ("check if it is a bug") and 6 ("can it be done without a big cost") come
+  to; and how do findings that conflict with existing rules (1, 7, 9) reach the spec?
+- **Solution:** every finding follows the owner's notes; where it conflicts with a rule, the
+  rule is changed in the spec first (D19, `rules/workflow.md`).
+  - **1. Market phase per player (rules, screens).** Every market go has 40 seconds, instead of the
+    first player's 45 and the others' 30 (R9.2, R18.11). A player's own main phase starts as soon as
+    their own market go ends, while later players still have their go (R4.1, new R18.15); their
+    main-phase limit and free time count from then (R9.1, R9.4). A time-out on a market go no longer
+    draws: the go passes to the next player, the player's main phase starts, and their turn draw
+    stays open as option B only; they choose the sector themselves at any time in their main phase
+    (new R18.16; a marketplace card is then rejected with `out_of_market`). Decided without the
+    owner: if they become done without choosing, the draw is taken for them with a random sector at
+    that moment (R8.5), so nobody loses their turn draw, as finding 11 asks for combos; the late
+    draw is not an action (no action-limit cost, allowed at the limit), cannot be undone, and is
+    revealed to others when the main phase ends like any main-phase draw (M3.3, R17.8). What others
+    see follows the existing hiding rules: a player is shown to the others as they were when their
+    own main phase started (R5.4); the deck and discard pile as at the start of your own main phase,
+    minus later market-go draws, plus your own draws and shuffles (R5.5, R17.7, R17.8). Screens: the
+    market banner is green on your go (S4.5), the Draw button of finding 2 takes a marketplace card
+    (S4.3), the action area offers the open turn draw (new S4.6), the main-phase actions open when
+    your own go ends (S4.4), and the top bar shows your own phase (S2.1, S2.3).
+  - **2. Every card can be looked at (screens).** Marketplace cards, your city and other players'
+    cities (in their board) open the big card on a click; a click never takes a marketplace card:
+    on your go, a **Draw** button appears under the selected marketplace card (S4.1, S4.3, S6.5,
+    S3.2).
+  - **3. More about opponents (screens, view).** Overview: quests completed as an orange **Q**
+    box, influence with its icon (S3.1). Board: total types of the city as an indigo **T** box,
+    combos claimed as a green **C** box (infinite claims each count), the five basic stats with
+    workforce, quality and satisfaction in a small table that is red while any is negative,
+    product and distribution next to it (S3.2). Quests panel: another player's negative stat is
+    shown only when the quest names that stat, and the username of every other player who could
+    complete the quest now is bold orange; the view says who can, so the client does not
+    compute it (S5.1). Decided without the owner: your own line keeps showing a negative stat as
+    an unmet part (phase 20a, R19.4), because your Complete button depends on it; "types in
+    their city" counts the types of their cards in play, a doubled type twice, not types gained
+    from quests.
+  - **4. Doubled types (screens; not a rules bug).** Checked: the card data marks Lake Park,
+    Central Park and National Park as counting Beautification twice (`doubleType1`), the engine
+    adds 2 (scenario "a card that counts a type twice adds 2 to that type count" passes), and
+    the big card (`BigCard.tsx`) shows the icon once with a small "2" next to it, which is easy
+    to miss. Fix: a type a card counts twice is shown as its icon twice, on the big card and in
+    the card set (S6.5).
+  - **5. Quests completed last turn (screens, view).** A small table next to the quests panel
+    lists the quests completed in the turn before, with tier and who completed them, only when
+    there are any (new S5.5, R19.6, M3.5). The view carries them; scenario added.
+  - **6. A fuller log (what is public, screens): fits the budgets, included.** At the end of each
+    main phase the log gets, per player in player order, the cards played, quests and projects
+    completed and influence actions used (new M3.7, S7.2; the draw log becomes the **game log**,
+    tab **Log**). Undone actions never appear (R5.7); nobody sees the entries before the main
+    phase ends, the player's own included, so the hiding rules are unchanged. Measured with 6
+    simulated legal-bot games of 3 and 4 players: today's draw log holds 231–300 entries
+    (30–39 KB as JSON) at the end of a game; the new entries add at most about 250 per game
+    (88–128 cards played, 21–88 quests, 10–20 trades, 6–12 projects), about 20–25 KB as JSON,
+    about 4 KB compressed. Budgets: no extra rows (the entries are part of the one state row,
+    B1–B5), no extra incoming messages (B9), the saved room grows from 15–19 KB to about 23 KB
+    compressed against B13's 100 KB, the replay record is unchanged (it is the action log,
+    B17), and the work per message is a few list entries (B11 measures 1 ms for room messages).
+    The view a player receives grows from 55–67 KB to about 90 KB as JSON by the end of a game;
+    no budget limits message size.
+  - **7. More time, and nobody kicked in casual games (rules).** Every turn gets 30 seconds more:
+    the main-phase limit is 210 + (turn − 1) × 120 ÷ 19 seconds, at most 330 (3:30 to 5:30, R9.1),
+    and the free time is 75 seconds instead of 45 (R9.4, R9.13), so a player with an empty bank
+    also gets the extra time and the bank lasts as long as before. Decided without the owner:
+    both, because "add 30 seconds per turn" only reaches a player whose bank is empty through
+    the free time, and only reaches a long turn through the limit. A player whose main-phase time
+    runs out is now **out of time**: they can keep playing, and are made done only once every
+    other player is done or out of time (R9.10, R9.6: their action after the deadline is
+    accepted; only a turn draw after a market-go deadline is rejected as `out_of_time`). The
+    3-time-outs leaving rule now holds in ranked games only; in casual games time-outs are not
+    counted and the player is told they can keep playing (R9.11, M5.3, M5.4, M6.10, S9.4). The
+    out-of-time status is public and shown like done (M3.5, S2.2, S2.3, S3.1, S6.7).
+  - **8. Quests that come straight back (rules; not a code bug, but a rule that looked like
+    one).** Checked: the engine follows R19.7 and R19.8 (no quest is ever on the table for more
+    than 5 turns). But a quest that left after 5 turns went back into the quest list before the
+    refill of the next turn, so it could be drawn straight back: in 45 simulated legal-bot games
+    (2–4 players), 242 of the 1,075 quests that left after 5 turns (22 %) were back on the table
+    the next turn, usually in the same place with 5 turns left again, which looks exactly like a
+    quest that never leaves and that nobody can complete. Fix: such a quest goes back into the
+    list only after the refill (R19.7, R10.2, R11.2, rulebook). The scenario "a quest nobody
+    completed in 5 turns goes back into the quest list" drew the same quest straight back; it
+    contradicted the new spec and now draws another (name unchanged, still required).
+  - **9. Username changes (accounts).** Up to 4 changes in any 7 days instead of 1 (A2.4, S12.5,
+    S16.3 text); the account keeps the times of its recent changes (one D1 row per change, as
+    now).
+  - **10. End turn highlighted (screens).** Once you have played a card this turn, End turn is
+    highlighted until you end your turn (S6.6).
+  - **11. Combos claimed on ending (rules).** When a player becomes done, by ending their turn or
+    by being made done, every ready combo is claimed for them first, with any income it brings;
+    not an action, also at the action limit; not for a player who leaves (new R8.5, S6.6,
+    rulebook).
+  - **12. Income notice (screens).** "Your [income icon] has increased!" with a close button,
+    closing by itself after 3 seconds, whenever your income goes up (new S16.4).
+  - **Scenarios.** 27 scenarios added (486 now; the harness test still expects 459). Scenarios
+    that contradicted the new rules were changed, with their names kept wherever the name stays
+    true (time values, `kind: ranked` for the 3-time-outs scenarios, other players done or out
+    of time where a player must be made done). Five required names could not stay true, because
+    the owner's findings 1, 7 and 9 change exactly the numbers they name; they are **renamed** in
+    the scenario files and in `harness/required.yaml` together, so the same requirement stays on
+    the list under the new rule and none is dropped. The owner approved them on 2026-11-11:
+    "the main-phase time limit in turn 10 is 3 minutes 57 seconds" → "… 4 minutes 27 seconds";
+    "the first 45 seconds of a main phase do not use the time bank" → "the first 75 seconds …";
+    "the first player's market go has 45 seconds" → "… 40 seconds"; "other market goes have
+    30 seconds" → "every later market go also has 40 seconds"; "a username can be changed at
+    most once every 7 days" → "a username can be changed at most 4 times in 7 days".
+  - New scenario fields, which the runner cannot read until phase 25a builds them: seat
+    `out_of_time` and `turn_draw_pending`; view `out_of_time` and `quests_completed_last_turn`;
+    log items `played`, `completed_quest`, `influence` (and `completed_project`); the `timed_out`
+    notice's `keep_playing`; the account's `username_changes_ms` (replaces
+    `last_username_change_ms`). They are explained in `HARNESS.md` and `scenario-format.yaml`.
+  - The spec and harness changes are on the branch `phase-25a-playthrough-fixes`, not on
+    master, as for 20a (Q74): on their own they turn the check red until 25a builds them.
+- **Implemented:** `harness/spec/game-rules.md`, `multiplayer.md`, `accounts.md`, `screens.md`,
+  `rulebook.md`, `glossary.md`; `harness/scenarios/turns-and-time.yaml`, `marketplace.yaml`,
+  `connections-and-leaving.yaml`, `combos-and-income.yaml`, `visibility.yaml`, `quests.yaml`,
+  `accounts.yaml`, `end-of-game.yaml`, `client.yaml`, `records-and-ratings.yaml`;
+  `harness/scenario-format.yaml`, `harness/HARNESS.md`, `harness/required.yaml` (the 5 renames);
+  `docs/plan/phase-25a-playthrough-fixes.md`, `docs/plan/README.md`, phase files 26 and 28.
+
+## Q127. Which questions did the start of phase 25a leave, and how are they solved?
+
+- **Phase:** 25a, the starter's read of the spec and harness changes of Q126.
+- **Question:** (1) R9.6 rejects "a turn draw received at or after the deadline" of a market go
+  as `out_of_time`, while R18.16 lets the player take their turn draw left open at any time after
+  that time-out: which one holds for a turn draw that arrives after the deadline? (2) Invariant
+  I24 still described one shared main phase: everyone shown as at "the start of the phase", with
+  only done, away, left and the time bank live. Since R5.4, R5.5 and R18.15 (Q126) each player
+  has their own main-phase start, market goes go on during it, and out of time and "has had
+  their market go" are live; I24 contradicts the spec.
+- **Options for (1):** reject every turn draw after the deadline (makes R18.16 impossible);
+  accept any turn draw after the time-out as the open draw (a draw the player sent for the go
+  would then be taken as option B, or answered `out_of_market` where R9.6 and the required
+  scenario "a message received at the deadline is rejected and the time-out is applied" expect
+  `out_of_time`); or tell them apart by what the player had seen when sending.
+- **Solution:** (1) A turn draw sent for the go that has ended is rejected: when it is the
+  message that applies the time-out, as `out_of_time` (R9.6, as the engine does now); when the
+  alarm applied the time-out first, it is based on a state version from before the time-out and
+  is rejected as `stale_state` (M9.4). A turn draw sent after the player
+  was shown the time-out is the turn draw left open (R18.16): option B is taken, option A is
+  rejected as `out_of_market`. R9.6 now says so in one sentence. Either way nothing the player
+  sent for the go is taken as a draw they did not choose. (2) I24 is reworded to R5.4 and R5.5:
+  it holds from the start of the turn's first main phase until the main phase ends; another
+  player is shown live while they wait for or take their go and as at the start of their own
+  main phase after it, with market go, done, out of time, away, left and the time bank live; the
+  piles follow R5.5, market-go draws and shuffles included.
+- **Implemented:** `harness/spec/game-rules.md` R9.6, `harness/invariants.yaml` I24 (one
+  `HARNESS:` commit); phase 25a items 1 to 3.
+- **Review finding F2 (2026-11-16):** the engine rejected every message that applied its sender's
+  own market-go time-out as `out_of_time`, not only a turn draw, so a `leave_game` at the go's
+  deadline was refused. Now only a turn draw is; every other message is handled after the
+  time-out (R9.6), as the scenario "a player who leaves at the deadline of their market go leaves
+  after the time-out" shows. `hasTimedOutThisDecision` is removed: since items 1 to 3 it only
+  caught a seat waiting for its market go right after a main-phase time-out of its own had ended
+  the main phase, and answered all its messages `out_of_time` until the first go ended, a
+  `leave_game` (M6.1, any time) included. R9.6 names no such case: such a message is handled after
+  the time-out like any other, so a late End turn is now `wrong_phase` (`roomAlarm.test.ts`
+  follows). `src/rules/receiveAction.ts`.
+
+## Q128. Where does a market-go draw of a card still shown in the discard pile come off?
+
+- **Phase:** 25a, item 2b (what each seat sees during each player's own main phase).
+- **Question:** R5.5 takes a card *you* drew that is still shown in your discard pile (another
+  player shuffled it into the deck during their main phase, hidden from you) off the discard
+  pile shown to you, not off the deck. Since market goes now draw while some players are in
+  their main phase (R18.15), a market go can draw such a card too. R5.5 does not say where that
+  draw comes off; taken off the deck shown, the deck count shown can fall below 0 and the card
+  stays counted in the discard pile, against I24.
+- **Options:** take every market-go draw off the deck shown (simple, can show a negative deck);
+  or treat it like your own draw.
+- **Solution:** like your own draw: a card drawn on a later market go that is still shown in your
+  discard pile is taken off the discard pile shown to you. It shows nothing hidden: the view
+  carries only the two counts, and their sum stays what was really drawn.
+- **Implemented:** `harness/spec/game-rules.md` R5.5 (`HARNESS:` commit); phase 25a item 2b
+  (`src/rules/pilesShownTo.ts`, `tools/simulator/shownPilesViolations.ts`).
+
+## Q129. How does the scenario runner read a `then.marketplace` that lists only some places?
+
+- **Phase:** 25a, item 3 (turn draw left open).
+- **Question:** two scenarios of item 3 ("a message received at the deadline is rejected and the
+  time-out is applied", "a time-out on the market go passes the go to the next player without a
+  draw") expect `marketplace: [{place: residential, card: Row House}]` after the step, while the
+  runner compared `then.marketplace` with all 8 places, so no partial list could ever match.
+  `HARNESS.md` says unlisted places in `given.marketplace` are empty, and says nothing for `then`.
+- **Options:** list all 8 places in the two scenarios; or read `then.marketplace` like
+  `given.marketplace`.
+- **Solution:** like `given`: the places listed must match, and every place not listed must be
+  empty. A full list of 8 places is checked exactly as before; a shorter list is no weaker,
+  because a card in any unlisted place fails the scenario. No scenario changes.
+- **Implemented:** `tools/harness-runner/engine/readEngineThen.ts`.
+
+## Q130. Who "could complete the quest now" in the quests panel (S5.1)?
+
+- **Phase:** 25a, item 11 (opponents and quests).
+- **Question:** S5.1 writes in bold orange the username of every other player who could complete
+  the quest now, as the viewer sees them (R5.4). It does not say whether a player who left the
+  game, or one who is done this turn, counts.
+- **Options:** the full quest check (R19.4, R19.5: on the table, not completed by them, the
+  requirement met, no negative workforce, quality or satisfaction) only; or also leave out
+  players who left; or also leave out players who are done.
+- **Solution:** the quest check on what the viewer sees of them, leaving out only players who left
+  the game: a player who left can never complete a quest again, while a done player still meets
+  the requirement and the name tells the viewer the quest is within their reach. The server
+  decides it per quest and player (`canCompleteNow` in each progress line of the view).
+- **Implemented:** `src/rules/questPlacesShownTo.ts`, `src/client/screens/game/QuestPlayerName.tsx`.
+
+## Q131. Where is the big card shown at 1280×720 during the market phase (finding F1)?
+
+- **Phase:** 25a, finding F1 of the finisher's first run.
+- **Question:** S6.5 opens the big card next to the hand, over the middle column, for hand cards
+  and for marketplace and city cards alike. At 1280×720 the big card (about 570 px high) reaches
+  up over the marketplace: it covers every marketplace column but the first, the **Draw** button
+  under the selected card (S4.3) and the market go panel's sector buttons. Closing it also cleared
+  the marketplace selection, so a player could not take most marketplace cards on their go. The
+  spec says both "the same place" (S6.5) and that the game is fully usable at 1280×720.
+- **Options:** make the big card smaller at low heights (too small to read at 720 px); keep the
+  place and only keep the selection after **Close** (Draw is still covered while the card is
+  shown, and option B's buttons too); or, until the player's own main phase starts, show the big
+  card over their stats and hand, which cannot be used before then (S4.4), and keep the
+  marketplace selection after **Close**.
+- **Solution:** the last. Until your own main phase starts the big card covers your stats and
+  hand, never the marketplace, **Draw** or the market go panel; from your main phase on it is
+  next to the hand as before. The marketplace selection for **Draw** is kept apart from the card
+  being looked at, so closing the big card keeps it. Written into S6.5 first.
+- **Implemented:** `src/client/screens/game/BigCardBesideHand.tsx`,
+  `SelectedCardPanel.module.css`, `MiddleColumn.tsx`.
+
+## Q132. Does a game that ends during a main phase write that main phase's log (finding F4)?
+
+- **Phase:** 25a, review finding F4.
+- **Question:** M3.7 writes a main phase's entries to the game log "when the main phase ends".
+  A game can also end during a main phase: the last player left (M6.8), everyone left (M6.9), an
+  abandon vote passed (M7.4) or a pause lasted 24 hours (R9.14). Does that end the main phase, so
+  that its plays, quests, projects and influence actions show in the log?
+- **Options:** leave them out (the log then misses the last turn's actions, though the end
+  screens show the cities); or write them as the game ends.
+- **Solution:** write them. The game ending ends the main phase too; nothing stays hidden after
+  the game, so the log is complete. Written into M3.7 first, with the scenario "the log shows the
+  cards played in a main phase the game ended in".
+- **Implemented:** `src/rules/endGame.ts` writes the log first (`withMainPhaseLogWritten`).

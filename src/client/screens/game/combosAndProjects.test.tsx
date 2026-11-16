@@ -45,7 +45,7 @@ describe("your city and combos", () => {
     showGame();
     expect(
       within(screen.getByRole("list", { name: "Your Residential cards" }))
-        .getAllByRole("listitem")
+        .getAllByRole("button")
         .map((card) => card.getAttribute("aria-label")),
     ).toEqual(["Row House"]);
     const combos = within(screen.getByRole("region", { name: "Combos · 1 ready" }));

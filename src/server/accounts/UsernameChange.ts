@@ -1,6 +1,6 @@
 export type UsernameChange = {
   readonly currentName: string;
   readonly wantedName: string;
-  readonly changedMs: number | null;
+  readonly changesMs: ReadonlyArray<number>;
   readonly now: number;
 };

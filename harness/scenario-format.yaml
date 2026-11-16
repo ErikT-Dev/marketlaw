@@ -99,6 +99,8 @@ definitions:
       connected: {type: boolean}
       time_bank_ms: {type: integer, minimum: 0, maximum: 900000}
       timeouts_in_a_row: {type: integer, minimum: 0}
+      out_of_time: {type: boolean}
+      turn_draw_pending: {type: boolean}
       market: {enum: [in, out]}
       new_cards: {type: array, items: {type: string}}
       state_version: {type: integer}
@@ -249,11 +251,21 @@ definitions:
       quests_completed: {type: array}
       done: {type: boolean}
       away: {type: boolean}
+      out_of_time: {type: boolean}
       time_bank_ms: {type: integer}
       time_bank_shown: {type: integer}
       deck_count: {type: integer}
       discard_count: {type: integer}
       known_in_hand: {type: array, items: {type: string}}
+      quests_completed_last_turn:
+        type: array
+        items:
+          type: object
+          additionalProperties: false
+          required: [quest, seats]
+          properties:
+            quest: {type: string}
+            seats: {type: array, items: {type: integer}}
       vote_answers:
         type: object
         additionalProperties: false

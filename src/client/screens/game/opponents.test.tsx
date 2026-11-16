@@ -39,6 +39,8 @@ describe("opponents overview", () => {
     const di = within(opponents().getByRole("article", { name: "Di" }));
     expect(di.getByRole("img", { name: "Funds 7" })).toBeDefined();
     expect(di.getByRole("img", { name: "Income 14" })).toBeDefined();
+    expect(di.getByRole("img", { name: "Influence 3" })).toBeDefined();
+    expect(di.getByRole("img", { name: "Quests completed 0" })).toBeDefined();
     expect(di.getByText("Hand 5")).toBeDefined();
     expect(
       within(di.getByRole("list", { name: "Cards in play of Di" }))
@@ -55,6 +57,51 @@ describe("opponents overview", () => {
 });
 
 describe("opponent's board", () => {
+  it("shows the type and combo counts and the five basic stats, with negative ones in a red table", () => {
+    const update = roomUpdateWith({});
+    const game = update.game;
+    const view = game?.view;
+    if (game === null || view === undefined) {
+      throw new Error("no game");
+    }
+    const seats = view.seats.map((seat) =>
+      seat.seat === 4 && seat.kind === "other"
+        ? {
+            ...seat,
+            city: ["Cottage", "Lake Park"] as const,
+            combosClaimed: [
+              { card: "Cottage", combo: 0, times: 1 },
+              { card: "Lake Park", combo: 1, times: 3 },
+            ] as const,
+            stats: {
+              ...seat.stats,
+              workforce: 2,
+              quality: -1,
+              satisfaction: 0,
+              product: 4,
+              distribution: 5,
+            },
+          }
+        : seat,
+    );
+    render(
+      <GamePage {...gamePageProps({ ...update, game: { ...game, view: { ...view, seats } } })} />,
+    );
+    fireEvent.click(opponents().getByRole("button", { name: "See Di's board ›" }));
+    const board = within(screen.getByRole("dialog", { name: "Di's board" }));
+    expect(board.getByRole("img", { name: "Types in their city 4" })).toBeDefined();
+    expect(board.getByRole("img", { name: "Combos claimed 4" })).toBeDefined();
+    const table = board.getByRole("list", { name: "Workforce, quality and satisfaction of Di" });
+    expect(table.className).toContain("projectStatsNegative");
+    expect(
+      within(table)
+        .getAllByRole("img")
+        .map((chip) => chip.getAttribute("aria-label")),
+    ).toEqual(["Workforce 2", "Quality -1", "Satisfaction 0"]);
+    expect(board.getByRole("img", { name: "Product 4" })).toBeDefined();
+    expect(board.getByRole("img", { name: "Distribution 5" })).toBeDefined();
+  });
+
   it("opens from the card, says it shows the start of the main phase, and lists the city by sector", () => {
     render(<GamePage {...gamePageProps(withDiCity(roomUpdateWith({})))} />);
     fireEvent.click(opponents().getByRole("button", { name: "See Di's board ›" }));
@@ -68,7 +115,7 @@ describe("opponent's board", () => {
     expect(board.getByRole("img", { name: "Build passes 2" })).toBeDefined();
     const residential = within(board.getByRole("region", { name: "Residential cards of Di" }));
     expect(
-      residential.getAllByRole("listitem").map((item) => item.getAttribute("aria-label")),
+      residential.getAllByRole("button").map((item) => item.getAttribute("aria-label")),
     ).toEqual(["Cottage", "Loft"]);
     expect(board.getByText("This turn: playing, not done yet")).toBeDefined();
   });

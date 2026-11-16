@@ -7,7 +7,7 @@ const YOUR_GO_TITLES = ["Your go: choose your turn draw", "The marketplace is em
 const YOUR_GO = { selector: "h2", texts: YOUR_GO_TITLES };
 const YOUR_GO_NAME = new RegExp(`^(${YOUR_GO_TITLES.join("|")})$`);
 const FIND_GO_INTERVAL_MS = 50;
-const LONGEST_GO_WAIT_MS = 30_000;
+const LONGEST_GO_WAIT_MS = 40_000;
 
 async function indexWithTheGo(players: ReadonlyArray<Player>): Promise<number> {
   const hasTheGo = await Promise.all(
@@ -30,12 +30,11 @@ async function playerWithTheGo(players: ReadonlyArray<Player>): Promise<Player> 
   return player;
 }
 
-function marketGoMove(page: Page, turn: number, isTakingACard: boolean) {
+async function marketGoMove(page: Page, turn: number, isTakingACard: boolean) {
   if (isTakingACard) {
-    return page
-      .getByRole("region", { name: "Marketplace" })
-      .getByRole("button", { name: /^Take / })
-      .first();
+    const marketplace = page.getByRole("list", { name: "Marketplace places" });
+    await marketplace.getByRole("button").first().click();
+    return marketplace.getByRole("button", { name: "Draw", exact: true });
   }
   const sector = Sector.options[turn % Sector.options.length] ?? "Industry";
   return page
@@ -54,7 +53,7 @@ export async function playMarketPhase(
     const isMarketplaceEmpty = await page
       .getByRole("heading", { name: "The marketplace is empty" })
       .isVisible();
-    const move = marketGoMove(page, turn, isTakingACard && !isMarketplaceEmpty);
+    const move = await marketGoMove(page, turn, isTakingACard && !isMarketplaceEmpty);
     times.push(await timeMove(page, move, YOUR_GO));
   }
   return times;

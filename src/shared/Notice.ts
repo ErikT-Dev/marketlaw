@@ -1,15 +1,11 @@
-import type { SeatNumber } from "./SeatNumber";
+import type { SeatFreeTime } from "./SeatFreeTime";
+import type { TimedOutNotice } from "./TimedOutNotice";
 
 export type Notice =
-  | {
-      readonly kind: "timed_out";
-      readonly inARow: number;
-      readonly of: number;
-    }
+  | TimedOutNotice
   | {
       readonly kind: "resumed";
-      readonly seats: ReadonlyArray<SeatNumber>;
-      readonly freeMs: number;
+      readonly seats: ReadonlyArray<SeatFreeTime>;
     }
   | { readonly kind: "site_game_limit" }
   | {

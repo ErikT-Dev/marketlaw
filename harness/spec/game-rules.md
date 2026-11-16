@@ -107,8 +107,10 @@ chat are in `accounts.md` (rules `A…`). The card data is `cards.json`.
   1. **Start of the turn** (R11): the marketplace and the quests table are refreshed, then the
      **market phase** (R18), where each player in turn takes their turn draw, from the
      marketplace or the deck.
-  2. **Main phase** (R5): all players act at the same time, each in their own city.
-  3. **End of the turn** (R10).
+  2. **Main phase** (R5): all players act at the same time, each in their own city. Each
+     player's own main phase starts as soon as their own market go ends, while later players
+     still have their goes (R18.15).
+  3. **End of the turn** (R10), once every player is done (R8.2).
 - **R4.2** Turn 1 starts straight with the main phase: it has no market phase and no turn draws,
   because every player starts with a full hand (R17.9).
 - **R4.3** **Seats:** when the game starts, the players are given seats numbered 1 to N in a
@@ -139,14 +141,20 @@ chat are in `accounts.md` (rules `A…`). The card data is `cards.json`.
   Undo counts as an action. Ending the turn does not count and is always allowed. A player who
   reaches the limit is told so.
 - **R5.4** **What you see during the main phase:** you see your own actions straight away. Other
-  players' actions are revealed when the main phase ends. Until then you see every other player
-  as they were at the start of the main phase, plus, live, whether each player is done, away
-  (M5.2) or has left (M6), and their time bank (R5.6).
-- **R5.5** During the main phase, the deck and the discard pile are shown to you as they were at
-  the start of the main phase, minus the cards you drew yourself, plus any discard shuffles you
-  caused: such a shuffle moves the cards it takes from the discard pile shown to you into the deck
-  shown to you. A card you drew that is still shown in the discard pile (because another player shuffled
-  it into the deck) is taken off the discard pile shown to you, not off the deck.
+  players' main-phase actions are revealed when the main phase ends. Until then you see every
+  other player as they were when their own main phase started (R18.15): live while they wait for
+  or take their market go, which is public, and after it as they were at the end of their go.
+  You also see, live, whether each player has had their market go, is done, is out of time
+  (R9.10), is away (M5.2) or has left (M6), and their time bank (R5.6).
+- **R5.5** During your main phase, the deck and the discard pile are shown to you as they were
+  when your own main phase started, minus the cards drawn on later market goes (R18.15), minus
+  the cards you drew yourself, plus any discard shuffles you caused or a later market go caused:
+  such a shuffle moves the cards it takes from the discard pile shown to you into the deck shown
+  to you. A player still waiting for their market go after the turn's first main phase has
+  started sees them as they were when that first main phase started, minus the cards drawn on
+  market goes since, plus the discard shuffles those goes caused. A card you drew, or a card
+  drawn on a later market go, that is still shown in the discard pile (because another player
+  shuffled it into the deck) is taken off the discard pile shown to you, not off the deck.
 - **R5.6** Every player's time bank is shown live during the main phase (R9.9).
 - **R5.7** Only the final result of each player's main phase is revealed; actions they undid are
   never shown.
@@ -194,44 +202,63 @@ chat are in `accounts.md` (rules `A…`). The card data is `cards.json`.
   game (R21.8).
 - **R8.4** Players who are made done at the same moment (R9.10) become done in player order
   (R4.5).
+- **R8.5** **Nothing is lost by ending:** when a player becomes done, by ending their turn or by
+  being made done (R9.10), first their turn draw is taken if it is still open (R18.16), then
+  every combo that is ready is claimed for them, as by claim all (R12.6), with any income it
+  brings (R13). Neither counts as an action (R5.3), and both happen even at the action limit. A
+  player who leaves the game (M6) gets neither.
 
 ## R9. Time limits
 
 - **R9.1** **Main-phase limit:** each player has a time limit for the main phase, in seconds:
 
-  180 + (turn number − 1) × 120 ÷ 19, rounded to the nearest second, and at most 300
+  210 + (turn number − 1) × 120 ÷ 19, rounded to the nearest second, and at most 330
 
-  That is 3 minutes in turn 1, about 6 seconds more each turn, and 5 minutes from turn 20 on.
+  That is 3 minutes 30 seconds in turn 1, about 6 seconds more each turn, and 5 minutes
+  30 seconds from turn 20 on. It counts from the moment the player's own main phase starts
+  (R18.15).
 
   | Turn | 1 | 5 | 10 | 15 | 20+ |
   |---|---|---|---|---|---|
-  | Time limit | 3:00 | 3:25 | 3:57 | 4:28 | 5:00 |
+  | Time limit | 3:30 | 3:55 | 4:27 | 4:58 | 5:30 |
 
-- **R9.2** **Market-go limit:** 30 seconds per market go; the first player of the turn has
-  45 seconds (R18.11).
+- **R9.2** **Market-go limit:** 40 seconds for every market go (R18.11).
 - **R9.3** **Time bank:** every player has a personal **time bank of 15 minutes** for the whole
   game.
 - **R9.4** Each decision has some **free time** that does not use the bank: the first
-  **45 seconds** of each main phase, and the first **5 seconds** of each market go.
+  **75 seconds** of each main phase, counted from the start of the player's own main phase
+  (R18.15), and the first **5 seconds** of each market go.
 - **R9.5** After the free time, the clock runs from the player's bank. In the main phase it runs
   until the player ends their turn; on a market go it runs until they make their choice for that
   go. It stops earlier if the main-phase or market-go limit is reached.
 - **R9.6** All time is measured by the server, at the moment it receives a player's message. A
-  message received at or after the player's deadline is rejected as out of time, and the
-  time-out is applied at that moment. Every time-out is recorded in the game's action log.
+  time-out is applied at the player's deadline; a message received at or after the deadline is
+  handled after the time-out. On a market go, a turn draw received at or after the deadline is
+  rejected as out of time (`out_of_time`): it was sent for the go that has ended. A turn draw
+  the player sends after being shown the time-out is their turn draw left open (R18.16). In the
+  main phase a time-out does not end the
+  player's turn (R9.10), so their action is then taken as normal. Every time-out is recorded in
+  the game's action log.
 - **R9.7** Banks are kept in milliseconds and shown rounded down to whole seconds.
 - **R9.8** When a player's bank is empty, they only have the free time.
 - **R9.9** Every player can see their own and every other player's bank, counting down live,
   also during the main phase.
 - **R9.10** **Running out of time:** when a player's time runs out in the main phase, they are
-  made done automatically. When it runs out on a market go, R18.11 applies.
-- **R9.11** A player whose time runs out in the main phase in 3 turns in a row is treated as
-  having left the game (M6). Each time their time runs out in the main phase, they are told how
-  many times in a row it has happened, out of 3.
+  **out of time**: their clock stops, and they can still take main-phase actions. They are made
+  done automatically only once no other player still in the game is playing with time left,
+  that is, once every other player is done or out of time. Players made done at that moment
+  become done in player order (R8.4). When a player's time runs out on a market go, R18.11
+  applies.
+- **R9.11** In a **ranked** game (A8), a player whose time runs out in the main phase in 3 turns
+  in a row is treated as having left the game (M6), at the moment of the third time-out. Each
+  time their time runs out in the main phase, they are told how many times in a row it has
+  happened, out of 3. In a **casual** game (M1.13), time-outs in a row are not counted and
+  nobody leaves because of them; a player whose time runs out in the main phase is told that
+  they can keep playing until the other players are done.
 - **R9.12** **Paused game:** if any player's time would run out while no player still in the game
   is connected, the game is **paused** instead: all clocks stop and nobody runs out of time.
 - **R9.13** A paused game goes on as soon as any player still in the game reconnects. The player
-  whose time would have run out then gets their free time again (45 seconds in the main phase,
+  whose time would have run out then gets their free time again (75 seconds in the main phase,
   5 seconds on a market go), without using their bank, before their time runs out.
 - **R9.14** A game that stays paused for 24 hours is abandoned: it ends with no winner, and
   ratings stay the same.
@@ -245,7 +272,8 @@ After the main phase, in this order:
   this turn" and "skipped build this turn" are reset (unused build passes are kept). Players who
   left get no end-of-turn steps.
 - **R10.2** Quests completed this turn leave the table for good. Quests at the end of their 5th
-  turn on the table that nobody completed go back into the quest list (R19.7).
+  turn on the table that nobody completed leave it, and go back into the quest list only after
+  the start-of-turn refill (R19.7, R11.2).
 - **R10.3** The turn number goes up by 1.
 
 ## R11. Start of a turn
@@ -255,7 +283,8 @@ At the start of every turn from turn 2 on, in this order:
 - **R11.1** The marketplace removes cards that have been on display during 2 market phases and
   refills its empty places (R18.14).
 - **R11.2** At the start of turn 20, a 5th quest place is added. The empty quest places are
-  refilled (R19.8).
+  refilled (R19.8). Then the quests that left the table after 5 turns at the end of the turn
+  before go back into the quest list (R19.7).
 - **R11.3** The **market phase** takes place, which includes every player's turn draw (R18).
 
 ## R12. Types and combos
@@ -387,9 +416,12 @@ At the start of every turn from turn 2 on, in this order:
 - **R17.7** During the main phase, draws happen in the order the actions arrive. Cards sold during
   the main phase, and the hand of a player who leaves during it (M6.5), go to a **holding pile**
   and join the discard pile when the main phase ends, so main-phase draws only use the discard
-  pile as it was at the start of the phase.
-- **R17.8** A discard shuffle during the main phase is shown to the player who caused it straight
-  away, and to other players when the main phase ends. Turn draws happen in the market phase, in
+  pile as it was when the turn's first main phase started (R18.15), apart from discard
+  shuffles. Market goes after that use the same discard pile.
+- **R17.8** A discard shuffle caused by a main-phase draw, or by a turn draw left open
+  (R18.16), is shown to the player who caused it straight away, and to other players when the
+  main phase ends. A discard shuffle caused by a market go is shown to everyone straight away,
+  also while some players are in their main phase. Turn draws happen in the market phase, in
   player order (R18).
 - **R17.9** **Starting hands (7 cards each):** dealt to one player at a time, in seat order from
   seat 1 (R4.3). Each player gets one tier 1 card of each sector, one tier 1 card of a random
@@ -445,9 +477,10 @@ At the start of every turn from turn 2 on, in this order:
   pay its real cost when you play it. Every card that comes into your hand during a turn, in the
   market phase or the main phase (from income, projects, quests or draw actions), is marked
   **new** until the end of that turn.
-- **R18.11** **Time:** you have 30 seconds for your market go; the first player of the turn has
-  45 seconds. Time beyond the first 5 seconds of a go comes from your time bank (R9). If time
-  runs out, you take option (B) with a random sector.
+- **R18.11** **Time:** you have 40 seconds for your market go. Time beyond the first 5 seconds
+  of a go comes from your time bank (R9). If time runs out, your go ends without a draw and the
+  next player's go starts. Your own main phase starts (R18.15), and your turn draw stays open as
+  option (B) only (R18.16).
 - **R18.12** **Refills:** a place emptied by taking a card stays empty until the start of the next
   turn.
 - **R18.13** A card stays in the marketplace for at most **2 market phases**. At the end of every
@@ -455,6 +488,20 @@ At the start of every turn from turn 2 on, in this order:
   phase. Cards placed when the game starts are first on display in turn 2's market phase.
 - **R18.14** **Start of every turn from turn 2 on:** every card that has already been on display
   during 2 market phases goes to the discard pile. Then every empty place is refilled.
+- **R18.15** **Your own main phase:** your main phase starts as soon as your market go ends, by
+  your choice or by your time running out, while later players still have their goes. Before
+  your market go has ended, main-phase actions are rejected (`wrong_phase`). Market goes do not
+  wait for anyone's main phase, and main-phase actions do not change the marketplace. Draws on
+  market goes stay public as they happen (M3.3), and come from the deck as it really is, like
+  main-phase draws (R17.7).
+- **R18.16** **A turn draw left open:** after a time-out on your market go, you can no longer
+  take a marketplace card (`out_of_market`), but at any time in your main phase you can take
+  your turn draw as option (B): choose a sector and draw 2 cards of it from the deck, tier by
+  turn. It is not a main-phase action: it does not count toward the action limit (R5.3) and is
+  allowed at the limit. Like every draw it cannot be undone (R7.3, R7.4), and others see it as a
+  main-phase draw (M3.3, R17.8). If you become done without having taken it, it is taken for
+  you at that moment with a random sector (R8.5). A player who leaves the game (M6) does not
+  get it.
 
 ## R19. Quests
 
@@ -471,9 +518,12 @@ At the start of every turn from turn 2 on, in this order:
   table once. The **reward** is given straight away. Any number of players can complete the same
   quest in the same turn.
 - **R19.6** At the end of a turn, every quest that at least one player completed leaves the table
-  for good.
+  for good. During the next turn, every player can still see which quests were completed in the
+  turn before and by whom (M3.5).
 - **R19.7** A quest stays on the table for at most **5 turns**. At the end of its 5th turn on the
-  table, if nobody completed it, it leaves the table and goes back into the quest list.
+  table, if nobody completed it, it leaves the table. It goes back into the quest list only
+  after the empty places have been refilled at the start of the next turn (R11.2, R19.8), so it
+  cannot come straight back.
 - **R19.8** At the start of the next turn, the empty places are filled one at a time, in table
   order (place 1 first, the 5th place last), each with a random quest from the list. A tier is
   picked only while the list still has quests. Its tier is set by the tier by turn rule (R17.10), but tier 2 quests can only be placed

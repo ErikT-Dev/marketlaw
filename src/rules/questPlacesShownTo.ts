@@ -5,6 +5,7 @@ import type { GameState } from "./GameState";
 import { QUEST_TABLE_RULES } from "./QUEST_TABLE_RULES";
 import { negativeStatsOf } from "./negativeStatsOf";
 import { questNeedHave } from "./questNeedHave";
+import { questRejection } from "./questRejection";
 import { rejectionOf } from "./rejectionOf";
 import { seatShownTo } from "./seatShownTo";
 import { typeCountsOf } from "./typeCountsOf";
@@ -30,6 +31,8 @@ export function questPlacesShownTo(
       progress: shownSeats.map(({ shown, typeCounts }) => ({
         seat: shown.seat,
         isCompleted: shown.questsCompleted.includes(place.quest),
+        canCompleteNow:
+          shown.departure === null && questRejection(state, shown, place.quest) === undefined,
         have: needs.map((need) => questNeedHave(shown, typeCounts, need)),
         negativeStats: negativeStatsOf(shown.stats),
       })),

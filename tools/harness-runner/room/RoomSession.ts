@@ -125,12 +125,13 @@ export class RoomSession {
       waiting: NO_WAITING,
       chat: NO_CHAT,
       game: {
-        kind: "casual",
+        kind: state.kind,
         saved: {
           schemaVersion: SAVE_SCHEMA_VERSION,
           seed: 1,
           setup: {
             players: v.parse(PLAYER_COUNT, state.seats.length),
+            kind: state.kind,
             startedAt: state.clockStartedAt,
           },
           startingState: state,

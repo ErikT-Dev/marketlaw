@@ -44,7 +44,7 @@ function playThreeTurns(saved: SavedGame): SavedGame {
 
 describe("saved games", () => {
   it("starts a game with the setup, the seed and an empty action log", () => {
-    const saved = startSavedGame({ players: 3, startedAt: GAME_STARTED_AT }, 42);
+    const saved = startSavedGame({ players: 3, kind: "casual", startedAt: GAME_STARTED_AT }, 42);
     expect(saved.schemaVersion).toBe(SAVE_SCHEMA_VERSION);
     expect(saved.actionLog).toEqual([]);
     expect(saved.state.seats.map((seat) => seat.hand.length)).toEqual([7, 7, 7]);
@@ -52,27 +52,27 @@ describe("saved games", () => {
   });
 
   it("deals the same game from the same seed and a different game from another seed", () => {
-    expect(startSavedGame({ players: 2, startedAt: GAME_STARTED_AT }, 7).state).toEqual(startSavedGame({ players: 2, startedAt: GAME_STARTED_AT }, 7).state);
-    expect(startSavedGame({ players: 2, startedAt: GAME_STARTED_AT }, 7).state.deck).not.toEqual(
-      startSavedGame({ players: 2, startedAt: GAME_STARTED_AT }, 8).state.deck,
+    expect(startSavedGame({ players: 2, kind: "casual", startedAt: GAME_STARTED_AT }, 7).state).toEqual(startSavedGame({ players: 2, kind: "casual", startedAt: GAME_STARTED_AT }, 7).state);
+    expect(startSavedGame({ players: 2, kind: "casual", startedAt: GAME_STARTED_AT }, 7).state.deck).not.toEqual(
+      startSavedGame({ players: 2, kind: "casual", startedAt: GAME_STARTED_AT }, 8).state.deck,
     );
   });
 
   it("records accepted actions and replays them to the same state", () => {
-    const saved = playThreeTurns(startSavedGame({ players: 2, startedAt: GAME_STARTED_AT }, 11));
+    const saved = playThreeTurns(startSavedGame({ players: 2, kind: "casual", startedAt: GAME_STARTED_AT }, 11));
     expect(saved.state.turn).toBe(4);
     expect(saved.actionLog).toHaveLength(10);
     expect(replay(saved).state).toEqual(saved.state);
   });
 
   it("does not record a rejected action", () => {
-    const saved = startSavedGame({ players: 2, startedAt: GAME_STARTED_AT }, 5);
+    const saved = startSavedGame({ players: 2, kind: "casual", startedAt: GAME_STARTED_AT }, 5);
     const result = applyToSavedGame(saved, { type: "end_turn", seat: 3 }, GAME_STARTED_AT, randomForNextAction(saved));
     expect(result).toEqual({ isOk: false, error: { code: "not_in_game" } });
   });
 
   it("replays a game that started from a given state from that state", () => {
-    const fresh = startSavedGame({ players: 2, startedAt: GAME_STARTED_AT }, 11);
+    const fresh = startSavedGame({ players: 2, kind: "casual", startedAt: GAME_STARTED_AT }, 11);
     const given = { ...fresh.state, turn: 6 };
     const started = { ...fresh, startingState: given, state: given };
     const played = playThreeTurns(started);

@@ -6,27 +6,27 @@ import type { CardName } from "../../src/shared/catalogue/CardName.ts";
 import type { PlayerView } from "../../src/shared/PlayerView.ts";
 import type { SeatNumber } from "../../src/shared/SeatNumber.ts";
 import type { SentToSeat } from "./SentToSeat.ts";
+import { startOf } from "./startOf.ts";
 import { shownPilesViolations } from "./shownPilesViolations.ts";
 import { typeCountViolations } from "./typeCountViolations.ts";
 
 function knownInHandOf(state: GameState, seat: SeatState): ReadonlyArray<CardName> {
-  const start = state.mainPhaseStart.seats.find((candidate) => candidate.seat === seat.seat);
-  return state.phase === "main" ? (start?.knownInHand ?? []) : seat.knownInHand;
+  return (startOf(state, seat.seat) ?? seat).knownInHand;
 }
 
 function hiddenFrom(state: GameState, viewer: SeatNumber): ReadonlyArray<CardName> {
   const others = state.seats.filter((seat) => seat.seat !== viewer);
   const known = others.flatMap((seat) => knownInHandOf(state, seat));
   const playedThisPhase = others.flatMap((seat) => {
-    const start = state.mainPhaseStart.seats.find((candidate) => candidate.seat === seat.seat);
-    return seat.city.filter((card) => !(start?.city ?? []).includes(card));
+    const start = startOf(state, seat.seat);
+    return start === undefined ? [] : seat.city.filter((card) => !start.city.includes(card));
   });
   const hidden = [
     ...others.flatMap((seat) => seat.hand),
     ...state.deck,
     ...state.discard,
     ...state.holdingPile,
-    ...(state.phase === "main" ? playedThisPhase : []),
+    ...playedThisPhase,
   ];
   return hidden.filter((card) => !known.includes(card));
 }
@@ -52,11 +52,12 @@ function startViewViolations(
   viewer: SeatNumber,
   view: PlayerView | undefined,
 ): ReadonlyArray<string> {
-  if (state.phase !== "main" || view === undefined) {
+  const firstStart = state.mainPhaseStart.piles[0];
+  if (state.phase === "ended" || view === undefined || firstStart === undefined) {
     return [];
   }
   const changedSeats = view.seats.flatMap((seen) => {
-    const start = state.mainPhaseStart.seats.find((seat) => seat.seat === seen.seat);
+    const start = startOf(state, seen.seat);
     if (seen.kind === "own" || start === undefined) {
       return [];
     }
@@ -69,9 +70,14 @@ function startViewViolations(
           `I24: seat ${String(viewer)} sees seat ${String(seen.seat)} changed during the main phase`,
         ];
   });
+  const marketGoEntries = new Set(
+    state.mainPhaseStart.marketGos.flatMap((go) =>
+      state.drawLog.slice(go.fromLogLength, go.toLogLength).map((entry) => JSON.stringify(entry)),
+    ),
+  );
   const hasOthersNewDraws = view.drawLog
-    .slice(state.mainPhaseStart.drawLogLength)
-    .some((entry) => entry.seat !== viewer);
+    .slice(firstStart.drawLogLength)
+    .some((entry) => entry.seat !== viewer && !marketGoEntries.has(JSON.stringify(entry)));
   return [
     ...changedSeats,
     ...shownPilesViolations(state, viewer, view),

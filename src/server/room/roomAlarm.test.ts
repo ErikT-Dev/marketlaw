@@ -20,10 +20,13 @@ import type { RoomStorage } from "./RoomStorage";
 import { NO_CHAT_CONTEXT } from "./NO_CHAT_CONTEXT";
 
 const STARTED_AT = 1_000_000;
-const FIRST_DEADLINE = STARTED_AT + 180_000;
+const FIRST_DEADLINE = STARTED_AT + 210_000;
 
 function playingRoom(): RoomRecord {
-  const saved = startSavedGame({ players: 2, startedAt: v.parse(EpochMs, STARTED_AT) }, 3);
+  const saved = startSavedGame(
+    { players: 2, kind: "casual", startedAt: v.parse(EpochMs, STARTED_AT) },
+    3,
+  );
   const players = [1, 2].map((seat) => ({
     playerId: v.parse(PlayerId, crypto.randomUUID()),
     name: `Seat ${String(seat)}`,
@@ -138,12 +141,12 @@ function lateEndTurn(storage: RoomStorage, seatIndex: number, now: number) {
 }
 
 describe("a message that arrives after its deadline before the alarm", () => {
-  it("is rejected out of time, applies every time-out due then, saves and updates everyone", () => {
+  it("applies every time-out due then first, saves and updates everyone, then is handled as normal", () => {
     const storage = storageWith(playingRoom());
     const outcome = lateEndTurn(storage, 0, FIRST_DEADLINE + 500);
     expect(outcome.isRoomGone ? null : outcome.reply).toMatchObject({
       type: "rejected",
-      code: "out_of_time",
+      code: "wrong_phase",
     });
     const game = storage.saved().game;
     expect(game?.saved.actionLog.map(({ action }) => action)).toEqual([
@@ -154,14 +157,14 @@ describe("a message that arrives after its deadline before the alarm", () => {
     expect(outcome.isRoomGone ? [] : outcome.playersToUpdate).toHaveLength(2);
   });
 
-  it("is rejected out of time when the alarm already applied the time-out", () => {
+  it("is handled as normal when the alarm already applied the time-out", () => {
     const record = playingRoom();
     const storage = storageWith(
       fireAlarm(record, v.parse(EpochMs, FIRST_DEADLINE), randomForNextAction),
     );
     const before = storage.saved();
     const outcome = lateEndTurn(storage, 0, FIRST_DEADLINE + 500);
-    expect(outcome.isRoomGone ? null : outcome.reply).toMatchObject({ code: "out_of_time" });
+    expect(outcome.isRoomGone ? null : outcome.reply).toMatchObject({ code: "wrong_phase" });
     expect(storage.saved()).toBe(before);
   });
 });

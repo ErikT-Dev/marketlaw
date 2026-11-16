@@ -29,6 +29,34 @@
   list-style: none;
 }
 
+.basicStats,
+.counts {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.projectStats,
+.projectStatsNegative,
+.outputStats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  margin: 0;
+  padding: var(--space-xs);
+  border-radius: var(--radius-sm);
+  list-style: none;
+}
+
+.projectStats {
+  background: var(--color-panel-raised);
+}
+
+.projectStatsNegative {
+  background: var(--color-board-negative-stats);
+}
+
 .status {
   margin: 0;
   color: var(--color-text-secondary);
@@ -60,4 +88,17 @@
 .close {
   display: flex;
   justify-content: flex-end;
+}
+
+.boardWithCard {
+  display: grid;
+  grid-template-columns: 315px repeat(4, minmax(0, 1fr));
+  gap: var(--space-lg);
+  align-items: start;
+}
+
+.bigCard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
 }

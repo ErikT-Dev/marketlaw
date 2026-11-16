@@ -2,8 +2,8 @@ import { applyDueTimeOuts } from "./applyDueTimeOuts";
 import { applyToSavedGame } from "./applyToSavedGame";
 import { dueTimeOuts } from "./dueTimeOuts";
 import type { GameAction } from "./GameAction";
-import { hasTimedOutThisDecision } from "./hasTimedOutThisDecision";
 import { isVoteAction } from "./isVoteAction";
+import { marketGoOf } from "./marketGoOf";
 import type { Random } from "./Random";
 import type { ReceivedAction } from "./ReceivedAction";
 import type { SavedGame } from "./SavedGame";
@@ -31,15 +31,13 @@ export function receiveAction(
   if (isVoteAction(action)) {
     return receiveVoteAction(saved, action, at, randomFor);
   }
-  if (dueTimeOuts(saved.state, at).includes(action.seat)) {
-    const caughtUp = applyDueTimeOuts(saved, at, randomFor);
+  const isOwnTimeOutDue = dueTimeOuts(saved.state, at).includes(action.seat);
+  const caughtUp = isOwnTimeOutDue ? applyDueTimeOuts(saved, at, randomFor) : saved;
+  if (isOwnTimeOutDue && action.type === "turn_draw" && marketGoOf(saved.state) === action.seat) {
     return { caughtUp, saved: caughtUp, rejection: { code: "out_of_time" } };
   }
-  if (hasTimedOutThisDecision(saved, action.seat)) {
-    return { caughtUp: saved, saved, rejection: { code: "out_of_time" } };
-  }
-  const result = applyToSavedGame(saved, action, at, randomFor(saved));
+  const result = applyToSavedGame(caughtUp, action, at, randomFor(caughtUp));
   return result.isOk
-    ? { caughtUp: saved, saved: result.value, rejection: null }
-    : { caughtUp: saved, saved, rejection: result.error };
+    ? { caughtUp, saved: result.value, rejection: null }
+    : { caughtUp, saved: caughtUp, rejection: result.error };
 }

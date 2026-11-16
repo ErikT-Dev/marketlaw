@@ -4,12 +4,14 @@ import { gameResultOf } from "./gameResultOf";
 import type { GameState } from "./GameState";
 import type { GameEnding } from "../shared/GameEnding";
 import { scoredEndingOf } from "./scoredEndingOf";
+import { withMainPhaseLogWritten } from "./withMainPhaseLogWritten";
 
 export function endGame(
-  state: GameState,
+  unlogged: GameState,
   at: number,
-  endedBy: GameEnding = scoredEndingOf(state),
+  endedBy: GameEnding = scoredEndingOf(unlogged),
 ): GameState {
+  const state = withMainPhaseLogWritten(unlogged);
   const firsts = firstCompletionsOf(state);
   const rewarded = {
     ...state,

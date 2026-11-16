@@ -2,6 +2,7 @@ import type { PlayerId } from "../../../shared/PlayerId";
 import { useContext } from "react";
 import type { OtherSeatView } from "../../../shared/OtherSeatView";
 import { PlayerBadge } from "../../components/PlayerBadge";
+import { CountBox } from "../../components/CountBox";
 import { StatChip } from "../../components/StatChip";
 import { cardsBySector } from "./cardsBySector";
 import styles from "./OpponentCard.module.css";
@@ -23,7 +24,10 @@ function statusOf(seat: OtherSeatView, isAway: boolean) {
   if (isAway) {
     return "away";
   }
-  return seat.isDone ? "done" : "none";
+  if (seat.isDone) {
+    return "done";
+  }
+  return seat.isOutOfTime ? "outOfTime" : "none";
 }
 
 export function OpponentCard({ seat, name, playerId, onOpen }: Props) {
@@ -38,6 +42,8 @@ export function OpponentCard({ seat, name, playerId, onOpen }: Props) {
         <div className={styles["stats"]}>
           <StatChip stat="funds" value={seat.stats.funds} />
           <StatChip stat="income" value={seat.stats.income} />
+          <StatChip stat="influence" value={seat.stats.influence} />
+          <CountBox letter="Q" count={seat.questsCompleted.length} label="Quests completed" />
           <span className={styles["hand"]}>Hand {seat.handCount}</span>
         </div>
         <ul className={styles["sectors"]} aria-label={`Cards in play of ${name}`}>

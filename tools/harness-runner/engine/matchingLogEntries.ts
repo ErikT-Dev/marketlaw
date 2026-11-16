@@ -1,5 +1,7 @@
 import type { DrawLogEntry } from "../../../src/shared/DrawLogEntry.ts";
+import type { MainPhaseLogEntry } from "../../../src/shared/MainPhaseLogEntry.ts";
 import { isRecord } from "../../harness-check/isRecord.ts";
+import type { GameLogEntry } from "./GameLogEntry.ts";
 
 function turnDrawFieldsOf(entry: DrawLogEntry): Readonly<Record<string, unknown>> {
   if (entry.kind !== "turn_draw") {
@@ -9,7 +11,7 @@ function turnDrawFieldsOf(entry: DrawLogEntry): Readonly<Record<string, unknown>
   return choice.option === "A" ? { turn_draw: "A", took: choice.card } : { turn_draw: "B" };
 }
 
-function scenarioFieldsOf(entry: DrawLogEntry): Readonly<Record<string, unknown>> {
+function drawFieldsOf(entry: DrawLogEntry): Readonly<Record<string, unknown>> {
   const asked =
     entry.asked === null
       ? {}
@@ -23,8 +25,36 @@ function scenarioFieldsOf(entry: DrawLogEntry): Readonly<Record<string, unknown>
   return { seat: entry.seat, turn: entry.turn, ...count, ...asked, ...turnDrawFieldsOf(entry) };
 }
 
+function mainPhaseFieldsOf(entry: MainPhaseLogEntry): Readonly<Record<string, unknown>> {
+  const common = { seat: entry.seat, turn: entry.turn };
+  switch (entry.kind) {
+    case "played":
+      return { ...common, played: entry.card };
+    case "completed_quest":
+      return { ...common, completed_quest: entry.quest };
+    case "completed_project":
+      return { ...common, completed_project: entry.project };
+    case "influence":
+      return { ...common, influence: entry.trade };
+  }
+}
+
+function scenarioFieldsOf(entry: GameLogEntry): Readonly<Record<string, unknown>> {
+  switch (entry.kind) {
+    case "draw":
+    case "turn_draw":
+    case "shuffle":
+      return drawFieldsOf(entry);
+    case "played":
+    case "completed_quest":
+    case "completed_project":
+    case "influence":
+      return mainPhaseFieldsOf(entry);
+  }
+}
+
 export function matchingLogEntries(
-  log: ReadonlyArray<DrawLogEntry>,
+  log: ReadonlyArray<GameLogEntry>,
   expected: unknown,
 ): ReadonlyArray<unknown> {
   const rows = log.map(scenarioFieldsOf);

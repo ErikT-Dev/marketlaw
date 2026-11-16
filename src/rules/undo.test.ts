@@ -26,7 +26,7 @@ function accepted(state: GameState, action: GameAction): GameState {
 
 describe("undo", () => {
   it("keeps the time bank as it is now and counts itself as an action", () => {
-    const start = startSavedGame({ players: 2, startedAt: GAME_STARTED_AT }, 7).state;
+    const start = startSavedGame({ players: 2, kind: "casual", startedAt: GAME_STARTED_AT }, 7).state;
     const traded = accepted(start, { type: "influence", seat: 1, trade: "fund_to_influence" });
     const timeUsed = updateSeat(traded, 1, (seat) => ({ ...seat, timeBankMs: 1_000 }));
     const undone = seatOf(accepted(timeUsed, { type: "undo", seat: 1 }), 1);
@@ -36,7 +36,7 @@ describe("undo", () => {
   });
 
   it("starts every main phase with nothing to undo", () => {
-    const start = startSavedGame({ players: 2, startedAt: GAME_STARTED_AT }, 7).state;
+    const start = startSavedGame({ players: 2, kind: "casual", startedAt: GAME_STARTED_AT }, 7).state;
     const traded = accepted(start, { type: "influence", seat: 1, trade: "fund_to_influence" });
     const nextTurnActions: ReadonlyArray<GameAction> = [
       { type: "end_turn", seat: 1 },

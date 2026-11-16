@@ -20,7 +20,8 @@ function dealSeats(setup: GameSetup, piles: Piles, random: Random): SeatsDealt {
   return SEAT_NUMBERS.slice(0, setup.players).reduce<SeatsDealt>(
     (soFar, seat) => {
       const deal = dealStartingHand(soFar.piles, random);
-      return { seats: [...soFar.seats, { ...newSeat(seat), hand: deal.hand }], piles: deal.piles };
+      const dealtSeat = { ...newSeat(seat), hand: deal.hand, mainPhaseStartedAt: setup.startedAt };
+      return { seats: [...soFar.seats, dealtSeat], piles: deal.piles };
     },
     { seats: [], piles },
   );
@@ -36,6 +37,7 @@ export function setUpGame(setup: GameSetup, random: Random): GameState {
   const filled = fillMarketplace(emptyMarketplace, dealt.piles, FIRST_TURN, random);
   const quests = pickStartingQuests(random);
   return withMainPhaseStart({
+    kind: setup.kind,
     turn: FIRST_TURN,
     phase: "main",
     firstPlayer: 1,
@@ -44,6 +46,8 @@ export function setUpGame(setup: GameSetup, random: Random): GameState {
     discard: filled.piles.discard,
     holdingPile: [],
     drawLog: [],
+    mainPhaseLog: [],
+    questsCompletedLastTurn: [],
     marketplace: filled.marketplace,
     quests: quests.map((quest) => ({ quest, turnsOnTable: 1 })),
     questList: QUESTS.map(({ name }) => name).filter((name) => !quests.includes(name)),

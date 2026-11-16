@@ -2,6 +2,7 @@ import type { GameState } from "../../src/rules/GameState.ts";
 import { cardOf } from "../../src/shared/catalogue/cardOf.ts";
 import type { PlayerView } from "../../src/shared/PlayerView.ts";
 import type { SeatNumber } from "../../src/shared/SeatNumber.ts";
+import { startOf } from "./startOf.ts";
 
 function countsText(counts: Readonly<Record<string, number | undefined>>): string {
   return JSON.stringify(
@@ -17,10 +18,8 @@ export function typeCountViolations(
   view: PlayerView,
 ): ReadonlyArray<string> {
   return view.seats.flatMap((seen) => {
-    const source =
-      seen.kind === "own" || state.phase !== "main"
-        ? state.seats.find((seat) => seat.seat === seen.seat)
-        : state.mainPhaseStart.seats.find((seat) => seat.seat === seen.seat);
+    const live = state.seats.find((seat) => seat.seat === seen.seat);
+    const source = seen.kind === "own" ? live : (startOf(state, seen.seat) ?? live);
     const expected: Record<string, number> = { ...source?.gainedTypes };
     for (const { type, count } of seen.city.flatMap((card) => cardOf(card).types)) {
       expected[type] = (expected[type] ?? 0) + count;

@@ -140,12 +140,12 @@ describe("RemoteGameHost", () => {
       JSON.stringify({
         type: "notice",
         protocolVersion: PROTOCOL_VERSION,
-        notice: { kind: "timed_out", inARow: 2, of: 3 },
+        notice: { kind: "timed_out", gameKind: "ranked", inARow: 2, of: 3 },
       }),
     );
     expect(network.events).toMatchObject([
       { type: "update", serverNow: 5000 },
-      { type: "notice", notice: { kind: "timed_out", inARow: 2, of: 3 } },
+      { type: "notice", notice: { kind: "timed_out", gameKind: "ranked", inARow: 2, of: 3 } },
     ]);
   });
 

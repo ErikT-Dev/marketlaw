@@ -16,6 +16,7 @@ export const QUEST_PLACE_VIEW_SCHEMA = v.union([
       v.object({
         seat: SEAT_NUMBER_SCHEMA,
         isCompleted: v.boolean(),
+        canCompleteNow: v.boolean(),
         have: v.array(COUNT),
         negativeStats: v.array(v.object({ stat: ProjectName, value: COUNT })),
       }),

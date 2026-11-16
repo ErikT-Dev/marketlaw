@@ -4,6 +4,7 @@ import type { SeatNumber } from "./SeatNumber";
 export type QuestProgress = {
   readonly seat: SeatNumber;
   readonly isCompleted: boolean;
+  readonly canCompleteNow: boolean;
   readonly have: ReadonlyArray<number>;
   readonly negativeStats: ReadonlyArray<NegativeStat>;
 };

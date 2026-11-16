@@ -2,6 +2,7 @@ import { BONUS_PER_FUND } from "./BONUS_PER_FUND";
 import { cardOf } from "../shared/catalogue/cardOf";
 import { FIRST_TURN_FOR_HIGHER_TIERS } from "./FIRST_TURN_FOR_HIGHER_TIERS";
 import { gameEndViolations } from "./gameEndViolations";
+import { isInOwnMainPhase } from "./isInOwnMainPhase";
 import { isVoteAction } from "./isVoteAction";
 import type { GameState } from "./GameState";
 import { seatOf } from "./seatOf";
@@ -24,7 +25,8 @@ function expectedFirstSeat(state: GameState): number {
 }
 
 function holdingPileViolations(before: GameState, after: GameState): ReadonlyArray<string> {
-  const isOutsideMainPhase = after.turn > before.turn || after.phase !== "main";
+  const isOutsideMainPhase =
+    after.turn > before.turn || !after.seats.some((seat) => isInOwnMainPhase(after, seat));
   return isOutsideMainPhase && after.holdingPile.length > 0
     ? [`I2: the holding pile holds ${String(after.holdingPile.length)} cards outside the main phase`]
     : [];

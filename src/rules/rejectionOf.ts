@@ -42,10 +42,17 @@ function progressRejection(
   }
 }
 
-function turnDrawRejection(state: GameState, action: TurnDraw): ReasonCode | undefined {
+function turnDrawRejection(
+  state: GameState,
+  seat: SeatState,
+  action: TurnDraw,
+): ReasonCode | undefined {
   const { choice } = action;
   if (choice.option === "B") {
     return undefined;
+  }
+  if (seat.isTurnDrawOpen) {
+    return "out_of_market";
   }
   if (state.marketplace.every(({ card }) => card === null)) {
     return "marketplace_empty";
@@ -115,7 +122,7 @@ function seatActionRejection(
     case "undo":
       return undoRejection(seat);
     case "turn_draw":
-      return turnDrawRejection(state, action);
+      return turnDrawRejection(state, seat, action);
   }
 }
 

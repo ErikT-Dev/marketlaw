@@ -10,11 +10,9 @@ import { bodyOf } from "./bodyOf";
 
 const LOGGED_OUT: AccountResponse = { isLoggedIn: false };
 
-function usernameWaitOf(changedMs: number | null, now: number): UsernameWait | null {
-  const allowedAt = usernameChangeAllowedAt(changedMs, now);
-  return changedMs === null || allowedAt === null
-    ? null
-    : v.parse(UsernameWait, { changedAt: changedMs, allowedAt });
+function usernameWaitOf(changesMs: ReadonlyArray<number>, now: number): UsernameWait | null {
+  const allowedAt = usernameChangeAllowedAt(changesMs, now);
+  return allowedAt === null ? null : v.parse(UsernameWait, { allowedAt });
 }
 
 export async function accountRoute(request: Request, env: Env): Promise<Response> {
@@ -30,7 +28,7 @@ export async function accountRoute(request: Request, env: Env): Promise<Response
   const reply: AccountResponse = {
     isLoggedIn: true,
     name: account.identity.name,
-    usernameWait: usernameWaitOf(account.usernameChangedMs, now),
+    usernameWait: usernameWaitOf(account.usernameChangesMs, now),
     email: await accountEmailDetailsOf(env.DB, account.identity.playerId),
   };
   return Response.json(reply);

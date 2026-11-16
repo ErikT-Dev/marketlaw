@@ -36,7 +36,7 @@ function engineGivenOf(rawGiven: Readonly<Record<string, unknown>>): unknown {
   return {
     ...playerCountOf(rawGiven),
     ...Object.fromEntries(
-      Object.entries(rawGiven).filter(([field]) => !["room", "accounts", "kind"].includes(field)),
+      Object.entries(rawGiven).filter(([field]) => !["room", "accounts"].includes(field)),
     ),
     ...(rawGiven["seats"] === undefined
       ? {}
@@ -114,9 +114,12 @@ function noticeTo(session: RoomSession, expected: unknown): unknown {
   if (sent === undefined || seat === undefined) {
     return undefined;
   }
-  return sent.notice.kind === "timed_out"
+  if (sent.notice.kind !== "timed_out") {
+    return { seat: seat.seat, notice: sent.notice.kind };
+  }
+  return sent.notice.gameKind === "ranked"
     ? { seat: seat.seat, notice: "timed_out", in_a_row: sent.notice.inARow, of: sent.notice.of }
-    : { seat: seat.seat, notice: sent.notice.kind };
+    : { seat: seat.seat, notice: "timed_out", keep_playing: true };
 }
 
 function messageTo(session: RoomSession, expected: unknown): unknown {
@@ -224,7 +227,7 @@ const SEAT_FIELDS = ENGINE_FIELDS.nestedFields.get("given.seats") ?? new Set<str
 
 export const ROOM_DRIVER: ScenarioDriver = {
   name: "room",
-  givenFields: new Set([...ENGINE_FIELDS.givenFields, "room", "accounts", "kind"]),
+  givenFields: new Set([...ENGINE_FIELDS.givenFields, "room", "accounts"]),
   steps: new Set([
     "raw",
     "play_card",
@@ -260,14 +263,9 @@ export const ROOM_DRIVER: ScenarioDriver = {
   ]),
   unhandledGivenValues: (given) => {
     const state = isRecord(given["room"]) ? given["room"]["state"] : undefined;
-    return [
-      ...(state === undefined || state === "playing"
-        ? []
-        : [`given room.state ${JSON.stringify(state)}`]),
-      ...(given["kind"] === undefined || given["kind"] === "casual"
-        ? []
-        : [`given kind ${JSON.stringify(given["kind"])}`]),
-    ];
+    return state === undefined || state === "playing"
+      ? []
+      : [`given room.state ${JSON.stringify(state)}`];
   },
   startSession,
 };

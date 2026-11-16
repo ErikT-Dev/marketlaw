@@ -56,7 +56,7 @@ function saveSignup(
     identity: { playerId, name },
     lastUsedMs: guest?.lastUsedMs ?? session.now,
     registration: registrationOf(session, step),
-    usernameChangedMs: guest?.usernameChangedMs ?? null,
+    usernameChangesMs: guest?.usernameChangesMs ?? [],
   });
 }
 

@@ -28,7 +28,7 @@ it by hand.
 | R3.6 | influence (1) | Covered |
 | R3.7 | influence (2) | Covered |
 | R3.8 | playing-cards (3) | Covered |
-| R4.1 | turns-and-time (1) | Covered |
+| R4.1 | marketplace (1), turns-and-time (1) | Covered |
 | R4.2 | setup (2) | Covered |
 | R4.3 | rooms (1) | Covered |
 | R4.4 | turns-and-time (3) | Covered |
@@ -36,11 +36,11 @@ it by hand.
 | R4.6 | setup (3) | Covered |
 | R5.1 | hostile-client (3), playing-cards (4) | Covered |
 | R5.2 | playing-cards (1), turns-and-time (1) | Covered |
-| R5.3 | playing-cards (3) | Covered |
-| R5.4 | visibility (3) | Covered |
+| R5.3 | combos-and-income (1), marketplace (1), playing-cards (3) | Covered |
+| R5.4 | visibility (5) | Covered |
 | R5.5 | drawing (2), visibility (3) | Covered |
 | R5.6 | turns-and-time (1) | Covered |
-| R5.7 | visibility (1) | Covered |
+| R5.7 | visibility (2) | Covered |
 | R6.1 | influence (1), playing-cards (8), undo (1) | Covered |
 | R6.2 | playing-cards (5) | Covered |
 | R7.1 | playing-cards (1), undo (5) | Covered |
@@ -48,20 +48,21 @@ it by hand.
 | R7.3 | undo (3) | Covered |
 | R7.4 | undo (1) | Covered |
 | R8.1 | playing-cards (1), turns-and-time (1) | Covered |
-| R8.2 | turns-and-time (1) | Covered |
+| R8.2 | turns-and-time (2) | Covered |
 | R8.3 | end-of-game (1), turns-and-time (1) | Covered |
 | R8.4 | end-of-game (1), turns-and-time (1) | Covered |
-| R9.1 | turns-and-time (2) | Covered |
+| R8.5 | combos-and-income (3), marketplace (1) | Covered |
+| R9.1 | marketplace (1), turns-and-time (2) | Covered |
 | R9.2 | turns-and-time (2) | Covered |
 | R9.3 | setup (1) | Covered |
-| R9.4 | marketplace (1), turns-and-time (1) | Covered |
+| R9.4 | marketplace (2), turns-and-time (1) | Covered |
 | R9.5 | turns-and-time (3) | Covered |
-| R9.6 | turns-and-time (2) | Covered |
+| R9.6 | connections-and-leaving (1), turns-and-time (3) | Covered |
 | R9.7 | turns-and-time (1) | Covered |
 | R9.8 | turns-and-time (2) | Covered |
 | R9.9 | turns-and-time (2) | Covered |
-| R9.10 | connections-and-leaving (1), marketplace (1), turns-and-time (4) | Covered |
-| R9.11 | turns-and-time (3) | Covered |
+| R9.10 | combos-and-income (1), connections-and-leaving (1), turns-and-time (8) | Covered |
+| R9.11 | turns-and-time (5) | Covered |
 | R9.12 | turns-and-time (4) | Covered |
 | R9.13 | turns-and-time (5) | Covered |
 | R9.14 | turns-and-time (1) | Covered |
@@ -69,14 +70,14 @@ it by hand.
 | R10.2 | quests (2) | Covered |
 | R10.3 | playing-cards (1), turns-and-time (1) | Covered |
 | R11.1 | turns-and-time (1) | Covered |
-| R11.2 | turns-and-time (1) | Covered |
+| R11.2 | quests (1), turns-and-time (1) | Covered |
 | R11.3 | turns-and-time (1) | Covered |
 | R12.1 | combos-and-income (2), playing-cards (1) | Covered |
 | R12.2 | combos-and-income (1) | Covered |
 | R12.3 | combos-and-income (5) | Covered |
 | R12.4 | combos-and-income (3) | Covered |
 | R12.5 | combos-and-income (1) | Covered |
-| R12.6 | combos-and-income (4), undo (1) | Covered |
+| R12.6 | combos-and-income (5), undo (1) | Covered |
 | R13.1 | combos-and-income (4), undo (1) | Covered |
 | R13.2 | combos-and-income (1) | Covered |
 | R14.1 | turns-and-time (1) | Covered |
@@ -113,17 +114,19 @@ it by hand.
 | R18.8 | marketplace (4) | Covered |
 | R18.9 | marketplace (2) | Covered |
 | R18.10 | combos-and-income (1), marketplace (2) | Covered |
-| R18.11 | connections-and-leaving (1), marketplace (2), turns-and-time (2) | Covered |
+| R18.11 | connections-and-leaving (2), marketplace (3), turns-and-time (3) | Covered |
 | R18.12 | marketplace (1) | Covered |
 | R18.13 | turns-and-time (1) | Covered |
 | R18.14 | turns-and-time (1) | Covered |
+| R18.15 | marketplace (3), visibility (1) | Covered |
+| R18.16 | marketplace (5), visibility (1) | Covered |
 | R19.1 | turns-and-time (1) | Covered |
 | R19.2 | – | Checked another way: The quest list scenarios in `quests.yaml` have one scenario for each of the 45 quests. *(approved by the owner, 2026-10-25)* |
 | R19.3 | setup (1) | Covered |
 | R19.4 | quests (5) | Covered |
 | R19.5 | quests (50), undo (1) | Covered |
-| R19.6 | quests (1) | Covered |
-| R19.7 | quests (1) | Covered |
+| R19.6 | quests (2) | Covered |
+| R19.7 | quests (2) | Covered |
 | R19.8 | quests (5) | Covered |
 | R19.9 | quests (1) | Covered |
 | R20.1 | quests (1) | Covered |
@@ -163,27 +166,28 @@ it by hand.
 | M2.1 | client (1), rooms (2) | Covered |
 | M2.2 | connections-and-leaving (1), rooms (1) | Covered |
 | M3.1 | – | Checked another way: A description of how players interact; each part is tested by its own rule. *(approved by the owner, 2026-10-25)* |
-| M3.2 | visibility (5) | Covered |
-| M3.3 | drawing (2), visibility (2) | Covered |
+| M3.2 | visibility (7) | Covered |
+| M3.3 | drawing (2), visibility (3) | Covered |
 | M3.4 | visibility (1) | Covered |
-| M3.5 | connections-and-leaving (1), visibility (2) | Covered |
+| M3.5 | connections-and-leaving (1), quests (1), visibility (3) | Covered |
 | M3.6 | – | Checked another way: A pointer to A6; tested there. *(approved by the owner, 2026-10-25)* |
+| M3.7 | visibility (5) | Covered |
 | M4.1 | visibility (1) | Covered |
 | M4.2 | – | Checked another way: Replay export check: a running and an ended room are exported and replay exactly. *(approved by the owner, 2026-10-25)* |
 | M4.3 | visibility (2) | Covered |
 | M5.1 | connections-and-leaving (1) | Covered |
 | M5.2 | connections-and-leaving (1) | Covered |
 | M5.3 | connections-and-leaving (2) | Covered |
-| M5.4 | turns-and-time (1) | Covered |
+| M5.4 | turns-and-time (2) | Covered |
 | M5.5 | turns-and-time (1) | Covered |
-| M6.1 | connections-and-leaving (2), end-of-game (1), hostile-client (1) | Covered |
+| M6.1 | connections-and-leaving (3), end-of-game (1), hostile-client (1) | Covered |
 | M6.2 | connections-and-leaving (3) | Covered |
 | M6.3 | connections-and-leaving (1) | Covered |
 | M6.4 | connections-and-leaving (1), turns-and-time (1) | Covered |
 | M6.5 | connections-and-leaving (2) | Covered |
 | M6.6 | connections-and-leaving (2), turns-and-time (1) | Covered |
 | M6.7 | connections-and-leaving (2) | Covered |
-| M6.8 | connections-and-leaving (1) | Covered |
+| M6.8 | connections-and-leaving (1), visibility (1) | Covered |
 | M6.9 | connections-and-leaving (2), records-and-ratings (1) | Covered |
 | M6.10 | connections-and-leaving (3), turns-and-time (1) | Covered |
 | M7.1 | connections-and-leaving (2) | Covered |
@@ -228,7 +232,7 @@ it by hand.
 | A2.1 | accounts (3) | Covered |
 | A2.2 | accounts (1) | Covered |
 | A2.3 | accounts (1) | Covered |
-| A2.4 | accounts (5) | Covered |
+| A2.4 | accounts (7) | Covered |
 | A3.1 | connections-and-leaving (1), records-and-ratings (2) | Covered |
 | A3.2 | records-and-ratings (2) | Covered |
 | A3.3 | records-and-ratings (2) | Covered |
@@ -349,7 +353,7 @@ it by hand.
 
 ## Summary
 
-- Rules: 313
-- Scenarios: 459
+- Rules: 317
+- Scenarios: 488
 - Gaps: 0
 - Checked another way or also checked another way: R3.2, R3.5, R17.10, R19.2, M3.1, M3.6, M4.2, A6.4, A10.6, C5.1, C5.2, C5.3, A12.1

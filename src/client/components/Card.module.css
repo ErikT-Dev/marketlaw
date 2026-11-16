@@ -44,6 +44,7 @@
 }
 
 .playedCard {
+  width: 100%;
   min-height: 62px;
   padding: 12px 14px;
 }

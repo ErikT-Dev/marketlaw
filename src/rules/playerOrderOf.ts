@@ -1,12 +1,9 @@
 import type { SeatNumber } from "../shared/SeatNumber";
 import type { GameState } from "./GameState";
+import { seatsInPlayerOrderOf } from "./seatsInPlayerOrderOf";
 
 export function playerOrderOf(state: GameState): ReadonlyArray<SeatNumber> {
-  const first = Math.max(
-    0,
-    state.seats.findIndex((seat) => seat.seat === state.firstPlayer),
-  );
-  return [...state.seats.slice(first), ...state.seats.slice(0, first)]
+  return seatsInPlayerOrderOf(state)
     .filter((seat) => seat.departure === null)
     .map((seat) => seat.seat);
 }

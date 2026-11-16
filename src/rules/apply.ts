@@ -7,6 +7,8 @@ import { closeVote } from "./closeVote";
 import { claimAll } from "./claimAll";
 import { completeProject } from "./completeProject";
 import { completeQuest } from "./completeQuest";
+import type { SeatNumber } from "../shared/SeatNumber";
+import { decisionOf } from "./decisionOf";
 import { dueTimeOuts } from "./dueTimeOuts";
 import { endTurn } from "./endTurn";
 import type { GameAction } from "./GameAction";
@@ -31,6 +33,7 @@ import { useDrawAction } from "./useDrawAction";
 import { useTrade } from "./useTrade";
 import type { VoteAction } from "./VoteAction";
 import { voteDeadlineOf } from "./voteDeadlineOf";
+import { withMainPhaseLogEntry } from "./withMainPhaseLogEntry";
 import { withUndoHistory } from "./withUndoHistory";
 
 function acceptedSystemAction(
@@ -76,7 +79,7 @@ function accepted(state: GameState, action: GameAction, random: Random, at: numb
     case "sell":
       return takeIncome(sellCards(state, action.seat, action.cards), action.seat, random);
     case "end_turn":
-      return endTurn(state, action.seat, random, { at, isTimeOut: false });
+      return endTurn(state, action.seat, random, at);
     case "claim_all":
       return takeIncome(updateSeat(state, action.seat, claimAll), action.seat, random);
     case "complete_project":
@@ -130,9 +133,17 @@ function systemRejectionOf(state: GameState, action: SystemAction, at: number) {
   return isSystemActionDue(state, action, at) ? undefined : "not_this_step";
 }
 
+function isSameDecision(before: GameState, after: GameState, seat: SeatNumber): boolean {
+  const startedAt = decisionOf(after, seat)?.startedAt;
+  return startedAt !== undefined && startedAt === decisionOf(before, seat)?.startedAt;
+}
+
 function withGraceKept(before: GameState, after: GameState): GameState {
-  const isSameClock = after.clockStartedAt === before.clockStartedAt || before.pause !== null;
-  return after.grace.length === 0 || isSameClock ? after : { ...after, grace: [] };
+  if (before.pause !== null) {
+    return after;
+  }
+  const grace = after.grace.filter(({ seat }) => isSameDecision(before, after, seat));
+  return grace.length === after.grace.length ? after : { ...after, grace };
 }
 
 export function apply(
@@ -149,6 +160,9 @@ export function apply(
   if (code !== undefined) {
     return { isOk: false, error: { code } };
   }
-  const next = withGraceKept(state, accepted(state, action, random, at));
+  const next = withGraceKept(
+    state,
+    withMainPhaseLogEntry(action, accepted(state, action, random, at)),
+  );
   return { isOk: true, value: withUndoHistory(state, action, next) };
 }

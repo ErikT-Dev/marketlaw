@@ -83,7 +83,7 @@ describe("after leaving", () => {
   it("says why the player left after their third time-out in a row", () => {
     const props = {
       ...gamePageProps(roomUpdateWith({}, { hasLeft: true, isDone: true })),
-      timeOutNotice: { kind: "timed_out" as const, inARow: 3, of: 3 },
+      timeOutNotice: { kind: "timed_out" as const, gameKind: "ranked" as const, inARow: 3, of: 3 },
     };
     render(<GamePage {...props} />);
     expect(screen.getByRole("heading", { name: "You left the game" })).toBeDefined();

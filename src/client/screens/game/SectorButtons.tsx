@@ -5,11 +5,12 @@ import styles from "./MarketGoPanel.module.css";
 type Props = {
   readonly isBusy: boolean;
   readonly onChoose: (sector: Sector) => void;
+  readonly isCompact?: boolean;
 };
 
-export function SectorButtons({ isBusy, onChoose }: Props) {
+export function SectorButtons({ isBusy, onChoose, isCompact = false }: Props) {
   return (
-    <div className={styles["sectors"]}>
+    <div className={styles[isCompact ? "sectorsCompact" : "sectors"]}>
       {Sector.options.map((sector) => (
         <button
           key={sector}

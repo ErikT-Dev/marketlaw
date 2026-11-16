@@ -5,6 +5,7 @@ import { NO_WAITING } from "./NO_WAITING";
 import type { RoomRecord } from "./RoomRecord";
 import { roomSizeOf } from "./roomSizeOf";
 
+const LIVE_GAME_KIND = "casual";
 const SEAT_NUMBERS: ReadonlyArray<SeatNumber> = [1, 2, 3, 4];
 
 function nameOf(record: RoomRecord, playerId: string): string {
@@ -17,9 +18,13 @@ export function startRoomGame(record: RoomRecord, start: GameStart): RoomRecord 
     ...record,
     waiting: NO_WAITING,
     game: {
-      kind: "casual",
+      kind: LIVE_GAME_KIND,
       saved: startSavedGame(
-        { players: roomSizeOf(record.players.length) ?? record.size, startedAt: start.now },
+        {
+          players: roomSizeOf(record.players.length) ?? record.size,
+          kind: LIVE_GAME_KIND,
+          startedAt: start.now,
+        },
         start.seed,
       ),
       seats: seatOrder.map((playerId, index) => ({

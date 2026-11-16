@@ -1,8 +1,10 @@
 import type { CardName } from "../shared/catalogue/CardName";
 import type { DrawLogEntry } from "../shared/DrawLogEntry";
 import type { SeatNumber } from "../shared/SeatNumber";
+import { cardsDrawnSinceStart } from "./cardsDrawnSinceStart";
 import type { GameState } from "./GameState";
 import { isAskedCard } from "./isAskedCard";
+import { pilesStartShownTo } from "./pilesStartShownTo";
 
 type PilesShown = {
   readonly deckCount: number;
@@ -12,7 +14,7 @@ type PilesShown = {
 
 type ShownSoFar = { readonly deckCount: number; readonly discard: ReadonlyArray<CardName> };
 
-function afterOwnEntry(shown: ShownSoFar, entry: DrawLogEntry): ShownSoFar {
+function afterShownEntry(shown: ShownSoFar, entry: DrawLogEntry): ShownSoFar {
   if (entry.kind !== "shuffle") {
     return { ...shown, deckCount: shown.deckCount - entry.count };
   }
@@ -25,19 +27,38 @@ function afterOwnEntry(shown: ShownSoFar, entry: DrawLogEntry): ShownSoFar {
   };
 }
 
+function shownEntriesFrom(
+  state: GameState,
+  viewer: SeatNumber,
+  logLength: number,
+): ReadonlyArray<DrawLogEntry> {
+  const marketGos = state.mainPhaseStart.marketGos;
+  return state.drawLog.flatMap((entry, index) => {
+    const isOnMarketGo = marketGos.some(
+      (go) => index >= go.fromLogLength && index < go.toLogLength,
+    );
+    return index >= logLength && (entry.seat === viewer || isOnMarketGo) ? [entry] : [];
+  });
+}
+
 export function pilesShownTo(state: GameState, viewer: SeatNumber): PilesShown {
-  if (state.phase !== "main") {
+  const start = pilesStartShownTo(state, viewer);
+  const firstStart = state.mainPhaseStart.piles[0];
+  if (start === null || firstStart === undefined) {
     return { deckCount: state.deck.length, discard: state.discard, drawLog: state.drawLog };
   }
-  const start = state.mainPhaseStart;
-  const earlier = state.drawLog.slice(0, start.drawLogLength);
-  const own = state.drawLog.slice(start.drawLogLength).filter((entry) => entry.seat === viewer);
-  const shown = own.reduce(afterOwnEntry, { deckCount: start.deckCount, discard: start.discard });
-  const drawn = state.seats.find((seat) => seat.seat === viewer)?.drawnThisPhase ?? [];
+  const shown = shownEntriesFrom(state, viewer, start.drawLogLength).reduce(afterShownEntry, {
+    deckCount: start.deckCount,
+    discard: start.discard,
+  });
+  const drawn = cardsDrawnSinceStart(state, viewer, start);
   const drawnFromShownDiscard = drawn.filter((card) => shown.discard.includes(card));
   return {
     deckCount: shown.deckCount + drawnFromShownDiscard.length,
     discard: shown.discard.filter((card) => !drawnFromShownDiscard.includes(card)),
-    drawLog: [...earlier, ...own],
+    drawLog: [
+      ...state.drawLog.slice(0, firstStart.drawLogLength),
+      ...shownEntriesFrom(state, viewer, firstStart.drawLogLength),
+    ],
   };
 }

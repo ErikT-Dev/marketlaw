@@ -1,26 +1,28 @@
 import { useState } from "react";
 import type { DrawLogEntry } from "../../../shared/DrawLogEntry";
+import type { MainPhaseLogEntry } from "../../../shared/MainPhaseLogEntry";
 import { Tab } from "../../components/Tab";
 import { useIsScrollable } from "../../components/useIsScrollable";
 import type { ChatBinding } from "../chat/ChatBinding";
 import { RoomChatPanel } from "../chat/RoomChatPanel";
-import styles from "./DrawLogAndChatPanel.module.css";
-import { DrawLogList } from "./DrawLogList";
+import styles from "./GameLogAndChatPanel.module.css";
+import { GameLogList } from "./GameLogList";
 
 type Props = {
   readonly drawLog: ReadonlyArray<DrawLogEntry>;
+  readonly mainPhaseLog: ReadonlyArray<MainPhaseLogEntry>;
   readonly playerNames: ReadonlyArray<string>;
   readonly chat: ChatBinding;
 };
 
-export function DrawLogAndChatPanel({ drawLog, playerNames, chat }: Props) {
+export function GameLogAndChatPanel({ drawLog, mainPhaseLog, playerNames, chat }: Props) {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const { scrollerRef, contentRef, isScrollable } = useIsScrollable();
   return (
-    <section className={styles["panel"]} aria-label="Draw log and chat">
-      <div className={styles["tabs"]} role="tablist" aria-label="Draw log and chat">
+    <section className={styles["panel"]} aria-label="Game log and chat">
+      <div className={styles["tabs"]} role="tablist" aria-label="Game log and chat">
         <Tab
-          label="Draw log"
+          label="Log"
           isSelected={!isChatOpen}
           onSelect={() => {
             setIsChatOpen(false);
@@ -44,11 +46,11 @@ export function DrawLogAndChatPanel({ drawLog, playerNames, chat }: Props) {
           ref={scrollerRef}
           className={styles["logBody"]}
           role="tabpanel"
-          aria-label="Draw log"
+          aria-label="Game log"
           tabIndex={isScrollable ? 0 : undefined}
         >
           <div ref={contentRef}>
-            <DrawLogList drawLog={drawLog} playerNames={playerNames} />
+            <GameLogList drawLog={drawLog} mainPhaseLog={mainPhaseLog} playerNames={playerNames} />
           </div>
         </div>
       )}

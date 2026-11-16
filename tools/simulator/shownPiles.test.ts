@@ -18,7 +18,10 @@ const PUBLIC_TIER_1: Random = {
 };
 
 function afterSeatTwoDrew(): GameState {
-  const fresh = startSavedGame({ players: 2, startedAt: GAME_STARTED_AT }, 17).state;
+  const fresh = startSavedGame(
+    { players: 2, kind: "casual", startedAt: GAME_STARTED_AT },
+    17,
+  ).state;
   const ready = withMainPhaseStart({
     ...fresh,
     deck: ["Landfill", "Pub"],

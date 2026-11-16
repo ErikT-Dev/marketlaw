@@ -7,11 +7,11 @@ import { randomForNextAction } from "./randomForNextAction";
 import type { SavedGame } from "./SavedGame";
 import { startSavedGame } from "./startSavedGame";
 
-const PAUSED_AT = 180_000;
+const PAUSED_AT = 210_000;
 const DAY_MS = 86_400_000;
 
 function pausedGame(): SavedGame {
-  const started = startSavedGame({ players: 3, startedAt: GAME_STARTED_AT }, 7);
+  const started = startSavedGame({ players: 3, kind: "casual", startedAt: GAME_STARTED_AT }, 7);
   const paused = applyToSavedGame(
     started,
     { type: "pause_game", seat: 1 },

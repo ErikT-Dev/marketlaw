@@ -4,7 +4,7 @@ import styles from "./Toast.module.css";
 
 type Props = {
   readonly kind: "success" | "error" | "info" | "warning";
-  readonly title: string;
+  readonly title: string | null;
   readonly text: IconText;
   readonly onClose: (() => void) | null;
 };
@@ -16,8 +16,8 @@ export function Toast({ kind, title, text, onClose }: Props) {
       role={kind === "error" ? "alert" : "status"}
     >
       <div className={styles["text"]}>
-        <span className={styles["title"]}>{title}</span>
-        <span className={styles["body"]}>
+        {title === null ? null : <span className={styles["title"]}>{title}</span>}
+        <span className={styles[title === null ? "titleless" : "body"]}>
           <TextWithIcons text={text} />
         </span>
       </div>
@@ -25,7 +25,7 @@ export function Toast({ kind, title, text, onClose }: Props) {
         <button
           className={styles["close"]}
           type="button"
-          aria-label={`Close: ${title}`}
+          aria-label={`Close: ${title ?? "notice"}`}
           onClick={onClose}
         >
           ×

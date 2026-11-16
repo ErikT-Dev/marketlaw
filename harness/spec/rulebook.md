@@ -101,8 +101,9 @@ Every turn after that has three parts:
 
 1. **Start of the turn:** the marketplace and quests are refreshed, then the **market phase**,
    where each player in turn draws cards, one at a time.
-2. **Main phase:** everyone plays at the same time, each in their own city.
-3. **End of the turn:** income, influence and bonus are paid out.
+2. **Main phase:** everyone plays at the same time, each in their own city. Your main phase
+   starts as soon as your own market go is over, while later players still have their go.
+3. **End of the turn:** once everyone is done, income, influence and bonus are paid out.
 
 **Who goes first:** at the start of the game, players get seats 1, 2, 3… in a random order.
 Seat 1 goes first in turn 1, seat 2 in turn 2, and so on, round and round. The order in a turn
@@ -127,9 +128,9 @@ You can take up to **50 actions** per main phase. Undo counts as an action; endi
 does not, and is always allowed.
 
 **What you see:** your own moves show straight away. Other players' moves stay hidden until
-the main phase ends; until then, you see the other players as they were when the phase began,
-plus who is done. The deck and the discard pile also look as they did when the phase began,
-except for your own draws. Only the end result of each player's main phase is shown, never the
+the main phase ends; until then, you see the other players as they were when their own main
+phase began, plus who is done or out of time. The deck and the discard pile also look as they
+did when your main phase began, except for your own draws and the market goes after it. Only the end result of each player's main phase is shown, never the
 moves they undid. Everyone's time bank counts down live.
 
 ## Playing a card
@@ -160,7 +161,8 @@ your turn. Once one of those has happened, nothing before it can be undone eithe
 
 ## Ending your turn
 
-When you end your turn you are **done** for this turn; you can't take more actions. The main
+When you end your turn you are **done** for this turn; you can't take more actions. Any combos
+that are ready are claimed for you first, so you never lose one by ending your turn. The main
 phase ends when every player is done.
 
 The order in which players became done is remembered: it breaks ties at the end of the game.
@@ -170,20 +172,22 @@ Players whose time runs out at the same moment become done in player order.
 
 | Turn | 1 | 5 | 10 | 15 | 20 and later |
 |---|---|---|---|---|---|
-| Main phase time limit | 3:00 | 3:25 | 3:57 | 4:28 | 5:00 |
+| Main phase time limit | 3:30 | 3:55 | 4:27 | 4:58 | 5:30 |
 
-The main phase limit grows by about 6 seconds each turn. Each go in the market phase has a
-limit of 30 seconds; the first player of the turn gets 45 seconds.
+The main phase limit grows by about 6 seconds each turn, and counts from the start of your own
+main phase. Each go in the market phase has a limit of 40 seconds.
 
-You also have a **time bank of 15 minutes** for the whole game. The first 45 seconds of every
+You also have a **time bank of 15 minutes** for the whole game. The first 75 seconds of every
 main phase, and the first 5 seconds of every market go, are free. After that, your bank counts
 down until you end your turn or make your market choice. When your bank is empty, you only have
 the free time. Everyone can see everyone's bank.
 
-**When your time runs out:** in the main phase, you are made done automatically. On a market
-go, see [The marketplace](#the-marketplace). If your time runs out in the main phase in 3 turns
-in a row, you are treated as having left the game; each time it happens, you are told how many
-times in a row it has been so far.
+**When your time runs out:** in the main phase, you are **out of time**, but you can keep
+playing. You are made done automatically, with your ready combos claimed, once every other
+player is done or out of time too. On a market go, see [The marketplace](#the-marketplace). In a
+ranked game, if your time runs out in the main phase in 3 turns in a row, you are treated as
+having left the game; each time it happens, you are told how many times in a row it has been so
+far. In a casual game nobody leaves because of time-outs.
 
 **Paused game:** if someone's time would run out while nobody in the game is connected, the game
 pauses. It continues as soon as anyone reconnects, and the player whose time was running out
@@ -198,7 +202,8 @@ After the main phase, in this order:
    [Bonus](#bonus)). Players who were among the first to complete a project this turn get their
    extra 2 funds (see [Projects](#projects)). Unused build passes are kept.
 2. Quests that someone completed this turn leave the table for good. Quests that have been on
-   the table for 5 turns without being completed go back into the quest list.
+   the table for 5 turns without being completed leave it too, and go back into the quest list
+   after the next turn's empty places are filled, so they cannot come straight back.
 3. The next turn begins.
 
 ## The start of every turn
@@ -347,7 +352,9 @@ The marketplace shows **8 cards** that everyone can see: one place for each of t
 If the marketplace is empty by your go, you take (B). You still pay a card's real cost when you
 play it. Cards you got this turn, in the market or later in the turn, are marked **new**.
 
-**Time:** if your time runs out on your go, you take (B) with a random sector.
+**Time:** if your time runs out on your go, the next player's go starts and your main phase
+begins. You can no longer take a marketplace card, but at any time in your main phase you choose
+a sector and draw 2 cards of it. If you end your turn without choosing, a random sector is used.
 
 Taken places stay empty until the next turn. A card stays in the marketplace for at most 2
 market phases.
@@ -364,7 +371,8 @@ with 4 tier 1 quests; tier 2 quests can appear from turn 5, tier 3 from turn 13.
 - Each player can complete each quest once, and any number of players can complete it in the
   same turn.
 - A completed quest leaves the table at the end of that turn.
-- A quest stays at most 5 turns. If nobody completed it, it goes back into the quest list.
+- A quest stays at most 5 turns. If nobody completed it, it goes back into the quest list, but
+  not in time for the next turn's refill.
 
 ## The quest list
 

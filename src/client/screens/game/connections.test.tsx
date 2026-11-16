@@ -22,9 +22,27 @@ describe("connections in a game", () => {
 
   it("says who gets free time again when the game goes on after a pause", () => {
     const props = gamePageProps(roomUpdateWith({}));
-    render(<GamePage {...props} timeOutNotice={{ kind: "resumed", seats: [3], freeMs: 45_000 }} />);
+    render(
+      <GamePage
+        {...props}
+        timeOutNotice={{ kind: "resumed", seats: [{ seat: 3, freeMs: 75_000 }] }}
+      />,
+    );
     expect(screen.getByRole("status").textContent).toContain(
-      "Everyone was away, so the game was paused. Cy gets 45 seconds of free time before their time runs out.",
+      "Everyone was away, so the game was paused. Cy gets 75 seconds of free time before their time runs out.",
+    );
+  });
+
+  it("says each player's own free time when a pause caught a market go and a main phase", () => {
+    const props = gamePageProps(roomUpdateWith({}));
+    const seats = [
+      { seat: 2, freeMs: 75_000 },
+      { seat: 1, freeMs: 5_000 },
+      { seat: 3, freeMs: 75_000 },
+    ] as const;
+    render(<GamePage {...props} timeOutNotice={{ kind: "resumed", seats }} />);
+    expect(screen.getByRole("status").textContent).toContain(
+      "You get 75 seconds of free time before your time runs out. Ann gets 5 seconds of free time before their time runs out. Cy gets 75 seconds of free time before their time runs out.",
     );
   });
 

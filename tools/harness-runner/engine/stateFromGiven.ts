@@ -6,6 +6,7 @@ import type { GameState } from "../../../src/rules/GameState.ts";
 import { marketGoOf } from "../../../src/rules/marketGoOf.ts";
 import { MARKETPLACE_PLACE_ORDER } from "../../../src/rules/MARKETPLACE_PLACE_ORDER.ts";
 import { SEAT_NUMBERS } from "../../../src/rules/SEAT_NUMBERS.ts";
+import { withClocksStartedAt } from "../../../src/rules/withClocksStartedAt.ts";
 import { withMainPhaseStart } from "../../../src/rules/withMainPhaseStart.ts";
 import { CARD_NAMES } from "../../../src/shared/catalogue/CARD_NAMES.ts";
 import { QUESTS } from "../../../src/shared/catalogue/QUESTS.ts";
@@ -42,6 +43,40 @@ function withGivenPause(state: GameState, isPaused: boolean): GameState {
   return pauseGame(state, first.deadline);
 }
 
+function seatsFrom(given: Given, players: number, turn: number): GameState["seats"] {
+  return SEAT_NUMBERS.slice(0, players).map((seat) =>
+    seatFromGiven(
+      seat,
+      given.seats?.find((entry) => entry.seat === seat),
+      turn,
+    ),
+  );
+}
+
+function questsFrom(given: Given): GameState["quests"] {
+  return (given.quests ?? []).map(({ quest, turns_on_table: turnsOnTable }) =>
+    quest === null ? null : { quest, turnsOnTable: turnsOnTable ?? 1 },
+  );
+}
+
+function marketplaceFrom(given: Given): GameState["marketplace"] {
+  return MARKETPLACE_PLACE_ORDER.map((place) => {
+    const entry = given.marketplace?.find((slot) => slot.place === place);
+    return { place, card: entry?.card ?? null, phasesShown: entry?.phases_shown ?? 0 };
+  });
+}
+
+function questListLeftBy(
+  quests: GameState["quests"],
+  seats: GameState["seats"],
+): GameState["questList"] {
+  return QUESTS.map(({ name }) => name).filter(
+    (name) =>
+      !quests.some((place) => place?.quest === name) &&
+      !seats.some((seat) => seat.questsCompleted.includes(name)),
+  );
+}
+
 export function stateFromGiven(given: Given): GameState {
   const players = given.players ?? DEFAULT_PLAYERS;
   const extraSeat = given.seats?.find((entry) => entry.seat > players);
@@ -49,27 +84,17 @@ export function stateFromGiven(given: Given): GameState {
     throw new Error(`given seat ${extraSeat.seat} is above the ${players} players`);
   }
   const turn = given.turn ?? 1;
-  const seats = SEAT_NUMBERS.slice(0, players).map((seat) =>
-    seatFromGiven(
-      seat,
-      given.seats?.find((entry) => entry.seat === seat),
-      turn,
-    ),
-  );
-  const marketplace = MARKETPLACE_PLACE_ORDER.map((place) => {
-    const entry = given.marketplace?.find((slot) => slot.place === place);
-    return { place, card: entry?.card ?? null, phasesShown: entry?.phases_shown ?? 0 };
-  });
-  const quests = (given.quests ?? []).map(({ quest, turns_on_table: turnsOnTable }) =>
-    quest === null ? null : { quest, turnsOnTable: turnsOnTable ?? 1 },
-  );
+  const seats = seatsFrom(given, players, turn);
+  const marketplace = marketplaceFrom(given);
+  const quests = questsFrom(given);
   const discard = given.discard ?? [];
   const placed = [
     ...seats.flatMap((seat) => [...seat.hand, ...seat.city]),
     ...marketplace.flatMap(({ card }) => (card === null ? [] : [card])),
     ...discard,
   ];
-  const started = withMainPhaseStart({
+  const unclocked = withMainPhaseStart({
+    kind: given.kind ?? "casual",
     turn,
     phase: phaseOf(given),
     firstPlayer: given.first_player ?? firstPlayerOf(turn, seats),
@@ -78,15 +103,11 @@ export function stateFromGiven(given: Given): GameState {
     discard,
     holdingPile: [],
     drawLog: [],
+    mainPhaseLog: [],
+    questsCompletedLastTurn: [],
     marketplace,
     quests,
-    questList:
-      given.quest_list ??
-      QUESTS.map(({ name }) => name).filter(
-        (name) =>
-          !quests.some((place) => place?.quest === name) &&
-          !seats.some((seat) => seat.questsCompleted.includes(name)),
-      ),
+    questList: given.quest_list ?? questListLeftBy(quests, seats),
     bonusTypes: given.bonus_types ?? TYPE_NAMES.slice(0, 2),
     doneOrder: seats.filter((seat) => seat.isDone).map((seat) => seat.seat),
     leaveOrder: seats.filter((seat) => seat.departure !== null).map((seat) => seat.seat),
@@ -98,5 +119,6 @@ export function stateFromGiven(given: Given): GameState {
     grace: [],
     result: null,
   });
+  const started = withClocksStartedAt(unclocked, unclocked.clockStartedAt);
   return withGivenPause(withCheckedMarketGo(started, given), given.paused === true);
 }

@@ -1,6 +1,6 @@
-.selected {
+.besideHand,
+.overStatsAndHand {
   position: absolute;
-  right: calc(100% + var(--space-lg));
   bottom: 0;
   z-index: 5;
   display: flex;
@@ -14,6 +14,14 @@
   background: var(--color-panel-base);
   box-sizing: border-box;
   overflow: auto;
+}
+
+.besideHand {
+  right: calc(100% + var(--space-lg));
+}
+
+.overStatsAndHand {
+  right: 0;
 }
 
 .cost {

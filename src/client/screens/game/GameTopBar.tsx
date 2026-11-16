@@ -33,6 +33,13 @@ const PHASE_NAMES: Readonly<Record<GamePhase, string>> = {
   ended: "Game over",
 };
 
+function phaseClassOf(view: PlayerView): string {
+  if (view.phase !== "market") {
+    return "phase";
+  }
+  return view.marketGo === view.seat ? "yourGoPhase" : "marketPhase";
+}
+
 export function GameTopBar(props: Props) {
   const { view, seat, playerNames, isConnected } = props;
   const awaySeats = useContext(AwaySeats);
@@ -42,9 +49,7 @@ export function GameTopBar(props: Props) {
         <h1 className={styles["turn"]}>
           Turn {view.turn} of {TURN_LIMIT}
         </h1>
-        <span className={styles[view.phase === "market" ? "marketPhase" : "phase"]}>
-          {PHASE_NAMES[view.phase]}
-        </span>
+        <span className={styles[phaseClassOf(view)]}>{PHASE_NAMES[view.phase]}</span>
       </div>
       <ol className={styles["order"]} aria-label="Player order">
         {orderBadgesOf(view, playerNames, awaySeats).map((badge, index) => (

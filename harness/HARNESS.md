@@ -59,7 +59,7 @@ Every scenario file is a list of scenarios. Every scenario has exactly these par
 | `phase` | `new_game` (not started yet), `market`, `main` or `ended` | `main` |
 | `first_player` | Seat number of this turn's first player | as R4.4 |
 | `market_go` | In the market phase: whose go it is | the first player's go |
-| `seats` | Per seat: `stats`, `hand`, `city`, `gained_types`, `build_passes`, `build_passes_bought`, `influence_uses`, `projects`, `quests_completed`, `combos_claimed`, `played_this_turn`, `skipped_build`, `actions_this_turn`, `done`, `left`, `connected`, `time_bank_ms`, `timeouts_in_a_row`, `market` (`in` before their market go this turn, `out` after it), `new_cards`, `state_version`, `actions_this_game` (accepted actions in this game so far, for A9.2), `player` (the account in that seat) | starting values (R2.1), empty hand and city, nothing used or claimed, connected |
+| `seats` | Per seat: `stats`, `hand`, `city`, `gained_types`, `build_passes`, `build_passes_bought`, `influence_uses`, `projects`, `quests_completed`, `combos_claimed`, `played_this_turn`, `skipped_build`, `actions_this_turn`, `done`, `left`, `connected`, `time_bank_ms`, `timeouts_in_a_row` (counted in ranked games only, R9.11), `out_of_time` (their main-phase time has run out and they are not done yet, R9.10), `turn_draw_pending` (their turn draw is still open after a time-out on their market go, R18.16), `market` (`in` before their market go this turn, `out` after it, when their own main phase has started, R18.15), `new_cards`, `state_version`, `actions_this_game` (accepted actions in this game so far, for A9.2), `player` (the account in that seat) | starting values (R2.1), empty hand and city, nothing used or claimed, connected |
 | `deck` | The deck, top first, as card names | all cards not placed elsewhere, in `cards.json` order |
 | `discard` | The discard pile, as card names | empty |
 | `marketplace` | Each `place` and its `card`, plus `phases_shown`: how many market phases it has been on display | empty; `phases_shown` 0 |
@@ -71,7 +71,7 @@ Every scenario file is a list of scenarios. Every scenario has exactly these par
 | `first_completions` | Projects someone has already completed in an earlier turn (R16.6) | none |
 | `paused`, `last_vote_turn` | Whether the game is paused (R9.12); the turn of the last abandon vote (M7.2) | not paused; no vote yet |
 | `room`, `other_rooms` | A room's `code`, `size`, `public`, `owner`, `players`, `state` (`waiting`, `accepting`, `playing`, `ended`), `kind` of its last game, `chat`, `messages_sent` per player, `ended_ms` | none |
-| `accounts` | Each account's `name`, `kind` (`guest` or `registered`), `email`, `email_confirmed`, `pending_email`, `password`, `rating`, `ranked_games`, `highest_rating`, `games` (how many game records), `online`, `in_game`, `ranking_place`, `last_used_ms`, `last_username_change_ms`, and today's counts `actions_today`, `games_started_today`, `emails_today` | none |
+| `accounts` | Each account's `name`, `kind` (`guest` or `registered`), `email`, `email_confirmed`, `pending_email`, `password`, `rating`, `ranked_games`, `highest_rating`, `games` (how many game records), `online`, `in_game`, `ranking_place`, `last_used_ms`, `username_changes_ms` (the times of their username changes, oldest first, A2.4), and today's counts `actions_today`, `games_started_today`, `emails_today` | none |
 | `email_counts` | Emails sent to each address today (A1.9) | none |
 | `queue`, `match`, `queue_count` | Players in the ranked queue in order, each a name (game size 3 only) or `{player, sizes}`; a match being confirmed; the queue count, a total or `{total, by_size}` | empty |
 | `tutorial` | A player in the tutorial, at the start of a step; the state is the one `tutorial.md` gives for that step | none |
@@ -125,15 +125,16 @@ it out, `player_to_mute` for a mute and `player_to_unmute` for an unmute.
 | `deck`, `deck_count`, `discard`, `holding_pile`, `marketplace`, `quests`, `quest_list`, `turn`, `phase`, `first_player`, `market_go`, `paused`, `done_order`, `first_completions` | Expected values; `market_go` can include `time_left_ms` |
 | `type_counts`, `new_cards` (inside `seats`) | A seat's type counts (R12.1) and cards marked new (R18.10) |
 | `quest_list_excludes` | Quests that must not be in the quest list |
-| `away`, `time_bank_shown`, `known_in_hand` (inside `view`) | Whether a seat is shown as away, a bank as shown in whole seconds, and marketplace cards known to be in a hand (M3.3) |
+| `away`, `out_of_time`, `time_bank_shown`, `known_in_hand` (inside `view`) | Whether a seat is shown as away or out of time (R9.10), a bank as shown in whole seconds, and marketplace cards known to be in a hand (M3.3) |
+| `quests_completed_last_turn` (inside `view`) | Each quest completed in the turn before, with the `seats` that completed it (R19.6) |
 | `vote_answers` (inside `view`) | During an abandon vote: `answered` and `of`, the only things the view holds about other players' answers (M7.5) |
 | Marker values | `none` (no game record), `kept` and `removed` (a replay record), `closed` and `deleted` (a room), `ended` (the tutorial), `unchanged` (ratings), `open` and `closed` (a vote) |
 | `room` (in `then`) | Besides the `given` room fields: `code_format` (the allowed characters) and `chat_last` (the last chat message) |
 | `tutorial_room`, `generated_name`, `connected_tab`, `chat_count`, `view_chat`, `view_lobby`, `ranking_page`, `record_usernames`, `replay_record` (`kept` or `removed`), `saved_before_shown`, `rules_viewer`, `rulebook_covers` | The tutorial room, a generated username, which tab holds the game, chat as stored and as one player sees it, the lobby as one player sees it, a page of the ranking table, usernames shown in records, whether a replay record exists, chat saved before shown, the rules viewer, and the R sections the rulebook covers |
 | `room`, `game`, `lobby_rooms`, `queue`, `match`, `accounts`, `players_online`, `chat`, `notified`, `emails_sent`, `logged_in`, `match_history`, `ranking`, `menu`, `card_set`, `card_detail` | The expected state of rooms, accounts, the lobby and client screens |
 | `view` | What one seat's view shows: `{seat: 2, of_seat: 1, stats: {...}, hand_count: 5, contains: [...], hides: [...]}` |
-| `message_to` | That a seat or player was sent a particular notice or text |
-| `log_contains`, `log_excludes` (inside `view`) | Public draw-log entries that must or must not appear (M3.3) |
+| `message_to` | That a seat or player was sent a particular notice or text; the `timed_out` notice has `in_a_row` and `of` in a ranked game, and `keep_playing: true` in a casual game (R9.11) |
+| `log_contains`, `log_excludes` (inside `view`) | Public game-log entries that must or must not appear: draws (M3.3), and what a player did in a main phase (M3.7) as `played` (a card), `completed_quest`, `completed_project` or `influence` (a trade), each with `seat` and optionally `turn` |
 | `discard_count` (inside `view`) | The number of cards in the discard pile as the seat sees it (R5.5); the view never holds which cards they are (M3.2), checked with `hides: [discard_cards]` |
 | `ended` | The game has ended: `winner`, `places` (seats, 1st first), `scores`, `bonus_type_points`, or `abandoned: true` |
 | `record` | The saved game record (A3) |
