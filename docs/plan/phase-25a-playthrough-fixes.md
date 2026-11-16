@@ -1,6 +1,6 @@
 # Phase 25a: Playthrough fixes
 
-Status: in progress
+Status: waiting for the owner
 Milestone: 5 Accounts and ranking
 
 ## Goal

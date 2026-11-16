@@ -281,7 +281,7 @@ The 427 scenarios cover all of version 1, but each phase implements only part of
 | 23 | [Accounts: signup and login](phase-23-accounts-signup-and-login.md) | 5 Accounts and ranking | 20a | done |
 | 24 | [Accounts: email, deletion and privacy](phase-24-accounts-email-deletion-privacy.md) | 5 Accounts and ranking | 23 | done |
 | 25 | [Game records and match history](phase-25-game-records-and-match-history.md) | 5 Accounts and ranking | 22, 24 | done |
-| 25a | [Playthrough fixes](phase-25a-playthrough-fixes.md) | 5 Accounts and ranking | 25 | in progress |
+| 25a | [Playthrough fixes](phase-25a-playthrough-fixes.md) | 5 Accounts and ranking | 25 | waiting for the owner |
 | 26 | [Ranked queue](phase-26-ranked-queue.md) | 5 Accounts and ranking | 25, 25a | approved |
 | 27 | [Ratings, ranking and players online](phase-27-ratings-ranking-and-players-online.md) | 5 Accounts and ranking | 26 | approved |
 | 28 | [Game menu, rules viewer and card set](phase-28-menu-rules-and-card-set.md) | 6 Learning | 20a, 25a | approved |
