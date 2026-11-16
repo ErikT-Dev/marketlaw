@@ -1,6 +1,6 @@
 import { useId } from "react";
 import { QUEST_TERMS } from "../../../shared/catalogue/QUEST_TERMS";
-import { QUESTS } from "../../../shared/catalogue/QUESTS";
+import { questTierOf } from "../../../shared/catalogue/questTierOf";
 import type { QuestPlaceView } from "../../../shared/QuestPlaceView";
 import type { SeatNumber } from "../../../shared/SeatNumber";
 import { Button } from "../../components/Button";
@@ -22,7 +22,7 @@ type Props = {
 export function QuestCard({ place, viewer, playerNames, isBusy, onComplete }: Props) {
   const nameId = useId();
   const { needs, reward } = QUEST_TERMS[place.quest];
-  const tier = QUESTS.find(({ name }) => name === place.quest)?.tier ?? 1;
+  const tier = questTierOf(place.quest);
   const isReady = place.completeRejection === null;
   const isCompleted = place.progress.some(
     ({ seat, isCompleted }) => seat === viewer && isCompleted,

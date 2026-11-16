@@ -1,4 +1,4 @@
-import { QUESTS } from "../../../shared/catalogue/QUESTS";
+import { questTierOf } from "../../../shared/catalogue/questTierOf";
 import type { QuestCompletedLastTurn } from "../../../shared/QuestCompletedLastTurn";
 import { playerNameOf } from "./playerNameOf";
 import styles from "./QuestsPanel.module.css";
@@ -23,7 +23,7 @@ export function QuestsCompletedLastTurnTable({ completed, playerNames }: Props) 
         {completed.map(({ quest, seats }) => (
           <tr key={quest}>
             <th scope="row">{quest}</th>
-            <td>{QUESTS.find(({ name }) => name === quest)?.tier ?? 1}</td>
+            <td>{questTierOf(quest)}</td>
             <td>{seats.map((seat) => playerNameOf(playerNames, seat)).join(", ")}</td>
           </tr>
         ))}

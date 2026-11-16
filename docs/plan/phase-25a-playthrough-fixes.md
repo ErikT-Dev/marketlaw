@@ -681,18 +681,39 @@ These 24 required scenarios now assert the new rules (Q126) and must pass again:
     `hasTimedOutThisDecision.ts` (still `out_of_time` for a seat waiting in the next market
     phase right after a main-phase time-out, `roomAlarm.test.ts` 143-170) is wanted; record it
     under Q127.
+    - Fixed (2026-11-16, Q127): only a turn draw that applies its own market-go time-out is
+      rejected `out_of_time` (`receiveAction.ts`); scenario "a player who leaves at the deadline
+      of their market go leaves after the time-out" (required). `hasTimedOutThisDecision` is
+      removed: it refused every message, `leave_game` included, from a seat waiting for its go
+      after its own main-phase time-out ended the main phase; R9.6 handles such a message after
+      the time-out, so a late End turn is now `wrong_phase` (`roomAlarm.test.ts` follows).
   - **F3 (suggestion, A2.4):** `src/server/renamePlayer.ts` builds the new
     `username_changes_ms` from the list read earlier while the `WHERE` counts the current row;
     two renames at once can allow a 5th change in 7 days. Build the list in SQL, or compare the
     old value in the `WHERE` and answer correctly on 0 changes.
+    - Fixed (2026-11-16): `renamePlayer` writes only while the stored change times are the ones
+      read (`json(username_changes_ms) = json(?)`); when they changed meanwhile, the route reads
+      the account and decides again (at most 5 tries), so a refusal answers
+      `username_change_too_soon` and a lost name race still `username_taken`. Route test "allows
+      exactly 4 username changes when 6 are sent at once" (failed before: 6 accepted).
   - **F4 (suggestion, M3.7):** a game ended mid main phase (`leaveGame.ts` last player and
     everyone left, `closeVote.ts`, `abandonPausedGame.ts`) calls `endGame` without
     `withMainPhaseLogWritten`, so that main phase's plays are missing from the log. Write the
     log in `endGame`, or record why not.
+    - Fixed (2026-11-16, Q132, M3.7 changed first in a `HARNESS:` commit): `endGame` writes the
+      log first; scenario "the log shows the cards played in a main phase the game ended in"
+      (required).
   - **F5 (suggestion, reuse):** `withMainPhaseLogWritten.ts` rotates seats itself instead of
     `playerOrderOf` (left seats); the game kind is stored three times (`RoomGame.kind`,
     `setup.kind`, `state.kind`); `QuestsCompletedLastTurnTable.tsx` uses a silent `?? 1` tier
     fallback. Not blocking.
+    - Fixed in part (2026-11-16): `seatsInPlayerOrderOf` (every seat, left ones included, in
+      player order) is now used by `playerOrderOf` and `withMainPhaseLogWritten`;
+      `questTierOf` (`src/shared/catalogue/`, as `cardOf`) replaces the `?? 1` fallback in
+      `QuestsCompletedLastTurnTable` and `QuestCard`. Left: the game kind stored three times.
+      `setup.kind` and `state.kind` are in the save format and `RoomGame.kind` in the room
+      record; folding them is a save-shape change across the engine, the room and the runner,
+      larger than the finding and with no behaviour gain, so it is left for a later refactor.
 
 ### Helper log
 
