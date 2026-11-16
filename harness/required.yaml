@@ -352,6 +352,8 @@ scenarios:
     - deleting a registered account frees the username and shows Deleted player in records
     - a username can be changed 4 times in a row
     - a fifth username change is allowed once the first of the last 4 is 7 days old
+    - deleting an account in the ranked queue takes it out of the queue at once
+    - deleting an account while confirming a ranked match declines it
   rooms:
     - a player creates a public room with a chosen size and becomes its owner
     - a private room is not listed in the lobby but can be joined with its code
@@ -379,6 +381,8 @@ scenarios:
     - a declined rematch leaves the room as it was
     - a player leaving the room ends a rematch asking
     - after a game the room stays and is deleted 24 hours after the game ended
+    - a player in a room cannot join another room or the queue
+    - after a game ends joining the queue takes the player out of the finished room
   connections-and-leaving:
     - opening the game in a second tab moves it there
     - a disconnected player is shown as away to everyone
@@ -413,6 +417,7 @@ scenarios:
     - a registered user who logs out during a game keeps their seat
     - deleting the account during a game counts as leaving it
     - when only one player is left the game ends and that player wins
+    - ranked games cannot be abandoned by vote
   lobby-queue-and-limits:
     - a player who started 10 games today cannot start another
     - after 50 games start on the site today no more games start
@@ -420,6 +425,30 @@ scenarios:
     - a guest at 2000 actions today cannot join a room
     - the daily action count resets at midnight UTC for joining a room
     - after 2000 chat messages on the site today no more messages are sent
+    - only registered users with a confirmed email can join the ranked queue
+    - guest users cannot join the ranked queue
+    - joining the queue without choosing game sizes means 3 players only
+    - a player can join the queue with several game sizes
+    - rejects joining the queue with no game size
+    - rejects a game size other than 2 3 or 4
+    - changing game sizes keeps the place in the queue
+    - rejects changing to no game size while in the queue
+    - changing game sizes can make a match straight away
+    - the queue count is public per game size and members see only themselves
+    - three players in the queue are matched and asked to confirm without seeing each other
+    - the longest waiting player is matched first even into a smaller game
+    - a larger game size is tried before a smaller one
+    - four players who chose 4 are matched into a 4 player game
+    - when all three confirm a ranked game starts in a new room
+    - when both players of a 2 player match confirm a ranked 2 player game starts
+    - a player who does not confirm leaves the queue and the others go back to the front
+    - a player who declined a match cannot rejoin the queue for 2 minutes
+    - a player can leave the queue and a closed connection for 10 seconds leaves it
+    - a player at 2000 actions today cannot join a new game
+    - the daily action count resets at midnight UTC
+    - a player's actions in a game are added to the daily count when the game ends
+    - the ranked queue makes no match while the site game limit is reached
+    - the ranked queue makes its matches at midnight UTC after the site game limit
   chat:
     - a message is seen by everyone in the room and notifies the others
     - a player sees only messages sent since they joined
@@ -440,6 +469,7 @@ scenarios:
     - an abandoned game saves no game record
     - game records always show the current username
     - the match history lists games newest first with a short overview
+    - email addresses and queue members are never shown to other players
 invariants:
   - I1
   - I2
