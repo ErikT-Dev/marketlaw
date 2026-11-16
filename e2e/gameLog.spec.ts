@@ -101,7 +101,7 @@ test("the game log sent by the room is listed newest first and fits the screen",
   await expect(entries).toHaveText([
     "T1Turn 1: Ann used influence: 4Influence → 2Funds",
     "T1Turn 1: Bea completed the quest Farmland",
-    /^T1Turn 1: Bea played \w[\w ]*$/,
+    /^T1Turn 1: Bea played \w[\w -]*$/,
     "T1Turn 1: Ann drew 1 card: Public quality, tier 1 (Income)",
     "T1Turn 1: Discard shuffle: 4 Public quality, tier 1 cards went into the deck",
     "T1Turn 1: Bea drew 1 card: Service, tier 1 (Income)",
