@@ -280,7 +280,7 @@ These 28 scenarios are added to `harness/required.yaml` in this phase, by file a
   - For later items: the next item that changes a message shape raises `PROTOCOL_VERSION` from
     18.
 
-- [ ] 3a. **Screens** (S10.4, S10.7, S10.9, S16.1; Q137, Q138; design boards "Lobby: in the
+- [x] 3a. **Screens** (S10.4, S10.7, S10.9, S16.1; Q137, Q138; design boards "Lobby: in the
   ranked queue", "Lobby: match found", "Lobby: ranked locked"). **Large.**
   - The ranked queue panel in the lobby and the match-found dialog with the texts written into
     S10.4 and S10.7, the notices after a match that did not start, and the queue texts of S10.9.
@@ -294,6 +294,25 @@ These 28 scenarios are added to `harness/required.yaml` in this phase, by file a
     confirmed through the test outbox (`e2e/emailLinks.spec.ts`, `readTestOutbox`): join with
     sizes, change sizes, a 2-player match found and confirmed into a ranked game, a decline with
     its wait, the disabled reasons. Screenshots of the three boards' screens.
+  - Done (2026-11-16): decisions Q144 (the queue view's own state carries `rejoinAt` and
+    `dailyLimit` when out, `isConfirmed` when confirming; the email standing comes from
+    `/api/account`, reloaded after an email link or a rejected join) and Q145
+    (`match_not_started` carries `reason`: `not_confirmed`, `player_daily_limit`, `no_room`,
+    each with its S10.7 text), both written into S10.4/S10.7 first; `PROTOCOL_VERSION` 22.
+    Client: `RemoteQueueFeed` (`src/hosts/`, `QueueFeed`, `OpenQueueFeed`, `QueueIntent` in
+    `src/shared/`), `QueueStore` between `EmailAccountStore` and `ClientStore` (opened and
+    closed with the lobby feed; resync on open and on login; `match_started` opens the room),
+    `RankedQueueSection`/`ShownRankedQueue`/`RankedQueuePanel`/`GameSizeToggles`/
+    `MatchFoundDialog`/`LobbyToasts` in `src/client/screens/lobby/`; sizes remembered under
+    `marketlaw.rankedGameSizes`; room joining and creating disabled in the queue. Browser tests
+    `e2e/rankedQueue.spec.ts` (screens `lobby-ranked-locked`, `lobby-in-the-ranked-queue`,
+    `lobby-match-found`) pass locally at every size. The queue is one per site, so the spec's
+    queue part runs under a file lock across workers (`e2e/withRankedQueueLock.ts`); a match
+    between players of two sizes' runs would otherwise break both.
+  - For later items: the finisher copies the three new screen folders from the branch check.
+    The match-found countdown uses the room clock offset (none in the lobby), so a browser with
+    a wrong clock shows a wrong M:SS; the server's deadline still decides. The next protocol
+    change raises `PROTOCOL_VERSION` from 22.
 
 - [ ] 3b. **The busy day with queue use** (B18; Q139). **Small.**
   - `tools/simulator/busyDay/` runs Q139's queue use through the `src/server/queue/` functions
