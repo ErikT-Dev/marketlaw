@@ -54,6 +54,29 @@
         market: out
         turn_draw_pending: true
 
+- name: a player who leaves at the deadline of their market go leaves after the time-out
+  covers: [R9.6, M6.1, R18.11]
+  given:
+    players: 3
+    turn: 2
+    phase: market
+    first_player: 2
+    marketplace: [{place: residential, card: Row House}]
+    seats:
+      - seat: 2
+        time_bank_ms: 0
+  when:
+    - {wait_ms: 5000, alarm_fires: false}
+    - {seat: 2, action: leave_game}
+  then:
+    market_go: {seat: 3}
+    marketplace: [{place: residential, card: Row House}]
+    seats:
+      - seat: 2
+        left: true
+        done: true
+        hand: []
+
 - name: a player who leaves is done straight away and keeps their city
   covers: [M6.1, M6.2, M6.4]
   given:

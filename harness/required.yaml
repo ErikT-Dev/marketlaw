@@ -383,6 +383,7 @@ scenarios:
     - a disconnected player is shown as away to everyone
     - an away player keeps their seat and their time runs as normal
     - an away player's time runs out on a market go as for any player
+    - a player who leaves at the deadline of their market go leaves after the time-out
     - a player who leaves is done straight away and keeps their city
     - a player who left cannot act again
     - a leaver's main-phase actions this turn are kept and revealed at the end of the phase

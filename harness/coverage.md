@@ -57,7 +57,7 @@ it by hand.
 | R9.3 | setup (1) | Covered |
 | R9.4 | marketplace (2), turns-and-time (1) | Covered |
 | R9.5 | turns-and-time (3) | Covered |
-| R9.6 | turns-and-time (3) | Covered |
+| R9.6 | connections-and-leaving (1), turns-and-time (3) | Covered |
 | R9.7 | turns-and-time (1) | Covered |
 | R9.8 | turns-and-time (2) | Covered |
 | R9.9 | turns-and-time (2) | Covered |
@@ -114,7 +114,7 @@ it by hand.
 | R18.8 | marketplace (4) | Covered |
 | R18.9 | marketplace (2) | Covered |
 | R18.10 | combos-and-income (1), marketplace (2) | Covered |
-| R18.11 | connections-and-leaving (1), marketplace (3), turns-and-time (3) | Covered |
+| R18.11 | connections-and-leaving (2), marketplace (3), turns-and-time (3) | Covered |
 | R18.12 | marketplace (1) | Covered |
 | R18.13 | turns-and-time (1) | Covered |
 | R18.14 | turns-and-time (1) | Covered |
@@ -180,7 +180,7 @@ it by hand.
 | M5.3 | connections-and-leaving (2) | Covered |
 | M5.4 | turns-and-time (2) | Covered |
 | M5.5 | turns-and-time (1) | Covered |
-| M6.1 | connections-and-leaving (2), end-of-game (1), hostile-client (1) | Covered |
+| M6.1 | connections-and-leaving (3), end-of-game (1), hostile-client (1) | Covered |
 | M6.2 | connections-and-leaving (3) | Covered |
 | M6.3 | connections-and-leaving (1) | Covered |
 | M6.4 | connections-and-leaving (1), turns-and-time (1) | Covered |
@@ -354,6 +354,6 @@ it by hand.
 ## Summary
 
 - Rules: 317
-- Scenarios: 486
+- Scenarios: 487
 - Gaps: 0
 - Checked another way or also checked another way: R3.2, R3.5, R17.10, R19.2, M3.1, M3.6, M4.2, A6.4, A10.6, C5.1, C5.2, C5.3, A12.1
