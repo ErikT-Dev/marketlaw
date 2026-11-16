@@ -214,3 +214,15 @@ These 28 scenarios are added to `harness/required.yaml` in this phase, by file a
 
 - [ ] Finish: finisher (required list, full check, harness, branch check, screenshots), review,
   fixes, releaser.
+
+### Finish
+
+### Helper log
+
+Filled in by the coordinator afterwards, from the helpers' completion notices (Q73). Tokens are
+each helper's conversation size at its end. Test builders (Q133) work in their own worktree and
+are never merged.
+
+| Job | Model, effort | Minutes | Tokens | Tool calls | Result |
+|---|---|---|---|---|---|
+| Starter | Opus, medium | 8 | 164k | 63 | done |
