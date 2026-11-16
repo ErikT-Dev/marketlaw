@@ -419,6 +419,12 @@ These 28 scenarios are added to `harness/required.yaml` in this phase, by file a
     `applyAlarmChange`; reuse them with a queue keep/set/delete decision.
     Fixed: `room/alarmChangeTo` (current, wanted) holds the keep/set/delete decision;
     `alarmChangeFor` and `RankedQueue.syncAlarm` both use it with `applyAlarmChange`.
+- Releaser stopped by the owner (2026-11-16): report written and pushed (9bc2940a); branch
+  check 43923506970 failed in "other tests 3 of 3" (likely `e2e/bigCardSwitch.spec.ts`, not yet
+  read). Nothing merged or deployed. Next: read that job's log; if it is `bigCardSwitch`, a fixer
+  makes the change the owner approved on 2026-11-16 (spec first in screens.md and a decision in
+  open-questions.md: the median click under 100 ms, no click over 300 ms, 10 cards clicked, 15 s
+  wait for the photos), then the releaser runs again. Uncommitted changes: none.
 ### Helper log
 
 Filled in by the coordinator afterwards, from the helpers' completion notices (Q73). Tokens are
@@ -486,3 +492,4 @@ for the site game limit in the queue): fixed, route test. F3 (queue write order 
 failure): fixed, Q148 and the `no_room` path. F4 (browser clock for the countdown): fixed, Q147.
 F5 (a `no_room` match kept its counted start): fixed, Q149. F6 (logout test used a player not in
 the queue): fixed. F7 (repeated alarm decision): fixed, reuse of `alarmChangeTo`.
+| Releaser (stopped by the owner) | Sonnet, low | – | – | – | stopped; branch check failed |
