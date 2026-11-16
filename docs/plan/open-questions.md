@@ -2967,7 +2967,13 @@ file.
 - **Implemented:** `docs/plan/phase-helpers.md` (Keep your context small, Finisher, Phase
   reviewer, Fixer, Releaser), `docs/plan/README.md` (steps table, The coordinator),
   `.github/workflows/check.yml` (screenshots kept per part).
-- **Builder model test result:** to be written after phase 26's two test items.
+- **Builder model test result:**
+  - Item 2 (no abandon vote in ranked games): Opus at medium 5 min, 70k tokens, 21 tool calls;
+    Sonnet at medium 14 min, 80k, 43 (test branch `worktree-agent-a8166e151fdcb0c7c`, 536e38f,
+    never merged). The code was identical, but Sonnet missed the `PROTOCOL_VERSION` raise a new
+    reason code needs (Q75), which a reviewer would have sent back. Verdict: nearly, not a match;
+    and Sonnet took twice the tool calls, so it saved nothing.
+  - Item 4 (Opus at low): to be written.
 
 ## Q134. What is a player who is confirming a ranked match, and what ends their confirming?
 
