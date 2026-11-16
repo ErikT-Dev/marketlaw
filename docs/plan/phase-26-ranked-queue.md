@@ -417,4 +417,4 @@ are never merged.
 | Builder, item 3a | Opus, medium | 28 | 266k | 121 | done |
 | Builder, item 3b | Opus, medium | 9 | 132k | 37 | done |
 | Finisher | Sonnet, medium | 22 | 111k | 79 | done |
-| Phase reviewer | Opus, medium | – | – | – | done (F1-F7) |
+| Phase reviewer | Opus, medium | 6 | 173k | 47 | done (F1-F7) |
