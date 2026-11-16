@@ -2973,7 +2973,15 @@ file.
     never merged). The code was identical, but Sonnet missed the `PROTOCOL_VERSION` raise a new
     reason code needs (Q75), which a reviewer would have sent back. Verdict: nearly, not a match;
     and Sonnet took twice the tool calls, so it saved nothing.
-  - Item 4 (Opus at low): to be written.
+  - Item 4 (deleting an account leaves the queue): Opus at medium 8 min, 103k tokens, 43 tool
+    calls; Opus at low 11 min, 110k, 47 (test branch `worktree-agent-a06d963078c3f60bc`,
+    8a4fa54a, never merged). Both server fixes were correct, but the low-effort builder did not
+    write its decision into the spec (A1.15) first, wrote one combined scenario and one route
+    test that was never cleanly shown to fail without the fix, where Opus at medium wrote two
+    scenarios and two route tests, each proven. Verdict: nearly, not a match; and it saved
+    nothing.
+  - **Conclusion:** neither cheaper setup matched, and neither used fewer tokens or minutes:
+    both took more tool calls. Builders and fixers stay on Opus at medium, small items too.
 
 ## Q134. What is a player who is confirming a ranked match, and what ends their confirming?
 
