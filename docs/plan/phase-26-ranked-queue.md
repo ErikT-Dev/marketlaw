@@ -364,8 +364,8 @@ These 28 scenarios are added to `harness/required.yaml` in this phase, by file a
   `lobby-ranked-locked`, `lobby-in-the-ranked-queue`, `lobby-match-found`. Note for the process:
   `gh run download <id> --pattern "screens*"` works, but the artifacts hold the screen folders
   directly (`screens (<job name>)/<screen>/<file>.png`), with no `harness/screens/` folder inside,
-  so each part's contents are copied over `harness/screens/` itself. Only 3 of the 6 browser jobs
-  have a screens artifact. 184 existing screenshots changed (re-rendered).
+  so each part's contents are copied over `harness/screens/` itself. All 6 browser jobs
+  upload a screens artifact (the download takes over 2 minutes; copy only after it ends). Existing screenshots changed (re-rendered).
 - `docs/enforcement.md`: the Playwright row gains the phase 26 browser tests.
 - Findings: none.
 

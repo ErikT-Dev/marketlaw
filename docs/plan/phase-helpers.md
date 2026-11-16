@@ -134,8 +134,9 @@ After the last Progress item, before the review (Q133).
    time-out rather than a wrong result. A failure that stays is a finding (F1, F2, …) for a
    fixer; write it under Finish.
 4. Copy the screenshots of that run into `harness/screens/`: `gh run download <id> --pattern
-   "screens*" --dir <scratchpad>/screens`, then copy each part's `harness/screens/` folder
-   over the repository's.
+   "screens*" --dir <scratchpad>/screens` (it can take over 2 minutes), then copy the contents
+   of each part's folder (`screens (<part>)/<screen>/<screen>-<size>.png`) over
+   `harness/screens/`. Only the parts whose tests take screenshots have a folder.
 5. Update `docs/enforcement.md` if a check now applies that did not before.
 6. Record the results (with the run id) in the Finish part of Progress, commit, push, and
    report.
