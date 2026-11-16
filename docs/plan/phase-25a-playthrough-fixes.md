@@ -738,3 +738,4 @@ each helper's conversation size at its end.
 | Finisher, first run | 70 | 119k | 76 | partial (F1) |
 | Phase reviewer | 11 | 195k | 90 | done (F2-F5) |
 | Fixer, F1 | 19 | 135k | 49 | done |
+| Fixer, F2 to F5 | 15 | 139k | 66 | done |
