@@ -157,6 +157,14 @@ an expired quest no longer comes straight back; you can change your username 4 t
 ## Waiting for the owner
 
 - None. The owner approved the 5 renamed required scenarios (Q126) on 2026-11-11.
+- **GitHub Actions do not run (2026-11-16).** The branch check on `5d72e02` (run
+  43871748078) failed in 4 seconds without starting any job: "The job was not started because
+  recent account payments have failed or your spending limit needs to be increased." The
+  repository is **private** again (it was made public for unlimited free minutes, Q123), so its
+  free minutes are used up. The merge waits for a green branch check, and master deploys only
+  through GitHub, so the release is blocked. The owner either makes the repository public again
+  (Settings, General, Danger Zone, Change visibility) or fixes the billing; then the releaser
+  reruns the branch check and merges.
 
 ## Required scenarios
 
