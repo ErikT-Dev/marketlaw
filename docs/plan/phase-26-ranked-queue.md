@@ -504,3 +504,4 @@ the queue): fixed. F7 (repeated alarm decision): fixed, reuse of `alarmChangeTo`
 **Branch check fix (Q150).** Run 43923506970 failed only on `e2e/bigCardSwitch.spec.ts` (one click
 111.6 ms at 2560x1440). As the owner approved, S6.5 and Q150 now ask for the median click under
 100 ms and every click under 300 ms; the test checks that. Local `npm run check` passed after it.
+| Releaser, second run | Sonnet, low | 26 | 65k | 29 | done |
