@@ -751,6 +751,7 @@ each helper's conversation size at its end.
 | Fixer, F2 to F5 | 15 | 139k | 66 | done |
 | Finisher, second run | 36 | 78k | 29 | done |
 | Releaser | 6 | 79k | 27 | blocked (GitHub Actions billing) |
+| Releaser, second run | 11 | 66k | 21 | done |
 
 ## Report
 
