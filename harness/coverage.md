@@ -227,7 +227,7 @@ it by hand.
 | A1.12 | accounts (4), rooms (1) | Covered |
 | A1.13 | accounts (6) | Covered |
 | A1.14 | accounts (3), connections-and-leaving (2) | Covered |
-| A1.15 | accounts (2), connections-and-leaving (1) | Covered |
+| A1.15 | accounts (4), connections-and-leaving (1) | Covered |
 | A1.16 | accounts (2) | Covered |
 | A2.1 | accounts (3) | Covered |
 | A2.2 | accounts (1) | Covered |
@@ -260,8 +260,8 @@ it by hand.
 | A8.6 | lobby-queue-and-limits (2) | Covered |
 | A8.7 | lobby-queue-and-limits (1) | Covered |
 | A8.8 | lobby-queue-and-limits (2) | Covered |
-| A8.9 | lobby-queue-and-limits (2) | Covered |
-| A8.10 | lobby-queue-and-limits (1) | Covered |
+| A8.9 | accounts (1), lobby-queue-and-limits (2) | Covered |
+| A8.10 | accounts (1), lobby-queue-and-limits (1) | Covered |
 | A8.11 | connections-and-leaving (1), lobby-queue-and-limits (2) | Covered |
 | A9.1 | lobby-queue-and-limits (4) | Covered |
 | A9.2 | lobby-queue-and-limits (5) | Covered |
@@ -354,6 +354,6 @@ it by hand.
 ## Summary
 
 - Rules: 317
-- Scenarios: 488
+- Scenarios: 490
 - Gaps: 0
 - Checked another way or also checked another way: R3.2, R3.5, R17.10, R19.2, M3.1, M3.6, M4.2, A6.4, A10.6, C5.1, C5.2, C5.3, A12.1

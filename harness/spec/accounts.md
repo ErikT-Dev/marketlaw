@@ -110,8 +110,9 @@ None.
   "Deleted player". Deleting an account during a game counts as leaving it (M6). Deleting asks for
   the account's password (S12.6); a wrong one is refused with `password_wrong` and changes
   nothing. Deleting ends every login of the account and every link sent for it; a player waiting
-  in a room leaves the room, and one in the ranked queue leaves the queue. A guest user cannot
-  delete their account (`not_registered`); it is removed after 90 days without use (A1.1).
+  in a room leaves the room, and one in the ranked queue leaves the queue at once, as leaving it
+  does (a match they are confirming counts as declined, A8.9). A guest user cannot delete their
+  account (`not_registered`); it is removed after 90 days without use (A1.1).
 - **A1.16** **Email links:** a link in an email works once. A confirmation link (also for a new
   address, A1.10) works for 24 hours, a reset link (A1.7) for 1 hour. A newer link of the same
   kind for the same account replaces the older one, which stops working. A link that has expired,

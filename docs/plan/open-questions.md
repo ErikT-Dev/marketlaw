@@ -3119,3 +3119,20 @@ file.
   first.
 - **Implemented:** `src/server/queue/declineMatch.ts`, `fireQueueAlarm.ts`; phase 26, Progress
   item 1b.
+
+## Q143. Which scenarios cover deleting an account in the ranked queue (A1.15)?
+
+- **Phase:** 26 (builder, item 4).
+- **Question:** A1.15 says a player in the ranked queue leaves it when their account is deleted,
+  but no scenario covers it, and the spec does not say what happens to a ranked match the player
+  is confirming, or whether the leave waits like a closed connection (A8.10).
+- **Options:** treat deletion as a closed connection (leave after 10 seconds); or leave at once,
+  as `leave_queue` does, which declines a match being confirmed (A8.9, Q142).
+- **Solution:** deleting leaves at once, exactly as leaving the queue does: a waiting player is
+  out of the queue straight away, and a match they are confirming counts as declined (the others
+  go back to the front and are matched again), written into A1.15 first. Two scenarios added to
+  `harness/scenarios/accounts.yaml` (`HARNESS:` commit): "deleting an account in the ranked queue
+  takes it out of the queue at once" and "deleting an account while confirming a ranked match
+  declines it".
+- **Implemented:** `src/server/RankedQueue.ts` (`logOut` leaves the queue when the login is
+  leaving), `tools/harness-runner/lobby/deleteAccountInLobby.ts`; phase 26, Progress item 4.

@@ -224,6 +224,29 @@
     record_usernames: [Deleted player]
     accounts: [{name: Ann, kind: guest}]
 
+- name: deleting an account in the ranked queue takes it out of the queue at once
+  covers: [A1.15, A8.10]
+  given:
+    accounts: [{name: Ann, kind: registered, email_confirmed: true}, {name: Bea, kind: registered, email_confirmed: true}]
+    queue: [Ann, Bea]
+  when:
+    - {player: Ann, action: delete_account}
+  then:
+    queue: [Bea]
+
+- name: deleting an account while confirming a ranked match declines it
+  covers: [A1.15, A8.9]
+  given:
+    accounts: [{name: Ann, kind: registered, email_confirmed: true}, {name: Bea, kind: registered, email_confirmed: true}, {name: Cat, kind: registered, email_confirmed: true}, {name: Dan, kind: registered, email_confirmed: true}]
+    match: {players: [Ann, Bea, Cat], size: 3, state: confirming}
+    queue: [Dan]
+  when:
+    - {player: Bea, action: confirm_match}
+    - {player: Ann, action: delete_account}
+  then:
+    queue: []
+    match: {players: [Bea, Cat, Dan], size: 3, state: confirming}
+
 - name: rejects a username with letters outside A to Z
   covers: [A2.1]
   when:
