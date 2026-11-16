@@ -277,6 +277,11 @@ None yet.
   - In the queue: the title "You are in the queue" and "N players are in the queue, including
     you. A match starts as soon as enough players for one of your game sizes are in it. You can
     change your game sizes while you wait. You cannot join a room while you wait."
+  - While confirming a match (behind the **Match found** dialog of S10.7): the counts and the
+    out-of-the-queue text, since a confirming player is not counted in the queue (A8.7, Q146),
+    with **Leave the queue**.
+  - Times shown in the lobby (the confirm time left, a rejoin wait) are counted on the server's
+    clock, from the server time each queue view carries (Q147).
   - Logged out: "Log in or sign up to play ranked games."
   - Guest user: "Sign up and confirm your email address to play ranked games."
   - Unconfirmed email address: "Confirm your email address to play ranked games. We sent you a

@@ -3176,3 +3176,28 @@ file.
 - **Solution:** the `match_not_started` notice carries its reason (`not_confirmed`,
   `player_daily_limit`, `no_room`), each with its own text in S10.7, written there first.
 - **Implemented:** phase 26, Progress item 3a.
+
+## Q146. What does the ranked queue panel say behind the match-found dialog?
+
+- **Phase:** 26 (fixer, finding F1).
+- **Question:** S10.4 has texts for a player out of the queue and in the queue, but none for a
+  player confirming a match. The panel used the in-queue texts, so behind the dialog it said
+  "You are in the queue" and "0 players are in the queue, including you", while a confirming
+  player is not counted in the queue (A8.7, Q134).
+- **Options:** the in-queue texts with the counts corrected; or the out-of-the-queue texts.
+- **Solution:** while confirming, the panel shows the counts and the out-of-the-queue text, with
+  **Leave the queue** (leaving declines, A8.9). Written into S10.4 first.
+- **Implemented:** phase 26, finding F1.
+
+## Q147. Which clock counts down the match-found dialog and the rejoin wait in the lobby?
+
+- **Phase:** 26 (fixer, finding F4).
+- **Question:** the confirm deadline and the rejoin wait are server times, but the lobby counted
+  them on the browser clock, since only room messages carried the server time. A browser with a
+  wrong clock showed a wrong M:SS (the server's deadline still decided).
+- **Options:** list it as a known gap; or send the server time with each queue view and count
+  on the server's clock, as the game does.
+- **Solution:** each `queue` message carries `serverNow`; the client store keeps the clock offset
+  from it (the same offset the room messages set), and the lobby counts with it. Written into
+  S10.4 first. `PROTOCOL_VERSION` 23.
+- **Implemented:** phase 26, finding F4.
