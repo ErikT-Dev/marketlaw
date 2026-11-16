@@ -1,8 +1,12 @@
 import type { PlayerId } from "../../shared/PlayerId";
-import type { RoomCode } from "../../shared/RoomCode";
+import type { BusyPlace } from "./BusyPlace";
 import type { LobbyRecord } from "./LobbyRecord";
 
-export function forgetPlayer(record: LobbyRecord, playerId: PlayerId, code: RoomCode): LobbyRecord {
+export function forgetPlayer(
+  record: LobbyRecord,
+  playerId: PlayerId,
+  code: BusyPlace,
+): LobbyRecord {
   return {
     ...record,
     rooms: record.rooms.map((room) =>

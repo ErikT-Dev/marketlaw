@@ -221,7 +221,7 @@ These 28 scenarios are added to `harness/required.yaml` in this phase, by file a
     word it or add a kind when building the screen. The next protocol change raises
     `PROTOCOL_VERSION` from 20.
 
-- [ ] 1c. **The `RankedQueue` Durable Object** (the server side of 1a and 1b; M2.1 across rooms and
+- [x] 1c. **The `RankedQueue` Durable Object** (the server side of 1a and 1b; M2.1 across rooms and
   the queue; `rules/cloudflare.md`). **Large.**
   - `wrangler.jsonc`: binding `QUEUE`, class `RankedQueue`, migration `v5` with
     `new_sqlite_classes` (approved with this phase; SQLite Durable Objects are on the Free plan,
@@ -238,6 +238,35 @@ These 28 scenarios are added to `harness/required.yaml` in this phase, by file a
   - `joinRoomRoute` and room creation reject a player in the queue or confirming with
     `busy_elsewhere` through the lobby's `busy` list; `isReallyBusy` asks the queue, as it asks a
     room, before trusting a stale entry.
+  - Done (2026-11-16): `wrangler.jsonc` binding `QUEUE`, class `RankedQueue`, migration `v5`.
+    `src/server/RankedQueue.ts` holds the queue record (`QUEUE_RECORD_SCHEMA`), one alarm
+    (`nextQueueAlarmAt`, changed only when it differs) and hibernating sockets (`QueueSockets`).
+    Because the queue functions change the lobby record too (busy list, daily counts), every queue
+    change runs inside the `Lobby` as one `QueueOperation` (`Lobby.changeQueue` →
+    `applyQueueOperation`, which first fires a due alarm, so an expired match ends before the
+    intent); the Lobby writes its record, then the queue writes its own (at most one row each).
+    Starts: `startRankedRooms` reads the names from D1 (`readUsernames`), creates the room with
+    `withFreeRoomCode` and `GameRoom.startRankedRoom` (`newGameStart`), then `Lobby.moveToRoom`;
+    if no room can be made the players are released and get `match_not_started`. Protocol
+    (`PROTOCOL_VERSION` 21): `/api/queue/socket`; on open it sends `{type: "queue", queue:
+    QueueView}` with `own: out`; client messages `QueueClientMessage` (`resync`, `join_queue`
+    with `sizes` or null, `change_sizes`, `leave_queue`, `confirm_match`, `decline_match`, each
+    with `token`), parsed by `parseQueueClientMessage`; replies `queue`, `queue_notice`,
+    `queue_rejected` (`QueueServerMessage`, `parseQueueServerMessage`). A valid token identifies
+    the socket; a player's last socket closing (or logging out, `logOutOfRooms` now calls
+    `RankedQueue.logOut`) records the closed connection; any message from them reopens it.
+    `isReallyBusy` asks `RankedQueue.isQueued` and forgets a stale queue entry; joining the queue
+    runs `isReallyBusy` and `leaveFinishedRooms` (both now take a `BusyPlace`). When room games
+    reach the site limit, `Lobby.startGame` tells the queue to resend its views and set its
+    midnight alarm. Tests: `src/server/queue/queueOperation.test.ts`,
+    `tools/route-tests/queueSocket.test.ts` (hostile messages, a 2-player match into a ranked
+    room, `busy_elsewhere` on room creation, the 10-second leave, logout closing the socket).
+  - For later items: 3a builds the client feed on `QueueServerMessage`/`QueueClientMessage`
+    (a lobby page opens the socket, then sends `resync` with the token to get its own state);
+    the next protocol change raises `PROTOCOL_VERSION` from 21. 4: `logOutOfRooms` already
+    closes the deleted player's queue sockets (which would only leave after 10 seconds); item 4
+    still has to take the player out at once with a `leave` operation (a `RankedQueue` method
+    calling `change({kind: "leave"})`, which declines a match being confirmed).
 
 - [x] 2. **No abandon vote in ranked games** (M7.1, A8.11; scenario `connections-and-leaving`
   #22). **Small.**

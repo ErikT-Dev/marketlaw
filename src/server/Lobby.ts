@@ -29,6 +29,14 @@ import type { RoomSummary } from "./lobby/RoomSummary";
 import { withActionsAdded } from "./lobby/withActionsAdded";
 import { withPlayerCountsSet } from "./lobby/withPlayerCountsSet";
 import { withRoomSummary } from "./lobby/withRoomSummary";
+import { movedToRoom } from "./lobby/movedToRoom";
+import { RANKED_QUEUE_PLACE } from "./lobby/RANKED_QUEUE_PLACE";
+import { applyQueueOperation } from "./queue/applyQueueOperation";
+import { isSiteGameLimitReached } from "./queue/isSiteGameLimitReached";
+import type { QueueOperation } from "./queue/QueueOperation";
+import type { QueueOutcome } from "./queue/QueueOutcome";
+import type { QueueRecord } from "./queue/QueueRecord";
+import { queueOf } from "./queueOf";
 
 const LOBBY_KEY = "lobby";
 
@@ -48,14 +56,18 @@ export class Lobby extends DurableObject<Env> {
     now: EpochMs,
   ): Promise<GameStartRejection | null> {
     let rejection: GameStartRejection | null = null;
+    const context = { now, siteGamesPerDay: siteGameLimitOf(this.env) };
+    const wasLimitReached = isSiteGameLimitReached(this.read(), context);
     await this.change((record) => {
-      const counted = countGameStart(record, players, {
-        now,
-        siteGamesPerDay: siteGameLimitOf(this.env),
-      });
+      const counted = countGameStart(record, players, context);
       rejection = counted.isOk ? null : counted.error;
       return counted.isOk ? counted.value : null;
     });
+    if (!wasLimitReached && isSiteGameLimitReached(this.read(), context)) {
+      await queueOf(this.env)
+        .siteGameLimitReached()
+        .catch(() => undefined);
+    }
     return rejection;
   }
 
@@ -86,6 +98,35 @@ export class Lobby extends DurableObject<Env> {
     await this.change((record) => returnSiteEmail(record, now));
   }
 
+  async changeQueue(
+    queue: QueueRecord,
+    operation: QueueOperation,
+    now: EpochMs,
+  ): Promise<QueueOutcome> {
+    const context = { now, siteGamesPerDay: siteGameLimitOf(this.env) };
+    return this.decide((record) => {
+      const outcome = applyQueueOperation({ queue, lobby: record }, operation, context);
+      return { after: outcome.change.lobby, result: outcome };
+    });
+  }
+
+  async moveToRoom(players: ReadonlyArray<PlayerId>, code: RoomCode): Promise<void> {
+    await this.change((record) => movedToRoom(record, players, RANKED_QUEUE_PLACE, code));
+  }
+
+  async releaseFromQueue(players: ReadonlyArray<PlayerId>): Promise<void> {
+    await this.change((record) =>
+      players.reduce(
+        (released, playerId) => releasePlayer(released, playerId, RANKED_QUEUE_PLACE),
+        record,
+      ),
+    );
+  }
+
+  readRecord(): LobbyRecord {
+    return this.read();
+  }
+
   busyPlaceOf(playerId: PlayerId): BusyPlace | null {
     return this.read().busy.find((entry) => entry.playerId === playerId)?.code ?? null;
   }
@@ -96,7 +137,7 @@ export class Lobby extends DurableObject<Env> {
       .map(({ code }) => code);
   }
 
-  async forget(playerId: PlayerId, code: RoomCode): Promise<void> {
+  async forget(playerId: PlayerId, code: BusyPlace): Promise<void> {
     await this.change((record) => forgetPlayer(record, playerId, code));
   }
 
@@ -130,17 +171,23 @@ export class Lobby extends DurableObject<Env> {
   }
 
   private async change(apply: (record: LobbyRecord) => LobbyRecord | null): Promise<boolean> {
+    return this.decide((record) => {
+      const after = apply(record);
+      return { after, result: after !== null };
+    });
+  }
+
+  private async decide<T>(
+    apply: (record: LobbyRecord) => { readonly after: LobbyRecord | null; readonly result: T },
+  ): Promise<T> {
     return this.ctx.blockConcurrencyWhile(async () => {
       const before = this.read();
-      const after = apply(before);
-      if (after === null) {
-        return false;
-      }
-      if (JSON.stringify(after) !== JSON.stringify(before)) {
+      const { after, result } = apply(before);
+      if (after !== null && JSON.stringify(after) !== JSON.stringify(before)) {
         this.ctx.storage.kv.put(LOBBY_KEY, after);
         this.broadcastIfListChanged(before, after);
       }
-      return Promise.resolve(true);
+      return Promise.resolve(result);
     });
   }
 
