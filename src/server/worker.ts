@@ -25,6 +25,7 @@ import { usernameChangeRoute } from "./api/usernameChangeRoute";
 import { removeUnusedGuests } from "./deletion/removeUnusedGuests";
 import { removeOldEmailRecords } from "./email/removeOldEmailRecords";
 import { lobbyOf } from "./lobbyOf";
+import { queueOf } from "./queueOf";
 import { removeForgottenLoginFailures } from "./removeForgottenLoginFailures";
 import { removeOldReplayRecords } from "./replays/removeOldReplayRecords";
 import { confirmTestSeat } from "./testRooms/confirmTestSeat";
@@ -35,6 +36,7 @@ import { setTestDailyCounts } from "./testRooms/setTestDailyCounts";
 
 export { GameRoom } from "./GameRoom";
 export { Lobby } from "./Lobby";
+export { RankedQueue } from "./RankedQueue";
 
 const ROOM_PATH = /^\/api\/rooms\/([A-Z0-9]{6})\/(join|socket|replay)$/;
 
@@ -91,6 +93,9 @@ async function route(request: Request, env: Env): Promise<Response> {
   }
   if (pathname === "/api/lobby/socket") {
     return lobbyOf(env).fetch(request);
+  }
+  if (pathname === "/api/queue/socket") {
+    return queueOf(env).fetch(request);
   }
   if (request.method === "GET" && pathname === "/api/generated-name") {
     return generatedNameRoute(env);

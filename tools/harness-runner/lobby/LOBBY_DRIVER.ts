@@ -25,6 +25,11 @@ import { deleteAccountInLobby } from "./deleteAccountInLobby.ts";
 import { LOBBY_NESTED_FIELDS } from "./LOBBY_NESTED_FIELDS.ts";
 import { matchHistoryThen } from "./matchHistoryThen.ts";
 import { removeUnusedGuestsInLobby } from "./removeUnusedGuestsInLobby.ts";
+import { runQueueStep } from "./runQueueStep.ts";
+import { waitWithQueue } from "./waitWithQueue.ts";
+import { lobbyQueueThen } from "./lobbyQueueThen.ts";
+import { queueSentTo } from "./queueSentTo.ts";
+import { connectInQueue } from "./connectInQueue.ts";
 
 const ROOM_ACTIONS = [
   "change_size",
@@ -35,10 +40,28 @@ const ROOM_ACTIONS = [
   "send_chat",
 ];
 
+const QUEUE_ACTIONS = [
+  "join_queue",
+  "change_sizes",
+  "leave_queue",
+  "confirm_match",
+  "decline_match",
+];
+
+const QUEUE_THEN_FIELDS = ["queue", "match", "view_lobby"];
+
 const CHAT_THEN_FIELDS = ["chat", "notified", "view_chat", "chat_count", "saved_before_shown"];
 
 function textOf(value: unknown): string {
   return typeof value === "string" ? value : "";
+}
+
+function playerOfStep(session: LobbySession, step: Readonly<Record<string, unknown>>): string {
+  const seat = session.record?.game?.seats.find(({ seat }) => seat === step["seat"]);
+  const named = [...session.accounts.values()].find(
+    ({ identity }) => identity.playerId === seat?.playerId,
+  );
+  return named?.identity.name ?? textOf(step["player"]);
 }
 
 function runPlayerStep(
@@ -61,6 +84,8 @@ function runPlayerStep(
     session.sendRoomAction(name, { type: "send_chat", text: chatTextOfStep(step) });
   } else if (action === "mute" || action === "unmute") {
     session.sendRoomAction(name, { type: action, playerName: textOf(step[`player_to_${action}`]) });
+  } else if (QUEUE_ACTIONS.includes(action)) {
+    runQueueStep(session, name, step);
   } else if (ROOM_ACTIONS.includes(action)) {
     const details = Object.entries(step).filter(([key]) => key !== "player" && key !== "action");
     session.sendRoomAction(name, { ...Object.fromEntries(details), type: action });
@@ -110,12 +135,12 @@ async function runStep(session: LobbySession, step: ScenarioStep): Promise<void>
   }
   session.rejected = null;
   if (typeof step["wait_ms"] === "number") {
-    session.wait(step["wait_ms"]);
+    waitWithQueue(session, step["wait_ms"]);
     removeUnusedGuestsInLobby(session);
   } else if (typeof step["disconnect"] === "string") {
-    session.setConnected(step["disconnect"], false);
+    connectInQueue(session, step["disconnect"], false);
   } else if (typeof step["reconnect"] === "string") {
-    session.setConnected(step["reconnect"], true);
+    connectInQueue(session, step["reconnect"], true);
   } else if (typeof step["visitor"] === "string") {
     await runVisitorStep(session, step["visitor"], step);
   } else if (step["action"] === "sign_up") {
@@ -134,8 +159,22 @@ async function runStep(session: LobbySession, step: ScenarioStep): Promise<void>
   } else if (step["action"] === "change_username") {
     await changeUsernameInLobby(session, textOf(step["player"]), textOf(step["username"]));
   } else {
-    runPlayerStep(session, textOf(step["player"]), step);
+    runPlayerStep(session, playerOfStep(session, step), step);
   }
+}
+
+function otherFieldThen(session: LobbySession, field: string, expected: unknown) {
+  if (field === "message_to") {
+    return lobbyMessageThen(session.messagesTo, expected, session.emails.noticesTo, (player) =>
+      queueSentTo(session, player),
+    );
+  }
+  if (QUEUE_THEN_FIELDS.includes(field)) {
+    return lobbyQueueThen(session, field, expected);
+  }
+  return CHAT_THEN_FIELDS.includes(field)
+    ? lobbyChatThen(session, field, expected)
+    : lobbyAccountsThen(session, field, expected);
 }
 
 function startSession(rawGiven: Readonly<Record<string, unknown>>, random: ScriptedRandom) {
@@ -182,12 +221,8 @@ function startSession(rawGiven: Readonly<Record<string, unknown>>, random: Scrip
           return matchHistoryThen(session.history.opened);
         case "record_usernames":
           return session.history.accountGameUsernames(session.accounts);
-        case "message_to":
-          return lobbyMessageThen(session.messagesTo, expected, session.emails.noticesTo);
         default:
-          return CHAT_THEN_FIELDS.includes(field)
-            ? lobbyChatThen(session, field, expected)
-            : lobbyAccountsThen(session, field, expected);
+          return otherFieldThen(session, field, expected);
       }
     },
     measurements: () => session.chat.rowsPerChatIntent.map((value) => ({ budget: "B7", value })),
@@ -203,11 +238,14 @@ export const LOBBY_DRIVER: ScenarioDriver = {
     "site_games_today",
     "site_counts_today",
     "email_counts",
+    "players",
     "seats",
     "accounts",
     "room",
     "other_rooms",
     "records",
+    "queue",
+    "match",
   ]),
   steps: new Set([
     "create_room",
@@ -232,6 +270,7 @@ export const LOBBY_DRIVER: ScenarioDriver = {
     "mute",
     "unmute",
     ...ROOM_ACTIONS,
+    ...QUEUE_ACTIONS,
   ]),
   thenFields: new Set([
     "rejected",
@@ -250,6 +289,7 @@ export const LOBBY_DRIVER: ScenarioDriver = {
     "emails_sent",
     "seats",
     ...CHAT_THEN_FIELDS,
+    ...QUEUE_THEN_FIELDS,
   ]),
   nestedFields: LOBBY_NESTED_FIELDS,
   startSession,

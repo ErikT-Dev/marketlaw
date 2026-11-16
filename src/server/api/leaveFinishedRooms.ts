@@ -1,8 +1,8 @@
 import type { PlayerId } from "../../shared/PlayerId";
-import type { RoomCode } from "../../shared/RoomCode";
+import type { BusyPlace } from "../lobby/BusyPlace";
 import { lobbyOf } from "../lobbyOf";
 
-export async function leaveFinishedRooms(env: Env, playerId: PlayerId, joined: RoomCode) {
+export async function leaveFinishedRooms(env: Env, playerId: PlayerId, joined: BusyPlace) {
   const codes = await lobbyOf(env).stayingRoomsOf(playerId);
   await Promise.all(
     codes

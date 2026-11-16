@@ -1,6 +1,8 @@
 import { useSyncExternalStore } from "react";
 import { accountBindingOf } from "./accountBindingOf";
+import { rankedQueueBindingOf } from "./rankedQueueBindingOf";
 import { RoomGameScreen } from "./RoomGameScreen";
+import { ServerClockOffset } from "./screens/game/ServerClockOffset";
 import { LobbyPage } from "./screens/lobby/LobbyPage";
 import { WaitingPage } from "./screens/WaitingPage";
 import type { ClientStore } from "./store/ClientStore";
@@ -15,19 +17,22 @@ export function CurrentScreen({ store }: Props) {
   const { session, update } = state;
   if (session?.roomCode === null || session === null) {
     return (
-      <LobbyPage
-        account={session === null ? null : accountBindingOf(store, session, false)}
-        joinError={state.joinError}
-        removal={state.removal}
-        onJoin={(code) => void store.joinRoom(code)}
-        onCreate={store.createRoom}
-        onStartAsGuest={store.startAsGuest}
-        onLogIn={store.logIn}
-        onSignUp={store.signUp}
-        onForgotPassword={store.openForgotPassword}
-        onDismissRemoval={store.dismissRemoval}
-        publicRooms={state.publicRooms}
-      />
+      <ServerClockOffset value={state.serverClockOffsetMs}>
+        <LobbyPage
+          account={session === null ? null : accountBindingOf(store, session, false)}
+          joinError={state.joinError}
+          removal={state.removal}
+          onJoin={(code) => void store.joinRoom(code)}
+          onCreate={store.createRoom}
+          onStartAsGuest={store.startAsGuest}
+          onLogIn={store.logIn}
+          onSignUp={store.signUp}
+          onForgotPassword={store.openForgotPassword}
+          onDismissRemoval={store.dismissRemoval}
+          publicRooms={state.publicRooms}
+          ranked={rankedQueueBindingOf(store, state)}
+        />
+      </ServerClockOffset>
     );
   }
   if (update === null) {

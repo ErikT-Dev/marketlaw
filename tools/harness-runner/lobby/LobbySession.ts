@@ -6,10 +6,6 @@ import { nameKeyOf } from "../../../src/server/accounts/nameKeyOf.ts";
 import { createRoomDecision } from "../../../src/server/room/createRoomDecision.ts";
 import type { Identity } from "../../../src/server/room/Identity.ts";
 import { claimPlayer } from "../../../src/server/lobby/claimPlayer.ts";
-import { countGameStart } from "../../../src/server/lobby/countGameStart.ts";
-import type { GameStartRejection } from "../../../src/server/lobby/GameStartRejection.ts";
-import { siteChatLimitOf } from "../../../src/server/lobby/siteChatLimitOf.ts";
-import { siteGameLimitOf } from "../../../src/server/lobby/siteGameLimitOf.ts";
 import { EMPTY_LOBBY } from "../../../src/server/lobby/EMPTY_LOBBY.ts";
 import type { LobbyRecord } from "../../../src/server/lobby/LobbyRecord.ts";
 import { releasePlayer } from "../../../src/server/lobby/releasePlayer.ts";
@@ -45,8 +41,6 @@ import { chatFromGiven } from "./chatFromGiven.ts";
 import { lobbyWithRooms } from "./lobbyWithRooms.ts";
 import { chatTrackingStorage } from "../../../src/server/room/chatTrackingStorage.ts";
 import { leaveRoomIfFreeIn } from "../../../src/server/room/leaveRoomIfFreeIn.ts";
-import type { ChatQuotaGrant } from "../../../src/server/room/ChatQuotaGrant.ts";
-import { grantChatQuota } from "../../../src/server/lobby/grantChatQuota.ts";
 import { fireAlarmsUntil } from "./fireAlarmsUntil.ts";
 import type { LobbyRegistration } from "./LobbyRegistration.ts";
 import type { FailedLogins } from "../../../src/server/accounts/FailedLogins.ts";
@@ -54,6 +48,14 @@ import { registrationFromGiven } from "./registrationFromGiven.ts";
 import { scriptedGeneratedName } from "./scriptedGeneratedName.ts";
 import { LobbyEmails } from "./LobbyEmails.ts";
 import { LobbyHistory } from "./LobbyHistory.ts";
+import { queueStateFromGiven } from "./queueStateFromGiven.ts";
+import type { QueueRecord } from "../../../src/server/queue/QueueRecord.ts";
+import type { QueueNotice } from "../../../src/shared/protocol/QueueNotice.ts";
+import { countGameStartInLobby } from "./countGameStartInLobby.ts";
+import { grantChatQuotaInLobby } from "./grantChatQuotaInLobby.ts";
+import { givenRoomRecordOf } from "./givenRoomRecordOf.ts";
+import { actionsAddedBetween } from "../../../src/server/room/actionsAddedBetween.ts";
+import { withActionsAdded } from "../../../src/server/lobby/withActionsAdded.ts";
 
 export class LobbySession {
   record: RoomRecord | null;
@@ -70,13 +72,15 @@ export class LobbySession {
   private readonly pendingJoins = new Map<string, string>();
   private live: ReadonlyArray<PlayerId> = [];
   lobby: LobbyRecord;
+  queue: QueueRecord;
+  readonly queueNoticesTo = new Map<string, QueueNotice[]>();
   private otherRooms: ReadonlyArray<RoomRecord> = [];
   private namesAsked = 0;
-  private readonly random: ScriptedRandom;
+  readonly random: ScriptedRandom;
   readonly chat: LobbyChat;
   readonly emails: LobbyEmails;
   readonly history: LobbyHistory;
-  private readonly storage: RoomStorage = chatTrackingStorage(
+  readonly storage: RoomStorage = chatTrackingStorage(
     {
       read: () => this.record ?? undefined,
       write: (record) => {
@@ -100,14 +104,14 @@ export class LobbySession {
       const usernameChangesMs = account.username_changes_ms ?? [];
       this.addAccount(account.name, account.last_used_ms ?? 0, registration, usernameChangesMs);
     }
-    this.lobby = { ...EMPTY_LOBBY, today: countsTodayFromGiven(given, this.now, this) };
+    const lobby = { ...EMPTY_LOBBY, today: countsTodayFromGiven(given, this.now, this) };
+    const queued = queueStateFromGiven(given, lobby, (name) => this.identityNamed(name), this.now);
+    this.lobby = queued.lobby;
+    this.queue = queued.queue;
     this.emails = new LobbyEmails(given, (name) => this.identityNamed(name));
     this.history = new LobbyHistory(given, (name) => this.identityNamed(name));
     this.chat = new LobbyChat(chatFromGiven(given, (name) => this.identityNamed(name), this.now));
-    this.record =
-      given.room === undefined || given.room.players.length === 0
-        ? null
-        : lobbyRoomFromGiven(given.room, (name) => this.identityNamed(name), this.now);
+    this.record = givenRoomRecordOf(given, (name) => this.identityNamed(name), this.now);
     this.endedRoom = new EndedRoomRecords(
       endedRoomFromGiven(given, (name) => this.identityNamed(name), this.now),
     );
@@ -133,7 +137,7 @@ export class LobbySession {
   }
 
   snapshot(): string {
-    return JSON.stringify([this.record, this.otherRooms, [...this.accounts.keys()]]);
+    return JSON.stringify([this.record, this.otherRooms, [...this.accounts.keys()], this.queue]);
   }
 
   wait(ms: number): void {
@@ -186,6 +190,12 @@ export class LobbySession {
       }
     } else if (roomCode.success) {
       this.lobby = releasePlayer(this.lobby, playerId, roomCode.output);
+    }
+  }
+
+  leaveFinishedRoom(playerId: PlayerId): void {
+    if (this.record !== null) {
+      leaveRoomIfFreeIn(this.storage, playerId);
     }
   }
 
@@ -253,33 +263,19 @@ export class LobbySession {
         now: this.now,
         seatOrder: (players) =>
           seatOrderDrawn(this.random, players, (name) => this.identityNamed(name)),
-        limitRejectionFor: (players) => this.countGameStart(players),
+        limitRejectionFor: (players) => countGameStartInLobby(this, players),
       },
       livePlayers: this.live,
-      chat: this.chat.contextFor(() => this.grantChatQuota()),
+      chat: this.chat.contextFor(() => grantChatQuotaInLobby(this)),
     });
     this.rejected = outcome.isRoomGone ? "room_not_found" : rejectionOfReply(outcome.reply);
+    const played = actionsAddedBetween(before.record, this.record);
+    this.lobby = withActionsAdded(this.lobby, played, this.now);
     if (!outcome.isRoomGone) {
       const delivery = { sender: name, accounts: this.accounts.values(), record: this.record };
       deliverRoomOutcome(this.messagesTo, { ...delivery, now: this.now }, outcome);
       this.chat.receive(this.messagesTo, outcome, { before, after: this.record });
     }
-  }
-
-  private countGameStart(players: ReadonlyArray<PlayerId>): GameStartRejection | null {
-    const limits = { now: this.now, siteGamesPerDay: siteGameLimitOf({}) };
-    const counted = countGameStart(this.lobby, players, limits);
-    this.lobby = counted.isOk ? counted.value : this.lobby;
-    return counted.isOk ? null : counted.error;
-  }
-
-  private grantChatQuota(): ChatQuotaGrant {
-    const grant = grantChatQuota(this.lobby, {
-      now: this.now,
-      siteChatMessagesPerDay: siteChatLimitOf({}),
-    });
-    this.lobby = grant.record;
-    return { kind: "granted", count: grant.granted };
   }
 
   private claimIn(playerId: PlayerId, code: RoomCode): boolean {

@@ -21,7 +21,7 @@ const RUN: HarnessRun = {
   tierShareProblems: [],
   replayExportProblems: [],
   simulation: NO_GAMES,
-  busyDay: { written: { room: 10, alarm: 20, lobby: 30, database: 40 }, rowsRead: 500 },
+  busyDay: { written: { room: 10, alarm: 20, lobby: 30, queue: 0, database: 40 }, rowsRead: 500 },
   passwordHashCpuMs: null,
   simulatedInvariants: [],
 };

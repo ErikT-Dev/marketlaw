@@ -5,6 +5,9 @@ import { PROTOCOL_VERSION } from "../shared/PROTOCOL_VERSION";
 import type { ServerMessage } from "../shared/protocol/ServerMessage";
 import { ROOM_GONE_CLOSE_CODE } from "../shared/ROOM_GONE_CLOSE_CODE";
 import { attachmentOf } from "./attachmentOf";
+import { closeLoginSockets } from "./closeLoginSockets";
+import type { LoginClosing } from "./LoginClosing";
+import { openSocketsOf } from "./openSocketsOf";
 import type { AddressedNotice } from "./room/AddressedNotice";
 import type { RoomRecord } from "./room/RoomRecord";
 import type { RoomRemoval } from "./room/RoomRemoval";
@@ -12,7 +15,6 @@ import { updateFor } from "./room/updateFor";
 import { otherTabsOf } from "./room/otherTabsOf";
 import { withAwaySeats } from "./room/withAwaySeats";
 import { OPENED_ELSEWHERE_CLOSE_CODE } from "../shared/OPENED_ELSEWHERE_CLOSE_CODE";
-import { LOGGED_OUT_CLOSE_CODE } from "../shared/LOGGED_OUT_CLOSE_CODE";
 import type { ReplySocket } from "./ReplySocket";
 
 export class RoomSockets {
@@ -23,7 +25,7 @@ export class RoomSockets {
   }
 
   private openSockets(): ReadonlyArray<WebSocket> {
-    return this.ctx.getWebSockets().filter((socket) => socket.readyState === WebSocket.OPEN);
+    return openSocketsOf(this.ctx);
   }
 
   closeAll(reason: string): void {
@@ -32,17 +34,8 @@ export class RoomSockets {
     }
   }
 
-  closeLogins(closing: { readonly tokenHash: string } | { readonly playerId: PlayerId }): void {
-    for (const socket of this.openSockets()) {
-      const attachment = attachmentOf(socket);
-      const isClosing =
-        "tokenHash" in closing
-          ? attachment.tokenHash === closing.tokenHash
-          : attachment.identity?.playerId === closing.playerId;
-      if (isClosing) {
-        socket.close(LOGGED_OUT_CLOSE_CODE, "Logged out");
-      }
-    }
+  closeLogins(closing: LoginClosing): void {
+    closeLoginSockets(this.openSockets(), closing);
   }
 
   livePlayers(): ReadonlyArray<PlayerId> {

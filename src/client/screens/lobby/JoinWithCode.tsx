@@ -8,9 +8,10 @@ type Props = {
   readonly error: IconText | null;
   readonly onJoin: (code: string) => void;
   readonly onCreate: () => void;
+  readonly isBusy: boolean;
 };
 
-export function JoinWithCode({ error, onJoin, onCreate }: Props) {
+export function JoinWithCode({ error, onJoin, onCreate, isBusy }: Props) {
   const [code, setCode] = useState("");
   const errorId = useId();
   return (
@@ -40,10 +41,10 @@ export function JoinWithCode({ error, onJoin, onCreate }: Props) {
           </p>
         )}
       </div>
-      <Button look="secondary" isSubmit isDisabled={code.trim() === ""}>
+      <Button look="secondary" isSubmit isDisabled={isBusy || code.trim() === ""}>
         Join with code
       </Button>
-      <Button look="primary" onClick={onCreate}>
+      <Button look="primary" isDisabled={isBusy} onClick={onCreate}>
         Create room
       </Button>
     </form>

@@ -14,7 +14,11 @@ import { RoomCode } from "../../../src/shared/RoomCode.ts";
 import type { LobbyGiven } from "./LOBBY_GIVEN_SCHEMA.ts";
 
 function endedRoom(waiting: RoomRecord, endedMs: number): RoomRecord {
-  const playing = startRoomGame(waiting, gameStartInJoinOrder(1, v.parse(EpochMs, endedMs)));
+  const playing = startRoomGame(
+    waiting,
+    gameStartInJoinOrder(1, v.parse(EpochMs, endedMs)),
+    "casual",
+  );
   const { game } = playing;
   if (game === null) {
     throw new Error("the ended room has no game");
@@ -55,7 +59,7 @@ function roomInState(
         },
       };
     case "playing":
-      return startRoomGame(waiting, gameStartInJoinOrder(1, now));
+      return startRoomGame(waiting, gameStartInJoinOrder(1, now), "casual");
     case "ended":
       return endedRoom(waiting, room.ended_ms ?? now);
   }

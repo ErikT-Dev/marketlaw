@@ -253,7 +253,7 @@
     - {player: Ann, action: join_queue}
   then:
     rejected: daily_action_limit
-    accounts: [{name: Ann, actions_today: 2005}]
+    accounts: [{name: Ann, actions_today: 2005}, {name: Bea}]
 
 - name: a player who started 10 games today cannot start another
   covers: [A9.3]

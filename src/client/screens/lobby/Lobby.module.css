@@ -355,3 +355,8 @@
 .linkButton:hover {
   text-decoration: underline;
 }
+
+.rankedColumns {
+  grid-template-columns: minmax(0, 1048px) minmax(320px, 440px);
+  gap: var(--space-lg);
+}

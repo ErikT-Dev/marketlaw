@@ -94,7 +94,7 @@ describe("usernames that open match histories", () => {
       playerNames: ["Oli", "Sam"],
       playerIds: [5, 6].map(testPlayerIdOf),
     };
-    render(<PublicRoomsList rooms={[room]} onJoin={vi.fn()} />);
+    render(<PublicRoomsList rooms={[room]} onJoin={vi.fn()} isBusy={false} />);
     expect(hrefOf(screen.getByRole("link", { name: "Sam" }))).toBe(historyOf(6));
     expect(hrefOf(screen.getByRole("link", { name: "Oli" }))).toBe(historyOf(5));
   });

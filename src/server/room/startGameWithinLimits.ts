@@ -34,7 +34,12 @@ export function startGameWithinLimits(
   const playerIds = record.players.map(({ playerId }) => playerId);
   const rejection = start.limitRejectionFor(playerIds);
   if (rejection === null) {
-    return { record: startRoomGame(record, start), removals: [], notices: [], refusal: null };
+    return {
+      record: startRoomGame(record, start, "casual"),
+      removals: [],
+      notices: [],
+      refusal: null,
+    };
   }
   if (rejection.kind === "no_answer") {
     return { record, removals: [], notices: [], refusal: "no_answer" };

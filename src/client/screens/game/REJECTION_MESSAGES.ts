@@ -56,6 +56,7 @@ export const REJECTION_MESSAGES: Readonly<Record<ReasonCode, IconText>> = {
   vote_already_open: "A vote is already open.",
   no_vote_open: "There is no vote to answer.",
   vote_already_answered: "You already answered this vote.",
+  vote_not_allowed: "Ranked games cannot be abandoned.",
   out_of_market: "Your market go is over for this turn.",
   card_not_in_marketplace: "That card was just taken.",
   marketplace_empty: "The marketplace is empty: choose a sector.",
@@ -95,6 +96,9 @@ export const REJECTION_MESSAGES: Readonly<Record<ReasonCode, IconText>> = {
   no_free_room_code: "No room could be created right now. Try again.",
   no_answer: "The server did not answer. Try again.",
   busy_elsewhere: "You are already in a room, the ranked queue or a game. Leave it first.",
+  invalid_game_sizes: "Something went wrong.",
+  not_in_queue: "You are not in the ranked queue.",
+  no_match_to_confirm: "This match is no longer waiting for you.",
   daily_action_limit:
     "You have used your 2,000 game actions for today. You can join rooms, the ranked queue and new games again after 00:00 UTC.",
   daily_game_start_limit:

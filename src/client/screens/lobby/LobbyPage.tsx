@@ -2,7 +2,6 @@ import type { LoginRequest } from "../../../shared/api/LoginRequest";
 import type { SignupRequest } from "../../../shared/api/SignupRequest";
 import type { PublicRoomView } from "../../../shared/protocol/PublicRoomView";
 import type { ReasonCode } from "../../../shared/ReasonCode";
-import { Toast } from "../../components/Toast";
 import type { AccountBinding } from "../account/AccountBinding";
 import type { JoinError } from "../../store/JoinError";
 import type { NewRoom } from "../../store/NewRoom";
@@ -14,8 +13,10 @@ import { joinErrorText } from "./joinErrorText";
 import { JoinWithCode } from "./JoinWithCode";
 import styles from "./Lobby.module.css";
 import { LobbyAccount } from "./LobbyAccount";
-import { removalText } from "./removalText";
 import { PublicRoomsList } from "./PublicRoomsList";
+import { LobbyToasts } from "./LobbyToasts";
+import type { RankedQueueBinding } from "./RankedQueueBinding";
+import { RankedQueueSection } from "./RankedQueueSection";
 import { useLobbyFlow } from "./useLobbyFlow";
 
 type Props = {
@@ -30,11 +31,13 @@ type Props = {
   readonly onForgotPassword: () => void;
   readonly onDismissRemoval: () => void;
   readonly publicRooms: ReadonlyArray<PublicRoomView>;
+  readonly ranked: RankedQueueBinding;
 };
 
 export function LobbyPage(props: Props) {
   const { account, joinError, removal, onJoin, onCreate, onStartAsGuest, onDismissRemoval } = props;
-  const { publicRooms } = props;
+  const { publicRooms, ranked } = props;
+  const isBusy = ranked.queue !== null && ranked.queue.own.kind !== "out";
   const now = useServerNow();
   const flow = useLobbyFlow(account !== null, onJoin);
   return (
@@ -45,7 +48,7 @@ export function LobbyPage(props: Props) {
         onSignUp={props.onSignUp}
         onForgotPassword={props.onForgotPassword}
       />
-      <main className={styles["columns"]}>
+      <main className={`${styles["columns"] ?? ""} ${styles["rankedColumns"] ?? ""}`}>
         <section className={styles["panel"]} aria-labelledby="rooms-heading">
           <div className={styles["panelHeader"]}>
             <h2 id="rooms-heading" className={styles["panelTitle"]}>
@@ -55,24 +58,23 @@ export function LobbyPage(props: Props) {
               error={joinError === null ? null : joinErrorText(joinError, now)}
               onJoin={(code) => void flow.start({ kind: "join", code })}
               onCreate={() => void flow.start({ kind: "create" })}
+              isBusy={isBusy}
             />
           </div>
           <PublicRoomsList
             rooms={publicRooms}
             onJoin={(code) => void flow.start({ kind: "join", code })}
+            isBusy={isBusy}
           />
         </section>
+        <RankedQueueSection account={account} ranked={ranked} now={now} />
       </main>
-      {removal === null ? null : (
-        <div className={styles["toastPlace"]}>
-          <Toast
-            kind="warning"
-            title={`Removed from room ${removal.code}`}
-            text={removalText(removal, now)}
-            onClose={onDismissRemoval}
-          />
-        </div>
-      )}
+      <LobbyToasts
+        removal={removal}
+        ranked={ranked}
+        now={now}
+        onDismissRemoval={onDismissRemoval}
+      />
       {flow.guestPrompt === null ? null : (
         <GuestNameDialog
           generatedName={flow.guestPrompt.generatedName}

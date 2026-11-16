@@ -4,6 +4,9 @@ import type { VoteAction } from "./VoteAction";
 import { nextVoteTurnOf } from "./nextVoteTurnOf";
 
 function callRejection(state: GameState): ReasonCode | undefined {
+  if (state.kind === "ranked") {
+    return "vote_not_allowed";
+  }
   if (state.vote !== null) {
     return "vote_already_open";
   }

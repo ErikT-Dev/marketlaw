@@ -23,6 +23,8 @@ import { loadRoom } from "./room/loadRoom";
 import { receiveAskingLobbyFor } from "./receiveAskingLobbyFor";
 import type { RoomRecord } from "./room/RoomRecord";
 import { startTestRoomIn } from "./room/startTestRoomIn";
+import { startRankedRoomIn } from "./room/startRankedRoomIn";
+import { newGameStart } from "./newGameStart";
 import { withConnection } from "./room/withConnection";
 import { reportToLobby } from "./reportToLobby";
 import { saveRecordsIfEnded } from "./records/saveRecordsIfEnded";
@@ -85,6 +87,18 @@ export class GameRoom extends DurableObject<Env> {
       const isStarted = startTestRoomIn(this.storage, { code, seed, now: nowMs() }, players, state);
       await this.rooms.save();
       await this.syncAlarm();
+      return isStarted;
+    });
+  }
+
+  async startRankedRoom(room: Parameters<typeof startRankedRoomIn>[1]): Promise<boolean> {
+    return this.inTurn(async () => {
+      const isStarted = startRankedRoomIn(this.storage, room, newGameStart(nowMs()));
+      await this.rooms.save();
+      await this.syncAlarm();
+      if (isStarted) {
+        await this.reportToLobby(null);
+      }
       return isStarted;
     });
   }

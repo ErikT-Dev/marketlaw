@@ -1,15 +1,15 @@
 import type { EpochMs } from "../../shared/EpochMs";
 import type { PlayerId } from "../../shared/PlayerId";
 import type { Result } from "../../shared/Result";
-import type { RoomCode } from "../../shared/RoomCode";
 import type { ClaimRejection } from "./ClaimRejection";
 import { dailyLimitRejection } from "./dailyLimitRejection";
+import type { BusyPlace } from "./BusyPlace";
 import type { LobbyRecord } from "./LobbyRecord";
 
 export function claimPlayer(
   record: LobbyRecord,
   playerId: PlayerId,
-  code: RoomCode,
+  code: BusyPlace,
   now: EpochMs,
 ): Result<LobbyRecord, ClaimRejection> {
   const current = record.busy.find((entry) => entry.playerId === playerId);

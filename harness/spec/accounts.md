@@ -110,8 +110,9 @@ None.
   "Deleted player". Deleting an account during a game counts as leaving it (M6). Deleting asks for
   the account's password (S12.6); a wrong one is refused with `password_wrong` and changes
   nothing. Deleting ends every login of the account and every link sent for it; a player waiting
-  in a room leaves the room, and one in the ranked queue leaves the queue. A guest user cannot
-  delete their account (`not_registered`); it is removed after 90 days without use (A1.1).
+  in a room leaves the room, and one in the ranked queue leaves the queue at once, as leaving it
+  does (a match they are confirming counts as declined, A8.9). A guest user cannot delete their
+  account (`not_registered`); it is removed after 90 days without use (A1.1).
 - **A1.16** **Email links:** a link in an email works once. A confirmation link (also for a new
   address, A1.10) works for 24 hours, a reset link (A1.7) for 1 hour. A newer link of the same
   kind for the same account replaces the older one, which stops working. A link that has expired,
@@ -243,14 +244,22 @@ None.
     would have played a 2-player game.
 - **A8.7** **Confirming the match:** each matched player is asked to confirm that they will play,
   and has 20 seconds to do so. While confirming, a player sees that a match was found and its
-  game size, but not who the other players are.
+  game size, but not who the other players are, nor how many have confirmed. A player who is
+  confirming is no longer counted in the queue (A8.4), but is still in the ranked queue for M2.1.
+  Leaving the queue while confirming declines the match. A closed connection while confirming
+  changes nothing: the 20 seconds decide.
 - **A8.8** If every matched player confirms, the game starts automatically, in a new room made
-  for it.
+  for it. The room is private and not listed in the lobby, its size is the game size, the
+  matched player who waited longest is its owner, and the game starts at once, without the asking
+  of M1.10. After the game it is a finished room like any other (M8).
 - **A8.9** If any player does not confirm in time, or declines, the game does not start. Players
   who did not confirm leave the queue, and can join it again after 2 minutes. Players who
   confirmed go back to the queue, at the front, in their earlier order, with their game sizes.
+  A decline ends the match at once: only the player who declined leaves with the wait, and the
+  others, whether or not they had confirmed yet, go back as players who confirmed (Q142).
 - **A8.10** A player can leave the queue at any time before their game starts. A player whose
-  connection has been closed for 10 seconds while in the queue leaves it.
+  connection has been closed for 10 seconds while in the queue leaves it, without a rejoin wait;
+  with the site open in several tabs, that is when all of them have been closed for 10 seconds.
 - **A8.11** Games started from the ranked queue are **ranked**: they change ELO ratings (A10).
   Ranked games cannot be abandoned by vote (M7.1).
 
@@ -273,7 +282,13 @@ None.
   again after 00:00 UTC". Games already in progress are not affected. In a room, the asking
   (M1.10) ends at once, everyone stays and keeps waiting and is told, and the room asks again the
   next time it becomes full. The ranked queue makes no matches until 00:00 UTC; players can join
-  it, stay in it and leave it as normal, and everyone in it sees the same message.
+  it, stay in it and leave it as normal, and everyone in it sees the same message. A match that
+  every player confirmed but that cannot start because the limit was reached meanwhile does not
+  start: its players go back to the queue at the front, in their earlier order, with their game
+  sizes and without a rejoin wait, and see the same message. Should a matched player have reached
+  A9.2 or A9.3 when the game would start, that player leaves the queue without a rejoin wait and
+  is told why, and the others go back to the queue the same way. A confirmed match for which no
+  room could be made does not start either, so it counts toward neither A9.3 nor A9.4 (Q149).
 - **A9.5** The tutorial does not count toward A9.2–A9.4 (C4.6).
 - **A9.6** **Site-wide caps:** at most **100 tutorials can start per day**, at most **2,000 chat
   messages can be sent per day** and at most **90 emails can be sent per day** (A1.9) on the whole

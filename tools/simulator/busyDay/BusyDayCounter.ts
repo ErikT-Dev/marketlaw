@@ -11,7 +11,7 @@ export class BusyDayCounter {
   lobby: LobbyRecord = EMPTY_LOBBY;
   record: RoomRecord | undefined;
   private alarm: number | null = null;
-  private rows: BusyDayRows = { room: 0, alarm: 0, lobby: 0, database: 0 };
+  private rows: BusyDayRows = { room: 0, alarm: 0, lobby: 0, queue: 0, database: 0 };
   private rowsRead = 0;
   chatBlocks = this.newChatBlocks();
   readonly storage: RoomStorage = {

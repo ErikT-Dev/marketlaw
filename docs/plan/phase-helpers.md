@@ -33,13 +33,11 @@ Your cost grows with everything you read, so read only what the job needs:
   `gh run view` over and over: each call re-sends your whole conversation.
 - Keep every command under 10 minutes, so it runs in the foreground (timeout 600000 ms) and
   never moves to the background. Ending your turn to wait for a background command is where
-  helpers stalled. Run the browser tests in these parts, each in its own command:
-  - `npm run e2e -- --workers=2 --grep-invert "play a whole game from the lobby" --shard=1/2`
-  - the same with `--shard=2/2`
-  - `npm run e2e -- --workers=2 --grep "two players play a whole game from the lobby"`, then
-    the same for `three players` and `four players`
-
-  A single spec file or a few tests can run in one command.
+  helpers stalled.
+- Run browser tests locally only for the screens your change touches: a single spec file or a
+  few tests in one command (`npm run e2e -- --workers=2 e2e/<file>.spec.ts`). The whole suite
+  and the full games run on GitHub, where seven jobs take about 7 minutes and the local load
+  time-outs do not happen (Q133): push the branch and wait for its check as above.
 
 ### Watch for stop
 The owner can stop the work at any time (`README.md`, "Continue and stop"). Before every new
@@ -126,19 +124,32 @@ One Progress item, or the rest of a partial one.
    a "For later items" line if later items should know something. Commit that with the work.
 
 ### Finisher
-After the last Progress item, and again after the review's fixes.
-1. First run only: add the phase's scenarios to `harness/required.yaml` in one edit
-   (`HARNESS:` commit).
-2. Run the full `npm run check`, `npm run harness` (the phase-end simulated games, D25), the
-   browser tests and the budget checks. The browser tests have a known local problem: some
-   time out loading pages when two workers run. Rerun only the failing tests. If they pass
-   then, note it; GitHub judges the full suite.
-3. Update `docs/enforcement.md` if a check now applies that did not before.
-4. Record the results in the Finish part of Progress, commit, and report.
+After the last Progress item, before the review (Q133).
+1. Add the phase's scenarios to `harness/required.yaml` in one edit (`HARNESS:` commit).
+2. Run the full `npm run check` and `npm run harness` (the phase-end simulated games, D25,
+   and the budget checks) locally.
+3. Push the branch and wait for its GitHub check, which runs every browser test at every
+   size. Do not run the browser suite locally. If a browser job fails, read its log; rerun
+   the failed jobs once (`gh run rerun <id> --failed`) only if the failure looks like a
+   time-out rather than a wrong result. A failure that stays is a finding (F1, F2, …) for a
+   fixer; write it under Finish.
+4. Copy the screenshots of that run into `harness/screens/`: `gh run download <id> --pattern
+   "screens*" --dir <scratchpad>/screens` (it can take over 2 minutes), then copy the contents
+   of each part's folder (`screens (<part>)/<screen>/<screen>-<size>.png`) over
+   `harness/screens/`. Only the parts whose tests take screenshots have a folder.
+5. Update `docs/enforcement.md` if a check now applies that did not before.
+6. Record the results (with the run id) in the Finish part of Progress, commit, push, and
+   report.
+
+If GitHub Actions do not start (billing, private repository), run the browser tests locally
+in parts as the old way did (`--shard=1/2` and `2/2` with `--grep-invert "play a whole game
+from the lobby"`, then the two, three and four player games), and note it.
 
 ### Phase reviewer
-The `phase-reviewer` agent, unchanged (D16). It only reads. The coordinator writes its findings
-into the Finish part of Progress.
+The `phase-reviewer` agent, unchanged (D16). It only reads. The coordinator's brief points it
+to the finisher's results under Finish (run id, checks that passed), so it reruns a check only
+to verify a finding, not to repeat the finisher's run (Q133). The coordinator writes its
+findings into the Finish part of Progress.
 
 ### Fixer
 One group of related review findings, named by number.
@@ -146,19 +157,27 @@ One group of related review findings, named by number.
 2. Fix each one, or, where a finding is wrong or belongs to a later phase, write why under it
    (as a known gap in the phase file if it is one).
 3. Follow the builder's steps 3 to 8 for the fixes. Mark each finding "fixed: …" or
-   "answered: …" in Progress.
+   "answered: …" in Progress. A fix to a screen runs that screen's spec file locally; the
+   full games and the whole suite are left to the releaser's branch check.
 
 ### Releaser
-When the finisher's second run is green.
-1. Write the phase report under **Report** at the end of the phase file: what was built, what
+After the fixes (or after the review, when nothing needed fixing). It also does what the
+finisher's second run used to (Q133).
+1. Run the full `npm run check` and `npm run harness` locally if any code or harness changed
+   since the finisher's run.
+2. Write the phase report under **Report** at the end of the phase file: what was built, what
    to try, differences from the phase file, decisions made, the review's findings and what
    happened to each. Commit it together with any other notes before the one push whose branch
    check the merge waits for. Every push starts a full branch check (about 10 to 20 minutes),
    so do not push notes on their own between that push and the merge.
-2. Merge to master as `docs/merging-and-rollback.md` describes and watch the deploy. Check
+3. Wait for that branch check, as the finisher's step 3 describes. A browser failure that stays
+   after one rerun goes back to a fixer: write it under Finish and end with result **partial**.
+4. Merge to master as `docs/merging-and-rollback.md` describes and watch the deploy. Check
    that it really deployed: the run's conclusion and the live bundle's text, not only the
    watch command's exit code.
-3. Check that the live site works, including anything the phase file says to try.
-4. If the deploy fails, fix it on the phase branch and merge again; roll back if the live site
+5. Check that the live site works, including anything the phase file says to try.
+6. If the deploy fails, fix it on the phase branch and merge again; roll back if the live site
    is broken and the fix is not quick.
-5. Mark the phase **done** in the phase table and the phase file, commit, push, and report.
+7. Copy the branch check's screenshots into `harness/screens/` (the finisher's step 4), mark
+   the phase **done** in the phase table and the phase file, commit both on master, push, and
+   report. Neither starts a deploy (`deploy.yml` ignores `docs/` and `harness/screens/`).

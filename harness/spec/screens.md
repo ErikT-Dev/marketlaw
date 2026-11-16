@@ -174,7 +174,8 @@ None yet.
   selected for **Draw** (S4.3). The big card's title bar
   has its sector colour as background (S1.5). A type that the card counts twice (R12.1) is shown
   as its icon twice, in every place that shows a card's types (also the card set, S14.3). Selecting another hand card shows that card in full, with its own photo, within 100 ms
-  of the click: the photos of the cards in your hand are loaded in the background. The selection
+  of the click as a rule (the median of the clicks is under 100 ms) and never later than 300 ms
+  after it: the photos of the cards in your hand are loaded in the background. The selection
   in the hand, the big card and Play card change together, only once the new card's photo is
   ready, so a card is never shown with a blank or another card's photo; until then the card
   selected before stays, and Play card plays the card shown. If the photo is not ready within
@@ -270,13 +271,52 @@ None yet.
   three toggles (2, 3 and 4 players; A8.2), and **Join the ranked queue**. In the queue it shows
   **Leave the queue**, the game-size toggles stay changeable (A8.3), and joining rooms is
   disabled. For logged-out players, guests and unconfirmed email addresses the button is
-  disabled with the reason (A8.1).
+  disabled with the reason (A8.1). The last chosen game size cannot be turned off (A8.2, A8.3).
+  Texts (Q137):
+  - Out of the queue: "A ranked game starts as soon as enough players for one of your game sizes
+    are in the queue. Ranked games change ELO ratings."
+  - In the queue: the title "You are in the queue" and "N players are in the queue, including
+    you. A match starts as soon as enough players for one of your game sizes are in it. You can
+    change your game sizes while you wait. You cannot join a room while you wait."
+  - While confirming a match (behind the **Match found** dialog of S10.7): the counts and the
+    out-of-the-queue text, since a confirming player is not counted in the queue (A8.7, Q146),
+    with **Leave the queue**.
+  - Times shown in the lobby (the confirm time left, a rejoin wait) are counted on the server's
+    clock, from the server time each queue view carries (Q147).
+  - Logged out: "Log in or sign up to play ranked games."
+  - Guest user: "Sign up and confirm your email address to play ranked games."
+  - Unconfirmed email address: "Confirm your email address to play ranked games. We sent you a
+    link." with **Send it again** (A1.4).
+  - Rejoin wait (A8.9): the button is disabled with "You can join the ranked queue again in
+    M:SS." The page shows the wait and the player's own daily limits also after a reload, and
+    after **Confirm** a reloaded page still shows the confirmed dialog (Q144).
+  - A player's own daily limits: the texts of S16.1, with the button disabled.
+  - While no match can be made (A9.4): "Daily game limit reached, try again after 00:00 UTC",
+    shown to everyone in the queue.
+  - A rejected **Join the ranked queue** with `not_registered` or `email_not_confirmed` shows the
+    matching reason above instead of the S10.9 text.
 - **S10.5** **Create room** asks for public or private, and size 2, 3 or 4, with the human check.
 - **S10.6** Join errors are shown under the room-code field: code not found, room full, game
   already started, rejoin wait with the time left, a player in the room with the same username,
   and busy elsewhere (M1, M2).
 - **S10.7** **Match found** shows the game size and asks you to confirm within the time shown,
-  without naming the other players (A8.7), and says what happens if you decline.
+  without naming the other players (A8.7), and says what happens if you decline. Texts (Q137):
+  the title "N-player match found!", "A ranked game with N players is ready. Confirm that you
+  will play.", "M:SS left to confirm. If you decline or do not confirm in time, you leave the
+  queue and can join again after 2 minutes.", and **Decline** and **Confirm**. The dialog has no
+  other way to close. After **Confirm** it shows "Confirmed. Waiting for the other players." with
+  the time left, without saying how many have confirmed. When the game starts, the game screen
+  opens. When the match does not start (A8.9, A9.4), the lobby shows a notice:
+  - to a player who confirmed: "The match did not start because a player did not confirm. You
+    are back at the front of the queue.", or the site-wide text of S16.1 when the site game limit
+    stopped it, or "The match did not start because a player has reached a daily limit. You are
+    back at the front of the queue." when another player's own daily limit (A9.2, A9.3) stopped
+    it (Q145);
+  - to every player of a confirmed match for which no room could be made: "No room could be made
+    for the match. Join the ranked queue again." (Q145);
+  - to a player whose own daily limit stopped it: the text of S16.1 for that limit;
+  - to a player who did not confirm: "You did not confirm the match and left the queue. You can
+    join it again in M:SS."
 - **S10.8** Empty lists say so: no public rooms, only you online.
 - **S10.9** A rejected lobby or room action shows the text for its reason code, in the place where
   the player acted (under the room-code field, in the dialog, or as an alert in the waiting room).
@@ -287,7 +327,7 @@ None yet.
   | `room_not_found` | No room has the code CODE. Check the code and try again. |
   | `room_full` | This room is full. |
   | `room_not_waiting` | The game in this room has already started. |
-  | `rejoin_too_soon` | You can join this room again in M:SS. |
+  | `rejoin_too_soon` | You can join this room again in M:SS. From the ranked queue: You can join the ranked queue again in M:SS. |
   | `username_in_room` | A player in this room has the same username as you. Join another room. |
   | `busy_elsewhere` | You are already in a room, the ranked queue or a game. Leave it first. |
   | `invalid_room_size` | Choose a room size of 2, 3 or 4 players. |
@@ -310,6 +350,11 @@ None yet.
   | `not_registered` | Sign up first. |
   | `no_free_room_code` | No room could be created right now. Try again. |
   | `no_answer` | The server did not answer. Try again. |
+  | `not_in_queue` | You are not in the ranked queue. |
+  | `no_match_to_confirm` | This match is no longer waiting for you. |
+
+  `invalid_game_sizes` can only come from a broken or forged client, since the last chosen game
+  size cannot be turned off (S10.4), and shows "Something went wrong".
 
 ## S11. Waiting room
 

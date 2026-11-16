@@ -2934,3 +2934,321 @@ file.
   the game, so the log is complete. Written into M3.7 first, with the scenario "the log shows the
   cards played in a main phase the game ended in".
 - **Implemented:** `src/rules/endGame.ts` writes the log first (`withMainPhaseLogWritten`).
+
+## Q133. How can building a phase use fewer tokens and less time without losing quality?
+
+- **Phase:** between 25a and 26, asked by the owner (2026-11-16).
+- **Question:** phase 25a took about 7.5 hours over 20 helpers, all on Opus at medium effort.
+  The finisher spent 70 and 36 minutes, mostly on browser tests that time out under local load
+  and that GitHub runs again anyway before the merge (7 parallel jobs, about 7 minutes). Which
+  jobs can be made cheaper without losing quality?
+- **Options:** keep the process; move the browser suite to GitHub; merge jobs; cheaper models or
+  lower effort for mechanical jobs; cheaper builders for small items (risky: builders write the
+  code nobody reads); trim the rule files (only with the owner's approval).
+- **Solution (owner's choice, lists A and B):**
+  - The finisher runs `npm run check` and `npm run harness` locally, then pushes and waits for
+    the branch check, which runs every browser test at every size; it copies the screenshots from
+    that run (`check.yml` keeps each part's `harness/screens/`, starting without the committed
+    ones). Browser tests run locally only for single spec files. Local runs stay as the fallback
+    when GitHub Actions do not start.
+  - The finisher's second run and the releaser are one job, the releaser.
+  - The phase reviewer is pointed to the finisher's results and reruns a check only to verify a
+    finding. Its definition (`.claude/agents/phase-reviewer.md`, protected) is unchanged.
+  - Fixers check a screen with its spec file only; the branch check covers the rest.
+  - Models and effort: starter, builder, fixer and phase reviewer Opus at medium (unchanged);
+    finisher Sonnet at medium; releaser Sonnet at low.
+  - Two small items share one helper whenever their order allows.
+  - A builder model test in phase 26: two small items are also built by a cheaper builder in a
+    worktree (Sonnet at medium, then Opus at low), never merged, and compared with the Opus
+    builder's work by one Opus helper. Small items move to the cheaper setup from phase 27 on
+    only if it matched.
+  - Expected saving: about 1 to 1.5 hours and 10 to 15% of the token cost per phase, more if
+    the builder test passes.
+- **Implemented:** `docs/plan/phase-helpers.md` (Keep your context small, Finisher, Phase
+  reviewer, Fixer, Releaser), `docs/plan/README.md` (steps table, The coordinator),
+  `.github/workflows/check.yml` (screenshots kept per part).
+- **Builder model test result:**
+  - Item 2 (no abandon vote in ranked games): Opus at medium 5 min, 70k tokens, 21 tool calls;
+    Sonnet at medium 14 min, 80k, 43 (test branch `worktree-agent-a8166e151fdcb0c7c`, 536e38f,
+    never merged). The code was identical, but Sonnet missed the `PROTOCOL_VERSION` raise a new
+    reason code needs (Q75), which a reviewer would have sent back. Verdict: nearly, not a match;
+    and Sonnet took twice the tool calls, so it saved nothing.
+  - Item 4 (deleting an account leaves the queue): Opus at medium 8 min, 103k tokens, 43 tool
+    calls; Opus at low 11 min, 110k, 47 (test branch `worktree-agent-a06d963078c3f60bc`,
+    8a4fa54a, never merged). Both server fixes were correct, but the low-effort builder did not
+    write its decision into the spec (A1.15) first, wrote one combined scenario and one route
+    test that was never cleanly shown to fail without the fix, where Opus at medium wrote two
+    scenarios and two route tests, each proven. Verdict: nearly, not a match; and it saved
+    nothing.
+  - **Conclusion:** neither cheaper setup matched, and neither used fewer tokens or minutes:
+    both took more tool calls. Builders and fixers stay on Opus at medium, small items too.
+
+## Q134. What is a player who is confirming a ranked match, and what ends their confirming?
+
+- **Phase:** 26 (starter).
+- **Question:** A8.5 says matched players "leave the queue", while A8.7 gives them 20 seconds to
+  confirm. The spec does not say whether a confirming player still counts in the queue (A8.4), is
+  still busy for M2.1 (could they join a room meanwhile?), what leaving the queue while
+  confirming means, or what a closed connection does then (A8.10). A8.10 also does not say what
+  happens with the site open in several tabs, or whether that leaving brings a rejoin wait.
+- **Options:** treat a confirming player as out of the queue for everything; or as still in it
+  for everything; or out of the counts but still busy.
+- **Solution:** out of the counts (A8.4: they no longer wait), but still in the ranked queue for
+  M2.1, so they cannot join a room while confirming. Leaving the queue while confirming declines
+  the match (with the 2-minute wait of A8.9). A closed connection while confirming changes
+  nothing; the 20 seconds decide, as a confirmed player who then disconnects is simply a
+  disconnected player in the game (M5). The 10 seconds of A8.10 count from the moment the last
+  of the player's connections closed, and leaving that way brings no rejoin wait. A8.7 also says
+  that a confirming player is not told how many have confirmed (that would hint at who). Written
+  into A8.7 and A8.10 first.
+- **Implemented:** phase 26, Progress items 1b and 1c.
+
+## Q135. What is the "new room made for" a ranked game?
+
+- **Phase:** 26 (starter).
+- **Question:** A8.8 starts the game "in a new room made for it", but rooms have an owner, are
+  public or private, and start with the asking of M1.10 (M1). None of that is said for the
+  ranked room.
+- **Options:** a public room that waits and asks like any other; or a private room that starts
+  at once.
+- **Solution:** a private room, not listed in the lobby, of the match's game size, owned by the
+  matched player who waited longest, whose game starts at once without the asking of M1.10 (the
+  players have just confirmed). After the game it is a finished room like any other (M8), so a
+  rematch there is casual (M8.5). Seat order is drawn as in any game. Written into A8.8 first.
+- **Implemented:** phase 26, Progress item 1b.
+
+## Q136. What happens to a confirmed match that cannot start because of a daily limit?
+
+- **Phase:** 26 (starter).
+- **Question:** A9.4 stops the queue from making matches once 50 games started today, and A9.3
+  checks a player's game starts again when a game starts. Between a match being made and all its
+  players confirming, room games can reach the site limit. The spec does not say what happens to
+  that match. A player's own limits (A9.2, A9.3) cannot grow while they wait in the queue, since
+  M2.1 keeps them out of games, but the check when the game starts must still have an outcome.
+- **Options:** start the game anyway; or let it fail like a match a player did not confirm (with
+  the rejoin wait); or put everyone back without a wait.
+- **Solution:** the game does not start, and nobody is to blame: its players go back to the queue
+  at the front, in their earlier order, with their game sizes and without a rejoin wait, and see
+  the site-wide message of A9.4; the queue then makes no match until 00:00 UTC. Should a matched
+  player have reached A9.2 or A9.3, that player leaves the queue without a rejoin wait and is told
+  why (as A9.3 does in a room), and the others go back the same way. Written into A9.4 first.
+- **Implemented:** phase 26, Progress item 1b.
+
+## Q137. What do the ranked queue panel and the match-found dialog say?
+
+- **Phase:** 26 (starter).
+- **Question:** S10.4 asks for the reasons the button is disabled, and S10.7 for what happens if
+  you decline, without the texts. Nothing says what a player is told when a match does not start,
+  what a rejoin wait in the queue says (the `rejoin_too_soon` text speaks of "this room"), which
+  text a rejected join with `email_not_confirmed` shows (S10.9's text is for password resets),
+  or which reason codes a change of sizes, leaving or confirming gets when the player is not in
+  the queue or the match is gone.
+- **Options:** take the design's texts where it has them (boards "Lobby: in the ranked queue",
+  "Lobby: match found", "Lobby: ranked locked") and write the rest in the same voice.
+- **Solution:** the design's texts where they agree with the spec, the rest written to match;
+  all in S10.4, S10.7 and S10.9. New reason codes `not_in_queue` and `no_match_to_confirm` (a
+  match can expire while the player clicks). `invalid_game_sizes` only comes from a broken or
+  forged client, because the last chosen size cannot be turned off, and shows "Something went
+  wrong". The match-found dialog has only **Decline** and **Confirm** (the design's × is not
+  used, so the dialog cannot be dismissed by accident).
+- **Implemented:** `screens.md` S10.4, S10.7, S10.9; phase 26, Progress item 3a.
+
+## Q138. Does the ranked queue panel show the player's rating in phase 26?
+
+- **Phase:** 26 (starter).
+- **Question:** S10.4 shows "your rating and number of ranked games". Ratings (A10) and the
+  number of ranked games that changed ratings (A10.5) are built in phase 27; this phase plays
+  ranked games without changing ratings.
+- **Options:** show 1000 and 0 for everyone (true by A10.1 and A10.5 until phase 27, but a value
+  no code computes); or leave the line out until the ratings exist.
+- **Solution:** leave it out, as a known gap of phase 26; phase 27 adds it with the ratings, with
+  the rating in the top bar (S10.1) and in players online (S10.2).
+- **Implemented:** phase 26 Known gaps; phase 27.
+
+## Q139. What "queue use" does the busy day of B18 include?
+
+- **Phase:** 26 (starter).
+- **Question:** B18's busy-day simulator must include "queue use", without saying how much.
+- **Options:** a few joins only; or a day where a large share of the 50 games come from the queue,
+  with the failures and leaving the queue that real use brings.
+- **Solution:** 20 of the busy day's 50 games are ranked games from the queue (7 of 2 players, 7
+  of 3 and 6 of 4: 59 players). Every one of those players joins the queue once and changes
+  their game sizes once; 5 of the matches fail once first because one player declines (who joins
+  again after the wait), and 30 more players join the queue and leave it without a game (15 by
+  leaving, 15 by a closed connection). Every row the queue and the lobby write for this counts,
+  including alarm changes. The other 30 games are room games as before.
+- **Implemented:** `tools/simulator/busyDay/`; phase 26, Progress item 3b.
+
+## Q140. Can a player who is confirming a ranked match change their game sizes?
+
+- **Phase:** 26 (builder, item 1a).
+- **Question:** A8.3 lets a player in the queue change their game sizes "at any time", and Q134
+  keeps a confirming player in the ranked queue for M2.1, but a confirming player no longer
+  waits (A8.4). The spec does not say whether a change of sizes while confirming is refused or
+  kept.
+- **Options:** refuse it with `not_in_queue`; or keep the new sizes for when the player goes back
+  to the queue after a match that did not start (A8.9), without matching anew.
+- **Solution:** keep them. The change is accepted, makes no new match (the player is not
+  waiting), and the player goes back with the new sizes if the match does not start (A8.9 "with
+  their game sizes"). A player neither waiting nor confirming gets `not_in_queue`.
+- **Implemented:** `src/server/queue/changeQueueSizes.ts`; phase 26, Progress item 1a.
+
+## Q141. Scenario `lobby-queue-and-limits` #23 lists only Ann under `then.accounts`
+
+- **Phase:** 26 (builder, item 1a).
+- **Question:** "a player's actions in a game are added to the daily count when the game ends"
+  gives two accounts, Ann and Bea, but its `then.accounts` lists only Ann. Every other scenario
+  reads `then.accounts` as the full list of accounts, which the deletion and guest-removal
+  scenarios depend on, so as written the scenario says Bea's account is gone, which nothing in
+  the spec makes happen (A9.2 only adds actions).
+- **Options:** make the lobby driver read `then.accounts` as "these accounts, others ignored",
+  which would weaken the deletion scenarios; or list Bea in the scenario.
+- **Solution:** list Bea: `accounts: [{name: Ann, actions_today: 2005}, {name: Bea}]`. Nothing
+  else about the scenario changes. The driver gains `given.players` with
+  `given.seats[].actions_this_game` (a playing room whose seat has that many non-system actions
+  in its log), seat steps, and `then.accounts[].actions_today`.
+- **Implemented:** `harness/scenarios/lobby-queue-and-limits.yaml` (`HARNESS:` commit);
+  `tools/harness-runner/lobby/`; phase 26, Progress item 1a.
+
+## Q142. When a player declines a ranked match, what happens to the players who have not confirmed yet?
+
+- **Phase:** 26 (builder, item 1b).
+- **Question:** A8.9 says players who did not confirm leave the queue with a 2-minute wait, and
+  those who confirmed go back to the front. When one player declines while another has not yet
+  answered, that other player "did not confirm" only because the match ended before they could.
+  The spec does not say whether the match waits for the 20 seconds, or who gets the wait.
+- **Options:** keep the match open until the deadline; end it at once and give everyone who had
+  not confirmed the wait; or end it at once and give only the decliner the wait.
+- **Solution:** a decline ends the match at once (nobody waits 20 seconds for a game that cannot
+  start); only the player who declined leaves with the wait; the others, confirmed or not yet,
+  go back to the front in their earlier order and are matched again. When the 20 seconds run
+  out, everyone who had not confirmed leaves with the wait, counted from the deadline. When
+  several matches fail at once, the players of the earliest match go first. Written into A8.9
+  first.
+- **Implemented:** `src/server/queue/declineMatch.ts`, `fireQueueAlarm.ts`; phase 26, Progress
+  item 1b.
+
+## Q143. Which scenarios cover deleting an account in the ranked queue (A1.15)?
+
+- **Phase:** 26 (builder, item 4).
+- **Question:** A1.15 says a player in the ranked queue leaves it when their account is deleted,
+  but no scenario covers it, and the spec does not say what happens to a ranked match the player
+  is confirming, or whether the leave waits like a closed connection (A8.10).
+- **Options:** treat deletion as a closed connection (leave after 10 seconds); or leave at once,
+  as `leave_queue` does, which declines a match being confirmed (A8.9, Q142).
+- **Solution:** deleting leaves at once, exactly as leaving the queue does: a waiting player is
+  out of the queue straight away, and a match they are confirming counts as declined (the others
+  go back to the front and are matched again), written into A1.15 first. Two scenarios added to
+  `harness/scenarios/accounts.yaml` (`HARNESS:` commit): "deleting an account in the ranked queue
+  takes it out of the queue at once" and "deleting an account while confirming a ranked match
+  declines it".
+- **Implemented:** `src/server/RankedQueue.ts` (`logOut` leaves the queue when the login is
+  leaving), `tools/harness-runner/lobby/deleteAccountInLobby.ts`; phase 26, Progress item 4.
+
+## Q144. How does the lobby know why the ranked queue is locked for a player?
+
+- **Phase:** 26 (builder, item 3a).
+- **Question:** S10.4 disables **Join the ranked queue** with a reason for logged-out players,
+  guests, unconfirmed email addresses, a rejoin wait (A8.9) and the player's own daily limits,
+  and S10.7 shows "Confirmed. Waiting for the other players." after **Confirm**. The queue view
+  (item 1c) told a player only whether they are out, waiting or confirming, so after a reload the
+  page could not show a rejoin wait, a daily limit or a confirmation already given, and nothing
+  said where the email standing comes from.
+- **Options:** look everything up in D1 for each view the queue sends; or let the queue view
+  carry what the queue and the lobby already hold, and take the email standing from the account
+  the page already loads.
+- **Solution:** the queue view's own state carries, for a player out of the queue, the rejoin
+  wait's end and their own daily limit (from the queue and lobby records, no extra reads), and
+  for a confirming player whether they have confirmed. Logged out and guest come from the
+  session; an unconfirmed email address from the account details (`/api/account`, as the account
+  dialog loads them), loaded again after a rejected join with `email_not_confirmed` and after an
+  email link is opened. Written into S10.4 first. `PROTOCOL_VERSION` 22.
+- **Implemented:** phase 26, Progress item 3a.
+
+## Q145. What does a player of a confirmed match hear when it does not start for another reason?
+
+- **Phase:** 26 (builder, item 3a).
+- **Question:** S10.7 tells a player who confirmed "The match did not start because a player did
+  not confirm", but a confirmed match can also stop because another matched player reached their
+  own daily limit (Q136, the others go back to the front) or because no room could be made
+  (item 1c, the players leave the queue). Both got the same notice, whose text is then wrong.
+- **Options:** one neutral text for all three; or a reason in the notice with a text each.
+- **Solution:** the `match_not_started` notice carries its reason (`not_confirmed`,
+  `player_daily_limit`, `no_room`), each with its own text in S10.7, written there first.
+- **Implemented:** phase 26, Progress item 3a.
+
+## Q146. What does the ranked queue panel say behind the match-found dialog?
+
+- **Phase:** 26 (fixer, finding F1).
+- **Question:** S10.4 has texts for a player out of the queue and in the queue, but none for a
+  player confirming a match. The panel used the in-queue texts, so behind the dialog it said
+  "You are in the queue" and "0 players are in the queue, including you", while a confirming
+  player is not counted in the queue (A8.7, Q134).
+- **Options:** the in-queue texts with the counts corrected; or the out-of-the-queue texts.
+- **Solution:** while confirming, the panel shows the counts and the out-of-the-queue text, with
+  **Leave the queue** (leaving declines, A8.9). Written into S10.4 first.
+- **Implemented:** phase 26, finding F1.
+
+## Q147. Which clock counts down the match-found dialog and the rejoin wait in the lobby?
+
+- **Phase:** 26 (fixer, finding F4).
+- **Question:** the confirm deadline and the rejoin wait are server times, but the lobby counted
+  them on the browser clock, since only room messages carried the server time. A browser with a
+  wrong clock showed a wrong M:SS (the server's deadline still decided).
+- **Options:** list it as a known gap; or send the server time with each queue view and count
+  on the server's clock, as the game does.
+- **Solution:** each `queue` message carries `serverNow`; the client store keeps the clock offset
+  from it (the same offset the room messages set), and the lobby counts with it. Written into
+  S10.4 first. `PROTOCOL_VERSION` 23.
+- **Implemented:** phase 26, finding F4.
+
+## Q148. How many rows does a ranked queue change write, and in what order?
+
+- **Phase:** 26 (fixer, finding F3).
+- **Question:** `rules/cloudflare.md` asks for one row (or one transaction) per accepted action.
+  A queue change writes the Lobby's record (busy entries, daily counts) and the RankedQueue's
+  record, two rows in two Durable Objects. And the queue record was saved only after
+  `startRankedRooms` (the D1 username read and the room calls), so a throw there left the game
+  start counted in the Lobby while the queue still held the match.
+- **Options:** move the queue record into the Lobby (one row, but the Lobby then holds every
+  queue socket's state and wakes for each); or keep the two records and make the order safe.
+- **Solution:** keep two rows on the record: the Lobby must decide the busy entries and daily
+  counts together with the queue (M2.1, A9), and the queue keeps its own sockets and alarm. Each
+  record is written only when it changed, so most queue changes write one or two rows, within
+  the budgets. The queue record is now saved right after the Lobby commits and before any room
+  is started, and any failure while starting a ranked room, the D1 read included, takes the
+  `no_room` path (Q149) instead of throwing.
+- **Implemented:** `src/server/RankedQueue.ts` (`change`), `src/server/startRankedRooms.ts`;
+  phase 26, finding F3.
+
+## Q149. Does a ranked match whose room could not be made count as a game start?
+
+- **Phase:** 26 (fixer, finding F5).
+- **Question:** a confirmed match is counted toward A9.3 and A9.4 when the Lobby accepts it,
+  before its room is made. When no room can be made (`no_room`, Q145), the players leave the
+  queue, but the counted start stayed. A8 and A9 did not say.
+- **Options:** keep the count (simpler; a rare case); or return it.
+- **Solution:** return it. A9.3 counts "every game they take part in from the start" and A9.4
+  "games that start"; a match with no room never starts. The Lobby's `undoRankedStart` releases
+  the players and returns their game starts and the site's in the same write, only when the
+  start was counted on the same UTC day. The queue then re-reads the Lobby before sending its
+  views, so the site limit shown is the returned one. Written into A9.4 first.
+- **Implemented:** `src/server/lobby/withGameStartReturned.ts`, `src/server/Lobby.ts`,
+  `src/server/startRankedRooms.ts`; phase 26, finding F5.
+
+## Q150. How fast must a clicked hand card be shown in full, and how is it measured?
+
+- **Phase:** 26 (fixer, branch check 43923506970).
+- **Question:** S6.5 said a selected hand card is shown in full, with its own photo, within
+  100 ms of the click, and `e2e/bigCardSwitch.spec.ts` failed if any one of 4 clicks took
+  longer. Typical clicks take 30-54 ms on GitHub, but single clicks spiked to 100-161 ms in
+  phases 22 to 26 (in run 43923506970 one click took 111.6 ms at 2560x1440), failing the branch
+  check on a slow runner rather than on a slow game.
+- **Options:** keep one click over 100 ms as a failure (flaky on GitHub); or measure the
+  typical click and bound the worst one.
+- **Solution:** approved by the owner on 2026-11-16: the median click is under 100 ms, and no
+  single click takes longer than 300 ms, the spec's existing photo fallback. The test clicks
+  up to 10 hand cards instead of 4 (every card held once, at most 10; a starting hand of 7
+  cards gives fewer, and the test still needs at least 4, as before), and waits up to 15 s
+  instead of 5 s for the hand's photos to download before clicking. Written into S6.5 first.
+- **Implemented:** `harness/spec/screens.md` (S6.5), `e2e/bigCardSwitch.spec.ts`.

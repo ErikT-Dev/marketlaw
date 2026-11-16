@@ -1,5 +1,6 @@
 import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { testRankedQueue } from "../../testing/testRankedQueue";
 import type { ReasonCode } from "../../../shared/ReasonCode";
 import { LobbyPage } from "./LobbyPage";
 
@@ -29,6 +30,7 @@ function lobbyLoggedOut(answers: Answers = {}) {
       onForgotPassword={onForgotPassword}
       onDismissRemoval={vi.fn()}
       publicRooms={[]}
+      ranked={testRankedQueue()}
     />,
   );
   return { onLogIn, onSignUp, onForgotPassword };
