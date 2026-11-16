@@ -1,6 +1,6 @@
 # Phase 26: Ranked queue
 
-Status: approved
+Status: in progress
 Milestone: 5 Accounts and ranking
 
 ## Goal
@@ -33,6 +33,8 @@ Phases 25 and 25a.
 ## Known gaps after this phase
 
 - Ranked games are played, but ratings change from phase 27.
+- The ranked queue panel (S10.4) shows no rating or number of ranked games until phase 27 adds
+  ratings (Q138).
 
 ## What you can see when it's done
 
@@ -79,3 +81,136 @@ These 28 scenarios are added to `harness/required.yaml` in this phase, by file a
 - `records-and-ratings` #8: email addresses and queue members are never shown to other players
 - `rooms` #19: a player in a room cannot join another room or the queue
 - `rooms` #20: after a game ends joining the queue takes the player out of the finished room
+
+## Progress
+
+- [x] 0. Start (2026-11-16): branch `phase-26-ranked-queue` (holds `3e655bf`, the Q133 process
+  changes, on top of master). Spec gaps decided and written into the spec first (commit
+  `HARNESS: Ranked queue confirming, ranked rooms, limits and texts (Q134-Q139)`): Q134 (a
+  confirming player: out of the counts, still busy for M2.1, leaving declines, a closed
+  connection changes nothing; A8.10 with several tabs, no rejoin wait), Q135 (the ranked room:
+  private, unlisted, owner the longest waiting, starts at once), Q136 (a confirmed match stopped
+  by a daily limit), Q137 (all queue texts and reason codes; S10.4, S10.7, S10.9), Q138 (no
+  rating line in S10.4 until phase 27, a known gap) and Q139 (B18's queue use). Read them before
+  building any item; they are the design.
+  - Design, for every item: the queue's logic is pure functions in a new `src/server/queue/`
+    (as `src/server/lobby/` is for the lobby), so the lobby scenario driver runs them without a
+    Durable Object, and a thin `RankedQueue` Durable Object (item 1c) holds one record
+    (`QUEUE_RECORD_SCHEMA`, read with `v.safeParse`, empty on failure, like `Lobby.ts`), one
+    alarm and the hibernating sockets. The `Lobby` stays the one place that knows where each
+    player is (M2.1): its `busy` list gains the queue as a place besides room codes, so
+    `claimPlayer`, `isReallyBusy` and `releasePlayer` keep working in both directions; the
+    daily counts (A9.2 to A9.4) stay in the `Lobby` (`dailyLimitRejection`, `countGameStart`,
+    `siteGameLimitOf`).
+  - Reason codes added by this phase: `invalid_game_sizes`, `not_in_queue`,
+    `no_match_to_confirm`, `vote_not_allowed` (`src/shared/ReasonCode.ts`). Every message shape
+    change raises `PROTOCOL_VERSION` (now 17) once per item that changes it; a new room record
+    shape raises `ROOM_SCHEMA_VERSION`, a new save shape `SAVE_SCHEMA_VERSION` (D1).
+  - Scenario numbers in the list above are by the phase plan; the names are what counts. All
+    items: scenarios become required only in the finisher's run; until then check them by adding
+    them to `harness/required.yaml` locally without committing.
+  - Files near the line limit (300 non-blank lines): `tools/harness-runner/lobby/LobbySession.ts`
+    (297: split it before adding anything), `src/server/GameRoom.ts` (271),
+    `tools/simulator/busyDay/simulateBusyDay.ts` (264), `tools/harness-runner/room/ROOM_DRIVER.ts`
+    (257), `src/client/store/ClientStore.ts` (255), `tools/harness-runner/lobby/LOBBY_DRIVER.ts`
+    (248). Split them, do not grow them past the limit.
+  - Order: 2 can go first (it touches only the engine and its message). Then 1a, 1b, 1c; 3a, 3b
+    and 4 need 1c.
+
+- [ ] 1a. **Queue membership and matching** (A8.1 to A8.6, A6.3, A9.1 to A9.4 for joining and
+  matching, M2.1, M2.2; scenarios `lobby-queue-and-limits` #2 to #15, #21, #22, #23, #26, #27,
+  `rooms` #19, #20, `records-and-ratings` #8). **Large.**
+  - Pure functions in `src/server/queue/`: the queue record (entries in queue order with player
+    id and game sizes; the matches being confirmed; rejoin waits); join (a registered user with a
+    confirmed email, else `not_registered` / `email_not_confirmed`; sizes default `[3]`; empty, or
+    anything but 2, 3 and 4, is `invalid_game_sizes`; daily limits through the lobby's
+    `dailyLimitRejection`; `busy_elsewhere` when waiting in a room or in a game, M2.1; from a
+    finished room it leaves that room, M2.2, as `leaveFinishedRooms` does for rooms); change
+    sizes (keeps the place; `not_in_queue`); leave; and matching exactly as A8.5 (per player in
+    queue order, largest size first, repeated until no match can be made). Matching runs after
+    every change and at 00:00 UTC, and not while the site game limit is reached (A9.4: the
+    joining player and everyone in the queue get the site-wide message). A match leaves the
+    queue in state confirming and sends each matched player a `match_found` notice with the size
+    only.
+  - Counts per size and in total for everyone (A8.4); a player sees only whether they are in it
+    (A6.3, #11 `view_lobby`). Who is in the queue never reaches a client (`records-and-ratings`
+    #8).
+  - The lobby driver gains `given.queue` (names, or `{player, sizes}`), `given.match`, the steps
+    `join_queue`, `change_sizes`, `leave_queue`, then `queue`, `match` and `view_lobby`, and
+    `message_to` with `notice: match_found` and `hides`. #23 plays a game through the driver's
+    `leave_game` and then joins the queue (actions added when the game ends, A9.2). #27 is
+    reached by `wait_ms` across 00:00 UTC (`fireAlarmsUntil`).
+  - Reuse: `claimPlayer`, `dailyLimitRejection`, `dayOf`, `siteGameLimitOf`, the view-building
+    style of `publicRoomsOf`, `Result`, `EpochMs`.
+
+- [ ] 1b. **Confirming and starting a ranked game** (A8.7 to A8.11, A9.3 and A9.4 at the start;
+  Q134, Q135, Q136; scenarios `lobby-queue-and-limits` #16 to #20). **Large.**
+  - Pure functions in `src/server/queue/`: confirm and decline (`no_match_to_confirm` when the
+    match is gone); the 20-second deadline (a confirmation at the deadline is too late); a failed
+    match (A8.9: those who did not confirm leave with a 2-minute wait, `rejoin_too_soon` on
+    joining; those who confirmed go back to the front in their earlier order with their sizes,
+    then matching runs again, #18); leaving the queue, also while confirming, which declines;
+    and the 10-second closed-connection leave without a wait (A8.10, from the last connection
+    closed).
+  - When all confirm: count the start in the lobby (`countGameStart`: A9.3, A9.4; a rejection as
+    Q136 says) and start the game in a new room as Q135 says, with seats drawn (`newGameStart`;
+    the scenarios' `random: [{seats: ...}]`) and `kind: "ranked"` (A8.11, #16, #17). Reuse
+    `createRoomIn`, `withFreeRoomCode`, the room's game start path and `RoomGame.kind`; the room
+    must not ask M1.10. The lobby's busy entries move from the queue to the room code.
+  - The driver's `then.game` already reads `kind` and `seats` (`lobbyGameThen`).
+
+- [ ] 1c. **The `RankedQueue` Durable Object** (the server side of 1a and 1b; M2.1 across rooms and
+  the queue; `rules/cloudflare.md`). **Large.**
+  - `wrangler.jsonc`: binding `QUEUE`, class `RankedQueue`, migration `v5` with
+    `new_sqlite_classes` (approved with this phase; SQLite Durable Objects are on the Free plan,
+    like `GameRoom` and `Lobby`). One write per accepted queue change, none for reads or
+    connects, at most one alarm (the earliest of the confirm deadline, the 10-second leaves, and
+    00:00 UTC while the site limit holds matches back), hibernating sockets only.
+  - A socket `/api/queue/socket` that every lobby page opens: without a token it gets the counts;
+    with the session token (checked as the room socket checks it, `senderOfToken`,
+    `identityOf`) it also gets the player's own queue state and notices, and takes the queue
+    intents, each parsed with a schema in `src/shared/`. Malformed messages, forged tokens and
+    intents out of place are rejected with a typed reason and change nothing (hostile client
+    tests in `src/server/`, as for rooms). A registered user who logs out is a closed connection
+    (A1.14, A8.10).
+  - `joinRoomRoute` and room creation reject a player in the queue or confirming with
+    `busy_elsewhere` through the lobby's `busy` list; `isReallyBusy` asks the queue, as it asks a
+    room, before trusting a stale entry.
+
+- [ ] 2. **No abandon vote in ranked games** (M7.1, A8.11; scenario `connections-and-leaving`
+  #22). **Small.**
+  - `callRejection` in `src/rules/voteRejectionOf.ts` returns `vote_not_allowed` when
+    `state.kind === "ranked"`, checked first (the scenario expects nothing changed). Add the code
+    to `ReasonCode`, and its text "Ranked games cannot be abandoned." (S16.3) to
+    `src/client/screens/game/REJECTION_MESSAGES.ts`. The engine driver already takes
+    `given.kind: ranked`. Independent of every other item.
+
+- [ ] 3a. **Screens** (S10.4, S10.7, S10.9, S16.1; Q137, Q138; design boards "Lobby: in the
+  ranked queue", "Lobby: match found", "Lobby: ranked locked"). **Large.**
+  - The ranked queue panel in the lobby and the match-found dialog with the texts written into
+    S10.4 and S10.7, the notices after a match that did not start, and the queue texts of S10.9.
+    No rating line (Q138). The game sizes are three toggles; the last chosen one cannot be turned
+    off; the choice is remembered in that browser (`localStorage`, A8.2). Joining rooms is
+    disabled while in the queue or confirming. A started match opens the game screen.
+  - The queue feed goes into the one client store like the lobby feed
+    (`src/hosts/RemoteLobbyFeed.ts`, `src/client/openLobbyFeed.ts`); the UI shows only what the
+    server sends.
+  - Browser tests by role and name at every size, with registered accounts whose email is
+    confirmed through the test outbox (`e2e/emailLinks.spec.ts`, `readTestOutbox`): join with
+    sizes, change sizes, a 2-player match found and confirmed into a ranked game, a decline with
+    its wait, the disabled reasons. Screenshots of the three boards' screens.
+
+- [ ] 3b. **The busy day with queue use** (B18; Q139). **Small.**
+  - `tools/simulator/busyDay/` runs Q139's queue use through the `src/server/queue/` functions
+    and the lobby's, counting every queue and lobby row and alarm change; update B18's `where`
+    text in `tools/harness-runner/BUDGET_CHECKS.ts`. B18 must stay within 5,000 (exit
+    criterion). `simulateBusyDay.ts` has 264 lines: put the queue part in its own file.
+
+- [ ] 4. **Deleting an account leaves the ranked queue** (A1.15, Q111). **Small.**
+  - `src/server/api/accountDeletionRoute.ts`: before the rows are deleted, take the player out of
+    the queue (a match they are confirming counts as declined) and free the lobby's busy entry,
+    next to `logOutOfRooms`. Add a test like the one for leaving a room on deletion, and let the
+    lobby driver's `deleteAccountInLobby` leave the queue too.
+
+- [ ] Finish: finisher (required list, full check, harness, branch check, screenshots), review,
+  fixes, releaser.
