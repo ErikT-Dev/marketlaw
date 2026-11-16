@@ -254,6 +254,8 @@ None.
 - **A8.9** If any player does not confirm in time, or declines, the game does not start. Players
   who did not confirm leave the queue, and can join it again after 2 minutes. Players who
   confirmed go back to the queue, at the front, in their earlier order, with their game sizes.
+  A decline ends the match at once: only the player who declined leaves with the wait, and the
+  others, whether or not they had confirmed yet, go back as players who confirmed (Q142).
 - **A8.10** A player can leave the queue at any time before their game starts. A player whose
   connection has been closed for 10 seconds while in the queue leaves it, without a rejoin wait;
   with the site open in several tabs, that is when all of them have been closed for 10 seconds.
