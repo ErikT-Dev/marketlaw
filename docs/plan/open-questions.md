@@ -3070,3 +3070,17 @@ file.
   leaving, 15 by a closed connection). Every row the queue and the lobby write for this counts,
   including alarm changes. The other 30 games are room games as before.
 - **Implemented:** `tools/simulator/busyDay/`; phase 26, Progress item 3b.
+
+## Q140. Can a player who is confirming a ranked match change their game sizes?
+
+- **Phase:** 26 (builder, item 1a).
+- **Question:** A8.3 lets a player in the queue change their game sizes "at any time", and Q134
+  keeps a confirming player in the ranked queue for M2.1, but a confirming player no longer
+  waits (A8.4). The spec does not say whether a change of sizes while confirming is refused or
+  kept.
+- **Options:** refuse it with `not_in_queue`; or keep the new sizes for when the player goes back
+  to the queue after a match that did not start (A8.9), without matching anew.
+- **Solution:** keep them. The change is accepted, makes no new match (the player is not
+  waiting), and the player goes back with the new sizes if the match does not start (A8.9 "with
+  their game sizes"). A player neither waiting nor confirming gets `not_in_queue`.
+- **Implemented:** `src/server/queue/changeQueueSizes.ts`; phase 26, Progress item 1a.

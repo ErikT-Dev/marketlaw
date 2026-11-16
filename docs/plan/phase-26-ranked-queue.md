@@ -142,6 +142,33 @@ These 28 scenarios are added to `harness/required.yaml` in this phase, by file a
     reached by `wait_ms` across 00:00 UTC (`fireAlarmsUntil`).
   - Reuse: `claimPlayer`, `dailyLimitRejection`, `dayOf`, `siteGameLimitOf`, the view-building
     style of `publicRoomsOf`, `Result`, `EpochMs`.
+  - Partial (2026-11-16): done: `src/server/queue/` (`QueueRecord` with entries, matches with
+    `deadline` and `confirmed`, `rejoinWaits`; `joinQueue`, `changeQueueSizes`, `leaveQueue`,
+    `matchQueue`, `queueViewFor`, `nextQueueAlarmAt`, unit tests in `queue.test.ts`); the lobby's
+    `busy` list holds `RANKED_QUEUE_PLACE` as a place (`BusyPlace`; `staying` is now
+    `StayingPlayer`, room codes only; `Lobby.busyRoomOf` renamed `busyPlaceOf`; `isReallyBusy`
+    treats the queue place as busy without asking anyone yet, `logOutOfRooms` skips it); shared
+    types `RankedGameSize`, `QueueView`, `QueueCounts`, `OwnQueueState`, `QueueNotice` (types
+    only, no schemas yet); reason codes `invalid_game_sizes`, `not_in_queue` with texts;
+    `PROTOCOL_VERSION` 19. Lobby driver: `given.queue`, `given.match`, steps `join_queue`,
+    `change_sizes`, `leave_queue`, then `queue`, `match`, `view_lobby`, `message_to` with queue
+    notices, `size`, the site-limit text and `hides: [queue_members]`; `wait_ms` fires the
+    queue's midnight alarm (`waitWithQueue`). Passing when added to the required list locally:
+    `lobby-queue-and-limits` #2-#15, #21, #22, #26, #27, `rooms` #19, #20 and
+    `records-and-ratings` "email addresses and queue members are never shown to other players"
+    (it is #9, not #8). Decision Q140 (changing sizes while confirming keeps them).
+  - Next (rest of 1a): `lobby-queue-and-limits` #23. Missing in the lobby driver: `given.players`
+    with `given.seats[].actions_this_game` (a playing room whose seat has that many non-system
+    actions in its log), adding `actionsAddedBetween` to the lobby when a game ends in
+    `LobbySession.send` (`withActionsAdded`), and `then.accounts[].actions_today`. Trap:
+    `then.accounts` compares the full account list, and #23 lists only Ann while Bea is an
+    account too: either the scenario gains `{name: Bea}` (a `HARNESS:` change, recorded) or the
+    driver needs another reading; do not make `then.accounts` ignore unlisted accounts, which
+    would weaken the deletion scenarios.
+  - For later items: `leaveQueue` returns `not_in_queue` for a confirming player; 1b makes it
+    decline the match. `LobbySession.ts` is at 292 non-blank lines (queue code lives in
+    `runQueueStep.ts`, `waitWithQueue.ts`, `lobbyQueueThen.ts`, `queueSentTo.ts`); the next
+    protocol change raises `PROTOCOL_VERSION` from 19.
 
 - [ ] 1b. **Confirming and starting a ranked game** (A8.7 to A8.11, A9.3 and A9.4 at the start;
   Q134, Q135, Q136; scenarios `lobby-queue-and-limits` #16 to #20). **Large.**
