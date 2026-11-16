@@ -268,3 +268,4 @@ are never merged.
 | Builder, item 2 | Opus, medium | 5 | 70k | 21 | done |
 | Test comparer, item 2 | Opus, medium | 0.5 | 53k | 4 | Sonnet nearly matched: same code, missed the PROTOCOL_VERSION raise (Q75) |
 | Builder, item 1a | Opus, medium | 21 | 216k | 106 | partial (#23 left) |
+| Builder, item 1a rest | Opus, medium | 8 | 119k | 47 | done |
