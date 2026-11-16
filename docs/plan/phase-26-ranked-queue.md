@@ -1,6 +1,6 @@
 # Phase 26: Ranked queue
 
-Status: in progress
+Status: done
 Milestone: 5 Accounts and ranking
 
 ## Goal
