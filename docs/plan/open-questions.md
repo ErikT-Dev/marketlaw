@@ -2889,3 +2889,24 @@ file.
   the requirement and the name tells the viewer the quest is within their reach. The server
   decides it per quest and player (`canCompleteNow` in each progress line of the view).
 - **Implemented:** `src/rules/questPlacesShownTo.ts`, `src/client/screens/game/QuestPlayerName.tsx`.
+
+## Q131. Where is the big card shown at 1280×720 during the market phase (finding F1)?
+
+- **Phase:** 25a, finding F1 of the finisher's first run.
+- **Question:** S6.5 opens the big card next to the hand, over the middle column, for hand cards
+  and for marketplace and city cards alike. At 1280×720 the big card (about 570 px high) reaches
+  up over the marketplace: it covers every marketplace column but the first, the **Draw** button
+  under the selected card (S4.3) and the market go panel's sector buttons. Closing it also cleared
+  the marketplace selection, so a player could not take most marketplace cards on their go. The
+  spec says both "the same place" (S6.5) and that the game is fully usable at 1280×720.
+- **Options:** make the big card smaller at low heights (too small to read at 720 px); keep the
+  place and only keep the selection after **Close** (Draw is still covered while the card is
+  shown, and option B's buttons too); or, until the player's own main phase starts, show the big
+  card over their stats and hand, which cannot be used before then (S4.4), and keep the
+  marketplace selection after **Close**.
+- **Solution:** the last. Until your own main phase starts the big card covers your stats and
+  hand, never the marketplace, **Draw** or the market go panel; from your main phase on it is
+  next to the hand as before. The marketplace selection for **Draw** is kept apart from the card
+  being looked at, so closing the big card keeps it. Written into S6.5 first.
+- **Implemented:** `src/client/screens/game/BigCardBesideHand.tsx`,
+  `SelectedCardPanel.module.css`, `MiddleColumn.tsx`.

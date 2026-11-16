@@ -168,7 +168,10 @@ None yet.
   why ("Base cost 4, plus 3 for the 3 Residential tier 1 cards already in your city"), and
   **Play card** and **Close**. Selecting a marketplace card (S4.1) or a card in your city opens
   the big card in the same place with the card's base cost and **Close** only; selecting a card in
-  another player's city shows it the same way inside their board (S3.2). The big card's title bar
+  another player's city shows it the same way inside their board (S3.2). Until your own main phase
+  starts (S4.4), the big card is shown over your stats and hand instead, so it never covers the
+  marketplace, its **Draw** button or the market go panel; closing it keeps the marketplace card
+  selected for **Draw** (S4.3). The big card's title bar
   has its sector colour as background (S1.5). A type that the card counts twice (R12.1) is shown
   as its icon twice, in every place that shows a card's types (also the card set, S14.3). Selecting another hand card shows that card in full, with its own photo, within 100 ms
   of the click: the photos of the cards in your hand are loaded in the background. The selection
