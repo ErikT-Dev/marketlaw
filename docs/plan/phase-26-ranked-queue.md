@@ -369,6 +369,32 @@ These 28 scenarios are added to `harness/required.yaml` in this phase, by file a
 - `docs/enforcement.md`: the Playwright row gains the phase 26 browser tests.
 - Findings: none.
 
+- Phase review (2026-11-16): ready after fixes. Item 1c's extras are in scope; the five
+  `PROTOCOL_VERSION` raises are fine (Q75). Findings:
+  - **F1 (should fix, S10.4):** `RankedQueuePanel.tsx` 120-131 and `ShownRankedQueue.tsx` treat
+    `confirming` as in the queue, so behind the match-found dialog the panel says "You are in
+    the queue" and "0 players are in the queue, including you" (A8.7, Q134 leave a confirming
+    player out of the counts; see `lobby-match-found-1280x720.png`). Use the in-queue texts only
+    for `waiting`; add a unit test for confirming.
+  - **F2 (should fix):** the site-limit path `Lobby.startGame` -> `RankedQueue.siteGameLimitReached`
+    (A9.4) has no test. Add a route test: a queued player, the site one game below the limit
+    (`setTestDailyCounts`), start a room game, expect a view with `isSiteGameLimitReached: true`.
+  - **F3 (should fix, rules/cloudflare.md):** each queue change writes two rows in two Durable
+    Objects (Lobby, then RankedQueue), not on the record. `startRankedRooms` (D1
+    `readUsernames`, room calls) runs after the Lobby commits but before the queue record is
+    saved; a throw from `readUsernames` leaves the start counted while the queue still holds the
+    match. Record the two-row design in open-questions; persist the queue record before
+    `startRankedRooms`; turn any start failure, the D1 read included, into the `no_room` path.
+  - **F4 (should fix):** the match-found countdown and rejoin wait use the browser clock
+    (`ShownRankedQueue.tsx` 77, `rankedLockOf.ts`; no server offset in the lobby). Add the
+    server time to the queue messages as the lobby's clock offset, or at least list it under
+    Known gaps.
+  - **F5 (suggestion):** a `no_room` match keeps its counted game starts
+    (`startRankedRooms.ts` 23-29); A8/A9 do not say. Record the decision or reverse the count.
+  - **F6 (suggestion):** the logout route test uses Dan, who never joined the queue. Join
+    first, log out, expect the player counted at once and gone after 10 s (A1.14, A8.10).
+  - **F7 (suggestion, reuse):** `RankedQueue.ts` 176-187 repeats `room/alarmChangeFor` and
+    `applyAlarmChange`; reuse them with a queue keep/set/delete decision.
 ### Helper log
 
 Filled in by the coordinator afterwards, from the helpers' completion notices (Q73). Tokens are
@@ -391,3 +417,4 @@ are never merged.
 | Builder, item 3a | Opus, medium | 28 | 266k | 121 | done |
 | Builder, item 3b | Opus, medium | 9 | 132k | 37 | done |
 | Finisher | Sonnet, medium | 22 | 111k | 79 | done |
+| Phase reviewer | Opus, medium | – | – | – | done (F1-F7) |
