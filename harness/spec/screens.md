@@ -174,7 +174,8 @@ None yet.
   selected for **Draw** (S4.3). The big card's title bar
   has its sector colour as background (S1.5). A type that the card counts twice (R12.1) is shown
   as its icon twice, in every place that shows a card's types (also the card set, S14.3). Selecting another hand card shows that card in full, with its own photo, within 100 ms
-  of the click: the photos of the cards in your hand are loaded in the background. The selection
+  of the click as a rule (the median of the clicks is under 100 ms) and never later than 300 ms
+  after it: the photos of the cards in your hand are loaded in the background. The selection
   in the hand, the big card and Play card change together, only once the new card's photo is
   ready, so a card is never shown with a blank or another card's photo; until then the card
   selected before stays, and Play card plays the card shown. If the photo is not ready within

@@ -3235,3 +3235,20 @@ file.
   views, so the site limit shown is the returned one. Written into A9.4 first.
 - **Implemented:** `src/server/lobby/withGameStartReturned.ts`, `src/server/Lobby.ts`,
   `src/server/startRankedRooms.ts`; phase 26, finding F5.
+
+## Q150. How fast must a clicked hand card be shown in full, and how is it measured?
+
+- **Phase:** 26 (fixer, branch check 43923506970).
+- **Question:** S6.5 said a selected hand card is shown in full, with its own photo, within
+  100 ms of the click, and `e2e/bigCardSwitch.spec.ts` failed if any one of 4 clicks took
+  longer. Typical clicks take 30-54 ms on GitHub, but single clicks spiked to 100-161 ms in
+  phases 22 to 26 (in run 43923506970 one click took 111.6 ms at 2560x1440), failing the branch
+  check on a slow runner rather than on a slow game.
+- **Options:** keep one click over 100 ms as a failure (flaky on GitHub); or measure the
+  typical click and bound the worst one.
+- **Solution:** approved by the owner on 2026-11-16: the median click is under 100 ms, and no
+  single click takes longer than 300 ms, the spec's existing photo fallback. The test clicks
+  up to 10 hand cards instead of 4 (every card held once, at most 10; a starting hand of 7
+  cards gives fewer, and the test still needs at least 4, as before), and waits up to 15 s
+  instead of 5 s for the hand's photos to download before clicking. Written into S6.5 first.
+- **Implemented:** `harness/spec/screens.md` (S6.5), `e2e/bigCardSwitch.spec.ts`.
