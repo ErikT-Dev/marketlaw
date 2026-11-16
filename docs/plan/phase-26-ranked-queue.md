@@ -444,3 +444,45 @@ are never merged.
 | Phase reviewer | Opus, medium | 6 | 173k | 47 | done (F1-F7) |
 | Fixer, F1 and F4 | Opus, medium | 19 | 129k | 51 | done |
 | Fixer, F2, F3, F5 to F7 | Opus, medium | 9 | 119k | 47 | done |
+
+## Report
+
+**Built.** A ranked queue in one Durable Object (`RankedQueue`, a new class in `wrangler.jsonc`):
+registered players choose game sizes, matching runs as a pure function on every queue change and
+at 00:00 UTC, matched players get a 20-second confirmation without names, a failed or declined
+match is handled, and a player who leaves a confirmed match waits 2 minutes before rejoining.
+Ranked games start in a new room with no abandon vote. The lobby has the ranked queue panel, the
+match-found dialog and the locked states (`lobby-ranked-locked`, `lobby-in-the-ranked-queue`,
+`lobby-match-found`). Deleting an account leaves the queue too (A1.15). The busy-day simulator
+counts queue use (B18).
+
+**What to try.** On the live site, with two or more registered test accounts: open the lobby,
+choose game sizes and join the ranked queue; the player who joins second sees the match-found
+dialog, both confirm, and a ranked room opens with no abandon vote. Leave the queue from the
+panel, decline a match, and delete an account while queued.
+
+**Checks.** Local `npm run check` green (133 test files, 770 tests, bundle 163.27 kB gzipped of
+300) and `npm run harness` green (490 scenarios in the harness check, 0 problems; phase-end
+simulated games passed). The finisher's branch check, run 43912746323, was green on all 7 jobs.
+The phase's scenarios and the two account deletion scenarios are required.
+
+**Differences from the phase file.** Item 4 has two scenarios (Q143). Five `PROTOCOL_VERSION`
+raises, now 23 (Q75). The queue panel shows no rating until phase 27 (Q138).
+
+**Decisions.** Q134 to Q149, among them: Q146 the panel behind the match-found dialog (written
+into S10.4), Q147 the server clock for the countdown and rejoin wait, Q148 two rows per queue
+change (Lobby, then RankedQueue), Q149 a match whose room could not be made returns the counted
+game start (written into A9.4).
+
+**Builder model test (Q133).** Neither cheaper setup matched the Opus builder, and neither saved
+tokens or minutes. Item 2: Sonnet at medium took 14 min, 80k tokens and 43 tool calls against
+Opus at medium 5 min, 70k and 21; the code was identical but Sonnet missed the `PROTOCOL_VERSION`
+raise (Q75). Item 4: Opus at low took 11 min, 110k and 47 calls against Opus at medium 8 min,
+103k and 43; it did not write the decision into the spec first and wrote fewer, weaker tests.
+Builders and fixers stay on Opus at medium, small items too.
+
+**Review findings.** F1 (the panel said "in the queue" while confirming): fixed, Q146. F2 (no test
+for the site game limit in the queue): fixed, route test. F3 (queue write order and start
+failure): fixed, Q148 and the `no_room` path. F4 (browser clock for the countdown): fixed, Q147.
+F5 (a `no_room` match kept its counted start): fixed, Q149. F6 (logout test used a player not in
+the queue): fixed. F7 (repeated alarm decision): fixed, reuse of `alarmChangeTo`.
