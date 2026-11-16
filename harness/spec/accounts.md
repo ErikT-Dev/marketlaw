@@ -287,7 +287,8 @@ None.
   start: its players go back to the queue at the front, in their earlier order, with their game
   sizes and without a rejoin wait, and see the same message. Should a matched player have reached
   A9.2 or A9.3 when the game would start, that player leaves the queue without a rejoin wait and
-  is told why, and the others go back to the queue the same way.
+  is told why, and the others go back to the queue the same way. A confirmed match for which no
+  room could be made does not start either, so it counts toward neither A9.3 nor A9.4 (Q149).
 - **A9.5** The tutorial does not count toward A9.2–A9.4 (C4.6).
 - **A9.6** **Site-wide caps:** at most **100 tutorials can start per day**, at most **2,000 chat
   messages can be sent per day** and at most **90 emails can be sent per day** (A1.9) on the whole
