@@ -243,14 +243,20 @@ None.
     would have played a 2-player game.
 - **A8.7** **Confirming the match:** each matched player is asked to confirm that they will play,
   and has 20 seconds to do so. While confirming, a player sees that a match was found and its
-  game size, but not who the other players are.
+  game size, but not who the other players are, nor how many have confirmed. A player who is
+  confirming is no longer counted in the queue (A8.4), but is still in the ranked queue for M2.1.
+  Leaving the queue while confirming declines the match. A closed connection while confirming
+  changes nothing: the 20 seconds decide.
 - **A8.8** If every matched player confirms, the game starts automatically, in a new room made
-  for it.
+  for it. The room is private and not listed in the lobby, its size is the game size, the
+  matched player who waited longest is its owner, and the game starts at once, without the asking
+  of M1.10. After the game it is a finished room like any other (M8).
 - **A8.9** If any player does not confirm in time, or declines, the game does not start. Players
   who did not confirm leave the queue, and can join it again after 2 minutes. Players who
   confirmed go back to the queue, at the front, in their earlier order, with their game sizes.
 - **A8.10** A player can leave the queue at any time before their game starts. A player whose
-  connection has been closed for 10 seconds while in the queue leaves it.
+  connection has been closed for 10 seconds while in the queue leaves it, without a rejoin wait;
+  with the site open in several tabs, that is when all of them have been closed for 10 seconds.
 - **A8.11** Games started from the ranked queue are **ranked**: they change ELO ratings (A10).
   Ranked games cannot be abandoned by vote (M7.1).
 
@@ -273,7 +279,12 @@ None.
   again after 00:00 UTC". Games already in progress are not affected. In a room, the asking
   (M1.10) ends at once, everyone stays and keeps waiting and is told, and the room asks again the
   next time it becomes full. The ranked queue makes no matches until 00:00 UTC; players can join
-  it, stay in it and leave it as normal, and everyone in it sees the same message.
+  it, stay in it and leave it as normal, and everyone in it sees the same message. A match that
+  every player confirmed but that cannot start because the limit was reached meanwhile does not
+  start: its players go back to the queue at the front, in their earlier order, with their game
+  sizes and without a rejoin wait, and see the same message. Should a matched player have reached
+  A9.2 or A9.3 when the game would start, that player leaves the queue without a rejoin wait and
+  is told why, and the others go back to the queue the same way.
 - **A9.5** The tutorial does not count toward A9.2–A9.4 (C4.6).
 - **A9.6** **Site-wide caps:** at most **100 tutorials can start per day**, at most **2,000 chat
   messages can be sent per day** and at most **90 emails can be sent per day** (A1.9) on the whole

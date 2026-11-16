@@ -2968,3 +2968,99 @@ file.
   reviewer, Fixer, Releaser), `docs/plan/README.md` (steps table, The coordinator),
   `.github/workflows/check.yml` (screenshots kept per part).
 - **Builder model test result:** to be written after phase 26's two test items.
+
+## Q134. What is a player who is confirming a ranked match, and what ends their confirming?
+
+- **Phase:** 26 (starter).
+- **Question:** A8.5 says matched players "leave the queue", while A8.7 gives them 20 seconds to
+  confirm. The spec does not say whether a confirming player still counts in the queue (A8.4), is
+  still busy for M2.1 (could they join a room meanwhile?), what leaving the queue while
+  confirming means, or what a closed connection does then (A8.10). A8.10 also does not say what
+  happens with the site open in several tabs, or whether that leaving brings a rejoin wait.
+- **Options:** treat a confirming player as out of the queue for everything; or as still in it
+  for everything; or out of the counts but still busy.
+- **Solution:** out of the counts (A8.4: they no longer wait), but still in the ranked queue for
+  M2.1, so they cannot join a room while confirming. Leaving the queue while confirming declines
+  the match (with the 2-minute wait of A8.9). A closed connection while confirming changes
+  nothing; the 20 seconds decide, as a confirmed player who then disconnects is simply a
+  disconnected player in the game (M5). The 10 seconds of A8.10 count from the moment the last
+  of the player's connections closed, and leaving that way brings no rejoin wait. A8.7 also says
+  that a confirming player is not told how many have confirmed (that would hint at who). Written
+  into A8.7 and A8.10 first.
+- **Implemented:** phase 26, Progress items 1b and 1c.
+
+## Q135. What is the "new room made for" a ranked game?
+
+- **Phase:** 26 (starter).
+- **Question:** A8.8 starts the game "in a new room made for it", but rooms have an owner, are
+  public or private, and start with the asking of M1.10 (M1). None of that is said for the
+  ranked room.
+- **Options:** a public room that waits and asks like any other; or a private room that starts
+  at once.
+- **Solution:** a private room, not listed in the lobby, of the match's game size, owned by the
+  matched player who waited longest, whose game starts at once without the asking of M1.10 (the
+  players have just confirmed). After the game it is a finished room like any other (M8), so a
+  rematch there is casual (M8.5). Seat order is drawn as in any game. Written into A8.8 first.
+- **Implemented:** phase 26, Progress item 1b.
+
+## Q136. What happens to a confirmed match that cannot start because of a daily limit?
+
+- **Phase:** 26 (starter).
+- **Question:** A9.4 stops the queue from making matches once 50 games started today, and A9.3
+  checks a player's game starts again when a game starts. Between a match being made and all its
+  players confirming, room games can reach the site limit. The spec does not say what happens to
+  that match. A player's own limits (A9.2, A9.3) cannot grow while they wait in the queue, since
+  M2.1 keeps them out of games, but the check when the game starts must still have an outcome.
+- **Options:** start the game anyway; or let it fail like a match a player did not confirm (with
+  the rejoin wait); or put everyone back without a wait.
+- **Solution:** the game does not start, and nobody is to blame: its players go back to the queue
+  at the front, in their earlier order, with their game sizes and without a rejoin wait, and see
+  the site-wide message of A9.4; the queue then makes no match until 00:00 UTC. Should a matched
+  player have reached A9.2 or A9.3, that player leaves the queue without a rejoin wait and is told
+  why (as A9.3 does in a room), and the others go back the same way. Written into A9.4 first.
+- **Implemented:** phase 26, Progress item 1b.
+
+## Q137. What do the ranked queue panel and the match-found dialog say?
+
+- **Phase:** 26 (starter).
+- **Question:** S10.4 asks for the reasons the button is disabled, and S10.7 for what happens if
+  you decline, without the texts. Nothing says what a player is told when a match does not start,
+  what a rejoin wait in the queue says (the `rejoin_too_soon` text speaks of "this room"), which
+  text a rejected join with `email_not_confirmed` shows (S10.9's text is for password resets),
+  or which reason codes a change of sizes, leaving or confirming gets when the player is not in
+  the queue or the match is gone.
+- **Options:** take the design's texts where it has them (boards "Lobby: in the ranked queue",
+  "Lobby: match found", "Lobby: ranked locked") and write the rest in the same voice.
+- **Solution:** the design's texts where they agree with the spec, the rest written to match;
+  all in S10.4, S10.7 and S10.9. New reason codes `not_in_queue` and `no_match_to_confirm` (a
+  match can expire while the player clicks). `invalid_game_sizes` only comes from a broken or
+  forged client, because the last chosen size cannot be turned off, and shows "Something went
+  wrong". The match-found dialog has only **Decline** and **Confirm** (the design's × is not
+  used, so the dialog cannot be dismissed by accident).
+- **Implemented:** `screens.md` S10.4, S10.7, S10.9; phase 26, Progress item 3a.
+
+## Q138. Does the ranked queue panel show the player's rating in phase 26?
+
+- **Phase:** 26 (starter).
+- **Question:** S10.4 shows "your rating and number of ranked games". Ratings (A10) and the
+  number of ranked games that changed ratings (A10.5) are built in phase 27; this phase plays
+  ranked games without changing ratings.
+- **Options:** show 1000 and 0 for everyone (true by A10.1 and A10.5 until phase 27, but a value
+  no code computes); or leave the line out until the ratings exist.
+- **Solution:** leave it out, as a known gap of phase 26; phase 27 adds it with the ratings, with
+  the rating in the top bar (S10.1) and in players online (S10.2).
+- **Implemented:** phase 26 Known gaps; phase 27.
+
+## Q139. What "queue use" does the busy day of B18 include?
+
+- **Phase:** 26 (starter).
+- **Question:** B18's busy-day simulator must include "queue use", without saying how much.
+- **Options:** a few joins only; or a day where a large share of the 50 games come from the queue,
+  with the failures and leaving the queue that real use brings.
+- **Solution:** 20 of the busy day's 50 games are ranked games from the queue (7 of 2 players, 7
+  of 3 and 6 of 4: 59 players). Every one of those players joins the queue once and changes
+  their game sizes once; 5 of the matches fail once first because one player declines (who joins
+  again after the wait), and 30 more players join the queue and leave it without a game (15 by
+  leaving, 15 by a closed connection). Every row the queue and the lobby write for this counts,
+  including alarm changes. The other 30 games are room games as before.
+- **Implemented:** `tools/simulator/busyDay/`; phase 26, Progress item 3b.
