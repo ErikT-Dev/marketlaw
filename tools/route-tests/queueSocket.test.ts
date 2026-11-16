@@ -12,6 +12,7 @@ const PASSWORD = "quiet-harbour-77";
 const STARTING_MS = 30_000;
 const WAITING_MS = 10_000;
 const CLOSED_LEAVE_WAITING_MS = 20_000;
+const SHORTER_THAN_CLOSED_LEAVE_MS = 5_000;
 const FORGED_TOKEN = "0123456789abcdef0123456789abcdef";
 const CONFIRM_LINK = /#confirm=([0-9a-f]{64})/u;
 const EMPTY_COUNTS = { total: 0, bySize: { 2: 0, 3: 0, 4: 0 } };
@@ -206,6 +207,51 @@ describe("closed connections and logging out in the ranked queue", () => {
       await post("/api/logout", { token: dan });
       await vi.waitFor(() => {
         expect(danSocket.closeCode).toBe(LOGGED_OUT_CLOSE_CODE);
+      }, WAITING_MS);
+    },
+    STARTING_MS,
+  );
+});
+
+describe("deleting an account in the ranked queue", () => {
+  it(
+    "takes the player out of the queue at once without the 10 second wait",
+    async () => {
+      const eve = await registeredToken("Queueeve", true);
+      const eveSocket = await queueSocket();
+      const watcher = await queueSocket();
+      eveSocket.send(eve, { type: "join_queue", sizes: [4] });
+      await vi.waitFor(() => {
+        expect(watcher.latestView()?.counts.total).toBe(1);
+      }, WAITING_MS);
+      expect(await post("/api/account-deletions", { token: eve, password: PASSWORD })).toEqual({
+        status: 200,
+        body: { isOk: true },
+      });
+      await vi.waitFor(() => {
+        expect(watcher.latestView()?.counts).toEqual(EMPTY_COUNTS);
+        expect(eveSocket.closeCode).toBe(LOGGED_OUT_CLOSE_CODE);
+      }, SHORTER_THAN_CLOSED_LEAVE_MS);
+    },
+    STARTING_MS,
+  );
+
+  it(
+    "declines a match the player is confirming and puts the other player back in the queue",
+    async () => {
+      const fay = await registeredToken("Queuefay", true);
+      const gus = await registeredToken("Queuegus", true);
+      const [faySocket, gusSocket] = [await queueSocket(), await queueSocket()];
+      faySocket.send(fay, { type: "join_queue", sizes: [2] });
+      gusSocket.send(gus, { type: "join_queue", sizes: [2] });
+      await vi.waitFor(() => {
+        expect(gusSocket.notices()).toEqual([{ kind: "match_found", size: 2 }]);
+      }, WAITING_MS);
+      gusSocket.send(gus, { type: "confirm_match" });
+      await post("/api/account-deletions", { token: fay, password: PASSWORD });
+      await vi.waitFor(() => {
+        expect(gusSocket.notices().at(-1)).toEqual({ kind: "match_not_started" });
+        expect(gusSocket.latestView()?.own).toEqual({ kind: "waiting", sizes: [2] });
       }, WAITING_MS);
     },
     STARTING_MS,

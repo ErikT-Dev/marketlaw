@@ -77,13 +77,20 @@ export class RankedQueue extends DurableObject<Env> {
     return this.inTurn(async () => Promise.resolve(isInQueue(this.read(), playerId)));
   }
 
-  async logOut(login: { readonly sender: Sender; readonly isEndingEveryLogin: boolean }) {
+  async logOut(login: {
+    readonly sender: Sender;
+    readonly isLeaving: boolean;
+    readonly isEndingEveryLogin: boolean;
+  }) {
     const { identity, tokenHash } = login.sender;
+    const { playerId } = identity;
     await this.inTurn(async () => {
-      this.sockets.closeLogins(
-        login.isEndingEveryLogin ? { playerId: identity.playerId } : { tokenHash },
-      );
-      await this.markClosed(identity.playerId, null);
+      this.sockets.closeLogins(login.isEndingEveryLogin ? { playerId } : { tokenHash });
+      if (login.isLeaving && isInQueue(this.read(), playerId)) {
+        await this.change({ kind: "leave", playerId }, false);
+        return;
+      }
+      await this.markClosed(playerId, null);
     });
   }
 

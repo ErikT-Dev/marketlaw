@@ -301,11 +301,21 @@ These 28 scenarios are added to `harness/required.yaml` in this phase, by file a
     text in `tools/harness-runner/BUDGET_CHECKS.ts`. B18 must stay within 5,000 (exit
     criterion). `simulateBusyDay.ts` has 264 lines: put the queue part in its own file.
 
-- [ ] 4. **Deleting an account leaves the ranked queue** (A1.15, Q111). **Small.**
+- [x] 4. **Deleting an account leaves the ranked queue** (A1.15, Q111). **Small.**
   - `src/server/api/accountDeletionRoute.ts`: before the rows are deleted, take the player out of
     the queue (a match they are confirming counts as declined) and free the lobby's busy entry,
     next to `logOutOfRooms`. Add a test like the one for leaving a room on deletion, and let the
     lobby driver's `deleteAccountInLobby` leave the queue too.
+  - Done (2026-11-16): the route itself is unchanged; `logOutOfRooms` already calls
+    `RankedQueue.logOut`, which now takes `isLeaving` and, for a leaving login (account
+    deletion, or a guest logging out, who is never queued) that is in the queue or confirming,
+    runs `change({kind: "leave"})` instead of recording a closed connection; the leave releases
+    the lobby's busy entry and declines a match being confirmed. The lobby driver's
+    `deleteAccountInLobby` runs `leaveQueue` first. Decision Q143 (written into A1.15 first)
+    with two new scenarios in `accounts.yaml`: "deleting an account in the ranked queue takes it
+    out of the queue at once" and "deleting an account while confirming a ranked match declines
+    it" (add them to the required list with the phase's others; `harness.test.ts` now counts
+    490 scenarios). Route tests in `tools/route-tests/queueSocket.test.ts`.
 
 - [ ] Finish: finisher (required list, full check, harness, branch check, screenshots), review,
   fixes, releaser.
