@@ -117,7 +117,7 @@ These 28 scenarios are added to `harness/required.yaml` in this phase, by file a
   - Order: 2 can go first (it touches only the engine and its message). Then 1a, 1b, 1c; 3a, 3b
     and 4 need 1c.
 
-- [ ] 1a. **Queue membership and matching** (A8.1 to A8.6, A6.3, A9.1 to A9.4 for joining and
+- [x] 1a. **Queue membership and matching** (A8.1 to A8.6, A6.3, A9.1 to A9.4 for joining and
   matching, M2.1, M2.2; scenarios `lobby-queue-and-limits` #2 to #15, #21, #22, #23, #26, #27,
   `rooms` #19, #20, `records-and-ratings` #8). **Large.**
   - Pure functions in `src/server/queue/`: the queue record (entries in queue order with player
@@ -165,8 +165,15 @@ These 28 scenarios are added to `harness/required.yaml` in this phase, by file a
     account too: either the scenario gains `{name: Bea}` (a `HARNESS:` change, recorded) or the
     driver needs another reading; do not make `then.accounts` ignore unlisted accounts, which
     would weaken the deletion scenarios.
+  - Done (2026-11-16): #23. The lobby driver gains `given.players` with
+    `given.seats[].actions_this_game` (`givenRoomRecordOf.ts`: a playing room whose seats have
+    that many `end_turn` entries in the log), steps by `seat`, the actions added to the lobby
+    when a game ends in `LobbySession.send` (`actionsAddedBetween`, `withActionsAdded`), and
+    `then.accounts[].actions_today`. The scenario now also lists Bea under `then.accounts`
+    (Q141, `HARNESS:` commit); `then.accounts` still compares the full list. No other
+    scenario changed status.
   - For later items: `leaveQueue` returns `not_in_queue` for a confirming player; 1b makes it
-    decline the match. `LobbySession.ts` is at 292 non-blank lines (queue code lives in
+    decline the match. `LobbySession.ts` is at 294 non-blank lines (queue code lives in
     `runQueueStep.ts`, `waitWithQueue.ts`, `lobbyQueueThen.ts`, `queueSentTo.ts`); the next
     protocol change raises `PROTOCOL_VERSION` from 19.
 

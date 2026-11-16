@@ -53,6 +53,9 @@ import type { QueueRecord } from "../../../src/server/queue/QueueRecord.ts";
 import type { QueueNotice } from "../../../src/shared/protocol/QueueNotice.ts";
 import { countGameStartInLobby } from "./countGameStartInLobby.ts";
 import { grantChatQuotaInLobby } from "./grantChatQuotaInLobby.ts";
+import { givenRoomRecordOf } from "./givenRoomRecordOf.ts";
+import { actionsAddedBetween } from "../../../src/server/room/actionsAddedBetween.ts";
+import { withActionsAdded } from "../../../src/server/lobby/withActionsAdded.ts";
 
 export class LobbySession {
   record: RoomRecord | null;
@@ -108,10 +111,7 @@ export class LobbySession {
     this.emails = new LobbyEmails(given, (name) => this.identityNamed(name));
     this.history = new LobbyHistory(given, (name) => this.identityNamed(name));
     this.chat = new LobbyChat(chatFromGiven(given, (name) => this.identityNamed(name), this.now));
-    this.record =
-      given.room === undefined || given.room.players.length === 0
-        ? null
-        : lobbyRoomFromGiven(given.room, (name) => this.identityNamed(name), this.now);
+    this.record = givenRoomRecordOf(given, (name) => this.identityNamed(name), this.now);
     this.endedRoom = new EndedRoomRecords(
       endedRoomFromGiven(given, (name) => this.identityNamed(name), this.now),
     );
@@ -269,6 +269,8 @@ export class LobbySession {
       chat: this.chat.contextFor(() => grantChatQuotaInLobby(this)),
     });
     this.rejected = outcome.isRoomGone ? "room_not_found" : rejectionOfReply(outcome.reply);
+    const played = actionsAddedBetween(before.record, this.record);
+    this.lobby = withActionsAdded(this.lobby, played, this.now);
     if (!outcome.isRoomGone) {
       const delivery = { sender: name, accounts: this.accounts.values(), record: this.record };
       deliverRoomOutcome(this.messagesTo, { ...delivery, now: this.now }, outcome);

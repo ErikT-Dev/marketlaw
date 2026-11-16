@@ -49,6 +49,14 @@ function textOf(value: unknown): string {
   return typeof value === "string" ? value : "";
 }
 
+function playerOfStep(session: LobbySession, step: Readonly<Record<string, unknown>>): string {
+  const seat = session.record?.game?.seats.find(({ seat }) => seat === step["seat"]);
+  const named = [...session.accounts.values()].find(
+    ({ identity }) => identity.playerId === seat?.playerId,
+  );
+  return named?.identity.name ?? textOf(step["player"]);
+}
+
 function runPlayerStep(
   session: LobbySession,
   name: string,
@@ -144,7 +152,7 @@ async function runStep(session: LobbySession, step: ScenarioStep): Promise<void>
   } else if (step["action"] === "change_username") {
     await changeUsernameInLobby(session, textOf(step["player"]), textOf(step["username"]));
   } else {
-    runPlayerStep(session, textOf(step["player"]), step);
+    runPlayerStep(session, playerOfStep(session, step), step);
   }
 }
 
@@ -223,6 +231,7 @@ export const LOBBY_DRIVER: ScenarioDriver = {
     "site_games_today",
     "site_counts_today",
     "email_counts",
+    "players",
     "seats",
     "accounts",
     "room",

@@ -1,5 +1,6 @@
 import { isRecord } from "../../harness-check/isRecord.ts";
 import type { LobbySession } from "./LobbySession.ts";
+import { countsOn } from "../../../src/server/lobby/countsOn.ts";
 
 function loggedInThen(session: LobbySession, visitor: unknown) {
   if (typeof visitor !== "string") {
@@ -21,6 +22,10 @@ export function lobbyAccountsThen(session: LobbySession, field: string, expected
           email_confirmed: registration?.isEmailConfirmed ?? false,
           pending_email: registration?.pendingEmail ?? null,
           games: await session.history.gamesOf(identity.playerId),
+          actions_today:
+            countsOn(session.lobby, session.now).players.find(
+              ({ playerId }) => playerId === identity.playerId,
+            )?.actions ?? 0,
         })),
       );
     case "emails_sent":

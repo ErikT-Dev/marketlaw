@@ -37,7 +37,16 @@ export const LOBBY_GIVEN_SCHEMA = v.strictObject({
     }),
   ),
   email_counts: v.optional(v.record(v.string(), v.number())),
-  seats: v.optional(v.array(v.strictObject({ seat: v.number(), player: v.string() }))),
+  players: v.optional(v.picklist([2, 3, 4])),
+  seats: v.optional(
+    v.array(
+      v.strictObject({
+        seat: v.number(),
+        player: v.string(),
+        actions_this_game: v.optional(v.number()),
+      }),
+    ),
+  ),
   accounts: v.optional(
     v.array(
       v.strictObject({
