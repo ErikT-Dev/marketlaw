@@ -425,6 +425,12 @@ These 28 scenarios are added to `harness/required.yaml` in this phase, by file a
   makes the change the owner approved on 2026-11-16 (spec first in screens.md and a decision in
   open-questions.md: the median click under 100 ms, no click over 300 ms, 10 cards clicked, 15 s
   wait for the photos), then the releaser runs again. Uncommitted changes: none.
+- Fixer (2026-11-16): fixed: check 43923506970 failed only on `e2e/bigCardSwitch.spec.ts` at
+  2560x1440 (one click 111.6 ms). As the owner approved, S6.5 and Q150 now ask for the median
+  click under 100 ms and no click over 300 ms; the test clicks every card held once, at most 10
+  (a 7-card starting hand gives at most 7; at least 4 still required), and waits up to 15 s for
+  the photos. The spec file passed locally at all three sizes and `npm run check` passed. Next:
+  the releaser runs again.
 ### Helper log
 
 Filled in by the coordinator afterwards, from the helpers' completion notices (Q73). Tokens are
