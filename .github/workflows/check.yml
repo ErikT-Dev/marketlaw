@@ -97,6 +97,9 @@ jobs:
           echo "TEST_SITE_CHAT_MESSAGES_PER_DAY=1000000" >> .dev.vars
           echo "TEST_SITE_EMAILS_PER_DAY=1000000" >> .dev.vars
 
+      - name: Start without the committed screenshots, so each part keeps only its own
+        run: rm -rf harness/screens
+
       - name: Browser tests
         timeout-minutes: 15
         run: npm run e2e -- --reporter=list ${{ matrix.tests }}
@@ -107,4 +110,12 @@ jobs:
         with:
           name: browser-test-results (${{ matrix.part }})
           path: test-results/
+          if-no-files-found: ignore
+
+      - name: Keep the screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: screens (${{ matrix.part }})
+          path: harness/screens/
           if-no-files-found: ignore

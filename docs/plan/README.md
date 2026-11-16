@@ -139,11 +139,10 @@ do one job and end, so no conversation grows large. What each helper does is in
 |---|---|---|
 | 1. Start | Starter | once: branch, decisions, Progress checklist |
 | 2. Loop | Builder | once per Progress item (again if a builder ends with **partial**) |
-| 4. Finish: checks | Finisher | after the last item |
+| 4. Finish: checks | Finisher | after the last item; browser tests on GitHub (Q133) |
 | 4. Finish: review | Phase reviewer (D16) | once |
 | 4. Finish: fixes | Fixer | once per group of related findings |
-| 4. Finish: checks again | Finisher | after the fixes |
-| 4. Finish: release | Releaser | report, merge, deploy, live check, phase done |
+| 4. Finish: release | Releaser | checks again, report, branch check, merge, deploy, live check, phase done |
 
 **3. Stop rules.** These hold for every helper (`phase-helpers.md`, "Stop rules"):
 
@@ -165,7 +164,21 @@ whole phase.
 
 - **One helper at a time.** All helpers share one working tree. Each is a fresh
   `general-purpose` agent (never a fork, which would inherit the coordinator's conversation),
-  started in the background with a name, on the same model as the coordinator.
+  started in the background with a name, with the model and effort of its job (Q133):
+
+  | Job | Model | Effort |
+  |---|---|---|
+  | Starter, builder, fixer, phase reviewer | Opus | medium |
+  | Finisher | Sonnet | medium |
+  | Releaser | Sonnet | low |
+
+- **The builder model test (Q133, phase 26 only).** For two **small** items, the coordinator
+  also gives the same item to a cheaper builder in its own worktree (Agent `isolation:
+  "worktree"`), started from the same commit before the Opus builder starts: Sonnet at medium
+  for the first, Opus at low for the second. Its work is never merged. After both report, one
+  Opus helper compares the two diffs against the item, the spec and the checks, and the
+  coordinator records the result, with tokens and minutes, in Q133. Small items move to the
+  cheaper setup from phase 27 on only if it matched the Opus builder.
 - **The helper marker.** Before starting a builder, finisher, fixer or releaser, the coordinator
   writes the current time (epoch ms) to `node_modules/.cache/marketlaw/helper-running`; after
   the helper's report, it deletes it. While the marker exists, the Stop hook leaves the
@@ -187,8 +200,9 @@ whole phase.
 - **Review findings.** The coordinator writes the phase reviewer's findings into the Finish part
   of Progress, then groups related findings, one group per fixer. When at most 4 findings need
   a fix, one fixer takes them all.
-- **Two small jobs, one helper.** The coordinator may give one helper the starter's job and a
-  first item the starter marks **small**, or two **small** items in a row. The helper does
+- **Two small jobs, one helper.** The coordinator gives one helper the starter's job and a
+  first item the starter marks **small**, or two **small** items in a row, whenever the order
+  of the items allows it (Q133). The helper does
   them one after the other, each with its own commits, tick and full check, and reports both.
 - **The helper log.** After each report, the coordinator adds one row to the **Helper log**
   table in the Finish part of Progress (job, minutes, tokens, tool calls, result, from the

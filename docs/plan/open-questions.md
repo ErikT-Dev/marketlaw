@@ -2934,3 +2934,37 @@ file.
   the game, so the log is complete. Written into M3.7 first, with the scenario "the log shows the
   cards played in a main phase the game ended in".
 - **Implemented:** `src/rules/endGame.ts` writes the log first (`withMainPhaseLogWritten`).
+
+## Q133. How can building a phase use fewer tokens and less time without losing quality?
+
+- **Phase:** between 25a and 26, asked by the owner (2026-11-16).
+- **Question:** phase 25a took about 7.5 hours over 20 helpers, all on Opus at medium effort.
+  The finisher spent 70 and 36 minutes, mostly on browser tests that time out under local load
+  and that GitHub runs again anyway before the merge (7 parallel jobs, about 7 minutes). Which
+  jobs can be made cheaper without losing quality?
+- **Options:** keep the process; move the browser suite to GitHub; merge jobs; cheaper models or
+  lower effort for mechanical jobs; cheaper builders for small items (risky: builders write the
+  code nobody reads); trim the rule files (only with the owner's approval).
+- **Solution (owner's choice, lists A and B):**
+  - The finisher runs `npm run check` and `npm run harness` locally, then pushes and waits for
+    the branch check, which runs every browser test at every size; it copies the screenshots from
+    that run (`check.yml` keeps each part's `harness/screens/`, starting without the committed
+    ones). Browser tests run locally only for single spec files. Local runs stay as the fallback
+    when GitHub Actions do not start.
+  - The finisher's second run and the releaser are one job, the releaser.
+  - The phase reviewer is pointed to the finisher's results and reruns a check only to verify a
+    finding. Its definition (`.claude/agents/phase-reviewer.md`, protected) is unchanged.
+  - Fixers check a screen with its spec file only; the branch check covers the rest.
+  - Models and effort: starter, builder, fixer and phase reviewer Opus at medium (unchanged);
+    finisher Sonnet at medium; releaser Sonnet at low.
+  - Two small items share one helper whenever their order allows.
+  - A builder model test in phase 26: two small items are also built by a cheaper builder in a
+    worktree (Sonnet at medium, then Opus at low), never merged, and compared with the Opus
+    builder's work by one Opus helper. Small items move to the cheaper setup from phase 27 on
+    only if it matched.
+  - Expected saving: about 1 to 1.5 hours and 10 to 15% of the token cost per phase, more if
+    the builder test passes.
+- **Implemented:** `docs/plan/phase-helpers.md` (Keep your context small, Finisher, Phase
+  reviewer, Fixer, Releaser), `docs/plan/README.md` (steps table, The coordinator),
+  `.github/workflows/check.yml` (screenshots kept per part).
+- **Builder model test result:** to be written after phase 26's two test items.
