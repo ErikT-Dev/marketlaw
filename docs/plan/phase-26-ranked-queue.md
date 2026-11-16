@@ -373,3 +373,4 @@ are never merged.
 | Builder, item 4 | Opus, medium | 8 | 103k | 43 | done |
 | Test comparer, item 4 | Opus, medium | 1 | 62k | 5 | Opus at low nearly matched: spec not written first, fewer and weaker tests |
 | Builder, item 3a | Opus, medium | 28 | 266k | 121 | done |
+| Builder, item 3b | Opus, medium | 9 | 132k | 37 | done |
