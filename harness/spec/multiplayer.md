@@ -96,7 +96,9 @@ None yet.
   project they completed, and each influence action they used (trades, build passes and skip
   build), all with the turn number. Actions they undid are not in it (R5.7), and draw actions
   appear as draws (M3.3). Until the main phase ends nobody sees these entries, the player's own
-  included. They are kept with the room's state and need no row written of their own.
+  included. A game that ends during a main phase (M6.8, M6.9, M7.4, R9.14) ends that main
+  phase too: its entries are written as the game ends. They are kept with the room's state and
+  need no row written of their own.
 
 ## M4. Replays
 

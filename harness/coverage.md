@@ -171,7 +171,7 @@ it by hand.
 | M3.4 | visibility (1) | Covered |
 | M3.5 | connections-and-leaving (1), quests (1), visibility (3) | Covered |
 | M3.6 | – | Checked another way: A pointer to A6; tested there. *(approved by the owner, 2026-10-25)* |
-| M3.7 | visibility (4) | Covered |
+| M3.7 | visibility (5) | Covered |
 | M4.1 | visibility (1) | Covered |
 | M4.2 | – | Checked another way: Replay export check: a running and an ended room are exported and replay exactly. *(approved by the owner, 2026-10-25)* |
 | M4.3 | visibility (2) | Covered |
@@ -187,7 +187,7 @@ it by hand.
 | M6.5 | connections-and-leaving (2) | Covered |
 | M6.6 | connections-and-leaving (2), turns-and-time (1) | Covered |
 | M6.7 | connections-and-leaving (2) | Covered |
-| M6.8 | connections-and-leaving (1) | Covered |
+| M6.8 | connections-and-leaving (1), visibility (1) | Covered |
 | M6.9 | connections-and-leaving (2), records-and-ratings (1) | Covered |
 | M6.10 | connections-and-leaving (3), turns-and-time (1) | Covered |
 | M7.1 | connections-and-leaving (2) | Covered |
@@ -354,6 +354,6 @@ it by hand.
 ## Summary
 
 - Rules: 317
-- Scenarios: 487
+- Scenarios: 488
 - Gaps: 0
 - Checked another way or also checked another way: R3.2, R3.5, R17.10, R19.2, M3.1, M3.6, M4.2, A6.4, A10.6, C5.1, C5.2, C5.3, A12.1

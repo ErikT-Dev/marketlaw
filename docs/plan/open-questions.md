@@ -2920,3 +2920,17 @@ file.
   being looked at, so closing the big card keeps it. Written into S6.5 first.
 - **Implemented:** `src/client/screens/game/BigCardBesideHand.tsx`,
   `SelectedCardPanel.module.css`, `MiddleColumn.tsx`.
+
+## Q132. Does a game that ends during a main phase write that main phase's log (finding F4)?
+
+- **Phase:** 25a, review finding F4.
+- **Question:** M3.7 writes a main phase's entries to the game log "when the main phase ends".
+  A game can also end during a main phase: the last player left (M6.8), everyone left (M6.9), an
+  abandon vote passed (M7.4) or a pause lasted 24 hours (R9.14). Does that end the main phase, so
+  that its plays, quests, projects and influence actions show in the log?
+- **Options:** leave them out (the log then misses the last turn's actions, though the end
+  screens show the cities); or write them as the game ends.
+- **Solution:** write them. The game ending ends the main phase too; nothing stays hidden after
+  the game, so the log is complete. Written into M3.7 first, with the scenario "the log shows the
+  cards played in a main phase the game ended in".
+- **Implemented:** `src/rules/endGame.ts` writes the log first (`withMainPhaseLogWritten`).

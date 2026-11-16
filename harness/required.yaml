@@ -145,6 +145,7 @@ scenarios:
     - the replay record is removed after 30 days
     - the discard pile is shown only as a number of cards
     - the log shows the cards each player played once the main phase ends
+    - the log shows the cards played in a main phase the game ended in
     - a card played in the main phase is not in the log before the main phase ends
     - an undone card play never appears in the log
     - the log shows the quests completed and influence actions used once the main phase ends
