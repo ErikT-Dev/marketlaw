@@ -38,6 +38,7 @@ export const ReasonCode = v.picklist([
   "vote_already_open",
   "no_vote_open",
   "vote_already_answered",
+  "vote_not_allowed",
   "room_not_found",
   "room_full",
   "room_not_waiting",

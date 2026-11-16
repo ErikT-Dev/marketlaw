@@ -177,13 +177,17 @@ These 28 scenarios are added to `harness/required.yaml` in this phase, by file a
     `busy_elsewhere` through the lobby's `busy` list; `isReallyBusy` asks the queue, as it asks a
     room, before trusting a stale entry.
 
-- [ ] 2. **No abandon vote in ranked games** (M7.1, A8.11; scenario `connections-and-leaving`
+- [x] 2. **No abandon vote in ranked games** (M7.1, A8.11; scenario `connections-and-leaving`
   #22). **Small.**
   - `callRejection` in `src/rules/voteRejectionOf.ts` returns `vote_not_allowed` when
     `state.kind === "ranked"`, checked first (the scenario expects nothing changed). Add the code
     to `ReasonCode`, and its text "Ranked games cannot be abandoned." (S16.3) to
     `src/client/screens/game/REJECTION_MESSAGES.ts`. The engine driver already takes
     `given.kind: ranked`. Independent of every other item.
+  - Done (2026-11-16): as planned; `PROTOCOL_VERSION` raised to 18 (the new code changes the
+    server message schema). The scenario passes when added to the required list locally.
+  - For later items: the next item that changes a message shape raises `PROTOCOL_VERSION` from
+    18.
 
 - [ ] 3a. **Screens** (S10.4, S10.7, S10.9, S16.1; Q137, Q138; design boards "Lobby: in the
   ranked queue", "Lobby: match found", "Lobby: ranked locked"). **Large.**
