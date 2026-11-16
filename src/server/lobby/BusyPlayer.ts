@@ -1,7 +1,7 @@
 import type { PlayerId } from "../../shared/PlayerId";
-import type { RoomCode } from "../../shared/RoomCode";
+import type { BusyPlace } from "./BusyPlace";
 
 export type BusyPlayer = {
   readonly playerId: PlayerId;
-  readonly code: RoomCode;
+  readonly code: BusyPlace;
 };

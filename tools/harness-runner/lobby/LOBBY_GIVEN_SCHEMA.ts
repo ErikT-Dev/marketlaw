@@ -58,6 +58,21 @@ export const LOBBY_GIVEN_SCHEMA = v.strictObject({
   room: v.optional(GIVEN_ROOM),
   other_rooms: v.optional(v.array(GIVEN_ROOM)),
   records: v.optional(v.array(GIVEN_RECORD)),
+  queue: v.optional(
+    v.array(
+      v.union([
+        v.string(),
+        v.strictObject({ player: v.string(), sizes: v.array(v.picklist([2, 3, 4])) }),
+      ]),
+    ),
+  ),
+  match: v.optional(
+    v.strictObject({
+      players: v.array(v.string()),
+      size: v.picklist([2, 3, 4]),
+      state: v.literal("confirming"),
+    }),
+  ),
 });
 
 export type LobbyGiven = v.InferOutput<typeof LOBBY_GIVEN_SCHEMA>;

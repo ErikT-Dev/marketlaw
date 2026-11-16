@@ -3,6 +3,7 @@ import { REJECTION_MESSAGES } from "../../../src/client/screens/game/REJECTION_M
 import type { ServerMessage } from "../../../src/shared/protocol/ServerMessage.ts";
 import type { IconText } from "../../../src/client/components/IconText.ts";
 import { isRecord } from "../../harness-check/isRecord.ts";
+import type { QueueSent } from "./QueueSent.ts";
 
 function acceptedNamesIn(messages: ReadonlyArray<ServerMessage>): ReadonlyArray<string> | null {
   const update = [...messages].reverse().find((message) => message.type === "update");
@@ -22,8 +23,17 @@ function shownTextOf(message: ServerMessage): ReadonlyArray<string> {
   return message.type === "notice" ? [wordsOf(noticeToastOf(message.notice, 1, []).text)] : [];
 }
 
-function textShownFrom(messages: ReadonlyArray<ServerMessage>, expected: unknown): unknown {
-  const texts = messages.flatMap(shownTextOf);
+function queueTextsOf(queue: QueueSent): ReadonlyArray<string> {
+  const isHeldBack = queue.view.isSiteGameLimitReached && queue.view.own.kind !== "out";
+  return isHeldBack ? [wordsOf(REJECTION_MESSAGES.site_game_limit)] : [];
+}
+
+function textShownFrom(
+  messages: ReadonlyArray<ServerMessage>,
+  queue: QueueSent,
+  expected: unknown,
+): unknown {
+  const texts = [...messages.flatMap(shownTextOf), ...queueTextsOf(queue)];
   return texts.includes(String(expected)) ? expected : (texts.at(-1) ?? null);
 }
 
@@ -40,19 +50,30 @@ function stringValuesOf(value: unknown): ReadonlyArray<string> {
 function noticeShownFrom(
   messages: ReadonlyArray<ServerMessage>,
   pageNotice: string | undefined,
+  queue: QueueSent,
   expected: unknown,
 ): string | null {
   const notices = [
     ...messages.flatMap((message) => (message.type === "notice" ? [message.notice.kind] : [])),
+    ...queue.notices.map(({ kind }) => kind),
     ...(pageNotice === undefined ? [] : [pageNotice]),
   ];
   return notices.find((notice) => notice === expected) ?? notices.at(-1) ?? null;
+}
+
+function isHiddenIn(word: unknown, queue: QueueSent, sentText: string): boolean {
+  if (word === "queue_members") {
+    const queueText = JSON.stringify([queue.notices, queue.view]);
+    return queue.memberIds.every((memberId) => !queueText.includes(memberId));
+  }
+  return typeof word === "string" && !sentText.includes(word);
 }
 
 export function lobbyMessageThen(
   messagesTo: ReadonlyMap<string, ReadonlyArray<ServerMessage>>,
   expected: unknown,
   pageNoticesTo: ReadonlyMap<string, string>,
+  queueSentTo: (player: string) => QueueSent,
 ): unknown {
   const asked = isRecord(expected) ? expected : {};
   const player = typeof asked["player"] === "string" ? asked["player"] : "";
@@ -61,13 +82,16 @@ export function lobbyMessageThen(
     : [];
   const messages = messagesTo.get(player) ?? [];
   const accepted = acceptedNamesIn(messages);
-  const sentText = stringValuesOf(messages).join(" ");
+  const queue = queueSentTo(player);
+  const queueText = JSON.stringify([queue.notices, queue.view]);
+  const sentText = `${stringValuesOf(messages).join(" ")} ${queueText}`;
   const hides: ReadonlyArray<unknown> = Array.isArray(asked["hides"]) ? asked["hides"] : [];
   return {
     player,
-    text: textShownFrom(messages, asked["text"]),
-    notice: noticeShownFrom(messages, pageNoticesTo.get(player), asked["notice"]),
-    hides: hides.filter((word) => typeof word === "string" && !sentText.includes(word)),
+    text: textShownFrom(messages, queue, asked["text"]),
+    notice: noticeShownFrom(messages, pageNoticesTo.get(player), queue, asked["notice"]),
+    size: queue.notices.at(-1)?.size,
+    hides: hides.filter((word) => isHiddenIn(word, queue, sentText)),
     contains: contains.map((entry) =>
       isRecord(entry) && "accepted" in entry ? { accepted } : undefined,
     ),

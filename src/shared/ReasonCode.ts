@@ -66,6 +66,8 @@ export const ReasonCode = v.picklist([
   "no_free_room_code",
   "no_answer",
   "busy_elsewhere",
+  "invalid_game_sizes",
+  "not_in_queue",
   "daily_action_limit",
   "daily_game_start_limit",
   "site_game_limit",

@@ -6,6 +6,7 @@ import type { PlayerId } from "../shared/PlayerId";
 import { PROTOCOL_VERSION } from "../shared/PROTOCOL_VERSION";
 import type { LobbyMessage } from "../shared/protocol/LobbyMessage";
 import type { RoomCode } from "../shared/RoomCode";
+import type { BusyPlace } from "./lobby/BusyPlace";
 import type { ClaimRejection } from "./lobby/ClaimRejection";
 import { claimPlayer } from "./lobby/claimPlayer";
 import { countGameStart } from "./lobby/countGameStart";
@@ -85,7 +86,7 @@ export class Lobby extends DurableObject<Env> {
     await this.change((record) => returnSiteEmail(record, now));
   }
 
-  busyRoomOf(playerId: PlayerId): RoomCode | null {
+  busyPlaceOf(playerId: PlayerId): BusyPlace | null {
     return this.read().busy.find((entry) => entry.playerId === playerId)?.code ?? null;
   }
 

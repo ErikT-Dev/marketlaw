@@ -1,3 +1,4 @@
+import { RANKED_QUEUE_PLACE } from "./lobby/RANKED_QUEUE_PLACE";
 import { lobbyOf } from "./lobbyOf";
 import type { Sender } from "./Sender";
 
@@ -12,9 +13,9 @@ export async function logOutOfRooms(
 ): Promise<boolean> {
   const { playerId } = login.sender.identity;
   const lobby = lobbyOf(env);
-  const busyCode = await lobby.busyRoomOf(playerId);
+  const busyPlace = await lobby.busyPlaceOf(playerId);
   const codes = [
-    ...(busyCode === null ? [] : [busyCode]),
+    ...(busyPlace === null || busyPlace === RANKED_QUEUE_PLACE ? [] : [busyPlace]),
     ...(await lobby.stayingRoomsOf(playerId)),
   ];
   const leftRooms = await Promise.allSettled(
