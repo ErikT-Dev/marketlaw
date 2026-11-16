@@ -390,3 +390,4 @@ are never merged.
 | Test comparer, item 4 | Opus, medium | 1 | 62k | 5 | Opus at low nearly matched: spec not written first, fewer and weaker tests |
 | Builder, item 3a | Opus, medium | 28 | 266k | 121 | done |
 | Builder, item 3b | Opus, medium | 9 | 132k | 37 | done |
+| Finisher | Sonnet, medium | 22 | 111k | 79 | done |
