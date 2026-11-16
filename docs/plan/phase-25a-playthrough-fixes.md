@@ -646,6 +646,24 @@ These 24 required scenarios now assert the new rules (Q126) and must pass again:
 
 ### Finish
 
+- Finisher, first run (2026-11-16): the 27 scenarios are required (28afe2d). `npm run check`
+  green; `npm run harness` green (486 scenarios, phase-end simulated games, budgets).
+  `docs/enforcement.md`: the harness runner row names phase 25a's new scenario fields.
+  Browser tests: shard 2 green; shard 1 had one failure, `e2e/gameLog.spec.ts`, whose pattern
+  for "Bea played ..." refused card names with a hyphen (Semi-detached); the test now allows
+  them and passes at all three sizes. The four-player game at 1920×1080 timed out once in the
+  lobby (the known local load problem) and passed when rerun alone.
+  - **F1 (open, for a fixer): at 1280×720 the Draw button is covered by the big card.** The
+    two- and three-player full games fail at 1280×720 on turn 2 (the four-player run was
+    stopped): the test clicks the first marketplace card (Aquaculture, Livestock Farm: the
+    Residential place was empty, so the first card was in the Industry place), and the big card
+    beside the hand (`SelectedCardPanel.module.css` `.selected`, 344 px wide, placed left of the
+    right column) covers every marketplace column but the first, Draw included. Closing the big
+    card also clears the marketplace selection (the selection is `lookedAt`, `MiddleColumn.tsx`),
+    so at 1280×720 a player cannot take any marketplace card outside the first column on their
+    go (S4.3 option A). The test is right; the layout must change (S4.1, S4.3, S6.5). At
+    1920×1080 and 2560×1440 the games pass.
+
 ### Helper log
 
 Filled in by the coordinator afterwards, from the helpers' completion notices (Q73). Tokens are
