@@ -685,6 +685,7 @@ These 24 required scenarios now assert the new rules (Q126) and must pass again:
     `playerOrderOf` (left seats); the game kind is stored three times (`RoomGame.kind`,
     `setup.kind`, `state.kind`); `QuestsCompletedLastTurnTable.tsx` uses a silent `?? 1` tier
     fallback. Not blocking.
+
 ### Helper log
 
 Filled in by the coordinator afterwards, from the helpers' completion notices (Q73). Tokens are
@@ -706,4 +707,4 @@ each helper's conversation size at its end.
 | Builder, item 11 | 15 | 153k | 75 | done |
 | Builder, item 12 | 11 | 132k | 51 | done |
 | Finisher, first run | 70 | 119k | 76 | partial (F1) |
-| Phase reviewer | 8 | 193k | 88 | done (F2-F5) |
+| Phase reviewer | 11 | 195k | 90 | done (F2-F5) |
