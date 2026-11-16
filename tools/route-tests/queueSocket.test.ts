@@ -11,6 +11,7 @@ const DUMMY_HUMAN_CHECK = "XXXX.DUMMY.TOKEN.XXXX";
 const PASSWORD = "quiet-harbour-77";
 const STARTING_MS = 30_000;
 const WAITING_MS = 10_000;
+const CLOSED_LEAVE_MS = 10_000;
 const CLOSED_LEAVE_WAITING_MS = 20_000;
 const SHORTER_THAN_CLOSED_LEAVE_MS = 5_000;
 const FORGED_TOKEN = "0123456789abcdef0123456789abcdef";
@@ -203,18 +204,25 @@ describe("closed connections and logging out in the ranked queue", () => {
   );
 
   it(
-    "closes the queue socket of a login that logs out",
+    "closes the queue socket of a login that logs out and takes it out of the queue 10 seconds later",
     async () => {
       const dan = await registeredToken("Queuedan", true);
       const danSocket = await queueSocket();
-      danSocket.send(dan, { type: "resync" });
+      const watcher = await queueSocket();
+      danSocket.send(dan, { type: "join_queue", sizes: [4] });
       await vi.waitFor(() => {
-        expect(danSocket.messages.filter(({ type }) => type === "queue")).toHaveLength(2);
+        expect(watcher.latestView()?.counts.total).toBe(1);
       }, WAITING_MS);
+      const loggedOutAt = Date.now();
       await post("/api/logout", { token: dan });
       await vi.waitFor(() => {
         expect(danSocket.closeCode).toBe(LOGGED_OUT_CLOSE_CODE);
       }, WAITING_MS);
+      expect(watcher.latestView()?.counts.total).toBe(1);
+      await vi.waitFor(() => {
+        expect(watcher.latestView()?.counts).toEqual(EMPTY_COUNTS);
+      }, CLOSED_LEAVE_WAITING_MS);
+      expect(Date.now() - loggedOutAt).toBeGreaterThanOrEqual(CLOSED_LEAVE_MS);
     },
     STARTING_MS,
   );
