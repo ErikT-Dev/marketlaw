@@ -25,6 +25,8 @@ import type { QueueRecord } from "./queue/QueueRecord";
 import type { QueueRejection } from "./queue/QueueRejection";
 import type { QueueState } from "./queue/QueueState";
 import { queueOperationOf } from "./queueOperationOf";
+import { alarmChangeTo } from "./room/alarmChangeTo";
+import { applyAlarmChange } from "./room/applyAlarmChange";
 import { QueueSockets } from "./QueueSockets";
 import type { Sender } from "./Sender";
 import { senderOfToken } from "./senderOfToken";
@@ -161,11 +163,11 @@ export class RankedQueue extends DurableObject<Env> {
     const now = nowMs();
     const outcome = await lobbyOf(this.env).changeQueue(before, operation, now);
     const { queue, lobby, notices, starts } = outcome.change;
-    const startNotices = await startRankedRooms(this.env, starts);
     if (JSON.stringify(queue) !== JSON.stringify(before)) {
       this.ctx.storage.kv.put(QUEUE_KEY, queue);
     }
-    const state = { queue, lobby };
+    const startNotices = await startRankedRooms(this.env, starts, now);
+    const state = starts.length === 0 ? { queue, lobby } : await this.state();
     const context = this.context(now);
     await this.syncAlarm(state, context, isAlarmFiring);
     this.sockets.sendNotices([...notices, ...startNotices]);
@@ -174,16 +176,11 @@ export class RankedQueue extends DurableObject<Env> {
   }
 
   private async syncAlarm(state: QueueState, context: QueueContext, isAlarmFiring: boolean) {
-    const next = nextQueueAlarmAt(state, context);
     const current = isAlarmFiring ? null : await this.ctx.storage.getAlarm();
-    if (next === current) {
-      return;
-    }
-    if (next === null) {
-      await this.ctx.storage.deleteAlarm();
-      return;
-    }
-    await this.ctx.storage.setAlarm(next);
+    await applyAlarmChange(
+      this.ctx.storage,
+      alarmChangeTo(current, nextQueueAlarmAt(state, context)),
+    );
   }
 
   private async inTurn<T>(handle: () => Promise<T>): Promise<T> {

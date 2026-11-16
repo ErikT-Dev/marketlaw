@@ -10,6 +10,7 @@ import { EMPTY_LOBBY } from "./EMPTY_LOBBY";
 import { LOBBY_RECORD_SCHEMA } from "./LOBBY_RECORD_SCHEMA";
 import type { LobbyRecord } from "./LobbyRecord";
 import { siteGameLimitOf } from "./siteGameLimitOf";
+import { withGameStartReturned } from "./withGameStartReturned";
 import { withPlayerCountsSet } from "./withPlayerCountsSet";
 
 const ANN = v.parse(PlayerId, crypto.randomUUID());
@@ -98,6 +99,19 @@ describe("counting a game start", () => {
       error: { kind: "site_game_limit" },
     });
     expect(countGameStart(full, [ANN, BEA], { ...LIMITS, now: NEXT_MIDNIGHT }).isOk).toBe(true);
+  });
+
+  it("returns a ranked start whose room could not be made to the site and its players", () => {
+    const counted = countGameStart(lobbyWith(5, 3), [ANN, BEA], LIMITS);
+    const record = counted.isOk ? counted.value : lobbyWith(0, 0);
+    expect(withGameStartReturned(record, [ANN, BEA], MIDNIGHT).today).toEqual({
+      ...lobbyWith(5, 3).today,
+      players: [
+        { playerId: ANN, actions: 5, gameStarts: 3 },
+        { playerId: BEA, actions: 0, gameStarts: 0 },
+      ],
+    });
+    expect(withGameStartReturned(record, [ANN, BEA], NEXT_MIDNIGHT)).toEqual(record);
   });
 
   it("uses 50 games a day unless the environment sets a test site limit", () => {

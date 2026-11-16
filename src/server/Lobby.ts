@@ -27,6 +27,7 @@ import type { PlayedActions } from "./lobby/PlayedActions";
 import type { PlayerCountsToday } from "./lobby/PlayerCountsToday";
 import type { RoomSummary } from "./lobby/RoomSummary";
 import { withActionsAdded } from "./lobby/withActionsAdded";
+import { withGameStartReturned } from "./lobby/withGameStartReturned";
 import { withPlayerCountsSet } from "./lobby/withPlayerCountsSet";
 import { withRoomSummary } from "./lobby/withRoomSummary";
 import { movedToRoom } from "./lobby/movedToRoom";
@@ -114,11 +115,15 @@ export class Lobby extends DurableObject<Env> {
     await this.change((record) => movedToRoom(record, players, RANKED_QUEUE_PLACE, code));
   }
 
-  async releaseFromQueue(players: ReadonlyArray<PlayerId>): Promise<void> {
+  async undoRankedStart(players: ReadonlyArray<PlayerId>, countedAt: EpochMs): Promise<void> {
     await this.change((record) =>
-      players.reduce(
-        (released, playerId) => releasePlayer(released, playerId, RANKED_QUEUE_PLACE),
-        record,
+      withGameStartReturned(
+        players.reduce(
+          (released, playerId) => releasePlayer(released, playerId, RANKED_QUEUE_PLACE),
+          record,
+        ),
+        players,
+        countedAt,
       ),
     );
   }

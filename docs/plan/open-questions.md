@@ -3201,3 +3201,37 @@ file.
   from it (the same offset the room messages set), and the lobby counts with it. Written into
   S10.4 first. `PROTOCOL_VERSION` 23.
 - **Implemented:** phase 26, finding F4.
+
+## Q148. How many rows does a ranked queue change write, and in what order?
+
+- **Phase:** 26 (fixer, finding F3).
+- **Question:** `rules/cloudflare.md` asks for one row (or one transaction) per accepted action.
+  A queue change writes the Lobby's record (busy entries, daily counts) and the RankedQueue's
+  record, two rows in two Durable Objects. And the queue record was saved only after
+  `startRankedRooms` (the D1 username read and the room calls), so a throw there left the game
+  start counted in the Lobby while the queue still held the match.
+- **Options:** move the queue record into the Lobby (one row, but the Lobby then holds every
+  queue socket's state and wakes for each); or keep the two records and make the order safe.
+- **Solution:** keep two rows on the record: the Lobby must decide the busy entries and daily
+  counts together with the queue (M2.1, A9), and the queue keeps its own sockets and alarm. Each
+  record is written only when it changed, so most queue changes write one or two rows, within
+  the budgets. The queue record is now saved right after the Lobby commits and before any room
+  is started, and any failure while starting a ranked room, the D1 read included, takes the
+  `no_room` path (Q149) instead of throwing.
+- **Implemented:** `src/server/RankedQueue.ts` (`change`), `src/server/startRankedRooms.ts`;
+  phase 26, finding F3.
+
+## Q149. Does a ranked match whose room could not be made count as a game start?
+
+- **Phase:** 26 (fixer, finding F5).
+- **Question:** a confirmed match is counted toward A9.3 and A9.4 when the Lobby accepts it,
+  before its room is made. When no room can be made (`no_room`, Q145), the players leave the
+  queue, but the counted start stayed. A8 and A9 did not say.
+- **Options:** keep the count (simpler; a rare case); or return it.
+- **Solution:** return it. A9.3 counts "every game they take part in from the start" and A9.4
+  "games that start"; a match with no room never starts. The Lobby's `undoRankedStart` releases
+  the players and returns their game starts and the site's in the same write, only when the
+  start was counted on the same UTC day. The queue then re-reads the Lobby before sending its
+  views, so the site limit shown is the returned one. Written into A9.4 first.
+- **Implemented:** `src/server/lobby/withGameStartReturned.ts`, `src/server/Lobby.ts`,
+  `src/server/startRankedRooms.ts`; phase 26, finding F5.
