@@ -13,7 +13,7 @@ export function queueViewFor(
 ): QueueView {
   return {
     counts: queueCountsOf(state.queue),
-    own: ownQueueStateOf(state.queue, playerId),
+    own: ownQueueStateOf(state, playerId, context.now),
     isSiteGameLimitReached: isSiteGameLimitReached(state.lobby, context),
   };
 }

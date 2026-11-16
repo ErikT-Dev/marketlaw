@@ -24,7 +24,7 @@ async function startRankedRoom(
     await lobby.releaseFromQueue(start.players);
     return start.players.map((playerId) => ({
       playerId,
-      notice: { kind: "match_not_started" as const },
+      notice: { kind: "match_not_started" as const, reason: "no_room" as const },
     }));
   }
   await lobby.moveToRoom(start.players, code);

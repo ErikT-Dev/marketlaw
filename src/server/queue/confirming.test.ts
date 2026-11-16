@@ -9,6 +9,7 @@ import { fireQueueAlarm } from "./fireQueueAlarm";
 import { joinQueue } from "./joinQueue";
 import { leaveQueue } from "./leaveQueue";
 import { nextQueueAlarmAt } from "./nextQueueAlarmAt";
+import { queueViewFor } from "./queueViewFor";
 import type { QueueChange } from "./QueueChange";
 import type { QueueContext } from "./QueueContext";
 import type { QueueState } from "./QueueState";
@@ -63,7 +64,7 @@ describe("confirming a ranked match", () => {
     expect(changed.lobby.busy.map(({ playerId }) => playerId)).toEqual([BEA]);
     expect(changed.notices).toEqual([
       { playerId: ANN, notice: { kind: "match_missed", rejoinAt: NOW + 120_001 } },
-      { playerId: BEA, notice: { kind: "match_not_started" } },
+      { playerId: BEA, notice: { kind: "match_not_started", reason: "not_confirmed" } },
     ]);
   });
 
@@ -91,6 +92,28 @@ describe("confirming a ranked match", () => {
       playerId: ANN,
       notice: { kind: "daily_limit", reason: "daily_action_limit" },
     });
+    expect(changed.notices[1]).toEqual({
+      playerId: BEA,
+      notice: { kind: "match_not_started", reason: "player_daily_limit" },
+    });
+    expect(queueViewFor(changed, ANN, at(3)).own).toEqual({
+      kind: "out",
+      rejoinAt: null,
+      dailyLimit: "daily_action_limit",
+    });
+  });
+
+  it("shows a confirming player that they confirmed and a decliner their rejoin wait", () => {
+    const confirmed = valueOf(confirmMatch(MATCHED, BEA, at(1)));
+    expect(queueViewFor(confirmed, BEA, at(2)).own).toMatchObject({ isConfirmed: true });
+    expect(queueViewFor(confirmed, ANN, at(2)).own).toMatchObject({ isConfirmed: false });
+    const declined = valueOf(leaveQueue(confirmed, ANN, at(3)));
+    expect(queueViewFor(declined, ANN, at(4)).own).toEqual({
+      kind: "out",
+      rejoinAt: NOW + 120_003,
+      dailyLimit: null,
+    });
+    expect(queueViewFor(declined, ANN, at(120_003)).own).toMatchObject({ rejoinAt: null });
   });
 
   it("wakes at the confirm deadline and lets the 20 seconds decide for a closed connection", () => {

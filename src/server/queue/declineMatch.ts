@@ -24,6 +24,7 @@ export function declineMatch(
   const leaving = [{ playerId, notice: { kind: "match_missed" as const, rejoinAt }, rejoinAt }];
   const undone = withMatchUndone({ ...state, notices: [], starts: [] }, match, leaving, {
     kind: "match_not_started",
+    reason: "not_confirmed",
   });
   return { isOk: true, value: rematched(undone, context) };
 }

@@ -1,16 +1,39 @@
+import type { EpochMs } from "../../shared/EpochMs";
 import type { PlayerId } from "../../shared/PlayerId";
 import type { OwnQueueState } from "../../shared/protocol/OwnQueueState";
-import type { QueueRecord } from "./QueueRecord";
+import { dailyLimitRejection } from "../lobby/dailyLimitRejection";
+import type { QueueState } from "./QueueState";
 
-export function ownQueueStateOf(queue: QueueRecord, playerId: PlayerId | null): OwnQueueState {
-  const waiting = queue.entries.find((entry) => entry.playerId === playerId);
+function outStateOf(state: QueueState, playerId: PlayerId | null, now: EpochMs): OwnQueueState {
+  const wait = state.queue.rejoinWaits.find(
+    (rejoinWait) => rejoinWait.playerId === playerId && rejoinWait.until > now,
+  );
+  return {
+    kind: "out",
+    rejoinAt: wait?.until ?? null,
+    dailyLimit: playerId === null ? null : dailyLimitRejection(state.lobby, playerId, now),
+  };
+}
+
+export function ownQueueStateOf(
+  state: QueueState,
+  playerId: PlayerId | null,
+  now: EpochMs,
+): OwnQueueState {
+  const waiting = state.queue.entries.find((entry) => entry.playerId === playerId);
   if (waiting !== undefined) {
     return { kind: "waiting", sizes: waiting.sizes };
   }
-  const match = queue.matches.find(({ players }) =>
+  const match = state.queue.matches.find(({ players }) =>
     players.some((entry) => entry.playerId === playerId),
   );
-  return match === undefined
-    ? { kind: "out" }
-    : { kind: "confirming", size: match.size, deadline: match.deadline };
+  if (match === undefined) {
+    return outStateOf(state, playerId, now);
+  }
+  return {
+    kind: "confirming",
+    size: match.size,
+    deadline: match.deadline,
+    isConfirmed: match.confirmed.some((confirmed) => confirmed === playerId),
+  };
 }

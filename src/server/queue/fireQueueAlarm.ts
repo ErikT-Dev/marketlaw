@@ -17,7 +17,10 @@ function withMatchExpired(change: QueueChange, match: QueueMatch): QueueChange {
       notice: { kind: "match_missed" as const, rejoinAt },
       rejoinAt,
     }));
-  return withMatchUndone(change, match, leaving, { kind: "match_not_started" });
+  return withMatchUndone(change, match, leaving, {
+    kind: "match_not_started",
+    reason: "not_confirmed",
+  });
 }
 
 export function fireQueueAlarm(state: QueueState, context: QueueContext): QueueChange {

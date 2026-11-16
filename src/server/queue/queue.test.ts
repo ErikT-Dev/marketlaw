@@ -112,10 +112,14 @@ describe("the ranked queue", () => {
     const state = joined(joined(joined(EMPTY, ANN, [2]), BEA, [2]), CAT, [3, 4]);
     expect(queueViewFor(state, BEA, CONTEXT)).toEqual({
       counts: { total: 1, bySize: { 2: 0, 3: 1, 4: 1 } },
-      own: { kind: "confirming", size: 2, deadline: NOW + 20_000 },
+      own: { kind: "confirming", size: 2, deadline: NOW + 20_000, isConfirmed: false },
       isSiteGameLimitReached: false,
     });
-    expect(queueViewFor(state, DAN, CONTEXT).own).toEqual({ kind: "out" });
+    expect(queueViewFor(state, DAN, CONTEXT).own).toEqual({
+      kind: "out",
+      rejoinAt: null,
+      dailyLimit: null,
+    });
   });
 
   it("wakes at midnight UTC only while the site game limit holds matches back", () => {

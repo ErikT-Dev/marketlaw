@@ -37,6 +37,9 @@ export function startConfirmedMatch(
     notice: { kind: "daily_limit" as const, reason },
     rejoinAt: null,
   }));
-  const undone = withMatchUndone(unchanged, match, leaving, { kind: "match_not_started" });
+  const undone = withMatchUndone(unchanged, match, leaving, {
+    kind: "match_not_started",
+    reason: "player_daily_limit",
+  });
   return rematched(undone, context);
 }

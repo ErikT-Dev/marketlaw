@@ -79,7 +79,7 @@ describe("the ranked queue socket refuses hostile messages", () => {
       const socket = await queueSocket();
       expect(socket.latestView()).toEqual({
         counts: EMPTY_COUNTS,
-        own: { kind: "out" },
+        own: { kind: "out", rejoinAt: null, dailyLimit: null },
         isSiteGameLimitReached: false,
       });
       expect(
@@ -170,7 +170,11 @@ describe("a ranked match through the queue socket", () => {
       }, WAITING_MS);
       expect(watcher.notices()).toEqual([]);
       expect(JSON.stringify(watcher.messages)).not.toContain("Queueann");
-      expect(annSocket.latestView()?.own).toEqual({ kind: "out" });
+      expect(annSocket.latestView()?.own).toEqual({
+        kind: "out",
+        rejoinAt: null,
+        dailyLimit: null,
+      });
     },
     STARTING_MS,
   );
@@ -250,7 +254,10 @@ describe("deleting an account in the ranked queue", () => {
       gusSocket.send(gus, { type: "confirm_match" });
       await post("/api/account-deletions", { token: fay, password: PASSWORD });
       await vi.waitFor(() => {
-        expect(gusSocket.notices().at(-1)).toEqual({ kind: "match_not_started" });
+        expect(gusSocket.notices().at(-1)).toEqual({
+          kind: "match_not_started",
+          reason: "not_confirmed",
+        });
         expect(gusSocket.latestView()?.own).toEqual({ kind: "waiting", sizes: [2] });
       }, WAITING_MS);
     },
