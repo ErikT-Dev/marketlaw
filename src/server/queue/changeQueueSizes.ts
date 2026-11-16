@@ -44,5 +44,5 @@ export function changeQueueSizes(
     ...match,
     players: withSizesOf(match.players, changed),
   }));
-  return { isOk: true, value: { ...state, queue: { ...queue, matches }, notices: [] } };
+  return { isOk: true, value: { ...state, queue: { ...queue, matches }, notices: [], starts: [] } };
 }

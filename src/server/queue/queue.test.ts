@@ -84,14 +84,14 @@ describe("the ranked queue", () => {
       isOk: false,
       error: "busy_elsewhere",
     });
-    const left = leaveQueue(waiting, playerId);
+    const left = leaveQueue(waiting, playerId, CONTEXT);
     expect(left.isOk && left.value.lobby.busy).toEqual([]);
     expect(left.isOk && left.value.queue.entries).toEqual([]);
   });
 
   it("rejects leaving or changing sizes for a player who is not in the queue", () => {
     const playerId = ANN;
-    expect(leaveQueue(EMPTY, playerId)).toEqual({ isOk: false, error: "not_in_queue" });
+    expect(leaveQueue(EMPTY, playerId, CONTEXT)).toEqual({ isOk: false, error: "not_in_queue" });
     expect(changeQueueSizes(EMPTY, playerId, [3], CONTEXT)).toEqual({
       isOk: false,
       error: "not_in_queue",

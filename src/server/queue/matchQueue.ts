@@ -66,9 +66,9 @@ function withMatchesMade(made: MatchesMade, deadline: EpochMs): MatchesMade {
 
 export function matchQueue(state: QueueState, context: QueueContext): QueueChange {
   if (isSiteGameLimitReached(state.lobby, context)) {
-    return { ...state, notices: [] };
+    return { ...state, notices: [], starts: [] };
   }
   const deadline = v.parse(EpochMs, context.now + QUEUE_TIMES.confirmMs);
   const { queue, notices } = withMatchesMade({ queue: state.queue, notices: [] }, deadline);
-  return { queue, lobby: state.lobby, notices };
+  return { queue, lobby: state.lobby, notices, starts: [] };
 }

@@ -3101,3 +3101,21 @@ file.
   in its log), seat steps, and `then.accounts[].actions_today`.
 - **Implemented:** `harness/scenarios/lobby-queue-and-limits.yaml` (`HARNESS:` commit);
   `tools/harness-runner/lobby/`; phase 26, Progress item 1a.
+
+## Q142. When a player declines a ranked match, what happens to the players who have not confirmed yet?
+
+- **Phase:** 26 (builder, item 1b).
+- **Question:** A8.9 says players who did not confirm leave the queue with a 2-minute wait, and
+  those who confirmed go back to the front. When one player declines while another has not yet
+  answered, that other player "did not confirm" only because the match ended before they could.
+  The spec does not say whether the match waits for the 20 seconds, or who gets the wait.
+- **Options:** keep the match open until the deadline; end it at once and give everyone who had
+  not confirmed the wait; or end it at once and give only the decliner the wait.
+- **Solution:** a decline ends the match at once (nobody waits 20 seconds for a game that cannot
+  start); only the player who declined leaves with the wait; the others, confirmed or not yet,
+  go back to the front in their earlier order and are matched again. When the 20 seconds run
+  out, everyone who had not confirmed leaves with the wait, counted from the deadline. When
+  several matches fail at once, the players of the earliest match go first. Written into A8.9
+  first.
+- **Implemented:** `src/server/queue/declineMatch.ts`, `fireQueueAlarm.ts`; phase 26, Progress
+  item 1b.

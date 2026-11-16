@@ -1,4 +1,6 @@
 import { changeQueueSizes } from "../../../src/server/queue/changeQueueSizes.ts";
+import { confirmMatch } from "../../../src/server/queue/confirmMatch.ts";
+import { declineMatch } from "../../../src/server/queue/declineMatch.ts";
 import { joinQueue } from "../../../src/server/queue/joinQueue.ts";
 import { leaveQueue } from "../../../src/server/queue/leaveQueue.ts";
 import type { QueueJoiner } from "../../../src/server/queue/QueueJoiner.ts";
@@ -39,10 +41,12 @@ function changeOfStep(
       return joinQueue(state, joinerNamed(session, name), sizesOfStep(step), context);
     case "change_sizes":
       return changeQueueSizes(state, playerId, sizesOfStep(step) ?? [], context);
-    default: {
-      const left = leaveQueue(state, playerId);
-      return left.isOk ? { isOk: true as const, value: { ...left.value, notices: [] } } : left;
-    }
+    case "confirm_match":
+      return confirmMatch(state, playerId, context);
+    case "decline_match":
+      return declineMatch(state, playerId, context);
+    default:
+      return leaveQueue(state, playerId, context);
   }
 }
 

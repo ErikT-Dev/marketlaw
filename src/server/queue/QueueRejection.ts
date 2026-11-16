@@ -6,4 +6,5 @@ export type QueueRejection =
   | "email_not_confirmed"
   | "invalid_game_sizes"
   | "rejoin_too_soon"
-  | "not_in_queue";
+  | "not_in_queue"
+  | "no_match_to_confirm";

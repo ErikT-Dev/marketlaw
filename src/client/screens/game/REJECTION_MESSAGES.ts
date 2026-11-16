@@ -98,6 +98,7 @@ export const REJECTION_MESSAGES: Readonly<Record<ReasonCode, IconText>> = {
   busy_elsewhere: "You are already in a room, the ranked queue or a game. Leave it first.",
   invalid_game_sizes: "Something went wrong.",
   not_in_queue: "You are not in the ranked queue.",
+  no_match_to_confirm: "This match is no longer waiting for you.",
   daily_action_limit:
     "You have used your 2,000 game actions for today. You can join rooms, the ranked queue and new games again after 00:00 UTC.",
   daily_game_start_limit:

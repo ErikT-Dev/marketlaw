@@ -177,7 +177,7 @@ These 28 scenarios are added to `harness/required.yaml` in this phase, by file a
     `runQueueStep.ts`, `waitWithQueue.ts`, `lobbyQueueThen.ts`, `queueSentTo.ts`); the next
     protocol change raises `PROTOCOL_VERSION` from 19.
 
-- [ ] 1b. **Confirming and starting a ranked game** (A8.7 to A8.11, A9.3 and A9.4 at the start;
+- [x] 1b. **Confirming and starting a ranked game** (A8.7 to A8.11, A9.3 and A9.4 at the start;
   Q134, Q135, Q136; scenarios `lobby-queue-and-limits` #16 to #20). **Large.**
   - Pure functions in `src/server/queue/`: confirm and decline (`no_match_to_confirm` when the
     match is gone); the 20-second deadline (a confirmation at the deadline is too late); a failed
@@ -192,6 +192,34 @@ These 28 scenarios are added to `harness/required.yaml` in this phase, by file a
     `createRoomIn`, `withFreeRoomCode`, the room's game start path and `RoomGame.kind`; the room
     must not ask M1.10. The lobby's busy entries move from the queue to the room code.
   - The driver's `then.game` already reads `kind` and `seats` (`lobbyGameThen`).
+  - Done (2026-11-16): `src/server/queue/` gains `confirmMatch`, `declineMatch`,
+    `fireQueueAlarm` (expired matches, the 10-second leaves, pruned rejoin waits, then matching),
+    `withQueueConnection` (`QueueRecord.closedConnections`, recorded only for queue members;
+    reopening clears it), `startConfirmedMatch` (`countGameStart`; Q136 both ways),
+    `withMatchUndone`, `rematched`, `startedMatchNotices`. `leaveQueue` now takes the context,
+    returns a `QueueChange` and declines while confirming. `QueueChange` gains `starts`
+    (`RankedStart`: players in queue order, size). `nextQueueAlarmAt` is the earliest of the
+    confirm deadlines, the 10-second leaves of waiting players and midnight while held back.
+    `QueueNotice` gains `match_started` (room code), `match_not_started`, `match_missed`
+    (`rejoinAt`), `site_game_limit`, `daily_limit`; reason code `no_match_to_confirm` with its
+    text; `PROTOCOL_VERSION` 20. Room side: `startRoomGame` takes the `GameKind` (rooms and
+    rematches pass `casual`), `startRankedRoomIn` writes a private room, owner first, game
+    started at once with `kind: "ranked"`; `movedToRoom` (lobby) moves busy entries from the
+    queue place to the room code. Lobby driver: `confirm_match`, `decline_match`, disconnect and
+    reconnect tell the queue (`connectInQueue`), `wait_ms` fires every queue alarm up to the end
+    (`waitWithQueue`), starts create the room (`startRankedRoomsInLobby`). Scenarios #16-#20
+    pass when added to the required list locally. Decision Q142 (a decline ends the match at
+    once; only the decliner gets the wait), written into A8.9 first.
+  - For later items: 1c must (a) run `fireQueueAlarm` before an intent when the alarm is due,
+    since `confirmMatch`/`declineMatch` refuse a match past its deadline; (b) know each queued
+    player's name to build the room (`startRankedRoomIn` takes `Identity`s; queue entries hold
+    only ids), e.g. from D1 or by storing it in the record; (c) create the room with
+    `withFreeRoomCode` and `newGameStart`, then apply `movedToRoom` in the Lobby and send
+    `startedMatchNotices`; (d) call `withQueueConnection` only when a player's last socket
+    closes or the first reopens. 3a: the notice text after a start stopped by a player's own
+    daily limit (`match_not_started` to the others) says "a player did not confirm" in S10.7;
+    word it or add a kind when building the screen. The next protocol change raises
+    `PROTOCOL_VERSION` from 20.
 
 - [ ] 1c. **The `RankedQueue` Durable Object** (the server side of 1a and 1b; M2.1 across rooms and
   the queue; `rules/cloudflare.md`). **Large.**

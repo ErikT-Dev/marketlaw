@@ -90,7 +90,9 @@ export function lobbyMessageThen(
     player,
     text: textShownFrom(messages, queue, asked["text"]),
     notice: noticeShownFrom(messages, pageNoticesTo.get(player), queue, asked["notice"]),
-    size: queue.notices.at(-1)?.size,
+    size: queue.notices
+      .flatMap((notice) => (notice.kind === "match_found" ? [notice.size] : []))
+      .at(-1),
     hides: hides.filter((word) => isHiddenIn(word, queue, sentText)),
     contains: contains.map((entry) =>
       isRecord(entry) && "accepted" in entry ? { accepted } : undefined,

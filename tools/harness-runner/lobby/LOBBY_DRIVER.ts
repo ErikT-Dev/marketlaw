@@ -29,6 +29,7 @@ import { runQueueStep } from "./runQueueStep.ts";
 import { waitWithQueue } from "./waitWithQueue.ts";
 import { lobbyQueueThen } from "./lobbyQueueThen.ts";
 import { queueSentTo } from "./queueSentTo.ts";
+import { connectInQueue } from "./connectInQueue.ts";
 
 const ROOM_ACTIONS = [
   "change_size",
@@ -39,7 +40,13 @@ const ROOM_ACTIONS = [
   "send_chat",
 ];
 
-const QUEUE_ACTIONS = ["join_queue", "change_sizes", "leave_queue"];
+const QUEUE_ACTIONS = [
+  "join_queue",
+  "change_sizes",
+  "leave_queue",
+  "confirm_match",
+  "decline_match",
+];
 
 const QUEUE_THEN_FIELDS = ["queue", "match", "view_lobby"];
 
@@ -131,9 +138,9 @@ async function runStep(session: LobbySession, step: ScenarioStep): Promise<void>
     waitWithQueue(session, step["wait_ms"]);
     removeUnusedGuestsInLobby(session);
   } else if (typeof step["disconnect"] === "string") {
-    session.setConnected(step["disconnect"], false);
+    connectInQueue(session, step["disconnect"], false);
   } else if (typeof step["reconnect"] === "string") {
-    session.setConnected(step["reconnect"], true);
+    connectInQueue(session, step["reconnect"], true);
   } else if (typeof step["visitor"] === "string") {
     await runVisitorStep(session, step["visitor"], step);
   } else if (step["action"] === "sign_up") {

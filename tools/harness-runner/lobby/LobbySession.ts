@@ -76,11 +76,11 @@ export class LobbySession {
   readonly queueNoticesTo = new Map<string, QueueNotice[]>();
   private otherRooms: ReadonlyArray<RoomRecord> = [];
   private namesAsked = 0;
-  private readonly random: ScriptedRandom;
+  readonly random: ScriptedRandom;
   readonly chat: LobbyChat;
   readonly emails: LobbyEmails;
   readonly history: LobbyHistory;
-  private readonly storage: RoomStorage = chatTrackingStorage(
+  readonly storage: RoomStorage = chatTrackingStorage(
     {
       read: () => this.record ?? undefined,
       write: (record) => {
