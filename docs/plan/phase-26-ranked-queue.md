@@ -443,3 +443,4 @@ are never merged.
 | Finisher | Sonnet, medium | 22 | 111k | 79 | done |
 | Phase reviewer | Opus, medium | 6 | 173k | 47 | done (F1-F7) |
 | Fixer, F1 and F4 | Opus, medium | 19 | 129k | 51 | done |
+| Fixer, F2, F3, F5 to F7 | Opus, medium | 9 | 119k | 47 | done |
