@@ -684,3 +684,4 @@ each helper's conversation size at its end.
 | Builder, item 10 | 23 | 170k | 88 | done |
 | Builder, item 11 | 15 | 153k | 75 | done |
 | Builder, item 12 | 11 | 132k | 51 | done |
+| Finisher, first run | 70 | 119k | 76 | partial (F1) |
