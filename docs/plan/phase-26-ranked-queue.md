@@ -353,6 +353,22 @@ These 28 scenarios are added to `harness/required.yaml` in this phase, by file a
 
 ### Finish
 
+- Finisher (2026-11-16): the 28 scenarios of the phase list plus the two account deletion scenarios of
+  item 4 (Q143) are in `harness/required.yaml` (`HARNESS:` commit `82af6120`; the harness check
+  reads 490 scenarios, 0 problems). Local `npm run check`: passed (3 min 19 s, bundle 163.25 kB
+  gzipped of 300). Local `npm run harness`: passed (the phase-end simulated games, 3 tests, 430 s;
+  scenario report: 0 fail).
+- Branch check, run 43912746323 (push of `82af6120`): conclusion success, all 7 jobs (check, other
+  tests 1 to 3 of 3, full games with 2, 3 and 4 players), no rerun needed.
+- Screenshots of that run copied into `harness/screens/`, including the three new folders
+  `lobby-ranked-locked`, `lobby-in-the-ranked-queue`, `lobby-match-found`. Note for the process:
+  `gh run download <id> --pattern "screens*"` works, but the artifacts hold the screen folders
+  directly (`screens (<job name>)/<screen>/<file>.png`), with no `harness/screens/` folder inside,
+  so each part's contents are copied over `harness/screens/` itself. Only 3 of the 6 browser jobs
+  have a screens artifact. 184 existing screenshots changed (re-rendered).
+- `docs/enforcement.md`: the Playwright row gains the phase 26 browser tests.
+- Findings: none.
+
 ### Helper log
 
 Filled in by the coordinator afterwards, from the helpers' completion notices (Q73). Tokens are
