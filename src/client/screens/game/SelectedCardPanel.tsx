@@ -16,14 +16,15 @@ type Props = {
   readonly isBusy: boolean;
   readonly onPlay: () => void;
   readonly onClose: () => void;
+  readonly className: string | undefined;
 };
 
 export function SelectedCardPanel(props: Props) {
-  const { details, seat, nextVoteTurn, isBusy, onPlay, onClose } = props;
+  const { details, seat, nextVoteTurn, isBusy, onPlay, onClose, className } = props;
   const card = cardOf(details.card);
   const rejection = details.playRejection;
   return (
-    <section className={styles["selected"]} aria-label={`Selected card: ${card.name}`}>
+    <section className={className} aria-label={`Selected card: ${card.name}`}>
       <BigCard card={card} realCost={details.realCost} />
       <h3 className={styles["cost"]}>
         Costs <StatChip stat="funds" value={details.realCost} />

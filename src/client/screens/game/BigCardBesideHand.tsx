@@ -11,6 +11,7 @@ type Props = {
   readonly seat: OwnSeatView;
   readonly nextVoteTurn: number;
   readonly isBusy: boolean;
+  readonly isOverStatsAndHand: boolean;
   readonly onPlay: () => void;
   readonly onClose: () => void;
   readonly onLookAt: (lookedAt: LookedAtCard | null) => void;
@@ -18,6 +19,7 @@ type Props = {
 
 export function BigCardBesideHand(props: Props) {
   const { details, lookedAt, onLookAt } = props;
+  const className = styles[props.isOverStatsAndHand ? "overStatsAndHand" : "besideHand"];
   if (details !== undefined) {
     return (
       <SelectedCardPanel
@@ -27,6 +29,7 @@ export function BigCardBesideHand(props: Props) {
         isBusy={props.isBusy}
         onPlay={props.onPlay}
         onClose={props.onClose}
+        className={className}
       />
     );
   }
@@ -36,7 +39,7 @@ export function BigCardBesideHand(props: Props) {
   return (
     <LookedAtCardPanel
       card={lookedAt.card}
-      className={styles["selected"]}
+      className={className}
       onClose={() => {
         onLookAt(null);
       }}

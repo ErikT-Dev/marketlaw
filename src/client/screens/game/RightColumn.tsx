@@ -81,6 +81,7 @@ export function RightColumn(props: Props) {
         seat={seat}
         nextVoteTurn={view.nextVoteTurn}
         isBusy={isBusy}
+        isOverStatsAndHand={view.phase === "market"}
         onPlay={playSelected}
         onClose={clear}
         onLookAt={onLookAt}

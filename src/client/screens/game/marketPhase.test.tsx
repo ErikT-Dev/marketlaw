@@ -108,6 +108,22 @@ describe("the market go panel", () => {
     });
   });
 
+  it("on your go keeps the marketplace card selected for Draw after the big card is closed", () => {
+    const { onAction } = showGame({ marketGo: 2 }, ON_YOUR_GO);
+    fireEvent.click(marketplace().getByRole("button", { name: "Saw Mill" }));
+    const bigCard = within(screen.getByRole("region", { name: "Selected card: Saw Mill" }));
+    fireEvent.click(bigCard.getByRole("button", { name: "Close" }));
+    expect(screen.queryByRole("region", { name: "Selected card: Saw Mill" })).toBeNull();
+    expect(
+      marketplace().getByRole("button", { name: "Saw Mill" }).getAttribute("aria-pressed"),
+    ).toBe("true");
+    fireEvent.click(marketplace().getByRole("button", { name: "Draw" }));
+    expect(onAction).toHaveBeenLastCalledWith({
+      type: "turn_draw",
+      choice: { option: "A", card: "Saw Mill" },
+    });
+  });
+
   it("offers only the sectors when the marketplace is empty", () => {
     showGame(
       { marketGo: 2, marketplace: MARKETPLACE.map((slot) => ({ ...slot, card: null })) },

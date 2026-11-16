@@ -12,6 +12,7 @@ import { marketGoText } from "./marketGoText";
 import { MarketPhaseBanner } from "./MarketPhaseBanner";
 import { MarketplacePanel } from "./MarketplacePanel";
 import { QuestsPanel } from "./QuestsPanel";
+import { useSelectedForDraw } from "./useSelectedForDraw";
 
 type Props = {
   readonly view: PlayerView;
@@ -31,6 +32,7 @@ export function MiddleColumn(props: Props) {
   const { view, seat, playerNames, isBusy, lookedAt, onLookAt, onAction } = props;
   const canTakeMarketCard = seat.marketCardRejection === null;
   const isYourGo = seat.turnDrawRejection === null && !seat.hasHadMarketGo;
+  const { selectedForDraw, selectForDraw } = useSelectedForDraw(isYourGo);
   function drawMarketCard(card: CardName) {
     onLookAt(null);
     onAction({ type: "turn_draw", choice: { option: "A", card } });
@@ -46,8 +48,9 @@ export function MiddleColumn(props: Props) {
       <MarketplacePanel
         view={view}
         isYourGo={isYourGo}
-        selected={lookedAtIn(lookedAt, "marketplace")}
+        selected={isYourGo ? selectedForDraw : lookedAtIn(lookedAt, "marketplace")}
         onSelect={(card) => {
+          selectForDraw(card);
           onLookAt({ card, place: "marketplace" });
         }}
         onDraw={canTakeMarketCard && !isBusy ? drawMarketCard : null}

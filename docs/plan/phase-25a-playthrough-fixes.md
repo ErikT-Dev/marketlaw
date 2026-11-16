@@ -663,6 +663,14 @@ These 24 required scenarios now assert the new rules (Q126) and must pass again:
     so at 1280×720 a player cannot take any marketplace card outside the first column on their
     go (S4.3 option A). The test is right; the layout must change (S4.1, S4.3, S6.5). At
     1920×1080 and 2560×1440 the games pass.
+    - Fixed (2026-11-16, Q131, S6.5 changed first in a `HARNESS:` commit): until your own main
+      phase starts, the big card is shown over your stats and hand (`BigCardBesideHand`
+      `isOverStatsAndHand`, class `overStatsAndHand`), never over the marketplace, Draw or the
+      market go panel; from your main phase on it stays beside the hand. The marketplace
+      selection for Draw is kept apart from the looked-at card (`useSelectedForDraw`), so Close
+      keeps it (`marketPhase.test.tsx`). The two-, three- and four-player full games pass at all
+      three sizes (the three-player game at 1920×1080 failed once in a sell on load and passed
+      alone), as do `marketPhase`, `lookingAtCards` and `bigCardSwitch`; `npm run check` green.
 
 - Phase review (2026-11-16): ready after fixes. `npm run check` and `npm run harness` green;
   all 27 new scenarios and the 5 renamed ones required. Findings:
