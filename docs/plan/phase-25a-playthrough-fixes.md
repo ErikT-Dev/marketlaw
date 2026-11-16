@@ -664,6 +664,27 @@ These 24 required scenarios now assert the new rules (Q126) and must pass again:
     go (S4.3 option A). The test is right; the layout must change (S4.1, S4.3, S6.5). At
     1920×1080 and 2560×1440 the games pass.
 
+- Phase review (2026-11-16): ready after fixes. `npm run check` and `npm run harness` green;
+  all 27 new scenarios and the 5 renamed ones required. Findings:
+  - **F2 (should fix, R9.6, Q127):** `src/rules/receiveAction.ts` line 38 rejects every action
+    `out_of_time` at the seat's own market-go deadline; only a turn draw should be. Other
+    actions (for example `leave_game`) are handled after the go time-out. Add a test or
+    scenario for a `leave_game` at the go deadline. Also check whether
+    `hasTimedOutThisDecision.ts` (still `out_of_time` for a seat waiting in the next market
+    phase right after a main-phase time-out, `roomAlarm.test.ts` 143-170) is wanted; record it
+    under Q127.
+  - **F3 (suggestion, A2.4):** `src/server/renamePlayer.ts` builds the new
+    `username_changes_ms` from the list read earlier while the `WHERE` counts the current row;
+    two renames at once can allow a 5th change in 7 days. Build the list in SQL, or compare the
+    old value in the `WHERE` and answer correctly on 0 changes.
+  - **F4 (suggestion, M3.7):** a game ended mid main phase (`leaveGame.ts` last player and
+    everyone left, `closeVote.ts`, `abandonPausedGame.ts`) calls `endGame` without
+    `withMainPhaseLogWritten`, so that main phase's plays are missing from the log. Write the
+    log in `endGame`, or record why not.
+  - **F5 (suggestion, reuse):** `withMainPhaseLogWritten.ts` rotates seats itself instead of
+    `playerOrderOf` (left seats); the game kind is stored three times (`RoomGame.kind`,
+    `setup.kind`, `state.kind`); `QuestsCompletedLastTurnTable.tsx` uses a silent `?? 1` tier
+    fallback. Not blocking.
 ### Helper log
 
 Filled in by the coordinator afterwards, from the helpers' completion notices (Q73). Tokens are
@@ -685,3 +706,4 @@ each helper's conversation size at its end.
 | Builder, item 11 | 15 | 153k | 75 | done |
 | Builder, item 12 | 11 | 132k | 51 | done |
 | Finisher, first run | 70 | 119k | 76 | partial (F1) |
+| Phase reviewer | 8 | 193k | 88 | done (F2-F5) |
