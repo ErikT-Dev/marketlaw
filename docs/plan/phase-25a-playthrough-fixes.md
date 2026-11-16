@@ -750,3 +750,73 @@ each helper's conversation size at its end.
 | Fixer, F1 | 19 | 135k | 49 | done |
 | Fixer, F2 to F5 | 15 | 139k | 66 | done |
 | Finisher, second run | 36 | 78k | 29 | done |
+
+## Report
+
+**Built.** All 12 findings of the owner's playthrough of 2026-11-10 (Q126). Each player's main
+phase starts as soon as their own market go ends, with its own main-phase limit and free time;
+while others still have their go, a player in their main phase sees the others as at the start
+of their own main phase, and the deck and discard pile as R5.5 says (the leak test, the
+simulator's what-seats-see checks and the bots follow). More time: a main phase of 210 seconds
+plus about 6 seconds per turn (at most 330), 75 seconds of free time, 40 seconds for every market
+go. A player whose time runs out is **out of time**, not done: they keep playing and are made
+done only once everyone else is done or out of time; the 3-time-outs leaving rule holds in
+ranked games only, and a casual game's notice says you can keep playing. A market go that runs
+out draws nothing and leaves your turn draw open in your main phase (option B, sector buttons);
+if you never take it, it is drawn with a random sector when you become done. Ending your turn
+claims every ready combo first. An expired quest no longer comes straight back. The panel's
+**Log** tab shows the game log: cards played, quests and projects completed and influence used,
+per player, once the main phase ends (also when the game ends in a main phase, Q132). A small
+table lists the quests completed last turn. Usernames can change 4 times in 7 days (D1
+migration 0013). On screen: the market banner and phase are green on your go, a marketplace card
+is taken only with **Draw**, your city and actions open when your go ends, clocks and badges
+show out of time, End turn lights up after you play a card, "Your income has increased!"
+appears, any card on the table opens in the big card with doubled types shown twice, opponents
+show quests, influence, types, combos and their stats, and the quests panel names, in bold
+orange, the other players who could complete a quest now. `PROTOCOL_VERSION` and
+`SAVE_SCHEMA_VERSION` are 17: old tabs are told to reload, and rooms saved before close (D1).
+
+**What to try.** On the live site, in a casual room with two players (two browsers):
+1. Start a game. On your market go the banner is green; click a marketplace card and take it
+   with **Draw**. As soon as your go ends, play a card while the other player still has theirs.
+2. After playing a card, End turn is highlighted; end your turn and see your ready combos
+   claimed. When your income rises, "Your income has increased!" shows and closes by itself.
+3. Let a market go run out: your main phase starts with the turn draw open; pick a sector.
+4. Let your main-phase time run out while the other player still plays: you are shown out of
+   time and can keep playing.
+5. Open the **Log** tab after a turn; click a card in another player's board to see it in the
+   big card; look at the quests panel and the completed-last-turn table.
+6. Change your username in account settings: four changes in a week are allowed.
+
+**Checks.** The second finisher run: `npm run check` green; `npm run harness` green (488
+scenarios, all of this phase's required, phase-end simulated games, budgets B3 and B13
+included). The two-, three- and four-player full games pass locally at all three sizes; two
+other browser tests timed out only under the known local load problem and passed when rerun
+alone. GitHub judges the full browser suite on the branch and again on master.
+
+**Differences from the phase file.** Item 2 was built in two parts (2a clocks and phases, 2b
+what each seat sees); bots act in their main phase at once only from 2b on. R5.5 now says where
+a market-go draw of a card still shown in the discard pile comes off (Q128). The runner reads a
+`then.marketplace` that lists only some places like `given` (Q129). The card set's doubled types
+(S14.3) wait for phase 28, which builds the card set. At 1280×720 the big card is shown over
+your stats and hand until your main phase starts, so it never covers Draw (Q131, S6.5 changed).
+A late End turn after your own main-phase time-out is now `wrong_phase`, not `out_of_time`
+(Q127). The game kind is still stored in three places (see F5).
+
+**Decisions.** Q126: the playthrough findings into the spec and this phase. Q127: the start's
+two contradictions (R9.6, I24), and later only a turn draw at its own go deadline is rejected
+`out_of_time`. Q128: market-go draws of a card still shown in the discard pile. Q129: partial
+`then.marketplace`. Q130: who "could complete the quest now" is decided on the server per
+viewer. Q131: where the big card sits at 1280×720 in the market phase. Q132: a game ending in a
+main phase writes that main phase's log.
+
+**Review findings and what happened to each.**
+1. F1 (finisher): at 1280×720 the big card covered Draw: fixed (Q131); Close keeps the
+   marketplace selection.
+2. F2: every action was rejected `out_of_time` at the go deadline: fixed, only the turn draw;
+   new required scenario for leaving at the deadline.
+3. F3: two renames at once could allow a 5th change in 7 days: fixed, the write checks the
+   change times it read and retries; route test with 6 renames at once.
+4. F4: a game ending mid main phase lost that phase's log: fixed (Q132), new required scenario.
+5. F5: reuse: fixed in part (`seatsInPlayerOrderOf`, `questTierOf`); the game kind stored three
+   times is left for a later refactor, as it changes the save shape with no behaviour gain.
