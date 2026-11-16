@@ -715,6 +715,16 @@ These 24 required scenarios now assert the new rules (Q126) and must pass again:
       record; folding them is a save-shape change across the engine, the room and the runner,
       larger than the finding and with no behaviour gain, so it is left for a later refactor.
 
+- Finisher, second run (2026-11-16, after F1 to F5): nothing listened on port 8787 before the
+  browser tests. `npm run check` green; `npm run harness` green (488 scenarios, phase-end
+  simulated games, budgets). Browser tests: each shard had the same two failures, run together,
+  at one size each (shard 1 at 1920×1080, shard 2 at 2560×1440): `accountSettings.spec.ts`
+  "adds a new one and deletes the account" (the Send request still "Sending" after 5 s) and
+  `bigCardSwitch.spec.ts` (hand-card photos not loaded within 5 s), the known local load
+  problem; both files passed at all three sizes when rerun alone. The two-, three- and
+  four-player full games pass at all three sizes. No new check applies, so
+  `docs/enforcement.md` is unchanged. Screenshots regenerated.
+
 ### Helper log
 
 Filled in by the coordinator afterwards, from the helpers' completion notices (Q73). Tokens are
