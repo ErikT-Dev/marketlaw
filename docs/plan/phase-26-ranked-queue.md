@@ -327,3 +327,4 @@ are never merged.
 | Builder, item 1a | Opus, medium | 21 | 216k | 106 | partial (#23 left) |
 | Builder, item 1a rest | Opus, medium | 8 | 119k | 47 | done |
 | Builder, item 1b (resumed after the usage limit) | Opus, medium | 8 after resume | 168k | 30 after resume | done |
+| Builder, item 1c | Opus, medium | 19 | 192k | 62 | done |
