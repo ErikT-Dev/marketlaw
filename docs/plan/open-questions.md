@@ -2842,6 +2842,16 @@ file.
   piles follow R5.5, market-go draws and shuffles included.
 - **Implemented:** `harness/spec/game-rules.md` R9.6, `harness/invariants.yaml` I24 (one
   `HARNESS:` commit); phase 25a items 1 to 3.
+- **Review finding F2 (2026-11-16):** the engine rejected every message that applied its sender's
+  own market-go time-out as `out_of_time`, not only a turn draw, so a `leave_game` at the go's
+  deadline was refused. Now only a turn draw is; every other message is handled after the
+  time-out (R9.6), as the scenario "a player who leaves at the deadline of their market go leaves
+  after the time-out" shows. `hasTimedOutThisDecision` is removed: since items 1 to 3 it only
+  caught a seat waiting for its market go right after a main-phase time-out of its own had ended
+  the main phase, and answered all its messages `out_of_time` until the first go ended, a
+  `leave_game` (M6.1, any time) included. R9.6 names no such case: such a message is handled after
+  the time-out like any other, so a late End turn is now `wrong_phase` (`roomAlarm.test.ts`
+  follows). `src/rules/receiveAction.ts`.
 
 ## Q128. Where does a market-go draw of a card still shown in the discard pile come off?
 
