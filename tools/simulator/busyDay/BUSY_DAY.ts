@@ -1,5 +1,10 @@
 export const BUSY_DAY = {
   games: 50,
+  rankedGames: 20,
+  declinedRankedMatches: 5,
+  queueLeavers: 15,
+  queueClosedConnections: 15,
+  queueMessageMs: 2_000,
   chatMessages: 2000,
   newGuests: 100,
   rowsPerNewGuest: 4,

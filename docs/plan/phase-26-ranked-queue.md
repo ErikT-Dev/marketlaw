@@ -314,11 +314,23 @@ These 28 scenarios are added to `harness/required.yaml` in this phase, by file a
     a wrong clock shows a wrong M:SS; the server's deadline still decides. The next protocol
     change raises `PROTOCOL_VERSION` from 22.
 
-- [ ] 3b. **The busy day with queue use** (B18; Q139). **Small.**
+- [x] 3b. **The busy day with queue use** (B18; Q139). **Small.**
   - `tools/simulator/busyDay/` runs Q139's queue use through the `src/server/queue/` functions
     and the lobby's, counting every queue and lobby row and alarm change; update B18's `where`
     text in `tools/harness-runner/BUDGET_CHECKS.ts`. B18 must stay within 5,000 (exit
     criterion). `simulateBusyDay.ts` has 264 lines: put the queue part in its own file.
+  - Done (2026-11-16): of the busy day's 50 games, 30 are room games as before and 20 are ranked
+    games matched through `applyQueueOperation` (`BusyDayQueue`: the queue record's rows in a new
+    `queue` count, the lobby's through `changeLobby`, the queue alarm as `RankedQueue` sets it),
+    started with `startRankedRoomIn` and `movedToRoom`, then played to the end like the room games
+    (`finishGame`, the 2,000 chat messages still spread over all 50). Each ranked player joins with
+    a size that cannot match yet and changes to the game's size; the first 5 matches are declined
+    by their last player, who joins again after the 2-minute wait; 30 more players join and leave
+    (15 by a closed connection, left by the queue alarm). B18 is now 3,794 rows (was 3,846: ranked
+    rooms skip the waiting room's joins), 262 of them the queue's; rows read 7,539 (B16).
+    `simulateBusyDay.ts` is at 290 non-blank lines (`busyDayPlayer`, `busyDayRoomCode`,
+    `startBusyDayRankedRoom`, `matchThroughQueue`, `useQueueWithoutGames` split out). Not run:
+    `npm run harness` (the finisher runs it).
 
 - [x] 4. **Deleting an account leaves the ranked queue** (A1.15, Q111). **Small.**
   - `src/server/api/accountDeletionRoute.ts`: before the rows are deleted, take the player out of
