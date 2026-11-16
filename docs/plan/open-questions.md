@@ -3084,3 +3084,20 @@ file.
   waiting), and the player goes back with the new sizes if the match does not start (A8.9 "with
   their game sizes"). A player neither waiting nor confirming gets `not_in_queue`.
 - **Implemented:** `src/server/queue/changeQueueSizes.ts`; phase 26, Progress item 1a.
+
+## Q141. Scenario `lobby-queue-and-limits` #23 lists only Ann under `then.accounts`
+
+- **Phase:** 26 (builder, item 1a).
+- **Question:** "a player's actions in a game are added to the daily count when the game ends"
+  gives two accounts, Ann and Bea, but its `then.accounts` lists only Ann. Every other scenario
+  reads `then.accounts` as the full list of accounts, which the deletion and guest-removal
+  scenarios depend on, so as written the scenario says Bea's account is gone, which nothing in
+  the spec makes happen (A9.2 only adds actions).
+- **Options:** make the lobby driver read `then.accounts` as "these accounts, others ignored",
+  which would weaken the deletion scenarios; or list Bea in the scenario.
+- **Solution:** list Bea: `accounts: [{name: Ann, actions_today: 2005}, {name: Bea}]`. Nothing
+  else about the scenario changes. The driver gains `given.players` with
+  `given.seats[].actions_this_game` (a playing room whose seat has that many non-system actions
+  in its log), seat steps, and `then.accounts[].actions_today`.
+- **Implemented:** `harness/scenarios/lobby-queue-and-limits.yaml` (`HARNESS:` commit);
+  `tools/harness-runner/lobby/`; phase 26, Progress item 1a.
