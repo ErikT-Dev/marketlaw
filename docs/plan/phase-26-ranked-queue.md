@@ -499,3 +499,4 @@ failure): fixed, Q148 and the `no_room` path. F4 (browser clock for the countdow
 F5 (a `no_room` match kept its counted start): fixed, Q149. F6 (logout test used a player not in
 the queue): fixed. F7 (repeated alarm decision): fixed, reuse of `alarmChangeTo`.
 | Releaser (stopped by the owner) | Sonnet, low | – | – | – | stopped; branch check failed |
+| Fixer, branch check (bigCardSwitch, Q150; resumed after the usage limit) | Opus, medium | – | – | – | done |
