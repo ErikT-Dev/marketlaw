@@ -2,7 +2,10 @@ import type { ConnectionStatus } from "../../shared/ConnectionStatus";
 import type { EmailDialog } from "./EmailDialog";
 import type { Notice } from "../../shared/Notice";
 import type { PublicRoomView } from "../../shared/protocol/PublicRoomView";
+import type { QueueView } from "../../shared/protocol/QueueView";
 import type { RoomUpdate } from "../../shared/protocol/RoomUpdate";
+import type { ReasonCode } from "../../shared/ReasonCode";
+import type { LobbyQueueNotice } from "./LobbyQueueNotice";
 import type { JoinError } from "./JoinError";
 import type { PendingAction } from "./PendingAction";
 import type { RejectedMove } from "./RejectedMove";
@@ -26,4 +29,7 @@ export type ClientState = {
   readonly publicRooms: ReadonlyArray<PublicRoomView>;
   readonly isOutdated: boolean;
   readonly emailDialog: EmailDialog | null;
+  readonly queue: QueueView | null;
+  readonly queueNotice: LobbyQueueNotice | null;
+  readonly queueRejection: ReasonCode | null;
 };

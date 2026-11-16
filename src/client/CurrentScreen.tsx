@@ -1,5 +1,6 @@
 import { useSyncExternalStore } from "react";
 import { accountBindingOf } from "./accountBindingOf";
+import { rankedQueueBindingOf } from "./rankedQueueBindingOf";
 import { RoomGameScreen } from "./RoomGameScreen";
 import { LobbyPage } from "./screens/lobby/LobbyPage";
 import { WaitingPage } from "./screens/WaitingPage";
@@ -27,6 +28,7 @@ export function CurrentScreen({ store }: Props) {
         onForgotPassword={store.openForgotPassword}
         onDismissRemoval={store.dismissRemoval}
         publicRooms={state.publicRooms}
+        ranked={rankedQueueBindingOf(store, state)}
       />
     );
   }

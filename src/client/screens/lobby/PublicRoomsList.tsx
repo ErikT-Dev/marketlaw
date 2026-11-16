@@ -6,13 +6,14 @@ import styles from "./Lobby.module.css";
 type Props = {
   readonly rooms: ReadonlyArray<PublicRoomView>;
   readonly onJoin: (code: string) => void;
+  readonly isBusy: boolean;
 };
 
 function freePlacesOf(room: PublicRoomView): number {
   return Math.max(0, room.size - room.playerNames.length);
 }
 
-export function PublicRoomsList({ rooms, onJoin }: Props) {
+export function PublicRoomsList({ rooms, onJoin, isBusy }: Props) {
   if (rooms.length === 0) {
     return (
       <div className={styles["emptyList"]}>
@@ -44,7 +45,7 @@ export function PublicRoomsList({ rooms, onJoin }: Props) {
             </span>
             <Button
               look="success"
-              isDisabled={free === 0}
+              isDisabled={isBusy || free === 0}
               onClick={() => {
                 onJoin(room.code);
               }}

@@ -2,6 +2,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { App } from "./App";
 import { openLobbyFeed } from "./openLobbyFeed";
+import { openQueueFeed } from "./openQueueFeed";
 import { openRoomHost } from "./openRoomHost";
 import { keepPrivacyNoticeInsideApp } from "./screens/privacy/keepPrivacyNoticeInsideApp";
 import { keepRecordPageInsideApp } from "./screens/records/keepRecordPageInsideApp";
@@ -17,7 +18,7 @@ if (linkedSession !== null || emailLink !== null) {
 }
 keepPrivacyNoticeInsideApp();
 keepRecordPageInsideApp();
-const store = new ClientStore(openRoomHost, openLobbyFeed);
+const store = new ClientStore(openRoomHost, openLobbyFeed, openQueueFeed);
 if (linkedSession !== null) {
   void store.startFromSeatLink(linkedSession, () =>
     window.confirm(

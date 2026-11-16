@@ -19,5 +19,8 @@ export function initialClientState(session: StoredSession | null): ClientState {
     publicRooms: [],
     isOutdated: false,
     emailDialog: null,
+    queue: null,
+    queueNotice: null,
+    queueRejection: null,
   };
 }

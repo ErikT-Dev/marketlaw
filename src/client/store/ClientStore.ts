@@ -4,6 +4,7 @@ import type { ReasonCode } from "../../shared/ReasonCode";
 import type { HostEvent } from "../../shared/HostEvent";
 import type { LobbyFeed } from "../../shared/LobbyFeed";
 import type { OpenLobbyFeed } from "../../shared/OpenLobbyFeed";
+import type { OpenQueueFeed } from "../../shared/OpenQueueFeed";
 import type { ActionIntent } from "../../shared/protocol/ActionIntent";
 import type { RoomCode } from "../../shared/RoomCode";
 import { requestRoom } from "../api/requestRoom";
@@ -12,7 +13,6 @@ import type { RemovalReason } from "../../shared/protocol/RemovalReason";
 import type { RoomIntent } from "../../shared/protocol/RoomIntent";
 import type { NewRoom } from "./NewRoom";
 import { requestTestSeat } from "../api/requestTestSeat";
-import { EmailAccountStore } from "./EmailAccountStore";
 import { chatAfterRefusal } from "./chatAfterRefusal";
 import { chatAfterSending } from "./chatAfterSending";
 import { CODES_THAT_RELOAD_THE_GAME } from "./CODES_THAT_RELOAD_THE_GAME";
@@ -22,18 +22,25 @@ import type { PendingAction } from "./PendingAction";
 import { readSession } from "./readSession";
 import { roomChatAfter } from "./roomChatAfter";
 import type { StoredSession } from "./StoredSession";
+import { QueueStore } from "./QueueStore";
 import { writeSession } from "./writeSession";
 
 type OpenHost = (code: RoomCode, token: string) => GameHost;
 
-export class ClientStore extends EmailAccountStore {
+const NO_FEED = { send: () => false, close: () => undefined };
+
+export class ClientStore extends QueueStore {
   private host: GameHost | null = null;
   private readonly openHost: OpenHost;
   private readonly openLobby: OpenLobbyFeed;
   private lobbyFeed: LobbyFeed | null = null;
 
-  constructor(openHost: OpenHost, openLobby: OpenLobbyFeed = () => ({ close: () => undefined })) {
-    super(initialClientState(readSession()));
+  constructor(
+    openHost: OpenHost,
+    openLobby: OpenLobbyFeed = () => NO_FEED,
+    openQueue: OpenQueueFeed = () => NO_FEED,
+  ) {
+    super(initialClientState(readSession()), openQueue);
     this.openHost = openHost;
     this.openLobby = openLobby;
     const session = this.state.session;
@@ -51,6 +58,14 @@ export class ClientStore extends EmailAccountStore {
     this.lobbyFeed ??= this.openLobby((publicRooms) => {
       this.change({ publicRooms });
     });
+    this.watchQueue();
+  }
+
+  protected enterRankedRoom(code: RoomCode): void {
+    const session = this.state.session;
+    if (session !== null) {
+      this.enterRoom(session, code);
+    }
   }
 
   readonly startFromSeatLink = async (
@@ -177,6 +192,7 @@ export class ClientStore extends EmailAccountStore {
     });
     this.lobbyFeed?.close();
     this.lobbyFeed = null;
+    this.stopWatchingQueue();
     this.host?.close();
     this.host = this.openHost(code, session.token);
     this.host.subscribe(this.receive);

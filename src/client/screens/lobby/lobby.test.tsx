@@ -1,6 +1,7 @@
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import * as v from "valibot";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { testRankedQueue } from "../../testing/testRankedQueue";
 import { EpochMs } from "../../../shared/EpochMs";
 import type { RoomView } from "../../../shared/protocol/RoomView";
 import { RoomCode } from "../../../shared/RoomCode";
@@ -29,6 +30,7 @@ function lobby(changes: Partial<Parameters<typeof LobbyPage>[0]> = {}) {
       onForgotPassword={vi.fn()}
       onDismissRemoval={vi.fn()}
       publicRooms={[]}
+      ranked={testRankedQueue()}
       {...changes}
     />,
   );
