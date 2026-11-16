@@ -27,7 +27,7 @@ async function joinTwoPlayerQueue(player: Player): Promise<void> {
   await panel.getByRole("switch", { name: "2 players" }).check();
   await panel.getByRole("switch", { name: "3 players" }).uncheck();
   await panel.getByRole("button", { name: "Join the ranked queue" }).click();
-  await expect(panel.getByText("You are in the queue")).toBeVisible();
+  await expect(panel.getByRole("button", { name: "Leave the queue" })).toBeVisible();
 }
 
 async function leaveQueueIfIn(player: Player): Promise<void> {
@@ -80,6 +80,7 @@ test("registered players join the ranked queue, confirm a match and play a ranke
   await withRankedQueueLock(async () => {
     try {
       await joinTwoPlayerQueue(ann);
+      await expect(annPanel.getByText("You are in the queue")).toBeVisible();
       await expect(ann.page.getByRole("button", { name: "Create room" })).toBeDisabled();
       await changeSizesInQueue(ann.page);
       await expectScreenFits(ann.page, "lobby-in-the-ranked-queue", testInfo);
@@ -87,6 +88,7 @@ test("registered players join the ranked queue, confirm a match and play a ranke
       const annDialog = ann.page.getByRole("dialog", { name: "2-player match found!" });
       await expect(annDialog).toContainText("A ranked game with 2 players is ready.");
       await expect(annDialog).not.toContainText(bea.name);
+      await expect(annPanel).not.toContainText("including you");
       await expectScreenFits(ann.page, "lobby-match-found", testInfo);
       await confirmMatch(ann, bea);
     } finally {

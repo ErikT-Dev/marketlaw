@@ -28,16 +28,17 @@ const WHILE_YOU_WAIT =
 export function RankedQueuePanel(props: Props) {
   const { queue, lock, error } = props;
   const isInQueue = queue.own.kind !== "out";
+  const isWaiting = queue.own.kind === "waiting";
   const counts = queueCountTexts(queue.counts);
   return (
     <section className={styles["panel"]} aria-labelledby="ranked-heading">
       <h2 id="ranked-heading" className={styles["title"]}>
         Ranked queue
       </h2>
-      <p className={styles["headline"]}>{isInQueue ? "You are in the queue" : counts.total}</p>
+      <p className={styles["headline"]}>{isWaiting ? "You are in the queue" : counts.total}</p>
       <p className={styles["text"]}>{counts.bySize}</p>
       <p className={styles["text"]}>
-        {isInQueue ? `${counts.includingYou} ${WHILE_YOU_WAIT}` : HOW_IT_WORKS}
+        {isWaiting ? `${counts.includingYou} ${WHILE_YOU_WAIT}` : HOW_IT_WORKS}
       </p>
       {isInQueue && queue.isSiteGameLimitReached ? (
         <p className={styles["lock"]}>

@@ -159,6 +159,15 @@ describe("the match found dialog", () => {
     expect(dialog.textContent).toContain("Confirmed. Waiting for the other players. 0:17 left.");
     expect(within(dialog).queryByRole("button")).toBeNull();
   });
+
+  it("shows the panel behind it with the counts and without the in-queue texts", async () => {
+    const own = { kind: "confirming" as const, size: 3 as const, deadline, isConfirmed: false };
+    const { panel } = await showQueue({ ...OUT_OF_QUEUE, own });
+    expect(panel.textContent).toContain("4 players in the queue");
+    expect(panel.textContent).toContain("Ranked games change ELO ratings.");
+    expect(panel.textContent).not.toContain("You are in the queue");
+    expect(panel.textContent).not.toContain("including you");
+  });
 });
 
 describe("the notices after a match that did not start", () => {
