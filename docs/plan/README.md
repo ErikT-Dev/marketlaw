@@ -174,7 +174,9 @@ whole phase.
 
 - **The builder model test (Q133, phase 26 only).** For two **small** items, the coordinator
   also gives the same item to a cheaper builder in its own worktree (Agent `isolation:
-  "worktree"`), started from the same commit before the Opus builder starts: Sonnet at medium
+  "worktree"`, brief: fast-forward to the phase branch first), started from the same commit before
+  the Opus builder starts, its worktree folder removed (`git worktree remove -f -f`, the branch
+  kept) before the Opus builder runs checks: Sonnet at medium
   for the first, Opus at low for the second. Its work is never merged. After both report, one
   Opus helper compares the two diffs against the item, the spec and the checks, and the
   coordinator records the result, with tokens and minutes, in Q133. Small items move to the

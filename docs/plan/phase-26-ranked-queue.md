@@ -231,3 +231,4 @@ are never merged.
 |---|---|---|---|---|---|
 | Starter | Opus, medium | 8 | 164k | 63 | done |
 | Test builder, item 2 (worktree) | Sonnet, medium | 14 | 80k | 43 | done |
+| Builder, item 2 | Opus, medium | 5 | 70k | 21 | done |
