@@ -376,6 +376,11 @@ These 28 scenarios are added to `harness/required.yaml` in this phase, by file a
     the queue" and "0 players are in the queue, including you" (A8.7, Q134 leave a confirming
     player out of the counts; see `lobby-match-found-1280x720.png`). Use the in-queue texts only
     for `waiting`; add a unit test for confirming.
+    Fixed: while confirming, the panel shows the counts and the out-of-the-queue text with
+    **Leave the queue** (Q146, written into S10.4 first); unit test in `rankedQueue.test.tsx`. `e2e/rankedQueue.spec.ts`: the second player to
+    join goes straight to confirming, so joining now waits for **Leave the queue**; the first
+    player still checks "You are in the queue", and the panel behind the dialog no longer says
+    "including you". The `lobby-match-found` screenshots change with the next branch check.
   - **F2 (should fix):** the site-limit path `Lobby.startGame` -> `RankedQueue.siteGameLimitReached`
     (A9.4) has no test. Add a route test: a queued player, the site one game below the limit
     (`setTestDailyCounts`), start a room game, expect a view with `isSiteGameLimitReached: true`.
@@ -389,6 +394,10 @@ These 28 scenarios are added to `harness/required.yaml` in this phase, by file a
     (`ShownRankedQueue.tsx` 77, `rankedLockOf.ts`; no server offset in the lobby). Add the
     server time to the queue messages as the lobby's clock offset, or at least list it under
     Known gaps.
+    Fixed: each `queue` message carries `serverNow`; `QueueStore` sets `serverClockOffsetMs`
+    from it and `CurrentScreen` gives the lobby the `ServerClockOffset`, so the confirm time,
+    the rejoin wait and the join errors count on the server's clock (Q147, S10.4).
+    `PROTOCOL_VERSION` 23; the next protocol change raises it from 23.
   - **F5 (suggestion):** a `no_room` match keeps its counted game starts
     (`startRankedRooms.ts` 23-29); A8/A9 do not say. Record the decision or reverse the count.
   - **F6 (suggestion):** the logout route test uses Dan, who never joined the queue. Join

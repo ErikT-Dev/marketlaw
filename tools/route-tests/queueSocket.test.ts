@@ -122,11 +122,14 @@ describe("the ranked queue socket refuses hostile messages", () => {
           socket.send(unconfirmed, { type: "confirm_match" });
         }),
       ).toBe("no_match_to_confirm");
+      const sentAt = Date.now();
       socket.send(unconfirmed, { type: "resync" });
       await vi.waitFor(() => {
         expect(socket.messages.at(-1)?.type).toBe("queue");
       }, WAITING_MS);
       expect(socket.latestView()?.counts).toEqual(EMPTY_COUNTS);
+      const latest = socket.messages.at(-1);
+      expect(latest?.type === "queue" ? latest.serverNow : 0).toBeGreaterThanOrEqual(sentAt);
     },
     STARTING_MS,
   );

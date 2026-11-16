@@ -23,8 +23,8 @@ export abstract class QueueStore extends EmailAccountStore {
       onOpen: () => {
         this.resyncQueue();
       },
-      onView: (queue) => {
-        this.change({ queue });
+      onView: (queue, serverNow) => {
+        this.change({ queue, serverClockOffsetMs: serverNow - Date.now() });
       },
       onNotice: (notice) => {
         this.receiveQueueNotice(notice);

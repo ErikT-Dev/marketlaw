@@ -37,7 +37,7 @@ export class RemoteQueueFeed implements QueueFeed {
     const { handlers } = this.options;
     switch (message?.type) {
       case "queue":
-        handlers.onView(message.queue);
+        handlers.onView(message.queue, message.serverNow);
         return;
       case "queue_notice":
         handlers.onNotice(message.notice);

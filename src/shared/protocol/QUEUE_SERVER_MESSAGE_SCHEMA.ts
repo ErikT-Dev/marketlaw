@@ -41,7 +41,12 @@ const QUEUE_NOTICE_SCHEMA = v.variant("kind", [
 ]);
 
 export const QUEUE_SERVER_MESSAGE_SCHEMA = v.variant("type", [
-  v.object({ ...VERSIONED, type: v.literal("queue"), queue: QUEUE_VIEW_SCHEMA }),
+  v.object({
+    ...VERSIONED,
+    type: v.literal("queue"),
+    queue: QUEUE_VIEW_SCHEMA,
+    serverNow: EpochMs,
+  }),
   v.object({ ...VERSIONED, type: v.literal("queue_notice"), notice: QUEUE_NOTICE_SCHEMA }),
   v.object({ ...VERSIONED, type: v.literal("queue_rejected"), code: ReasonCode }),
 ]);

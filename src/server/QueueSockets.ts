@@ -32,6 +32,7 @@ export class QueueSockets {
       type: "queue",
       protocolVersion: PROTOCOL_VERSION,
       queue: queueViewFor(state, playerId, context),
+      serverNow: context.now,
     });
   }
 

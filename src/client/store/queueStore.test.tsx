@@ -55,13 +55,22 @@ describe("the ranked queue in the client store", () => {
 
   it("keeps the latest queue view and sends queue intents with the token", () => {
     const { store, sent, feeds } = storeInLobby();
-    feeds[0]?.onView(OUT_OF_QUEUE);
+    feeds[0]?.onView(OUT_OF_QUEUE, v.parse(EpochMs, Date.now()));
     store.sendQueueIntent({ type: "join_queue", sizes: [2, 3] });
     expect(store.getSnapshot().queue).toEqual(OUT_OF_QUEUE);
     expect(sent.at(-1)).toEqual({
       token: "ann-token",
       intent: { type: "join_queue", sizes: [2, 3] },
     });
+  });
+
+  it("keeps the server clock offset of the latest queue view", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(10_000);
+    const { store, feeds } = storeInLobby();
+    feeds[0]?.onView(OUT_OF_QUEUE, v.parse(EpochMs, 7_000));
+    expect(store.getSnapshot().serverClockOffsetMs).toBe(-3_000);
+    vi.useRealTimers();
   });
 
   it("shows rejections and notices and clears them on the next intent", () => {

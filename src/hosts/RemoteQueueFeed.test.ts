@@ -15,7 +15,7 @@ const VIEW: QueueView = {
 function openFeed() {
   const opened: SocketHandlers[] = [];
   const sentTexts: string[] = [];
-  const views: QueueView[] = [];
+  const views: Array<{ readonly view: QueueView; readonly serverNow: number }> = [];
   const notices: QueueNotice[] = [];
   const rejections: ReasonCode[] = [];
   let opens = 0;
@@ -40,7 +40,7 @@ function openFeed() {
       onOpen: () => {
         opens += 1;
       },
-      onView: (view) => views.push(view),
+      onView: (view, serverNow) => views.push({ view, serverNow }),
       onNotice: (notice) => notices.push(notice),
       onRejected: (code) => rejections.push(code),
     },
@@ -55,13 +55,13 @@ function message(body: Readonly<Record<string, unknown>>): string {
 describe("RemoteQueueFeed", () => {
   it("passes on views, notices and rejections and ignores messages it cannot read", () => {
     const { opened, views, notices, rejections } = openFeed();
-    opened[0]?.onMessage(message({ type: "queue", queue: VIEW }));
+    opened[0]?.onMessage(message({ type: "queue", queue: VIEW, serverNow: 1_761_436_800_000 }));
     opened[0]?.onMessage(
       message({ type: "queue_notice", notice: { kind: "match_found", size: 3 } }),
     );
     opened[0]?.onMessage(message({ type: "queue_rejected", code: "not_in_queue" }));
     opened[0]?.onMessage("not json");
-    expect(views).toEqual([VIEW]);
+    expect(views).toEqual([{ view: VIEW, serverNow: 1_761_436_800_000 }]);
     expect(notices).toEqual([{ kind: "match_found", size: 3 }]);
     expect(rejections).toEqual(["not_in_queue"]);
   });
