@@ -328,3 +328,4 @@ are never merged.
 | Builder, item 1a rest | Opus, medium | 8 | 119k | 47 | done |
 | Builder, item 1b (resumed after the usage limit) | Opus, medium | 8 after resume | 168k | 30 after resume | done |
 | Builder, item 1c | Opus, medium | 19 | 192k | 62 | done |
+| Test builder, item 4 (worktree) | Opus, low | 11 | 110k | 47 | done |
