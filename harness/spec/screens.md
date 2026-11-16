@@ -282,7 +282,8 @@ None yet.
   - Unconfirmed email address: "Confirm your email address to play ranked games. We sent you a
     link." with **Send it again** (A1.4).
   - Rejoin wait (A8.9): the button is disabled with "You can join the ranked queue again in
-    M:SS."
+    M:SS." The page shows the wait and the player's own daily limits also after a reload, and
+    after **Confirm** a reloaded page still shows the confirmed dialog (Q144).
   - A player's own daily limits: the texts of S16.1, with the button disabled.
   - While no match can be made (A9.4): "Daily game limit reached, try again after 00:00 UTC",
     shown to everyone in the queue.
@@ -302,7 +303,12 @@ None yet.
   opens. When the match does not start (A8.9, A9.4), the lobby shows a notice:
   - to a player who confirmed: "The match did not start because a player did not confirm. You
     are back at the front of the queue.", or the site-wide text of S16.1 when the site game limit
-    stopped it;
+    stopped it, or "The match did not start because a player has reached a daily limit. You are
+    back at the front of the queue." when another player's own daily limit (A9.2, A9.3) stopped
+    it (Q145);
+  - to every player of a confirmed match for which no room could be made: "No room could be made
+    for the match. Join the ranked queue again." (Q145);
+  - to a player whose own daily limit stopped it: the text of S16.1 for that limit;
   - to a player who did not confirm: "You did not confirm the match and left the queue. You can
     join it again in M:SS."
 - **S10.8** Empty lists say so: no public rooms, only you online.

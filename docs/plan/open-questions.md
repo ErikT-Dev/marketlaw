@@ -3144,3 +3144,35 @@ file.
   declines it".
 - **Implemented:** `src/server/RankedQueue.ts` (`logOut` leaves the queue when the login is
   leaving), `tools/harness-runner/lobby/deleteAccountInLobby.ts`; phase 26, Progress item 4.
+
+## Q144. How does the lobby know why the ranked queue is locked for a player?
+
+- **Phase:** 26 (builder, item 3a).
+- **Question:** S10.4 disables **Join the ranked queue** with a reason for logged-out players,
+  guests, unconfirmed email addresses, a rejoin wait (A8.9) and the player's own daily limits,
+  and S10.7 shows "Confirmed. Waiting for the other players." after **Confirm**. The queue view
+  (item 1c) told a player only whether they are out, waiting or confirming, so after a reload the
+  page could not show a rejoin wait, a daily limit or a confirmation already given, and nothing
+  said where the email standing comes from.
+- **Options:** look everything up in D1 for each view the queue sends; or let the queue view
+  carry what the queue and the lobby already hold, and take the email standing from the account
+  the page already loads.
+- **Solution:** the queue view's own state carries, for a player out of the queue, the rejoin
+  wait's end and their own daily limit (from the queue and lobby records, no extra reads), and
+  for a confirming player whether they have confirmed. Logged out and guest come from the
+  session; an unconfirmed email address from the account details (`/api/account`, as the account
+  dialog loads them), loaded again after a rejected join with `email_not_confirmed` and after an
+  email link is opened. Written into S10.4 first. `PROTOCOL_VERSION` 22.
+- **Implemented:** phase 26, Progress item 3a.
+
+## Q145. What does a player of a confirmed match hear when it does not start for another reason?
+
+- **Phase:** 26 (builder, item 3a).
+- **Question:** S10.7 tells a player who confirmed "The match did not start because a player did
+  not confirm", but a confirmed match can also stop because another matched player reached their
+  own daily limit (Q136, the others go back to the front) or because no room could be made
+  (item 1c, the players leave the queue). Both got the same notice, whose text is then wrong.
+- **Options:** one neutral text for all three; or a reason in the notice with a text each.
+- **Solution:** the `match_not_started` notice carries its reason (`not_confirmed`,
+  `player_daily_limit`, `no_room`), each with its own text in S10.7, written there first.
+- **Implemented:** phase 26, Progress item 3a.
