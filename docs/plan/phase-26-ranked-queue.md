@@ -500,3 +500,7 @@ F5 (a `no_room` match kept its counted start): fixed, Q149. F6 (logout test used
 the queue): fixed. F7 (repeated alarm decision): fixed, reuse of `alarmChangeTo`.
 | Releaser (stopped by the owner) | Sonnet, low | – | – | – | stopped; branch check failed |
 | Fixer, branch check (bigCardSwitch, Q150; resumed after the usage limit) | Opus, medium | – | – | – | done |
+
+**Branch check fix (Q150).** Run 43923506970 failed only on `e2e/bigCardSwitch.spec.ts` (one click
+111.6 ms at 2560x1440). As the owner approved, S6.5 and Q150 now ask for the median click under
+100 ms and every click under 300 ms; the test checks that. Local `npm run check` passed after it.
