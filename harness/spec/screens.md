@@ -260,10 +260,13 @@ None yet.
 ## S10. Lobby
 
 - **S10.1** The top bar shows the game title, **Game menu**, **My match history**, **ELO ranking**,
-  and the user box with your username and rating. Logged out, it shows **Log in** and **Sign up**
-  instead.
+  and the user box with your username and rating: "Rating 1043" for a registered user, "Guest"
+  for a guest user, who cannot play ranked games (A8.1; Q154). Logged out, it shows **Log in** and
+  **Sign up** instead.
 - **S10.2** **Players online** lists every player online with their badge: username, rating once
-  they have played a ranked game, and status online or in a game (A7.2), with the total count.
+  they have played a ranked game, and status online or in a game (A7.2), with the total count, as
+  "Players online · 37". Players are listed by username in alphabetical order, each once however
+  many tabs they have open (Q152).
 - **S10.3** **Public rooms** lists each public room's players and free places, with **Join**, plus
   the room-code field with **Join with code**, and **Create room**.
 - **S10.4** **Ranked queue** shows how many players are in it in total and for each game size
@@ -414,7 +417,17 @@ None yet.
   ("left (turn 20)"), with their values at that moment (A3.3). Times are the viewer's local time.
 - **S13.3** The **ELO ranking** shows 50 players per page with place, username, rating and ranked
   games, page buttons, and **Jump to me** with your row highlighted. Players not in the table see
-  why, and Jump to me is disabled.
+  why, and Jump to me is disabled. It opens at page 1 as a page over the current screen with
+  **Back**, like a match history (S13.4); usernames open match histories (A6.1). Texts (Q153):
+  - Above the table: "Every registered player with at least 1 ranked game, highest rating first.
+    Equal ratings: more ranked games first, then by username."
+  - Pager: "‹ Previous", "Page 3 of 9 · places 101–150", "Next ›".
+  - Logged out: "Log in to find your place in the ranking."
+  - Guest user: "You are not in the ranking: it lists registered players who have played at least
+    1 ranked game. Sign up to play ranked games."
+  - Registered user without a ranked game: "You are not in the ranking yet: it lists registered
+    players who have played at least 1 ranked game. Join the ranked queue from the lobby."
+  - An empty table: "Nobody is in the ranking yet."
 - **S13.4** Match histories and game records open as pages over the current screen, each with
   **Back** to where the player came from; during a game nothing pauses (C1.3). A username opens
   that player's match history wherever it stands on its own: the player badges (S2.2), the

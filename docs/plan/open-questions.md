@@ -3252,3 +3252,99 @@ file.
   cards gives fewer, and the test still needs at least 4, as before), and waits up to 15 s
   instead of 5 s for the hand's photos to download before clicking. Written into S6.5 first.
 - **Implemented:** `harness/spec/screens.md` (S6.5), `e2e/bigCardSwitch.spec.ts`.
+
+## Q151. Where are ratings kept, and when and how are they written?
+
+- **Phase:** 27 (starter; A10, A5, A7, B8).
+- **Question:** A10 says how a rating changes but not where ratings live, when the ratings
+  "before the game" are taken, or how the write fits B8 (12 D1 rows per finished game, of which
+  the game record already takes up to 5, Q119). A player who left a ranked game can play another
+  ranked game before the first ends (M6.7), so the rating when the first game ends may differ
+  from the one it started with.
+- **Options:** rating columns on `players` (every ranking read scans all guests too; an index on
+  the rating costs a row written per change, Q62); or a `ratings` table with one row per player
+  who has played a ranked game. Take the ratings before the game when it starts, or read them
+  when it ends. Write the new rating, or add the change.
+- **Solution:** a `ratings` table (`player_id` key, `rating`, `ranked_games`, `highest_rating`,
+  `WITHOUT ROWID`, no other index); a player with no row has 1000, 0 games and highest 1000
+  (A10.1). A ranked room reads its players' ratings, ranked games and highest ratings together
+  with their usernames when it starts (`startRankedRooms`) and keeps them in its record; when
+  the game ends, the changes are computed from those (A10.7) by pure functions in
+  `src/server/ratings/`, as the queue's are in `src/server/queue/`, from the game record's places
+  (A3.4, A10.8, A10.10). The changes are written in the same D1 batch as the game record, one
+  upsert per player that adds the change, adds 1 ranked game and raises the highest rating
+  (`MAX`), so a second game's change is never lost. The record holds each player's rating before
+  and change (A3.2). Abandoned games write no record and no rating (A10.9). B8: 1 + 4 + 4 = 9
+  of 12 rows for a 4-player ranked game; the harness counts the rating rows. Written into A10.7
+  first.
+- **Why:** a small table read without an index keeps a rating change at one row written; taking
+  the ratings at the start is A10.7 literally and needs no extra read at the end.
+- **Implemented:** phase 27, items 1 and 2.
+
+## Q152. Who is online, and how does the lobby know?
+
+- **Phase:** 27 (starter; A7, S10.2, S11.1).
+- **Question:** A7.1 lists every logged-in player "who currently has the site open". The lobby
+  socket is anonymous and is closed in rooms and games, and only the rooms know who is
+  connected to them. Neither the order of the list nor when a player counts as "in a game" was
+  defined.
+- **Options:** rooms report every connect and disconnect to the Lobby (a Durable Object call
+  each, and the Lobby must store them); or the client keeps its lobby socket open on every
+  screen while logged in, and identifies on it.
+- **Solution:** the client keeps the lobby socket open on every screen (lobby, waiting room,
+  game, room after the game) and sends its session token once in a first message, as the queue
+  socket does. The Lobby keeps who each socket belongs to, with their username and rating, in
+  the socket's attachment, never in storage: being online writes no row. A player is online
+  while any of their sockets is open, listed once. **In a game** means the Lobby's busy entry is
+  a room whose game is in progress and the player has not left that game; otherwise
+  **online**. Ratings shown are those of players with at least 1 ranked game (A7.2), read from
+  D1 when a socket identifies and updated when a ranked game's ratings, a username or a login
+  changes; logging out makes the socket anonymous. The list is by username in alphabetical
+  order, the viewer included, with the total count. The queue count stays in the queue panel
+  (A7.3). Each page load costs one more connection and one message, no writes. Written into
+  A7.1, A7.2 and S10.2 first.
+- **Implemented:** phase 27, items 5a and 5b.
+
+## Q153. How does the ranking table page, order and explain itself?
+
+- **Phase:** 27 (starter; A5, S13.3).
+- **Question:** A5 and S13.3 do not say how equal usernames sort, where the table opens, which
+  page it shows first, or what players who are not in it see; only the registered user without
+  a ranked game has a design board ("Records: not in the ranking yet").
+- **Solution:** places are positions 1, 2, 3 … with no shared places (A5.2 breaks every tie);
+  usernames sort by their case-insensitive key (`name_key`). The table opens at page 1 as a page
+  over the current screen with Back, like a match history; Jump to me shows the page holding the
+  player's place with their row highlighted. Only registered users with a `ratings` row are in
+  it (A5.1); a deleted account's row is deleted with it. The texts for logged-out players, guest
+  users, registered users without a ranked game and an empty table are in S13.3, the second
+  taken from the design. The route reads the table without an index (Q151), so one page costs
+  about as many rows read as there are ranked players, well inside B16's half for the lobby,
+  histories and ranking. Written into S13.3 first.
+- **Implemented:** phase 27, items 4a and 4b.
+
+## Q154. Where are ratings shown?
+
+- **Phase:** 27 (starter; S9.5, S10.1, S10.2, S10.4, S13.2).
+- **Question:** the phase file says "ratings on player badges", but S2.2's game badges hold no
+  rating; S10.1's user box shows "your username and rating" without saying what a guest user
+  sees.
+- **Solution:** the spec wins over the phase file: ratings appear in players online (S10.2, also
+  in the waiting room, S11.1), the lobby's user box, the ranked queue panel ("Your rating: 1043 ·
+  12 ranked games", S10.4, which ends Q138's gap), the end-of-game table of a ranked game (rating
+  before and after, S9.5), the game record of a ranked game (rating before and change, A3.2,
+  S13.2) and the ranking (S13.3); not on the game's badges. The user box shows "Rating 1043" for
+  a registered user, also before their first ranked game (A10.1), and "Guest" for a guest user,
+  as now. Written into S10.1 first.
+- **Implemented:** phase 27, items 3, 4b, 5b and 6.
+
+## Q155. How does the rating calculation check reach a total of exactly 2.5?
+
+- **Phase:** 27 (starter; `HARNESS.md` point 7, A10.6).
+- **Question:** the check must show +2.5 rounding to +3 and −2.5 to −3. With whole-number
+  ratings, a per-opponent change is a whole multiple of 2.5 only between equal ratings, and no
+  game of equal ratings gives a player a total of ±2.5, so a whole game rarely reaches the case.
+- **Solution:** the check runs the A10 functions on whole games (A10.11, A10.12 and the
+  scenarios' cases) and, for A10.6, the total step on per-opponent changes that sum to exactly
+  ±2.5, and to 2.5 ± 0.0000004 (which the 6-decimal step makes 2.5, then 3). It is listed in the
+  harness report like the card-data and tier checks.
+- **Implemented:** phase 27, item 1.

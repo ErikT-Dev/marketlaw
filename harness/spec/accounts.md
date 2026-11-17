@@ -208,9 +208,12 @@ None.
 ## A7. Players online
 
 - **A7.1** Anyone on the site, logged in or not, can see the list of **players online**: every
-  logged-in player, guest or registered, who currently has the site open.
+  logged-in player, guest or registered, who currently has the site open: in the lobby, a room or
+  a game, in any tab (Q152).
 - **A7.2** For each player the list shows their username, their ELO rating (A10) once they have
-  played at least 1 ranked game, and their status: **online** or **in a game**.
+  played at least 1 ranked game, and their status: **online** or **in a game**. A player is **in a
+  game** while they are in a game in progress that they have not left (M6.7), and **online**
+  otherwise (Q152).
 - **A7.3** The number of players in the ranked queue is shown separately (A8.4).
 
 ## A8. Ranked queue
@@ -327,7 +330,10 @@ None.
 - **A10.6** A player's total change is the sum over all their opponents, first rounded to 6 decimal
   places, then rounded to the nearest whole number. A total that ends in exactly .5 is rounded
   away from zero: +2.5 becomes +3, and −2.5 becomes −3.
-- **A10.7** All ratings are updated at once, from the ratings before the game.
+- **A10.7** All ratings are updated at once, from the ratings before the game: the ratings, ranked
+  games played and highest ratings the players had when the game started. Each player's change is
+  then added to their rating as it is when the game ends, so a player who left a ranked game and
+  played another one before it ended (M6.7) keeps both changes (Q151).
 - **A10.8** **Left the game:** a player who left is placed below every player who stayed. If two
   players left, the one who left first is placed lower.
 - **A10.9** **Abandoned games:** ratings stay the same (R9.14, M6.9).
