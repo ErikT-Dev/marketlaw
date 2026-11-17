@@ -451,3 +451,4 @@ the own ranking row is highlighted whenever it is on the page (F5; written into 
 F3 (ratings sent to the lobby were not the stored ones): fixed, stored ratings are read back after
 the save. F4 (deleted account got a ratings row): fixed with `WHERE EXISTS`. F5 (undocumented
 differences): fixed in the spec. F6 (several exports per file): fixed, one file per list.
+| Releaser | Sonnet, low | 30 | 76k | 30 | done: merged, deployed (run 44102029895), live check |
