@@ -27,6 +27,9 @@ test("a public room appears in the lobby and is joined with one click", async ({
   const code = await createRoomAs(host, 3);
   const listed = visitor.page.getByRole("listitem", { name: `${host.name}'s room` });
   await expect(listed).toContainText("1 of 3 players · 2 free");
+  await expect(visitor.page.getByRole("list", { name: "Players online" })).toContainText(
+    `${host.name}online`,
+  );
   await expectScreenFits(visitor.page, "lobby", testInfo);
   await listed.getByRole("button", { name: "Join" }).click();
   await becomeGuest(visitor);
@@ -34,6 +37,7 @@ test("a public room appears in the lobby and is joined with one click", async ({
   await expect(host.page.getByRole("list", { name: "Players in the room" })).toContainText(
     visitor.name,
   );
+  await expect(host.page.getByRole("list", { name: "Players online" })).toContainText(visitor.name);
   await Promise.all([host, visitor].map(async (player) => player.page.context().close()));
 });
 
@@ -66,7 +70,12 @@ test("a player waiting in a room cannot join or create another room", async ({ r
 test("the lobby says when there are no public rooms", async ({ page }, testInfo) => {
   await page.routeWebSocket(/\/api\/lobby\/socket$/, (socket) => {
     socket.send(
-      JSON.stringify({ type: "lobby", protocolVersion: PROTOCOL_VERSION, publicRooms: [] }),
+      JSON.stringify({
+        type: "lobby",
+        protocolVersion: PROTOCOL_VERSION,
+        publicRooms: [],
+        playersOnline: [],
+      }),
     );
   });
   await page.goto("/");

@@ -27,7 +27,7 @@ function storeInLobby() {
   const openHost = vi.fn(() => idleHost());
   const store = new ClientStore(
     openHost,
-    () => ({ close: () => undefined }),
+    () => ({ identify: () => false, close: () => undefined }),
     (handlers) => {
       feeds.push(handlers);
       return {

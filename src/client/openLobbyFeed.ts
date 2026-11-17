@@ -1,9 +1,9 @@
 import { openBrowserSocket } from "../hosts/openBrowserSocket";
 import { RemoteLobbyFeed } from "../hosts/RemoteLobbyFeed";
 import type { LobbyFeed } from "../shared/LobbyFeed";
-import type { PublicRoomView } from "../shared/protocol/PublicRoomView";
+import type { LobbyFeedHandlers } from "../shared/LobbyFeedHandlers";
 
-export function openLobbyFeed(onRooms: (rooms: ReadonlyArray<PublicRoomView>) => void): LobbyFeed {
+export function openLobbyFeed(handlers: LobbyFeedHandlers): LobbyFeed {
   const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
   return new RemoteLobbyFeed({
     url: `${protocol}//${window.location.host}/api/lobby/socket`,
@@ -11,6 +11,6 @@ export function openLobbyFeed(onRooms: (rooms: ReadonlyArray<PublicRoomView>) =>
     runLater: (delayMs, run) => {
       window.setTimeout(run, delayMs);
     },
-    onRooms,
+    handlers,
   });
 }

@@ -1,19 +1,32 @@
 import { describe, expect, it } from "vitest";
 import { PROTOCOL_VERSION } from "../shared/PROTOCOL_VERSION";
+import type { PlayerOnlineView } from "../shared/protocol/PlayerOnlineView";
 import type { PublicRoomView } from "../shared/protocol/PublicRoomView";
+import type { ReasonCode } from "../shared/ReasonCode";
 import { RemoteLobbyFeed } from "./RemoteLobbyFeed";
 import type { SocketHandlers } from "./SocketHandlers";
 
+type Received = {
+  readonly publicRooms: ReadonlyArray<PublicRoomView>;
+  readonly playersOnline: ReadonlyArray<PlayerOnlineView>;
+};
+
 function openFeed() {
   const opened: SocketHandlers[] = [];
-  const received: Array<ReadonlyArray<PublicRoomView>> = [];
+  const sent: string[] = [];
+  const received: Received[] = [];
+  const rejected: ReasonCode[] = [];
   const delays: number[] = [];
+  let openCount = 0;
   const feed = new RemoteLobbyFeed({
     url: "ws://test/api/lobby/socket",
     openSocket: (url, handlers) => {
       opened.push(handlers);
       return {
-        send: () => true,
+        send: (text) => {
+          sent.push(text);
+          return true;
+        },
         close: () => {
           handlers.onClose(1000);
         },
@@ -23,9 +36,15 @@ function openFeed() {
       delays.push(delay);
       run();
     },
-    onRooms: (rooms) => received.push(rooms),
+    handlers: {
+      onOpen: () => {
+        openCount += 1;
+      },
+      onLobby: (publicRooms, playersOnline) => received.push({ publicRooms, playersOnline }),
+      onRejected: (code) => rejected.push(code),
+    },
   });
-  return { feed, opened, received, delays };
+  return { feed, opened, sent, received, rejected, delays, openCount: () => openCount };
 }
 
 const ROOMS = [
@@ -38,19 +57,51 @@ const ROOMS = [
   },
 ];
 
+const PLAYERS_ONLINE = [
+  {
+    playerId: "5b0f6a52-3d5e-4f7c-8a41-6c2b9e0d7f13",
+    username: "Ann",
+    rating: 1043,
+    status: "in_game",
+  },
+];
+
 describe("RemoteLobbyFeed", () => {
-  it("passes on each public room list and ignores messages it cannot read", () => {
+  it("passes on the public rooms and players online and ignores messages it cannot read", () => {
     const { opened, received } = openFeed();
     opened[0]?.onMessage(
       JSON.stringify({
         type: "lobby",
         protocolVersion: PROTOCOL_VERSION,
         publicRooms: ROOMS,
-        playersOnline: [],
+        playersOnline: PLAYERS_ONLINE,
       }),
     );
     opened[0]?.onMessage("not json");
-    expect(received).toEqual([ROOMS]);
+    expect(received).toEqual([{ publicRooms: ROOMS, playersOnline: PLAYERS_ONLINE }]);
+  });
+
+  it("passes on a rejection with its reason", () => {
+    const { opened, rejected } = openFeed();
+    opened[0]?.onMessage(
+      JSON.stringify({
+        type: "lobby_rejected",
+        protocolVersion: PROTOCOL_VERSION,
+        code: "invalid_token",
+      }),
+    );
+    expect(rejected).toEqual(["invalid_token"]);
+  });
+
+  it("identifies with the token only once the socket is open", () => {
+    const { feed, opened, sent, openCount } = openFeed();
+    expect(feed.identify("ann-token")).toBe(false);
+    opened[0]?.onOpen();
+    expect(openCount()).toBe(1);
+    expect(feed.identify("ann-token")).toBe(true);
+    expect(sent.map((text): unknown => JSON.parse(text))).toEqual([
+      { protocolVersion: PROTOCOL_VERSION, type: "identify", token: "ann-token" },
+    ]);
   });
 
   it("reconnects after a dropped connection but not after it was closed", () => {
@@ -58,6 +109,7 @@ describe("RemoteLobbyFeed", () => {
     opened[0]?.onClose(1006);
     expect(opened).toHaveLength(2);
     expect(delays).toEqual([1000]);
+    expect(feed.identify("ann-token")).toBe(false);
     feed.close();
     expect(opened).toHaveLength(2);
   });
@@ -74,7 +126,7 @@ describe("RemoteLobbyFeed", () => {
       runLater: (delay, run) => {
         waiting.push(run);
       },
-      onRooms: () => undefined,
+      handlers: { onOpen: () => undefined, onLobby: () => undefined, onRejected: () => undefined },
     });
     opened[0]?.onClose(1006);
     feed.close();

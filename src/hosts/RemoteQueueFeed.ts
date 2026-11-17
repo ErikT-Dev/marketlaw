@@ -2,34 +2,29 @@ import { PROTOCOL_VERSION } from "../shared/PROTOCOL_VERSION";
 import { parseQueueServerMessage } from "../shared/protocol/parseQueueServerMessage";
 import type { QueueIntent } from "../shared/protocol/QueueIntent";
 import type { QueueFeed } from "../shared/QueueFeed";
-import type { HostSocket } from "./HostSocket";
 import type { QueueFeedOptions } from "./QueueFeedOptions";
-import { Reconnector } from "./Reconnector";
+import { ReopeningSocket } from "./ReopeningSocket";
 
 export class RemoteQueueFeed implements QueueFeed {
   private readonly options: QueueFeedOptions;
-  private socket: HostSocket | null = null;
-  private isOpen = false;
-  private readonly reconnector: Reconnector;
+  private readonly socket: ReopeningSocket;
 
   constructor(options: QueueFeedOptions) {
     this.options = options;
-    this.reconnector = new Reconnector(options.runLater);
-    this.connect();
+    this.socket = new ReopeningSocket({
+      ...options,
+      onOpen: options.handlers.onOpen,
+      onMessage: (text) => {
+        this.receive(text);
+      },
+    });
   }
 
-  readonly send = (token: string, intent: QueueIntent): boolean => {
-    if (this.socket === null || !this.isOpen) {
-      return false;
-    }
-    return this.socket.send(
-      JSON.stringify({ ...intent, protocolVersion: PROTOCOL_VERSION, token }),
-    );
-  };
+  readonly send = (token: string, intent: QueueIntent): boolean =>
+    this.socket.send(JSON.stringify({ ...intent, protocolVersion: PROTOCOL_VERSION, token }));
 
   readonly close = (): void => {
-    this.reconnector.close();
-    this.socket?.close();
+    this.socket.close();
   };
 
   private receive(text: string): void {
@@ -48,25 +43,5 @@ export class RemoteQueueFeed implements QueueFeed {
       case undefined:
         return;
     }
-  }
-
-  private connect(): void {
-    this.socket = this.options.openSocket(this.options.url, {
-      onOpen: () => {
-        this.isOpen = true;
-        this.reconnector.connected();
-        this.options.handlers.onOpen();
-      },
-      onMessage: (text) => {
-        this.receive(text);
-      },
-      onClose: () => {
-        this.socket = null;
-        this.isOpen = false;
-        this.reconnector.afterDrop(() => {
-          this.connect();
-        });
-      },
-    });
   }
 }

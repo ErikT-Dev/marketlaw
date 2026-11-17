@@ -285,7 +285,7 @@ These 12 scenarios are added to `harness/required.yaml` in this phase, by file a
     `lobby_rejected`; the status text "in a game" is the driver's mapping in `LobbyPresence`
     until the client has its own text. The socket is not closed on logout, only made anonymous.
 
-- [ ] 5b. **Players online in the client** (S10.2, S11.1; design "Lobby 1920x940" and the waiting
+- [x] 5b. **Players online in the client** (S10.2, S11.1; design "Lobby 1920x940" and the waiting
   room). **Large.**
   - The client keeps the lobby feed open on every screen while logged in, identified with the
     token (today `ClientStore.enterRoom` closes it), and anonymous when logged out.
@@ -293,6 +293,25 @@ These 12 scenarios are added to `harness/required.yaml` in this phase, by file a
     and one `PlayerBadge` per player (it already takes a `rating` and the statuses `online` and
     `inGame`), usernames opening match histories. Component tests; the lobby and waiting room
     screenshots change (finisher).
+  - Done (2026-11-17): the lobby feed opens once per page and stays open in rooms and games
+    (`LobbyFeedStore`, between `QueueStore` and `ClientStore`); it sends `identify` with the
+    session token whenever the socket opens and whenever the session token changes (login, signup,
+    guest start), and nothing while logged out. `LobbyFeed.identify`, `LobbyFeedHandlers`
+    (`onOpen`, `onLobby(publicRooms, playersOnline)`, `onRejected`),
+    `LOBBY_SERVER_MESSAGE_SCHEMA`; on `lobby_rejected`, `wrong_protocol_version` asks for a
+    reload and `invalid_token` checks the session again. `ClientState.playersOnline`.
+    `PlayersOnlinePanel` (heading "Players online · N", list "Players online" of `PlayerBadge`s
+    with rating and status) is the left column of the lobby and of `RoomPageFrame` (the waiting
+    room and the room after the game, as S11.1 and the design's "Waiting room: after the game"
+    show). The lobby's public rooms moved into `PublicRoomsPanel`; the three columns are 19:51:22
+    (the design's 380:1020:440), at most 1920 px wide. The socket code shared by the lobby and
+    queue feeds moved to `hosts/ReopeningSocket` (jscpd). Status texts are `PLAYER_STATUS_TEXTS`
+    and `onlineBadgeStatusOf`, which the lobby driver's `LobbyPresence` now uses instead of its
+    own mapping. Tests: `playersOnline.test.tsx`, `lobbyFeedStore.test.tsx`,
+    `RemoteLobbyFeed.test.ts`, the lobby and waiting room tests; `e2e/lobby.spec.ts` checks that
+    a visitor sees the room owner online and the owner sees the guest who joined.
+  - For the finisher: the screenshots of the lobby, the waiting room, the room after the game and
+    every lobby dialog change (new left column).
 
 - [ ] 6. **Own rating in the lobby** (S10.1's user box, S10.4's rating line; Q138, Q154).
   **Small.**

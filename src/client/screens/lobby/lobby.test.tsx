@@ -3,6 +3,7 @@ import * as v from "valibot";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { testRankedQueue } from "../../testing/testRankedQueue";
 import { EpochMs } from "../../../shared/EpochMs";
+import type { PlayerOnlineView } from "../../../shared/protocol/PlayerOnlineView";
 import type { RoomView } from "../../../shared/protocol/RoomView";
 import { RoomCode } from "../../../shared/RoomCode";
 import { LobbyPage } from "./LobbyPage";
@@ -30,6 +31,7 @@ function lobby(changes: Partial<Parameters<typeof LobbyPage>[0]> = {}) {
       onForgotPassword={vi.fn()}
       onDismissRemoval={vi.fn()}
       publicRooms={[]}
+      playersOnline={[]}
       ranked={testRankedQueue()}
       {...changes}
     />,
@@ -56,7 +58,11 @@ function room(changes: Partial<RoomView> = {}): RoomView {
   };
 }
 
-function waitingRoom(view: RoomView, hasSiteGameLimitNotice = false) {
+function waitingRoom(
+  view: RoomView,
+  hasSiteGameLimitNotice = false,
+  playersOnline: ReadonlyArray<PlayerOnlineView> = [],
+) {
   const handlers = {
     onChangeSize: vi.fn(),
     onAccept: vi.fn(),
@@ -71,6 +77,7 @@ function waitingRoom(view: RoomView, hasSiteGameLimitNotice = false) {
       onLeave={vi.fn()}
       rejection={null}
       hasSiteGameLimitNotice={hasSiteGameLimitNotice}
+      playersOnline={playersOnline}
       chat={{
         chat: NO_ROOM_CHAT,
         onSend: vi.fn(),
@@ -83,6 +90,13 @@ function waitingRoom(view: RoomView, hasSiteGameLimitNotice = false) {
   );
   return handlers;
 }
+
+const ONLINE_BEA: PlayerOnlineView = {
+  playerId: testPlayerIdOf(2),
+  username: "Bea",
+  rating: 987,
+  status: "online",
+};
 
 const OWN_ACTION_LIMIT_TEXT =
   "You have used your 2,000 game actions for today. You can join rooms, the ranked queue and new games again after 00:00 UTC.";
@@ -137,6 +151,12 @@ describe("the lobby", () => {
       true,
     );
     expect(onJoin).not.toHaveBeenCalled();
+  });
+
+  it("shows the players online beside the public rooms", () => {
+    lobby({ playersOnline: [ONLINE_BEA] });
+    expect(screen.getByRole("heading", { name: "Players online · 1" })).toBeDefined();
+    expect(screen.getByRole("link", { name: "Bea" })).toBeDefined();
   });
 
   it("tells a removed player when they can join the room again", () => {
@@ -225,6 +245,11 @@ describe("the waiting room", () => {
         .getAllByRole("listitem")
         .map((item) => item.textContent),
     ).toEqual(["Quiet River Baronowner", "Youyou", "Bea", "Free place: waiting for 1 more player"]);
+  });
+
+  it("keeps the players online list", () => {
+    waitingRoom(room(), false, [ONLINE_BEA]);
+    expect(screen.getByRole("heading", { name: "Players online · 1" })).toBeDefined();
   });
 
   it("lets only the owner change the size and never below the players present", () => {

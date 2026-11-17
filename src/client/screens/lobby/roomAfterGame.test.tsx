@@ -67,6 +67,7 @@ function roomAfterGame(room: RoomView, result: GameResult = RESULT) {
       }}
       rejection={null}
       toast={null}
+      playersOnline={[]}
       {...handlers}
     />,
   );

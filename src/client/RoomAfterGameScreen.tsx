@@ -32,6 +32,7 @@ export function RoomAfterGameScreen(props: Props) {
         turn={view.turn}
         viewer={view.seat}
         chat={chatBindingOf(store, state.chat)}
+        playersOnline={state.playersOnline}
         {...afterGameNoticesOf(state, view.seat, room.playerNames)}
         onDismissToast={() => {
           store.dismissTimeOutNotice();

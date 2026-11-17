@@ -23,6 +23,7 @@ export function WaitingRoomScreen({ store, state, room, myName, account }: Props
         myName={myName}
         account={account}
         chat={chatBindingOf(store, state.chat)}
+        playersOnline={state.playersOnline}
         onChangeSize={(size) => {
           store.sendRoomAction({ type: "change_size", size });
         }}

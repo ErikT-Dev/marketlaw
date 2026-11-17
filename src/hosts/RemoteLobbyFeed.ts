@@ -1,14 +1,15 @@
 import * as v from "valibot";
 import type { LobbyFeed } from "../shared/LobbyFeed";
-import { LobbyMessage } from "../shared/protocol/LobbyMessage";
-import type { HostSocket } from "./HostSocket";
-import { Reconnector } from "./Reconnector";
+import { PROTOCOL_VERSION } from "../shared/PROTOCOL_VERSION";
+import type { LobbyClientMessage } from "../shared/protocol/LobbyClientMessage";
+import { LOBBY_SERVER_MESSAGE_SCHEMA } from "../shared/protocol/LOBBY_SERVER_MESSAGE_SCHEMA";
 import type { LobbyFeedOptions } from "./LobbyFeedOptions";
+import { ReopeningSocket } from "./ReopeningSocket";
 
-function parsedRooms(text: string) {
+function parsedLobbyMessage(text: string) {
   try {
-    const parsed = v.safeParse(LobbyMessage, JSON.parse(text));
-    return parsed.success ? parsed.output.publicRooms : null;
+    const parsed = v.safeParse(LOBBY_SERVER_MESSAGE_SCHEMA, JSON.parse(text));
+    return parsed.success ? parsed.output : null;
   } catch {
     return null;
   }
@@ -16,37 +17,44 @@ function parsedRooms(text: string) {
 
 export class RemoteLobbyFeed implements LobbyFeed {
   private readonly options: LobbyFeedOptions;
-  private socket: HostSocket | null = null;
-  private readonly reconnector: Reconnector;
+  private readonly socket: ReopeningSocket;
 
   constructor(options: LobbyFeedOptions) {
     this.options = options;
-    this.reconnector = new Reconnector(options.runLater);
-    this.connect();
-  }
-
-  readonly close = (): void => {
-    this.reconnector.close();
-    this.socket?.close();
-  };
-
-  private connect(): void {
-    this.socket = this.options.openSocket(this.options.url, {
-      onOpen: () => {
-        this.reconnector.connected();
-      },
+    this.socket = new ReopeningSocket({
+      ...options,
+      onOpen: options.handlers.onOpen,
       onMessage: (text) => {
-        const rooms = parsedRooms(text);
-        if (rooms !== null) {
-          this.options.onRooms(rooms);
-        }
-      },
-      onClose: () => {
-        this.socket = null;
-        this.reconnector.afterDrop(() => {
-          this.connect();
-        });
+        this.receive(text);
       },
     });
+  }
+
+  readonly identify = (token: string): boolean => {
+    const message: LobbyClientMessage = {
+      protocolVersion: PROTOCOL_VERSION,
+      type: "identify",
+      token,
+    };
+    return this.socket.send(JSON.stringify(message));
+  };
+
+  readonly close = (): void => {
+    this.socket.close();
+  };
+
+  private receive(text: string): void {
+    const message = parsedLobbyMessage(text);
+    const { handlers } = this.options;
+    switch (message?.type) {
+      case "lobby":
+        handlers.onLobby(message.publicRooms, message.playersOnline);
+        return;
+      case "lobby_rejected":
+        handlers.onRejected(message.code);
+        return;
+      case undefined:
+        return;
+    }
   }
 }
