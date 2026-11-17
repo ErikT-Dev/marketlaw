@@ -338,6 +338,28 @@ These 12 scenarios are added to `harness/required.yaml` in this phase, by file a
   - For the finisher: the user box and the ranked queue panel of a registered user change in the
     lobby and waiting room screenshots.
 
+### Finish
+
+- Finisher (2026-11-17): the 12 phase scenarios added to `harness/required.yaml` (`HARNESS:`
+  commit); `docs/enforcement.md` lists the rating calculation check. Local `npm run check`
+  passed; `npm run harness` passed (phase-end simulated games, budgets).
+- GitHub run 44080237305 on the branch: all jobs green except the three "other tests" browser
+  jobs (6, 5 and 6 failures at 1280x720, 2560x1440 and 1920x1080; the other test jobs and the
+  full games passed). The failures repeat in every size, so they are not time-outs and were not
+  rerun. Screenshots of that run are copied into `harness/screens/` (the new `ranking` and
+  `ranking-not-in-it-yet` screens included); the releaser copies them again after the green run.
+  - F1: axe `color-contrast` (serious) on the players online list's status "in a game":
+    foreground `var(--color-status-in-game)` (#a855f7) on #262a40 is 3.56:1, below 4.5:1. Breaks
+    the axe check on every screen that shows the list: `accountSettings.spec.ts:34`,
+    `dailyLimits.spec.ts:19`, `rematch.spec.ts:40`, `roomsAndGuests.spec.ts:13` and `:82`
+    (the last only at 1920x1080). Fix: a lighter tint of the status colour for the text (see
+    `proposed-rules.md`, "Text colours are checked on solid backgrounds").
+  - F2: `idleClient.spec.ts:15` expects 1 frame sent while connecting and gets 2: the waiting
+    room now also opens the lobby socket, whose first message identifies the player (Q152,
+    S11.1). The test's point is that an idle client sends nothing more in five minutes. The
+    fixer decides whether the count is now rightly 2 (the identifying message of the lobby socket)
+    and records it, never by loosening the "nothing sent while idle" check.
+
 ### Helper log
 
 Filled in by the coordinator afterwards, from the helpers' completion notices (Q73). Tokens are
