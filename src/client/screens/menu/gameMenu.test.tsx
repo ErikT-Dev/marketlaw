@@ -2,6 +2,7 @@ import { act, fireEvent, render, screen, within } from "@testing-library/react";
 import * as v from "valibot";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { EpochMs } from "../../../shared/EpochMs";
+import type { GameResult } from "../../../shared/GameResult";
 import { gamePageProps } from "../../testing/gamePageProps";
 import { roomUpdateWith } from "../../testing/roomUpdateWith";
 import { GamePage } from "../GamePage";
@@ -112,6 +113,35 @@ describe("the game menu", () => {
       within(menu).getByRole("button", {
         name: "Card set",
         description: "Your clock keeps running while you look",
+      }),
+    ).toBeDefined();
+  });
+
+  it("keeps the lobby lines once the game is over", () => {
+    const result: GameResult = {
+      endedBy: "turn_limit" as const,
+      places: ([2, 3, 4, 1] as const).map((seat, index) => ({
+        seat,
+        score: 400 - index,
+        bonusTypePoints: 6,
+        leftInTurn: null,
+        hasReachedEndGoal: false,
+        income: 15,
+        fundsAndHand: 20,
+      })),
+    };
+    render(<GamePage {...gamePageProps(roomUpdateWith({ phase: "ended", turn: 40, result }))} />);
+    const menu = openMenu("Menu");
+    expect(
+      within(menu).getByRole("button", {
+        name: "Rules",
+        description: "How to play, with examples",
+      }),
+    ).toBeDefined();
+    expect(
+      within(menu).getByRole("button", {
+        name: "Card set",
+        description: "All 240 cards, with filters and search",
       }),
     ).toBeDefined();
   });
