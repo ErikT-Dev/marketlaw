@@ -359,6 +359,29 @@ These 12 scenarios are added to `harness/required.yaml` in this phase, by file a
     S11.1). The test's point is that an idle client sends nothing more in five minutes. The
     fixer decides whether the count is now rightly 2 (the identifying message of the lobby socket)
     and records it, never by loosening the "nothing sent while idle" check.
+- Phase review (2026-11-17, phase-reviewer): ready after fixes. All Builds items present, the 12
+  scenarios required, the rating check built. No scope creep, escape hatches, protected-file
+  changes or new dependencies. The two `emailScreens.test.tsx` changes are not weakened tests;
+  the hand-edited `tokens.css` is regenerated the same by `npm run design:tokens`; the strict
+  `/api/account` reply and `POST /api/ranking` are acceptable.
+  - F3 (should fix): the players online list sets a player's new rating to "before + change"
+    (`ratingsAfterGameOf.ts`, used by `reportToLobby.ts`), not the stored rating. With A10.7 a
+    player who left game 1 and finished game 2 first then shows a rating different from D1; and
+    a failed D1 batch still sends ratings that were never saved. Breaks A10.7, A7.2, S10.2. Fix:
+    send the Lobby the stored ratings (`RETURNING` on the upsert, or re-read after the batch
+    succeeds), none if the batch failed; test a stored rating that differs from the kept before.
+  - F4 (suggestion): a player who deletes their account during a ranked game gets a new
+    `ratings` row when the game ends (`gameRecordRowsOf.ts`, `ADD_RATING_CHANGE`), against Q153.
+    Fix: insert only `WHERE EXISTS` the player, still one statement per player (B8 unchanged).
+  - F5 (suggestion): two differences noted only in Progress, not in the spec: the players online
+    list also in the room after the game (S11.1, S11.4), and the own row highlighted whenever it
+    is on the page (S13.3). Fix: write both into S11.4 and S13.3 and record them under Q152, Q153.
+  - F6 (suggestion): `tools/harness-runner/lobby/LOBBY_FIELDS.ts` exports 7 constants, and
+    `LobbyPresence.ts`, `recordsThen.ts`, `runRecordsStep.ts` export a field list beside their
+    main export (`rules/architecture.md`, File structure). Fix: keep the lists private and export
+    only what the driver needs, or one file per list.
+- Fixer groups: A = F1, F2, F5 (client screens, browser tests, spec texts); B = F3, F4, F6
+  (server ratings, harness driver).
 
 ### Helper log
 
@@ -376,3 +399,4 @@ each helper's conversation size at its end.
 | Builder, item 5b | Opus, medium | 19 | 187k | 86 | done |
 | Builder, item 6 | Opus, medium | 13 | 136k | 53 | done |
 | Finisher | Sonnet, medium | 26 | 87k | 30 | partial: F1, F2 from run 44080237305 |
+| Phase reviewer (resumed after the usage limit) | Opus, medium | 3 after resume | 149k | 17 after resume | done: F3 to F6 |
