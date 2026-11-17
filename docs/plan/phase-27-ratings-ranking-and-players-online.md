@@ -354,11 +354,22 @@ These 12 scenarios are added to `harness/required.yaml` in this phase, by file a
     `dailyLimits.spec.ts:19`, `rematch.spec.ts:40`, `roomsAndGuests.spec.ts:13` and `:82`
     (the last only at 1920x1080). Fix: a lighter tint of the status colour for the text (see
     `proposed-rules.md`, "Text colours are checked on solid backgrounds").
+    Fixed: the status text of a player "in a game" uses the new token
+    `--color-board-in-game-text` (#d8b4fe, purple 300); the dot keeps the full status colour.
+    The token is in `tools/design-export/BOARD_VALUES.ts`, so `npm run design:tokens` writes it;
+    `--color-board-user-menu`, hand-added to `tokens.css` in an earlier phase, is now there too,
+    or regenerating dropped it. Locally the five spec files pass at every size (the four local
+    load time-outs passed on a one-worker rerun).
   - F2: `idleClient.spec.ts:15` expects 1 frame sent while connecting and gets 2: the waiting
     room now also opens the lobby socket, whose first message identifies the player (Q152,
     S11.1). The test's point is that an idle client sends nothing more in five minutes. The
     fixer decides whether the count is now rightly 2 (the identifying message of the lobby socket)
     and records it, never by loosening the "nothing sent while idle" check.
+    Answered and fixed: 2 is right. Q152 already costs each page load one more connection and one
+    message, the lobby socket's identifying message. The test now waits until the lobby socket
+    has sent exactly that one message (`type: "identify"`), expects 2 frames while connecting,
+    and still expects no frame at all in the next five minutes. Not a spec question (Q152 covers
+    it), so nothing in `open-questions.md`.
 - Phase review (2026-11-17, phase-reviewer): ready after fixes. All Builds items present, the 12
   scenarios required, the rating check built. No scope creep, escape hatches, protected-file
   changes or new dependencies. The two `emailScreens.test.tsx` changes are not weakened tests;
@@ -384,6 +395,7 @@ These 12 scenarios are added to `harness/required.yaml` in this phase, by file a
   - F5 (suggestion): two differences noted only in Progress, not in the spec: the players online
     list also in the room after the game (S11.1, S11.4), and the own row highlighted whenever it
     is on the page (S13.3). Fix: write both into S11.4 and S13.3 and record them under Q152, Q153.
+    Fixed: S11.4 and S13.3 say both (`HARNESS:` commit), recorded under Q152 and Q153.
   - F6 (suggestion): `tools/harness-runner/lobby/LOBBY_FIELDS.ts` exports 7 constants, and
     `LobbyPresence.ts`, `recordsThen.ts`, `runRecordsStep.ts` export a field list beside their
     main export (`rules/architecture.md`, File structure). Fix: keep the lists private and export
