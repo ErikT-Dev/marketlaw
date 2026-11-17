@@ -195,3 +195,17 @@ These 17 scenarios are added to `harness/required.yaml` in this phase, by file a
     visitor, plays all 19 steps and finishes; screenshots of the tutorial screens at the three
     sizes, axe, no horizontal scroll, `getByRole` selectors. Locally run only this spec file
     with `--workers=2`.
+
+## Finish
+
+- [ ] Finisher: the phase's scenarios into `harness/required.yaml`, the full check and harness,
+  the branch check, screenshots, `docs/enforcement.md`.
+
+### Helper log
+
+Filled in by the coordinator afterwards, from the helpers' completion notices (Q73). Tokens are
+each helper's conversation size at its end.
+
+| Job | Model, effort | Minutes | Tokens | Tool calls | Result |
+|---|---|---|---|---|---|
+| Starter | Opus, medium | 8 | 151k | 78 | done |
