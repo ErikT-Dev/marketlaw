@@ -22,6 +22,11 @@ const STATUS_COLOR: Readonly<Record<PlayerStatus, string>> = {
   none: "var(--color-status-online)",
 };
 
+const STATUS_TEXT_COLOR: Readonly<Record<PlayerStatus, string>> = {
+  ...STATUS_COLOR,
+  inGame: "var(--color-board-in-game-text)",
+};
+
 export function PlayerBadge({ name, playerId, status, rating, isFirstPlayer = false }: Props) {
   const color = STATUS_COLOR[status];
   return (
@@ -32,7 +37,10 @@ export function PlayerBadge({ name, playerId, status, rating, isFirstPlayer = fa
       </span>
       {rating === undefined ? null : <span className={styles["rating"]}>{rating}</span>}
       {status === "none" ? null : (
-        <span className={styles["status"]} {...(status === "left" ? {} : { style: { color } })}>
+        <span
+          className={styles["status"]}
+          {...(status === "left" ? {} : { style: { color: STATUS_TEXT_COLOR[status] } })}
+        >
           {PLAYER_STATUS_TEXTS[status]}
         </span>
       )}
