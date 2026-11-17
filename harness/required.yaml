@@ -482,6 +482,16 @@ scenarios:
     - four new players in a 4 player ranked game change rating by 20 7 minus 7 and minus 20
     - a player who left is placed below the players who stayed for ratings
     - an abandoned game leaves ratings unchanged
+  client:
+    - during a game the menu offers rules and card set but not the tutorial
+    - opening the menu during a game does not stop the clock
+    - anyone can open the rulebook with its table of contents
+    - the rulebook explains every section of the game rules
+    - anyone can open the card set and see all 240 cards
+    - the card set filters by sector tier and type and searches by name
+    - searching the card set by name finds matching cards
+    - opening a card shows everything about it
+    - the menu in a waiting room does not offer the tutorial
 invariants:
   - I1
   - I2
