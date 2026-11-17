@@ -2,8 +2,6 @@ import type { RankingViewer } from "../../../src/server/ratings/RankingViewer.ts
 import type { LobbyRanking } from "./LobbyRanking.ts";
 import type { LobbySession } from "./LobbySession.ts";
 
-export const RECORDS_ACTIONS = ["open_match_history", "open_ranking"];
-
 function textOf(value: unknown): string {
   return typeof value === "string" ? value : "";
 }

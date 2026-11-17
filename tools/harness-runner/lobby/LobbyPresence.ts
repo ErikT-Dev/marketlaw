@@ -9,8 +9,6 @@ import type { LobbySession } from "./LobbySession.ts";
 import { memoryReadStatementOf } from "./memoryReadStatementOf.ts";
 import { queueSentTo } from "./queueSentTo.ts";
 
-export const PRESENCE_THEN_FIELDS = ["players_online", "queue_count"];
-
 export class LobbyPresence {
   private opened: LobbyMessage | null = null;
   private readonly given: LobbyGiven;

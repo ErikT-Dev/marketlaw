@@ -2,8 +2,6 @@ import type { LobbyRanking } from "./LobbyRanking.ts";
 import type { LobbySession } from "./LobbySession.ts";
 import { matchHistoryThen } from "./matchHistoryThen.ts";
 
-export const RECORDS_THEN_FIELDS = ["match_history", "record_usernames", "ranking", "ranking_page"];
-
 function rankingThen(ranking: LobbyRanking) {
   return (
     ranking.opened?.entries.map(({ place, username, rating, rankedGames }) => ({
