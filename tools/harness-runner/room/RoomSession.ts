@@ -81,7 +81,7 @@ export class RoomSession {
   readonly accounts: Map<string, Identity>;
   readonly records = memoryGameRecordDatabase();
   readonly givenRatings: ReadonlyArray<PlayerRatingBeforeGame>;
-  private readonly recordSaves: Array<Promise<void>> = [];
+  private readonly recordSaves: Array<Promise<unknown>> = [];
   readonly connections = new Map<string, Connection>();
   readonly offline = new Set<string>();
   readonly openTabs = new Map<string, number>();

@@ -27,6 +27,7 @@ import { startRankedRoomIn } from "./room/startRankedRoomIn";
 import { newGameStart } from "./newGameStart";
 import { withConnection } from "./room/withConnection";
 import { reportToLobby } from "./reportToLobby";
+import type { PlayerRating } from "./records/PlayerRating";
 import { saveRecordsIfEnded } from "./records/saveRecordsIfEnded";
 import { RoomSockets } from "./RoomSockets";
 import { chatTrackingStorage } from "./room/chatTrackingStorage";
@@ -197,11 +198,12 @@ export class GameRoom extends DurableObject<Env> {
   override async alarm(): Promise<void> {
     await this.inTurn(async () => {
       const record = loadRoom(this.storage);
-      if (record !== null) {
-        await applyRoomAlarm(this.publishing, this.env.DB, { record, now: nowMs() });
-      }
+      const ratings =
+        record === null
+          ? []
+          : await applyRoomAlarm(this.publishing, this.env.DB, { record, now: nowMs() });
       await this.syncAlarm(true);
-      await this.reportToLobby(record);
+      await this.reportToLobby(record, ratings);
     });
   }
 
@@ -291,14 +293,16 @@ export class GameRoom extends DurableObject<Env> {
       { record: recordBefore, messageCount },
     );
     await this.syncAlarm();
-    if (recordAfter !== null) {
-      await saveRecordsIfEnded(this.env.DB, recordBefore, recordAfter);
-    }
-    await this.reportToLobby(recordBefore);
+    const ratings =
+      recordAfter === null ? [] : await saveRecordsIfEnded(this.env.DB, recordBefore, recordAfter);
+    await this.reportToLobby(recordBefore, ratings);
   }
 
-  private async reportToLobby(before: RoomRecord | null): Promise<void> {
-    await reportToLobby(this.env, before, loadRoom(this.storage));
+  private async reportToLobby(
+    before: RoomRecord | null,
+    ratings: ReadonlyArray<PlayerRating> = [],
+  ): Promise<void> {
+    await reportToLobby(this.env, before, loadRoom(this.storage), ratings);
   }
 
   private async syncAlarm(isFiring = false): Promise<void> {
