@@ -3430,3 +3430,16 @@ file.
   steps as client steps that send nothing, and a client test checks that opening them during a
   game sends no message and the clock keeps counting.
 - **Implemented:** `harness/spec/screens.md` S14.1; phase 28, item 5.
+
+## Q160. Where does the card set differ from its design boards?
+
+- **Phase:** 28 (review finding F3; S14.3, S1.6, S17).
+- **Question:** the boards "Card set: grid" and "Card set: card detail" filter types with an "Any
+  type" dropdown and write stats, types and combos as words, which S1.6 forbids. The differences
+  were recorded only in the phase's Progress notes, not in S17, where known design differences
+  are listed.
+- **Solution:** the spec wins: the type filter is a row of type icon buttons, and the card
+  detail shows stats and types as icons and marks an infinite combo with its infinite mark. The
+  tiles show no photo, as the boards do (the phase file's lazy photos were dropped, item 3), so
+  that is not a design difference. Written into S17 as a known difference.
+- **Implemented:** `harness/spec/screens.md` S17; phase 28, items 3 and 4 (no code change).

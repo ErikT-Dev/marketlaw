@@ -569,3 +569,8 @@ these, the spec is followed:
   boards show the address in a text field. The removed address is explained without naming it
   (the account no longer holds it, A1.11), and the address is shown as text with its
   confirmation (Q114).
+- **The card set** board "Card set: grid" filters types with an "Any type" dropdown, and "Card
+  set: card detail" writes stats, types and combos as words ("1 Farm → +1 workforce", "None of
+  them is infinite"). Types and stats are always icons (S1.6), so the type filter is a row of
+  type icon buttons, and the detail shows stats and types as icons and marks an infinite combo
+  with its infinite mark (S14.3, Q160).
