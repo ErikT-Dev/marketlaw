@@ -1,6 +1,6 @@
 # Phase 28: Game menu, rules viewer and card set
 
-Status: in progress
+Status: done
 Milestone: 6 Learning
 
 ## Goal
