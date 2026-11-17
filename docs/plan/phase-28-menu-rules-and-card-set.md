@@ -262,9 +262,19 @@ These 9 scenarios are added to `harness/required.yaml` in this phase, by file an
 
 ## Finish
 
-- [ ] Finisher: the 9 scenarios into `harness/required.yaml`, the full check and harness, the
+- [x] Finisher: the 9 scenarios into `harness/required.yaml`, the full check and harness, the
   branch check, screenshots, `docs/enforcement.md` (the rulebook type markup check), B14 still
   within its limit (exit criterion).
+  - Done: the 9 scenarios are in `harness/required.yaml` under `client` (`HARNESS:` commit);
+    `npm run check` passed locally (exit 0, B14 within its limit in the size step);
+    `npm run harness` passed locally (490 scenarios, 0 problems, phase-end simulated games and
+    budgets). GitHub branch check, run 44123870779: success, all 7 jobs (check, other tests 1
+    to 3, full games with 2, 3 and 4 players), no rerun needed. Screenshots of that run copied
+    into `harness/screens/` (including `game-menu-lobby`, `game-menu-game`, `rules-viewer`,
+    `rules-during-game`, `card-set`). `docs/enforcement.md` updated with the rulebook type
+    markup check and the menu client steps. The item 5 builder's local one-off failures (route
+    tests with ECONNRESET, rules page at 1920, game page at 1280) did not show up in the
+    finisher's local check or in the GitHub run. No findings.
 
 ### Helper log
 
