@@ -291,7 +291,18 @@ These 9 scenarios are added to `harness/required.yaml` in this phase, by file an
     photo on tiles) are recorded only in Progress. Fix: an S17 entry in `screens.md` in a
     `HARNESS:` commit, recorded in `open-questions.md`.
 - Fixer groups: A = F1, F2, F3 (one fixer).
-- [ ] Fixer: F1, F2, F3.
+- [x] Fixer: F1, F2, F3 (2026-11-17).
+  - F1 fixed: `GameMenuPlace` gains `"game_over"` (lobby lines; phase 29 treats it like
+    `waiting_room`); `gameMenuPlaceOf` in `screens/game/` gives `"game"` only while
+    `view.result === null && !seat.hasLeft`, as `runningGameClockOf` does. Follows S14.1 as
+    written (only where a clock runs), so no spec change. Test "keeps the lobby lines once the
+    game is over" in `gameMenu.test.tsx` (fails without the fix). The scenario step `open_menu`
+    still accepts only `lobby`, `waiting_room` and `game`. `e2e/gameMenu.spec.ts` passed locally (9 tests).
+  - F2 fixed: `isRulebookListStart.ts` on its own; the list item patterns it shares with
+    `parseRulebookList` live in `RULEBOOK_LIST_ITEM.ts`.
+  - F3 fixed: S17 entry "The card set" (type icon buttons instead of "Any type", icons and the
+    infinite mark in the detail), Q160. No photo on tiles is not a design difference (the boards
+    have none), only a difference from the phase file, already noted under item 3.
 
 ### Helper log
 
