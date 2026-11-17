@@ -1,4 +1,5 @@
 .page {
+  contain: layout;
   position: fixed;
   inset: 0;
   z-index: 200;
@@ -147,6 +148,20 @@
   padding: 12px 14px;
   border-radius: var(--radius-md);
   box-sizing: border-box;
+}
+
+.tileFace {
+  align-items: flex-start;
+  border: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.tileFace:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 2px;
 }
 
 .tileFace span {

@@ -10,14 +10,14 @@ import { CardSetPage } from "./CardSetPage";
 const NOW = 5_000_000;
 
 function showCardSet(gameClock: Parameters<typeof CardSetPage>[0]["gameClock"] = null) {
-  render(<CardSetPage gameClock={gameClock} />);
+  render(<CardSetPage openCard={null} gameClock={gameClock} />);
   return screen.getByRole("dialog", { name: "Card set" });
 }
 
 function tileNames(cardSet: HTMLElement): ReadonlyArray<string | null> {
   const grid = within(cardSet).getByRole("list", { name: "Cards" });
   return within(grid)
-    .queryAllByRole("listitem")
+    .queryAllByRole("button")
     .map((tile) => tile.getAttribute("aria-label"));
 }
 

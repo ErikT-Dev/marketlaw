@@ -203,7 +203,20 @@ These 9 scenarios are added to `harness/required.yaml` in this phase, by file an
     the top bar with the clock line.
   - Component tests, and a browser test with the screenshot `card-set` at the three sizes.
 
-- [ ] 4. **Card detail** (C3.3, S14.3; scenario `client` #9). **Small.**
+- [x] 4. **Card detail** (C3.3, S14.3; scenario `client` #9). **Small.**
+  - Done (2026-11-17). Hash `#card-set/<card name, URI-encoded>` (`cardDetailHash`,
+    `cardSetPageOf`, `useCardSetPage` replacing `useCardSetOpen`); an unknown name shows the
+    grid. A tile click pushes the card's hash, so Back, Close and Escape return to the grid with
+    the filters kept; a link straight to a card pushes `#card-set` under it. The detail is the
+    shared `Modal` over the card set (the page has `contain: layout`, so the backdrop stays
+    below the game's top bar), focus returns to the tile on close. Differs from the phase file:
+    a doubled type is shown as its icon twice, not `TypeChip` count 2 (S5 says so for every
+    place that shows a card's types, the card set included); tier is shown as words ("tier 2"),
+    as the design does, since the tier icon is dark on the dark modal. Gives and uses up come
+    from R3.4's sector table (`SECTOR_STAT_EFFECTS`, display data, not a rule outcome).
+  - For later items: client driver step `open_card` and field `card_detail`; `client` #9 passes
+    with it added to `required.yaml` locally. Browser test "a visitor opens a card and goes back
+    to the grid with the filters kept" (screenshot `card-detail`).
   - Clicking a tile opens the detail: the big card (`BigCard`), sector and tier, base cost, what
     it gives and uses up (stat icons with numbers), the types with a doubled type shown as
     elsewhere (`TypeChip` count 2), and every combo with "infinite" marked (`ComboLabel`). Back

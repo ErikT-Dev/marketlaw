@@ -81,6 +81,43 @@ test("the rules opened during a game leave the top bar visible and repeat the ti
   await expect(cardSet).toBeHidden();
 });
 
+test("a visitor opens a card and goes back to the grid with the filters kept", async ({
+  browser,
+  viewport,
+}, testInfo) => {
+  const visitor = await openLobby(browser, "Detail Ann", viewport ?? undefined);
+  const cardSet = await openPageByLink(visitor.page, "#card-set", "Card set");
+  const sector = cardSet.getByRole("group", { name: "Sector" });
+  await sector.getByRole("button", { name: "Residential" }).click();
+  await cardSet.getByRole("group", { name: "Tier" }).getByRole("button", { name: "2" }).click();
+  const tiles = cardSet.getByRole("list", { name: "Cards" }).getByRole("button");
+  const residentialTier2 = await tiles.count();
+  await tiles.filter({ hasText: "Repetitive Housing" }).click();
+
+  const detail = visitor.page.getByRole("dialog", { name: "#23 Repetitive Housing" });
+  await expect(detail).toBeVisible();
+  await expect(detail.getByRole("article", { name: "Repetitive Housing" })).toBeVisible();
+  await expect(detail.getByRole("definition").getByRole("img", { name: "Cost 9" })).toBeVisible();
+  await expectScreenFits(visitor.page, "card-detail", testInfo);
+
+  await detail.getByRole("button", { name: "Close" }).click();
+  await expect(detail).toBeHidden();
+  await expect(sector.getByRole("button", { name: "Residential" })).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
+  await expect(tiles).toHaveCount(residentialTier2);
+  await expect(tiles.filter({ hasText: "Repetitive Housing" })).toBeFocused();
+
+  await tiles.filter({ hasText: "Repetitive Housing" }).press("Enter");
+  await expect(detail).toBeVisible();
+  await visitor.page.keyboard.press("Escape");
+  await expect(detail).toBeHidden();
+  await expect(cardSet).toBeVisible();
+  await visitor.page.keyboard.press("Escape");
+  await expect(cardSet).toBeHidden();
+});
+
 test("a visitor filters and searches the card set", async ({ browser, viewport }, testInfo) => {
   const visitor = await openLobby(browser, "Cards Ann", viewport ?? undefined);
   const cardSet = await openPageByLink(visitor.page, "#card-set", "Card set");

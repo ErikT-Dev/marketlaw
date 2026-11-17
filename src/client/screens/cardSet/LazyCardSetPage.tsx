@@ -1,4 +1,5 @@
 import { lazy, Suspense } from "react";
+import type { CardName } from "../../../shared/catalogue/CardName";
 import type { RunningGameClock } from "../game/RunningGameClock";
 
 const CardSetPage = lazy(async () => ({
@@ -6,13 +7,14 @@ const CardSetPage = lazy(async () => ({
 }));
 
 type Props = {
+  readonly openCard: CardName | null;
   readonly gameClock: RunningGameClock | null;
 };
 
-export function LazyCardSetPage({ gameClock }: Props) {
+export function LazyCardSetPage({ openCard, gameClock }: Props) {
   return (
     <Suspense fallback={null}>
-      <CardSetPage gameClock={gameClock} />
+      <CardSetPage openCard={openCard} gameClock={gameClock} />
     </Suspense>
   );
 }

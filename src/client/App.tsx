@@ -2,7 +2,7 @@ import { useSyncExternalStore } from "react";
 import styles from "./App.module.css";
 import { CurrentScreen } from "./CurrentScreen";
 import { LazyCardSetPage } from "./screens/cardSet/LazyCardSetPage";
-import { useCardSetOpen } from "./screens/cardSet/useCardSetOpen";
+import { useCardSetPage } from "./screens/cardSet/useCardSetPage";
 import { EmailDialogIfOpen } from "./screens/email/EmailDialogIfOpen";
 import { LazyPrivacyNoticePage } from "./screens/privacy/LazyPrivacyNoticePage";
 import { usePrivacyNoticeOpen } from "./screens/privacy/usePrivacyNoticeOpen";
@@ -40,7 +40,7 @@ export function App({ store }: Props) {
   const isPrivacyNoticeOpen = usePrivacyNoticeOpen();
   const recordPage = useRecordPage();
   const rulesPage = useRulesPage();
-  const isCardSetOpen = useCardSetOpen();
+  const cardSetPage = useCardSetPage();
   const gameClock = runningGameClockOf(update, serverClockOffsetMs);
   return (
     <>
@@ -49,7 +49,9 @@ export function App({ store }: Props) {
       </p>
       <div
         className={styles["app"]}
-        inert={isPrivacyNoticeOpen || recordPage !== null || rulesPage !== null || isCardSetOpen}
+        inert={
+          isPrivacyNoticeOpen || recordPage !== null || rulesPage !== null || cardSetPage !== null
+        }
       >
         {notice === null ? null : (
           <p role="alert" className={styles["notice"]}>
@@ -62,7 +64,9 @@ export function App({ store }: Props) {
       </div>
       {isPrivacyNoticeOpen ? <LazyPrivacyNoticePage /> : null}
       {rulesPage === null ? null : <LazyRulesPage address={rulesPage} gameClock={gameClock} />}
-      {isCardSetOpen ? <LazyCardSetPage gameClock={gameClock} /> : null}
+      {cardSetPage === null ? null : (
+        <LazyCardSetPage openCard={cardSetPage.openCard} gameClock={gameClock} />
+      )}
       {recordPage === null ? null : (
         <LazyRecordsPage
           key={window.location.hash}

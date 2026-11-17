@@ -1,4 +1,5 @@
 import { useState } from "react";
+import type { CardName } from "../../../shared/catalogue/CardName";
 import { CARDS } from "../../../shared/catalogue/CARDS";
 import { Button } from "../../components/Button";
 import { goBack } from "../../components/goBack";
@@ -6,6 +7,7 @@ import { useOverlayPage } from "../../components/useOverlayPage";
 import { ClockKeepsRunningNote } from "../game/ClockKeepsRunningNote";
 import type { RunningGameClock } from "../game/RunningGameClock";
 import { ANY_CARD } from "./ANY_CARD";
+import { CardDetailDialog } from "./CardDetailDialog";
 import { cardMatchCountText } from "./cardMatchCountText";
 import { CardSetFilters } from "./CardSetFilters";
 import { CardSetGrid } from "./CardSetGrid";
@@ -13,10 +15,11 @@ import { cardsMatching } from "./cardsMatching";
 import styles from "./CardSet.module.css";
 
 type Props = {
+  readonly openCard: CardName | null;
   readonly gameClock: RunningGameClock | null;
 };
 
-export function CardSetPage({ gameClock }: Props) {
+export function CardSetPage({ openCard, gameClock }: Props) {
   const pageRef = useOverlayPage();
   const [filter, setFilter] = useState(ANY_CARD);
   const cards = cardsMatching(CARDS, filter);
@@ -29,7 +32,7 @@ export function CardSetPage({ gameClock }: Props) {
       aria-modal="true"
       aria-labelledby="card-set-title"
     >
-      <div className={styles["panel"]}>
+      <div className={styles["panel"]} inert={openCard !== null}>
         <div className={styles["controls"]}>
           <header className={styles["header"]}>
             <h1 id="card-set-title" className={styles["title"]}>
@@ -56,12 +59,14 @@ export function CardSetPage({ gameClock }: Props) {
             />
           )}
           <CardSetFilters filter={filter} onChange={setFilter} />
-          <p className={styles["count"]} role="status">
-            {cardMatchCountText(cards.length)}
+          <p className={styles["count"]}>
+            <span role="status">{cardMatchCountText(cards.length)}</span> · click a card to see
+            everything about it
           </p>
         </div>
         <CardSetGrid cards={cards} />
       </div>
+      {openCard === null ? null : <CardDetailDialog name={openCard} />}
     </div>
   );
 }
