@@ -276,6 +276,23 @@ These 9 scenarios are added to `harness/required.yaml` in this phase, by file an
     tests with ECONNRESET, rules page at 1920, game page at 1280) did not show up in the
     finisher's local check or in the GitHub run. No findings.
 
+- [x] Phase review (D16): ready after fixes; 3 findings.
+  - F1 (should fix): after game over the game menu still says the clock keeps running.
+    `GameTopBar.tsx:50` always passes place `"game"`, though the board stays after
+    `view.result` is set. Breaks S14.1 (Q159) and disagrees with `runningGameClockOf`. Fix: clock
+    lines only while `view.result === null && !seat.hasLeft`; otherwise a place such as
+    `"game_over"` with the lobby lines (phase 29 treats it like `waiting_room`); add a case to
+    `gameMenu.test.tsx`.
+  - F2 (suggestion): `parseRulebookList.ts` exports `isRulebookListStart` and
+    `parseRulebookList` (`rules/architecture.md`, File structure). Fix: move
+    `isRulebookListStart` to its own file.
+  - F3 (suggestion): the design differences of the card set (type icon buttons instead of the
+    "Any type" dropdown, icons and an infinite mark in the card detail instead of words, no
+    photo on tiles) are recorded only in Progress. Fix: an S17 entry in `screens.md` in a
+    `HARNESS:` commit, recorded in `open-questions.md`.
+- Fixer groups: A = F1, F2, F3 (one fixer).
+- [ ] Fixer: F1, F2, F3.
+
 ### Helper log
 
 Filled in by the coordinator afterwards, from the helpers' completion notices (Q73). Tokens are
@@ -290,3 +307,4 @@ each helper's conversation size at its end.
 | Builder, item 4 | Opus, medium | 13 | 143k | 65 | done |
 | Builder, item 5 | Opus, medium | 29 | 177k | 94 | done |
 | Finisher | Sonnet, medium | 30 | 86k | 38 | done |
+| Phase reviewer | Opus, medium | 4 | 150k | 35 | done: F1-F3 |
