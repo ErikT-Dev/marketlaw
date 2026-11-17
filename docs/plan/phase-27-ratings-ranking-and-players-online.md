@@ -438,8 +438,8 @@ rating change on the end screen, find both accounts in the ranking table (Jump t
 new ratings in players online.
 
 **Checks.** Local `npm run check` and `npm run harness` green on the final code (490 scenarios, 0
-problems; bundle 164.59 kB gzipped of 300). The 12 phase scenarios are required. The branch check
-and deploy results: branch check run 44100447771 green on all 7 jobs; merged to master; Deploy run 44102029895 succeeded (migration 0014 applied; live bundle index-wswlLiP8.js matches the build).
+problems; bundle 164.59 kB gzipped of 300). The 12 phase scenarios are required.
+Branch check run 44100447771 green on all 7 jobs; merged to master; Deploy run 44102029895 succeeded (migration 0014 applied; live bundle index-wswlLiP8.js matches the build).
 
 **Differences from the phase file.** Players online is also shown in the room after the game, and
 the own ranking row is highlighted whenever it is on the page (F5; written into S11.4 and S13.3).
