@@ -37,8 +37,6 @@
 }
 
 .waitingColumns {
-  grid-template-columns: minmax(0, 1048px) minmax(320px, 440px);
-  gap: var(--space-lg);
   align-content: stretch;
 }
 
@@ -356,7 +354,11 @@
   text-decoration: underline;
 }
 
-.rankedColumns {
-  grid-template-columns: minmax(0, 1048px) minmax(320px, 440px);
+.withPlayersOnline {
+  width: 100%;
+  max-width: 1920px;
+  margin-inline: auto;
+  box-sizing: border-box;
+  grid-template-columns: minmax(200px, 19fr) minmax(0, 51fr) minmax(320px, 22fr);
   gap: var(--space-lg);
 }

@@ -50,6 +50,7 @@ function seat(seatNumber: number, player: unknown, changes: Readonly<Record<stri
     comboGains: { workforce: 9, quality: 11, satisfaction: 7 },
     typeCounts: { Farm: 3 },
     player,
+    rating: null,
     ...changes,
   };
 }
@@ -112,7 +113,7 @@ describe("the match history page", () => {
         older: null,
       },
     });
-    render(<RecordsPage page={{ kind: "history", playerId: ANN }} viewerId={BEA} />);
+    render(<RecordsPage page={{ kind: "history", playerId: ANN }} viewerId={BEA} token={null} />);
     const page = screen.getByRole("dialog");
     expect(await within(page).findByRole("heading", { name: "Match history · Ann" })).toBeTruthy();
     const rows = within(page).getAllByRole("row").slice(1);
@@ -145,7 +146,7 @@ describe("the match history page", () => {
         older: null,
       },
     });
-    render(<RecordsPage page={{ kind: "history", playerId: ANN }} viewerId={ANN} />);
+    render(<RecordsPage page={{ kind: "history", playerId: ANN }} viewerId={ANN} token={null} />);
     fireEvent.click(await screen.findByRole("button", { name: "Show older games" }));
     expect(await screen.findByRole("link", { name: "22 Oct 2026" })).toBeTruthy();
     expect(screen.getAllByRole("row")).toHaveLength(3);
@@ -159,19 +160,19 @@ describe("the match history page", () => {
       [`/api/players/${BEA}/history`]: { kind: "account_gone" },
     });
     const { unmount } = render(
-      <RecordsPage page={{ kind: "history", playerId: ANN }} viewerId={ANN} />,
+      <RecordsPage page={{ kind: "history", playerId: ANN }} viewerId={ANN} token={null} />,
     );
     expect(await screen.findByRole("heading", { name: "No games yet" })).toBeTruthy();
     expect(screen.getByText("Games you finish, or leave, appear here.")).toBeTruthy();
     unmount();
-    render(<RecordsPage page={{ kind: "history", playerId: BEA }} viewerId={ANN} />);
+    render(<RecordsPage page={{ kind: "history", playerId: BEA }} viewerId={ANN} token={null} />);
     expect(await screen.findByText("This player's account no longer exists.")).toBeTruthy();
   });
 
   it("goes back to where the player came from and says when the history could not be loaded", async () => {
     serverAnswers({});
     const back = vi.spyOn(window.history, "back").mockImplementation(() => undefined);
-    render(<RecordsPage page={{ kind: "history", playerId: ANN }} viewerId={null} />);
+    render(<RecordsPage page={{ kind: "history", playerId: ANN }} viewerId={null} token={null} />);
     fireEvent.click(screen.getByRole("button", { name: "Back" }));
     fireEvent.keyDown(document, { key: "Escape" });
     expect(back).toHaveBeenCalledTimes(2);
@@ -185,7 +186,9 @@ describe("the match history page", () => {
 describe("the game record page", () => {
   it("shows the game and a column per player with every recorded value", async () => {
     serverAnswers({ [`/api/records/${NEWER_GAME}`]: RECORD });
-    render(<RecordsPage page={{ kind: "record", gameId: NEWER_GAME }} viewerId={ANN} />);
+    render(
+      <RecordsPage page={{ kind: "record", gameId: NEWER_GAME }} viewerId={ANN} token={null} />,
+    );
     const page = screen.getByRole("dialog");
     expect(await within(page).findByRole("heading", { name: "Game record · 25 Oct 2026" })).toBe(
       within(page).getByRole("heading", { level: 1 }),
@@ -214,9 +217,48 @@ describe("the game record page", () => {
     expect(page.textContent).toContain("Players who left are scored with their values");
   });
 
+  it("shows each player's rating before and its change in a ranked game", async () => {
+    const [bea, ann, left] = RECORD.record.seats;
+    const ranked = {
+      ...RECORD,
+      record: {
+        ...RECORD.record,
+        kind: "ranked",
+        seats: [
+          { ...bea, rating: { before: 1000, change: 20 } },
+          { ...ann, rating: { before: 1043, change: 0 } },
+          { ...left, rating: { before: 1188, change: -20 } },
+        ],
+      },
+    };
+    serverAnswers({ [`/api/records/${NEWER_GAME}`]: ranked });
+    render(
+      <RecordsPage page={{ kind: "record", gameId: NEWER_GAME }} viewerId={ANN} token={null} />,
+    );
+    const table = await screen.findByRole("table", { name: "Players" });
+    expect(within(table).getByRole("row", { name: /^Rating before/ }).textContent).toBe(
+      "Rating before100010431188",
+    );
+    expect(within(table).getByRole("row", { name: /^Rating change/ }).textContent).toBe(
+      "Rating change+200−20",
+    );
+  });
+
+  it("shows no rating rows in a casual game", async () => {
+    serverAnswers({ [`/api/records/${NEWER_GAME}`]: RECORD });
+    render(
+      <RecordsPage page={{ kind: "record", gameId: NEWER_GAME }} viewerId={ANN} token={null} />,
+    );
+    const table = await screen.findByRole("table", { name: "Players" });
+    expect(within(table).queryByRole("rowheader", { name: "Rating before" })).toBeNull();
+    expect(within(table).queryByRole("rowheader", { name: "Rating change" })).toBeNull();
+  });
+
   it("says when a game record does not exist", async () => {
     serverAnswers({});
-    render(<RecordsPage page={{ kind: "record", gameId: OLDER_GAME }} viewerId={null} />);
+    render(
+      <RecordsPage page={{ kind: "record", gameId: OLDER_GAME }} viewerId={null} token={null} />,
+    );
     expect(await screen.findByText("This game record does not exist.")).toBeTruthy();
   });
 });

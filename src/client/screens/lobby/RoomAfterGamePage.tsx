@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { GameResult } from "../../../shared/GameResult";
+import type { PlayerOnlineView } from "../../../shared/protocol/PlayerOnlineView";
 import type { RoomView } from "../../../shared/protocol/RoomView";
 import type { SeatNumber } from "../../../shared/SeatNumber";
 import { Button } from "../../components/Button";
@@ -27,6 +28,7 @@ type Props = {
   readonly turn: number;
   readonly viewer: SeatNumber;
   readonly chat: ChatBinding;
+  readonly playersOnline: ReadonlyArray<PlayerOnlineView>;
   readonly rejection: IconText | null;
   readonly toast: { readonly title: string; readonly text: IconText } | null;
   readonly onDismissToast: () => void;
@@ -51,6 +53,7 @@ export function RoomAfterGamePage(props: Props) {
           viewer={viewer}
           playerNames={room.playerNames}
           playerIds={room.playerIds}
+          ratings={room.ratings}
           onExitToLobby={props.onLeave}
           onClose={() => {
             setIsResultShown(false);
@@ -75,7 +78,12 @@ export function RoomAfterGamePage(props: Props) {
     </p>
   );
   return (
-    <RoomPageFrame account={props.account} chat={props.chat} overlay={overlay}>
+    <RoomPageFrame
+      account={props.account}
+      chat={props.chat}
+      playersOnline={props.playersOnline}
+      overlay={overlay}
+    >
       <WaitingRoomHeader room={room} subtitle={resultLine} onLeave={props.onLeave}>
         <Button look="primary" onClick={props.onAskRematch} isDisabled={!canAskRematch}>
           Ask for a rematch

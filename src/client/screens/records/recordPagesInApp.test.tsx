@@ -73,4 +73,13 @@ describe("record pages in the app", () => {
     expect(screen.getByRole("button", { name: "Log in" })).toBeTruthy();
     expect(screen.queryByRole("button", { name: "My match history" })).toBeNull();
   });
+
+  it("opens the ELO ranking over the lobby for a visitor who is not logged in", async () => {
+    serverAnswers();
+    render(<App store={new ClientStore(() => idleHost())} />);
+    fireEvent.click(screen.getByRole("button", { name: "ELO ranking" }));
+    await hashChanged();
+    expect(await screen.findByRole("dialog", { name: "ELO ranking" })).toBeTruthy();
+    expect(window.location.hash).toBe("#ranking");
+  });
 });

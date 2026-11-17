@@ -1,5 +1,6 @@
 import { gameRecordOf } from "../../rules/gameRecordOf";
 import type { RoomGame } from "../room/RoomGame";
+import { recordPlayersOf } from "./recordPlayersOf";
 import type { StoredGameRecord } from "./StoredGameRecord";
 
 export function storedGameRecordOf(game: RoomGame): StoredGameRecord | null {
@@ -11,6 +12,6 @@ export function storedGameRecordOf(game: RoomGame): StoredGameRecord | null {
         kind: game.kind,
         startedMs: game.saved.setup.startedAt,
         endedMs: game.saved.state.clockStartedAt,
-        players: game.seats.map(({ seat, playerId }) => ({ seat, playerId })),
+        players: recordPlayersOf(game, record.seats),
       };
 }

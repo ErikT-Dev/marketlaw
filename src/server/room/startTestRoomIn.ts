@@ -40,6 +40,7 @@ export function startTestRoomIn(
     waiting: NO_WAITING,
     game: {
       kind: state.kind,
+      ratingsBeforeGame: [],
       saved: {
         schemaVersion: SAVE_SCHEMA_VERSION,
         seed: room.seed,

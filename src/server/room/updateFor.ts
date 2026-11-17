@@ -4,6 +4,7 @@ import type { RoomUpdate } from "../../shared/protocol/RoomUpdate";
 import { endedRoomDeletionAt } from "./endedRoomDeletionAt";
 import type { Identity } from "./Identity";
 import type { RoomRecord } from "./RoomRecord";
+import { seatRatingsOf } from "./seatRatingsOf";
 
 const UPDATES_BY_RECORD = new WeakMap<
   RoomRecord,
@@ -44,6 +45,7 @@ function buildUpdate(record: RoomRecord, playerId: PlayerId): RoomUpdate {
               hasAccepted: asking.accepted.includes(playerId),
             },
       deletionAt: endedRoomDeletionAt(record),
+      ratings: seatRatingsOf(record.game),
     },
     game:
       record.game === null || seat === undefined

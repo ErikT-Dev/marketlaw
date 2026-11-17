@@ -39,6 +39,7 @@
   --color-board-field-error-text: #fca5a5;
   --color-board-guest-log-out: #fca5a5;
   --color-board-guest-note: #2e2442;
+  --color-board-in-game-text: #d8b4fe;
   --color-board-market-phase-text: #1c1206;
   --color-board-market-phase: #f59e0b;
   --color-board-negative-stats: #7f1d1d;
@@ -47,6 +48,10 @@
   --color-board-pending: rgba(0, 0, 0, 0.6);
   --color-board-phase-chip-text: #ddd6fe;
   --color-board-phase-chip: #3b2a6b;
+  --color-board-ranking-own: #3b2f0b;
+  --color-board-ranking-standing: #fde68a;
+  --color-board-rating-gain: #86efac;
+  --color-board-rating-loss: #fca5a5;
   --color-board-shuffle-text: #fcd34d;
   --color-board-timer-low: #3f1d24;
   --color-board-toast-error: #4c1414;

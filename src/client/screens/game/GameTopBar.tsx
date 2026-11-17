@@ -71,7 +71,7 @@ export function GameTopBar(props: Props) {
         ))}
       </ol>
       <div className={styles["right"]}>
-        <UserAccount account={props.account} />
+        <UserAccount account={props.account} rating={null} />
         <YourClock view={view} seat={seat} playerNames={playerNames} />
         {view.phase === "ended" ? null : (
           <>

@@ -4,19 +4,21 @@ import type { RankedGameSize } from "../../../shared/RankedGameSize";
 import type { ReasonCode } from "../../../shared/ReasonCode";
 import type { IconText } from "../../components/IconText";
 import type { AccountBinding } from "../account/AccountBinding";
+import type { LoggedInAccount } from "../account/LoggedInAccount";
 import { REJECTION_MESSAGES } from "../game/REJECTION_MESSAGES";
 import { MatchFoundDialog } from "./MatchFoundDialog";
 import type { RankedQueueBinding } from "./RankedQueueBinding";
 import { RankedQueuePanel } from "./RankedQueuePanel";
 import { rankedLockOf } from "./rankedLockOf";
+import { rankedStandingOf } from "./rankedStandingOf";
 import { rankedRejectionText } from "./rankedRejectionText";
 import { toggledGameSizes } from "./toggledGameSizes";
 import { useGameSizeChoice } from "./useGameSizeChoice";
-import { useRankedStanding } from "./useRankedStanding";
 
 type Props = {
   readonly queue: QueueView;
   readonly account: AccountBinding | null;
+  readonly details: LoggedInAccount | null;
   readonly ranked: RankedQueueBinding;
   readonly now: number;
 };
@@ -31,9 +33,9 @@ function useResyncOnLogin(playerId: string | null, resync: () => void): void {
   }, [playerId, resync]);
 }
 
-export function ShownRankedQueue({ account, ranked, now, queue }: Props) {
+export function ShownRankedQueue({ account, details, ranked, now, queue }: Props) {
   const { onIntent } = ranked;
-  const standing = useRankedStanding(account, ranked.standingCheck);
+  const standing = rankedStandingOf(account, details);
   const choice = useGameSizeChoice();
   const [sendAgainText, setSendAgainText] = useState<IconText | null>(null);
   useResyncOnLogin(account?.playerId ?? null, ranked.onResync);
@@ -51,6 +53,7 @@ export function ShownRankedQueue({ account, ranked, now, queue }: Props) {
       <RankedQueuePanel
         queue={queue}
         sizes={sizes}
+        rating={details?.rating ?? null}
         lock={rankedLockOf(standing, own, now)}
         error={rejection ?? sendAgainText}
         onToggle={(size: RankedGameSize) => {

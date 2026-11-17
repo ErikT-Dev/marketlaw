@@ -9,12 +9,13 @@ const RecordsPage = lazy(async () => ({
 type Props = {
   readonly page: RecordPage;
   readonly viewerId: PlayerId | null;
+  readonly token: string | null;
 };
 
-export function LazyRecordsPage({ page, viewerId }: Props) {
+export function LazyRecordsPage({ page, viewerId, token }: Props) {
   return (
     <Suspense fallback={null}>
-      <RecordsPage page={page} viewerId={viewerId} />
+      <RecordsPage page={page} viewerId={viewerId} token={token} />
     </Suspense>
   );
 }

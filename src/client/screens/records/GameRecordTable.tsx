@@ -1,7 +1,7 @@
 import type { GameRecordView } from "../../../shared/api/GameRecordView";
 import type { PlayerId } from "../../../shared/PlayerId";
 import { TextWithIcons } from "../../components/TextWithIcons";
-import { GAME_RECORD_ROWS } from "./GAME_RECORD_ROWS";
+import { gameRecordRowsOf } from "./gameRecordRowsOf";
 import { RecordNameLink } from "./RecordNameLink";
 import styles from "./Records.module.css";
 
@@ -25,7 +25,7 @@ export function GameRecordTable({ record, viewerId }: Props) {
         </tr>
       </thead>
       <tbody>
-        {GAME_RECORD_ROWS.map((row, index) => (
+        {gameRecordRowsOf(record.kind).map((row, index) => (
           <tr key={index}>
             <th scope="row">
               <TextWithIcons text={row.label} />

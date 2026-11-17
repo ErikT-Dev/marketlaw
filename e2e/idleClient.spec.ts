@@ -3,6 +3,7 @@ import { DUMMY_HUMAN_CHECK } from "./DUMMY_HUMAN_CHECK";
 import { uniqueName } from "./uniqueName";
 
 const FIVE_MINUTES_MS = 5 * 60 * 1000;
+const LOBBY_SOCKET_PATH = "/api/lobby/socket";
 
 function textField(value: unknown, field: string): string {
   const found: unknown =
@@ -29,15 +30,22 @@ test("an idle connected client sends no messages for five minutes", async ({ pag
     localStorage.setItem("marketlaw.session", stored);
   }, JSON.stringify(session));
   const sentFrames: string[] = [];
+  const lobbySocketFrames: string[] = [];
   page.on("websocket", (socket) => {
     socket.on("framesent", (frame) => {
-      sentFrames.push(String(frame.payload));
+      const payload = String(frame.payload);
+      sentFrames.push(payload);
+      if (socket.url().endsWith(LOBBY_SOCKET_PATH)) {
+        lobbySocketFrames.push(payload);
+      }
     });
   });
   await page.goto("/");
   await expect(page.getByRole("list", { name: "Players in the room" })).toBeVisible();
+  await expect.poll(() => lobbySocketFrames.length).toBe(1);
   const sentWhileConnecting = sentFrames.length;
   await page.clock.runFor(FIVE_MINUTES_MS);
-  expect(sentWhileConnecting).toBe(1);
+  expect(sentWhileConnecting).toBe(2);
+  expect(textField(JSON.parse(lobbySocketFrames[0] ?? "{}"), "type")).toBe("identify");
   expect(sentFrames).toHaveLength(sentWhileConnecting);
 });

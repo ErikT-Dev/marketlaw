@@ -37,6 +37,7 @@ function endedRoom(changes: Partial<RoomView> = {}): RoomView {
     mySeat: 1,
     asking: null,
     deletionAt: v.parse(EpochMs, Date.now() + 3_600_000),
+    ratings: null,
     ...changes,
   };
 }
@@ -66,6 +67,7 @@ function roomAfterGame(room: RoomView, result: GameResult = RESULT) {
       }}
       rejection={null}
       toast={null}
+      playersOnline={[]}
       {...handlers}
     />,
   );

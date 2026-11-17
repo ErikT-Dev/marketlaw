@@ -2,7 +2,6 @@ import type { ConnectionStatus } from "../../shared/ConnectionStatus";
 import type { GameHost } from "../../shared/GameHost";
 import type { ReasonCode } from "../../shared/ReasonCode";
 import type { HostEvent } from "../../shared/HostEvent";
-import type { LobbyFeed } from "../../shared/LobbyFeed";
 import type { OpenLobbyFeed } from "../../shared/OpenLobbyFeed";
 import type { OpenQueueFeed } from "../../shared/OpenQueueFeed";
 import type { ActionIntent } from "../../shared/protocol/ActionIntent";
@@ -22,27 +21,24 @@ import type { PendingAction } from "./PendingAction";
 import { readSession } from "./readSession";
 import { roomChatAfter } from "./roomChatAfter";
 import type { StoredSession } from "./StoredSession";
-import { QueueStore } from "./QueueStore";
+import { LobbyFeedStore } from "./LobbyFeedStore";
 import { writeSession } from "./writeSession";
 
 type OpenHost = (code: RoomCode, token: string) => GameHost;
 
-const NO_FEED = { send: () => false, close: () => undefined };
+const NO_FEED = { send: () => false, identify: () => false, close: () => undefined };
 
-export class ClientStore extends QueueStore {
+export class ClientStore extends LobbyFeedStore {
   private host: GameHost | null = null;
   private readonly openHost: OpenHost;
-  private readonly openLobby: OpenLobbyFeed;
-  private lobbyFeed: LobbyFeed | null = null;
 
   constructor(
     openHost: OpenHost,
     openLobby: OpenLobbyFeed = () => NO_FEED,
     openQueue: OpenQueueFeed = () => NO_FEED,
   ) {
-    super(initialClientState(readSession()), openQueue);
+    super(initialClientState(readSession()), openLobby, openQueue);
     this.openHost = openHost;
-    this.openLobby = openLobby;
     const session = this.state.session;
     if (session !== null) {
       void this.checkSession(session);
@@ -50,15 +46,8 @@ export class ClientStore extends QueueStore {
     if (session?.roomCode !== null && session !== null) {
       this.enterRoom(session, session.roomCode);
     } else {
-      this.watchLobby();
+      this.watchQueue();
     }
-  }
-
-  private watchLobby(): void {
-    this.lobbyFeed ??= this.openLobby((publicRooms) => {
-      this.change({ publicRooms });
-    });
-    this.watchQueue();
   }
 
   protected enterRankedRoom(code: RoomCode): void {
@@ -157,7 +146,7 @@ export class ClientStore extends QueueStore {
   protected override leaveRoom(notice: string | null, session: StoredSession | null): void {
     this.host?.close();
     this.host = null;
-    this.watchLobby();
+    this.watchQueue();
     writeSession(session);
     this.change({
       session,
@@ -190,8 +179,6 @@ export class ClientStore extends QueueStore {
       joinError: null,
       removal: null,
     });
-    this.lobbyFeed?.close();
-    this.lobbyFeed = null;
     this.stopWatchingQueue();
     this.host?.close();
     this.host = this.openHost(code, session.token);

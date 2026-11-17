@@ -1,3 +1,4 @@
+import type { PlayerOnlineView } from "../../../shared/protocol/PlayerOnlineView";
 import type { RoomView } from "../../../shared/protocol/RoomView";
 import { Button } from "../../components/Button";
 import type { IconText } from "../../components/IconText";
@@ -26,6 +27,7 @@ type Props = {
   readonly hasSiteGameLimitNotice: boolean;
   readonly onDismissSiteGameLimit: () => void;
   readonly chat: ChatBinding;
+  readonly playersOnline: ReadonlyArray<PlayerOnlineView>;
 };
 
 export function WaitingRoomPage(props: Props) {
@@ -52,7 +54,7 @@ export function WaitingRoomPage(props: Props) {
     </>
   );
   return (
-    <RoomPageFrame account={props.account} chat={props.chat} overlay={overlay}>
+    <RoomPageFrame {...props} overlay={overlay}>
       <WaitingRoomHeader
         room={room}
         subtitle={`${kind} · ${isOwner ? "you are the owner" : `owner: ${room.ownerName}`}`}

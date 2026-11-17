@@ -1,4 +1,4 @@
 import type { LobbyFeed } from "./LobbyFeed";
-import type { PublicRoomView } from "./protocol/PublicRoomView";
+import type { LobbyFeedHandlers } from "./LobbyFeedHandlers";
 
-export type OpenLobbyFeed = (onRooms: (rooms: ReadonlyArray<PublicRoomView>) => void) => LobbyFeed;
+export type OpenLobbyFeed = (handlers: LobbyFeedHandlers) => LobbyFeed;

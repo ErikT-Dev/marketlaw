@@ -39,6 +39,7 @@ export function GameBoard(props: Props) {
               viewer={view.seat}
               playerNames={playerNames}
               playerIds={update.room.playerIds}
+              ratings={update.room.ratings}
               onExitToLobby={props.onExitToLobby}
               onClose={props.onCloseResult}
               onAskRematch={props.onAskRematch}

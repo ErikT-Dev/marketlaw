@@ -23,6 +23,10 @@ export function App({ store }: Props) {
     store.subscribe,
     () => store.getSnapshot().session?.playerId ?? null,
   );
+  const token = useSyncExternalStore(
+    store.subscribe,
+    () => store.getSnapshot().session?.token ?? null,
+  );
   const isPrivacyNoticeOpen = usePrivacyNoticeOpen();
   const recordPage = useRecordPage();
   return (
@@ -42,7 +46,12 @@ export function App({ store }: Props) {
       </div>
       {isPrivacyNoticeOpen ? <LazyPrivacyNoticePage /> : null}
       {recordPage === null ? null : (
-        <LazyRecordsPage key={window.location.hash} page={recordPage} viewerId={viewerId} />
+        <LazyRecordsPage
+          key={window.location.hash}
+          page={recordPage}
+          viewerId={viewerId}
+          token={token}
+        />
       )}
     </>
   );

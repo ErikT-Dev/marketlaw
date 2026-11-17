@@ -30,6 +30,7 @@ export function CurrentScreen({ store }: Props) {
           onForgotPassword={store.openForgotPassword}
           onDismissRemoval={store.dismissRemoval}
           publicRooms={state.publicRooms}
+          playersOnline={state.playersOnline}
           ranked={rankedQueueBindingOf(store, state)}
         />
       </ServerClockOffset>

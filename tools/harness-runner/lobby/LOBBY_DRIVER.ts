@@ -23,34 +23,27 @@ import { setNewPasswordInLobby } from "./setNewPasswordInLobby.ts";
 import { changeEmailInLobby } from "./changeEmailInLobby.ts";
 import { deleteAccountInLobby } from "./deleteAccountInLobby.ts";
 import { LOBBY_NESTED_FIELDS } from "./LOBBY_NESTED_FIELDS.ts";
-import { matchHistoryThen } from "./matchHistoryThen.ts";
+import { LobbyRanking } from "./LobbyRanking.ts";
+import { recordsThen } from "./recordsThen.ts";
+import { runRecordsStep } from "./runRecordsStep.ts";
 import { removeUnusedGuestsInLobby } from "./removeUnusedGuestsInLobby.ts";
 import { runQueueStep } from "./runQueueStep.ts";
 import { waitWithQueue } from "./waitWithQueue.ts";
 import { lobbyQueueThen } from "./lobbyQueueThen.ts";
 import { queueSentTo } from "./queueSentTo.ts";
 import { connectInQueue } from "./connectInQueue.ts";
-
-const ROOM_ACTIONS = [
-  "change_size",
-  "leave_room",
-  "accept_game",
-  "decline_game",
-  "ask_rematch",
-  "send_chat",
-];
-
-const QUEUE_ACTIONS = [
-  "join_queue",
-  "change_sizes",
-  "leave_queue",
-  "confirm_match",
-  "decline_match",
-];
-
-const QUEUE_THEN_FIELDS = ["queue", "match", "view_lobby"];
-
-const CHAT_THEN_FIELDS = ["chat", "notified", "view_chat", "chat_count", "saved_before_shown"];
+import { CHAT_THEN_FIELDS } from "./CHAT_THEN_FIELDS.ts";
+import { LOBBY_GIVEN_FIELDS } from "./LOBBY_GIVEN_FIELDS.ts";
+import { LOBBY_STEPS } from "./LOBBY_STEPS.ts";
+import { LOBBY_THEN_FIELDS } from "./LOBBY_THEN_FIELDS.ts";
+import { QUEUE_ACTIONS } from "./QUEUE_ACTIONS.ts";
+import { QUEUE_THEN_FIELDS } from "./QUEUE_THEN_FIELDS.ts";
+import { ROOM_ACTIONS } from "./ROOM_ACTIONS.ts";
+import { PRESENCE_THEN_FIELDS } from "./PRESENCE_THEN_FIELDS.ts";
+import { RECORDS_THEN_FIELDS } from "./RECORDS_THEN_FIELDS.ts";
+import { RECORDS_ACTIONS } from "./RECORDS_ACTIONS.ts";
+import { LobbyPresence } from "./LobbyPresence.ts";
+import { withInGameRooms } from "./withInGameRooms.ts";
 
 function textOf(value: unknown): string {
   return typeof value === "string" ? value : "";
@@ -129,12 +122,20 @@ async function runVisitorStep(
   }
 }
 
-async function runStep(session: LobbySession, step: ScenarioStep): Promise<void> {
+async function runStep(
+  session: LobbySession,
+  pages: { readonly ranking: LobbyRanking; readonly presence: LobbyPresence },
+  step: ScenarioStep,
+): Promise<void> {
   if (typeof step === "string") {
     throw new Error(`the lobby driver has no step ${step}`);
   }
   session.rejected = null;
-  if (typeof step["wait_ms"] === "number") {
+  if (RECORDS_ACTIONS.includes(textOf(step["action"]))) {
+    await runRecordsStep(session, pages.ranking, step);
+  } else if (step["action"] === "open_lobby") {
+    await pages.presence.open(session);
+  } else if (typeof step["wait_ms"] === "number") {
     waitWithQueue(session, step["wait_ms"]);
     removeUnusedGuestsInLobby(session);
   } else if (typeof step["disconnect"] === "string") {
@@ -151,11 +152,6 @@ async function runStep(session: LobbySession, step: ScenarioStep): Promise<void>
     changeEmailInLobby(session, textOf(step["player"]), step);
   } else if (step["action"] === "delete_account") {
     deleteAccountInLobby(session, textOf(step["player"]), step);
-  } else if (step["action"] === "open_match_history") {
-    const of =
-      session.accounts.get(textOf(step["of"]))?.identity ??
-      session.identityNamed(textOf(step["of"]));
-    await session.history.open(session.accounts, of.playerId);
   } else if (step["action"] === "change_username") {
     await changeUsernameInLobby(session, textOf(step["player"]), textOf(step["username"]));
   } else {
@@ -178,7 +174,10 @@ function otherFieldThen(session: LobbySession, field: string, expected: unknown)
 }
 
 function startSession(rawGiven: Readonly<Record<string, unknown>>, random: ScriptedRandom) {
-  const session = new LobbySession(v.parse(LOBBY_GIVEN_SCHEMA, rawGiven), random);
+  const given = v.parse(LOBBY_GIVEN_SCHEMA, rawGiven);
+  const session = new LobbySession(withInGameRooms(given), random);
+  const ranking = new LobbyRanking(given);
+  const presence = new LobbyPresence(given);
   let before = session.snapshot();
   const chatAtStart = {
     messageCount: session.chat.storage.messages().length,
@@ -188,11 +187,17 @@ function startSession(rawGiven: Readonly<Record<string, unknown>>, random: Scrip
   const driverSession: DriverSession = {
     async runStep(step) {
       before = session.snapshot();
-      await runStep(session, step);
+      await runStep(session, { ranking, presence }, step);
       session.reportRooms();
       isUnchanged = before === session.snapshot();
     },
     readThen(field, expected) {
+      if (RECORDS_THEN_FIELDS.includes(field)) {
+        return recordsThen(session, ranking, field);
+      }
+      if (PRESENCE_THEN_FIELDS.includes(field)) {
+        return presence.then(session, field);
+      }
       switch (field) {
         case "rejected":
           return session.rejected ?? undefined;
@@ -217,10 +222,6 @@ function startSession(rawGiven: Readonly<Record<string, unknown>>, random: Scrip
             players: room.playerNames,
             free_places: room.size - room.playerNames.length,
           }));
-        case "match_history":
-          return matchHistoryThen(session.history.opened);
-        case "record_usernames":
-          return session.history.accountGameUsernames(session.accounts);
         default:
           return otherFieldThen(session, field, expected);
       }
@@ -233,64 +234,9 @@ function startSession(rawGiven: Readonly<Record<string, unknown>>, random: Scrip
 export const LOBBY_DRIVER: ScenarioDriver = {
   name: "lobby",
   unhandledGivenValues: () => [],
-  givenFields: new Set([
-    "clock_ms",
-    "site_games_today",
-    "site_counts_today",
-    "email_counts",
-    "players",
-    "seats",
-    "accounts",
-    "room",
-    "other_rooms",
-    "records",
-    "queue",
-    "match",
-  ]),
-  steps: new Set([
-    "create_room",
-    "join_room",
-    "open_site",
-    "create_guest",
-    "ask_generated_name",
-    "log_in",
-    "log_out",
-    "sign_up",
-    "change_username",
-    "confirm_email",
-    "change_email",
-    "delete_account",
-    "reset_password",
-    "set_new_password",
-    "open_match_history",
-    "wait_ms",
-    "disconnect",
-    "reconnect",
-    "leave_game",
-    "mute",
-    "unmute",
-    ...ROOM_ACTIONS,
-    ...QUEUE_ACTIONS,
-  ]),
-  thenFields: new Set([
-    "rejected",
-    "unchanged",
-    "room",
-    "game",
-    "message_to",
-    "accounts",
-    "generated_name",
-    "logged_in",
-    "lobby_rooms",
-    "replay_record",
-    "record",
-    "match_history",
-    "record_usernames",
-    "emails_sent",
-    "seats",
-    ...CHAT_THEN_FIELDS,
-    ...QUEUE_THEN_FIELDS,
-  ]),
+  givenFields: LOBBY_GIVEN_FIELDS,
+  steps: LOBBY_STEPS,
+  thenFields: LOBBY_THEN_FIELDS,
   nestedFields: LOBBY_NESTED_FIELDS,
   startSession,
 };

@@ -20,6 +20,7 @@ const RUN: HarnessRun = {
   cardDataProblems: [],
   tierShareProblems: [],
   replayExportProblems: [],
+  ratingProblems: [],
   simulation: NO_GAMES,
   busyDay: { written: { room: 10, alarm: 20, lobby: 30, queue: 0, database: 40 }, rowsRead: 500 },
   passwordHashCpuMs: null,

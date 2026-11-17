@@ -4,14 +4,20 @@ import type { IconText } from "../../components/IconText";
 import { listedNames } from "./listedNames";
 
 const CASUAL = "Casual game: ratings do not change.";
+const RANKED = "Ranked game: ratings changed.";
 const NO_WINNER = "Abandoned games have no winner and no game record, and ratings stay the same.";
 
 type GameOverTexts = { readonly title: string; readonly why: IconText };
 
-function lastPlayerTexts(winner: string, isViewer: boolean, turn: number): GameOverTexts {
+function lastPlayerTexts(
+  winner: string,
+  isViewer: boolean,
+  turn: number,
+  ratingsLine: string,
+): GameOverTexts {
   return {
     title: isViewer ? "You win: everyone else left" : `${winner} wins: everyone else left`,
-    why: `All other players left the game in turn ${String(turn)}, so the game ended at once and ${isViewer ? "you are" : `${winner} is`} 1st. ${CASUAL}`,
+    why: `All other players left the game in turn ${String(turn)}, so the game ended at once and ${isViewer ? "you are" : `${winner} is`} 1st. ${ratingsLine}`,
   };
 }
 
@@ -20,7 +26,9 @@ export function gameOverTexts(
   turn: number,
   nameOf: (seat: SeatNumber) => string,
   viewer: SeatNumber,
+  isRanked: boolean,
 ): GameOverTexts {
+  const ratingsLine = isRanked ? RANKED : CASUAL;
   const winner = result.places[0];
   const title = winner === undefined ? "The game is over" : `${nameOf(winner.seat)} wins!`;
   switch (result.endedBy) {
@@ -40,11 +48,16 @@ export function gameOverTexts(
         why: `All players voted yes, so the game ended with no winner. ${NO_WINNER}`,
       };
     case "last_player":
-      return lastPlayerTexts(nameOf(winner?.seat ?? viewer), winner?.seat === viewer, turn);
+      return lastPlayerTexts(
+        nameOf(winner?.seat ?? viewer),
+        winner?.seat === viewer,
+        turn,
+        ratingsLine,
+      );
     case "turn_limit":
       return {
         title,
-        why: `Nobody reached the end goal by turn ${String(turn)}, the last turn, so the game ended after that main phase. ${CASUAL}`,
+        why: `Nobody reached the end goal by turn ${String(turn)}, the last turn, so the game ended after that main phase. ${ratingsLine}`,
       };
     case "end_goal": {
       const reached = result.places
@@ -55,7 +68,7 @@ export function gameOverTexts(
         why: [
           `${listedNames(reached)} reached `,
           { stat: "income", value: 22 },
-          ` and all 3 projects in turn ${String(turn)}, so the game ended after that main phase. ${CASUAL}`,
+          ` and all 3 projects in turn ${String(turn)}, so the game ended after that main phase. ${ratingsLine}`,
         ],
       };
     }

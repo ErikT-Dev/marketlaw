@@ -17,6 +17,7 @@ export function initialClientState(session: StoredSession | null): ClientState {
     removal: null,
     goneRoomCode: null,
     publicRooms: [],
+    playersOnline: [],
     isOutdated: false,
     emailDialog: null,
     queue: null,

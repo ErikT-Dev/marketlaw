@@ -24,6 +24,7 @@ export async function logOutOfRooms(
       env.ROOM.get(env.ROOM.idFromName(code)).logOut(login),
     ),
     queueOf(env).logOut(login),
+    lobby.logOut(login.isEndingEveryLogin ? { playerId } : { tokenHash: login.sender.tokenHash }),
   ]);
   return leftRooms.every(({ status }) => status === "fulfilled");
 }

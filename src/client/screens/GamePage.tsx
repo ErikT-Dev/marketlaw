@@ -22,6 +22,7 @@ export function GamePage(props: Props) {
             viewer={view.seat}
             playerNames={props.update.room.playerNames}
             playerIds={props.update.room.playerIds}
+            ratings={props.update.room.ratings}
             onExitToLobby={props.onExitToLobby}
             onCloseResult={props.onCloseResult}
             onAskRematch={props.onAskRematch}

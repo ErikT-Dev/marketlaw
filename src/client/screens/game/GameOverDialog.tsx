@@ -2,6 +2,7 @@ import type { PlayerId } from "../../../shared/PlayerId";
 import type { GameResult } from "../../../shared/GameResult";
 import { isAbandoned } from "../../../shared/isAbandoned";
 import type { SeatNumber } from "../../../shared/SeatNumber";
+import type { SeatRatingView } from "../../../shared/protocol/SeatRatingView";
 import { Button } from "../../components/Button";
 import { Modal } from "../../components/Modal";
 import styles from "./GameOverDialog.module.css";
@@ -16,18 +17,20 @@ type Props = {
   readonly viewer: SeatNumber;
   readonly playerNames: ReadonlyArray<string>;
   readonly playerIds: ReadonlyArray<PlayerId>;
+  readonly ratings: ReadonlyArray<SeatRatingView> | null;
   readonly onExitToLobby: () => void;
   readonly onClose: () => void;
   readonly onAskRematch: (() => void) | null;
 };
 
 export function GameOverDialog(props: Props) {
-  const { result, turn, viewer, playerNames } = props;
+  const { result, turn, viewer, playerNames, ratings } = props;
   const { title, why } = gameOverTexts(
     result,
     turn,
     (seat) => playerNameOf(playerNames, seat),
     viewer,
+    ratings !== null,
   );
   const hasTable = !isAbandoned(result.endedBy);
   return (
@@ -41,6 +44,7 @@ export function GameOverDialog(props: Props) {
           viewer={viewer}
           playerNames={playerNames}
           playerIds={props.playerIds}
+          ratings={ratings}
         />
       ) : null}
       <div className={styles["buttons"]}>

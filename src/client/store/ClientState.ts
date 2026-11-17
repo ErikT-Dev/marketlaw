@@ -1,6 +1,7 @@
 import type { ConnectionStatus } from "../../shared/ConnectionStatus";
 import type { EmailDialog } from "./EmailDialog";
 import type { Notice } from "../../shared/Notice";
+import type { PlayerOnlineView } from "../../shared/protocol/PlayerOnlineView";
 import type { PublicRoomView } from "../../shared/protocol/PublicRoomView";
 import type { QueueView } from "../../shared/protocol/QueueView";
 import type { RoomUpdate } from "../../shared/protocol/RoomUpdate";
@@ -27,6 +28,7 @@ export type ClientState = {
   readonly removal: RemovalNotice | null;
   readonly goneRoomCode: string | null;
   readonly publicRooms: ReadonlyArray<PublicRoomView>;
+  readonly playersOnline: ReadonlyArray<PlayerOnlineView>;
   readonly isOutdated: boolean;
   readonly emailDialog: EmailDialog | null;
   readonly queue: QueueView | null;

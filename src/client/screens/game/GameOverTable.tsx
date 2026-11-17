@@ -3,17 +3,20 @@ import { PlayerNameLink } from "../../components/PlayerNameLink";
 import type { PlayerId } from "../../../shared/PlayerId";
 import type { GameResult } from "../../../shared/GameResult";
 import type { SeatNumber } from "../../../shared/SeatNumber";
+import type { SeatRatingView } from "../../../shared/protocol/SeatRatingView";
 import type { IconText } from "../../components/IconText";
 import { TextWithIcons } from "../../components/TextWithIcons";
 import styles from "./GameOverDialog.module.css";
 import { placeOrdinal } from "./placeOrdinal";
 import { playerNameOf } from "./playerNameOf";
+import { RatingCell } from "./RatingCell";
 
 type Props = {
   readonly result: GameResult;
   readonly viewer: SeatNumber;
   readonly playerNames: ReadonlyArray<string>;
   readonly playerIds: ReadonlyArray<PlayerId>;
+  readonly ratings: ReadonlyArray<SeatRatingView> | null;
 };
 
 const COLUMNS: ReadonlyArray<IconText> = [
@@ -27,13 +30,14 @@ const COLUMNS: ReadonlyArray<IconText> = [
   "Bonus-type pts",
 ];
 
-export function GameOverTable({ result, viewer, playerNames, playerIds }: Props) {
+export function GameOverTable({ result, viewer, playerNames, playerIds, ratings }: Props) {
+  const columns = ratings === null ? COLUMNS : [...COLUMNS, "Rating"];
   return (
     <>
       <table className={styles["table"]}>
         <thead>
           <tr>
-            {COLUMNS.map((column, index) => (
+            {columns.map((column, index) => (
               <th key={index} scope="col">
                 <TextWithIcons text={column} />
               </th>
@@ -60,6 +64,9 @@ export function GameOverTable({ result, viewer, playerNames, playerIds }: Props)
               <td>{place.income}</td>
               <td>{place.fundsAndHand}</td>
               <td>{place.bonusTypePoints}</td>
+              {ratings === null ? null : (
+                <RatingCell rating={ratings.find((rating) => rating.seat === place.seat)} />
+              )}
             </tr>
           ))}
         </tbody>
@@ -69,6 +76,11 @@ export function GameOverTable({ result, viewer, playerNames, playerIds }: Props)
           Players who left are placed by when they left: the one who left first is last.
         </p>
       ) : null}
+      {ratings === null ? null : (
+        <p className={styles["note"]}>
+          Each pair of players counts as one result. A rematch of a ranked game is casual.
+        </p>
+      )}
     </>
   );
 }

@@ -4,6 +4,7 @@ import { TypeName } from "../../shared/catalogue/TypeName";
 import { PlayerId } from "../../shared/PlayerId";
 
 const SEAT_NUMBER = v.picklist([1, 2, 3, 4]);
+const RECORD_RATING = v.strictObject({ before: v.number(), change: v.number() });
 
 export const STORED_GAME_RECORD_SCHEMA = v.strictObject({
   turns: v.number(),
@@ -13,5 +14,11 @@ export const STORED_GAME_RECORD_SCHEMA = v.strictObject({
   kind: v.picklist(["casual", "ranked"]),
   startedMs: v.number(),
   endedMs: v.number(),
-  players: v.array(v.strictObject({ seat: SEAT_NUMBER, playerId: PlayerId })),
+  players: v.array(
+    v.strictObject({
+      seat: SEAT_NUMBER,
+      playerId: PlayerId,
+      rating: v.optional(v.nullable(RECORD_RATING), null),
+    }),
+  ),
 });

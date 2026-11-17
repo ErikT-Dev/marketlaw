@@ -1,0 +1,16 @@
+export const LOBBY_GIVEN_FIELDS: ReadonlySet<string> = new Set([
+  "clock_ms",
+  "site_games_today",
+  "site_counts_today",
+  "email_counts",
+  "players",
+  "seats",
+  "accounts",
+  "room",
+  "other_rooms",
+  "records",
+  "queue",
+  "match",
+  "ranked_accounts",
+  "queue_count",
+]);

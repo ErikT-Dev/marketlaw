@@ -23,6 +23,7 @@ export function startRoomGame(
     waiting: NO_WAITING,
     game: {
       kind,
+      ratingsBeforeGame: [],
       saved: startSavedGame(
         {
           players: roomSizeOf(record.players.length) ?? record.size,

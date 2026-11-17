@@ -35,6 +35,7 @@ function harnessRun(parts: Partial<HarnessRun>): HarnessRun {
     cardDataProblems: [],
     tierShareProblems: [],
     replayExportProblems: [],
+    ratingProblems: [],
     simulation: NO_GAMES,
     busyDay: null,
     passwordHashCpuMs: null,
@@ -130,6 +131,15 @@ describe("judgeHarness", () => {
     });
     expect(judgeHarness(run)).toEqual([
       "replay export check: the ended room's export does not replay exactly",
+    ]);
+  });
+
+  it("fails the check when the rating calculation gives an unexpected total", () => {
+    const run = harnessRun({
+      ratingProblems: ["a total of +2.5 became 2, expected 3"],
+    });
+    expect(judgeHarness(run)).toEqual([
+      "rating calculation check: a total of +2.5 became 2, expected 3",
     ]);
   });
 });

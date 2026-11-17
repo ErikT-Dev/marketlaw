@@ -10,12 +10,14 @@ import { useAccountDialogs } from "./useAccountDialogs";
 
 type Props = {
   readonly account: AccountBinding | null;
+  readonly rating: number | null;
   readonly onLogIn: (login: LoginRequest) => Promise<ReasonCode | null>;
   readonly onSignUp: (signup: Omit<SignupRequest, "token">) => Promise<ReasonCode | null>;
   readonly onForgotPassword: () => void;
 };
 
-export function LobbyAccount({ account, onLogIn, onSignUp, onForgotPassword }: Props) {
+export function LobbyAccount(props: Props) {
+  const { account, rating, onLogIn, onSignUp, onForgotPassword } = props;
   const dialogs = useAccountDialogs();
   return (
     <>
@@ -23,7 +25,7 @@ export function LobbyAccount({ account, onLogIn, onSignUp, onForgotPassword }: P
         {account === null ? (
           <AccountButtons onLogIn={dialogs.openLogIn} onSignUp={() => void dialogs.openSignUp()} />
         ) : (
-          <LoggedInLobbyBar account={account} />
+          <LoggedInLobbyBar account={account} rating={rating} />
         )}
       </LobbyTopBar>
       {account === null ? (

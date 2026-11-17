@@ -1,0 +1,19 @@
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: calc(100vh - 220px);
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.row {
+  display: flex;
+}
+
+.row > * {
+  flex: 1;
+  min-width: 0;
+}

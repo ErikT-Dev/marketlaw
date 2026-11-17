@@ -32,6 +32,7 @@ function startedRoom(): RoomRecord {
     chat: NO_CHAT,
     game: {
       kind: "casual",
+      ratingsBeforeGame: [],
       saved,
       seats: saved.state.seats.map((seat, index) => ({
         seat: seat.seat,

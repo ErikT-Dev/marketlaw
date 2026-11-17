@@ -14,6 +14,7 @@ import { loginRoute } from "./api/loginRoute";
 import { logoutRoute } from "./api/logoutRoute";
 import { newPasswordRoute } from "./api/newPasswordRoute";
 import { privacyContactRoute } from "./api/privacyContactRoute";
+import { rankingRoute } from "./api/rankingRoute";
 import { recordRoute } from "./api/recordRoute";
 import { replayExportRoute } from "./api/replayExportRoute";
 import { resetEmailRoute } from "./api/resetEmailRoute";
@@ -65,6 +66,7 @@ const POST_ROUTES: Readonly<Record<string, (request: Request, env: Env) => Promi
   "/api/guests": createGuestRoute,
   "/api/logins": loginRoute,
   "/api/logout": logoutRoute,
+  "/api/ranking": rankingRoute,
   "/api/rooms": createRoomRoute,
   "/api/signups": signupRoute,
   "/api/confirmation-emails": sendAgainRoute,

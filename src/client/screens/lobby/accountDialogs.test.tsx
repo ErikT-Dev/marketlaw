@@ -30,6 +30,7 @@ function lobbyLoggedOut(answers: Answers = {}) {
       onForgotPassword={onForgotPassword}
       onDismissRemoval={vi.fn()}
       publicRooms={[]}
+      playersOnline={[]}
       ranked={testRankedQueue()}
     />,
   );

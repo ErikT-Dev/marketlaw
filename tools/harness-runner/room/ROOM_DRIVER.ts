@@ -19,6 +19,7 @@ import { roomMessageContains } from "./roomMessageContains.ts";
 import { RoomSession } from "./RoomSession.ts";
 import { logOutInRoom } from "./logOutInRoom.ts";
 import { recordThen } from "./recordThen.ts";
+import { ratingsThen } from "./ratingsThen.ts";
 
 const ROOM_SEAT_FIELDS = ["state_version", "connected", "player"];
 
@@ -192,6 +193,8 @@ function readRoomThen(session: RoomSession, field: string, expected: unknown): u
       });
     case "record":
       return recordThen(game, session.seatNames);
+    case "ratings":
+      return ratingsThen(session, expected);
     case "connected_tab":
       return connectedTab(session, expected);
     case "view":
@@ -213,7 +216,10 @@ function startSession(
     .filter((account) => account.kind === "registered")
     .map(({ name }) => name);
   return {
-    runStep: async (step) => runRoomStep(session, step, registeredNames),
+    runStep: async (step) => {
+      await runRoomStep(session, step, registeredNames);
+      await session.recordsSaved();
+    },
     readThen: (field, expected) => readRoomThen(session, field, expected),
     measurements: () => [
       { budget: "B1", value: Math.max(0, ...session.rowsForAccepted) },
@@ -249,13 +255,14 @@ export const ROOM_DRIVER: ScenarioDriver = {
     "connected_tab",
     "room",
     "record",
+    "ratings",
   ]),
   nestedFields: new Map([
     ...ENGINE_FIELDS.nestedFields,
     ["given.seats", new Set([...SEAT_FIELDS, ...ROOM_SEAT_FIELDS])],
     ["then.seats", new Set([...SEAT_FIELDS, "type_counts", ...ROOM_SEAT_FIELDS])],
     ["given.room", new Set(["code", "size", "public", "owner", "players", "state"])],
-    ["given.accounts", new Set(["name", "kind"])],
+    ["given.accounts", new Set(["name", "kind", "rating", "ranked_games", "highest_rating"])],
     ["then.view", new Set([...(ENGINE_FIELDS.nestedFields.get("then.view") ?? []), "away"])],
     ["then.connected_tab", new Set(["player", "tab"])],
     ["then.room", new Set(["state", "players"])],

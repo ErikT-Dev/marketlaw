@@ -4,14 +4,14 @@ import { lobbyOf } from "./lobbyOf";
 import type { QueueNoticeTo } from "./queue/QueueNoticeTo";
 import type { RankedStart } from "./queue/RankedStart";
 import { startedMatchNotices } from "./queue/startedMatchNotices";
-import { readUsernames } from "./records/readUsernames";
+import { readRankedPlayers } from "./ratings/readRankedPlayers";
 import { withFreeRoomCode } from "./withFreeRoomCode";
 
 async function rankedRoomCodeOf(env: Env, start: RankedStart): Promise<RoomCode | null> {
-  const names = await readUsernames(env.DB, start.players);
+  const rankedPlayers = await readRankedPlayers(env.DB, start.players);
   const playersInQueueOrder = start.players.flatMap((playerId) => {
-    const name = names.get(playerId);
-    return name === undefined ? [] : [{ playerId, name }];
+    const player = rankedPlayers.get(playerId);
+    return player === undefined ? [] : [player];
   });
   return withFreeRoomCode(env, async (room, roomCode) =>
     room

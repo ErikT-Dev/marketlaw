@@ -1,5 +1,6 @@
 import type { MatchHistoryEntry } from "../../../shared/api/MatchHistoryEntry";
 import { MatchHistoryRow } from "./MatchHistoryRow";
+import { RecordTableHead } from "./RecordTableHead";
 import styles from "./Records.module.css";
 
 type Props = {
@@ -21,15 +22,7 @@ const COLUMNS = [
 export function MatchHistoryTable({ games }: Props) {
   return (
     <table className={styles["table"]} aria-label="Games">
-      <thead>
-        <tr>
-          {COLUMNS.map((column) => (
-            <th key={column} scope="col">
-              {column}
-            </th>
-          ))}
-        </tr>
-      </thead>
+      <RecordTableHead columns={COLUMNS} />
       <tbody>
         {games.map((game) => (
           <MatchHistoryRow key={game.gameId} game={game} />

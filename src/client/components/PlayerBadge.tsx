@@ -1,6 +1,7 @@
 import { PlayerNameLink } from "./PlayerNameLink";
 import type { PlayerId } from "../../shared/PlayerId";
 import styles from "./Badge.module.css";
+import { PLAYER_STATUS_TEXTS } from "./PLAYER_STATUS_TEXTS";
 import type { PlayerStatus } from "./PlayerStatus";
 
 type Props = {
@@ -11,15 +12,6 @@ type Props = {
   readonly isFirstPlayer?: boolean;
 };
 
-const STATUS_TEXT: Readonly<Record<PlayerStatus, string>> = {
-  online: "online",
-  inGame: "in a game",
-  away: "away",
-  done: "done",
-  outOfTime: "out of time",
-  left: "left",
-  none: "",
-};
 const STATUS_COLOR: Readonly<Record<PlayerStatus, string>> = {
   online: "var(--color-status-online)",
   inGame: "var(--color-status-in-game)",
@@ -28,6 +20,11 @@ const STATUS_COLOR: Readonly<Record<PlayerStatus, string>> = {
   outOfTime: "var(--color-board-out-of-time)",
   left: "var(--color-status-left)",
   none: "var(--color-status-online)",
+};
+
+const STATUS_TEXT_COLOR: Readonly<Record<PlayerStatus, string>> = {
+  ...STATUS_COLOR,
+  inGame: "var(--color-board-in-game-text)",
 };
 
 export function PlayerBadge({ name, playerId, status, rating, isFirstPlayer = false }: Props) {
@@ -40,8 +37,11 @@ export function PlayerBadge({ name, playerId, status, rating, isFirstPlayer = fa
       </span>
       {rating === undefined ? null : <span className={styles["rating"]}>{rating}</span>}
       {status === "none" ? null : (
-        <span className={styles["status"]} {...(status === "left" ? {} : { style: { color } })}>
-          {STATUS_TEXT[status]}
+        <span
+          className={styles["status"]}
+          {...(status === "left" ? {} : { style: { color: STATUS_TEXT_COLOR[status] } })}
+        >
+          {PLAYER_STATUS_TEXTS[status]}
         </span>
       )}
       {isFirstPlayer ? <span className={styles["firstPlayer"]}>first player</span> : null}

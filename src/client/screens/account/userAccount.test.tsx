@@ -10,7 +10,7 @@ const OCTOBER_27 = Date.UTC(2026, 9, 27, 12);
 
 function userAccount(changes: Partial<AccountBinding> = {}): AccountBinding {
   const account = testAccount(changes);
-  render(<UserAccount account={account} />);
+  render(<UserAccount account={account} rating={null} />);
   return account;
 }
 
@@ -55,7 +55,7 @@ describe("the user menu", () => {
 
   it("opens the own match history from the menu, and only once the player id is known", () => {
     const account = testAccount();
-    const { unmount } = render(<UserAccount account={account} />);
+    const { unmount } = render(<UserAccount account={account} rating={null} />);
     fireEvent.click(menuItem("My match history"));
     expect(window.location.hash).toBe(`#history/${String(account.playerId)}`);
     unmount();
@@ -143,7 +143,13 @@ describe("account settings", () => {
     const usernameWait = v.parse(UsernameWait, { allowedAt: OCTOBER_27 });
     userAccount({
       onLoadAccount: async () =>
-        Promise.resolve({ isLoggedIn: true, name: "Bea", usernameWait, email: null }),
+        Promise.resolve({
+          isLoggedIn: true,
+          name: "Bea",
+          usernameWait,
+          email: null,
+          rating: null,
+        }),
     });
     const settings = openSettings();
     expect(

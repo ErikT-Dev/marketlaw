@@ -3,6 +3,7 @@ import type { PlayerId } from "../PlayerId";
 import type { RoomCode } from "../RoomCode";
 import type { SeatNumber } from "../SeatNumber";
 import type { AskingView } from "./AskingView";
+import type { SeatRatingView } from "./SeatRatingView";
 
 export type RoomView = {
   readonly code: RoomCode;
@@ -17,4 +18,5 @@ export type RoomView = {
   readonly mySeat: SeatNumber | null;
   readonly asking: AskingView | null;
   readonly deletionAt: EpochMs | null;
+  readonly ratings: ReadonlyArray<SeatRatingView> | null;
 };

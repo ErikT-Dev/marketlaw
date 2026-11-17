@@ -30,6 +30,13 @@
   font-size: var(--font-size-sm);
 }
 
+.ownRating {
+  margin: 0;
+  color: var(--color-board-ranking-standing);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+}
+
 .lock {
   display: flex;
   flex-wrap: wrap;

@@ -2,6 +2,7 @@ import { randomForNextAction } from "../rules/randomForNextAction";
 import type { EpochMs } from "../shared/EpochMs";
 import type { PublishingRoom } from "./PublishingRoom";
 import type { ReplySocket } from "./ReplySocket";
+import type { PlayerRating } from "./records/PlayerRating";
 import { saveRecordsIfEnded } from "./records/saveRecordsIfEnded";
 import { fireRoomAlarm } from "./room/fireRoomAlarm";
 import { playersWhoseUpdateChanged } from "./room/playersWhoseUpdateChanged";
@@ -13,7 +14,7 @@ export async function applyRoomAlarm(
   room: PublishingRoom<ReplySocket>,
   db: D1Database,
   { record, now }: { readonly record: RoomRecord; readonly now: EpochMs },
-): Promise<void> {
+): Promise<ReadonlyArray<PlayerRating>> {
   const { sockets, storage, rooms } = room;
   const { record: fired, removals } = fireRoomAlarm(
     record,
@@ -24,10 +25,10 @@ export async function applyRoomAlarm(
   if (fired === null) {
     sockets.sendRemovals(removals);
     storage.remove();
-    return;
+    return [];
   }
   if (fired === record) {
-    return;
+    return [];
   }
   storage.write(fired);
   await rooms.save();
@@ -41,5 +42,5 @@ export async function applyRoomAlarm(
   );
   sockets.sendNotices(timeOutNoticesBetween(record, fired));
   sendChatSince(room, { record, messageCount: rooms.chat.messages().length });
-  await saveRecordsIfEnded(db, record, fired);
+  return saveRecordsIfEnded(db, record, fired);
 }
