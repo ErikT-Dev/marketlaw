@@ -225,8 +225,26 @@ These 9 scenarios are added to `harness/required.yaml` in this phase, by file an
     the stat numbers, types, double_types, combos with needs, gives and infinite).
   - Component test, and the screenshot `card-detail` at the three sizes.
 
-- [ ] 5. **Game menu** (C1.1 to C1.3, S2.1, S10.1, S14.1; Q159; scenarios `client` #2, #3,
+- [x] 5. **Game menu** (C1.1 to C1.3, S2.1, S10.1, S14.1; Q159; scenarios `client` #2, #3,
   #16). **Large.**
+  - Done (2026-11-17). `GameMenu` (`src/client/screens/menu/`): "Game menu" beside the title in
+    `LobbyTopBar` (lobby and, through `RoomPageFrame`, the waiting room and the room after a
+    game), "Menu" first in the game's top bar, as the design places them; a list named "Game
+    menu" of buttons named by the entry and described by its line, the first entry focused on
+    open, closed by Escape (focus back on the button) and an outside click
+    (`useHelpBoxDismissal`). The entries come from the pure `gameMenuEntriesOf(place)`, which
+    the client driver also uses (step `open_menu`, field `menu`; given `seats`, `accounts`,
+    `room` as context). The room driver runs `open_menu`, `open_rules` and `open_card_set`
+    (`STEPS_SENDING_NOTHING`) as steps that send nothing. `client` #2, #3, #16 pass with them in
+    `required.yaml` locally; `client` #1 (the lobby menu with Tutorial) now runs on the client
+    driver and fails until phase 29 adds the entry (not required). While a page is open the app
+    is inert (item 2), so the menu cannot be opened over the rules or the card set; the browser
+    test closes one page before opening the other. Browser tests in `e2e/gameMenu.spec.ts`
+    (screenshots `game-menu-lobby`, `game-menu-game`); one local run had a waiting-room test
+    miss the rules page once at 1920x1080 and a game page that did not load at 1280x720, both
+    passed on rerun (`--repeat-each=2`, 18 of 18).
+  - For later items: phase 29 adds Tutorial to `gameMenuEntriesOf` (disabled with its reason
+    outside the lobby), which makes `client` #1 pass.
   - The **Game menu** button in the lobby top bar (S10.1; `LobbyTopBar.tsx`, like
     `RankingButton`) and in the waiting room (`WaitingRoomHeader.tsx` or `RoomPageFrame.tsx`),
     and the **Menu** button in the game's top bar (`GameTopBar.tsx`, S2.1). The menu: Rules and

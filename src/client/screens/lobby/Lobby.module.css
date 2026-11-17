@@ -18,6 +18,12 @@
   background: var(--color-background-game-overlay-top);
 }
 
+.brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+}
+
 .title {
   margin: 0;
   background: linear-gradient(var(--color-text-title-from), var(--color-text-title-to));

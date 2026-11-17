@@ -24,7 +24,7 @@ export function RoomPageFrame({ account, chat, playersOnline, children, overlay 
   const details = useRegisteredAccountDetails(account, NO_CHECK);
   return (
     <div className={styles["page"]}>
-      <LobbyTopBar>
+      <LobbyTopBar menuPlace="waiting_room">
         <div className={styles["accountButtons"]}>
           <RankingButton />
           <UserAccount account={account} rating={details?.rating?.rating ?? null} />
