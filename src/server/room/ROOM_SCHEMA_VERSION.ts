@@ -1,1 +1,1 @@
-export const ROOM_SCHEMA_VERSION = 4;
+export const ROOM_SCHEMA_VERSION = 5;

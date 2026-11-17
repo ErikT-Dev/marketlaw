@@ -53,6 +53,10 @@ export function fixtureGameRecordOf(
     kind: "casual",
     startedMs: endedMs,
     endedMs,
-    players: players.map(({ playerId }, index) => ({ seat: seatNumberAt(index), playerId })),
+    players: players.map(({ playerId }, index) => ({
+      seat: seatNumberAt(index),
+      playerId,
+      rating: null,
+    })),
   };
 }

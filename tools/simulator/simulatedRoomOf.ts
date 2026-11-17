@@ -24,6 +24,7 @@ export function simulatedRoomOf(
     chat: NO_CHAT,
     game: {
       kind: "casual",
+      ratingsBeforeGame: [],
       saved,
       seats: seats.map((seat) => ({
         seat: seat.seat,

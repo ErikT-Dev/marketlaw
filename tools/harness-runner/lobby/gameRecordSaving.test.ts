@@ -2,6 +2,7 @@ import * as v from "valibot";
 import { describe, expect, it } from "vitest";
 import { endGame } from "../../../src/rules/endGame.ts";
 import { saveGameRecord } from "../../../src/server/records/saveGameRecord.ts";
+import type { StoredGameRecord } from "../../../src/server/records/StoredGameRecord.ts";
 import { storedGameRecordOf } from "../../../src/server/records/storedGameRecordOf.ts";
 import type { RoomGame } from "../../../src/server/room/RoomGame.ts";
 import { EpochMs } from "../../../src/shared/EpochMs.ts";
@@ -31,11 +32,22 @@ function endedGame(): RoomGame {
   return game;
 }
 
+function ratingAtPlace(record: StoredGameRecord | null, place: number): unknown {
+  const seat = record?.seats.find((recorded) => recorded.place === place)?.seat;
+  return record?.players.find((player) => player.seat === seat)?.rating;
+}
+
+function rankedGame(game: RoomGame): RoomGame {
+  return { ...game, kind: "ranked" };
+}
+
 describe("saving game records", () => {
   it("stores the players' ids, the kind and the start and end times with the record", () => {
     const game = endedGame();
     const record = storedGameRecordOf(game);
-    expect(record?.players).toEqual(game.seats.map(({ seat, playerId }) => ({ seat, playerId })));
+    expect(record?.players).toEqual(
+      game.seats.map(({ seat, playerId }) => ({ seat, playerId, rating: null })),
+    );
     expect(record?.kind).toBe("casual");
     expect(record?.startedMs).toBe(game.saved.setup.startedAt);
     expect(record?.endedMs).toBe(ENDED_MS);
@@ -49,7 +61,36 @@ describe("saving game records", () => {
       throw new Error("the ended game has no record");
     }
     await saveGameRecord(records.database, v.parse(GameId, crypto.randomUUID()), record);
-    expect(records.rowCounts()).toEqual({ records: 1, players: 3 });
+    expect(records.rowCounts()).toEqual({ records: 1, players: 3, ratings: 0 });
+  });
+
+  it("keeps each player's rating before a ranked game and the change from their place", () => {
+    const game = rankedGame(endedGame());
+    const record = storedGameRecordOf(game);
+    expect([1, 2, 3].map((place) => ratingAtPlace(record, place))).toEqual([
+      { before: 1000, change: 20 },
+      { before: 1000, change: 0 },
+      { before: 1000, change: -20 },
+    ]);
+  });
+
+  it("adds a ranked game's changes to the ratings the players have when it ends", async () => {
+    const records = memoryGameRecordDatabase();
+    const game = rankedGame(endedGame());
+    const record = storedGameRecordOf(game);
+    const winner = record?.seats.find(({ place }) => place === 1)?.seat;
+    const winnerId = game.seats.find(({ seat }) => seat === winner)?.playerId;
+    if (record === null || winnerId === undefined) {
+      throw new Error("the ended game has no record");
+    }
+    records.giveRating({ playerId: winnerId, rating: 2395, rankedGames: 40, highestRating: 2395 });
+    await saveGameRecord(records.database, v.parse(GameId, crypto.randomUUID()), record);
+    expect(records.rowCounts()).toEqual({ records: 1, players: 3, ratings: 3 });
+    expect(records.ratingOf(winnerId)).toEqual({
+      rating: 2415,
+      rankedGames: 41,
+      highestRating: 2415,
+    });
   });
 
   it("keeps no record of an abandoned game", () => {

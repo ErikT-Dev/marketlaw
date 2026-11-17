@@ -16,6 +16,9 @@ export const ROOM_GIVEN_SCHEMA = v.looseObject({
       v.strictObject({
         name: v.string(),
         kind: v.optional(v.picklist(["guest", "registered"])),
+        rating: v.optional(v.number()),
+        ranked_games: v.optional(v.number()),
+        highest_rating: v.optional(v.number()),
       }),
     ),
   ),

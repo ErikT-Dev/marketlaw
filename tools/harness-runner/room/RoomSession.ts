@@ -27,6 +27,10 @@ import { rawMessageText } from "./rawMessageText.ts";
 import { roomTokenOf } from "./roomTokenOf.ts";
 import type { RoomGiven } from "./RoomGiven.ts";
 import { NO_CHAT_CONTEXT } from "../../../src/server/room/NO_CHAT_CONTEXT.ts";
+import type { PlayerRatingBeforeGame } from "../../../src/server/ratings/PlayerRatingBeforeGame.ts";
+import { saveGameRecordIfEnded } from "../../../src/server/records/saveGameRecordIfEnded.ts";
+import { memoryGameRecordDatabase } from "../lobby/memoryGameRecordDatabase.ts";
+import { givenRatingsOf } from "./givenRatingsOf.ts";
 
 type Connection = { state: ConnectionState; isClosed: boolean };
 
@@ -46,6 +50,13 @@ function nameForSeat(given: RoomGiven, seat: number): string {
   );
 }
 
+function ratingsKeptFor(
+  state: GameState,
+  givenRatings: ReadonlyArray<PlayerRatingBeforeGame>,
+): ReadonlyArray<PlayerRatingBeforeGame> {
+  return state.kind === "ranked" ? givenRatings : [];
+}
+
 function checkOwnerIsFirst(given: RoomGiven, seatNames: ReadonlyArray<string>): void {
   if (given.room?.owner !== undefined && given.room.owner !== seatNames[0]) {
     throw new Error("the room driver makes the player in seat 1 the owner");
@@ -59,6 +70,7 @@ export class RoomSession {
   private readonly storage: RoomStorage = {
     read: () => this.record,
     write: (record) => {
+      this.recordSaves.push(saveGameRecordIfEnded(this.records.database, this.record, record));
       this.record = record;
       this.rowsWritten += 1;
     },
@@ -67,6 +79,9 @@ export class RoomSession {
     },
   };
   readonly accounts: Map<string, Identity>;
+  readonly records = memoryGameRecordDatabase();
+  readonly givenRatings: ReadonlyArray<PlayerRatingBeforeGame>;
+  private readonly recordSaves: Array<Promise<void>> = [];
   readonly connections = new Map<string, Connection>();
   readonly offline = new Set<string>();
   readonly openTabs = new Map<string, number>();
@@ -116,6 +131,10 @@ export class RoomSession {
     );
     const players = this.seatNames.map((name) => this.identityNamed(name));
     checkOwnerIsFirst(given, this.seatNames);
+    this.givenRatings = givenRatingsOf(given, (name) => this.identityNamed(name));
+    this.givenRatings.forEach((rating) => {
+      this.records.giveRating(rating);
+    });
     this.record = {
       schemaVersion: ROOM_SCHEMA_VERSION,
       code: v.parse(RoomCode, given.room?.code ?? DEFAULT_ROOM_CODE),
@@ -126,6 +145,7 @@ export class RoomSession {
       chat: NO_CHAT,
       game: {
         kind: state.kind,
+        ratingsBeforeGame: ratingsKeptFor(state, this.givenRatings),
         saved: {
           schemaVersion: SAVE_SCHEMA_VERSION,
           seed: 1,
@@ -157,6 +177,10 @@ export class RoomSession {
     const identity = { playerId: v.parse(PlayerId, randomUUID()), name };
     this.accounts.set(name, identity);
     return identity;
+  }
+
+  async recordsSaved(): Promise<void> {
+    await Promise.all(this.recordSaves.splice(0));
   }
 
   livePlayers(): ReadonlyArray<PlayerId> {

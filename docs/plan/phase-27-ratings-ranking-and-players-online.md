@@ -109,7 +109,7 @@ These 12 scenarios are added to `harness/required.yaml` in this phase, by file a
   - For later items: item 2 builds `RatedSeat`s from the stored record's places and the
     ratings kept in the room record (`RatingBeforeGame` is the shape to keep per seat).
 
-- [ ] 2. **Ratings saved after a ranked game** (A10.1, A10.5, A10.7, A10.9, R9.14, M6.9, A3.2's
+- [x] 2. **Ratings saved after a ranked game** (A10.1, A10.5, A10.7, A10.9, R9.14, M6.9, A3.2's
   rating fields; Q151; scenarios `records-and-ratings` #9 to #16, `turns-and-time` #26).
   **Large.**
   - Migration: a `ratings` table (`player_id` primary key, `rating`, `ranked_games`,
@@ -138,6 +138,25 @@ These 12 scenarios are added to `harness/required.yaml` in this phase, by file a
     `records-and-ratings` #16 give no accounts: their seats have default ratings.
   - Reuse: `storedGameRecordOf`, `saveGameRecordIfEnded`, `endedGameOf`, `isAbandoned`,
     `readUsernames`.
+  - Done (2026-11-17): `migrations/0014_ratings.sql`; `readRankedPlayers` (players joined with
+    `ratings`, one query) in `startRankedRooms`, so `startRankedRoomIn` takes `RankedPlayer`s
+    (identity plus `RatingBeforeGame`); `RoomGame.ratingsBeforeGame` (per player id, empty for
+    casual games; `ROOM_SCHEMA_VERSION` 5); the stored record's `players[]` gain `rating`
+    (`{ before, change }` in a ranked game, `null` otherwise; older stored records read as
+    `null`), made by `recordPlayersOf`; `gameRecordRowsOf` adds one upsert per rated player;
+    account deletion deletes the `ratings` row. B8 counts the simulator's games as ranked (9 rows
+    for 4 players). Room driver: `given.accounts` rating fields, `then.ratings`, a memory D1
+    (`memoryGameRecordDatabase` now also runs `0014`, with `giveRating` and `ratingOf`) fed by
+    `saveGameRecordIfEnded` on every room write. No message shape changed (no
+    `PROTOCOL_VERSION` change).
+  - Differs: a player with no kept rating (test rooms of a ranked kind, `startTestRoomIn`, keep
+    none) counts as a new player (1000, 0, 1000), like a player with no `ratings` row
+    (`ratingBeforeGameOf`). The lobby driver and the busy-day simulator start ranked rooms with
+    new-player ratings.
+  - For later items: item 3 reads the rating before and the change from the stored record's
+    `players[].rating` and, for the room's message, from `RoomGame.ratingsBeforeGame` with
+    `ratingBeforeGameOf` and `recordPlayersOf`. Item 5a's ratings come from the same
+    `ratings` table (`NEW_PLAYER_RATING` when there is no row).
 
 - [ ] 3. **Ratings shown after the game** (S9.5's ranked columns, S13.2 and A3.2's rating
   fields; Q154; design board "End: turn limit, ranked"). **Large.**

@@ -27,7 +27,7 @@ export const BUDGET_CHECKS: Readonly<Record<string, BudgetCheck>> = {
   B8: {
     by: "harness",
     where:
-      "simulator, the most D1 rows the game record write makes in a finished legal-bot game: the record and one row per player",
+      "simulator, the most D1 rows the game record write makes in a finished legal-bot game, counted as a ranked game: the record, one row per player and one rating row per player",
   },
   B9: { by: "harness", where: LEGAL_THREE_PLAYER_AVERAGE },
   B10: {
