@@ -2,18 +2,18 @@ import type { PlayerId } from "../../../shared/PlayerId";
 import { Button } from "../../components/Button";
 import { goBack } from "../../components/goBack";
 import { useOverlayPage } from "../../components/useOverlayPage";
-import { GameRecordContent } from "./GameRecordContent";
-import { MatchHistoryContent } from "./MatchHistoryContent";
 import { RECORD_PAGE_TITLE_ID } from "./RECORD_PAGE_TITLE_ID";
 import type { RecordPage } from "./RecordPage";
+import { RecordPageContent } from "./RecordPageContent";
 import styles from "./Records.module.css";
 
 type Props = {
   readonly page: RecordPage;
   readonly viewerId: PlayerId | null;
+  readonly token: string | null;
 };
 
-export function RecordsPage({ page, viewerId }: Props) {
+export function RecordsPage(props: Props) {
   const pageRef = useOverlayPage();
   return (
     <div
@@ -30,11 +30,7 @@ export function RecordsPage({ page, viewerId }: Props) {
             Back
           </Button>
         </div>
-        {page.kind === "history" ? (
-          <MatchHistoryContent playerId={page.playerId} isOwn={page.playerId === viewerId} />
-        ) : (
-          <GameRecordContent gameId={page.gameId} viewerId={viewerId} />
-        )}
+        <RecordPageContent {...props} />
       </article>
     </div>
   );

@@ -5,6 +5,7 @@ import { UserAccount } from "../account/UserAccount";
 import { RoomChatSection } from "../chat/RoomChatSection";
 import styles from "./Lobby.module.css";
 import { LobbyTopBar } from "./LobbyTopBar";
+import { RankingButton } from "./RankingButton";
 
 type Props = {
   readonly account: AccountBinding;
@@ -17,7 +18,10 @@ export function RoomPageFrame({ account, chat, children, overlay }: Props) {
   return (
     <div className={styles["page"]}>
       <LobbyTopBar>
-        <UserAccount account={account} />
+        <div className={styles["accountButtons"]}>
+          <RankingButton />
+          <UserAccount account={account} />
+        </div>
       </LobbyTopBar>
       <main className={`${styles["columns"] ?? ""} ${styles["waitingColumns"] ?? ""}`}>
         <section className={styles["panel"]} aria-labelledby="room-heading">

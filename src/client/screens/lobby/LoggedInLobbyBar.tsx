@@ -2,6 +2,7 @@ import { Button } from "../../components/Button";
 import type { AccountBinding } from "../account/AccountBinding";
 import { UserAccount } from "../account/UserAccount";
 import { matchHistoryOpenerOf } from "../records/matchHistoryOpenerOf";
+import { RankingButton } from "./RankingButton";
 import styles from "./Lobby.module.css";
 
 type Props = {
@@ -18,6 +19,7 @@ export function LoggedInLobbyBar({ account }: Props) {
       >
         My match history
       </Button>
+      <RankingButton />
       <UserAccount account={account} />
     </div>
   );

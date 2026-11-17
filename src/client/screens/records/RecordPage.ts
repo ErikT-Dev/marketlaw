@@ -3,4 +3,5 @@ import type { PlayerId } from "../../../shared/PlayerId";
 
 export type RecordPage =
   | { readonly kind: "history"; readonly playerId: PlayerId }
-  | { readonly kind: "record"; readonly gameId: GameId };
+  | { readonly kind: "record"; readonly gameId: GameId }
+  | { readonly kind: "ranking" };

@@ -217,7 +217,7 @@ These 12 scenarios are added to `harness/required.yaml` in this phase, by file a
   - For later items: 4b posts `{ token, page }` to `/api/ranking` (`token: null` when logged
     out) and shows S13.3's texts from `standing`; the pager's places come from the entries.
 
-- [ ] 4b. **Ranking page in the client** (S13.3, S10.1's ELO ranking; design boards "Records: ELO
+- [x] 4b. **Ranking page in the client** (S13.3, S10.1's ELO ranking; design boards "Records: ELO
   ranking" and "Records: not in the ranking yet"). **Large.**
   - S10.1's **ELO ranking** button in the lobby's top bar (also in the waiting room, S11.1)
     opens the ranking as a records page over the current screen with Back (`RecordsPage`,
@@ -225,6 +225,25 @@ These 12 scenarios are added to `harness/required.yaml` in this phase, by file a
     Jump to me with the row highlighted, and usernames that open match histories
     (`RecordNameLink`). Component tests by role and name; a browser test with a screenshot of
     the ranking (copied into `harness/screens/` by the finisher).
+  - Done (2026-11-17): the records page `#ranking` (`RecordPage` kind `ranking`, `RANKING_HASH`,
+    `RecordPageContent`), `RankingContent` with `useRanking` (`requestRanking(token, page)`; the
+    token comes from the store's session through `App` and `LazyRecordsPage`), `RankingPager`
+    (Previous, "Page 3 of 9 · places 101–150" from the entries, Next, Jump to me disabled
+    unless `standing` is `placed`), `RankingTable` (place, username as `UsernameLink`, rating,
+    ranked games; the viewer's row has `aria-current` and the design's highlight) and
+    `rankingStandingText` (S13.3's texts). The **ELO ranking** button (`RankingButton`) is in
+    the lobby's top bar, logged in and logged out, and in the room pages' top bar
+    (`RoomPageFrame`). `RecordTableHead` is shared with the match history. New colour tokens
+    `--color-board-ranking-own` and `-standing`. Tests: `ranking.test.tsx`,
+    `recordPagesInApp.test.tsx`, browser test `e2e/ranking.spec.ts` (screens `ranking` and
+    `ranking-not-in-it-yet`).
+  - Differs: the viewer's row is highlighted whenever it is on the shown page, not only after
+    Jump to me. With no entries the pager shows no page text and the table is replaced by
+    "Nobody is in the ranking yet."
+  - For later items: a local D1 made before this phase needs `npm run db:migrate:local` (0014)
+    before the browser tests, or `/api/ranking` fails. The finisher copies the `ranking` and
+    `ranking-not-in-it-yet` screenshots; the ranking is empty in the browser tests (no test
+    ends a ranked game of registered players).
 
 - [ ] 5a. **Players online on the server** (A7.1 to A7.3, A6; Q152; scenario
   `lobby-queue-and-limits` #1). **Large.**
