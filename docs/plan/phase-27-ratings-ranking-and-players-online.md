@@ -211,3 +211,12 @@ These 12 scenarios are added to `harness/required.yaml` in this phase, by file a
     "Rating 1043" under the username for a registered user; the ranked queue panel
     (`RankedQueuePanel.tsx`) shows "Your rating: 1043 · 12 ranked games" (design "Lobby"). Both
     refresh after a ranked game (the `check` key `useRankedStanding` already uses).
+
+### Helper log
+
+Filled in by the coordinator afterwards, from the helpers' completion notices (Q73). Tokens are
+each helper's conversation size at its end.
+
+| Job | Model, effort | Minutes | Tokens | Tool calls | Result |
+|---|---|---|---|---|---|
+| Starter + builder, item 1 | Opus, medium | 16 | 191k | 81 | done |
