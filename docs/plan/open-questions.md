@@ -3351,3 +3351,95 @@ file.
   ±2.5, and to 2.5 ± 0.0000004 (which the 6-decimal step makes 2.5, then 3). It is listed in the
   harness report like the card-data and tier checks.
 - **Implemented:** phase 27, item 1.
+
+## Q156. How is the rulebook's Markdown rendered?
+
+- **Phase:** 28 (starter; C2, S14.2, the phase file's open point "The Markdown dependency").
+- **Question:** the rules viewer shows `rulebook.md`. Rendering Markdown needs either a library
+  or a small project renderer; the phase file leaves the choice open.
+- **Options:** (a) `marked` (about 12 kB compressed) or `markdown-it` (about 35 kB), which
+  produce HTML that must then be inserted with `dangerouslySetInnerHTML` and walked again to put
+  stat and type icons into the text (S1.6, Q157); (b) a small project renderer for the subset
+  `rulebook.md` uses (headings, paragraphs, bold, italic, links to sections, ordered and
+  unordered lists with continuation lines, tables, one fenced block, inline code), producing
+  React elements directly.
+- **Solution:** (b), no new dependency. The rulebook is the project's own fixed file, the icon
+  pass needs a custom walk over the text either way, React elements need no HTML insertion, and
+  the bundle grows by nothing a library would not add. A unit test renders the whole
+  `rulebook.md` and fails on any line the renderer does not understand, so a rulebook edit that
+  uses new syntax is caught. The renderer and the rulebook text load only when the rules viewer
+  opens (a lazy chunk; `rulebook.md` imported with Vite's `?raw`), so B14 does not grow.
+- **Implemented:** phase 28, items 1 and 2.
+
+## Q157. Which words of the rulebook become icons?
+
+- **Phase:** 28 (starter; S1.6, S14.2, C2.1).
+- **Question:** S1.6 says stats and types are icons everywhere, the rulebook included, but
+  `rulebook.md` writes them as words, and a type name is not always a type: "Service" is also a
+  sector ("Service cards"), "Farm" is part of the card name "Farm House" and of quest names, and
+  section titles such as "Income" name sections, not stats.
+- **Options:** (a) replace every word that matches a stat or type name; wrong for sectors, card
+  and quest names; (b) mark every stat and type in `rulebook.md`; makes the owner's text harder
+  to read for stats, which have no second meaning there; (c) stats by word, types marked.
+- **Solution:** (c). Every stat name in the text, tables and score formula is shown as its icon
+  with the name as tooltip and accessible name (fund or funds, income, influence, workforce,
+  quality, satisfaction, product, distribution, bonus, build pass or passes, any case). A type
+  meant as a type is written as inline code in `rulebook.md` (`` `Farm` ``), which the viewer shows
+  as the type's icon; a harness check (beside `checkRulebookLinks`) fails on inline code that
+  names no type. Section titles (contents, headings, "See also", previous and next) stay words,
+  since they name sections; sector, card and quest names stay words. Written into S14.2 first.
+- **Implemented:** `harness/spec/screens.md` S14.2; phase 28, item 1: every type in `rulebook.md`
+  written as inline code (the type list in "The cards", the combo examples, the quest list rules
+  and tables, the bonus types table; "Service" only where it means the type), and the harness
+  check `tools/harness-check/checkRulebookTypes.ts`, which fails on inline code naming no type in
+  `cards.json`; the parser in item 1 (`src/client/screens/rules/parseRulebook.ts`). Two details
+  settled there: "bonus" followed by "type" or "types" ("Bonus types", "bonus-type points")
+  names the bonus types of R21, not the bonus stat, and stays words; the text of a link inside
+  the rulebook's prose ("[income](#income)") is prose, so its stat words are icons too, while
+  the contents, headings, "See also" and previous and next stay words as S14.2 says.
+
+## Q158. What are the rules viewer's related sections, and how is C2.4 checked?
+
+- **Phase:** 28 (starter; S14.2, C2.4, scenario `client` "the rulebook explains every section of
+  the game rules").
+- **Question:** S14.2 asks for "links to related sections" but `rulebook.md` names none apart
+  from its inline links; the design board shows a "See also" line. C2.4's scenario lists R1 to
+  R21 but the rulebook does not cite rule numbers.
+- **Solution:** a section's related sections are the sections its own text links to, in the
+  order they first appear, shown as "See also" under the text (none when it links to none). The
+  rulebook's 21 sections after Contents explain R1 to R21 in order, one each, as their titles
+  show; the scenario's check reads the rulebook's sections and requires exactly one per listed R
+  section, in order, with the contents listing all of them. That the text says nothing
+  contradicting the rules stays a review matter. Written into S14.2 first.
+- **Implemented:** `harness/spec/screens.md` S14.2; phase 28, items 1 and 2.
+
+## Q159. What does the menu offer before the tutorial exists, and what do the client steps send?
+
+- **Phase:** 28 (starter; C1.2, C1.3, S14.1, scenarios `client` #2, #3, #16).
+- **Question:** S14.1 shows Tutorial disabled with its reason in a game, room or queue, but the
+  scenarios expect the menu `[Rules, Card set]` there, and the tutorial comes only in phase 29.
+  S14.1 also says Rules and Card set mention the clock "during a game, a room or the ranked
+  queue", though only a game has a clock. The scenarios `open_menu`, `open_rules` and
+  `open_card_set` are client actions with no server message defined.
+- **Solution:** a scenario's `menu` lists the entries the player can open; a disabled Tutorial is
+  shown but not offered, so S14.1 and the scenarios agree. Phase 28 shows no Tutorial entry at
+  all (its known gap); phase 29 adds it, disabled with the reason where C1.2 says so. Only during
+  a game do Rules and Card set carry the clock lines; in a waiting room or the queue they keep
+  their lobby lines (written into S14.1 first). Opening the menu, the rules or the card set sends
+  nothing to the server, so nothing about the game can pause (C1.3): the room driver runs these
+  steps as client steps that send nothing, and a client test checks that opening them during a
+  game sends no message and the clock keeps counting.
+- **Implemented:** `harness/spec/screens.md` S14.1; phase 28, item 5.
+
+## Q160. Where does the card set differ from its design boards?
+
+- **Phase:** 28 (review finding F3; S14.3, S1.6, S17).
+- **Question:** the boards "Card set: grid" and "Card set: card detail" filter types with an "Any
+  type" dropdown and write stats, types and combos as words, which S1.6 forbids. The differences
+  were recorded only in the phase's Progress notes, not in S17, where known design differences
+  are listed.
+- **Solution:** the spec wins: the type filter is a row of type icon buttons, and the card
+  detail shows stats and types as icons and marks an infinite combo with its infinite mark. The
+  tiles show no photo, as the boards do (the phase file's lazy photos were dropped, item 3), so
+  that is not a design difference. Written into S17 as a known difference.
+- **Implemented:** `harness/spec/screens.md` S17; phase 28, items 3 and 4 (no code change).

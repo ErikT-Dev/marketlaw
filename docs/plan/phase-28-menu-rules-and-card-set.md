@@ -1,6 +1,6 @@
 # Phase 28: Game menu, rules viewer and card set
 
-Status: approved
+Status: in progress
 Milestone: 6 Learning
 
 ## Goal
@@ -45,7 +45,7 @@ Open the menu from the lobby and a game; read the rules; filter the card set and
 
 ## Open points
 
-- The Markdown dependency.
+- The Markdown dependency: decided, none; a small project renderer (Q156).
 
 ## Required scenarios
 
@@ -60,3 +60,285 @@ These 9 scenarios are added to `harness/required.yaml` in this phase, by file an
 - `client` #8: searching the card set by name finds matching cards
 - `client` #9: opening a card shows everything about it
 - `client` #16: the menu in a waiting room does not offer the tutorial
+
+## Progress
+
+- [x] 0. Start (2026-11-17): branch `phase-28-menu-rules-and-card-set`. Spec gaps decided and
+  written into the spec first (commit `HARNESS: Game menu, rules viewer and card set settled
+  (S14.1, S14.2, S14.3; Q156-Q159)`): Q156 (no Markdown dependency: a small project renderer
+  for the subset `rulebook.md` uses, loaded lazily), Q157 (which rulebook words become icons:
+  stats by word, types written as inline code in `rulebook.md`, section titles stay words),
+  Q158 ("See also" from a section's own links; C2.4 checked by the 21 sections matching R1–R21
+  in order), Q159 (the menu lists only entries the player can open, no Tutorial entry until
+  phase 29; clock lines only during a game; the client steps send nothing). Read them and
+  S14.1 to S14.3 before building any item; they are the design.
+  - Nothing here changes a message, the save or the room record: no `PROTOCOL_VERSION` (25),
+    schema or migration change is expected. If one turns out to be needed, raise it as
+    `proposed-rules.md` says.
+  - B14 (initial download, 300 kB): the rules viewer, the rulebook text, the card set and the
+    card detail are lazy chunks, as `src/client/screens/records/LazyRecordsPage.tsx` and
+    `src/client/screens/privacy/LazyPrivacyNoticePage.tsx` are. Only the menu button and the
+    menu itself go in the first screen. Check `npm run size` in every item that adds client
+    code.
+  - Scenarios: the 9 required ones run through a new **client driver**
+    (`tools/harness-runner/client/CLIENT_DRIVER.ts`, added to `DRIVERS.ts`; tools may import
+    `src/client/`, as `lobby/lobbyMessageThen.ts` does) built on the pure client functions,
+    except `client` #3 (the clock), which needs the room driver (Q159). The client driver
+    accepts the `given` of #2 and #16 (`seats`, `accounts`, `room`) as context only. A driver
+    is chosen by field names (`runScenario.ts`, `missingFor`), so it must list every given,
+    step and then field a scenario uses. All items: scenarios become required only in the
+    finisher's run; until then check them by adding them to `harness/required.yaml` locally
+    without committing.
+  - Pages open by hash, as the ranking does (`RANKING_HASH`, `RankingButton.tsx`,
+    `recordPageOf.ts`, `useRecordPage.ts`, `keepRecordPageInsideApp.ts`; `useOverlayPage.ts`
+    for focus, Escape and Back). Suggested hashes: `#rules` (`#rules/<section-anchor>` for a
+    section) and `#card-set` (`#card-set/<card name>` for a card); the builder of item 2
+    settles them and later items follow.
+  - During a game (S14.2, S14.3, S1.4): the page opens below the game's top bar and shows "Your
+    clock keeps running while the rules are open." (the card set: "… while the card set is
+    open.") with the time left as the game shows it; reuse the game screen's clock text and
+    live clock (`YourClock.tsx`, `LiveBankChip.tsx`, `clockText.ts`, `useServerNow.ts`).
+  - Icons (S1.6): reuse `StatChip`, `TypeChip` (with `count` 2 for a doubled type),
+    `TextWithIcons`, `IconText`/`IconTextPart`, `STAT_ICONS`, `typeIconFile.ts`. Cards:
+    `CardTileFace.tsx`, `BigCard.tsx`, `ComboLabel.tsx`, `sectorColor.ts`, `photoUrl.ts`. Card
+    data: `src/shared/catalogue/CARDS.ts`, `Card.ts`, `Combo.ts`, `TYPE_NAMES.ts`.
+  - Files near the line limit (300 non-blank lines): `tools/harness-runner/room/RoomSession.ts`
+    (282), `tools/harness-runner/room/ROOM_DRIVER.ts` (264). Split them, do not grow them past
+    the limit.
+  - Order: 1, then 2 (needs 1's parser). 3, then 4 (needs 3's page). 5 last (it opens the pages
+    of 2, 3 and 4). Items 3 and 4 may go before or after 1 and 2.
+
+- [x] 1. **Rulebook parser, type markup and checks** (C2.1, C2.2, C2.4, S1.6, S14.2; Q156, Q157,
+  Q158; scenarios `client` #4, #5). **Large.**
+  - Done (2026-11-17). The type check reads the types from `cards.json` (`collectKnownNames`,
+    as the other harness checks do) rather than `TYPE_NAMES`, since `tools/harness-check/` runs
+    under plain Node; `catalogueMatchesSpec` keeps the two equal. `headingAnchor` moved to
+    `src/client/screens/rules/headingAnchor.ts` and `checkRulebookLinks` imports it. A line
+    "2. Types gained …" inside a paragraph is paragraph text, as in CommonMark (only "1. " starts
+    a list there). Q157 records two details: "bonus types" stays words; link text in the prose
+    gets stat icons.
+  - For later items: `parseRulebook(text)` returns `Result<Rulebook, problems>`; `Rulebook` has
+    `title`, `introduction`, `contents` (title, anchor), `sections` (title, anchor, blocks,
+    `related`). Inline parts are `IconTextPart` (string, `{ stat }`, `{ type }`) or `{ kind:
+    "bold" | "italic", parts }` / `{ kind: "link", anchor, parts }`; blocks are paragraph, list
+    (`isOrdered`, items), table (header, rows of cells), preformatted (lines of `IconTextPart`).
+    `linkAnchorsIn(blocks)` lists link anchors. The client driver is
+    `tools/harness-runner/client/CLIENT_DRIVER.ts` (step `open_rules`, then `rules_viewer`,
+    `rulebook_covers`); later items add their steps and fields there. `client` #4 and #5 pass
+    with them added to `required.yaml` locally.
+  - `HARNESS:` commit first: in `harness/spec/rulebook.md`, write every type name meant as a
+    type as inline code (`` `Farm` ``, `` `Low Wealth` ``; the quest list and the bonus types
+    table too; not "Service" as a sector, not card, quest or project names). Add a harness
+    check beside `tools/harness-check/checkRulebookLinks.ts` that every inline code span names
+    a type (`TYPE_NAMES`). Add the markup and the check to Q157's Implemented line. Run
+    `npm run harness:check`.
+  - A pure parser in `src/client/screens/rules/` from the rulebook text to its title, contents
+    and sections: title, anchor (as `checkRulebookLinks`'s `headingAnchor` makes it), blocks
+    (paragraph, list, table, preformatted block) and inline parts (text, bold, italic, link,
+    stat icon, type icon), and each section's related sections (Q158). A unit test parses the
+    whole `rulebook.md` and fails on any syntax the parser does not know. Stat words become
+    `{ stat }` parts by Q157's list (`buildPasses` for build pass or passes); section titles
+    stay words.
+  - Start the client driver: step `open_rules` (`visitor`), then `rules_viewer` (`source`,
+    `contents` 21, `links_work`: every link points to a section) and `rulebook_covers` (one
+    section per listed R rule, in order, matched against `game-rules.md`'s `## R<n>.`
+    headings; Q158).
+
+- [x] 2. **Rules viewer page** (C2.1 to C2.3, S14.2; Q156, Q158). **Large.**
+  - Done (2026-11-17). Hashes settled: `#rules` (opens the first section) and
+    `#rules/<section-anchor>`; an unknown anchor shows the first section. Links between
+    sections, the contents, "See also" and previous/next replace the history entry
+    (`location.replace`), so Back and Escape close the rules in one step wherever the reader
+    went. The rulebook's introduction is shown above the first section. Section links carry an
+    absolute URL, since axe's skip-link rule fails `#…` links scrolled out of view. The page is
+    rendered by `App.tsx` (like the records pages); during a game (`runningGameClockOf`: a game
+    without a result, own seat not left) it starts below the 56 px top bar.
+  - For later items: reuse `screens/game/RunningGameClock.ts`, `runningGameClockOf(update,
+    offset)` and `ClockKeepsRunningNote` (text + the game's `YourClock`, role `note`) for the
+    card set; open the rules with `RULES_HASH` (`screens/rules/RULES_HASH.ts`). The browser
+    spec file is `e2e/rulesAndCardSet.spec.ts` (opens pages by setting `location.hash`).
+  - The lazy page: contents on the left, the current section on the right with its text, "See
+    also" links, previous and next buttons (none before the first or after the last section),
+    links between sections, Back and Escape as on the other overlay pages. Rendered from item
+    1's parse result as React elements, never as inserted HTML. Anyone can open it, logged in
+    or not (C2.3), so it needs no session.
+  - Opened during a game: below the top bar, with the clock line (see Start). The menu comes in
+    item 5, so tests open the page by its hash.
+  - Component tests: contents, a link, previous and next, icons with accessible names in the
+    text (S1.6). A browser test (a new spec file, for example `e2e/rulesAndCardSet.spec.ts`) at
+    the three sizes with `expectScreenFits` screenshots `rules-viewer` (from the lobby) and
+    `rules-during-game`.
+
+- [x] 3. **Card set grid, filters and search** (C3.1, C3.2, C3.4, S14.3; scenarios `client` #6,
+  #7, #8). **Large.**
+  - Done (2026-11-17). Hash `#card-set` (`screens/cardSet/CARD_SET_HASH.ts`,
+    `useCardSetOpen`, `keepCardSetInsideApp` in `main.tsx`); rendered by `App.tsx` like the
+    rules page. Differs from the phase file and design: tiles show no photo (the design's
+    tiles have none), so nothing needs `loading="lazy"`; the type filter is a row of type icon
+    buttons (S1.6 forbids type words, so not the design's "Any type ▾" dropdown); the panel
+    scrolls with the title, search, filters and count kept at the top (sticky), since axe
+    requires a scrolling list to hold focusable content and the tiles are not yet buttons.
+    Tiles sit on a solid `--color-background-game-window` underlay with white text: on the
+    solid overlay axe measured Service tier 1 tiles at 2.96:1 (the game hides this behind the
+    photo, see proposed-rules "Text colours are checked on solid backgrounds").
+  - For later items: `cardsMatching(cards, filter)` with `CardSetFilter` (`sector`, `tier`,
+    `type`, `nameText`, all-cards `ANY_CARD`); the filter state lives in `CardSetPage`'s
+    `useState`, so item 4 must keep `CardSetPage` mounted for `#card-set/<card>` (extend
+    `useCardSetOpen`/`keepCardSetInsideApp` to that hash) to keep the filters. Tiles are
+    `li`s named by the card (`CardSetGrid.tsx`); item 4 turns them into buttons and adds
+    "click a card to see everything about it" to the count line. Filter groups are
+    `role="group"` named Sector, Tier, Type with `aria-pressed` buttons. Client driver steps
+    `open_card_set`, `filter_cards`, `search_cards` and then `card_set` (`count`, `cards`);
+    `client` #6 to #8 pass with them added to `required.yaml` locally. Browser test "a
+    visitor filters and searches the card set" (screenshot `card-set`) in
+    `e2e/rulesAndCardSet.spec.ts`, plus a card set clock-line check in the game test.
+  - Pure functions: the matching cards for a sector, tier, type (any of `type1`–`type5` and the
+    double types) and name text (case-insensitive part of the card name: #8 expects "row house"
+    to find "Tall Row Houses"), in `cards.json` order. Client driver steps `open_card_set`,
+    `filter_cards` (`sector`, `tier`, `type`) and `search_cards` (`text`), and then `card_set`
+    (`count`, `cards` by name).
+  - The lazy page: tiles (reuse `CardTileFace`), the three filters (each with an "all" choice),
+    the name search and the number of matching cards; photos load lazily (`loading="lazy"`) so
+    240 photos do not load at once. Filters and search work by keyboard. During a game: below
+    the top bar with the clock line.
+  - Component tests, and a browser test with the screenshot `card-set` at the three sizes.
+
+- [x] 4. **Card detail** (C3.3, S14.3; scenario `client` #9). **Small.**
+  - Done (2026-11-17). Hash `#card-set/<card name, URI-encoded>` (`cardDetailHash`,
+    `cardSetPageOf`, `useCardSetPage` replacing `useCardSetOpen`); an unknown name shows the
+    grid. A tile click pushes the card's hash, so Back, Close and Escape return to the grid with
+    the filters kept; a link straight to a card pushes `#card-set` under it. The detail is the
+    shared `Modal` over the card set (the page has `contain: layout`, so the backdrop stays
+    below the game's top bar), focus returns to the tile on close. Differs from the phase file:
+    a doubled type is shown as its icon twice, not `TypeChip` count 2 (S5 says so for every
+    place that shows a card's types, the card set included); tier is shown as words ("tier 2"),
+    as the design does, since the tier icon is dark on the dark modal. Gives and uses up come
+    from R3.4's sector table (`SECTOR_STAT_EFFECTS`, display data, not a rule outcome).
+  - For later items: client driver step `open_card` and field `card_detail`; `client` #9 passes
+    with it added to `required.yaml` locally. Browser test "a visitor opens a card and goes back
+    to the grid with the filters kept" (screenshot `card-detail`).
+  - Clicking a tile opens the detail: the big card (`BigCard`), sector and tier, base cost, what
+    it gives and uses up (stat icons with numbers), the types with a doubled type shown as
+    elsewhere (`TypeChip` count 2), and every combo with "infinite" marked (`ComboLabel`). Back
+    returns to the grid with the filters kept.
+  - Client driver step `open_card` (`card`), then `card_detail` (name, sector, tier, base_cost,
+    the stat numbers, types, double_types, combos with needs, gives and infinite).
+  - Component test, and the screenshot `card-detail` at the three sizes.
+
+- [x] 5. **Game menu** (C1.1 to C1.3, S2.1, S10.1, S14.1; Q159; scenarios `client` #2, #3,
+  #16). **Large.**
+  - Done (2026-11-17). `GameMenu` (`src/client/screens/menu/`): "Game menu" beside the title in
+    `LobbyTopBar` (lobby and, through `RoomPageFrame`, the waiting room and the room after a
+    game), "Menu" first in the game's top bar, as the design places them; a list named "Game
+    menu" of buttons named by the entry and described by its line, the first entry focused on
+    open, closed by Escape (focus back on the button) and an outside click
+    (`useHelpBoxDismissal`). The entries come from the pure `gameMenuEntriesOf(place)`, which
+    the client driver also uses (step `open_menu`, field `menu`; given `seats`, `accounts`,
+    `room` as context). The room driver runs `open_menu`, `open_rules` and `open_card_set`
+    (`STEPS_SENDING_NOTHING`) as steps that send nothing. `client` #2, #3, #16 pass with them in
+    `required.yaml` locally; `client` #1 (the lobby menu with Tutorial) now runs on the client
+    driver and fails until phase 29 adds the entry (not required). While a page is open the app
+    is inert (item 2), so the menu cannot be opened over the rules or the card set; the browser
+    test closes one page before opening the other. Browser tests in `e2e/gameMenu.spec.ts`
+    (screenshots `game-menu-lobby`, `game-menu-game`); one local run had a waiting-room test
+    miss the rules page once at 1920x1080 and a game page that did not load at 1280x720, both
+    passed on rerun (`--repeat-each=2`, 18 of 18).
+  - For later items: phase 29 adds Tutorial to `gameMenuEntriesOf` (disabled with its reason
+    outside the lobby), which makes `client` #1 pass.
+  - The **Game menu** button in the lobby top bar (S10.1; `LobbyTopBar.tsx`, like
+    `RankingButton`) and in the waiting room (`WaitingRoomHeader.tsx` or `RoomPageFrame.tsx`),
+    and the **Menu** button in the game's top bar (`GameTopBar.tsx`, S2.1). The menu: Rules and
+    Card set with S14.1's lines (the clock lines only during a game) and no Tutorial entry
+    (known gap, Q159). It opens the pages of items 2 and 3, closes on Escape and an outside
+    click, and works by keyboard (real buttons, an accessible name for the menu).
+  - Client driver: step `open_menu` (`from`: `lobby`, `waiting_room`, `game`), then `menu` (the
+    entry labels). Room driver: `open_menu`, `open_rules` and `open_card_set` are client steps
+    that send nothing (Q159), so `client` #3 checks the room's clock (885000 ms after 90 s: the
+    first 75 s are free time, R9.4). Keep `ROOM_DRIVER.ts` under the line limit.
+  - A client test: opening the menu and the rules during a game sends no message and the clock
+    keeps counting (C1.3).
+  - Browser tests: open the menu from the lobby, a waiting room and a game; screenshots
+    `game-menu-lobby` and `game-menu-game`. Then check B14 (`npm run size`).
+
+## Finish
+
+- [x] Finisher: the 9 scenarios into `harness/required.yaml`, the full check and harness, the
+  branch check, screenshots, `docs/enforcement.md` (the rulebook type markup check), B14 still
+  within its limit (exit criterion).
+  - Done: the 9 scenarios are in `harness/required.yaml` under `client` (`HARNESS:` commit);
+    `npm run check` passed locally (exit 0, B14 within its limit in the size step);
+    `npm run harness` passed locally (490 scenarios, 0 problems, phase-end simulated games and
+    budgets). GitHub branch check, run 44123870779: success, all 7 jobs (check, other tests 1
+    to 3, full games with 2, 3 and 4 players), no rerun needed. Screenshots of that run copied
+    into `harness/screens/` (including `game-menu-lobby`, `game-menu-game`, `rules-viewer`,
+    `rules-during-game`, `card-set`). `docs/enforcement.md` updated with the rulebook type
+    markup check and the menu client steps. The item 5 builder's local one-off failures (route
+    tests with ECONNRESET, rules page at 1920, game page at 1280) did not show up in the
+    finisher's local check or in the GitHub run. No findings.
+
+- [x] Phase review (D16): ready after fixes; 3 findings.
+  - F1 (should fix): after game over the game menu still says the clock keeps running.
+    `GameTopBar.tsx:50` always passes place `"game"`, though the board stays after
+    `view.result` is set. Breaks S14.1 (Q159) and disagrees with `runningGameClockOf`. Fix: clock
+    lines only while `view.result === null && !seat.hasLeft`; otherwise a place such as
+    `"game_over"` with the lobby lines (phase 29 treats it like `waiting_room`); add a case to
+    `gameMenu.test.tsx`.
+  - F2 (suggestion): `parseRulebookList.ts` exports `isRulebookListStart` and
+    `parseRulebookList` (`rules/architecture.md`, File structure). Fix: move
+    `isRulebookListStart` to its own file.
+  - F3 (suggestion): the design differences of the card set (type icon buttons instead of the
+    "Any type" dropdown, icons and an infinite mark in the card detail instead of words, no
+    photo on tiles) are recorded only in Progress. Fix: an S17 entry in `screens.md` in a
+    `HARNESS:` commit, recorded in `open-questions.md`.
+- Fixer groups: A = F1, F2, F3 (one fixer).
+- [x] Fixer: F1, F2, F3 (2026-11-17).
+  - F1 fixed: `GameMenuPlace` gains `"game_over"` (lobby lines; phase 29 treats it like
+    `waiting_room`); `gameMenuPlaceOf` in `screens/game/` gives `"game"` only while
+    `view.result === null && !seat.hasLeft`, as `runningGameClockOf` does. Follows S14.1 as
+    written (only where a clock runs), so no spec change. Test "keeps the lobby lines once the
+    game is over" in `gameMenu.test.tsx` (fails without the fix). The scenario step `open_menu`
+    still accepts only `lobby`, `waiting_room` and `game`. `e2e/gameMenu.spec.ts` passed locally (9 tests).
+  - F2 fixed: `isRulebookListStart.ts` on its own; the list item patterns it shares with
+    `parseRulebookList` live in `RULEBOOK_LIST_ITEM.ts`.
+  - F3 fixed: S17 entry "The card set" (type icon buttons instead of "Any type", icons and the
+    infinite mark in the detail), Q160. No photo on tiles is not a design difference (the boards
+    have none), only a difference from the phase file, already noted under item 3.
+
+### Helper log
+
+Filled in by the coordinator afterwards, from the helpers' completion notices (Q73). Tokens are
+each helper's conversation size at its end.
+
+| Job | Model, effort | Minutes | Tokens | Tool calls | Result |
+|---|---|---|---|---|---|
+| Starter | Opus, medium | 7 | 141k | 63 | done |
+| Builder, item 1 | Opus, medium | 14 | 145k | 62 | done |
+| Builder, item 2 | Opus, medium | 15 | 176k | 87 | done |
+| Builder, item 3 | Opus, medium | 14 | 155k | 68 | done |
+| Builder, item 4 | Opus, medium | 13 | 143k | 65 | done |
+| Builder, item 5 | Opus, medium | 29 | 177k | 94 | done |
+| Finisher | Sonnet, medium | 30 | 86k | 38 | done |
+| Phase reviewer | Opus, medium | 4 | 150k | 35 | done: F1-F3 |
+| Fixer, F1, F2, F3 | Opus, medium | 8 | 91k | 40 | done |
+
+## Report
+
+**Built.** The game menu (lobby, waiting room, game; Rules and Card set; opening anything never
+stops the clock), the rules viewer (`rulebook.md` through a small project renderer, loaded only
+when opened, contents, links, previous and next, types and stats as icons), and the card set (all
+240 cards as tiles, sector, tier and type filters, name search with the matching count, and the
+card detail with every combo).
+
+**To try.** Open the menu from the lobby and from a game, read the rules and follow a link, filter
+the card set, search a name and open a card.
+
+**Differs from the phase file.** No Markdown library (Q156). The card set differs from the design
+in its type icon buttons and in the icons and infinite mark of the card detail (S17, Q160); tiles
+carry no photo, as in the boards. The menu has no Tutorial entry until phase 29, so `client` #1
+fails until then (not required).
+
+**Decisions.** Q156 to Q160.
+
+**Review.** F1 (menu said the clock runs after game over): fixed, place `game_over` with the lobby
+lines. F2 (two exports in one file): fixed, `isRulebookListStart.ts`. F3 (design differences only
+in Progress): fixed, S17 entry and Q160.

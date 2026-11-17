@@ -16,6 +16,8 @@ import styles from "./GameTopBar.module.css";
 import { LeaveGameButton } from "./LeaveGameButton";
 import { orderBadgesOf } from "./orderBadgesOf";
 import { YourClock } from "./YourClock";
+import { GameMenu } from "../menu/GameMenu";
+import { gameMenuPlaceOf } from "./gameMenuPlaceOf";
 
 type Props = {
   readonly view: PlayerView;
@@ -46,6 +48,7 @@ export function GameTopBar(props: Props) {
   return (
     <header className={styles["topBar"]}>
       <div className={styles["turnInfo"]}>
+        <GameMenu place={gameMenuPlaceOf(view, seat)} buttonLabel="Menu" />
         <h1 className={styles["turn"]}>
           Turn {view.turn} of {TURN_LIMIT}
         </h1>

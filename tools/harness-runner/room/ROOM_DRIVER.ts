@@ -13,7 +13,9 @@ import { stateFromGiven } from "../engine/stateFromGiven.ts";
 import type { ScenarioDriver } from "../ScenarioDriver.ts";
 import type { ScenarioStep } from "../ScenarioStep.ts";
 import type { ScriptedRandom } from "../ScriptedRandom.ts";
+import { stepKindOf } from "../stepKindOf.ts";
 import { lobbyRoomThen } from "../lobby/lobbyRoomThen.ts";
+import { STEPS_SENDING_NOTHING } from "../client/STEPS_SENDING_NOTHING.ts";
 import { ROOM_GIVEN_SCHEMA } from "./ROOM_GIVEN_SCHEMA.ts";
 import { roomMessageContains } from "./roomMessageContains.ts";
 import { RoomSession } from "./RoomSession.ts";
@@ -217,7 +219,9 @@ function startSession(
     .map(({ name }) => name);
   return {
     runStep: async (step) => {
-      await runRoomStep(session, step, registeredNames);
+      if (!STEPS_SENDING_NOTHING.includes(stepKindOf(step))) {
+        await runRoomStep(session, step, registeredNames);
+      }
       await session.recordsSaved();
     },
     readThen: (field, expected) => readRoomThen(session, field, expected),
@@ -248,6 +252,7 @@ export const ROOM_DRIVER: ScenarioDriver = {
     "vote",
     "log_out",
     "delete_account",
+    ...STEPS_SENDING_NOTHING,
   ]),
   thenFields: new Set([
     ...ENGINE_FIELDS.thenFields,

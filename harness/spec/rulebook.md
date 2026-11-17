@@ -65,7 +65,7 @@ There are 240 cards, all different. Each card has:
 - a **tier**: 1, 2 or 3. Higher tiers are stronger and cost more.
 - a **cost** in funds
 - **stat numbers**
-- 1 to 5 **types**, such as Farm, Low Wealth or Retail. Some cards count a type twice.
+- 1 to 5 **types**, such as `Farm`, `Low Wealth` or `Retail`. Some cards count a type twice.
 - up to 4 **combos** (see [Types and combos](#types-and-combos))
 
 What a card does when you play it depends on its sector:
@@ -225,12 +225,12 @@ needs either:
 
 - **a card name**, such as "Stone Quarry": it can be claimed once, as soon as that card is also
   in your city. It doesn't matter which of the two you played first.
-- **a type count**, such as "2 Farm": it can be claimed once when you have that many.
+- **a type count**, such as "2 `Farm`": it can be claimed once when you have that many.
   **Infinite** combos can be claimed again every time you reach the next multiple of their
-  count: for "2 Farm" at 2, 4, 6 and so on.
+  count: for "2 `Farm`" at 2, 4, 6 and so on.
 
 A combo gives +1 or more workforce, quality or satisfaction. You claim every ready combo at once
-with **claim all**. *Example: a "2 Farm" infinite combo, not claimed yet, with 4 Farm in your
+with **claim all**. *Example: a "2 `Farm`" infinite combo, not claimed yet, with 4 `Farm` in your
 city, is claimed twice.*
 
 ## Income
@@ -378,9 +378,9 @@ with 4 tier 1 quests; tier 2 quests can appear from turn 5, tier 3 from turn 13.
 
 - Every requirement means "at least".
 - "3 Residential cards" counts cards in your city.
-- "1 Low Wealth" counts your type count, including types gained from quests.
-- Card counts and types are checked separately. *Example: "2 Service cards and 1 Service type"
-  needs 2 Service cards and a Service type count of 1, from any card.*
+- "1 `Low Wealth`" counts your type count, including types gained from quests.
+- Card counts and types are checked separately. *Example: "2 Service cards and 1 `Service` type"
+  needs 2 Service cards and a `Service` type count of 1, from any card.*
 - **Draw** rewards draw each card from a random sector.
 - **Gain a type** adds 1 to that type count, as if another card in your city had that type. It
   counts for type combos, bonus types and quests, but it is not a card.
@@ -389,61 +389,61 @@ with 4 tier 1 quests; tier 2 quests can appear from turn 5, tier 3 from turn 13.
 
 | Quest | Needs | Reward |
 |---|---|---|
-| Working district | 3 Residential cards and 1 Low Wealth | +1 quality |
-| Farming industry | 2 Industry cards and 1 Farm | +1 workforce |
-| Local services | 2 Service cards and 1 Service type | +1 satisfaction |
-| Green city | 3 Public cards and 2 Beautification | +3 funds |
-| Countryside | 1 Suburban Housing and 1 Farm | gain 1 Suburban Housing |
-| Farmland | 1 Farm and 2 Food | gain 1 Farm |
-| Fishing village | 1 Sea and 2 Food | gain 1 Sea, +1 fund |
-| Sports town | 1 Leisure and 1 Health | gain 1 Health |
-| High street | 2 Retail and 1 Suburban Housing | +1 satisfaction, +1 fund |
-| Mining town | 1 Mine and 1 Low Wealth | gain 1 Mine |
-| Workers' housing | 5 workforce and 1 Low Wealth | +1 fund, +3 influence |
-| Tidy streets | 5 quality and 1 Beautification | +1 workforce |
-| Healthy town | 4 satisfaction and 1 Health | +1 workforce |
-| Trading post | Income of 4 and 1 Retail | +1 fund, +2 influence |
-| Supply chain | Income of 5 and 1 Raw Material | draw 1 card |
+| Working district | 3 Residential cards and 1 `Low Wealth` | +1 quality |
+| Farming industry | 2 Industry cards and 1 `Farm` | +1 workforce |
+| Local services | 2 Service cards and 1 `Service` type | +1 satisfaction |
+| Green city | 3 Public cards and 2 `Beautification` | +3 funds |
+| Countryside | 1 `Suburban Housing` and 1 `Farm` | gain 1 `Suburban Housing` |
+| Farmland | 1 `Farm` and 2 `Food` | gain 1 `Farm` |
+| Fishing village | 1 `Sea` and 2 `Food` | gain 1 `Sea`, +1 fund |
+| Sports town | 1 `Leisure` and 1 `Health` | gain 1 `Health` |
+| High street | 2 `Retail` and 1 `Suburban Housing` | +1 satisfaction, +1 fund |
+| Mining town | 1 `Mine` and 1 `Low Wealth` | gain 1 `Mine` |
+| Workers' housing | 5 workforce and 1 `Low Wealth` | +1 fund, +3 influence |
+| Tidy streets | 5 quality and 1 `Beautification` | +1 workforce |
+| Healthy town | 4 satisfaction and 1 `Health` | +1 workforce |
+| Trading post | Income of 4 and 1 `Retail` | +1 fund, +2 influence |
+| Supply chain | Income of 5 and 1 `Raw Material` | draw 1 card |
 
 **Tier 2**
 
 | Quest | Needs | Reward |
 |---|---|---|
-| Growing suburbs | 2 Town Housing and 1 Low Wealth | +2 quality |
-| Upmarket homes | 2 tier 2 or 3 Residential cards and 1 Luxury | +2 satisfaction |
-| Modern industry | 2 tier 2 or 3 Industry cards and 1 Light Industry | +2 workforce |
-| Service economy | 2 tier 2 or 3 Service cards and 1 Service type | +2 satisfaction |
-| Culture hub | 3 tier 2 or 3 Public cards and 1 Culture | gain 1 Culture, +3 influence |
-| Factory town | 2 Town Housing and 1 Light Industry | gain 1 Light Industry, +1 quality |
-| Market town | 1 Town Housing, 1 Retail and 1 Food | gain 1 Retail, draw 1 card |
-| Industrial zone | 2 Light Industry and 1 Raw Material | +4 funds |
-| Shopping centre | 2 Retail, 1 Service type and 1 Leisure | +2 satisfaction |
-| Leisure park | 2 Leisure and 1 Beautification | gain 1 Beautification, +2 funds |
-| Culture district | 2 Culture and 1 Education | gain 1 Culture, +1 satisfaction |
-| Safe streets | 6 quality and 1 Safety | +2 workforce |
-| Happy residents | 6 satisfaction and 1 Leisure | +1 workforce, +1 quality |
-| Civic pride | 1 completed project and 2 Beautification | +2 funds, +3 influence |
-| Service boom | Income of 7 and 1 Service type | draw 2 cards |
+| Growing suburbs | 2 `Town Housing` and 1 `Low Wealth` | +2 quality |
+| Upmarket homes | 2 tier 2 or 3 Residential cards and 1 `Luxury` | +2 satisfaction |
+| Modern industry | 2 tier 2 or 3 Industry cards and 1 `Light Industry` | +2 workforce |
+| Service economy | 2 tier 2 or 3 Service cards and 1 `Service` type | +2 satisfaction |
+| Culture hub | 3 tier 2 or 3 Public cards and 1 `Culture` | gain 1 `Culture`, +3 influence |
+| Factory town | 2 `Town Housing` and 1 `Light Industry` | gain 1 `Light Industry`, +1 quality |
+| Market town | 1 `Town Housing`, 1 `Retail` and 1 `Food` | gain 1 `Retail`, draw 1 card |
+| Industrial zone | 2 `Light Industry` and 1 `Raw Material` | +4 funds |
+| Shopping centre | 2 `Retail`, 1 `Service` type and 1 `Leisure` | +2 satisfaction |
+| Leisure park | 2 `Leisure` and 1 `Beautification` | gain 1 `Beautification`, +2 funds |
+| Culture district | 2 `Culture` and 1 `Education` | gain 1 `Culture`, +1 satisfaction |
+| Safe streets | 6 quality and 1 `Safety` | +2 workforce |
+| Happy residents | 6 satisfaction and 1 `Leisure` | +1 workforce, +1 quality |
+| Civic pride | 1 completed project and 2 `Beautification` | +2 funds, +3 influence |
+| Service boom | Income of 7 and 1 `Service` type | draw 2 cards |
 
 **Tier 3**
 
 | Quest | Needs | Reward |
 |---|---|---|
-| Penthouses | 3 tier 2 or 3 Residential cards, at least 1 of them tier 3, and 1 City Housing | +3 quality |
-| Heavy industry | 3 tier 2 or 3 Industry cards and 1 Heavy Industry | +3 workforce |
-| Office district | 3 tier 2 or 3 Service cards and 1 Office | +3 satisfaction |
-| Public institutions | 4 tier 2 or 3 Public cards, 1 Safety and 1 Education | +2 quality, +3 influence |
-| City living | 2 City Housing and 1 Luxury | gain 1 City Housing, +2 quality |
-| Tech campus | 2 High Tech and 1 Education | gain 1 High Tech, draw 1 card |
-| Commuter city | 1 City Housing and 1 Mass Transit | gain 1 Mass Transit, +1 quality |
-| Business district | 2 Office and 1 Finance | +4 funds, +4 influence |
-| Media city | 1 Mass Media, 1 Office and 1 Culture | gain 1 Mass Media, +2 satisfaction |
-| Tech industry | 1 High Tech and 1 Heavy Industry | draw 2 cards |
+| Penthouses | 3 tier 2 or 3 Residential cards, at least 1 of them tier 3, and 1 `City Housing` | +3 quality |
+| Heavy industry | 3 tier 2 or 3 Industry cards and 1 `Heavy Industry` | +3 workforce |
+| Office district | 3 tier 2 or 3 Service cards and 1 `Office` | +3 satisfaction |
+| Public institutions | 4 tier 2 or 3 Public cards, 1 `Safety` and 1 `Education` | +2 quality, +3 influence |
+| City living | 2 `City Housing` and 1 `Luxury` | gain 1 `City Housing`, +2 quality |
+| Tech campus | 2 `High Tech` and 1 `Education` | gain 1 `High Tech`, draw 1 card |
+| Commuter city | 1 `City Housing` and 1 `Mass Transit` | gain 1 `Mass Transit`, +1 quality |
+| Business district | 2 `Office` and 1 `Finance` | +4 funds, +4 influence |
+| Media city | 1 `Mass Media`, 1 `Office` and 1 `Culture` | gain 1 `Mass Media`, +2 satisfaction |
+| Tech industry | 1 `High Tech` and 1 `Heavy Industry` | draw 2 cards |
 | Metropolis | 1 tier 3 card in each of 3 different sectors | draw 3 cards |
-| Balanced city | 3 cards of each sector and 1 Mass Transit | +4 funds, draw 2 cards |
-| Cultural capital | 8 satisfaction and 1 Culture | +3 workforce |
-| Civic leader | 2 completed projects and 1 Safety | +2 quality, +2 satisfaction |
-| High-tech economy | Income of 10 and 1 High Tech | draw 3 cards |
+| Balanced city | 3 cards of each sector and 1 `Mass Transit` | +4 funds, draw 2 cards |
+| Cultural capital | 8 satisfaction and 1 `Culture` | +3 workforce |
+| Civic leader | 2 completed projects and 1 `Safety` | +2 quality, +2 satisfaction |
+| High-tech economy | Income of 10 and 1 `High Tech` | draw 3 cards |
 
 ## The end of the game
 
@@ -476,9 +476,9 @@ from quests:
 
 | Points per count | Types |
 |---|---|
-| 2 | Suburban Housing, Low Wealth, Town Housing, Luxury, City Housing, Light Industry, Heavy Industry, High Tech, Service, Leisure, Retail, Culture, Office |
-| 3 | Raw Material, Forestry, Farm, Power Plant, Mine, Food, Sea, Utility, Mass Transit, Health, Mercantile, Beautification, Safety, Education |
-| 4 | Alcohol, Grain, Petroleum, Mass Media, Finance, Rental Space |
+| 2 | `Suburban Housing`, `Low Wealth`, `Town Housing`, `Luxury`, `City Housing`, `Light Industry`, `Heavy Industry`, `High Tech`, `Service`, `Leisure`, `Retail`, `Culture`, `Office` |
+| 3 | `Raw Material`, `Forestry`, `Farm`, `Power Plant`, `Mine`, `Food`, `Sea`, `Utility`, `Mass Transit`, `Health`, `Mercantile`, `Beautification`, `Safety`, `Education` |
+| 4 | `Alcohol`, `Grain`, `Petroleum`, `Mass Media`, `Finance`, `Rental Space` |
 
 **Winner:** players are ranked by score, and the highest score wins. Players who left the game
 come last. On a tie, the player who became done earlier in the final turn places higher; if

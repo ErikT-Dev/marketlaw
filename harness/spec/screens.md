@@ -443,14 +443,29 @@ None yet.
 
 - **S14.1** The **game menu** lists Rules, Card set and Tutorial with one line about each. During a
   game, a room or the ranked queue, Tutorial is disabled with the reason, and Rules and Card set say
-  that the clock keeps running (C1).
+  that the clock keeps running (C1). The lines: Rules "How to play, with examples", Card set "All
+  240 cards, with filters and search", Tutorial "A guided one-player game that teaches the first
+  turns", disabled "Not available while you are in a game, a room or the ranked queue". Only
+  during a game, where a clock runs, do Rules and Card set say "Your clock keeps running while
+  you read" and "… while you look" instead; in a waiting room or the ranked queue they keep their
+  lobby lines (Q159).
 - **S14.2** The **rules viewer** shows the rulebook's table of contents on the left, the current
   section on the right, links to related sections, and previous and next buttons. Opened during a
-  game, it leaves the top bar visible and repeats the time left.
+  game, it leaves the top bar visible and repeats the time left ("Your clock keeps running while
+  the rules are open." with the time left as the game shows it). The related sections are the
+  sections the current section links to, in the order they first appear, shown as "See also"
+  under the text. Section titles, in the contents, the headings, "See also" and the previous and
+  next buttons, are written as words, since they name sections. In the rulebook's text, tables
+  and score formula, every stat name (fund or funds, income, influence, workforce, quality,
+  satisfaction, product, distribution, bonus, build pass or build passes) is shown as its icon
+  (S1.6), and every type is shown as its icon; `rulebook.md` writes each type name meant as a
+  type as inline code (`` `Farm` ``), since a type name is also a sector name (Service) or part
+  of a card or quest name (Q157).
 - **S14.3** The **card set** shows cards as tiles, with filters for sector, tier and type, a name
   search, and the number of matching cards. Clicking a card opens its detail: the big card, sector
   and tier, base cost, what it gives and uses up, types including any counted twice, and every
-  combo, including whether it is infinite.
+  combo, including whether it is infinite. Opened during a game, it leaves the top bar visible
+  and repeats the time left, as the rules viewer does (S1.4).
 
 ## S15. Tutorial
 
@@ -554,3 +569,8 @@ these, the spec is followed:
   boards show the address in a text field. The removed address is explained without naming it
   (the account no longer holds it, A1.11), and the address is shown as text with its
   confirmation (Q114).
+- **The card set** board "Card set: grid" filters types with an "Any type" dropdown, and "Card
+  set: card detail" writes stats, types and combos as words ("1 Farm → +1 workforce", "None of
+  them is infinite"). Types and stats are always icons (S1.6), so the type filter is a row of
+  type icon buttons, and the detail shows stats and types as icons and marks an infinite combo
+  with its infinite mark (S14.3, Q160).

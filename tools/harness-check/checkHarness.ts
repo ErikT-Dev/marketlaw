@@ -5,6 +5,7 @@ import { checkCoveredRulesExist } from "./checkCoveredRulesExist.ts";
 import { checkFieldsDocumented } from "./checkFieldsDocumented.ts";
 import { checkNames } from "./checkNames.ts";
 import { checkRulebookLinks } from "./checkRulebookLinks.ts";
+import { checkRulebookTypes } from "./checkRulebookTypes.ts";
 import { checkScenarioFormat } from "./checkScenarioFormat.ts";
 import { checkUniqueNames } from "./checkUniqueNames.ts";
 import { HARNESS_PATHS } from "./HARNESS_PATHS.ts";
@@ -24,6 +25,7 @@ export function checkHarness(): number {
     ...checkCodesAndActions(files),
     ...checkFieldsDocumented(files),
     ...checkRulebookLinks(files),
+    ...checkRulebookTypes(files),
     ...coverage.gaps.map((rule) => ({
       file: HARNESS_PATHS.coverage,
       where: rule,

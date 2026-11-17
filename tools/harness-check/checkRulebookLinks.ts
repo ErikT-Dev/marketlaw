@@ -1,17 +1,10 @@
+import { headingAnchor } from "../../src/client/screens/rules/headingAnchor.ts";
 import type { HarnessFiles } from "./HarnessFiles.ts";
 import type { HarnessProblem } from "./HarnessProblem.ts";
 import { HARNESS_PATHS } from "./HARNESS_PATHS.ts";
 
 const HEADING = /^#{1,6} (.+)$/gm;
 const SECTION_LINK = /\]\(#([^)]+)\)/g;
-
-function headingAnchor(heading: string): string {
-  return heading
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9 -]/g, "")
-    .replace(/ /g, "-");
-}
 
 export function checkRulebookLinks(files: HarnessFiles): ReadonlyArray<HarnessProblem> {
   const anchors = new Set(

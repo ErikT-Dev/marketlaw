@@ -21,7 +21,7 @@ export function LobbyAccount(props: Props) {
   const dialogs = useAccountDialogs();
   return (
     <>
-      <LobbyTopBar>
+      <LobbyTopBar menuPlace="lobby">
         {account === null ? (
           <AccountButtons onLogIn={dialogs.openLogIn} onSignUp={() => void dialogs.openSignUp()} />
         ) : (

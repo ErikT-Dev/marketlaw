@@ -185,3 +185,12 @@ removed first; `git worktree remove --force` follows it and empties the main `no
 (including `node_modules/.cache/marketlaw/`). Restore with `npm ci`.
 **Why:** found in the phase 25 timing fix, which compared master and the branch in a worktree.
 **Enforced by:** judgment.
+
+## For `rules/workflow.md`
+
+### File names differ by more than case
+Never create a file whose name differs from an existing one only in case (`RULEBOOK.ts` beside
+`Rulebook.ts`). Windows' file system is case-insensitive: writing the new file overwrites the
+old one, and TypeScript then reports confusing "differs only in casing" errors.
+**Why:** found in phase 28, item 2; a constant file overwrote the `Rulebook` type.
+**Enforced by:** judgment · the type check.
