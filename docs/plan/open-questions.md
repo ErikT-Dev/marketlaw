@@ -3388,8 +3388,11 @@ file.
   as the type's icon; a harness check (beside `checkRulebookLinks`) fails on inline code that
   names no type. Section titles (contents, headings, "See also", previous and next) stay words,
   since they name sections; sector, card and quest names stay words. Written into S14.2 first.
-- **Implemented:** `harness/spec/screens.md` S14.2; phase 28, item 1 (the `rulebook.md` markup,
-  the check and the renderer).
+- **Implemented:** `harness/spec/screens.md` S14.2; phase 28, item 1: every type in `rulebook.md`
+  written as inline code (the type list in "The cards", the combo examples, the quest list rules
+  and tables, the bonus types table; "Service" only where it means the type), and the harness
+  check `tools/harness-check/checkRulebookTypes.ts`, which fails on inline code naming no type in
+  `cards.json`; the renderer in item 1.
 
 ## Q158. What are the rules viewer's related sections, and how is C2.4 checked?
 
