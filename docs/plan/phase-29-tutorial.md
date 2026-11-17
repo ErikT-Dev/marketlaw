@@ -95,7 +95,7 @@ These 17 scenarios are added to `harness/required.yaml` in this phase, by file a
     (269). Split them before growing them, or keep the tutorial out of them.
   - Order: 1, 2, 3, 4 in order. 5 and 6a after 3; 6b after 6a.
 
-- [ ] 1. **Tutorial engine** (T0–T5, C4.1, C4.3, C4.4, C4.5; Q161; scenarios `tutorial` #1–#7,
+- [x] 1. **Tutorial engine** (T0–T5, C4.1, C4.3, C4.4, C4.5; Q161; scenarios `tutorial` #1–#7,
   `client` #11, #12). **Large.**
   - A pure tutorial in `src/rules/`: the fixed setup of T0 (stats R2.1, the 7-card hand, quests
     T0.3, bonus types T0.4, the turn 2 marketplace) and a fixed deck order plus a fixed `Random`
@@ -116,6 +116,22 @@ These 17 scenarios are added to `harness/required.yaml` in this phase, by file a
     `actionFromStep.ts` where they fit. Item 2 moves the driver onto the room.
   - Test first: unit tests for `not_this_step` on every step kind (a card, a draw option, a
     sector, claim all, end turn, continue).
+  - Done (2026-11-17): a tutorial state wrapping `GameState` (no new `GameKind`).
+    `src/rules/tutorial/`: `TutorialState` `{ stage, game }` (stage a step id or `"complete"`);
+    `startTutorial(at)` (also Restart); `applyTutorialAction(tutorial, action, at)` takes a
+    `GameAction` or `{ type: "continue" }`, and anything but the step's action, or anything after
+    completion, is `not_this_step`; `tutorialViewFor` gives `TutorialView` `{ progress, game }`,
+    progress `{ kind: "step", step, number }` or `{ kind: "complete" }`. `TUTORIAL_STEPS` lists
+    each step's action and the cards it draws; the deck starts with those cards in that order,
+    and each step's `Random` (`tutorialRandomFor`) answers sector and tier from them (no seed).
+    Shared: `TUTORIAL_STEP_IDS`, `TutorialStepId`, `TutorialStage`, `TutorialProgress`,
+    `TutorialView`. Driver `tools/harness-runner/tutorial/` (last in `DRIVERS.ts`) passes the 9
+    item scenarios. No message changed yet, so `PROTOCOL_VERSION` is still 25.
+  - For later items: the state at a step is fully determined by the step, so the room can save
+    `TutorialState` as it is. The engine never applies time-outs to a tutorial; the room must not
+    schedule time-out alarms (`earliestDeadline`) for it. `client` #12 passes trivially in the
+    engine-level driver; item 2 makes it pass through the room. The driver maps a step's
+    `player` to seat 1.
 
 - [ ] 2. **Tutorial room** (C4.2, C4.5, C4.6, C4.8, C4.10; B6; scenarios `client` #12, #13, #14,
   #17; the item 1 scenarios through the room). **Large.**
