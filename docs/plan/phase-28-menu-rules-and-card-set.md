@@ -342,3 +342,4 @@ fails until then (not required).
 **Review.** F1 (menu said the clock runs after game over): fixed, place `game_over` with the lobby
 lines. F2 (two exports in one file): fixed, `isRulebookListStart.ts`. F3 (design differences only
 in Progress): fixed, S17 entry and Q160.
+| Releaser | Sonnet, low | 10 | 100k | 33 | done (resumed once after the usage limit) |
