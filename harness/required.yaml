@@ -127,6 +127,7 @@ scenarios:
     - a main-phase action after the player's time ran out is accepted while another player is still playing
     - in a casual game time-outs in a row do not count as leaving the game
     - in a casual game a player whose time runs out is told they can keep playing
+    - a game paused for 24 hours is abandoned
   visibility:
     - other players' hands are shown only as a number of cards
     - a player sees their own hand
@@ -449,6 +450,7 @@ scenarios:
     - a player's actions in a game are added to the daily count when the game ends
     - the ranked queue makes no match while the site game limit is reached
     - the ranked queue makes its matches at midnight UTC after the site game limit
+    - anyone can see the players online with their status and rating
   chat:
     - a message is seen by everyone in the room and notifies the others
     - a player sees only messages sent since they joined
@@ -470,6 +472,16 @@ scenarios:
     - game records always show the current username
     - the match history lists games newest first with a short overview
     - email addresses and queue members are never shown to other players
+    - the ranking table lists registered users with a ranked game by rating
+    - the ranking table shows 50 players per page and can jump to the player's position
+    - three new players change rating by 20 0 and minus 20
+    - rating changes use each player's own k and the ratings before the game
+    - a rating difference over 400 counts as 400
+    - a player who ever reached 2400 uses k 5
+    - two new players in a 2 player ranked game change rating by 20 and minus 20
+    - four new players in a 4 player ranked game change rating by 20 7 minus 7 and minus 20
+    - a player who left is placed below the players who stayed for ratings
+    - an abandoned game leaves ratings unchanged
 invariants:
   - I1
   - I2
