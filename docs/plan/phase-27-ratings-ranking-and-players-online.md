@@ -424,3 +424,30 @@ each helper's conversation size at its end.
 | Phase reviewer (resumed after the usage limit) | Opus, medium | 3 after resume | 149k | 17 after resume | done: F3 to F6 |
 | Fixer, F3, F4, F6 | Opus, medium | 9 | 121k | 46 | done |
 | Fixer, F1, F2, F5 | Opus, medium | 15 | 94k | 48 | done |
+
+## Report
+
+**Built.** ELO ratings (A10.4 k rules) are computed for all players of a ranked game at once from
+the ratings before the game and saved with the game record (D1 migration `0014_ratings.sql`). The
+end screen shows rating changes, the ranking table lists everyone who has played a ranked game (50
+per page, Jump to me, own row highlighted), and the lobby and the waiting room show players online
+with status and rating. The rating calculation check is built.
+
+**What to try.** On the live site, play a ranked game with two registered test accounts; see the
+rating change on the end screen, find both accounts in the ranking table (Jump to me), and see the
+new ratings in players online.
+
+**Checks.** Local `npm run check` and `npm run harness` green on the final code (490 scenarios, 0
+problems; bundle 164.59 kB gzipped of 300). The 12 phase scenarios are required. The branch check
+and deploy results are in the commits that mark the phase done.
+
+**Differences from the phase file.** Players online is also shown in the room after the game, and
+the own ranking row is highlighted whenever it is on the page (F5; written into S11.4 and S13.3).
+
+**Decisions.** Q152 to Q154 and the notes under them; see `open-questions.md`.
+
+**Review findings.** F1 (contrast of "in a game" text): fixed with a lighter text token. F2
+(idle client frame count): answered, 2 is right (identify message of the lobby socket), test updated.
+F3 (ratings sent to the lobby were not the stored ones): fixed, stored ratings are read back after
+the save. F4 (deleted account got a ratings row): fixed with `WHERE EXISTS`. F5 (undocumented
+differences): fixed in the spec. F6 (several exports per file): fixed, one file per list.
