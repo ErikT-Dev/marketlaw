@@ -60,6 +60,7 @@ describe("usernames that open match histories", () => {
         viewer={2}
         playerNames={["Ann", "Bea", "Cy"]}
         playerIds={[1, 2, 3].map(testPlayerIdOf)}
+        ratings={null}
       />,
     );
     expect(hrefOf(screen.getByRole("link", { name: "Cy" }))).toBe(historyOf(3));

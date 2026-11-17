@@ -50,6 +50,7 @@ function seat(seatNumber: number, player: unknown, changes: Readonly<Record<stri
     comboGains: { workforce: 9, quality: 11, satisfaction: 7 },
     typeCounts: { Farm: 3 },
     player,
+    rating: null,
     ...changes,
   };
 }
@@ -212,6 +213,39 @@ describe("the game record page", () => {
     expect(within(table).getAllByRole("img", { name: "Farm 3" })).toHaveLength(3);
     expect(within(table).getAllByRole("img", { name: "Workforce +9" })).toHaveLength(3);
     expect(page.textContent).toContain("Players who left are scored with their values");
+  });
+
+  it("shows each player's rating before and its change in a ranked game", async () => {
+    const [bea, ann, left] = RECORD.record.seats;
+    const ranked = {
+      ...RECORD,
+      record: {
+        ...RECORD.record,
+        kind: "ranked",
+        seats: [
+          { ...bea, rating: { before: 1000, change: 20 } },
+          { ...ann, rating: { before: 1043, change: 0 } },
+          { ...left, rating: { before: 1188, change: -20 } },
+        ],
+      },
+    };
+    serverAnswers({ [`/api/records/${NEWER_GAME}`]: ranked });
+    render(<RecordsPage page={{ kind: "record", gameId: NEWER_GAME }} viewerId={ANN} />);
+    const table = await screen.findByRole("table", { name: "Players" });
+    expect(within(table).getByRole("row", { name: /^Rating before/ }).textContent).toBe(
+      "Rating before100010431188",
+    );
+    expect(within(table).getByRole("row", { name: /^Rating change/ }).textContent).toBe(
+      "Rating change+200−20",
+    );
+  });
+
+  it("shows no rating rows in a casual game", async () => {
+    serverAnswers({ [`/api/records/${NEWER_GAME}`]: RECORD });
+    render(<RecordsPage page={{ kind: "record", gameId: NEWER_GAME }} viewerId={ANN} />);
+    const table = await screen.findByRole("table", { name: "Players" });
+    expect(within(table).queryByRole("rowheader", { name: "Rating before" })).toBeNull();
+    expect(within(table).queryByRole("rowheader", { name: "Rating change" })).toBeNull();
   });
 
   it("says when a game record does not exist", async () => {

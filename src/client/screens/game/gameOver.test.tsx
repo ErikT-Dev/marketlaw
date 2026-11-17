@@ -76,6 +76,39 @@ describe("end-of-game screen", () => {
     expect(dialog.textContent).toContain("Nobody reached the end goal by turn 24");
   });
 
+  it("says a casual game leaves ratings unchanged and shows no rating column", () => {
+    showResult({ endedBy: "turn_limit", places: [place(2, 40), place(1, 12)] });
+    const dialog = screen.getByRole("dialog", { name: "Bea wins!" });
+    expect(dialog.textContent).toContain("Casual game: ratings do not change.");
+    expect(within(dialog).queryByRole("columnheader", { name: "Rating" })).toBeNull();
+  });
+
+  it("shows every player's rating before and after a ranked game", () => {
+    const update = roomUpdateWith({
+      phase: "ended",
+      turn: 40,
+      result: { endedBy: "turn_limit", places: [place(3, 402), place(2, 389), place(1, 12)] },
+    });
+    const ratings = [
+      { seat: 1 as const, before: 1000, after: 980 },
+      { seat: 2 as const, before: 1000, after: 1000 },
+      { seat: 3 as const, before: 1000, after: 1020 },
+    ];
+    render(<GamePage {...gamePageProps({ ...update, room: { ...update.room, ratings } })} />);
+    const dialog = screen.getByRole("dialog", { name: "Cy wins!" });
+    expect(dialog.textContent).toContain("Ranked game: ratings changed.");
+    expect(dialog.textContent).not.toContain("Casual game");
+    expect(within(dialog).getByRole("columnheader", { name: "Rating" })).toBeTruthy();
+    const ratingCells = within(dialog)
+      .getAllByRole("row")
+      .slice(1)
+      .map((row) => within(row).getAllByRole("cell").at(-1)?.textContent);
+    expect(ratingCells).toEqual(["1000 → 1020 (+20)", "1000 → 1000 (0)", "1000 → 980 (−20)"]);
+    expect(dialog.textContent).toContain(
+      "Each pair of players counts as one result. A rematch of a ranked game is casual.",
+    );
+  });
+
   it("exits to the lobby, closes to the room and has no rematch button when none is possible", () => {
     const props = showResult(END_GOAL);
     expect(screen.queryByRole("button", { name: "Ask for a rematch" })).toBeNull();

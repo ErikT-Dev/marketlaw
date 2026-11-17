@@ -51,6 +51,7 @@ export function RoomAfterGamePage(props: Props) {
           viewer={viewer}
           playerNames={room.playerNames}
           playerIds={room.playerIds}
+          ratings={room.ratings}
           onExitToLobby={props.onLeave}
           onClose={() => {
             setIsResultShown(false);

@@ -27,6 +27,8 @@ export const BOARD_VALUES: Readonly<Record<string, string>> = {
   "--color-board-toast-warning": "#451a03",
   "--color-board-timer-low": "#3f1d24",
   "--color-board-pending": "rgba(0, 0, 0, 0.6)",
+  "--color-board-rating-gain": "#86efac",
+  "--color-board-rating-loss": "#fca5a5",
   "--color-board-shuffle-text": "#fcd34d",
   "--color-board-trade": "#4c1d95",
   "--color-board-trade-off": "#2b2840",

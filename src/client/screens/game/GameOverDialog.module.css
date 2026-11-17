@@ -41,3 +41,11 @@
   gap: var(--space-sm);
   margin-top: var(--space-md);
 }
+
+.table td.ratingGain {
+  color: var(--color-board-rating-gain);
+}
+
+.table td.ratingLoss {
+  color: var(--color-board-rating-loss);
+}

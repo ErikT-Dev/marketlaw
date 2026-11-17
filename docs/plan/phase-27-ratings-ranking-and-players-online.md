@@ -158,7 +158,7 @@ These 12 scenarios are added to `harness/required.yaml` in this phase, by file a
     `ratingBeforeGameOf` and `recordPlayersOf`. Item 5a's ratings come from the same
     `ratings` table (`NEW_PLAYER_RATING` when there is no row).
 
-- [ ] 3. **Ratings shown after the game** (S9.5's ranked columns, S13.2 and A3.2's rating
+- [x] 3. **Ratings shown after the game** (S9.5's ranked columns, S13.2 and A3.2's rating
   fields; Q154; design board "End: turn limit, ranked"). **Large.**
   - The room's message carries, for an ended ranked game, each seat's rating before and after
     (from the ratings kept in the room record and item 1's functions; public, not hidden
@@ -169,6 +169,21 @@ These 12 scenarios are added to `harness/required.yaml` in this phase, by file a
     (`gameRecordResponseOf`).
   - Tests: component tests for both tables; a screenshot of a ranked end screen if the browser
     tests already reach one (phase 26's ranked queue tests), else a note for the finisher.
+  - Done (2026-11-17): `RoomView.ratings` (`SeatRatingView`s `{ seat, before, after }` for an
+    ended ranked game with a record, else `null`; `seatRatingsOf` from `storedGameRecordOf`);
+    `PROTOCOL_VERSION` 24. `GameOverDialog`, `GameOverTable` and `gameOverTexts` take the
+    ratings: a ranked game says "Ranked game: ratings changed." and adds the design's note "Each
+    pair of players counts as one result. A rematch of a ranked game is casual." The game record's
+    seats gain `rating` (`RatingChange` `{ before, change }` or `null`; `gameRecordResponseOf`),
+    shown as the rows "Rating before" and "Rating change" after "Place and result" in a ranked
+    game (`gameRecordRowsOf`). `ratingChangeText` writes +20, 0, −20. New colour tokens
+    `--color-board-rating-gain` and `-loss` (`BOARD_VALUES.ts`, `tokens.css`).
+  - Differs: the end-of-game table has one "Rating" column, "1000 → 1020 (+20)" coloured by the
+    change, as the design board shows, not two columns; it still shows the rating before and
+    after (S9.5).
+  - For the finisher: no browser test reaches the end of a ranked game (the ranked queue test
+    stops after the match starts, `leaving.spec.ts`'s ranked game is abandoned), so there is no
+    ranked end-screen screenshot.
 
 - [ ] 4a. **Ranking table on the server** (A5.1 to A5.4, A6.2; Q153; scenarios
   `records-and-ratings` #6, #7). **Large.**

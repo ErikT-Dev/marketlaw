@@ -81,6 +81,7 @@ const ROOM_UPDATE_TEXT = JSON.stringify({
       mySeat: null,
       asking: null,
       deletionAt: null,
+      ratings: null,
     },
     game: null,
   },

@@ -1,6 +1,7 @@
 import type { PlayerId } from "../../../shared/PlayerId";
 import type { GameResult } from "../../../shared/GameResult";
 import type { SeatNumber } from "../../../shared/SeatNumber";
+import type { SeatRatingView } from "../../../shared/protocol/SeatRatingView";
 import { Button } from "../../components/Button";
 import type { ChatBinding } from "../chat/ChatBinding";
 import { RoomChatSection } from "../chat/RoomChatSection";
@@ -13,6 +14,7 @@ type Props = {
   readonly viewer: SeatNumber;
   readonly playerNames: ReadonlyArray<string>;
   readonly playerIds: ReadonlyArray<PlayerId>;
+  readonly ratings: ReadonlyArray<SeatRatingView> | null;
   readonly onExitToLobby: () => void;
   readonly onCloseResult: () => void;
   readonly onAskRematch: (() => void) | null;
@@ -48,6 +50,7 @@ export function LeftGamePage(props: Props) {
           viewer={viewer}
           playerNames={playerNames}
           playerIds={props.playerIds}
+          ratings={props.ratings}
           onExitToLobby={onExitToLobby}
           onClose={props.onCloseResult}
           onAskRematch={props.onAskRematch}

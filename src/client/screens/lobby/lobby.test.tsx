@@ -51,6 +51,7 @@ function room(changes: Partial<RoomView> = {}): RoomView {
     mySeat: null,
     asking: null,
     deletionAt: null,
+    ratings: null,
     ...changes,
   };
 }

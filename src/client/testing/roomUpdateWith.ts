@@ -102,6 +102,7 @@ export function roomUpdateWith(
       mySeat: 2,
       asking: null,
       deletionAt: null,
+      ratings: null,
     },
     game: { stateVersion: 1, view, awaySeats: [] },
   };

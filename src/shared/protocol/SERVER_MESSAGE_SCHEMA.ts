@@ -151,6 +151,7 @@ export const SERVER_MESSAGE_SCHEMA = v.variant("type", [
           }),
         ),
         deletionAt: v.nullable(EpochMs),
+        ratings: v.nullable(v.array(v.object({ seat: SEAT, before: COUNT, after: COUNT }))),
       }),
       game: v.nullable(
         v.object({ stateVersion: COUNT, view: PLAYER_VIEW, awaySeats: v.array(SEAT) }),

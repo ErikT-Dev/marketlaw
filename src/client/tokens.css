@@ -47,6 +47,8 @@
   --color-board-pending: rgba(0, 0, 0, 0.6);
   --color-board-phase-chip-text: #ddd6fe;
   --color-board-phase-chip: #3b2a6b;
+  --color-board-rating-gain: #86efac;
+  --color-board-rating-loss: #fca5a5;
   --color-board-shuffle-text: #fcd34d;
   --color-board-timer-low: #3f1d24;
   --color-board-toast-error: #4c1414;
