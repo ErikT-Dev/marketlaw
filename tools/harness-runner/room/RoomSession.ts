@@ -130,6 +130,9 @@ export class RoomSession {
       names.map((name) => [name, { playerId: v.parse(PlayerId, randomUUID()), name }]),
     );
     const players = this.seatNames.map((name) => this.identityNamed(name));
+    this.accounts.forEach(({ playerId }) => {
+      this.records.addPlayer(playerId);
+    });
     checkOwnerIsFirst(given, this.seatNames);
     this.givenRatings = givenRatingsOf(given, (name) => this.identityNamed(name));
     this.givenRatings.forEach((rating) => {

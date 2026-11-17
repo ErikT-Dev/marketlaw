@@ -1,12 +1,14 @@
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import { DatabaseSync } from "node:sqlite";
 import type { MemoryGameRecords } from "./MemoryGameRecords.ts";
 import { memoryReadStatementOf } from "./memoryReadStatementOf.ts";
 import { memoryStatementOf } from "./memoryStatementOf.ts";
 
-const MIGRATIONS = ["0012_game_records.sql", "0014_ratings.sql"].map(
-  (file) => new URL(`../../../migrations/${file}`, import.meta.url),
-);
+const MIGRATION_FOLDER = new URL("../../../migrations/", import.meta.url);
+const MIGRATIONS = readdirSync(MIGRATION_FOLDER)
+  .filter((file) => file.endsWith(".sql"))
+  .sort()
+  .map((file) => new URL(file, MIGRATION_FOLDER));
 
 function countOf(sqlite: DatabaseSync, table: string): number {
   const counted = sqlite.prepare(`SELECT COUNT(*) AS counted FROM ${table}`).get()?.["counted"];
@@ -33,6 +35,11 @@ export function memoryGameRecordDatabase(): MemoryGameRecords {
       players: countOf(sqlite, "game_record_players"),
       ratings: countOf(sqlite, "ratings"),
     }),
+    addPlayer: (playerId) => {
+      sqlite
+        .prepare("INSERT INTO players (id, name, created_ms) VALUES (?, ?, 0)")
+        .run(playerId, playerId);
+    },
     giveRating: ({ playerId, rating, rankedGames, highestRating }) => {
       sqlite
         .prepare(

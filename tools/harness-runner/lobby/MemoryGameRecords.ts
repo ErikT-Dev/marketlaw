@@ -8,6 +8,7 @@ export type MemoryGameRecords = {
   readonly database: GameRecordDatabase;
   readonly reader: RecordReadDatabase;
   readonly rowCounts: () => Readonly<Record<"records" | "players" | "ratings", number>>;
+  readonly addPlayer: (playerId: PlayerId) => void;
   readonly giveRating: (rating: PlayerRatingBeforeGame) => void;
   readonly ratingOf: (playerId: PlayerId) => RatingBeforeGame | null;
 };

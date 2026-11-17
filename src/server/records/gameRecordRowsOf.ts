@@ -10,7 +10,8 @@ const INSERT_PLAYER =
 const STARTING = String(RATING_RULES.startingRating);
 const ADD_RATING_CHANGE =
   "INSERT INTO ratings (player_id, rating, ranked_games, highest_rating) " +
-  `VALUES (?, ${STARTING} + ?, 1, MAX(${STARTING}, ${STARTING} + ?)) ` +
+  `SELECT ?, ${STARTING} + ?, 1, MAX(${STARTING}, ${STARTING} + ?) ` +
+  "WHERE EXISTS (SELECT 1 FROM players WHERE id = ?) " +
   "ON CONFLICT (player_id) DO UPDATE SET rating = rating + ?, " +
   "ranked_games = ranked_games + 1, highest_rating = MAX(highest_rating, rating + ?)";
 
@@ -20,7 +21,7 @@ function ratingRowsOf({ playerId, rating }: RecordPlayer): ReadonlyArray<GameRec
     : [
         {
           query: ADD_RATING_CHANGE,
-          values: [playerId, rating.change, rating.change, rating.change, rating.change],
+          values: [playerId, rating.change, rating.change, playerId, rating.change, rating.change],
         },
       ];
 }

@@ -83,6 +83,9 @@ describe("saving game records", () => {
     if (record === null || winnerId === undefined) {
       throw new Error("the ended game has no record");
     }
+    game.seats.forEach(({ playerId }) => {
+      records.addPlayer(playerId);
+    });
     records.giveRating({ playerId: winnerId, rating: 2395, rankedGames: 40, highestRating: 2395 });
     await saveGameRecord(records.database, v.parse(GameId, crypto.randomUUID()), record);
     expect(records.rowCounts()).toEqual({ records: 1, players: 3, ratings: 3 });
@@ -91,6 +94,22 @@ describe("saving game records", () => {
       rankedGames: 41,
       highestRating: 2415,
     });
+  });
+
+  it("gives no rating to a player whose account was deleted during a ranked game", async () => {
+    const records = memoryGameRecordDatabase();
+    const game = rankedGame(endedGame());
+    const record = storedGameRecordOf(game);
+    if (record === null) {
+      throw new Error("the ended game has no record");
+    }
+    const [deleted, ...kept] = game.seats.map(({ playerId }) => playerId);
+    kept.forEach((playerId) => {
+      records.addPlayer(playerId);
+    });
+    await saveGameRecord(records.database, v.parse(GameId, crypto.randomUUID()), record);
+    expect(records.rowCounts()).toEqual({ records: 1, players: 3, ratings: 2 });
+    expect(deleted === undefined ? undefined : records.ratingOf(deleted)).toBe(null);
   });
 
   it("keeps no record of an abandoned game", () => {
