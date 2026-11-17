@@ -6,6 +6,9 @@ import { LazyPrivacyNoticePage } from "./screens/privacy/LazyPrivacyNoticePage";
 import { usePrivacyNoticeOpen } from "./screens/privacy/usePrivacyNoticeOpen";
 import { LazyRecordsPage } from "./screens/records/LazyRecordsPage";
 import { useRecordPage } from "./screens/records/useRecordPage";
+import { runningGameClockOf } from "./screens/game/runningGameClockOf";
+import { LazyRulesPage } from "./screens/rules/LazyRulesPage";
+import { useRulesPage } from "./screens/rules/useRulesPage";
 import { RoomNotFoundDialog } from "./screens/lobby/RoomNotFoundDialog";
 import type { ClientStore } from "./store/ClientStore";
 
@@ -27,14 +30,23 @@ export function App({ store }: Props) {
     store.subscribe,
     () => store.getSnapshot().session?.token ?? null,
   );
+  const update = useSyncExternalStore(store.subscribe, () => store.getSnapshot().update);
+  const serverClockOffsetMs = useSyncExternalStore(
+    store.subscribe,
+    () => store.getSnapshot().serverClockOffsetMs,
+  );
   const isPrivacyNoticeOpen = usePrivacyNoticeOpen();
   const recordPage = useRecordPage();
+  const rulesPage = useRulesPage();
   return (
     <>
       <p className={styles["tooSmall"]}>
         Please use a larger screen: MarketLaw needs at least 1280 pixels of width.
       </p>
-      <div className={styles["app"]} inert={isPrivacyNoticeOpen || recordPage !== null}>
+      <div
+        className={styles["app"]}
+        inert={isPrivacyNoticeOpen || recordPage !== null || rulesPage !== null}
+      >
         {notice === null ? null : (
           <p role="alert" className={styles["notice"]}>
             {notice}
@@ -45,6 +57,12 @@ export function App({ store }: Props) {
         <EmailDialogIfOpen store={store} />
       </div>
       {isPrivacyNoticeOpen ? <LazyPrivacyNoticePage /> : null}
+      {rulesPage === null ? null : (
+        <LazyRulesPage
+          address={rulesPage}
+          gameClock={runningGameClockOf(update, serverClockOffsetMs)}
+        />
+      )}
       {recordPage === null ? null : (
         <LazyRecordsPage
           key={window.location.hash}

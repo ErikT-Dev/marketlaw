@@ -144,7 +144,19 @@ These 9 scenarios are added to `harness/required.yaml` in this phase, by file an
     section per listed R rule, in order, matched against `game-rules.md`'s `## R<n>.`
     headings; Q158).
 
-- [ ] 2. **Rules viewer page** (C2.1 to C2.3, S14.2; Q156, Q158). **Large.**
+- [x] 2. **Rules viewer page** (C2.1 to C2.3, S14.2; Q156, Q158). **Large.**
+  - Done (2026-11-17). Hashes settled: `#rules` (opens the first section) and
+    `#rules/<section-anchor>`; an unknown anchor shows the first section. Links between
+    sections, the contents, "See also" and previous/next replace the history entry
+    (`location.replace`), so Back and Escape close the rules in one step wherever the reader
+    went. The rulebook's introduction is shown above the first section. Section links carry an
+    absolute URL, since axe's skip-link rule fails `#…` links scrolled out of view. The page is
+    rendered by `App.tsx` (like the records pages); during a game (`runningGameClockOf`: a game
+    without a result, own seat not left) it starts below the 56 px top bar.
+  - For later items: reuse `screens/game/RunningGameClock.ts`, `runningGameClockOf(update,
+    offset)` and `ClockKeepsRunningNote` (text + the game's `YourClock`, role `note`) for the
+    card set; open the rules with `RULES_HASH` (`screens/rules/RULES_HASH.ts`). The browser
+    spec file is `e2e/rulesAndCardSet.spec.ts` (opens pages by setting `location.hash`).
   - The lazy page: contents on the left, the current section on the right with its text, "See
     also" links, previous and next buttons (none before the first or after the last section),
     links between sections, Back and Escape as on the other overlay pages. Rendered from item

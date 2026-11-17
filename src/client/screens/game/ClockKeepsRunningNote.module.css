@@ -1,0 +1,12 @@
+.note {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-md);
+  background: var(--color-board-email-pending);
+  color: var(--color-board-email-pending-text);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+}
