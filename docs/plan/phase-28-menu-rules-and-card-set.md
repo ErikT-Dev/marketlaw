@@ -289,3 +289,4 @@ each helper's conversation size at its end.
 | Builder, item 3 | Opus, medium | 14 | 155k | 68 | done |
 | Builder, item 4 | Opus, medium | 13 | 143k | 65 | done |
 | Builder, item 5 | Opus, medium | 29 | 177k | 94 | done |
+| Finisher | Sonnet, medium | 30 | 86k | 38 | done |
