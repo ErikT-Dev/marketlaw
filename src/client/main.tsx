@@ -4,6 +4,7 @@ import { App } from "./App";
 import { openLobbyFeed } from "./openLobbyFeed";
 import { openQueueFeed } from "./openQueueFeed";
 import { openRoomHost } from "./openRoomHost";
+import { keepCardSetInsideApp } from "./screens/cardSet/keepCardSetInsideApp";
 import { keepPrivacyNoticeInsideApp } from "./screens/privacy/keepPrivacyNoticeInsideApp";
 import { keepRecordPageInsideApp } from "./screens/records/keepRecordPageInsideApp";
 import { keepRulesPageInsideApp } from "./screens/rules/keepRulesPageInsideApp";
@@ -20,6 +21,7 @@ if (linkedSession !== null || emailLink !== null) {
 keepPrivacyNoticeInsideApp();
 keepRecordPageInsideApp();
 keepRulesPageInsideApp();
+keepCardSetInsideApp();
 const store = new ClientStore(openRoomHost, openLobbyFeed, openQueueFeed);
 if (linkedSession !== null) {
   void store.startFromSeatLink(linkedSession, () =>

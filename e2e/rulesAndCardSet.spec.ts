@@ -3,13 +3,17 @@ import { expectScreenFits } from "./expectScreenFits";
 import { openLobby } from "./openLobby";
 import { startTestRoom } from "./startTestRoom";
 
-async function openRulesByLink(page: Page, hash: string) {
-  await page.evaluate((rulesHash) => {
-    window.location.hash = rulesHash;
+async function openPageByLink(page: Page, hash: string, title: string) {
+  await page.evaluate((pageHash) => {
+    window.location.hash = pageHash;
   }, hash);
-  const rules = page.getByRole("dialog", { name: "Rules" });
-  await expect(rules).toBeVisible();
-  return rules;
+  const opened = page.getByRole("dialog", { name: title });
+  await expect(opened).toBeVisible();
+  return opened;
+}
+
+async function openRulesByLink(page: Page, hash: string) {
+  return openPageByLink(page, hash, "Rules");
 }
 
 test("a visitor reads the rules section by section and goes back to the lobby", async ({
@@ -67,4 +71,43 @@ test("the rules opened during a game leave the top bar visible and repeat the ti
   await rules.getByRole("button", { name: "Back" }).click();
   await expect(rules).toBeHidden();
   await expect(page.getByRole("button", { name: "Leave game" })).toBeVisible();
+
+  const cardSet = await openPageByLink(page, "#card-set", "Card set");
+  await expect(turn).toBeVisible();
+  await expect(cardSet.getByRole("note")).toContainText(
+    "Your clock keeps running while the card set is open.",
+  );
+  await page.keyboard.press("Escape");
+  await expect(cardSet).toBeHidden();
+});
+
+test("a visitor filters and searches the card set", async ({ browser, viewport }, testInfo) => {
+  const visitor = await openLobby(browser, "Cards Ann", viewport ?? undefined);
+  const cardSet = await openPageByLink(visitor.page, "#card-set", "Card set");
+  const tiles = cardSet.getByRole("list", { name: "Cards" }).getByRole("listitem");
+  await expect(tiles).toHaveCount(240);
+  await expect(cardSet.getByRole("status")).toHaveText("240 cards match");
+  await expectScreenFits(visitor.page, "card-set", testInfo);
+
+  await cardSet
+    .getByRole("group", { name: "Sector" })
+    .getByRole("button", { name: "Public" })
+    .click();
+  await cardSet.getByRole("group", { name: "Tier" }).getByRole("button", { name: "1" }).click();
+  await cardSet
+    .getByRole("group", { name: "Type" })
+    .getByRole("button", { name: "Safety" })
+    .click();
+  await expect(tiles).toHaveCount(2);
+  await expect(cardSet.getByRole("status")).toHaveText("2 cards match");
+
+  await cardSet.getByRole("group", { name: "Sector" }).getByRole("button", { name: "All" }).click();
+  await cardSet.getByRole("group", { name: "Tier" }).getByRole("button", { name: "All" }).click();
+  await cardSet.getByRole("group", { name: "Type" }).getByRole("button", { name: "All" }).click();
+  await cardSet.getByRole("searchbox", { name: "Search by card name" }).fill("row house");
+  await expect(tiles).toHaveText([/Row House/, /Modern Row House/, /Tall Row Houses/]);
+
+  await cardSet.getByRole("button", { name: "Back" }).click();
+  await expect(cardSet).toBeHidden();
+  await expect(visitor.page.getByRole("button", { name: "Create room" })).toBeVisible();
 });

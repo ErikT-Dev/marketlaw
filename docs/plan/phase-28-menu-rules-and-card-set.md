@@ -169,8 +169,29 @@ These 9 scenarios are added to `harness/required.yaml` in this phase, by file an
     the three sizes with `expectScreenFits` screenshots `rules-viewer` (from the lobby) and
     `rules-during-game`.
 
-- [ ] 3. **Card set grid, filters and search** (C3.1, C3.2, C3.4, S14.3; scenarios `client` #6,
+- [x] 3. **Card set grid, filters and search** (C3.1, C3.2, C3.4, S14.3; scenarios `client` #6,
   #7, #8). **Large.**
+  - Done (2026-11-17). Hash `#card-set` (`screens/cardSet/CARD_SET_HASH.ts`,
+    `useCardSetOpen`, `keepCardSetInsideApp` in `main.tsx`); rendered by `App.tsx` like the
+    rules page. Differs from the phase file and design: tiles show no photo (the design's
+    tiles have none), so nothing needs `loading="lazy"`; the type filter is a row of type icon
+    buttons (S1.6 forbids type words, so not the design's "Any type ▾" dropdown); the panel
+    scrolls with the title, search, filters and count kept at the top (sticky), since axe
+    requires a scrolling list to hold focusable content and the tiles are not yet buttons.
+    Tiles sit on a solid `--color-background-game-window` underlay with white text: on the
+    solid overlay axe measured Service tier 1 tiles at 2.96:1 (the game hides this behind the
+    photo, see proposed-rules "Text colours are checked on solid backgrounds").
+  - For later items: `cardsMatching(cards, filter)` with `CardSetFilter` (`sector`, `tier`,
+    `type`, `nameText`, all-cards `ANY_CARD`); the filter state lives in `CardSetPage`'s
+    `useState`, so item 4 must keep `CardSetPage` mounted for `#card-set/<card>` (extend
+    `useCardSetOpen`/`keepCardSetInsideApp` to that hash) to keep the filters. Tiles are
+    `li`s named by the card (`CardSetGrid.tsx`); item 4 turns them into buttons and adds
+    "click a card to see everything about it" to the count line. Filter groups are
+    `role="group"` named Sector, Tier, Type with `aria-pressed` buttons. Client driver steps
+    `open_card_set`, `filter_cards`, `search_cards` and then `card_set` (`count`, `cards`);
+    `client` #6 to #8 pass with them added to `required.yaml` locally. Browser test "a
+    visitor filters and searches the card set" (screenshot `card-set`) in
+    `e2e/rulesAndCardSet.spec.ts`, plus a card set clock-line check in the game test.
   - Pure functions: the matching cards for a sector, tier, type (any of `type1`–`type5` and the
     double types) and name text (case-insensitive part of the card name: #8 expects "row house"
     to find "Tall Row Houses"), in `cards.json` order. Client driver steps `open_card_set`,
