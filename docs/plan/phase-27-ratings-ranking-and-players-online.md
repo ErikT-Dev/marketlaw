@@ -185,7 +185,7 @@ These 12 scenarios are added to `harness/required.yaml` in this phase, by file a
     stops after the match starts, `leaving.spec.ts`'s ranked game is abandoned), so there is no
     ranked end-screen screenshot.
 
-- [ ] 4a. **Ranking table on the server** (A5.1 to A5.4, A6.2; Q153; scenarios
+- [x] 4a. **Ranking table on the server** (A5.1 to A5.4, A6.2; Q153; scenarios
   `records-and-ratings` #6, #7). **Large.**
   - A route (`src/server/api/rankingRoute.ts`, beside `matchHistoryRoute.ts`): page N (from 1,
     50 per page, A5.4), or Jump to me with the session token (the page holding the player's
@@ -200,6 +200,22 @@ These 12 scenarios are added to `harness/required.yaml` in this phase, by file a
     get their `ranking_place`); the step `open_ranking` for a `visitor` or a `player`, with
     `jump_to_me`; `then.ranking` (the first page's entries) and `then.ranking_page` (`page`,
     `first_place`, `last_place`, `shows`). Reuse `memoryReadStatementOf` for the D1 reads.
+  - Done (2026-11-17): `POST /api/ranking` (`rankingRoute`) with `RankingRequest`
+    `{ token: SessionToken | null, page: number from 1 | "mine" }` (a POST so the token stays out
+    of the address); reply `RankingResponse` `{ page, pageCount, entries: RankingEntry[],
+    standing }`, `RankingStanding` `placed {place}` | `logged_out` | `guest` | `no_ranked_game`
+    (all in `src/shared/api/`). `rankingOf` (viewer from `findSessionAccount`, which gives
+    guest or registered) and `readRankingRows`: one query (`ROW_NUMBER()` over `ratings` joined
+    with registered `players`, `ranked_games > 0`, ordered rating, ranked games, `name_key`)
+    returns the shown page and the viewer's own row. A page past the last shows the last page;
+    "mine" for a viewer not in the table shows page 1; an empty table is page 1 of 1 with no
+    entries. Route test `tools/route-tests/rankingRoute.test.ts` (real D1). Lobby driver:
+    `LobbyRanking` (a memory SQLite with every migration, the session's accounts as `players`
+    and the given ratings, `givenRankingRatingsOf`), `runRecordsStep` and `recordsThen` (the match
+    history step and thens moved there from `LOBBY_DRIVER.ts`, which is at its line limit).
+    No socket message changed (no `PROTOCOL_VERSION` change).
+  - For later items: 4b posts `{ token, page }` to `/api/ranking` (`token: null` when logged
+    out) and shows S13.3's texts from `standing`; the pager's places come from the entries.
 
 - [ ] 4b. **Ranking page in the client** (S13.3, S10.1's ELO ranking; design boards "Records: ELO
   ranking" and "Records: not in the ranking yet"). **Large.**

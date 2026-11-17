@@ -61,12 +61,16 @@ export const LOBBY_GIVEN_SCHEMA = v.strictObject({
         games_started_today: v.optional(v.number()),
         emails_today: v.optional(v.number()),
         games: v.optional(v.number()),
+        rating: v.optional(v.number()),
+        ranked_games: v.optional(v.number()),
+        ranking_place: v.optional(v.number()),
       }),
     ),
   ),
   room: v.optional(GIVEN_ROOM),
   other_rooms: v.optional(v.array(GIVEN_ROOM)),
   records: v.optional(v.array(GIVEN_RECORD)),
+  ranked_accounts: v.optional(v.number()),
   queue: v.optional(
     v.array(
       v.union([

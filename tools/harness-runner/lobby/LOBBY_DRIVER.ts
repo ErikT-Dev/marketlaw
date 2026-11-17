@@ -23,7 +23,9 @@ import { setNewPasswordInLobby } from "./setNewPasswordInLobby.ts";
 import { changeEmailInLobby } from "./changeEmailInLobby.ts";
 import { deleteAccountInLobby } from "./deleteAccountInLobby.ts";
 import { LOBBY_NESTED_FIELDS } from "./LOBBY_NESTED_FIELDS.ts";
-import { matchHistoryThen } from "./matchHistoryThen.ts";
+import { LobbyRanking } from "./LobbyRanking.ts";
+import { RECORDS_THEN_FIELDS, recordsThen } from "./recordsThen.ts";
+import { RECORDS_ACTIONS, runRecordsStep } from "./runRecordsStep.ts";
 import { removeUnusedGuestsInLobby } from "./removeUnusedGuestsInLobby.ts";
 import { runQueueStep } from "./runQueueStep.ts";
 import { waitWithQueue } from "./waitWithQueue.ts";
@@ -129,12 +131,18 @@ async function runVisitorStep(
   }
 }
 
-async function runStep(session: LobbySession, step: ScenarioStep): Promise<void> {
+async function runStep(
+  session: LobbySession,
+  ranking: LobbyRanking,
+  step: ScenarioStep,
+): Promise<void> {
   if (typeof step === "string") {
     throw new Error(`the lobby driver has no step ${step}`);
   }
   session.rejected = null;
-  if (typeof step["wait_ms"] === "number") {
+  if (RECORDS_ACTIONS.includes(textOf(step["action"]))) {
+    await runRecordsStep(session, ranking, step);
+  } else if (typeof step["wait_ms"] === "number") {
     waitWithQueue(session, step["wait_ms"]);
     removeUnusedGuestsInLobby(session);
   } else if (typeof step["disconnect"] === "string") {
@@ -151,11 +159,6 @@ async function runStep(session: LobbySession, step: ScenarioStep): Promise<void>
     changeEmailInLobby(session, textOf(step["player"]), step);
   } else if (step["action"] === "delete_account") {
     deleteAccountInLobby(session, textOf(step["player"]), step);
-  } else if (step["action"] === "open_match_history") {
-    const of =
-      session.accounts.get(textOf(step["of"]))?.identity ??
-      session.identityNamed(textOf(step["of"]));
-    await session.history.open(session.accounts, of.playerId);
   } else if (step["action"] === "change_username") {
     await changeUsernameInLobby(session, textOf(step["player"]), textOf(step["username"]));
   } else {
@@ -178,7 +181,9 @@ function otherFieldThen(session: LobbySession, field: string, expected: unknown)
 }
 
 function startSession(rawGiven: Readonly<Record<string, unknown>>, random: ScriptedRandom) {
-  const session = new LobbySession(v.parse(LOBBY_GIVEN_SCHEMA, rawGiven), random);
+  const given = v.parse(LOBBY_GIVEN_SCHEMA, rawGiven);
+  const session = new LobbySession(given, random);
+  const ranking = new LobbyRanking(given);
   let before = session.snapshot();
   const chatAtStart = {
     messageCount: session.chat.storage.messages().length,
@@ -188,11 +193,14 @@ function startSession(rawGiven: Readonly<Record<string, unknown>>, random: Scrip
   const driverSession: DriverSession = {
     async runStep(step) {
       before = session.snapshot();
-      await runStep(session, step);
+      await runStep(session, ranking, step);
       session.reportRooms();
       isUnchanged = before === session.snapshot();
     },
     readThen(field, expected) {
+      if (RECORDS_THEN_FIELDS.includes(field)) {
+        return recordsThen(session, ranking, field);
+      }
       switch (field) {
         case "rejected":
           return session.rejected ?? undefined;
@@ -217,10 +225,6 @@ function startSession(rawGiven: Readonly<Record<string, unknown>>, random: Scrip
             players: room.playerNames,
             free_places: room.size - room.playerNames.length,
           }));
-        case "match_history":
-          return matchHistoryThen(session.history.opened);
-        case "record_usernames":
-          return session.history.accountGameUsernames(session.accounts);
         default:
           return otherFieldThen(session, field, expected);
       }
@@ -246,6 +250,7 @@ export const LOBBY_DRIVER: ScenarioDriver = {
     "records",
     "queue",
     "match",
+    "ranked_accounts",
   ]),
   steps: new Set([
     "create_room",
@@ -262,7 +267,7 @@ export const LOBBY_DRIVER: ScenarioDriver = {
     "delete_account",
     "reset_password",
     "set_new_password",
-    "open_match_history",
+    ...RECORDS_ACTIONS,
     "wait_ms",
     "disconnect",
     "reconnect",
@@ -284,8 +289,7 @@ export const LOBBY_DRIVER: ScenarioDriver = {
     "lobby_rooms",
     "replay_record",
     "record",
-    "match_history",
-    "record_usernames",
+    ...RECORDS_THEN_FIELDS,
     "emails_sent",
     "seats",
     ...CHAT_THEN_FIELDS,

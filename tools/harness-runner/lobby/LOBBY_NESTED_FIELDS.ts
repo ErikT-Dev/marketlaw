@@ -13,6 +13,9 @@ export const LOBBY_NESTED_FIELDS: ReadonlyMap<string, ReadonlySet<string>> = new
       "games_started_today",
       "emails_today",
       "games",
+      "rating",
+      "ranked_games",
+      "ranking_place",
     ]),
   ],
   ["given.records", new Set(["date", "turns", "players"])],
@@ -71,4 +74,6 @@ export const LOBBY_NESTED_FIELDS: ReadonlyMap<string, ReadonlySet<string>> = new
   ["then.emails_sent", new Set(["to", "kind"])],
   ["then.generated_name", new Set(["taken", "max_length", "not"])],
   ["then.logged_in", new Set(["visitor", "as"])],
+  ["then.ranking", new Set(["place", "username", "rating", "ranked_games"])],
+  ["then.ranking_page", new Set(["page", "first_place", "last_place", "shows"])],
 ]);
