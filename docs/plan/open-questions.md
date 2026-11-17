@@ -3392,7 +3392,11 @@ file.
   written as inline code (the type list in "The cards", the combo examples, the quest list rules
   and tables, the bonus types table; "Service" only where it means the type), and the harness
   check `tools/harness-check/checkRulebookTypes.ts`, which fails on inline code naming no type in
-  `cards.json`; the renderer in item 1.
+  `cards.json`; the parser in item 1 (`src/client/screens/rules/parseRulebook.ts`). Two details
+  settled there: "bonus" followed by "type" or "types" ("Bonus types", "bonus-type points")
+  names the bonus types of R21, not the bonus stat, and stays words; the text of a link inside
+  the rulebook's prose ("[income](#income)") is prose, so its stat words are icons too, while
+  the contents, headings, "See also" and previous and next stay words as S14.2 says.
 
 ## Q158. What are the rules viewer's related sections, and how is C2.4 checked?
 

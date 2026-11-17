@@ -108,8 +108,24 @@ These 9 scenarios are added to `harness/required.yaml` in this phase, by file an
   - Order: 1, then 2 (needs 1's parser). 3, then 4 (needs 3's page). 5 last (it opens the pages
     of 2, 3 and 4). Items 3 and 4 may go before or after 1 and 2.
 
-- [ ] 1. **Rulebook parser, type markup and checks** (C2.1, C2.2, C2.4, S1.6, S14.2; Q156, Q157,
+- [x] 1. **Rulebook parser, type markup and checks** (C2.1, C2.2, C2.4, S1.6, S14.2; Q156, Q157,
   Q158; scenarios `client` #4, #5). **Large.**
+  - Done (2026-11-17). The type check reads the types from `cards.json` (`collectKnownNames`,
+    as the other harness checks do) rather than `TYPE_NAMES`, since `tools/harness-check/` runs
+    under plain Node; `catalogueMatchesSpec` keeps the two equal. `headingAnchor` moved to
+    `src/client/screens/rules/headingAnchor.ts` and `checkRulebookLinks` imports it. A line
+    "2. Types gained …" inside a paragraph is paragraph text, as in CommonMark (only "1. " starts
+    a list there). Q157 records two details: "bonus types" stays words; link text in the prose
+    gets stat icons.
+  - For later items: `parseRulebook(text)` returns `Result<Rulebook, problems>`; `Rulebook` has
+    `title`, `introduction`, `contents` (title, anchor), `sections` (title, anchor, blocks,
+    `related`). Inline parts are `IconTextPart` (string, `{ stat }`, `{ type }`) or `{ kind:
+    "bold" | "italic", parts }` / `{ kind: "link", anchor, parts }`; blocks are paragraph, list
+    (`isOrdered`, items), table (header, rows of cells), preformatted (lines of `IconTextPart`).
+    `linkAnchorsIn(blocks)` lists link anchors. The client driver is
+    `tools/harness-runner/client/CLIENT_DRIVER.ts` (step `open_rules`, then `rules_viewer`,
+    `rulebook_covers`); later items add their steps and fields there. `client` #4 and #5 pass
+    with them added to `required.yaml` locally.
   - `HARNESS:` commit first: in `harness/spec/rulebook.md`, write every type name meant as a
     type as inline code (`` `Farm` ``, `` `Low Wealth` ``; the quest list and the bonus types
     table too; not "Service" as a sector, not card, quest or project names). Add a harness
