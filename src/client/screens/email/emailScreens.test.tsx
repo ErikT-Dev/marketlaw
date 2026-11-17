@@ -110,11 +110,14 @@ describe("email links", () => {
   it("offers to send a new link to a logged-in player whose address is unconfirmed", async () => {
     logInAsBea();
     const email = { address: "bea@example.com", isConfirmed: false, pendingAddress: null };
-    const account = { isLoggedIn: true, name: "Bea", usernameWait: null };
+    const account = { isLoggedIn: true, name: "Bea", usernameWait: null, rating: null };
     const accountBody = { ...account, email: { ...email, wasRemoved: false } };
     serverAnswers({
       "/api/email-confirmations": [LINK_EXPIRED],
-      "/api/account": [{ status: 200, body: accountBody }],
+      "/api/account": [
+        { status: 200, body: accountBody },
+        { status: 200, body: accountBody },
+      ],
       "/api/confirmation-emails": [OK],
     });
     const store = openApp();
@@ -184,7 +187,7 @@ describe("set a new password", () => {
     await waitFor(() => {
       expect(screen.queryByRole("dialog", { name: "Set a new password" })).toBeNull();
     });
-    expect(sent.at(-1)).toEqual({
+    expect(sent.filter(({ path }) => path === "/api/password-resets").at(-1)).toEqual({
       path: "/api/password-resets",
       body: { link: "reset-1", password: "long enough" },
     });

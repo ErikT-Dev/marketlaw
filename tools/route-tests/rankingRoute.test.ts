@@ -34,6 +34,10 @@ async function giveRating(db: RouteTestDatabase, playerId: string, rating: numbe
     .run();
 }
 
+async function ratingFor(token: string) {
+  return (await postToRoute(server, "/api/account", { token })).body;
+}
+
 async function addRankedFillers(db: RouteTestDatabase) {
   for (let index = 0; index < FILLER_PLAYERS; index += 1) {
     const id = crypto.randomUUID();
@@ -111,6 +115,22 @@ describe("the ranking route", () => {
     },
     STARTING_MS,
   );
+
+  it("gives the account details a registered user's rating and a guest none", async () => {
+    const db = await routeTestDatabaseOf(server);
+    const newToken = await signUp("Ratenew");
+    const ratedToken = await signUp("Ratedone");
+    await giveRating(db, await playerIdNamed(db, "Ratedone"), 1043, 12);
+    const guest = await postToRoute(server, "/api/guests", {
+      name: "Rateguest",
+      humanCheck: DUMMY_HUMAN_CHECK,
+    });
+    expect(await ratingFor(newToken)).toMatchObject({ rating: { rating: 1000, rankedGames: 0 } });
+    expect(await ratingFor(ratedToken)).toMatchObject({
+      rating: { rating: 1043, rankedGames: 12 },
+    });
+    expect(await ratingFor(tokenOf(guest))).toMatchObject({ isLoggedIn: true, rating: null });
+  });
 
   it("rejects a malformed request", async () => {
     expect((await postToRoute(server, "/api/ranking", { page: 0, token: null })).status).toBe(400);

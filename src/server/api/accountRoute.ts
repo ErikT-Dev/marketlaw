@@ -5,6 +5,7 @@ import { UsernameWait } from "../../shared/api/UsernameWait";
 import { usernameChangeAllowedAt } from "../accounts/usernameChangeAllowedAt";
 import { accountEmailDetailsOf } from "../email/accountEmailDetailsOf";
 import { findRenameAccount } from "../findRenameAccount";
+import { accountRatingOf } from "../ratings/accountRatingOf";
 import { sha256Hex } from "../sha256Hex";
 import { bodyOf } from "./bodyOf";
 
@@ -30,6 +31,7 @@ export async function accountRoute(request: Request, env: Env): Promise<Response
     name: account.identity.name,
     usernameWait: usernameWaitOf(account.usernameChangesMs, now),
     email: await accountEmailDetailsOf(env.DB, account.identity.playerId),
+    rating: await accountRatingOf(env.DB, account.identity.playerId),
   };
   return Response.json(reply);
 }

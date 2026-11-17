@@ -27,7 +27,10 @@ const CONFIRMED = {
 };
 
 function accountAnswer(email: EmailDetails): Answer {
-  return { status: 200, body: { isLoggedIn: true, name: "Bea", usernameWait: null, email } };
+  return {
+    status: 200,
+    body: { isLoggedIn: true, name: "Bea", usernameWait: null, email, rating: null },
+  };
 }
 
 function idleHost(): GameHost {
@@ -207,7 +210,7 @@ describe("deleting an account", () => {
   });
 
   it("warns during a game that deleting counts as leaving it", () => {
-    render(<UserAccount account={testAccount({ isGuest: false, isInGame: true })} />);
+    render(<UserAccount account={testAccount({ isGuest: false, isInGame: true })} rating={null} />);
     fireEvent.click(screen.getByRole("button", { name: "Your account" }));
     fireEvent.click(screen.getByRole("button", { name: "Account settings" }));
     fireEvent.click(screen.getByRole("button", { name: "Delete account" }));
@@ -217,7 +220,7 @@ describe("deleting an account", () => {
   });
 
   it("offers a guest no account deleting", () => {
-    render(<UserAccount account={testAccount()} />);
+    render(<UserAccount account={testAccount()} rating={null} />);
     fireEvent.click(screen.getByRole("button", { name: "Your account" }));
     fireEvent.click(screen.getByRole("button", { name: "Account settings" }));
     expect(screen.queryByRole("button", { name: "Delete account" })).toBeNull();

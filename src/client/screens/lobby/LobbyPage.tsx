@@ -4,6 +4,7 @@ import type { PlayerOnlineView } from "../../../shared/protocol/PlayerOnlineView
 import type { PublicRoomView } from "../../../shared/protocol/PublicRoomView";
 import type { ReasonCode } from "../../../shared/ReasonCode";
 import type { AccountBinding } from "../account/AccountBinding";
+import { useRegisteredAccountDetails } from "../account/useRegisteredAccountDetails";
 import type { JoinError } from "../../store/JoinError";
 import type { NewRoom } from "../../store/NewRoom";
 import type { RemovalNotice } from "../../store/RemovalNotice";
@@ -42,10 +43,12 @@ export function LobbyPage(props: Props) {
   const isBusy = ranked.queue !== null && ranked.queue.own.kind !== "out";
   const now = useServerNow();
   const flow = useLobbyFlow(account !== null, onJoin);
+  const details = useRegisteredAccountDetails(account, ranked.standingCheck);
   return (
     <div className={styles["page"]}>
       <LobbyAccount
         account={account}
+        rating={details?.rating?.rating ?? null}
         onLogIn={props.onLogIn}
         onSignUp={props.onSignUp}
         onForgotPassword={props.onForgotPassword}
@@ -59,7 +62,7 @@ export function LobbyPage(props: Props) {
           onJoin={(code) => void flow.start({ kind: "join", code })}
           onCreate={() => void flow.start({ kind: "create" })}
         />
-        <RankedQueueSection account={account} ranked={ranked} now={now} />
+        <RankedQueueSection account={account} details={details} ranked={ranked} now={now} />
       </main>
       <LobbyToasts
         removal={removal}

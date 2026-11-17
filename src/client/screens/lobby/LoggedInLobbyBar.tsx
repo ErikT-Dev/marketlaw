@@ -7,9 +7,10 @@ import styles from "./Lobby.module.css";
 
 type Props = {
   readonly account: AccountBinding;
+  readonly rating: number | null;
 };
 
-export function LoggedInLobbyBar({ account }: Props) {
+export function LoggedInLobbyBar({ account, rating }: Props) {
   const openMatchHistory = matchHistoryOpenerOf(account.playerId);
   return (
     <div className={styles["accountButtons"]}>
@@ -20,7 +21,7 @@ export function LoggedInLobbyBar({ account }: Props) {
         My match history
       </Button>
       <RankingButton />
-      <UserAccount account={account} />
+      <UserAccount account={account} rating={rating} />
     </div>
   );
 }

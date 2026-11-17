@@ -25,6 +25,7 @@ const CONFIRMED_ACCOUNT = testAccount({
         pendingAddress: null,
         wasRemoved: false,
       },
+      rating: { rating: 1043, rankedGames: 12 },
     }),
   ),
 });
@@ -39,7 +40,9 @@ async function showQueue(
   account: AccountBinding | null = CONFIRMED_ACCOUNT,
 ) {
   const ranked = testRankedQueue({ queue, ...changes });
-  render(<RankedQueueSection account={account} ranked={ranked} now={NOW} />);
+  const loaded = account === null || account.isGuest ? null : await account.onLoadAccount();
+  const details = loaded?.isLoggedIn === true ? loaded : null;
+  render(<RankedQueueSection account={account} details={details} ranked={ranked} now={NOW} />);
   await act(async () => Promise.resolve());
   return { ranked, panel: screen.getByRole("region", { name: "Ranked queue" }) };
 }
@@ -54,6 +57,7 @@ describe("the ranked queue panel", () => {
     expect(panel.textContent).toContain("4 players in the queue");
     expect(panel.textContent).toContain("2 players: 1 · 3 players: 2 · 4 players: 1");
     expect(panel.textContent).toContain("Ranked games change ELO ratings.");
+    expect(panel.textContent).toContain("Your rating: 1043 · 12 ranked games");
     fireEvent.click(sizeSwitch(4));
     fireEvent.click(screen.getByRole("button", { name: "Join the ranked queue" }));
     expect(ranked.onIntent).toHaveBeenCalledWith({ type: "join_queue", sizes: [3, 4] });
@@ -89,6 +93,7 @@ describe("the ranked queue panel", () => {
 
   it("disables joining with the reason for guest users", async () => {
     await showQueue(OUT_OF_QUEUE, {}, testAccount({ isGuest: true }));
+    expect(screen.queryByText(/Your rating/)).toBeNull();
     expect(
       screen.getByText("Sign up and confirm your email address to play ranked games."),
     ).toBeDefined();

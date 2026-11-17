@@ -1,3 +1,4 @@
+import type { AccountRating } from "../../../shared/api/AccountRating";
 import type { QueueView } from "../../../shared/protocol/QueueView";
 import type { RankedGameSize } from "../../../shared/RankedGameSize";
 import { Button } from "../../components/Button";
@@ -5,6 +6,7 @@ import type { IconText } from "../../components/IconText";
 import { TextWithIcons } from "../../components/TextWithIcons";
 import { REJECTION_MESSAGES } from "../game/REJECTION_MESSAGES";
 import { GameSizeToggles } from "./GameSizeToggles";
+import { ownRatingText } from "./ownRatingText";
 import { queueCountTexts } from "./queueCountTexts";
 import styles from "./RankedQueue.module.css";
 import type { RankedLock } from "./RankedLock";
@@ -12,6 +14,7 @@ import type { RankedLock } from "./RankedLock";
 type Props = {
   readonly queue: QueueView;
   readonly sizes: ReadonlyArray<RankedGameSize>;
+  readonly rating: AccountRating | null;
   readonly lock: RankedLock | null;
   readonly error: IconText | null;
   readonly onToggle: (size: RankedGameSize) => void;
@@ -26,7 +29,7 @@ const WHILE_YOU_WAIT =
   "A match starts as soon as enough players for one of your game sizes are in it. You can change your game sizes while you wait. You cannot join a room while you wait.";
 
 export function RankedQueuePanel(props: Props) {
-  const { queue, lock, error } = props;
+  const { queue, lock, error, rating } = props;
   const isInQueue = queue.own.kind !== "out";
   const isWaiting = queue.own.kind === "waiting";
   const counts = queueCountTexts(queue.counts);
@@ -40,6 +43,7 @@ export function RankedQueuePanel(props: Props) {
       <p className={styles["text"]}>
         {isWaiting ? `${counts.includingYou} ${WHILE_YOU_WAIT}` : HOW_IT_WORKS}
       </p>
+      {rating === null ? null : <p className={styles["ownRating"]}>{ownRatingText(rating)}</p>}
       {isInQueue && queue.isSiteGameLimitReached ? (
         <p className={styles["lock"]}>
           <TextWithIcons text={REJECTION_MESSAGES.site_game_limit} />

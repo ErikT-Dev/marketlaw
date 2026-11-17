@@ -10,9 +10,10 @@ import { matchHistoryOpenerOf } from "../records/matchHistoryOpenerOf";
 
 type Props = {
   readonly account: AccountBinding;
+  readonly rating: number | null;
 };
 
-export function UserAccount({ account }: Props) {
+export function UserAccount({ account, rating }: Props) {
   const [dialog, setDialog] = useState<UserAccountDialog | null>(null);
   function close() {
     setDialog(null);
@@ -35,6 +36,7 @@ export function UserAccount({ account }: Props) {
       <UserMenu
         name={account.name}
         isGuest={account.isGuest}
+        rating={rating}
         onSignUp={openSignUp}
         onOpenSettings={openSettings}
         onOpenMatchHistory={matchHistoryOpenerOf(account.playerId)}

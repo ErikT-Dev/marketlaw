@@ -12,7 +12,13 @@ export function testAccount(changes: Partial<AccountBinding> = {}): AccountBindi
     onSignUp: vi.fn(async () => Promise.resolve(null)),
     onChangeUsername: vi.fn(async () => Promise.resolve(null)),
     onLoadAccount: vi.fn(async () =>
-      Promise.resolve({ isLoggedIn: true as const, name: "Bea", usernameWait: null, email: null }),
+      Promise.resolve({
+        isLoggedIn: true as const,
+        name: "Bea",
+        usernameWait: null,
+        email: null,
+        rating: null,
+      }),
     ),
     onChangeEmail: vi.fn(async () => Promise.resolve(null)),
     onSendConfirmationAgain: vi.fn(async () => Promise.resolve(null)),

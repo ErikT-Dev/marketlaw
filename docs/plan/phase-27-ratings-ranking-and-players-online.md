@@ -313,13 +313,30 @@ These 12 scenarios are added to `harness/required.yaml` in this phase, by file a
   - For the finisher: the screenshots of the lobby, the waiting room, the room after the game and
     every lobby dialog change (new left column).
 
-- [ ] 6. **Own rating in the lobby** (S10.1's user box, S10.4's rating line; Q138, Q154).
+- [x] 6. **Own rating in the lobby** (S10.1's user box, S10.4's rating line; Q138, Q154).
   **Small.**
   - The account details (`/api/account`, `onLoadAccount`, already read by `useRankedStanding`)
     gain a registered user's rating and ranked games. The user box (`UserMenu.tsx`) shows
     "Rating 1043" under the username for a registered user; the ranked queue panel
     (`RankedQueuePanel.tsx`) shows "Your rating: 1043 · 12 ranked games" (design "Lobby"). Both
     refresh after a ranked game (the `check` key `useRankedStanding` already uses).
+  - Done (2026-11-17): `AccountResponse.rating` (`AccountRating` `{ rating, rankedGames }`, `null`
+    for a guest; `accountRatingOf`, one query of `players` joined with `ratings`, new-player values
+    when there is no row). `useRankedStanding` became `useRegisteredAccountDetails` (the loading,
+    called once in `LobbyPage` and once in `RoomPageFrame`) and `rankedStandingOf`; the details go
+    to `RankedQueueSection` and the rating to `UserAccount`/`UserMenu` ("Rating 1043" for a
+    registered user, also at 0 ranked games) and to `RankedQueuePanel` (`ownRatingText`, "1
+    ranked game" in the singular, colour `--color-board-ranking-standing`, the design's #fde68a).
+    The game's top bar shows no rating (S2.3). No socket message changed (no `PROTOCOL_VERSION`
+    change). Tests: `ownRating.test.tsx`, `rankedQueue.test.tsx`, route test in
+    `rankingRoute.test.ts`.
+  - Differs: the rating refreshes when the lobby or the room page opens (they remount after a
+    game) and on the queue's `standingCheck`, as before. The lobby now loads the account details
+    for a registered user even when the ranked queue is not shown yet (one more `/api/account`
+    request on opening the lobby, none per action). The user box follows S10.1's "Rating 1043",
+    not the design's "Rating 1043 · registered".
+  - For the finisher: the user box and the ranked queue panel of a registered user change in the
+    lobby and waiting room screenshots.
 
 ### Helper log
 

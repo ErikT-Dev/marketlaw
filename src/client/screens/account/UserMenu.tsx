@@ -6,6 +6,7 @@ import { UserMenuItems } from "./UserMenuItems";
 type Props = {
   readonly name: string;
   readonly isGuest: boolean;
+  readonly rating: number | null;
   readonly onOpenMatchHistory: (() => void) | null;
   readonly onSignUp: () => void;
   readonly onOpenSettings: () => void;
@@ -13,7 +14,7 @@ type Props = {
 };
 
 export function UserMenu(props: Props) {
-  const { name, isGuest, onSignUp, onOpenSettings, onOpenMatchHistory, onLogOut } = props;
+  const { name, isGuest, rating, onSignUp, onOpenSettings, onOpenMatchHistory, onLogOut } = props;
   const menuId = useId();
   const containerRef = useRef<HTMLDivElement>(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -45,6 +46,9 @@ export function UserMenu(props: Props) {
         <span className={styles["userText"]}>
           <strong className={styles["userName"]}>{name}</strong>
           {isGuest ? <span className={styles["guestMark"]}>Guest</span> : null}
+          {!isGuest && rating !== null ? (
+            <span className={styles["guestMark"]}>{`Rating ${String(rating)}`}</span>
+          ) : null}
         </span>
       </button>
       {isOpen ? (
