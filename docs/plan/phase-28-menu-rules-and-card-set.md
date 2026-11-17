@@ -185,3 +185,12 @@ These 9 scenarios are added to `harness/required.yaml` in this phase, by file an
 - [ ] Finisher: the 9 scenarios into `harness/required.yaml`, the full check and harness, the
   branch check, screenshots, `docs/enforcement.md` (the rulebook type markup check), B14 still
   within its limit (exit criterion).
+
+### Helper log
+
+Filled in by the coordinator afterwards, from the helpers' completion notices (Q73). Tokens are
+each helper's conversation size at its end.
+
+| Job | Model, effort | Minutes | Tokens | Tool calls | Result |
+|---|---|---|---|---|---|
+| Starter | Opus, medium | 7 | 141k | 63 | done |
