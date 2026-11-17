@@ -1,6 +1,6 @@
 # Phase 29: Tutorial
 
-Status: approved
+Status: in progress
 Milestone: 6 Learning
 
 ## Goal
@@ -64,3 +64,134 @@ These 17 scenarios are added to `harness/required.yaml` in this phase, by file a
 - `tutorial` #5: tutorial turn 4 teaches product and the first bonus fund
 - `tutorial` #6: tutorial turn 5 teaches income and quests and then ends
 - `tutorial` #7: the tutorial rejects playing a different card than the step asks for
+
+## Progress
+
+- [x] 0. Start (2026-11-17): branch `phase-29-tutorial`. Spec gaps decided and written into the
+  spec first (commit `HARNESS: Tutorial text box, restart and after the last step settled (S15,
+  C1.2, C4.8, A9.6; Q161-Q164)`): Q161 (19 steps, "Step N of 19"; the text box shows the previous
+  step's text after its action, the step's text and its action line; the "waiting for" words of
+  every step are the table in S15.7), Q162 (Restart and Play it again restart from T1.1 without
+  asking and count as a tutorial start for A9.6's cap), Q163 (after Finish the player stays in
+  the ended tutorial with Tutorial complete until they leave or C4.10 deletes it; opening the
+  site brings a player in a tutorial back to it; dialog texts in S15.4), Q164 (the menu place
+  `game_over` **offers** Tutorial, unlike phase 28's note: C1.2 with M2.2 and M6.7; starting it
+  takes the player out of the room). Read them and S15 before building any item.
+  - The spec's numbers were checked against `cards.json` for T1.2 to T5.2 (costs, stats, real
+    cost); they agree.
+  - Every message shape change raises `PROTOCOL_VERSION` (now 25) once in the phase, in the
+    first item that changes a message (`proposed-rules.md`); a changed saved shape raises its
+    schema version (`ROOM_SCHEMA_VERSION` 5, `SAVE_SCHEMA_VERSION` 17); no migration (D1).
+  - Rules stay in the engine (`rules/architecture.md`, Thin server): which action a step
+    accepts (C4.4), the fixed setup (T0) and the step order are pure code in `src/rules/`
+    (suggested `src/rules/tutorial/`); the room only orchestrates.
+  - Scenarios: `given.tutorial: {player, step}` is reached by playing the tutorial's own steps
+    from T1.1 up to that step. A driver is chosen by field names (`runScenario.ts`,
+    `missingFor`), so one driver must list every given, step and then field its scenarios use.
+    All items: scenarios become required only in the finisher's run; check them by adding them
+    to `harness/required.yaml` locally without committing.
+  - Files at the line limit (300 non-blank lines): `src/server/GameRoom.ts` (288),
+    `tools/harness-runner/room/RoomSession.ts` (282), `tools/harness-runner/room/ROOM_DRIVER.ts`
+    (269). Split them before growing them, or keep the tutorial out of them.
+  - Order: 1, 2, 3, 4 in order. 5 and 6a after 3; 6b after 6a.
+
+- [ ] 1. **Tutorial engine** (T0–T5, C4.1, C4.3, C4.4, C4.5; Q161; scenarios `tutorial` #1–#7,
+  `client` #11, #12). **Large.**
+  - A pure tutorial in `src/rules/`: the fixed setup of T0 (stats R2.1, the 7-card hand, quests
+    T0.3, bonus types T0.4, the turn 2 marketplace) and a fixed deck order plus a fixed `Random`
+    (T0.6), so every draw and marketplace refill of T0.5 and the steps happens as written. Draws
+    take a sector from `random.pickSector()` and a tier from `pickTier` (`drawRandomCard.ts`,
+    `drawIntoHand.ts`), then the deck; the marketplace refills through `fillMarketplace.ts`.
+    Read how R18.13 and R18.14 remove and refill places before arranging the deck.
+  - The steps T1.1 to T5.4 in order, each with the one action it accepts (text steps accept a
+    `continue`; T5.4's continue is Finish and ends the tutorial, C4.6). Any other action,
+    including undo, is rejected with `not_this_step` (already in `ReasonCode.ts`) and changes
+    nothing; the accepted action goes through the normal `apply`. No time-outs (C4.5): no clock
+    deadlines (`dueTimeOuts.ts`, `TIME_RULES.ts`). Choose between a `GameKind` "tutorial" and a
+    tutorial state wrapping `GameState`, and say which in the note.
+  - Restart (Q162) returns to the T1.1 state. The step id and its number (1 to 19) go into the
+    player's view so the client can show S15.5 to S15.7 (the words stay in the client).
+  - Scenarios through a new tutorial driver (`tools/harness-runner/tutorial/`, added to
+    `DRIVERS.ts`), reusing the engine driver's `seatThen.ts`, `viewThen.ts` and
+    `actionFromStep.ts` where they fit. Item 2 moves the driver onto the room.
+  - Test first: unit tests for `not_this_step` on every step kind (a card, a draw option, a
+    sector, claim all, end turn, continue).
+
+- [ ] 2. **Tutorial room** (C4.2, C4.5, C4.6, C4.8, C4.10; B6; scenarios `client` #12, #13, #14,
+  #17; the item 1 scenarios through the room). **Large.**
+  - One seat, no record (A3), no rating (A10), no chat, no asking, no votes; deleted when left
+    (C4.8) and by its one alarm 30 minutes after its last connection closed (C4.10; one alarm per
+    room, `rules/cloudflare.md`). Persist before acknowledging, one write per accepted action
+    (`continue` included). Restart resets in place (Q162).
+  - Choose between a new SQLite Durable Object class (a `v6` migration in `wrangler.jsonc`, free
+    as the other classes are) named per player with `idFromName`, and a mode of `GameRoom` (288
+    lines, would need splitting). Reuse the socket and publishing pieces (`RoomSockets.ts`,
+    `PublishingRoom.ts`, `PublishingSockets.ts`, `attachmentOf.ts`,
+    `acceptedSocketResponse.ts`, `applyRoomAlarm.ts`, `ROOM_TIMES.ts`), `viewFor`, and the
+    intent schemas in `src/shared/`. Record the choice in the note.
+  - Intents: start, continue, restart, leave, and the game intents the steps use; the view adds
+    the tutorial step (raise `PROTOCOL_VERSION`). `RemoteGameHost` must reach the tutorial room
+    and pass the host contract tests.
+  - B6 (60 rows for T0 to T5): replace `B6: { by: "not built", … }` in
+    `tools/harness-runner/BUDGET_CHECKS.ts` with a real measurement (rows written while playing
+    T1.1 to T5.4 once) and update its case in `reportBudgets.test.ts`.
+  - Scenario fields `record`, `ratings`, `disconnect`, `wait_ms`: reuse `recordThen.ts`,
+    `ratingsThen.ts`, `givenRatingsOf.ts` (room driver) and `fireAlarmsUntil.ts` (lobby driver).
+
+- [ ] 3. **Tutorial in the lobby: one thing at a time, limits and the cap** (C4.6, C4.7, C4.9,
+  M2.1, A9.5, A9.6; Q162, Q163, Q164; scenarios `client` #10, #15, `lobby-queue-and-limits` #28,
+  #29). **Large.**
+  - The lobby's busy places (`BusyPlace.ts`, `claimPlayer.ts`, `releasePlayer.ts`,
+    `isReallyBusy.ts`) gain the tutorial: a player in a tutorial gets `busy_elsewhere` when
+    joining a room or the queue (`joinRoomRoute.ts`, `createRoomRoute.ts`, `joinQueue.ts`), and
+    a player waiting in a room or the queue, or in a game, gets `busy_elsewhere` when starting
+    the tutorial. Starting from a finished or left game takes the player out of that room
+    (`leaveFinishedRooms.ts`, Q164). Leaving or deleting the tutorial releases the player.
+  - Starting skips A9.2 to A9.4 (A9.5) and counts a site tutorial start in `CountsToday` (1 row;
+    Q52 counted game and tutorial starts at 1 row each); at 100 it is refused with
+    `site_daily_cap` and "Daily limit reached, try again after 00:00 UTC" (already in
+    `REJECTION_MESSAGES.ts`). Restart counts too (Q162). The lobby given `site_counts_today:
+    {tutorials}` is already in `LOBBY_GIVEN_SCHEMA.ts`.
+  - A visitor becomes a guest first (C4.7, A1.2), as when joining a game: reuse that flow
+    (`createGuestRoute.ts`; `logInVisitor.ts` in the lobby driver).
+  - Opening the site while in a tutorial goes back to it (Q163): do what is done for a player in
+    a game (`isInGame.ts`, `sessionRoute.ts`).
+
+- [ ] 4. **Busy day with tutorials** (B18). **Small.**
+  - `tools/simulator/busyDay/`: add the day's 100 tutorials (start, play, leave) through the
+    lobby code, counting their lobby rows and alarm changes in B18; their room rows are B6's
+    and stay out of B18 (the budget's text). Update B18's `where` text in `BUDGET_CHECKS.ts`.
+
+- [ ] 5. **Tutorial in the game menu** (C1.2, S14.1, Q159, Q164; scenario `client` #1).
+  **Small.**
+  - `gameMenuEntriesOf` (`src/client/screens/menu/`) adds Tutorial, "A guided one-player game
+    that teaches the first turns", which starts the tutorial (item 3's start). In
+    `waiting_room` and `game`, and while the player is in the ranked queue, it is shown disabled
+    with "Not available while you are in a game, a room or the ranked queue" and is not listed
+    in a scenario's `menu` (Q159). `game_over` offers it (Q164). `GameMenuPlace` has no queue
+    case yet (`lobby`, `waiting_room`, `game`, `game_over`): add one, or let the lobby pass
+    whether the player is queued (`LobbyTopBar.tsx`).
+  - `e2e/gameMenu.spec.ts` line 24 expects no Tutorial button; change it to the disabled entry
+    with its reason and add the lobby entry. The client driver's `open_menu` stays as it is.
+
+- [ ] 6a. **Tutorial screen: start, top bar, text box, leave and restart** (S15.1, S15.2,
+  S15.5–S15.7, S15.4's leave dialog, C4.8; Q161, Q162). **Large.**
+  - The game screen (`src/client/screens/game/`, `GameScreen.tsx`, `GamePage.tsx`) without
+    opponents, timers or chat; top bar "Tutorial · turn N" and Leave tutorial (with the S15.4
+    confirmation). Left column: the tutorial text box (S15.2, S15.5–S15.7), texts exactly as in
+    `tutorial.md`, kept in one client file keyed by step id; Continue, Finish, Restart.
+  - Design boards: `design/export/tutorial/contents.md` ("Tutorial base 1920x940", "Tutorial:
+    …"); they say "of 21" (S17). Reuse the existing modal and toast components.
+  - Lazy-load the tutorial screen if it adds much to the first screen (B14, `npm run size`).
+
+- [ ] 6b. **Tutorial screen: highlights, Not this step, Tutorial complete, browser test**
+  (S15.2's highlights and disabled actions, S15.3, S15.4; "What you can see when it's done").
+  **Large.**
+  - Each step highlights the part of the screen it is about (the boards' "Highlight" rect) and
+    disables every other action; "Not this step" shows "The tutorial is waiting for you to …
+    Nothing changed." (S15.7; `rejectionMessage.ts`, `REJECTION_MESSAGES.ts`).
+  - Tutorial complete (S15.4) with Read the rules, Play it again and Go to the lobby.
+  - A browser test (`e2e/tutorial.spec.ts`) starts the tutorial from the lobby menu as a new
+    visitor, plays all 19 steps and finishes; screenshots of the tutorial screens at the three
+    sizes, axe, no horizontal scroll, `getByRole` selectors. Locally run only this spec file
+    with `--workers=2`.
