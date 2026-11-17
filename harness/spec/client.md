@@ -21,7 +21,9 @@ None yet.
 
 - **C1.1** The **game menu** can be opened from the lobby, from a waiting room and during a game.
 - **C1.2** It holds **Rules** (C2), **Card set** (C3) and **Tutorial** (C4). Tutorial is offered
-  only when the player is not waiting in a room, in the ranked queue or in a game (M2).
+  only when the player is not waiting in a room, in the ranked queue or in a game (M2). A player
+  whose game has ended, or who has left a game, is no longer in it (M2.2, M6.7): the menu offers
+  them Tutorial, and starting it takes them out of the room (Q164).
 - **C1.3** Opening the menu, the rules or the card set during a game does not pause anything. The
   player's clock keeps running (R9).
 
@@ -62,7 +64,9 @@ None yet.
 - **C4.7** Anyone can play the tutorial. A player who is not logged in becomes a guest user first,
   as when joining a game (A1.2).
 - **C4.8** The player can leave the tutorial at any time, and can start it again from the
-  beginning at any time. Leaving deletes the tutorial room.
+  beginning at any time. Leaving deletes the tutorial room. After the last step the player stays
+  in the tutorial, with **Tutorial complete** (S15.4), until they leave it or it is deleted
+  (C4.10). Until then, opening the site brings the player back to their tutorial (Q163).
 - **C4.9** Starting the tutorial counts as being in a game for M2 (one thing at a time).
 - **C4.10** A tutorial room whose player has not been connected for 30 minutes is deleted.
 

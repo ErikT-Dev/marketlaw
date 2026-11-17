@@ -3443,3 +3443,68 @@ file.
   tiles show no photo, as the boards do (the phase file's lazy photos were dropped, item 3), so
   that is not a design difference. Written into S17 as a known difference.
 - **Implemented:** `harness/spec/screens.md` S17; phase 28, items 3 and 4 (no code change).
+
+## Q161. How many tutorial steps are there, and what does the text box show?
+
+- **Phase:** 29 (starter; S15.2, S15.3, T1–T5, design boards "Tutorial: …").
+- **Question:** S15.2 and the design boards count "Step N of 21", but `tutorial.md` has 19 steps
+  (T1.1 to T5.4). Several steps have a text after the action, some have no text before it, and
+  S15.2 and S15.3 name "the action asked for" and "what the tutorial is waiting for" without
+  giving their words.
+- **Options:** count 21 (invent two steps); count the 19 steps; count the texts after an action
+  as steps of their own (27).
+- **Solution:** 19 steps, numbered in the order of `tutorial.md`: "Step N of 19". A step's box
+  shows the previous step's text after its action, then its own text, then its action line;
+  a closing sentence equal to the action line is shown once, as the action line (as the boards
+  show "Play Row House."). T1.1 and T2.1 have Continue, T5.4 has Finish (the board's button).
+  Each step's "waiting for" words are listed in S15.7; the action line is the same words as a
+  sentence, and "Not this step" says "The tutorial is waiting for you to … Nothing changed." (the
+  board's text). The scenarios already move from one action to the next without a Continue, so
+  the texts after an action cannot be steps of their own. Written into S15.2, S15.3, S15.5 to
+  S15.7 and S17 first (screen rules, so not in `tutorial.md`, whose T rules scenarios cover).
+- **Why:** `tutorial.md` is the source of the steps; the boards were drawn for an older draft.
+- **Implemented:** `harness/spec/screens.md` S15.2, S15.3, S15.5 to S15.7, S17; phase 29.
+
+## Q162. Does Restart count toward the daily tutorial cap?
+
+- **Phase:** 29 (starter; S15.2, C4.8, A9.6, B6).
+- **Question:** S15.2 offers Restart and C4.8 lets the player start again at any time, but A9.6
+  counts only tutorials that start. A restart in the same room writes the tutorial's rows again
+  (B6) without counting.
+- **Options:** a restart is free; a restart counts as a start.
+- **Solution:** Restart (and Play it again, S15.4) starts again from T1.1 without asking, and
+  counts as starting a tutorial: once the cap is reached it is refused with `site_daily_cap`
+  like a new start. Written into A9.6 and S15.2 first.
+- **Why:** the cap exists to keep the rows the tutorials write within the day's budget (B6, B18);
+  free restarts would bypass it.
+- **Implemented:** `harness/spec/accounts.md` A9.6, `harness/spec/screens.md` S15.2; phase 29.
+
+## Q163. What happens after the tutorial's last step, and how does a player get back to it?
+
+- **Phase:** 29 (starter; C4.6, C4.8, C4.10, S15.4).
+- **Question:** C4.6 ends the tutorial after T5.4 and S15.4 shows Tutorial complete, but nothing
+  says when the room goes away after that, what Read the rules does, or how a player who closed
+  the tab reaches their tutorial again within C4.10's 30 minutes. S15.4's dialog texts and the
+  leave confirmation have no words in the spec.
+- **Solution:** after Finish the player stays in the ended tutorial, with Tutorial complete,
+  until they leave it (Go to the lobby, Read the rules, Leave tutorial) or C4.10 deletes it;
+  Play it again restarts it (Q162). While they are in a tutorial, opening the site brings them
+  back to it, as a game does. The dialog texts are the boards' "Tutorial: complete" and
+  "Tutorial: leave". Written into C4.8 and S15.4 first.
+- **Why:** C4.8 already says leaving deletes the room; keeping the ended room until then needs
+  no new rule, and C4.10 removes rooms left behind.
+- **Implemented:** `harness/spec/client.md` C4.8, `harness/spec/screens.md` S15.4; phase 29.
+
+## Q164. Is the tutorial offered on the game screen after the game is over?
+
+- **Phase:** 29 (starter; C1.2, M2.2, M6.7; phase 28 F1).
+- **Question:** phase 28 added the menu place `game_over` (the game has ended, or the player has
+  left it) and noted that phase 29 would treat it like a waiting room, where Tutorial is
+  disabled. C1.2 disables it only while waiting in a room, in the queue or in a game, and M2.2
+  and M6.7 free such a player to join the queue or another room.
+- **Options:** disabled, as phase 28's note says; offered, as C1.2 with M2.2 and M6.7 says.
+- **Solution:** offered: the spec wins over the plan note. Starting it takes the player out of
+  the room, as joining the queue does (M2.2, M6.7). Written into C1.2 first.
+- **Why:** C4.9 makes the tutorial count as a game for M2, and a player whose game is over may
+  start another game.
+- **Implemented:** `harness/spec/client.md` C1.2; phase 29.
