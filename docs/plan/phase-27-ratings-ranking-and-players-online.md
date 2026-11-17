@@ -86,7 +86,7 @@ These 12 scenarios are added to `harness/required.yaml` in this phase, by file a
   - Order: 1, then 2 (needs 1), then 3 (needs 2). 4a, 5a and 6 need 2's `ratings` table; 4b
     needs 4a, 5b needs 5a. Items 4a/4b and 5a/5b can go in either order after 2.
 
-- [ ] 1. **Rating calculation** (A10.2 to A10.8, A10.10 to A10.12; `HARNESS.md` point 7; Q151,
+- [x] 1. **Rating calculation** (A10.2 to A10.8, A10.10 to A10.12; `HARNESS.md` point 7; Q151,
   Q155). **Small.**
   - Pure functions in a new `src/server/ratings/` (as `src/server/queue/` is for the queue): from
     each seat's place (A3.4, A10.8 and A10.10 come with the record's places), rating before,
@@ -100,6 +100,14 @@ These 12 scenarios are added to `harness/required.yaml` in this phase, by file a
     and shown in the report; remove "Rating calculation check (A10)" from `CHECKS_NOT_BUILT` in
     `buildReport.ts`. Look in `docs/enforcement.md` and `harness/coverage.md` for where the
     check is listed as not built.
+  - Done (2026-11-17, by the starter): `src/server/ratings/` (`ratingChangesOf` from `RatedSeat`s
+    (`RatingBeforeGame` plus seat and place) to `SeatRatingChange`s; `expectedResultOf`,
+    `kFactorOf`, `roundedTotalChange`, `RATING_RULES`), unit tests in `ratings.test.ts`;
+    `tools/harness-runner/checkRatings.ts` (A10.11, A10.12, the scenarios' cases and the totals
+    of Q155) in `HarnessRun.ratingProblems`, judged and shown in the report.
+    `docs/enforcement.md` does not list the check yet: the finisher adds it (step 5).
+  - For later items: item 2 builds `RatedSeat`s from the stored record's places and the
+    ratings kept in the room record (`RatingBeforeGame` is the shape to keep per seat).
 
 - [ ] 2. **Ratings saved after a ranked game** (A10.1, A10.5, A10.7, A10.9, R9.14, M6.9, A3.2's
   rating fields; Q151; scenarios `records-and-ratings` #9 to #16, `turns-and-time` #26).

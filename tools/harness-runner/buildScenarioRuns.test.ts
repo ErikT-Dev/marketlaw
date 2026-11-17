@@ -44,6 +44,7 @@ async function judge(required: RequiredList): Promise<ReadonlyArray<string>> {
     cardDataProblems: [],
     tierShareProblems: [],
     replayExportProblems: [],
+    ratingProblems: [],
     simulation: NO_GAMES,
     busyDay: null,
     passwordHashCpuMs: null,

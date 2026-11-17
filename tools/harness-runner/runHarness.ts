@@ -9,6 +9,7 @@ import { buildSteadyScenarioRuns } from "./buildSteadyScenarioRuns.ts";
 import { checkCardData } from "./checkCardData.ts";
 import { simulateBusyDay } from "../simulator/busyDay/simulateBusyDay.ts";
 import { simulateInParallel } from "../simulator/simulateInParallel.ts";
+import { checkRatings } from "./checkRatings.ts";
 import { checkReplayExport } from "./checkReplayExport.ts";
 import { checkTierShares } from "./checkTierShares.ts";
 import { LAST_SIMULATED_TURN } from "./LAST_SIMULATED_TURN.ts";
@@ -46,6 +47,7 @@ export async function runHarness(
     cardDataProblems: checkCardData(files.cards),
     tierShareProblems: checkTierShares(DRAWS_PER_TURN),
     replayExportProblems: checkReplayExport(),
+    ratingProblems: checkRatings(),
     simulation: await simulateInParallel(simulatedGames, LAST_SIMULATED_TURN),
     busyDay: simulateBusyDay(),
     passwordHashCpuMs: livePasswordHashCpuMs(),

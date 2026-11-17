@@ -10,7 +10,6 @@ import { reportStatusOf } from "./reportStatusOf.ts";
 import { statusBadge } from "./statusBadge.ts";
 
 const SCENARIO_STATUSES = ["passes", "fails", "passes, not yet required", "not yet"] as const;
-const CHECKS_NOT_BUILT = ["Rating calculation check (A10)"];
 
 function verdict({ problems }: ReportInput): string {
   const status = problems.length === 0 ? "passes" : "fails";
@@ -35,7 +34,6 @@ function checkItem(title: string, problems: ReadonlyArray<string>): string {
 }
 
 function checks({ run }: ReportInput): string {
-  const notBuilt = CHECKS_NOT_BUILT.map((check) => `<li>${statusBadge("not yet")}${check}</li>`);
   const built = [
     checkItem("Card-data check (R3.1, R3.2, R3.5)", run.cardDataProblems),
     checkItem(
@@ -46,8 +44,12 @@ function checks({ run }: ReportInput): string {
       "Replay export check: a running and an ended room are exported and replay exactly (M4.2)",
       run.replayExportProblems,
     ),
+    checkItem(
+      "Rating calculation check: the A10 totals, with +2.5 rounding to +3 and -2.5 to -3 (A10.6)",
+      run.ratingProblems,
+    ),
   ];
-  return `<h2>Checks</h2><ul>${[...built, ...notBuilt].join("")}</ul>`;
+  return `<h2>Checks</h2><ul>${built.join("")}</ul>`;
 }
 
 function identifiedList(

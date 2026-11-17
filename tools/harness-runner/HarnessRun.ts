@@ -11,6 +11,7 @@ export type HarnessRun = {
   readonly cardDataProblems: ReadonlyArray<string>;
   readonly tierShareProblems: ReadonlyArray<string>;
   readonly replayExportProblems: ReadonlyArray<string>;
+  readonly ratingProblems: ReadonlyArray<string>;
   readonly simulation: SimulationSummary;
   readonly busyDay: BusyDayCount | null;
   readonly passwordHashCpuMs: number | null;
