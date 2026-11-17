@@ -3302,7 +3302,8 @@ file.
   changes; logging out makes the socket anonymous. The list is by username in alphabetical
   order, the viewer included, with the total count. The queue count stays in the queue panel
   (A7.3). Each page load costs one more connection and one message, no writes. Written into
-  A7.1, A7.2 and S10.2 first.
+  A7.1, A7.2 and S10.2 first. The room after the game keeps the players online list too, as the
+  design's "Waiting room: after the game" shows; written into S11.4 (phase 27 review, F5).
 - **Implemented:** phase 27, items 5a and 5b.
 
 ## Q153. How does the ranking table page, order and explain itself?
@@ -3319,7 +3320,9 @@ file.
   users, registered users without a ranked game and an empty table are in S13.3, the second
   taken from the design. The route reads the table without an index (Q151), so one page costs
   about as many rows read as there are ranked players, well inside B16's half for the lobby,
-  histories and ranking. Written into S13.3 first.
+  histories and ranking. Written into S13.3 first. The viewer's row is highlighted whenever it
+  is on the shown page, not only after Jump to me, so a player on page 1 finds themselves
+  without a click; written into S13.3 (phase 27 review, F5).
 - **Implemented:** phase 27, items 4a and 4b.
 
 ## Q154. Where are ratings shown?

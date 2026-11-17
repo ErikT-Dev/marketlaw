@@ -370,9 +370,10 @@ None yet.
 - **S11.3** When the room is full, every player gets the **accept** dialog with the time left and
   the usernames of the players who have accepted (M1.10). A player who declined or ran out of time
   sees a message in the lobby with when they can rejoin.
-- **S11.4** After a game, the room shows the result, the players still in it, **Ask for a
-  rematch**, **Leave room**, and when the room will be deleted (M8). The rematch dialog shows the
-  time left and who has accepted (M8.4). **Close** on the end-of-game screen (S9.5) leads here;
+- **S11.4** After a game, the room keeps the top bar, the players online list and the room chat
+  of S11.1 (Q152), and shows the result, the players still in it, **Ask for a rematch**, **Leave
+  room**, and when the room will be deleted (M8). The rematch dialog shows the time left and who
+  has accepted (M8.4). **Close** on the end-of-game screen (S9.5) leads here;
   the result line has **Show result**, which opens the end-of-game screen again.
 
 ## S12. Accounts
@@ -416,8 +417,9 @@ None yet.
   A3.2. Deleted accounts show "Deleted player". A player who left shows the turn they left in
   ("left (turn 20)"), with their values at that moment (A3.3). Times are the viewer's local time.
 - **S13.3** The **ELO ranking** shows 50 players per page with place, username, rating and ranked
-  games, page buttons, and **Jump to me** with your row highlighted. Players not in the table see
-  why, and Jump to me is disabled. It opens at page 1 as a page over the current screen with
+  games, page buttons, and **Jump to me**. Your row is highlighted whenever it is on the shown
+  page, not only after Jump to me (Q153). Players not in the table see why, and Jump to me is
+  disabled. It opens at page 1 as a page over the current screen with
   **Back**, like a match history (S13.4); usernames open match histories (A6.1). Texts (Q153):
   - Above the table: "Every registered player with at least 1 ranked game, highest rating first.
     Equal ratings: more ranked games first, then by username."
