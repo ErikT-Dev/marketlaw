@@ -25,7 +25,11 @@ export async function joinRoomRoute(request: Request, env: Env, code: RoomCode) 
   const expected = await room.joinRejection(identity);
   if (expected !== null) {
     if (expected.reason === "room_not_found") {
-      await lobby.roomChanged(code, null, { played: [], now: v.parse(EpochMs, Date.now()) });
+      await lobby.roomChanged(code, null, {
+        played: [],
+        now: v.parse(EpochMs, Date.now()),
+        ratings: [],
+      });
     }
     return roomJson({ isOk: false, ...expected }, 409);
   }

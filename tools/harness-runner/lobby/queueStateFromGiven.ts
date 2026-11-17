@@ -15,7 +15,10 @@ export function queueStateFromGiven(
   identityNamed: (name: string) => Identity,
   now: EpochMs,
 ): QueueState {
-  const entries: ReadonlyArray<QueueEntry> = (given.queue ?? []).map((entry) =>
+  const fixtures = [...Array(given.queue_count ?? 0).keys()].map(
+    (index) => `Queued player ${String(index + 1)}`,
+  );
+  const entries: ReadonlyArray<QueueEntry> = [...(given.queue ?? []), ...fixtures].map((entry) =>
     typeof entry === "string"
       ? { playerId: identityNamed(entry).playerId, sizes: [3] }
       : { playerId: identityNamed(entry.player).playerId, sizes: entry.sizes },

@@ -42,7 +42,12 @@ describe("RemoteLobbyFeed", () => {
   it("passes on each public room list and ignores messages it cannot read", () => {
     const { opened, received } = openFeed();
     opened[0]?.onMessage(
-      JSON.stringify({ type: "lobby", protocolVersion: PROTOCOL_VERSION, publicRooms: ROOMS }),
+      JSON.stringify({
+        type: "lobby",
+        protocolVersion: PROTOCOL_VERSION,
+        publicRooms: ROOMS,
+        playersOnline: [],
+      }),
     );
     opened[0]?.onMessage("not json");
     expect(received).toEqual([ROOMS]);

@@ -16,6 +16,8 @@ export const LOBBY_NESTED_FIELDS: ReadonlyMap<string, ReadonlySet<string>> = new
       "rating",
       "ranked_games",
       "ranking_place",
+      "online",
+      "in_game",
     ]),
   ],
   ["given.records", new Set(["date", "turns", "players"])],
@@ -76,4 +78,5 @@ export const LOBBY_NESTED_FIELDS: ReadonlyMap<string, ReadonlySet<string>> = new
   ["then.logged_in", new Set(["visitor", "as"])],
   ["then.ranking", new Set(["place", "username", "rating", "ranked_games"])],
   ["then.ranking_page", new Set(["page", "first_place", "last_place", "shows"])],
+  ["then.players_online", new Set(["username", "status", "rating"])],
 ]);

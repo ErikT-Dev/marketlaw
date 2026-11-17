@@ -245,7 +245,7 @@ These 12 scenarios are added to `harness/required.yaml` in this phase, by file a
     `ranking-not-in-it-yet` screenshots; the ranking is empty in the browser tests (no test
     ends a ranked game of registered players).
 
-- [ ] 5a. **Players online on the server** (A7.1 to A7.3, A6; Q152; scenario
+- [x] 5a. **Players online on the server** (A7.1 to A7.3, A6; Q152; scenario
   `lobby-queue-and-limits` #1). **Large.**
   - The lobby socket (`Lobby.fetch`; today anonymous, and `webSocketMessage` ignores messages)
     accepts one identify message with the session token, shaped and checked like the queue
@@ -263,6 +263,27 @@ These 12 scenarios are added to `harness/required.yaml` in this phase, by file a
   - Lobby driver: `given.accounts[]` with `online` and `in_game`; `given.queue_count`; the step
     `open_lobby` for a visitor; `then.players_online` and `then.queue_count` (the queue view's
     total). `LobbySession.ts` is at 294 lines: put the new code in files of its own.
+  - Done (2026-11-17): the lobby socket takes `LobbyClientMessage` `{ protocolVersion, type:
+    "identify", token }` (`parseLobbyClientMessage`; `parseQueueClientMessage` now shares
+    `parseVersionedMessage`); a bad message or token gets `LobbyRejectedMessage` `{ type:
+    "lobby_rejected", code }` and leaves the socket anonymous. The socket's attachment is an
+    `OnlineConnection` (`playerId`, `username`, `tokenHash`, `rating`: shown rating or `null`,
+    `shownRatingOf` over `readRankedPlayers`), `null` when anonymous; no storage writes.
+    `LobbyMessage.playersOnline` is `PlayerOnlineView[]` `{ playerId, username, rating, status:
+    "online" | "in_game" }` (`lobbyMessageOf`, `playersOnlineOf`, `isInGame`), one per player,
+    by name key. `PROTOCOL_VERSION` 25. The Lobby sends the message to every open socket
+    whenever its text changes (`LobbySockets`): identify, close, logout (`Lobby.logOut` from
+    `logOutOfRooms`, by token or every login), username change (`Lobby.renamePlayer` from
+    `usernameChangeRoute`), room changes, and new ratings (`roomChanged`'s `ratings` from
+    `ratingsAfterGameOf` in `reportToLobby`). Lobby driver: `LobbyPresence` (`open_lobby`,
+    `players_online`, `queue_count`), `withInGameRooms` (an `in_game` account plays in a 2
+    player room), `queue_count` fixtures in `queueStateFromGiven`; the driver's field sets moved
+    to `LOBBY_FIELDS.ts`, the ranking's memory D1 to `givenRatingsDatabaseOf.ts`. Tests: route
+    test `tools/route-tests/lobbySocket.test.ts`, `ratingsAfterGame.test.ts`.
+  - For later items: 5b sends `identify` after each socket open while logged in (again after a
+    login), reads `playersOnline` from `LobbyMessage` (`RemoteLobbyFeed` ignores it today) and
+    `lobby_rejected`; the status text "in a game" is the driver's mapping in `LobbyPresence`
+    until the client has its own text. The socket is not closed on logout, only made anonymous.
 
 - [ ] 5b. **Players online in the client** (S10.2, S11.1; design "Lobby 1920x940" and the waiting
   room). **Large.**

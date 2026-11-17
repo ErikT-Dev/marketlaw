@@ -64,6 +64,8 @@ export const LOBBY_GIVEN_SCHEMA = v.strictObject({
         rating: v.optional(v.number()),
         ranked_games: v.optional(v.number()),
         ranking_place: v.optional(v.number()),
+        online: v.optional(v.boolean()),
+        in_game: v.optional(v.boolean()),
       }),
     ),
   ),
@@ -71,6 +73,7 @@ export const LOBBY_GIVEN_SCHEMA = v.strictObject({
   other_rooms: v.optional(v.array(GIVEN_ROOM)),
   records: v.optional(v.array(GIVEN_RECORD)),
   ranked_accounts: v.optional(v.number()),
+  queue_count: v.optional(v.number()),
   queue: v.optional(
     v.array(
       v.union([

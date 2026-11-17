@@ -3,8 +3,7 @@ import { acceptedSocketResponse } from "./acceptedSocketResponse";
 import * as v from "valibot";
 import type { EpochMs } from "../shared/EpochMs";
 import type { PlayerId } from "../shared/PlayerId";
-import { PROTOCOL_VERSION } from "../shared/PROTOCOL_VERSION";
-import type { LobbyMessage } from "../shared/protocol/LobbyMessage";
+import { parseLobbyClientMessage } from "../shared/protocol/parseLobbyClientMessage";
 import type { RoomCode } from "../shared/RoomCode";
 import type { BusyPlace } from "./lobby/BusyPlace";
 import type { ClaimRejection } from "./lobby/ClaimRejection";
@@ -16,7 +15,10 @@ import { grantChatQuota } from "./lobby/grantChatQuota";
 import type { GameStartRejection } from "./lobby/GameStartRejection";
 import { LOBBY_RECORD_SCHEMA } from "./lobby/LOBBY_RECORD_SCHEMA";
 import type { LobbyRecord } from "./lobby/LobbyRecord";
-import { publicRoomsOf } from "./lobby/publicRoomsOf";
+import { lobbyMessageOf } from "./lobby/lobbyMessageOf";
+import type { OnlineConnection } from "./lobby/OnlineConnection";
+import { connectionOfToken } from "./lobby/connectionOfToken";
+import { onlineConnectionOfSocket } from "./lobby/onlineConnectionOfSocket";
 import { releasePlayer } from "./lobby/releasePlayer";
 import { siteChatLimitOf } from "./lobby/siteChatLimitOf";
 import { siteEmailLimitOf } from "./lobby/siteEmailLimitOf";
@@ -38,10 +40,15 @@ import type { QueueOperation } from "./queue/QueueOperation";
 import type { QueueOutcome } from "./queue/QueueOutcome";
 import type { QueueRecord } from "./queue/QueueRecord";
 import { queueOf } from "./queueOf";
+import { LobbySockets } from "./LobbySockets";
+import type { LoginClosing } from "./LoginClosing";
+import type { PlayerRating } from "./records/PlayerRating";
 
 const LOBBY_KEY = "lobby";
 
 export class Lobby extends DurableObject<Env> {
+  private readonly sockets = new LobbySockets(this.ctx);
+
   async claim(playerId: PlayerId, code: RoomCode, now: EpochMs): Promise<ClaimRejection | null> {
     let rejection: ClaimRejection | null = null;
     await this.change((record) => {
@@ -153,11 +160,33 @@ export class Lobby extends DurableObject<Env> {
   async roomChanged(
     code: RoomCode,
     summary: RoomSummary | null,
-    ended: { readonly played: ReadonlyArray<PlayedActions>; readonly now: EpochMs },
+    ended: {
+      readonly played: ReadonlyArray<PlayedActions>;
+      readonly now: EpochMs;
+      readonly ratings: ReadonlyArray<PlayerRating>;
+    },
   ): Promise<void> {
-    await this.change((record) =>
-      withActionsAdded(withRoomSummary(record, code, summary), ended.played, ended.now),
+    await this.decide(
+      (record) => ({
+        after: withActionsAdded(withRoomSummary(record, code, summary), ended.played, ended.now),
+        result: undefined,
+      }),
+      () => {
+        this.sockets.rerate(ended.ratings);
+      },
     );
+  }
+
+  logOut(closing: LoginClosing): void {
+    this.changeSockets(() => {
+      this.sockets.logOut(closing);
+    });
+  }
+
+  renamePlayer(playerId: PlayerId, username: string): void {
+    this.changeSockets(() => {
+      this.sockets.rename(playerId, username);
+    });
   }
 
   async setCountsForTest(counts: PlayerCountsToday, now: EpochMs): Promise<void> {
@@ -167,12 +196,36 @@ export class Lobby extends DurableObject<Env> {
   override fetch(request: Request): Response {
     return acceptedSocketResponse(request, (server) => {
       this.ctx.acceptWebSocket(server);
-      server.send(JSON.stringify(this.messageFor(this.read())));
+      server.send(this.messageText());
     });
   }
 
-  override webSocketMessage(): void {
-    return undefined;
+  override async webSocketMessage(socket: WebSocket, message: string | ArrayBuffer): Promise<void> {
+    const text = typeof message === "string" ? message : new TextDecoder().decode(message);
+    const parsed = parseLobbyClientMessage(text);
+    const connection = parsed.isOk
+      ? await connectionOfToken(this.env.DB, parsed.value.token)
+      : null;
+    this.changeSockets(() => {
+      socket.serializeAttachment(connection);
+    });
+    if (!parsed.isOk || connection === null) {
+      LobbySockets.reject(socket, parsed.isOk ? "invalid_token" : parsed.error);
+    }
+  }
+
+  override webSocketClose(socket: WebSocket): void {
+    const closing = onlineConnectionOfSocket(socket);
+    if (closing !== null) {
+      const staying = this.sockets.connections(socket);
+      this.sendIfChanged(this.messageText([...staying, closing]), socket);
+    }
+  }
+
+  private changeSockets(change: () => void): void {
+    const before = this.messageText();
+    change();
+    this.sendIfChanged(before, null);
   }
 
   private async change(apply: (record: LobbyRecord) => LobbyRecord | null): Promise<boolean> {
@@ -184,14 +237,17 @@ export class Lobby extends DurableObject<Env> {
 
   private async decide<T>(
     apply: (record: LobbyRecord) => { readonly after: LobbyRecord | null; readonly result: T },
+    changeSockets: () => void = () => undefined,
   ): Promise<T> {
     return this.ctx.blockConcurrencyWhile(async () => {
       const before = this.read();
+      const textBefore = this.messageText();
+      changeSockets();
       const { after, result } = apply(before);
       if (after !== null && JSON.stringify(after) !== JSON.stringify(before)) {
         this.ctx.storage.kv.put(LOBBY_KEY, after);
-        this.broadcastIfListChanged(before, after);
       }
+      this.sendIfChanged(textBefore, null);
       return Promise.resolve(result);
     });
   }
@@ -201,25 +257,16 @@ export class Lobby extends DurableObject<Env> {
     return parsed.success ? parsed.output : EMPTY_LOBBY;
   }
 
-  private messageFor(record: LobbyRecord): LobbyMessage {
-    return {
-      type: "lobby",
-      protocolVersion: PROTOCOL_VERSION,
-      publicRooms: publicRoomsOf(record).map((room) => ({
-        ...room,
-        playerNames: [...room.playerNames],
-        playerIds: [...room.playerIds],
-      })),
-    };
+  private messageText(
+    connections: ReadonlyArray<OnlineConnection> = this.sockets.connections(),
+  ): string {
+    return JSON.stringify(lobbyMessageOf(this.read(), connections));
   }
 
-  private broadcastIfListChanged(before: LobbyRecord, after: LobbyRecord): void {
-    const message = JSON.stringify(this.messageFor(after));
-    if (message === JSON.stringify(this.messageFor(before))) {
-      return;
-    }
-    for (const socket of this.ctx.getWebSockets()) {
-      socket.send(message);
+  private sendIfChanged(textBefore: string, closing: WebSocket | null): void {
+    const textAfter = this.messageText(this.sockets.connections(closing));
+    if (textAfter !== textBefore) {
+      this.sockets.sendToAll(textAfter, closing);
     }
   }
 }

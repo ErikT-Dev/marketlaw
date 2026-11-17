@@ -32,27 +32,17 @@ import { waitWithQueue } from "./waitWithQueue.ts";
 import { lobbyQueueThen } from "./lobbyQueueThen.ts";
 import { queueSentTo } from "./queueSentTo.ts";
 import { connectInQueue } from "./connectInQueue.ts";
-
-const ROOM_ACTIONS = [
-  "change_size",
-  "leave_room",
-  "accept_game",
-  "decline_game",
-  "ask_rematch",
-  "send_chat",
-];
-
-const QUEUE_ACTIONS = [
-  "join_queue",
-  "change_sizes",
-  "leave_queue",
-  "confirm_match",
-  "decline_match",
-];
-
-const QUEUE_THEN_FIELDS = ["queue", "match", "view_lobby"];
-
-const CHAT_THEN_FIELDS = ["chat", "notified", "view_chat", "chat_count", "saved_before_shown"];
+import {
+  CHAT_THEN_FIELDS,
+  LOBBY_GIVEN_FIELDS,
+  LOBBY_STEPS,
+  LOBBY_THEN_FIELDS,
+  QUEUE_ACTIONS,
+  QUEUE_THEN_FIELDS,
+  ROOM_ACTIONS,
+} from "./LOBBY_FIELDS.ts";
+import { LobbyPresence, PRESENCE_THEN_FIELDS } from "./LobbyPresence.ts";
+import { withInGameRooms } from "./withInGameRooms.ts";
 
 function textOf(value: unknown): string {
   return typeof value === "string" ? value : "";
@@ -133,7 +123,7 @@ async function runVisitorStep(
 
 async function runStep(
   session: LobbySession,
-  ranking: LobbyRanking,
+  pages: { readonly ranking: LobbyRanking; readonly presence: LobbyPresence },
   step: ScenarioStep,
 ): Promise<void> {
   if (typeof step === "string") {
@@ -141,7 +131,9 @@ async function runStep(
   }
   session.rejected = null;
   if (RECORDS_ACTIONS.includes(textOf(step["action"]))) {
-    await runRecordsStep(session, ranking, step);
+    await runRecordsStep(session, pages.ranking, step);
+  } else if (step["action"] === "open_lobby") {
+    await pages.presence.open(session);
   } else if (typeof step["wait_ms"] === "number") {
     waitWithQueue(session, step["wait_ms"]);
     removeUnusedGuestsInLobby(session);
@@ -182,8 +174,9 @@ function otherFieldThen(session: LobbySession, field: string, expected: unknown)
 
 function startSession(rawGiven: Readonly<Record<string, unknown>>, random: ScriptedRandom) {
   const given = v.parse(LOBBY_GIVEN_SCHEMA, rawGiven);
-  const session = new LobbySession(given, random);
+  const session = new LobbySession(withInGameRooms(given), random);
   const ranking = new LobbyRanking(given);
+  const presence = new LobbyPresence(given);
   let before = session.snapshot();
   const chatAtStart = {
     messageCount: session.chat.storage.messages().length,
@@ -193,13 +186,16 @@ function startSession(rawGiven: Readonly<Record<string, unknown>>, random: Scrip
   const driverSession: DriverSession = {
     async runStep(step) {
       before = session.snapshot();
-      await runStep(session, ranking, step);
+      await runStep(session, { ranking, presence }, step);
       session.reportRooms();
       isUnchanged = before === session.snapshot();
     },
     readThen(field, expected) {
       if (RECORDS_THEN_FIELDS.includes(field)) {
         return recordsThen(session, ranking, field);
+      }
+      if (PRESENCE_THEN_FIELDS.includes(field)) {
+        return presence.then(session, field);
       }
       switch (field) {
         case "rejected":
@@ -237,64 +233,9 @@ function startSession(rawGiven: Readonly<Record<string, unknown>>, random: Scrip
 export const LOBBY_DRIVER: ScenarioDriver = {
   name: "lobby",
   unhandledGivenValues: () => [],
-  givenFields: new Set([
-    "clock_ms",
-    "site_games_today",
-    "site_counts_today",
-    "email_counts",
-    "players",
-    "seats",
-    "accounts",
-    "room",
-    "other_rooms",
-    "records",
-    "queue",
-    "match",
-    "ranked_accounts",
-  ]),
-  steps: new Set([
-    "create_room",
-    "join_room",
-    "open_site",
-    "create_guest",
-    "ask_generated_name",
-    "log_in",
-    "log_out",
-    "sign_up",
-    "change_username",
-    "confirm_email",
-    "change_email",
-    "delete_account",
-    "reset_password",
-    "set_new_password",
-    ...RECORDS_ACTIONS,
-    "wait_ms",
-    "disconnect",
-    "reconnect",
-    "leave_game",
-    "mute",
-    "unmute",
-    ...ROOM_ACTIONS,
-    ...QUEUE_ACTIONS,
-  ]),
-  thenFields: new Set([
-    "rejected",
-    "unchanged",
-    "room",
-    "game",
-    "message_to",
-    "accounts",
-    "generated_name",
-    "logged_in",
-    "lobby_rooms",
-    "replay_record",
-    "record",
-    ...RECORDS_THEN_FIELDS,
-    "emails_sent",
-    "seats",
-    ...CHAT_THEN_FIELDS,
-    ...QUEUE_THEN_FIELDS,
-  ]),
+  givenFields: LOBBY_GIVEN_FIELDS,
+  steps: LOBBY_STEPS,
+  thenFields: LOBBY_THEN_FIELDS,
   nestedFields: LOBBY_NESTED_FIELDS,
   startSession,
 };

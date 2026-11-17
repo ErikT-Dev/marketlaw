@@ -6,6 +6,7 @@ import { findRenameAccount } from "../findRenameAccount";
 import type { RenameAccount } from "../RenameAccount";
 import { renamePlayer } from "../renamePlayer";
 import { sha256Hex } from "../sha256Hex";
+import { lobbyOf } from "../lobbyOf";
 import { bodyOf } from "./bodyOf";
 import { takenNameKeys } from "./takenNameKeys";
 
@@ -25,11 +26,11 @@ function isSameList(first: ReadonlyArray<number>, second: ReadonlyArray<number>)
 }
 
 async function changeUsername(
-  db: D1Database,
+  env: Env,
   attempt: UsernameChangeAttempt,
   attemptsLeft: number,
 ): Promise<Response> {
-  const account = await findRenameAccount(db, attempt.tokenHash, attempt.now);
+  const account = await findRenameAccount(env.DB, attempt.tokenHash, attempt.now);
   if (account === null) {
     return json({ isOk: false, reason: "invalid_token" }, 401);
   }
@@ -42,7 +43,7 @@ async function changeUsername(
       changesMs: account.usernameChangesMs,
       now: attempt.now,
     },
-    async (wanted) => (await takenNameKeys(db, [wanted])).length > 0,
+    async (wanted) => (await takenNameKeys(env.DB, [wanted])).length > 0,
   );
   if (decision.kind === "refused") {
     return json({ isOk: false, reason: decision.reason }, 400);
@@ -51,11 +52,14 @@ async function changeUsername(
     return renamed;
   }
   const change = { name: attempt.username, now: attempt.now, changesMs: account.usernameChangesMs };
-  if (await renamePlayer(db, playerId, change)) {
+  if (await renamePlayer(env.DB, playerId, change)) {
+    await lobbyOf(env)
+      .renamePlayer(playerId, attempt.username)
+      .catch(() => undefined);
     return renamed;
   }
-  return attemptsLeft > 1 && (await isChangedMeanwhile(db, attempt, account))
-    ? changeUsername(db, attempt, attemptsLeft - 1)
+  return attemptsLeft > 1 && (await isChangedMeanwhile(env.DB, attempt, account))
+    ? changeUsername(env, attempt, attemptsLeft - 1)
     : json({ isOk: false, reason: "username_taken" }, 409);
 }
 
@@ -79,5 +83,5 @@ export async function usernameChangeRoute(request: Request, env: Env): Promise<R
     username: body.username,
     now: Date.now(),
   };
-  return changeUsername(env.DB, attempt, USERNAME_CHANGES_IN_WAIT + 1);
+  return changeUsername(env, attempt, USERNAME_CHANGES_IN_WAIT + 1);
 }
