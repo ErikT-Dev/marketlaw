@@ -255,3 +255,4 @@ each helper's conversation size at its end.
 |---|---|---|---|---|---|
 | Starter + builder, item 1 | Opus, medium | 16 | 191k | 81 | done |
 | Builder, item 2 | Opus, medium | 13 | 164k | 65 | done |
+| Builder, item 3 | Opus, medium | 12 | 150k | 85 | done |
