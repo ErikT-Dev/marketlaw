@@ -320,3 +320,25 @@ each helper's conversation size at its end.
 | Finisher | Sonnet, medium | 30 | 86k | 38 | done |
 | Phase reviewer | Opus, medium | 4 | 150k | 35 | done: F1-F3 |
 | Fixer, F1, F2, F3 | Opus, medium | 8 | 91k | 40 | done |
+
+## Report
+
+**Built.** The game menu (lobby, waiting room, game; Rules and Card set; opening anything never
+stops the clock), the rules viewer (`rulebook.md` through a small project renderer, loaded only
+when opened, contents, links, previous and next, types and stats as icons), and the card set (all
+240 cards as tiles, sector, tier and type filters, name search with the matching count, and the
+card detail with every combo).
+
+**To try.** Open the menu from the lobby and from a game, read the rules and follow a link, filter
+the card set, search a name and open a card.
+
+**Differs from the phase file.** No Markdown library (Q156). The card set differs from the design
+in its type icon buttons and in the icons and infinite mark of the card detail (S17, Q160); tiles
+carry no photo, as in the boards. The menu has no Tutorial entry until phase 29, so `client` #1
+fails until then (not required).
+
+**Decisions.** Q156 to Q160.
+
+**Review.** F1 (menu said the clock runs after game over): fixed, place `game_over` with the lobby
+lines. F2 (two exports in one file): fixed, `isRulebookListStart.ts`. F3 (design differences only
+in Progress): fixed, S17 entry and Q160.
