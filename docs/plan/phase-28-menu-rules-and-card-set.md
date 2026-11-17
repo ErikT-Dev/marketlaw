@@ -319,3 +319,4 @@ each helper's conversation size at its end.
 | Builder, item 5 | Opus, medium | 29 | 177k | 94 | done |
 | Finisher | Sonnet, medium | 30 | 86k | 38 | done |
 | Phase reviewer | Opus, medium | 4 | 150k | 35 | done: F1-F3 |
+| Fixer, F1, F2, F3 | Opus, medium | 8 | 91k | 40 | done |
