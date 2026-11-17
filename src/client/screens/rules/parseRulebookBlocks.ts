@@ -2,7 +2,8 @@ import { joinParsed } from "./joinParsed";
 import type { RulebookBlock } from "./RulebookBlock";
 import type { RulebookParsed } from "./RulebookParsed";
 import { parseRulebookInline } from "./parseRulebookInline";
-import { isRulebookListStart, parseRulebookList } from "./parseRulebookList";
+import { isRulebookListStart } from "./isRulebookListStart";
+import { parseRulebookList } from "./parseRulebookList";
 import { parseRulebookTable } from "./parseRulebookTable";
 import { statWordParts } from "./statWordParts";
 
