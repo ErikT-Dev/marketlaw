@@ -370,9 +370,17 @@ These 12 scenarios are added to `harness/required.yaml` in this phase, by file a
     a failed D1 batch still sends ratings that were never saved. Breaks A10.7, A7.2, S10.2. Fix:
     send the Lobby the stored ratings (`RETURNING` on the upsert, or re-read after the batch
     succeeds), none if the batch failed; test a stored rating that differs from the kept before.
+    Fixed: saving the game record now reads back the stored ratings after the batch succeeds
+    (`readStoredRatings.ts`), `saveGameRecordIfEnded` returns them (none when the save fails or
+    the game was casual), and the room passes them to `reportToLobby`; `ratingsAfterGameOf.ts`
+    is gone. `ratingsAfterGame.test.ts` tests a stored 1500 rating against a kept 1000, a failed
+    save and a deleted account.
   - F4 (suggestion): a player who deletes their account during a ranked game gets a new
     `ratings` row when the game ends (`gameRecordRowsOf.ts`, `ADD_RATING_CHANGE`), against Q153.
     Fix: insert only `WHERE EXISTS` the player, still one statement per player (B8 unchanged).
+    Fixed: the ratings upsert is an `INSERT ... SELECT ... WHERE EXISTS (players)`, one statement
+    per player. The harness's memory database now runs every migration and adds the room
+    driver's accounts as players; `gameRecordSaving.test.ts` tests a deleted account.
   - F5 (suggestion): two differences noted only in Progress, not in the spec: the players online
     list also in the room after the game (S11.1, S11.4), and the own row highlighted whenever it
     is on the page (S13.3). Fix: write both into S11.4 and S13.3 and record them under Q152, Q153.
@@ -380,6 +388,8 @@ These 12 scenarios are added to `harness/required.yaml` in this phase, by file a
     `LobbyPresence.ts`, `recordsThen.ts`, `runRecordsStep.ts` export a field list beside their
     main export (`rules/architecture.md`, File structure). Fix: keep the lists private and export
     only what the driver needs, or one file per list.
+    Fixed: one file per list (`ROOM_ACTIONS.ts`, `LOBBY_STEPS.ts`, `PRESENCE_THEN_FIELDS.ts`,
+    `RECORDS_ACTIONS.ts` and the others); `LOBBY_FIELDS.ts` is gone.
 - Fixer groups: A = F1, F2, F5 (client screens, browser tests, spec texts); B = F3, F4, F6
   (server ratings, harness driver).
 
