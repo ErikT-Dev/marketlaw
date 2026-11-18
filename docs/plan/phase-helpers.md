@@ -20,6 +20,10 @@ nothing else about the phase than what is written down: the phase file (above al
 
 `CLAUDE.md` and `rules/` are already in your context; they apply to you in full.
 
+Stage your own files by path, never with `git add -A`, `git add .` or `git commit -a`. Never
+stage, edit or delete anything in `docs/feedback-notes/` (the owner's; `README.md`, "Feedback
+notes").
+
 ### Keep your context small
 Your cost grows with everything you read, so read only what the job needs:
 - Read the part of a file you need (a section, a function, a line range), not every file in a
@@ -181,3 +185,5 @@ finisher's second run used to (Q133).
 7. Copy the branch check's screenshots into `harness/screens/` (the finisher's step 4), mark
    the phase **done** in the phase table and the phase file, commit both on master, push, and
    report. Neither starts a deploy (`deploy.yml` ignores `docs/` and `harness/screens/`).
+   For a fix phase, in the same commit, rename its note in `docs/feedback-notes/` from
+   `ready` to `deployed` (`git mv`), the only change Claude ever makes there.

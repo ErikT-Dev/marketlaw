@@ -60,7 +60,7 @@ the live site from the lobby to the final score. Invited testers only (D6).
   ("Playthrough") or send the notes; findings become spec changes (with your approval) or new
   phases before milestone 4 starts. No secret, setting or command is needed from you.
 - Done 2026-11-06: the owner played and sent 9 findings, all approved
-  (`docs/playthrough-notes/2026-11-06-first-playthrough.txt`). They are built in phase 20a,
+  (`docs/feedback-notes/2026.11.06 - deployed.txt`). They are built in phase 20a,
   which also takes over accepting milestone 3 (Q74).
 
 ## Required scenarios

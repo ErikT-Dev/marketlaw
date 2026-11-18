@@ -1285,7 +1285,7 @@ file.
 ## Q74. What happens with the findings of the owner's first playthrough?
 
 - **Phase:** 20, waiting for the owner (Q71); the owner's notes are
-  `docs/playthrough-notes/2026-11-06-first-playthrough.txt`. The owner reviewed all 9 findings
+  `docs/feedback-notes/2026.11.06 - deployed.txt`. The owner reviewed all 9 findings
   and approved every one for implementing (2026-11-06).
 - **Question:** phase 20 says findings become spec changes or new phases before milestone 4.
   Where do the notes live, how do the findings reach the spec, and which phase builds them?
@@ -2692,7 +2692,7 @@ file.
 
 ## Q126. What happens with the findings of the owner's playthrough of 2026-11-10?
 
-- **Phase:** 25 is done; the owner's notes are `docs/playthrough-notes/2026-11-10-playthrough.txt`
+- **Phase:** 25 is done; the owner's notes are `docs/feedback-notes/2026.11.10 - deployed.txt`
   (12 findings). As Q78 says, the next "continue" plans a fix phase for them before any other
   phase: **25a, Playthrough fixes**. Phases 26 and 28 now also depend on 25a.
 - **Question:** which findings change the rules, the protocol, the screens or the accounts; what

@@ -82,7 +82,9 @@ The session that receives "continue" is the **coordinator**. It finds the work i
 1. Delete the stop flag `node_modules/.cache/marketlaw/stop-requested`. If no helper of this
    session is running, also delete a leftover helper marker
    `node_modules/.cache/marketlaw/helper-running`.
-2. Check git: the current branch, uncommitted changes, the last few commits.
+2. Check git: the current branch, uncommitted changes, the last few commits. Uncommitted
+   changes in `docs/feedback-notes/` are the owner's, never phase work: commit them first,
+   exactly as they are, on their own (`NOTES: …`), staging only that folder.
 3. Read the **Status** column of the phase table below. It is the one source of truth; each
    phase file's Status line mirrors it. For a phase in progress, read only the **Progress**
    section of its phase file.
@@ -90,9 +92,9 @@ The session that receives "continue" is the **coordinator**. It finds the work i
    - **Uncommitted changes on a phase branch:** they belong to that phase, left by a stopped or
      interrupted helper. Run the job the Progress notes name, which picks them up.
    - **A phase in progress:** the first Progress item not ticked off, or the next Finish step.
-   - **New playthrough notes:** a file in `docs/playthrough-notes/` that no phase builds yet
-     (Q78). Before any other phase is started, a fix phase for it is planned, as 20a was (Q74),
-     and built.
+   - **New feedback notes:** a file in `docs/feedback-notes/` marked `ready` that no phase
+     builds yet (Q78, "Feedback notes" below). Before any other phase is started, a fix phase
+     for it is planned, as 20a was (Q74), and built.
    - **A phase waiting for the owner:** whatever the phase can still do without the owner. If
      nothing is left, start the next phase whose dependencies are done, or stop and tell the
      owner what is needed.
@@ -127,6 +129,19 @@ When the owner says "stop" (or anything like it) while a helper runs, the coordi
 If no helper is running, the coordinator only confirms that nothing is running. Pressing Esc
 does not stop a helper; closing the terminal does, at once, and leaves its work uncommitted for
 the next "continue".
+
+### Feedback notes
+
+The owner's notes from using the product live in `docs/feedback-notes/`, one file per round,
+named `YYYY.MM.DD - status.txt` (2026-11-18). The folder is the owner's: Claude reads it and
+commits the owner's changes as they are, but never creates, edits or deletes a note. The status:
+
+- `not ready`: the owner is still writing it. Ignore it.
+- `ready`: the next "continue" plans a fix phase for it, unless a phase already builds it.
+- `deployed`: its fix phase is merged and deployed. Nothing left to do.
+
+The one exception: when a fix phase is merged and its deploy has really finished, the releaser
+renames that phase's note from `ready` to `deployed` and commits only that rename.
 
 ## How a phase is built
 

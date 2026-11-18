@@ -14,7 +14,7 @@ Phase 20.
 
 ## Covers
 
-- Notes: `docs/playthrough-notes/2026-11-06-first-playthrough.txt`, all 9 findings (Q74).
+- Notes: `docs/feedback-notes/2026.11.06 - deployed.txt`, all 9 findings (Q74).
 - Rules: R19.4 (quests need workforce, quality and satisfaction 0 or more), R17.1, R17.6, M3.2 and
   M3.5 (the discard pile is shown only as a number of cards).
 - Screens: S1.5, S1.6 (every screen and text, owner's rule of 2026-11-06), S4.2, S4.5, S5.1,
