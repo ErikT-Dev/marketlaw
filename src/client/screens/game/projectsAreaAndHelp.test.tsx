@@ -99,6 +99,7 @@ describe("the help buttons", () => {
         .getAllByRole("img")
         .map((icon) => icon.getAttribute("aria-label")),
     ).toEqual([
+      "Income",
       "Workforce",
       "Quality",
       "Satisfaction",

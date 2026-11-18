@@ -23,7 +23,7 @@ const READY: Partial<OwnSeatView> = {
   projects: ["workforce"],
   stats: {
     funds: 7,
-    income: 3,
+    income: 10,
     influence: 0,
     workforce: 2,
     quality: 9,
@@ -113,7 +113,9 @@ describe("projects", () => {
     fireEvent.click(screen.getByRole("button", { name: "Projects" }));
     const dialog = within(screen.getByRole("dialog", { name: "Projects" }));
     const streetsItem = dialog.getByRole("listitem", { name: "Clean up the streets" });
-    expect(textWithIconNames(streetsItem)).toContain("Needs [Quality 8] · you have [Quality 9]");
+    expect(textWithIconNames(streetsItem)).toContain(
+      "Needs [Quality 8] and at least [Income 10] · you have [Quality 9] and [Income 10]",
+    );
     const streets = within(streetsItem);
     const campaign = within(dialog.getByRole("listitem", { name: "Culture campaign" }));
     expect(campaign.getByRole("button", { name: "Need 4 more" })).toHaveProperty("disabled", true);
@@ -150,7 +152,7 @@ describe("projects", () => {
       true,
     );
     expect(textWithIconNames(streetsItem)).toContain(
-      "You need 8 of the stat, and no negative [Workforce], [Quality] or [Satisfaction].",
+      "You need 8 of the stat, at least 10 [Income], and no negative [Workforce], [Quality] or [Satisfaction].",
     );
   });
 

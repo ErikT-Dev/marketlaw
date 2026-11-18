@@ -81,7 +81,7 @@ export const TUTORIAL_TEXTS: Readonly<Record<TutorialStepId, TutorialStepText>> 
     waitingFor: "complete Trading post",
   },
   "T5.4": {
-    text: "Two more things to know. Projects: when you collect 8 quality, 8 satisfaction or 8 workforce, you can complete a project for income, funds and influence. The game ends after the turn in which a player has income 22 and all 3 projects; then the highest score wins. In a real game, you play against 1 to 3 other players at the same time, and every turn has a time limit. You can read all the rules any time from the menu.",
+    text: "Two more things to know. Projects: when you collect 8 quality, 8 satisfaction or 8 workforce and have at least 10 income, you can complete a project for income, funds and influence. The game ends after the turn in which a player has income 22 and all 3 projects; then the highest score wins. In a real game, you play against 1 to 3 other players at the same time, and every turn has a time limit. You can read all the rules any time from the menu.",
     textAfter: null,
     waitingFor: "press Finish",
   },

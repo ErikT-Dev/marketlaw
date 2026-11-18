@@ -18,7 +18,7 @@ test("claim combos with the totals, complete a project, and get the first-comple
 }, testInfo) => {
   const [seatOne = "", seatTwo = ""] = await startTestRoom(request, {
     players: 2,
-    seats: [{ seat: 1, city: ["Row House", "Fire Station"], stats: { quality: 8 } }],
+    seats: [{ seat: 1, city: ["Row House", "Fire Station"], stats: { quality: 8, income: 10 } }],
   });
   const ann = await openSeat(browser, viewport, seatOne);
   const bea = await openSeat(browser, viewport, seatTwo);

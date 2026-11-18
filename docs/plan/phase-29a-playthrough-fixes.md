@@ -391,11 +391,19 @@ These 35 required scenarios now assert the new rules (Q169) and must pass again:
   - Scenarios: `drawing`, the 5 redraw ones; `visibility` "the log shows a redraw …";
     `tutorial` "the tutorial does not offer a redraw …".
 
-- [ ] 5. **Projects need 10 income** (R16.2, S6.3, S8.2, S16.3, T5.4). **Small.**
+- [x] 5. **Projects need 10 income** (R16.2, S6.3, S8.2, S16.3, T5.4). **Small.**
   - `src/rules/projectRejection.ts`, reason `project_needs_not_met`, whose text names the income
     (no new code, Q169, 4); `REJECTION_MESSAGES.ts`, the projects help text and pop-up, the
     tutorial's T5.4 text. Scenarios: `projects` "rejects a project with less than 10 income" and
     the 7 with 10 income. The bots must not try a project below 10 income (`bots.test.ts`).
+  - Done (2026-11-18). All 8 project scenarios pass; `npm run check` is green.
+  - As built: `src/shared/PROJECT_INCOME_NEED.ts` (10), used by `projectRejection.ts` and the
+    Projects pop-up, whose need line reads "Needs [stat 8] and at least [income 10] · you have
+    [stat] and [income]" (S8.2 "what you have" taken as both). The `project_needs_not_met`
+    text, the projects help (S6.3) and the tutorial's T5.4 text follow the spec. The bots
+    already choose projects from the view's `projectRejections`, so they needed no change.
+  - Differs: `e2e/combosAndProjects.spec.ts` gives the player 10 income (not run locally: see
+    item 3, the browser tests do not load since 1b).
 
 - [ ] 6. **Total worth gained** (R2.4, M3.5, I28). **Small.**
   - A seat count, 14 at setup, raised where funds are received (not selling) and cards gained;

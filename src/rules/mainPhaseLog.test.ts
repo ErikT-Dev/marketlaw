@@ -95,7 +95,14 @@ describe("the game log of what players did in the main phase", () => {
       ...game,
       seats: game.seats.map((seat) => ({
         ...seat,
-        stats: { ...seat.stats, funds: 20, workforce: 10, quality: 10, satisfaction: 10 },
+        stats: {
+          ...seat.stats,
+          funds: 20,
+          income: 10,
+          workforce: 10,
+          quality: 10,
+          satisfaction: 10,
+        },
       })),
     };
     const after = played(withMainPhaseStart(ready), [
