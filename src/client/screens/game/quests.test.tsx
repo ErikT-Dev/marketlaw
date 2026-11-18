@@ -205,7 +205,7 @@ describe("quests panel", () => {
     expect(within(card).queryByRole("img", { name: /^quality/ })).toBeNull();
   });
 
-  it("lists the quests completed in the turn before with tier and who completed them", () => {
+  it("lists the quests completed in the turn before with tier, requirement, reward and who completed them", () => {
     render(
       <GamePage
         {...gamePageProps(
@@ -222,9 +222,26 @@ describe("quests panel", () => {
     const table = screen.getByRole("table", { name: "Completed last turn" });
     expect(
       within(table)
-        .getAllByRole("row")
-        .map((row) => row.textContent),
-    ).toEqual(["QuestTierCompleted by", "Growing suburbs2Ann, Cy", "Working district1Bea"]);
+        .getAllByRole("columnheader")
+        .map((header) => header.textContent),
+    ).toEqual(["Quest", "Tier", "Requirement", "Reward", "Completed by"]);
+    const [, suburbs, district] = within(table).getAllByRole("row");
+    expect(
+      within(suburbs ?? table)
+        .getAllByRole("cell")
+        .map((cell) => cell.textContent),
+    ).toEqual(["2", expect.any(String), expect.any(String), "Ann, Cy"]);
+    expect(within(suburbs ?? table).getByRole("rowheader").textContent).toBe("Growing suburbs");
+    expect(
+      within(suburbs ?? table)
+        .getAllByRole("img")
+        .map((part) => part.getAttribute("aria-label")),
+    ).toEqual(["2 Town Housing", "1 Low Wealth", "+2 quality"]);
+    expect(
+      within(district ?? table)
+        .getAllByRole("img")
+        .map((part) => part.getAttribute("aria-label")),
+    ).toEqual(["3 Residential cards", "1 Low Wealth", "+1 quality"]);
   });
 
   it("shows no completed last turn table when no quest was completed in the turn before", () => {

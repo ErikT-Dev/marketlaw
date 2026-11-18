@@ -527,9 +527,15 @@ These 35 required scenarios now assert the new rules (Q169) and must pass again:
   - For later items: 13 sorts type lists with `typesInListOrder` and shows them with
     `TypeCountsList`.
 
-- [ ] 10. **Quests completed last turn** (S5.5). **Small.**
+- [x] 10. **Quests completed last turn** (S5.5). **Small.**
   - Each quest with its requirement and reward as icons (S1.6), reusing how the quests table
     shows them; usernames stay in this table (Q169, 16).
+  - Done (2026-11-19). Unit test in `quests.test.tsx` (columns, each quest's requirement and
+    reward parts); `e2e/quests.spec.ts` passes locally; `npm run check` is green.
+  - As built: the table has Quest, Tier, Requirement, Reward and Completed by columns; the
+    requirement parts come from `QuestNeedParts.tsx` (taken out of `QuestNeedsLine`), the reward
+    from `QuestRewardParts`. The table column is at most half the quests panel
+    (`fit-content(50%)`), so the quest cards stay readable at 1280x720 and the cells wrap.
 
 - [ ] 11. **Card-name combos on the big card** (S6.9). **Large.**
   - `src/client/components/BigCard*`: the red name with "!" (both directions, Q169, 18), its
