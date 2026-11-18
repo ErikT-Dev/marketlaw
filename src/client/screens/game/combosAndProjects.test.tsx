@@ -41,7 +41,7 @@ function showGame(changes: Partial<OwnSeatView> = READY) {
 }
 
 describe("your city and combos", () => {
-  it("shows the city by sector and the combos with how many are ready", () => {
+  it("shows the city by sector and the combos with how many are ready, without claimed one-time combos", () => {
     showGame();
     expect(
       within(screen.getByRole("list", { name: "Your Residential cards" }))
@@ -51,7 +51,6 @@ describe("your city and combos", () => {
     const combos = within(screen.getByRole("region", { name: "Combos · 1 ready" }));
     expect(combos.getAllByRole("listitem").map(textWithIconNames)).toEqual([
       "Row House · 1 [Safety][Quality +1]ready",
-      "Row House · 1 [Rental Space][Satisfaction +1]claimed",
       "Fire Station · 1 [Suburban Housing][Quality +1]",
     ]);
   });

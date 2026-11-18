@@ -479,12 +479,28 @@ These 35 required scenarios now assert the new rules (Q169) and must pass again:
   - For later items: 10 keeps usernames (Q169, 16); any later display of icons reuses
     `PlayerIcon` and `PlayerIconColors`.
 
-- [ ] 8. **Combos list and Claim all** (S6.1, S6.6, S1.7, S8.1). **Large.**
+- [x] 8. **Combos list and Claim all** (S6.1, S6.6, S1.7, S8.1). **Large.**
   - One coloured list in the order of S6.1 (group counts include ready combos; the stat order of
     R2.1; fewer cards needed is the smaller type count, Q169, 2); the same order in the claim
     pop-up and in the detailed summary table; **Claim all (N)**, N being 1 per ready one-time
     combo plus each time an infinite combo is ready (Q169, 11), from the view. The S6.1 order is
     one pure client function that items 11 and 13 reuse.
+  - Done (2026-11-18). Unit tests in `src/client/screens/game/combosList.test.tsx` (order, what
+    stays, Claim all (5), the pop-up's order, the detailed summary table's list); `npm run check`
+    is green.
+  - As built: `src/client/sorting/`: `combosInListOrder(entries, isReady)` (S6.1, for any entries
+    with `card` and `combo`), `compareCombosOfOneCard(combo, other)` (S1.7's order for the
+    combos printed on one card: type combos first, infinite first, fewer needed, bigger reward,
+    R2.1 stat order, then card-name combos by card name) and `compareAlphabetically`.
+    `combosListOf` drops claimed one-time combos and sorts; the combos panel colours each combo
+    (tokens `--color-combo-*`), the Claim all pop-up keeps the list's order, and
+    `claimAllCountOf` sums `readyTimes`. The panel title still counts ready combos.
+  - Differs: the detailed summary table had no list of claimed combos (S3.2), only the C box; it
+    now has one under the T and C boxes (`ClaimedCombosList.tsx`, "Combos claimed by Di",
+    ×times when claimed more than once), sorted with `combosInListOrder`.
+  - For later items: 11 and 13 sort one card's combos with `compareCombosOfOneCard`; 9 sorts
+    type names with `compareAlphabetically` (its type sorter can go in `src/client/sorting/`).
+    `e2e/combosAndProjects.spec.ts` (Claim all (1), the combos-list screenshot) still matches.
 
 - [ ] 9. **Stats and summary tables** (S3.1, S3.2, S6.2, S1.7, S13.4). **Large.**
   - Q, T, C and F boxes in your stats (T counts the city's card types, a doubled type twice,

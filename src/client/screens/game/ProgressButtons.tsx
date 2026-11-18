@@ -3,6 +3,7 @@ import { Button } from "../../components/Button";
 import type { OpenDialog } from "./OpenDialog";
 import { Highlighted } from "./Highlighted";
 import { StatChip } from "../../components/StatChip";
+import { claimAllCountOf } from "./claimAllCountOf";
 
 type Props = {
   readonly seat: OwnSeatView;
@@ -11,7 +12,7 @@ type Props = {
 };
 
 export function ProgressButtons({ seat, isBusy, onOpenDialog }: Props) {
-  const ready = seat.combos.filter(({ readyTimes }) => readyTimes > 0).length;
+  const claims = claimAllCountOf(seat.combos);
   return (
     <>
       <Highlighted part={{ kind: "button", button: "claim_all" }}>
@@ -22,7 +23,7 @@ export function ProgressButtons({ seat, isBusy, onOpenDialog }: Props) {
             onOpenDialog("claimAll");
           }}
         >
-          Claim all ({ready})
+          Claim all ({claims})
         </Button>
       </Highlighted>
       <Button

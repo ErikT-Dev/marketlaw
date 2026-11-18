@@ -5,6 +5,7 @@ import { CountBox } from "../../components/CountBox";
 import { StatChip } from "../../components/StatChip";
 import type { StatName } from "../../icons/StatName";
 import { cityTypeTotalOf } from "./cityTypeTotalOf";
+import { ClaimedCombosList } from "./ClaimedCombosList";
 import { combosClaimedCountOf } from "./combosClaimedCountOf";
 import { LiveBankChip } from "./LiveBankChip";
 import { OpponentBasicStats } from "./OpponentBasicStats";
@@ -53,6 +54,7 @@ export function OpponentStatsBox({ seat, name, playerId }: Props) {
           label="Combos claimed"
         />
       </div>
+      <ClaimedCombosList combosClaimed={seat.combosClaimed} name={name} />
       <LiveBankChip timeBankMs={seat.timeBankMs} clock={seat.clock} label="Bank" />
       <p className={styles["status"]}>This turn: {turnStatus(seat)}</p>
     </section>
