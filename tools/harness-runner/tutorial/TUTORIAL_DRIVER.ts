@@ -9,6 +9,7 @@ import { playTutorialUntil } from "./playTutorialUntil.ts";
 import { TUTORIAL_GIVEN_SCHEMA } from "./TUTORIAL_GIVEN_SCHEMA.ts";
 import { tutorialActionFromStep } from "./tutorialActionFromStep.ts";
 import { tutorialRatingsThen } from "./tutorialRatingsThen.ts";
+import { tutorialRoomThen } from "./tutorialRoomThen.ts";
 import { TutorialSession } from "./TutorialSession.ts";
 
 const TUTORIAL_GAME_FIELDS = ["seats", "turn", "marketplace", "quests", "bonus_types"];
@@ -38,19 +39,6 @@ function runTutorialStep(session: TutorialSession, step: ScenarioStep): void {
   }
 }
 
-function readRoomThen(session: TutorialSession, field: string): unknown {
-  const { record } = session;
-  const stage = record?.tutorial.stage;
-  switch (field) {
-    case "tutorial_step":
-      return stage;
-    case "tutorial":
-      return stage === "complete" ? "ended" : stage;
-    default:
-      return record === undefined ? "deleted" : { seats: 1, player: record.player.name };
-  }
-}
-
 function readTutorialThen(session: TutorialSession, field: string, expected: unknown): unknown {
   const { record, lastReply } = session;
   switch (field) {
@@ -61,7 +49,7 @@ function readTutorialThen(session: TutorialSession, field: string, expected: unk
     case "tutorial_step":
     case "tutorial":
     case "tutorial_room":
-      return readRoomThen(session, field);
+      return tutorialRoomThen(session, field);
     case "record":
       return session.records.rowCounts().records === 0 ? "none" : "saved";
     case "ratings":

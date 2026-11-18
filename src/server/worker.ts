@@ -23,11 +23,13 @@ import { roomJson } from "./api/roomJson";
 import { sessionRoute } from "./api/sessionRoute";
 import { sendAgainRoute } from "./api/sendAgainRoute";
 import { signupRoute } from "./api/signupRoute";
+import { startTutorialRoute } from "./api/startTutorialRoute";
 import { usernameChangeRoute } from "./api/usernameChangeRoute";
 import { removeUnusedGuests } from "./deletion/removeUnusedGuests";
 import { removeOldEmailRecords } from "./email/removeOldEmailRecords";
 import { lobbyOf } from "./lobbyOf";
 import { queueOf } from "./queueOf";
+import { tutorialOf } from "./tutorialOf";
 import { removeForgottenLoginFailures } from "./removeForgottenLoginFailures";
 import { removeOldReplayRecords } from "./replays/removeOldReplayRecords";
 import { confirmTestSeat } from "./testRooms/confirmTestSeat";
@@ -52,7 +54,7 @@ async function routeTutorialSocket(
 ): Promise<Response> {
   const playerId = v.safeParse(PlayerId, path[1]);
   return playerId.success
-    ? env.TUTORIAL.get(env.TUTORIAL.idFromName(playerId.output)).fetch(request)
+    ? tutorialOf(env, playerId.output).fetch(request)
     : new Response("Not found", { status: 404 });
 }
 
@@ -84,6 +86,7 @@ const POST_ROUTES: Readonly<Record<string, (request: Request, env: Env) => Promi
   "/api/ranking": rankingRoute,
   "/api/rooms": createRoomRoute,
   "/api/signups": signupRoute,
+  "/api/tutorials": startTutorialRoute,
   "/api/confirmation-emails": sendAgainRoute,
   "/api/email-confirmations": confirmEmailRoute,
   "/api/email-changes": emailChangeRoute,

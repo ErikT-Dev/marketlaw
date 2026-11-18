@@ -58,6 +58,9 @@ function receiveVersioned(
   if (action.type === "leave_tutorial") {
     return leave(storage);
   }
+  if (action.type === "restart_tutorial" && input.restartRefusal !== null) {
+    return rejected(connection, input.restartRefusal, actionId);
+  }
   const next = nextTutorialState(record.tutorial, action, now);
   if (!next.isOk) {
     return rejected(connection, next.error, actionId);

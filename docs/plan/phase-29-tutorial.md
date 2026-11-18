@@ -172,7 +172,7 @@ These 17 scenarios are added to `harness/required.yaml` in this phase, by file a
   - Scenario fields `record`, `ratings`, `disconnect`, `wait_ms`: reuse `recordThen.ts`,
     `ratingsThen.ts`, `givenRatingsOf.ts` (room driver) and `fireAlarmsUntil.ts` (lobby driver).
 
-- [ ] 3. **Tutorial in the lobby: one thing at a time, limits and the cap** (C4.6, C4.7, C4.9,
+- [x] 3. **Tutorial in the lobby: one thing at a time, limits and the cap** (C4.6, C4.7, C4.9,
   M2.1, A9.5, A9.6; Q162, Q163, Q164; scenarios `client` #10, #15, `lobby-queue-and-limits` #28,
   #29). **Large.**
   - The lobby's busy places (`BusyPlace.ts`, `claimPlayer.ts`, `releasePlayer.ts`,
@@ -190,6 +190,30 @@ These 17 scenarios are added to `harness/required.yaml` in this phase, by file a
     (`createGuestRoute.ts`; `logInVisitor.ts` in the lobby driver).
   - Opening the site while in a tutorial goes back to it (Q163): do what is done for a player in
     a game (`isInGame.ts`, `sessionRoute.ts`).
+  - Done (2026-11-18), Q166: `POST /api/tutorials` (`startTutorialRoute`, body `{ token }`,
+    answer `TutorialStartResponse` `{ isOk: true }` or `{ isOk: false, reason }`): `isReallyBusy`
+    (now asks `TutorialRoom.isPlayerBusy` for the place `TUTORIAL_PLACE`), then
+    `Lobby.startTutorial` (`countTutorialStart`: `busy_elsewhere` or `site_daily_cap`, else
+    claims the tutorial place and counts `siteTutorialStarts`), then `TutorialRoom.start`, then
+    `leaveFinishedRooms`. Restart: `TutorialRoom` asks `Lobby.startTutorial` before a restart it
+    would accept (`restartingPlayerOf`) and passes the refusal in `TutorialInput.restartRefusal`.
+    Leaving and the alarm's deletion call `Lobby.release(player, TUTORIAL_PLACE)`. The site cap
+    reads `TEST_SITE_TUTORIALS_PER_DAY` (`.dev.vars`, `check.yml`, `deploy.yml`: 1000000).
+    No message shape changed (`PROTOCOL_VERSION` still 26). Route test
+    `tools/route-tests/tutorialStartRoute.test.ts`.
+  - Driver: `TutorialSession` starts and restarts through `countTutorialStart` on a lobby record
+    (its own, or the lobby driver's through `TutorialSessionLinks`). The lobby driver now runs
+    `given.tutorial`, `start_tutorial` (player, and visitor through `visitorAwaits` before
+    `create_guest`), `tutorial_step` and `tutorial_room` (`lobbyTutorialSteps.ts`), so it also
+    takes `client` #12 and #17; the tutorial driver keeps the rest.
+  - Differs from the phase file: opening the site in a tutorial is client work (a game's return
+    is the stored session, not `sessionRoute`), left to item 6a. A player stays busy in an ended
+    tutorial until they leave it (Q166).
+  - For later items: item 4 counts a tutorial start as `countTutorialStart` (1 lobby row) plus
+    the room's rows; item 5 starts the tutorial with `POST /api/tutorials` and shows the
+    rejection through `REJECTION_MESSAGES`; item 6a must bring a player back to their tutorial
+    when the site opens (store it in the session as `roomCode` is for games) and handle a
+    rejected Restart (`site_daily_cap`).
 
 - [ ] 4. **Busy day with tutorials** (B18). **Small.**
   - `tools/simulator/busyDay/`: add the day's 100 tutorials (start, play, leave) through the

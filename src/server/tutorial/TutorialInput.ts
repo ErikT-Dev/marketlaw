@@ -10,4 +10,5 @@ export type TutorialInput = {
   readonly parsed: Result<TutorialClientMessage, ReasonCode>;
   readonly sender: Identity | null;
   readonly now: EpochMs;
+  readonly restartRefusal: ReasonCode | null;
 };

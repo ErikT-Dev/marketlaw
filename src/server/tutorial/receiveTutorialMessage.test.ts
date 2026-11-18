@@ -4,6 +4,7 @@ import { EpochMs } from "../../shared/EpochMs";
 import { PlayerId } from "../../shared/PlayerId";
 import { parseTutorialClientMessage } from "../../shared/protocol/parseTutorialClientMessage";
 import type { ServerMessage } from "../../shared/protocol/ServerMessage";
+import type { ReasonCode } from "../../shared/ReasonCode";
 import { PROTOCOL_VERSION } from "../../shared/PROTOCOL_VERSION";
 import type { Identity } from "../room/Identity";
 import { receiveTutorialMessage } from "./receiveTutorialMessage";
@@ -30,7 +31,7 @@ type Room = {
   ) => ServerMessage | null;
 };
 
-function startedRoom(): Room {
+function startedRoom(restartRefusal: ReasonCode | null = null): Room {
   let stored: TutorialRecord | undefined;
   let writes = 0;
   const storage: TutorialStorage = {
@@ -55,6 +56,7 @@ function startedRoom(): Room {
         ),
         sender,
         now: NOW,
+        restartRefusal,
       }).reply,
   };
 }
@@ -128,6 +130,21 @@ describe("the tutorial room", () => {
     };
     expect(room.send(restart)).toMatchObject({ type: "tutorial_update", stateVersion: 2 });
     expect(stepOf(room)).toBe("T1.1");
+  });
+
+  it("refuses a restart the lobby did not count and keeps the step", () => {
+    const room = startedRoom("site_daily_cap");
+    room.send(continueMessage("a1", 0));
+    const stepBefore = stepOf(room);
+    const restart = {
+      type: "tutorial",
+      actionId: "a2",
+      stateVersion: 1,
+      action: { type: "restart_tutorial" },
+    };
+    expect(room.send(restart)).toMatchObject({ type: "rejected", code: "site_daily_cap" });
+    expect(stepOf(room)).toBe(stepBefore);
+    expect(room.writes()).toBe(2);
   });
 
   it("deletes the room when the player leaves and closes later messages", () => {

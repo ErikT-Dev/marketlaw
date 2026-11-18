@@ -11,9 +11,13 @@ import { openSocketsOf } from "./openSocketsOf";
 import type { Identity } from "./room/Identity";
 import { ROOM_TIMES } from "./room/ROOM_TIMES";
 import { senderOfToken } from "./senderOfToken";
+import { TUTORIAL_PLACE } from "./lobby/TUTORIAL_PLACE";
+import { lobbyOf } from "./lobbyOf";
+import { restartingPlayerOf } from "./tutorial/restartingPlayerOf";
 import { kvTutorialStorage } from "./tutorial/kvTutorialStorage";
 import { receiveTutorialMessage } from "./tutorial/receiveTutorialMessage";
 import { startTutorialIn } from "./tutorial/startTutorialIn";
+import type { TutorialRecord } from "./tutorial/TutorialRecord";
 import { tutorialUpdateFor } from "./tutorial/tutorialUpdateFor";
 
 const GONE_TEXT = "This tutorial no longer exists";
@@ -31,6 +35,10 @@ export class TutorialRoom extends DurableObject<Env> {
     await this.ctx.storage.setAlarm(now + ROOM_TIMES.tutorialAwayMs);
   }
 
+  isPlayerBusy(): boolean {
+    return this.storage.read() !== undefined;
+  }
+
   override fetch(request: Request): Response {
     return acceptRoomSocket(this.ctx, request);
   }
@@ -42,17 +50,23 @@ export class TutorialRoom extends DurableObject<Env> {
     const sender = parsed.isOk
       ? await senderOfToken(this.env.DB, parsed.value.token, attachment)
       : null;
+    const record = this.storage.read();
+    const now = nowMs();
+    const restarting = restartingPlayerOf(record, parsed, sender?.identity ?? null);
+    const restartRefusal =
+      restarting === null ? null : await lobbyOf(this.env).startTutorial(restarting, now);
     const outcome = receiveTutorialMessage(this.storage, {
       connection: attachment,
       parsed,
       sender: sender?.identity ?? null,
-      now: nowMs(),
+      now,
+      restartRefusal,
     });
     if (outcome.reply !== null) {
       socket.send(JSON.stringify(outcome.reply));
     }
     if (outcome.kind === "closing") {
-      await this.removeRoom();
+      await this.removeRoom(record);
       return;
     }
     if (attachment.identity === null && outcome.connection.identity !== null) {
@@ -73,7 +87,7 @@ export class TutorialRoom extends DurableObject<Env> {
 
   override async alarm(): Promise<void> {
     if (openSocketsOf(this.ctx).length === 0) {
-      await this.removeRoom();
+      await this.removeRoom(this.storage.read());
     }
   }
 
@@ -96,11 +110,16 @@ export class TutorialRoom extends DurableObject<Env> {
     }
   }
 
-  private async removeRoom(): Promise<void> {
+  private async removeRoom(record: TutorialRecord | undefined): Promise<void> {
     for (const socket of this.ctx.getWebSockets()) {
       socket.close(ROOM_GONE_CLOSE_CODE, GONE_TEXT);
     }
     await this.ctx.storage.deleteAlarm();
     await this.ctx.storage.deleteAll();
+    if (record !== undefined) {
+      await lobbyOf(this.env)
+        .release(record.player.playerId, TUTORIAL_PLACE)
+        .catch(() => undefined);
+    }
   }
 }

@@ -6,4 +6,5 @@ export type CountsToday = {
   readonly siteGameStarts: number;
   readonly siteChatMessages: number;
   readonly siteEmails: number;
+  readonly siteTutorialStarts: number;
 };

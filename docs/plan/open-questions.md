@@ -3537,3 +3537,31 @@ file.
   the other three classes are (https://developers.cloudflare.com/durable-objects/platform/pricing/).
 - **Implemented:** `src/server/TutorialRoom.ts`, `src/server/tutorial/`, `wrangler.jsonc`;
   phase 29, item 2. B6 measures 21 rows (start: record and alarm; 19 steps).
+
+## Q166. How does the lobby know about a tutorial, and how are its starts counted?
+
+- **Phase:** 29 (item 3; C4.7, C4.9, M2.1, A9.5, A9.6; Q162, Q163, Q164).
+- **Question:** the tutorial room (Q165) does not report to the lobby, so nothing keeps a player
+  in a tutorial out of rooms and the queue, counts the site's tutorial starts, or counts a
+  Restart, which reaches only the room. C4.8 keeps the ended tutorial until the player leaves it,
+  and the spec does not say whether the player is still busy there.
+- **Solution:** the lobby's busy places gain the tutorial (`TUTORIAL_PLACE`) and its daily counts
+  gain `siteTutorialStarts` (an optional field of the stored lobby record, so no migration).
+  `POST /api/tutorials` with the session token starts it: busy elsewhere (checked as joining a
+  room is, with `isReallyBusy`, which asks the tutorial room whether it still exists) is
+  refused with `busy_elsewhere`; then the lobby counts the start (`countTutorialStart`, one
+  write, skipping A9.2 to A9.4) or refuses it with `site_daily_cap` at 100; then the room
+  starts (again from T1.1 when it already exists) and finished game rooms are left (Q164).
+  Restart is counted the same way: the tutorial room asks the lobby before accepting
+  `restart_tutorial` (only a restart it would accept: right player, current state version, new
+  action id) and rejects it with the lobby's reason. Leaving and the alarm's deletion tell the
+  lobby to release the player. A player stays busy in an ended tutorial until they leave it:
+  every way out of Tutorial complete leaves it (Q163). Local and CI servers raise the cap with
+  `TEST_SITE_TUTORIALS_PER_DAY` in `.dev.vars`, as for Q52's game limit. Going back to the
+  tutorial when the site opens is the client's, as for a game (its stored session): item 6a.
+- **Why:** the lobby already decides one-thing-at-a-time and the site counts in one place; a
+  route like joining a room reuses its checks, and counting a restart in the lobby before the
+  room writes keeps one count per start (Q162). A player in an ended tutorial has no way to
+  reach a room without leaving it first, so keeping them busy needs no extra rule.
+- **Implemented:** `src/server/api/startTutorialRoute.ts`, `src/server/lobby/countTutorialStart.ts`,
+  `src/server/TutorialRoom.ts`; phase 29, item 3.

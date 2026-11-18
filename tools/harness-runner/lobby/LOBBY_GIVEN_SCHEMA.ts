@@ -1,4 +1,5 @@
 import * as v from "valibot";
+import { TUTORIAL_STEP_IDS } from "../../../src/shared/TUTORIAL_STEP_IDS.ts";
 
 const GIVEN_ROOM = v.strictObject({
   code: v.string(),
@@ -70,6 +71,7 @@ export const LOBBY_GIVEN_SCHEMA = v.strictObject({
     ),
   ),
   room: v.optional(GIVEN_ROOM),
+  tutorial: v.optional(v.strictObject({ player: v.string(), step: v.picklist(TUTORIAL_STEP_IDS) })),
   other_rooms: v.optional(v.array(GIVEN_ROOM)),
   records: v.optional(v.array(GIVEN_RECORD)),
   ranked_accounts: v.optional(v.number()),

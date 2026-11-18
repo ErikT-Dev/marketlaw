@@ -15,7 +15,14 @@ const AT_NOW = { now: NOW, siteEmailsPerDay: siteEmailLimitOf({}) };
 function lobbyWithEmails(siteEmails: number): LobbyRecord {
   return {
     ...EMPTY_LOBBY,
-    today: { day: dayOf(NOW), players: [], siteGameStarts: 0, siteChatMessages: 0, siteEmails },
+    today: {
+      day: dayOf(NOW),
+      players: [],
+      siteGameStarts: 0,
+      siteChatMessages: 0,
+      siteEmails,
+      siteTutorialStarts: 0,
+    },
   };
 }
 

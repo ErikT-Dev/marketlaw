@@ -22,5 +22,6 @@ export function countsTodayFromGiven(
     siteGameStarts: given.site_games_today ?? 0,
     siteChatMessages: given.site_counts_today?.chat_messages ?? 0,
     siteEmails: given.site_counts_today?.emails ?? 0,
+    siteTutorialStarts: given.site_counts_today?.tutorials ?? 0,
   };
 }
