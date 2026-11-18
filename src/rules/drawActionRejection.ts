@@ -19,6 +19,9 @@ export function drawActionRejection(
   if (!kindTiersLeft.includes(kindTierKey(kind, tier))) {
     return "no_card_of_kind";
   }
-  const canAfford = STAT_KEYS.every((stat) => seat.stats[stat] >= (draw.costs[stat] ?? 0));
+  const canAfford = STAT_KEYS.every((stat) => {
+    const cost = draw.costs[stat];
+    return cost === undefined || seat.stats[stat] >= cost;
+  });
   return canAfford ? undefined : "cannot_afford_trade";
 }
