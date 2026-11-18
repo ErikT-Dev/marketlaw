@@ -3734,11 +3734,12 @@ file.
     R20.9, T0.7 and A2.5 (checked by the rule file check and by server and client tests) are
     added and R19.2's is reworded; they are Claude's under D19, for the owner's review with the
     rest of version 1.
-  - **Required names (waiting for the owner).** 11 names on `harness/required.yaml` become
+  - **Required names (approved by the owner).** 11 names on `harness/required.yaml` become
     untrue: 6 are about skip build, 2 name the 40-second market go, 1 names 75 seconds of free
     time for every main phase, and 2 say "a second card", which since finding 9 is no different
-    from the first. They are left unchanged until the owner approves; proposed (the 6 replacements
-    are already written as new scenarios):
+    from the first. The owner approved all 11 at once on 2026-11-18 ("approve all 11"); the 5
+    renames and the 6 replacements (old scenario deleted, new one on the list in its place) are
+    made in the scenario files and `harness/required.yaml` together:
     - "the first player's market go has 40 seconds" → "the first player's market go has
       30 seconds" (rename)
     - "every later market go also has 40 seconds" → "every later market go also has 30 seconds"

@@ -148,39 +148,9 @@ combos you can complete.
 
 ## Waiting for the owner
 
-- **Approve 11 required scenario names (Q169).** Findings 1 and 9 make these names on
-  `harness/required.yaml` untrue. Names leave the list only with your approval, so they are
-  left unchanged until you answer; until then the check cannot go green. Proposed:
-  - Renamed (the scenario is changed to the new rule under the new name):
-    - `turns-and-time`: "the first player's market go has 40 seconds" → "the first player's
-      market go has 30 seconds"
-    - `turns-and-time`: "every later market go also has 40 seconds" → "every later market go
-      also has 30 seconds"
-    - `turns-and-time`: "the first 75 seconds of a main phase do not use the time bank" →
-      "from turn 2 the first 75 seconds of a main phase do not use the time bank" (turn 1 now
-      has 165; the new "the first 165 seconds of the main phase in turn 1 do not use the time
-      bank" covers turn 1)
-    - `playing-cards`: "rejects a second card in a turn without a build pass" → "rejects a card
-      when the player has no build pass left"
-    - `playing-cards`: "a build pass allows a second card and is used up" → "playing a card uses
-      up 1 build pass"
-  - Replaced (skip build is gone; the old scenario is deleted and the new one, already written,
-    takes its place on the list):
-    - `playing-cards`: "rejects playing a card after skip build even with a build pass" → "a
-      player with saved build passes can play several cards in one turn"
-    - `turns-and-time`: "skip build is reset at the end of the turn" → "every player gets 1
-      build pass at the start of every turn"
-    - `influence`: "skip build gives a build pass and blocks playing cards this turn" → "a
-      bought build pass can be used straight away" (`influence`)
-    - `influence`: "skip build is rejected after playing a card this turn" → "unused build
-      passes carry over to later turns with no limit" (`turns-and-time`)
-    - `influence`: "skip build can be used 3 times per game" → "every player starts turn 1 with
-      1 build pass" (`setup`)
-    - `undo`: "undo takes back skip build and the build pass it gave" → "undo takes back a build
-      pass bought with influence" (`undo`)
-
-  Everything else in the phase goes on without the answer. Once you approve, one `HARNESS:`
-  commit makes these changes in the scenario files and in `harness/required.yaml` together.
+- The 11 required scenario names of Q169 (5 renamed, 6 skip-build scenarios replaced): the owner
+  approved all 11 on 2026-11-18 ("approve all 11"); they are changed in the scenario files and in
+  `harness/required.yaml` together.
 - **Your review of the quest list, before the release (finding 10).** When every item is built
   and the checks pass, and before the releaser merges and deploys, the phase stops and you go
   over `harness/spec/quests.txt` (and `influence-actions.txt` if you like) and edit it. Then the
