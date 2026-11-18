@@ -91,6 +91,7 @@ export abstract class EmailAccountStore extends AccountSessionStore {
       name: answer.name,
       isGuest: false,
       roomCode: null,
+      isInTutorial: false,
     });
     this.showEmailDialog(null);
     return null;

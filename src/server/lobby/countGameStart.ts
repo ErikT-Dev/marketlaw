@@ -38,6 +38,7 @@ export function countGameStart(
         siteGameStarts: counts.siteGameStarts + 1,
         siteChatMessages: counts.siteChatMessages,
         siteEmails: counts.siteEmails,
+        siteTutorialStarts: counts.siteTutorialStarts,
       },
     },
   };

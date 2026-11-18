@@ -1,2 +1,4 @@
 export type LobbyIntent =
-  { readonly kind: "join"; readonly code: string } | { readonly kind: "create" };
+  | { readonly kind: "join"; readonly code: string }
+  | { readonly kind: "create" }
+  | { readonly kind: "tutorial" };

@@ -56,6 +56,7 @@ import { grantChatQuotaInLobby } from "./grantChatQuotaInLobby.ts";
 import { givenRoomRecordOf } from "./givenRoomRecordOf.ts";
 import { actionsAddedBetween } from "../../../src/server/room/actionsAddedBetween.ts";
 import { withActionsAdded } from "../../../src/server/lobby/withActionsAdded.ts";
+import { lobbyTutorialSession } from "./lobbyTutorialSession.ts";
 
 export class LobbySession {
   record: RoomRecord | null;
@@ -69,7 +70,7 @@ export class LobbySession {
   loggedIn: Readonly<Record<string, string>> | null = null;
   readonly visitorLogins = new Map<string, string>();
   readonly unknownLoginFailures = new Map<string, FailedLogins>();
-  private readonly pendingJoins = new Map<string, string>();
+  private readonly afterGuest = new Map<string, (name: string) => void>();
   private live: ReadonlyArray<PlayerId> = [];
   lobby: LobbyRecord;
   queue: QueueRecord;
@@ -80,6 +81,7 @@ export class LobbySession {
   readonly chat: LobbyChat;
   readonly emails: LobbyEmails;
   readonly history: LobbyHistory;
+  readonly tutorial = lobbyTutorialSession(this);
   readonly storage: RoomStorage = chatTrackingStorage(
     {
       read: () => this.record ?? undefined,
@@ -200,7 +202,13 @@ export class LobbySession {
   }
 
   visitorJoins(visitor: string, code: unknown): void {
-    this.pendingJoins.set(visitor, typeof code === "string" ? code : "");
+    this.visitorAwaits(visitor, (name) => {
+      this.joinRoom(name, code);
+    });
+  }
+
+  visitorAwaits(visitor: string, afterGuest: (name: string) => void): void {
+    this.afterGuest.set(visitor, afterGuest);
     this.askGeneratedName();
   }
 
@@ -220,10 +228,7 @@ export class LobbySession {
       return;
     }
     this.addAccount(name, this.now);
-    const code = this.pendingJoins.get(visitor);
-    if (code !== undefined) {
-      this.joinRoom(name, code);
-    }
+    this.afterGuest.get(visitor)?.(name);
   }
 
   openSite(name: string): void {

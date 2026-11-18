@@ -92,9 +92,16 @@ describe("the budget report", () => {
     expect(item).toContain("checked by: size-limit");
   });
 
-  it("names the phase that builds the feature of a budget not measured yet", () => {
+  it("measures the rows of a full tutorial in the tutorial scenarios", () => {
+    const measurements = [{ budget: "B6", value: 21 }];
+    const run = { ...RUN, runs: [{ ...SCENARIO_RUN, measurements }] };
+    const item = itemOf(reportBudgets(run, BUDGETS, []), "B6");
+    expect(item).toContain("limit: 60 (Durable Object rows written)");
+    expect(item).toContain("measured: 21, by tutorial scenarios");
+  });
+
+  it("lists a measured budget that is not required yet as not yet judged", () => {
     const item = itemOf(reportBudgets(RUN, BUDGETS, []), "B6");
     expect(item).toContain('<span class="status not-yet">not yet</span>');
-    expect(item).toContain("checked by: phase 29, the tutorial");
   });
 });

@@ -124,6 +124,7 @@ jobs:
           echo "TEST_SITE_GAMES_PER_DAY=1000000" >> .dev.vars
           echo "TEST_SITE_CHAT_MESSAGES_PER_DAY=1000000" >> .dev.vars
           echo "TEST_SITE_EMAILS_PER_DAY=1000000" >> .dev.vars
+          echo "TEST_SITE_TUTORIALS_PER_DAY=1000000" >> .dev.vars
 
       - name: Browser tests
         timeout-minutes: 15

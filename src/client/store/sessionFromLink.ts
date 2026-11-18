@@ -19,6 +19,7 @@ export function sessionFromLink(hash: string): StoredSession | null {
         name: parsed.output.name,
         isGuest: true,
         roomCode: parsed.output.room,
+        isInTutorial: false,
       }
     : null;
 }

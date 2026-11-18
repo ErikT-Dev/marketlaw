@@ -298,6 +298,7 @@ None.
   site. Once a cap is reached, players are told
   "Daily limit reached, try again after 00:00 UTC"; tutorials and chats already going on are not
   ended, but no more tutorials start and no more messages or emails are sent until the next day.
+  Restarting a tutorial (S15.2) counts as starting one (Q162).
 
 ## A10. ELO rating
 

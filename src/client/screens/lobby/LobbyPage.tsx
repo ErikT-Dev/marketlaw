@@ -8,7 +8,9 @@ import { useRegisteredAccountDetails } from "../account/useRegisteredAccountDeta
 import type { JoinError } from "../../store/JoinError";
 import type { NewRoom } from "../../store/NewRoom";
 import type { RemovalNotice } from "../../store/RemovalNotice";
+import { useContext } from "react";
 import { useServerNow } from "../game/useServerNow";
+import { TutorialStart } from "../menu/TutorialStart";
 import { CreateRoomDialog } from "./CreateRoomDialog";
 import { GuestNameDialog } from "./GuestNameDialog";
 import { joinErrorText } from "./joinErrorText";
@@ -42,17 +44,20 @@ export function LobbyPage(props: Props) {
   const { publicRooms, playersOnline, ranked } = props;
   const isBusy = ranked.queue !== null && ranked.queue.own.kind !== "out";
   const now = useServerNow();
-  const flow = useLobbyFlow(account !== null, onJoin);
+  const flow = useLobbyFlow(account !== null, onJoin, useContext(TutorialStart));
   const details = useRegisteredAccountDetails(account, ranked.standingCheck);
   return (
     <div className={styles["page"]}>
-      <LobbyAccount
-        account={account}
-        rating={details?.rating?.rating ?? null}
-        onLogIn={props.onLogIn}
-        onSignUp={props.onSignUp}
-        onForgotPassword={props.onForgotPassword}
-      />
+      <TutorialStart.Provider value={() => void flow.start({ kind: "tutorial" })}>
+        <LobbyAccount
+          menuPlace={isBusy ? "ranked_queue" : "lobby"}
+          account={account}
+          rating={details?.rating?.rating ?? null}
+          onLogIn={props.onLogIn}
+          onSignUp={props.onSignUp}
+          onForgotPassword={props.onForgotPassword}
+        />
+      </TutorialStart.Provider>
       <main className={`${styles["columns"] ?? ""} ${styles["withPlayersOnline"] ?? ""}`}>
         <PlayersOnlinePanel players={playersOnline} />
         <PublicRoomsPanel

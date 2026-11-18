@@ -7,4 +7,5 @@ export type StoredSession = {
   readonly name: string;
   readonly isGuest: boolean;
   readonly roomCode: RoomCode | null;
+  readonly isInTutorial: boolean;
 };

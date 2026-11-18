@@ -2,6 +2,7 @@ import { CLIENT_DRIVER } from "./client/CLIENT_DRIVER.ts";
 import { ENGINE_DRIVER } from "./engine/ENGINE_DRIVER.ts";
 import { LOBBY_DRIVER } from "./lobby/LOBBY_DRIVER.ts";
 import { ROOM_DRIVER } from "./room/ROOM_DRIVER.ts";
+import { TUTORIAL_DRIVER } from "./tutorial/TUTORIAL_DRIVER.ts";
 import type { ScenarioDriver } from "./ScenarioDriver.ts";
 
 export const DRIVERS: ReadonlyArray<ScenarioDriver> = [
@@ -9,4 +10,5 @@ export const DRIVERS: ReadonlyArray<ScenarioDriver> = [
   ROOM_DRIVER,
   LOBBY_DRIVER,
   CLIENT_DRIVER,
+  TUTORIAL_DRIVER,
 ];

@@ -27,4 +27,5 @@ export const LOBBY_STEPS: ReadonlySet<string> = new Set([
   ...ROOM_ACTIONS,
   ...QUEUE_ACTIONS,
   "open_lobby",
+  "start_tutorial",
 ]);

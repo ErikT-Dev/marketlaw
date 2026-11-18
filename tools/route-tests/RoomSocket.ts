@@ -23,7 +23,11 @@ export class RoomSocket {
   }
 
   static async open(serverUrl: URL, code: string, token: string): Promise<RoomSocket> {
-    const url = new URL(`/api/rooms/${code}/socket`, serverUrl);
+    return RoomSocket.openAt(serverUrl, `/api/rooms/${code}/socket`, token);
+  }
+
+  static async openAt(serverUrl: URL, path: string, token: string): Promise<RoomSocket> {
+    const url = new URL(path, serverUrl);
     url.protocol = "ws:";
     const socket = new WebSocket(url);
     await new Promise((resolve, reject) => {

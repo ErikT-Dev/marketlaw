@@ -1,11 +1,9 @@
 import { Button } from "../../components/Button";
+import type { LeaveDialogProps } from "../../components/LeaveDialogProps";
 import { Modal } from "../../components/Modal";
 import styles from "./LeaveGameDialog.module.css";
 
-type Props = {
-  readonly onStay: () => void;
-  readonly onLeave: () => void;
-};
+type Props = LeaveDialogProps;
 
 export function LeaveGameDialog({ onStay, onLeave }: Props) {
   return (

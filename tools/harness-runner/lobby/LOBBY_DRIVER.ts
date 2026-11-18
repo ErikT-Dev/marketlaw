@@ -44,6 +44,13 @@ import { RECORDS_THEN_FIELDS } from "./RECORDS_THEN_FIELDS.ts";
 import { RECORDS_ACTIONS } from "./RECORDS_ACTIONS.ts";
 import { LobbyPresence } from "./LobbyPresence.ts";
 import { withInGameRooms } from "./withInGameRooms.ts";
+import { tutorialRoomThen } from "../tutorial/tutorialRoomThen.ts";
+import {
+  disconnectFromLobbyTutorial,
+  givenTutorialInLobby,
+  startTutorialInLobby,
+  waitInLobbyTutorial,
+} from "./lobbyTutorialSteps.ts";
 
 function textOf(value: unknown): string {
   return typeof value === "string" ? value : "";
@@ -67,6 +74,8 @@ function runPlayerStep(
     session.createRoom(name, step);
   } else if (action === "join_room") {
     session.joinRoom(name, step["code"]);
+  } else if (action === "start_tutorial") {
+    startTutorialInLobby(session, name);
   } else if (action === "open_site") {
     session.openSite(name);
   } else if (action === "log_out") {
@@ -105,6 +114,11 @@ async function runVisitorStep(
     case "join_room":
       session.visitorJoins(visitor, step["code"]);
       return;
+    case "start_tutorial":
+      session.visitorAwaits(visitor, (name) => {
+        startTutorialInLobby(session, name);
+      });
+      return;
     case "create_guest":
       session.createGuest(visitor, step);
       return;
@@ -136,9 +150,11 @@ async function runStep(
   } else if (step["action"] === "open_lobby") {
     await pages.presence.open(session);
   } else if (typeof step["wait_ms"] === "number") {
+    waitInLobbyTutorial(session, step["wait_ms"]);
     waitWithQueue(session, step["wait_ms"]);
     removeUnusedGuestsInLobby(session);
   } else if (typeof step["disconnect"] === "string") {
+    disconnectFromLobbyTutorial(session, step["disconnect"]);
     connectInQueue(session, step["disconnect"], false);
   } else if (typeof step["reconnect"] === "string") {
     connectInQueue(session, step["reconnect"], true);
@@ -160,6 +176,9 @@ async function runStep(
 }
 
 function otherFieldThen(session: LobbySession, field: string, expected: unknown) {
+  if (field === "tutorial_step" || field === "tutorial_room") {
+    return tutorialRoomThen(session.tutorial, field);
+  }
   if (field === "message_to") {
     return lobbyMessageThen(session.messagesTo, expected, session.emails.noticesTo, (player) =>
       queueSentTo(session, player),
@@ -178,6 +197,7 @@ function startSession(rawGiven: Readonly<Record<string, unknown>>, random: Scrip
   const session = new LobbySession(withInGameRooms(given), random);
   const ranking = new LobbyRanking(given);
   const presence = new LobbyPresence(given);
+  givenTutorialInLobby(session, given.tutorial);
   let before = session.snapshot();
   const chatAtStart = {
     messageCount: session.chat.storage.messages().length,

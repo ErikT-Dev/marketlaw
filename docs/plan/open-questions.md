@@ -1285,7 +1285,7 @@ file.
 ## Q74. What happens with the findings of the owner's first playthrough?
 
 - **Phase:** 20, waiting for the owner (Q71); the owner's notes are
-  `docs/playthrough-notes/2026-11-06-first-playthrough.txt`. The owner reviewed all 9 findings
+  `docs/feedback-notes/2026.11.06 - deployed.txt`. The owner reviewed all 9 findings
   and approved every one for implementing (2026-11-06).
 - **Question:** phase 20 says findings become spec changes or new phases before milestone 4.
   Where do the notes live, how do the findings reach the spec, and which phase builds them?
@@ -2692,7 +2692,7 @@ file.
 
 ## Q126. What happens with the findings of the owner's playthrough of 2026-11-10?
 
-- **Phase:** 25 is done; the owner's notes are `docs/playthrough-notes/2026-11-10-playthrough.txt`
+- **Phase:** 25 is done; the owner's notes are `docs/feedback-notes/2026.11.10 - deployed.txt`
   (12 findings). As Q78 says, the next "continue" plans a fix phase for them before any other
   phase: **25a, Playthrough fixes**. Phases 26 and 28 now also depend on 25a.
 - **Question:** which findings change the rules, the protocol, the screens or the accounts; what
@@ -3443,3 +3443,163 @@ file.
   tiles show no photo, as the boards do (the phase file's lazy photos were dropped, item 3), so
   that is not a design difference. Written into S17 as a known difference.
 - **Implemented:** `harness/spec/screens.md` S17; phase 28, items 3 and 4 (no code change).
+
+## Q161. How many tutorial steps are there, and what does the text box show?
+
+- **Phase:** 29 (starter; S15.2, S15.3, T1–T5, design boards "Tutorial: …").
+- **Question:** S15.2 and the design boards count "Step N of 21", but `tutorial.md` has 19 steps
+  (T1.1 to T5.4). Several steps have a text after the action, some have no text before it, and
+  S15.2 and S15.3 name "the action asked for" and "what the tutorial is waiting for" without
+  giving their words.
+- **Options:** count 21 (invent two steps); count the 19 steps; count the texts after an action
+  as steps of their own (27).
+- **Solution:** 19 steps, numbered in the order of `tutorial.md`: "Step N of 19". A step's box
+  shows the previous step's text after its action, then its own text, then its action line;
+  a closing sentence equal to the action line is shown once, as the action line (as the boards
+  show "Play Row House."). T1.1 and T2.1 have Continue, T5.4 has Finish (the board's button).
+  Each step's "waiting for" words are listed in S15.7; the action line is the same words as a
+  sentence, and "Not this step" says "The tutorial is waiting for you to … Nothing changed." (the
+  board's text). The scenarios already move from one action to the next without a Continue, so
+  the texts after an action cannot be steps of their own. Written into S15.2, S15.3, S15.5 to
+  S15.7 and S17 first (screen rules, so not in `tutorial.md`, whose T rules scenarios cover).
+- **Why:** `tutorial.md` is the source of the steps; the boards were drawn for an older draft.
+- **Implemented:** `harness/spec/screens.md` S15.2, S15.3, S15.5 to S15.7, S17; phase 29.
+
+## Q162. Does Restart count toward the daily tutorial cap?
+
+- **Phase:** 29 (starter; S15.2, C4.8, A9.6, B6).
+- **Question:** S15.2 offers Restart and C4.8 lets the player start again at any time, but A9.6
+  counts only tutorials that start. A restart in the same room writes the tutorial's rows again
+  (B6) without counting.
+- **Options:** a restart is free; a restart counts as a start.
+- **Solution:** Restart (and Play it again, S15.4) starts again from T1.1 without asking, and
+  counts as starting a tutorial: once the cap is reached it is refused with `site_daily_cap`
+  like a new start. Written into A9.6 and S15.2 first.
+- **Why:** the cap exists to keep the rows the tutorials write within the day's budget (B6, B18);
+  free restarts would bypass it.
+- **Implemented:** `harness/spec/accounts.md` A9.6, `harness/spec/screens.md` S15.2; phase 29.
+
+## Q163. What happens after the tutorial's last step, and how does a player get back to it?
+
+- **Phase:** 29 (starter; C4.6, C4.8, C4.10, S15.4).
+- **Question:** C4.6 ends the tutorial after T5.4 and S15.4 shows Tutorial complete, but nothing
+  says when the room goes away after that, what Read the rules does, or how a player who closed
+  the tab reaches their tutorial again within C4.10's 30 minutes. S15.4's dialog texts and the
+  leave confirmation have no words in the spec.
+- **Solution:** after Finish the player stays in the ended tutorial, with Tutorial complete,
+  until they leave it (Go to the lobby, Read the rules, Leave tutorial) or C4.10 deletes it;
+  Play it again restarts it (Q162). While they are in a tutorial, opening the site brings them
+  back to it, as a game does. The dialog texts are the boards' "Tutorial: complete" and
+  "Tutorial: leave". Written into C4.8 and S15.4 first.
+- **Why:** C4.8 already says leaving deletes the room; keeping the ended room until then needs
+  no new rule, and C4.10 removes rooms left behind.
+- **Implemented:** `harness/spec/client.md` C4.8, `harness/spec/screens.md` S15.4; phase 29.
+
+## Q164. Is the tutorial offered on the game screen after the game is over?
+
+- **Phase:** 29 (starter; C1.2, M2.2, M6.7; phase 28 F1).
+- **Question:** phase 28 added the menu place `game_over` (the game has ended, or the player has
+  left it) and noted that phase 29 would treat it like a waiting room, where Tutorial is
+  disabled. C1.2 disables it only while waiting in a room, in the queue or in a game, and M2.2
+  and M6.7 free such a player to join the queue or another room.
+- **Options:** disabled, as phase 28's note says; offered, as C1.2 with M2.2 and M6.7 says.
+- **Solution:** offered: the spec wins over the plan note. Starting it takes the player out of
+  the room, as joining the queue does (M2.2, M6.7). Written into C1.2 first.
+- **Why:** C4.9 makes the tutorial count as a game for M2, and a player whose game is over may
+  start another game.
+- **Implemented:** `harness/spec/client.md` C1.2; phase 29.
+
+## Q165. How is the tutorial room built, and how does the browser talk to it?
+
+- **Phase:** 29 (item 2; C4.2, C4.5, C4.8, C4.10, B6).
+- **Question:** the phase file leaves open whether the tutorial room is a new Durable Object
+  class or a mode of `GameRoom`, and how its messages differ from a game room's.
+- **Options:** a mode of `GameRoom` (288 lines, it would need splitting, and every room rule of
+  M1, M6, chat, votes and records would need a tutorial exception); a new SQLite Durable Object
+  class.
+- **Solution:** a new SQLite class `TutorialRoom` (migration `v6`, binding `TUTORIAL`), one per
+  player (`idFromName(playerId)`), reached at `/api/tutorials/<playerId>/socket`; the session
+  token in every message is still the proof of identity, and a message from anyone but the
+  tutorial's player is rejected with `not_in_game`. It stores one record (`TutorialRecord`: the
+  player, the engine's `TutorialState`, the state version and the last 20 accepted action ids)
+  as one key; every accepted step, Restart included, is one write before the answer. Messages:
+  `resync`, `action` (the game intents) and the new `tutorial` (`continue`, `restart_tutorial`,
+  `leave_tutorial`, with an action id and state version so a repeated Continue cannot skip a
+  step); the answer is the new `tutorial_update` with the `TutorialView`, and leaving answers
+  `removed` (`left`) and deletes the room's storage. `GameHost` gains `sendTutorialAction` and
+  `HostEvent` `tutorial_update`. `PROTOCOL_VERSION` 26. The room's one alarm is set at the start
+  and when its last socket closes, 30 minutes ahead (`ROOM_TIMES.tutorialAwayMs`); when it fires
+  with no socket open the room deletes its storage, otherwise it does nothing, so connecting
+  writes nothing. No time-out alarms, records or ratings are ever made.
+- **Why:** the tutorial shares none of the room rules (C4.2), so a separate class keeps
+  `GameRoom` unchanged and the tutorial small; per-player naming makes "one tutorial per
+  player" hold without a lookup. SQLite-backed Durable Objects are on the Workers Free plan, as
+  the other three classes are (https://developers.cloudflare.com/durable-objects/platform/pricing/).
+- **Implemented:** `src/server/TutorialRoom.ts`, `src/server/tutorial/`, `wrangler.jsonc`;
+  phase 29, item 2. B6 measures 21 rows (start: record and alarm; 19 steps).
+
+## Q166. How does the lobby know about a tutorial, and how are its starts counted?
+
+- **Phase:** 29 (item 3; C4.7, C4.9, M2.1, A9.5, A9.6; Q162, Q163, Q164).
+- **Question:** the tutorial room (Q165) does not report to the lobby, so nothing keeps a player
+  in a tutorial out of rooms and the queue, counts the site's tutorial starts, or counts a
+  Restart, which reaches only the room. C4.8 keeps the ended tutorial until the player leaves it,
+  and the spec does not say whether the player is still busy there.
+- **Solution:** the lobby's busy places gain the tutorial (`TUTORIAL_PLACE`) and its daily counts
+  gain `siteTutorialStarts` (an optional field of the stored lobby record, so no migration).
+  `POST /api/tutorials` with the session token starts it: busy elsewhere (checked as joining a
+  room is, with `isReallyBusy`, which asks the tutorial room whether it still exists) is
+  refused with `busy_elsewhere`; then the lobby counts the start (`countTutorialStart`, one
+  write, skipping A9.2 to A9.4) or refuses it with `site_daily_cap` at 100; then the room
+  starts (again from T1.1 when it already exists) and finished game rooms are left (Q164).
+  Restart is counted the same way: the tutorial room asks the lobby before accepting
+  `restart_tutorial` (only a restart it would accept: right player, current state version, new
+  action id) and rejects it with the lobby's reason. Leaving and the alarm's deletion tell the
+  lobby to release the player. A player stays busy in an ended tutorial until they leave it:
+  every way out of Tutorial complete leaves it (Q163). Local and CI servers raise the cap with
+  `TEST_SITE_TUTORIALS_PER_DAY` in `.dev.vars`, as for Q52's game limit. Going back to the
+  tutorial when the site opens is the client's, as for a game (its stored session): item 6a.
+- **Why:** the lobby already decides one-thing-at-a-time and the site counts in one place; a
+  route like joining a room reuses its checks, and counting a restart in the lobby before the
+  room writes keeps one count per start (Q162). A player in an ended tutorial has no way to
+  reach a room without leaving it first, so keeping them busy needs no extra rule.
+- **Implemented:** `src/server/api/startTutorialRoute.ts`, `src/server/lobby/countTutorialStart.ts`,
+  `src/server/TutorialRoom.ts`; phase 29, item 3.
+
+## Q167. What does "every other action is disabled" in the tutorial mean, and when is Not this step shown?
+
+- **Phase:** 29 (item 6b; S15.2, S15.3, C4.4).
+- **Question:** S15.2 disables every action but the step's, and S15.3 shows Not this step for
+  any other action, which could never happen if everything else were disabled. The design
+  boards highlight one card or button and still show the other action buttons enabled on the
+  "not this step" board. The spec does not say what is highlighted on the text steps.
+- **Solution:** each step highlights its part of the screen with the boards' yellow frame: the
+  hand card to play or sell, the marketplace card to take, End turn, Claim all, the sector
+  button, the quest; the hand and the stats on T1.1; the marketplace and the market go on
+  T2.1; nothing on T5.4. The side of the table the step's part is not on cannot be used (it is
+  `inert`): the hand and actions side for marketplace, sector and quest steps, the middle for
+  hand, action and claim steps, both on text steps. The text box, the top bar and the menu stay
+  usable. Another choice on the usable side (another card, End turn too early, another sector)
+  is sent and answered `not_this_step`, shown as an info toast "Not this step" with S15.7's
+  words. Tutorial complete has no close button; its three buttons are the ways out. Written into
+  S15.2 first.
+- **Why:** disabling single buttons inside the shared game panels would spread tutorial checks
+  through the game screen's components; whole sides are one attribute each, keep the server as
+  the only judge of the step's action (C4.4) and leave S15.3 reachable.
+- **Implemented:** `harness/spec/screens.md` S15.2; `src/client/screens/tutorial/TUTORIAL_FOCUS.ts`,
+  `src/client/screens/game/Highlighted.tsx`; phase 29, item 6b.
+
+## Q168. What does the game menu say inside the tutorial?
+
+- **Phase:** 29 (review finding F2; S14.1, C4.5).
+- **Question:** S14.1 names the lobby, a game, a room and the ranked queue, but not the
+  tutorial. The tutorial used the game's menu lines, so Rules and Card set said the clock keeps
+  running, though the tutorial has no clock (C4.5).
+- **Solution:** in the tutorial, Rules and Card set keep their lobby lines, and Tutorial is
+  disabled with its reason ("Not available while you are in a game, a room or the ranked
+  queue"), since the player is already in one. Written into S14.1 first.
+- **Why:** the clock lines warn about a clock that runs; the tutorial has none. Starting the
+  tutorial again from its own menu would duplicate Restart.
+- **Implemented:** `src/client/screens/menu/gameMenuEntriesOf.ts` (place `tutorial`),
+  `src/client/screens/tutorial/TutorialTopBar.tsx`; test in
+  `src/client/screens/tutorial/tutorialPage.test.tsx`; phase 29, finding F2.

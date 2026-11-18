@@ -7,6 +7,7 @@ export function initialClientState(session: StoredSession | null): ClientState {
     session,
     connection: "closed",
     update: null,
+    tutorial: null,
     chat: NO_ROOM_CHAT,
     pendingActions: [],
     rejectedMove: null,
@@ -23,5 +24,6 @@ export function initialClientState(session: StoredSession | null): ClientState {
     queue: null,
     queueNotice: null,
     queueRejection: null,
+    tutorialRefusal: null,
   };
 }

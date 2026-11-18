@@ -37,6 +37,7 @@ function idleHost(): GameHost {
   return {
     sendAction: () => null,
     sendRoomAction: () => false,
+    sendTutorialAction: () => null,
     requestResync: () => undefined,
     subscribe: () => () => undefined,
     close: () => undefined,
@@ -64,7 +65,14 @@ function serverAnswers(answers: Answers): ReadonlyArray<SentRequest> {
 }
 
 async function openSettingsAsBea(): Promise<HTMLElement> {
-  writeSession({ token: "bea-token", playerId: null, name: "Bea", isGuest: false, roomCode: null });
+  writeSession({
+    token: "bea-token",
+    playerId: null,
+    name: "Bea",
+    isGuest: false,
+    roomCode: null,
+    isInTutorial: false,
+  });
   render(<App store={new ClientStore(() => idleHost())} />);
   fireEvent.click(await screen.findByRole("button", { name: "Your account" }));
   fireEvent.click(screen.getByRole("button", { name: "Account settings" }));

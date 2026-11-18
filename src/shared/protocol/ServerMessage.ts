@@ -4,6 +4,7 @@ import type { Notice } from "../Notice";
 import type { ReasonCode } from "../ReasonCode";
 import type { RemovalReason } from "./RemovalReason";
 import type { RoomUpdate } from "./RoomUpdate";
+import type { TutorialUpdateMessage } from "./TutorialUpdateMessage";
 
 export type ServerMessage =
   | {
@@ -28,6 +29,7 @@ export type ServerMessage =
       readonly mutedNames: ReadonlyArray<string>;
       readonly isFullList: boolean;
     }
+  | TutorialUpdateMessage
   | { readonly type: "opened_elsewhere"; readonly protocolVersion: number }
   | {
       readonly type: "removed";

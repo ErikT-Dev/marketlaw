@@ -1,4 +1,5 @@
 export const LOBBY_NESTED_FIELDS: ReadonlyMap<string, ReadonlySet<string>> = new Map([
+  ["given.tutorial", new Set(["player", "step"])],
   [
     "given.accounts",
     new Set([

@@ -27,6 +27,7 @@ function storeInRoom(): FakeHost {
     name: "Ann",
     isGuest: true,
     roomCode: v.parse(RoomCode, "ABCDEF"),
+    isInTutorial: false,
   });
   let listener: ((event: HostEvent) => void) | null = null;
   let resyncCount = 0;
@@ -38,6 +39,7 @@ function storeInRoom(): FakeHost {
       roomActions.push(action);
       return true;
     },
+    sendTutorialAction: () => null,
     requestResync: () => {
       resyncCount += 1;
     },
@@ -62,6 +64,7 @@ function fakeHost(): GameHost {
   return {
     sendAction: () => null,
     sendRoomAction: () => false,
+    sendTutorialAction: () => null,
     requestResync: () => undefined,
     subscribe: () => () => undefined,
     close: () => undefined,
@@ -88,6 +91,7 @@ const SEAT_LINK = {
   name: "Seat 1",
   isGuest: true,
   roomCode: v.parse(RoomCode, "K7QR2P"),
+  isInTutorial: false,
 };
 
 const SEAT_PLAYER = "3e7a1c9d-2b4f-4d6e-8a0c-5f1b7d3e9a26";

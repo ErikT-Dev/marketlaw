@@ -15,6 +15,8 @@ export const LOBBY_THEN_FIELDS: ReadonlySet<string> = new Set([
   "lobby_rooms",
   "replay_record",
   "record",
+  "tutorial_step",
+  "tutorial_room",
   ...RECORDS_THEN_FIELDS,
   "emails_sent",
   "seats",

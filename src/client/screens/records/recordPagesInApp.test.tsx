@@ -13,6 +13,7 @@ function idleHost(): GameHost {
   return {
     sendAction: () => null,
     sendRoomAction: () => false,
+    sendTutorialAction: () => null,
     requestResync: () => undefined,
     subscribe: () => () => undefined,
     close: () => undefined,
@@ -53,6 +54,7 @@ describe("record pages in the app", () => {
       name: "Ann",
       isGuest: false,
       roomCode: null,
+      isInTutorial: false,
     });
     render(<App store={new ClientStore(() => idleHost())} />);
     const createRoom = screen.getByRole("button", { name: "Create room" });

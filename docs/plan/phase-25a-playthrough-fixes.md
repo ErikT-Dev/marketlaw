@@ -16,7 +16,7 @@ Phase 25.
 
 ## Covers
 
-- Notes: `docs/playthrough-notes/2026-11-10-playthrough.txt`, all 12 findings (Q126).
+- Notes: `docs/feedback-notes/2026.11.10 - deployed.txt`, all 12 findings (Q126).
 - Rules: R4.1, R5.4, R5.5, R8.5 (new), R9.1, R9.2, R9.4, R9.6, R9.10, R9.11, R9.13, R10.2,
   R11.2, R17.7, R17.8, R18.11, R18.15 (new), R18.16 (new), R19.6, R19.7; M3.3, M3.5, M3.7 (new),
   M5.3, M5.4, M6.10; A2.4.

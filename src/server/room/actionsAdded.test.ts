@@ -191,6 +191,7 @@ describe("adding actions to the lobby's counts", () => {
       siteGameStarts: 5,
       siteChatMessages: 0,
       siteEmails: 0,
+      siteTutorialStarts: 0,
     },
   };
 
@@ -212,6 +213,7 @@ describe("adding actions to the lobby's counts", () => {
       siteGameStarts: 5,
       siteChatMessages: 0,
       siteEmails: 0,
+      siteTutorialStarts: 0,
     });
   });
 
@@ -223,6 +225,7 @@ describe("adding actions to the lobby's counts", () => {
       siteGameStarts: 0,
       siteChatMessages: 0,
       siteEmails: 0,
+      siteTutorialStarts: 0,
     });
   });
 

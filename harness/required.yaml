@@ -451,6 +451,8 @@ scenarios:
     - the ranked queue makes no match while the site game limit is reached
     - the ranked queue makes its matches at midnight UTC after the site game limit
     - anyone can see the players online with their status and rating
+    - the tutorial does not count toward the daily limits
+    - after 100 tutorials start on the site today no more tutorials start
   chat:
     - a message is seen by everyone in the room and notifies the others
     - a player sees only messages sent since they joined
@@ -483,6 +485,14 @@ scenarios:
     - a player who left is placed below the players who stayed for ratings
     - an abandoned game leaves ratings unchanged
   client:
+    - the game menu offers rules card set and tutorial in the lobby
+    - a visitor who is not logged in becomes a guest before the tutorial starts
+    - in the tutorial any action other than the step's action is rejected
+    - the tutorial has no time limits
+    - finishing the tutorial creates no game record and changes no rating
+    - leaving the tutorial deletes its room and it can start again from the beginning
+    - a player in the tutorial cannot join a room or the queue
+    - a tutorial room whose player has been away for 30 minutes is deleted
     - during a game the menu offers rules and card set but not the tutorial
     - opening the menu during a game does not stop the clock
     - anyone can open the rulebook with its table of contents
@@ -492,6 +502,14 @@ scenarios:
     - searching the card set by name finds matching cards
     - opening a card shows everything about it
     - the menu in a waiting room does not offer the tutorial
+  tutorial:
+    - the tutorial starts with the fixed hand quests and bonus types
+    - tutorial turn 1 teaches playing selling and ending the turn
+    - tutorial turn 2 teaches the market and combos
+    - tutorial turn 3 teaches drawing from the deck and real cost
+    - tutorial turn 4 teaches product and the first bonus fund
+    - tutorial turn 5 teaches income and quests and then ends
+    - the tutorial rejects playing a different card than the step asks for
 invariants:
   - I1
   - I2
@@ -526,6 +544,7 @@ budgets:
   - B3
   - B4
   - B5
+  - B6
   - B7
   - B8
   - B9

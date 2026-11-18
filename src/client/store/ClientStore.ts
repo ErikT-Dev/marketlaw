@@ -21,14 +21,24 @@ import type { PendingAction } from "./PendingAction";
 import { readSession } from "./readSession";
 import { roomChatAfter } from "./roomChatAfter";
 import type { StoredSession } from "./StoredSession";
-import { LobbyFeedStore } from "./LobbyFeedStore";
+import { TutorialStore } from "./TutorialStore";
+import type { OpenTutorialHost } from "./OpenTutorialHost";
 import { writeSession } from "./writeSession";
 
 type OpenHost = (code: RoomCode, token: string) => GameHost;
 
 const NO_FEED = { send: () => false, identify: () => false, close: () => undefined };
 
-export class ClientStore extends LobbyFeedStore {
+const NO_TUTORIAL_HOST: GameHost = {
+  sendAction: () => null,
+  sendRoomAction: () => false,
+  sendTutorialAction: () => null,
+  requestResync: () => undefined,
+  subscribe: () => () => undefined,
+  close: () => undefined,
+};
+
+export class ClientStore extends TutorialStore {
   private host: GameHost | null = null;
   private readonly openHost: OpenHost;
 
@@ -36,14 +46,17 @@ export class ClientStore extends LobbyFeedStore {
     openHost: OpenHost,
     openLobby: OpenLobbyFeed = () => NO_FEED,
     openQueue: OpenQueueFeed = () => NO_FEED,
+    openTutorialHost: OpenTutorialHost = () => NO_TUTORIAL_HOST,
   ) {
-    super(initialClientState(readSession()), openLobby, openQueue);
+    super(initialClientState(readSession()), openLobby, openQueue, openTutorialHost);
     this.openHost = openHost;
     const session = this.state.session;
     if (session !== null) {
       void this.checkSession(session);
     }
-    if (session?.roomCode !== null && session !== null) {
+    if (session?.isInTutorial === true) {
+      this.enterTutorial(session);
+    } else if (session?.roomCode !== null && session !== null) {
       this.enterRoom(session, session.roomCode);
     } else {
       this.watchQueue();
@@ -146,11 +159,13 @@ export class ClientStore extends LobbyFeedStore {
   protected override leaveRoom(notice: string | null, session: StoredSession | null): void {
     this.host?.close();
     this.host = null;
+    this.closeTutorial();
     this.watchQueue();
     writeSession(session);
     this.change({
       session,
       update: null,
+      tutorial: null,
       chat: NO_ROOM_CHAT,
       pendingActions: [],
       rejectedMove: null,
@@ -170,16 +185,18 @@ export class ClientStore extends LobbyFeedStore {
   };
 
   private enterRoom(session: StoredSession, code: RoomCode): void {
-    const inRoom = { ...session, roomCode: code };
+    const inRoom = { ...session, roomCode: code, isInTutorial: false };
     writeSession(inRoom);
     this.change({
       session: inRoom,
+      tutorial: null,
       chat: NO_ROOM_CHAT,
       notice: null,
       joinError: null,
       removal: null,
     });
     this.stopWatchingQueue();
+    this.closeTutorial();
     this.host?.close();
     this.host = this.openHost(code, session.token);
     this.host.subscribe(this.receive);
@@ -208,6 +225,8 @@ export class ClientStore extends LobbyFeedStore {
         return;
       case "removed":
         this.receiveRemoval(event.reason, event.rejoinAt);
+        return;
+      case "tutorial_update":
         return;
     }
   };
@@ -277,6 +296,6 @@ export class ClientStore extends LobbyFeedStore {
 
   private sessionOutsideRooms(): StoredSession | null {
     const session = this.state.session;
-    return session === null ? null : { ...session, roomCode: null };
+    return session === null ? null : { ...session, roomCode: null, isInTutorial: false };
   }
 }

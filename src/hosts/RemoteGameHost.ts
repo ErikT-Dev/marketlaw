@@ -3,6 +3,8 @@ import type { HostEvent } from "../shared/HostEvent";
 import type { ActionIntent } from "../shared/protocol/ActionIntent";
 import type { RoomIntent } from "../shared/protocol/RoomIntent";
 import type { ServerMessage } from "../shared/protocol/ServerMessage";
+import type { TutorialIntent } from "../shared/protocol/TutorialIntent";
+import type { TutorialUpdateMessage } from "../shared/protocol/TutorialUpdateMessage";
 import { parseServerMessage } from "../shared/protocol/parseServerMessage";
 import { PROTOCOL_VERSION } from "../shared/PROTOCOL_VERSION";
 import { LOGGED_OUT_CLOSE_CODE } from "../shared/LOGGED_OUT_CLOSE_CODE";
@@ -25,20 +27,29 @@ export class RemoteGameHost implements GameHost {
     this.connect();
   }
 
-  readonly sendAction = (action: ActionIntent): string | null => {
+  readonly sendAction = (action: ActionIntent): string | null =>
+    this.sendVersioned("action", action);
+
+  readonly sendTutorialAction = (action: TutorialIntent): string | null =>
+    this.sendVersioned("tutorial", action);
+
+  private sendVersioned(
+    type: "action" | "tutorial",
+    action: ActionIntent | TutorialIntent,
+  ): string | null {
     const actionId = this.options.newActionId();
     const isSent = this.socket?.send(
       JSON.stringify({
         protocolVersion: PROTOCOL_VERSION,
         token: this.options.token,
-        type: "action",
+        type,
         actionId,
         stateVersion: this.stateVersion ?? 0,
         action,
       }),
     );
     return isSent === true ? actionId : null;
-  };
+  }
 
   readonly sendRoomAction = (action: RoomIntent): boolean =>
     this.socket?.send(
@@ -80,20 +91,25 @@ export class RemoteGameHost implements GameHost {
 
   private receive(text: string): void {
     const message = parseServerMessage(text);
-    if (message?.type === "update") {
+    if (message === undefined) {
+      return;
+    }
+    if (message.type === "update") {
       this.receiveUpdate(message);
-    } else if (message?.type === "opened_elsewhere") {
+    } else if (message.type === "tutorial_update") {
+      this.receiveTutorialUpdate(message);
+    } else if (message.type === "opened_elsewhere") {
       this.reconnector.close();
       this.emit({ type: "connection", status: "opened_elsewhere" });
-    } else if (message?.type === "removed") {
+    } else if (message.type === "removed") {
       this.reconnector.close();
       this.emit({ type: "removed", reason: message.reason, rejoinAt: message.rejoinAt });
-    } else if (message?.type === "notice") {
+    } else if (message.type === "notice") {
       this.emit({ type: "notice", notice: message.notice });
-    } else if (message?.type === "chat") {
+    } else if (message.type === "chat") {
       const { entries, mutedNames, isFullList } = message;
       this.emit({ type: "chat", entries, mutedNames, isFullList });
-    } else if (message?.type === "rejected") {
+    } else {
       const { code, actionId, sendAgainAt } = message;
       this.emit({ type: "rejected", code, actionId, sendAgainAt });
       if (message.code === "stale_state") {
@@ -103,16 +119,28 @@ export class RemoteGameHost implements GameHost {
   }
 
   private receiveUpdate(message: Extract<ServerMessage, { readonly type: "update" }>): void {
-    const next = message.update.game?.stateVersion ?? null;
-    const hasGap = next !== null && this.stateVersion !== null && next > this.stateVersion + 1;
-    this.stateVersion = next;
-    this.reconnector.connected();
-    this.emit({
+    this.receiveVersioned(message.update.game?.stateVersion ?? null, {
       type: "update",
       update: message.update,
       acceptedActionId: message.acceptedActionId,
       serverNow: message.serverNow,
     });
+  }
+
+  private receiveTutorialUpdate(message: TutorialUpdateMessage): void {
+    this.receiveVersioned(message.stateVersion, {
+      type: "tutorial_update",
+      view: message.view,
+      acceptedActionId: message.acceptedActionId,
+      serverNow: message.serverNow,
+    });
+  }
+
+  private receiveVersioned(next: number | null, event: HostEvent): void {
+    const hasGap = next !== null && this.stateVersion !== null && next > this.stateVersion + 1;
+    this.stateVersion = next;
+    this.reconnector.connected();
+    this.emit(event);
     if (hasGap) {
       this.requestResync();
     }

@@ -48,10 +48,18 @@ describe("the game menu", () => {
     vi.useRealTimers();
   });
 
-  it("offers rules and card set with their lines in the lobby and no tutorial", () => {
+  it("offers rules, card set and tutorial with their lines in the lobby", () => {
     render(<LobbyTopBar menuPlace="lobby">{null}</LobbyTopBar>);
     const menu = openMenu("Game menu");
-    expect(entryNamesIn(menu)).toEqual(["Rules", "Card set"]);
+    expect(entryNamesIn(menu)).toEqual(["Rules", "Card set", "Tutorial"]);
+    expect(
+      within(menu)
+        .getByRole("button", {
+          name: "Tutorial",
+          description: "A guided one-player game that teaches the first turns",
+        })
+        .getAttribute("aria-disabled"),
+    ).toBe("false");
     expect(
       within(menu).getByRole("button", {
         name: "Rules",
@@ -69,7 +77,7 @@ describe("the game menu", () => {
   it("offers rules and card set with the lobby lines in a waiting room", () => {
     render(<LobbyTopBar menuPlace="waiting_room">{null}</LobbyTopBar>);
     const menu = openMenu("Game menu");
-    expect(entryNamesIn(menu)).toEqual(["Rules", "Card set"]);
+    expect(entryNamesIn(menu)).toEqual(["Rules", "Card set", "Tutorial"]);
     expect(
       within(menu).getByRole("button", { description: "How to play, with examples" }),
     ).toBeDefined();
@@ -102,7 +110,7 @@ describe("the game menu", () => {
   it("says during a game that the clock keeps running", () => {
     showGame();
     const menu = openMenu("Menu");
-    expect(entryNamesIn(menu)).toEqual(["Rules", "Card set"]);
+    expect(entryNamesIn(menu)).toEqual(["Rules", "Card set", "Tutorial"]);
     expect(
       within(menu).getByRole("button", {
         name: "Rules",

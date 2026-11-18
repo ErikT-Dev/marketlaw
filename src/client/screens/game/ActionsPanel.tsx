@@ -6,6 +6,7 @@ import { ActionNotices } from "./ActionNotices";
 import styles from "./ActionsPanel.module.css";
 import { counted } from "./counted";
 import { DoneBanner } from "./DoneBanner";
+import { Highlighted } from "./Highlighted";
 import { MarketPhaseNotice } from "./MarketPhaseNotice";
 import type { HandChoice } from "./HandChoice";
 import type { OpenDialog } from "./OpenDialog";
@@ -78,17 +79,19 @@ export function ActionsPanel(props: Props) {
           {sellLabel(choice)}
         </Button>
         <ProgressButtons seat={seat} isBusy={isBusy} onOpenDialog={props.onOpenDialog} />
-        <Button
-          look="success"
-          isDisabled={isBusy || seat.endTurnRejection !== null}
-          loadingLabel={isEndTurnPending ? "Waiting for the server…" : null}
-          highlightReason={seat.hasPlayedThisTurn ? "You have played a card this turn" : null}
-          onClick={() => {
-            props.onAction({ type: "end_turn" });
-          }}
-        >
-          End turn
-        </Button>
+        <Highlighted part={{ kind: "button", button: "end_turn" }}>
+          <Button
+            look="success"
+            isDisabled={isBusy || seat.endTurnRejection !== null}
+            loadingLabel={isEndTurnPending ? "Waiting for the server…" : null}
+            highlightReason={seat.hasPlayedThisTurn ? "You have played a card this turn" : null}
+            onClick={() => {
+              props.onAction({ type: "end_turn" });
+            }}
+          >
+            End turn
+          </Button>
+        </Highlighted>
       </div>
     </Panel>
   );

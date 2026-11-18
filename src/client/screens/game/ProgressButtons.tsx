@@ -1,6 +1,7 @@
 import type { OwnSeatView } from "../../../shared/OwnSeatView";
 import { Button } from "../../components/Button";
 import type { OpenDialog } from "./OpenDialog";
+import { Highlighted } from "./Highlighted";
 import { StatChip } from "../../components/StatChip";
 
 type Props = {
@@ -13,15 +14,17 @@ export function ProgressButtons({ seat, isBusy, onOpenDialog }: Props) {
   const ready = seat.combos.filter(({ readyTimes }) => readyTimes > 0).length;
   return (
     <>
-      <Button
-        look="primary"
-        isDisabled={isBusy || seat.claimAllRejection !== null}
-        onClick={() => {
-          onOpenDialog("claimAll");
-        }}
-      >
-        Claim all ({ready})
-      </Button>
+      <Highlighted part={{ kind: "button", button: "claim_all" }}>
+        <Button
+          look="primary"
+          isDisabled={isBusy || seat.claimAllRejection !== null}
+          onClick={() => {
+            onOpenDialog("claimAll");
+          }}
+        >
+          Claim all ({ready})
+        </Button>
+      </Highlighted>
       <Button
         look="primary"
         isDisabled={isBusy}

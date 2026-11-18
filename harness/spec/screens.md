@@ -448,7 +448,8 @@ None yet.
   turns", disabled "Not available while you are in a game, a room or the ranked queue". Only
   during a game, where a clock runs, do Rules and Card set say "Your clock keeps running while
   you read" and "… while you look" instead; in a waiting room or the ranked queue they keep their
-  lobby lines (Q159).
+  lobby lines (Q159). In the tutorial, which has no clock (C4.5), Rules and Card set keep their
+  lobby lines and Tutorial is disabled with the reason (Q168).
 - **S14.2** The **rules viewer** shows the rulebook's table of contents on the left, the current
   section on the right, links to related sections, and previous and next buttons. Opened during a
   game, it leaves the top bar visible and repeats the time left ("Your clock keeps running while
@@ -471,12 +472,46 @@ None yet.
 
 - **S15.1** The tutorial uses the game screen without opponents, timers or chat. The top bar shows
   "Tutorial · turn N" and **Leave tutorial**.
-- **S15.2** The left column shows the **tutorial text box**: "Step N of 21", the step's text from
-  `tutorial.md`, the action asked for, **Continue** on text-only steps, and **Restart**. The part of
-  the screen the step is about is highlighted, and every other action is disabled.
-- **S15.3** Any other action shows "Not this step" with what the tutorial is waiting for (C4.4).
-- **S15.4** After the last step, **Tutorial complete** offers Read the rules, Play it again and Go to
-  the lobby. Leaving asks for confirmation.
+- **S15.2** The left column shows the **tutorial text box**: "Step N of 19", the step's text from
+  `tutorial.md`, the action asked for, **Continue** on text-only steps (**Finish** on the last),
+  and **Restart**, as S15.5 to S15.7 say. The part of the screen the step is about is
+  highlighted (a card, a button, a sector or a quest; the hand and the stats on T1.1, the
+  marketplace and the market go on T2.1), and the side of the table it is not on cannot be
+  used: on a hand, action or claim step only the hand and actions side, on a marketplace,
+  sector or quest step only the middle, on a text step neither. Another choice on the side
+  that can be used is answered with Not this step (S15.3). **Restart** starts the tutorial
+  again from T1.1 without asking; it counts as starting a tutorial (A9.6) (Q161, Q162, Q167).
+- **S15.3** Any other action shows "Not this step" with what the tutorial is waiting for (C4.4):
+  "The tutorial is waiting for you to *waiting for*. Nothing changed." (S15.7).
+- **S15.4** After the last step, **Tutorial complete** says "You played your first turns, got your
+  first income and completed your first quest." and "The tutorial creates no game record and does
+  not change your rating.", and offers **Read the rules**, **Play it again** and **Go to the
+  lobby**. Play it again restarts the tutorial as Restart does; Read the rules and Go to the
+  lobby leave it (C4.8). **Leave tutorial** asks "Leave the tutorial?" with "Your progress in the
+  tutorial is lost. You can start it again from the beginning any time from the game menu.",
+  **Stay** and **Leave tutorial** (Q163).
+- **S15.5** The steps are numbered in the order of `tutorial.md`, T1.1 to T5.4: 19 steps. The text
+  box shows "Step N of 19".
+- **S15.6** A step's text box shows, in this order: the text after the step before it, if that
+  step has one; the step's own text; and its action line. Where the step's own text ends with
+  the sentence of its action line, that sentence is shown once, as the action line. T1.1 and T2.1
+  show **Continue** and T5.4 shows **Finish** instead of an action line.
+- **S15.7** Each step's action line, and what "Not this step" says the tutorial is waiting for
+  (S15.3), come from the table below. The action line is the *waiting for* words with a capital
+  letter and a full stop.
+
+  | Step | Waiting for | Step | Waiting for |
+  |---|---|---|---|
+  | T1.1 | press Continue | T3.1 | draw 2 Public cards from the deck |
+  | T1.2 | play Row House | T3.2 | play Public Playground |
+  | T1.3 | sell Hiking Trail | T3.3 | end your turn |
+  | T1.4 | end your turn | T4.1 | take Orchard from the marketplace |
+  | T2.1 | press Continue | T4.2 | play Orchard |
+  | T2.2 | take Fire Station from the marketplace | T4.3 | end your turn |
+  | T2.3 | play Fire Station | T5.1 | draw 2 Service cards from the deck |
+  | T2.4 | claim all ready combos | T5.2 | play Liquor Shop |
+  | T2.5 | end your turn | T5.3 | complete Trading post |
+  |  |  | T5.4 | press Finish |
 
 ## S16. Notices and messages
 
@@ -574,3 +609,5 @@ these, the spec is followed:
   them is infinite"). Types and stats are always icons (S1.6), so the type filter is a row of
   type icon buttons, and the detail shows stats and types as icons and marks an infinite combo
   with its infinite mark (S14.3, Q160).
+- **The tutorial boards** count "Step N of 21". The tutorial has 19 steps, and the box shows
+  "Step N of 19" (S15.5, Q161).

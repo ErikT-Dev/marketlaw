@@ -1,0 +1,6 @@
+1. Market phase should go back to having 30 seconds per player
+2. Played combos display: combos should be colord correctly so infinite combos have a blue background, regular ones are green. When  should be ordered correctly and have a colorin(check the original code)
+3. Players should be able to see how many quests they have completed themseleves, how many types they have, how many combos they have completed
+4. New rule - players cannot complete a project until they have at least 10 income
+5. You should always be able to see how many types opponents have and how many combos they have completed
+6. You should always be able to see 

@@ -3,6 +3,7 @@ import { accountBindingOf } from "./accountBindingOf";
 import { rankedQueueBindingOf } from "./rankedQueueBindingOf";
 import { RoomGameScreen } from "./RoomGameScreen";
 import { ServerClockOffset } from "./screens/game/ServerClockOffset";
+import { TutorialScreen } from "./TutorialScreen";
 import { LobbyPage } from "./screens/lobby/LobbyPage";
 import { WaitingPage } from "./screens/WaitingPage";
 import type { ClientStore } from "./store/ClientStore";
@@ -14,7 +15,14 @@ type Props = {
 
 export function CurrentScreen({ store }: Props) {
   const state = useSyncExternalStore(store.subscribe, store.getSnapshot);
-  const { session, update } = state;
+  const { session, update, tutorial } = state;
+  if (session?.isInTutorial === true) {
+    return tutorial === null ? (
+      <WaitingPage connection={state.connection} />
+    ) : (
+      <TutorialScreen store={store} state={state} tutorial={tutorial} />
+    );
+  }
   if (session?.roomCode === null || session === null) {
     return (
       <ServerClockOffset value={state.serverClockOffsetMs}>

@@ -4,7 +4,7 @@ import type { GameMenuPlace } from "../menu/GameMenuPlace";
 import styles from "./Lobby.module.css";
 
 type Props = {
-  readonly menuPlace: Exclude<GameMenuPlace, "game">;
+  readonly menuPlace: Exclude<GameMenuPlace, "game" | "tutorial">;
   readonly children: ReactNode;
 };
 

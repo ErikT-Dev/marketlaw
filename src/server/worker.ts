@@ -1,5 +1,6 @@
 import * as v from "valibot";
 import { EpochMs } from "../shared/EpochMs";
+import { PlayerId } from "../shared/PlayerId";
 import { RoomCode } from "../shared/RoomCode";
 import { accountDeletionRoute } from "./api/accountDeletionRoute";
 import { accountRoute } from "./api/accountRoute";
@@ -22,11 +23,13 @@ import { roomJson } from "./api/roomJson";
 import { sessionRoute } from "./api/sessionRoute";
 import { sendAgainRoute } from "./api/sendAgainRoute";
 import { signupRoute } from "./api/signupRoute";
+import { startTutorialRoute } from "./api/startTutorialRoute";
 import { usernameChangeRoute } from "./api/usernameChangeRoute";
 import { removeUnusedGuests } from "./deletion/removeUnusedGuests";
 import { removeOldEmailRecords } from "./email/removeOldEmailRecords";
 import { lobbyOf } from "./lobbyOf";
 import { queueOf } from "./queueOf";
+import { tutorialOf } from "./tutorialOf";
 import { removeForgottenLoginFailures } from "./removeForgottenLoginFailures";
 import { removeOldReplayRecords } from "./replays/removeOldReplayRecords";
 import { confirmTestSeat } from "./testRooms/confirmTestSeat";
@@ -38,8 +41,22 @@ import { setTestDailyCounts } from "./testRooms/setTestDailyCounts";
 export { GameRoom } from "./GameRoom";
 export { Lobby } from "./Lobby";
 export { RankedQueue } from "./RankedQueue";
+export { TutorialRoom } from "./TutorialRoom";
 
 const ROOM_PATH = /^\/api\/rooms\/([A-Z0-9]{6})\/(join|socket|replay)$/;
+
+const TUTORIAL_SOCKET_PATH = /^\/api\/tutorials\/([0-9a-f-]{36})\/socket$/;
+
+async function routeTutorialSocket(
+  request: Request,
+  env: Env,
+  path: RegExpExecArray,
+): Promise<Response> {
+  const playerId = v.safeParse(PlayerId, path[1]);
+  return playerId.success
+    ? tutorialOf(env, playerId.output).fetch(request)
+    : new Response("Not found", { status: 404 });
+}
 
 async function routeRoom(request: Request, env: Env, path: RegExpExecArray): Promise<Response> {
   const code = v.safeParse(RoomCode, path[1]);
@@ -69,6 +86,7 @@ const POST_ROUTES: Readonly<Record<string, (request: Request, env: Env) => Promi
   "/api/ranking": rankingRoute,
   "/api/rooms": createRoomRoute,
   "/api/signups": signupRoute,
+  "/api/tutorials": startTutorialRoute,
   "/api/confirmation-emails": sendAgainRoute,
   "/api/email-confirmations": confirmEmailRoute,
   "/api/email-changes": emailChangeRoute,
@@ -88,6 +106,10 @@ async function route(request: Request, env: Env): Promise<Response> {
   const roomPath = ROOM_PATH.exec(pathname);
   if (roomPath !== null) {
     return routeRoom(request, env, roomPath);
+  }
+  const tutorialPath = TUTORIAL_SOCKET_PATH.exec(pathname);
+  if (tutorialPath !== null) {
+    return routeTutorialSocket(request, env, tutorialPath);
   }
   const recordAnswer = recordRoute(request, env, pathname);
   if (recordAnswer !== null) {

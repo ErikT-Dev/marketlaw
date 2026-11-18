@@ -7,6 +7,7 @@ export const LOBBY_GIVEN_FIELDS: ReadonlySet<string> = new Set([
   "seats",
   "accounts",
   "room",
+  "tutorial",
   "other_rooms",
   "records",
   "queue",

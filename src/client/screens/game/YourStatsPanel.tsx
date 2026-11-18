@@ -7,6 +7,7 @@ import type { StatName } from "../../icons/StatName";
 import { ProjectProgressList } from "./ProjectProgressList";
 import { TypeCountsList } from "./TypeCountsList";
 import styles from "./YourStatsPanel.module.css";
+import { Highlighted } from "./Highlighted";
 
 type Props = {
   readonly seat: OwnSeatView;
@@ -33,21 +34,23 @@ function valueOf(seat: OwnSeatView, stat: (typeof SHOWN_STATS)[number]): number 
 
 function YourStatsPanelContent({ seat, view, playerNames }: Props) {
   return (
-    <Panel title="Your stats">
-      <ul className={styles["statGrid"]} aria-label="Stat values">
-        {SHOWN_STATS.map((stat) => (
-          <li key={stat}>
-            <StatChip stat={stat} value={valueOf(seat, stat)} />
-          </li>
-        ))}
-      </ul>
-      <TypeCountsList
-        typeCounts={seat.typeCounts}
-        bonusTypes={view.bonusTypes}
-        label="Your type counts, bonus types first"
-      />
-      <ProjectProgressList seat={seat} view={view} playerNames={playerNames} />
-    </Panel>
+    <Highlighted part={{ kind: "panel", panel: "stats" }} isBlock>
+      <Panel title="Your stats">
+        <ul className={styles["statGrid"]} aria-label="Stat values">
+          {SHOWN_STATS.map((stat) => (
+            <li key={stat}>
+              <StatChip stat={stat} value={valueOf(seat, stat)} />
+            </li>
+          ))}
+        </ul>
+        <TypeCountsList
+          typeCounts={seat.typeCounts}
+          bonusTypes={view.bonusTypes}
+          label="Your type counts, bonus types first"
+        />
+        <ProjectProgressList seat={seat} view={view} playerNames={playerNames} />
+      </Panel>
+    </Highlighted>
   );
 }
 

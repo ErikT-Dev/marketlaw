@@ -13,7 +13,14 @@ const AT_NOW = { now: NOW, siteChatMessagesPerDay: siteChatLimitOf({}) };
 function lobbyWithChatMessages(siteChatMessages: number): LobbyRecord {
   return {
     ...EMPTY_LOBBY,
-    today: { day: dayOf(NOW), players: [], siteGameStarts: 3, siteChatMessages, siteEmails: 0 },
+    today: {
+      day: dayOf(NOW),
+      players: [],
+      siteGameStarts: 3,
+      siteChatMessages,
+      siteEmails: 0,
+      siteTutorialStarts: 0,
+    },
   };
 }
 
@@ -27,6 +34,7 @@ describe("the site's daily chat quota", () => {
       siteGameStarts: 3,
       siteChatMessages: 120,
       siteEmails: 0,
+      siteTutorialStarts: 0,
     });
   });
 

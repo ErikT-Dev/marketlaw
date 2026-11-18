@@ -18,6 +18,7 @@ const IN_ROOM = {
   name: "Ann",
   isGuest: true,
   roomCode: ROOM_CODE,
+  isInTutorial: false,
 };
 
 function hostWithEvents() {
@@ -26,6 +27,7 @@ function hostWithEvents() {
   const host: GameHost = {
     sendAction: () => null,
     sendRoomAction: () => true,
+    sendTutorialAction: () => null,
     requestResync: () => undefined,
     subscribe: (newListener) => {
       listener = newListener;

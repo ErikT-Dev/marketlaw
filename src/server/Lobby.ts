@@ -9,6 +9,7 @@ import type { BusyPlace } from "./lobby/BusyPlace";
 import type { ClaimRejection } from "./lobby/ClaimRejection";
 import { claimPlayer } from "./lobby/claimPlayer";
 import { countGameStart } from "./lobby/countGameStart";
+import { countTutorialStart } from "./lobby/countTutorialStart";
 import { EMPTY_LOBBY } from "./lobby/EMPTY_LOBBY";
 import { forgetPlayer } from "./lobby/forgetPlayer";
 import { grantChatQuota } from "./lobby/grantChatQuota";
@@ -25,6 +26,8 @@ import { siteEmailLimitOf } from "./lobby/siteEmailLimitOf";
 import { returnSiteEmail } from "./lobby/returnSiteEmail";
 import { takeSiteEmail } from "./lobby/takeSiteEmail";
 import { siteGameLimitOf } from "./lobby/siteGameLimitOf";
+import { siteTutorialLimitOf } from "./lobby/siteTutorialLimitOf";
+import type { TutorialStartRejection } from "./lobby/TutorialStartRejection";
 import type { PlayedActions } from "./lobby/PlayedActions";
 import type { PlayerCountsToday } from "./lobby/PlayerCountsToday";
 import type { RoomSummary } from "./lobby/RoomSummary";
@@ -76,6 +79,19 @@ export class Lobby extends DurableObject<Env> {
         .siteGameLimitReached()
         .catch(() => undefined);
     }
+    return rejection;
+  }
+
+  async startTutorial(playerId: PlayerId, now: EpochMs): Promise<TutorialStartRejection | null> {
+    let rejection: TutorialStartRejection | null = null;
+    await this.change((record) => {
+      const counted = countTutorialStart(record, playerId, {
+        now,
+        siteTutorialsPerDay: siteTutorialLimitOf(this.env),
+      });
+      rejection = counted.isOk ? null : counted.error;
+      return counted.isOk ? counted.value : null;
+    });
     return rejection;
   }
 
@@ -153,7 +169,7 @@ export class Lobby extends DurableObject<Env> {
     await this.change((record) => forgetPlayer(record, playerId, code));
   }
 
-  async release(playerId: PlayerId, code: RoomCode): Promise<void> {
+  async release(playerId: PlayerId, code: BusyPlace): Promise<void> {
     await this.change((record) => releasePlayer(record, playerId, code));
   }
 

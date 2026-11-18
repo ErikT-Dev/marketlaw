@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { HostEvent } from "../shared/HostEvent";
 import { PROTOCOL_VERSION } from "../shared/PROTOCOL_VERSION";
+import { OWN_SEAT_VIEW } from "../shared/testing/OWN_SEAT_VIEW";
 import { RemoteGameHost } from "./RemoteGameHost";
 import type { SocketHandlers } from "./SocketHandlers";
 
@@ -89,6 +90,39 @@ const ROOM_UPDATE_TEXT = JSON.stringify({
 });
 
 const SOCKET_URL = "ws://test/api/rooms/K7QR2P/socket";
+
+const TUTORIAL_UPDATE_TEXT = JSON.stringify({
+  type: "tutorial_update",
+  protocolVersion: PROTOCOL_VERSION,
+  acceptedActionId: "id-7",
+  stateVersion: 4,
+  view: {
+    progress: { kind: "step", step: "T1.2", number: 2 },
+    game: {
+      seat: 1,
+      turn: 1,
+      phase: "main",
+      firstPlayer: 1,
+      marketGo: null,
+      seats: [OWN_SEAT_VIEW],
+      deckCount: 100,
+      discardCount: 0,
+      marketplace: [],
+      quests: [],
+      bonusTypes: [],
+      doneOrder: [],
+      playerOrder: [1],
+      drawLog: [],
+      mainPhaseLog: [],
+      questsCompletedLastTurn: [],
+      firstCompletions: [],
+      vote: null,
+      nextVoteTurn: 1,
+      result: null,
+    },
+  },
+  serverNow: 6000,
+});
 
 describe("RemoteGameHost", () => {
   it("asks for the full view as soon as the connection opens", () => {
@@ -251,5 +285,28 @@ describe("RemoteGameHost", () => {
       { type: "connection", status: "room_gone" },
     ]);
     expect(network.connects()).toBe(1);
+  });
+
+  it("passes on a tutorial update and sends tutorial actions on its state version", () => {
+    const network = connectedHost();
+    network.handlers().onMessage(TUTORIAL_UPDATE_TEXT);
+    expect(network.events).toMatchObject([
+      {
+        type: "tutorial_update",
+        acceptedActionId: "id-7",
+        serverNow: 6000,
+        view: { progress: { kind: "step", step: "T1.2", number: 2 } },
+      },
+    ]);
+    expect(network.host.sendTutorialAction({ type: "continue" })).toBe("id-1");
+    expect(network.sent.at(-1)).toEqual({
+      protocolVersion: PROTOCOL_VERSION,
+      token: "secret-token",
+      type: "tutorial",
+      actionId: "id-1",
+      stateVersion: 4,
+      action: { type: "continue" },
+      url: SOCKET_URL,
+    });
   });
 });
