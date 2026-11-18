@@ -61,6 +61,13 @@ chat are in `accounts.md` (rules `A…`). The card data is `cards.json`.
   is the same for all players.
 - **R2.3** Workforce, quality and satisfaction can go below zero. While any of them is negative
   you cannot gain income (R13) or complete projects (R16).
+- **R2.4** **Total worth gained (F):** each player also has a running count of everything of
+  worth they have received in the game: every fund they received (the starting funds, income,
+  bonus turned into funds, first-completion funds, and funds from projects, quests and influence
+  actions; not funds from selling cards) plus 1 for every card they gained (the starting hand, and every card drawn or
+  taken from the marketplace). It starts at 14 (7 funds and 7 cards). Selling or playing a card
+  does not change it, and a redraw of the starting hand (R17.12) does not change it either, so it
+  only goes up. It is shown, not used by any rule.
 
 ## R3. Cards
 
@@ -124,6 +131,7 @@ chat are in `accounts.md` (rules `A…`). The card data is `cards.json`.
 - **R4.6** **Setup order:** when a game starts, these happen in this order: seats are given
   (R4.3), the deck is shuffled (R17.2), starting hands are dealt (R17.9), the marketplace is
   filled (R18.5), the quests table is filled (R19.3), and the bonus types are picked (R21.6).
+  Then every player gets the build pass of turn 1 (R6.3).
 
 ## R5. The main phase
 
@@ -164,15 +172,18 @@ chat are in `accounts.md` (rules `A…`). The card data is `cards.json`.
 - **R6.1** You can play a card only if all of these are true:
   - you have at least its real cost in funds (R3.8)
   - it is tier 1, or it is turn 5 or later
-  - you have not played a card yet this turn, or you have a **build pass** left (one pass is
-    used up per extra card)
-  - you have not used "skip build" this turn (R15)
+  - you have at least 1 **build pass** (R6.3); every card you play uses up 1, the first card of
+    the turn too
 - **R6.2** When you play it:
-  - you pay the real cost
+  - you pay the real cost and use up 1 build pass
   - the card is added to your city
   - the stat changes from R3.4 are applied
   - its types are added to your type counts (R12.1)
   - its combos become available to you (R12)
+- **R6.3** **Build passes:** at the start of every turn, turn 1 included, every player still in
+  the game gets **1 build pass** (R4.6, R11.4). Unused passes are kept for later turns, with no
+  limit, so a player who saves passes can play several cards in one turn. Passes can also be
+  bought with influence actions (R15); a bought pass can be used straight away.
 
 ## R7. Undo
 
@@ -183,13 +194,14 @@ chat are in `accounts.md` (rules `A…`). The card data is `cards.json`.
   draws a card:
   - playing a card
   - claim all
-  - influence actions that do not draw a card (trades, build passes, skip build)
+  - influence actions that do not draw a card (trades and build passes)
   - completing a quest whose reward does not draw a card
 
   An action after which income is taken (R13) counts as drawing a card, even when no card is
   left to draw.
 - **R7.3** All other actions cannot be undone: selling, completing a project, draw actions and
-  ending your turn.
+  ending your turn. A redraw of the starting hand (R17.12) is not an action and cannot be undone
+  either.
 - **R7.4** Once an action that cannot be undone has happened, nothing before it can be undone
   either.
 
@@ -212,22 +224,24 @@ chat are in `accounts.md` (rules `A…`). The card data is `cards.json`.
 
 - **R9.1** **Main-phase limit:** each player has a time limit for the main phase, in seconds:
 
-  210 + (turn number − 1) × 120 ÷ 19, rounded to the nearest second, and at most 330
+  210 + (turn number − 1) × 120 ÷ 19, rounded to the nearest second, and at most 330; in
+  turn 1, 90 seconds more
 
-  That is 3 minutes 30 seconds in turn 1, about 6 seconds more each turn, and 5 minutes
+  That is 5 minutes in turn 1, which has 90 extra seconds for redrawing the starting hand
+  (R17.12); 3 minutes 36 seconds in turn 2, about 6 seconds more each turn, and 5 minutes
   30 seconds from turn 20 on. It counts from the moment the player's own main phase starts
   (R18.15).
 
-  | Turn | 1 | 5 | 10 | 15 | 20+ |
-  |---|---|---|---|---|---|
-  | Time limit | 3:30 | 3:55 | 4:27 | 4:58 | 5:30 |
+  | Turn | 1 | 2 | 5 | 10 | 15 | 20+ |
+  |---|---|---|---|---|---|---|
+  | Time limit | 5:00 | 3:36 | 3:55 | 4:27 | 4:58 | 5:30 |
 
-- **R9.2** **Market-go limit:** 40 seconds for every market go (R18.11).
+- **R9.2** **Market-go limit:** 30 seconds for every market go (R18.11).
 - **R9.3** **Time bank:** every player has a personal **time bank of 15 minutes** for the whole
   game.
 - **R9.4** Each decision has some **free time** that does not use the bank: the first
-  **75 seconds** of each main phase, counted from the start of the player's own main phase
-  (R18.15), and the first **5 seconds** of each market go.
+  **75 seconds** of each main phase (**165 seconds** in turn 1), counted from the start of the
+  player's own main phase (R18.15), and the first **5 seconds** of each market go.
 - **R9.5** After the free time, the clock runs from the player's bank. In the main phase it runs
   until the player ends their turn; on a market go it runs until they make their choice for that
   go. It stops earlier if the main-phase or market-go limit is reached.
@@ -258,10 +272,16 @@ chat are in `accounts.md` (rules `A…`). The card data is `cards.json`.
 - **R9.12** **Paused game:** if any player's time would run out while no player still in the game
   is connected, the game is **paused** instead: all clocks stop and nobody runs out of time.
 - **R9.13** A paused game goes on as soon as any player still in the game reconnects. The player
-  whose time would have run out then gets their free time again (75 seconds in the main phase,
-  5 seconds on a market go), without using their bank, before their time runs out.
+  whose time would have run out then gets their free time again (that turn's main-phase free
+  time of R9.4 in the main phase, 5 seconds on a market go), without using their bank, before
+  their time runs out.
 - **R9.14** A game that stays paused for 24 hours is abandoned: it ends with no winner, and
   ratings stay the same.
+- **R9.15** **Unused free time goes into the bank:** when a player ends their turn (R8.1), the
+  part of that turn's main-phase free time (R9.4) they have not used is added to their time
+  bank. The bank never goes above its starting 15 minutes, so saved time only refills time
+  already used. Free time given again after a pause (R9.13) and the free time of market goes are
+  never added, and a player made done (R9.10) has no free time left to add.
 
 ## R10. End-of-turn steps
 
@@ -269,8 +289,8 @@ After the main phase, in this order:
 
 - **R10.1** For each player still in the game: influence +1; funds + income; bonus is added and
   turned into funds (R14); first-completion project rewards are given (R16.6); "played a card
-  this turn" and "skipped build this turn" are reset (unused build passes are kept). Players who
-  left get no end-of-turn steps.
+  this turn" is reset (unused build passes are kept, R6.3). Players who left get no end-of-turn
+  steps.
 - **R10.2** Quests completed this turn leave the table for good. Quests at the end of their 5th
   turn on the table that nobody completed leave it, and go back into the quest list only after
   the start-of-turn refill (R19.7, R11.2).
@@ -286,6 +306,8 @@ At the start of every turn from turn 2 on, in this order:
   refilled (R19.8). Then the quests that left the table after 5 turns at the end of the turn
   before go back into the quest list (R19.7).
 - **R11.3** The **market phase** takes place, which includes every player's turn draw (R18).
+- **R11.4** Before R11.1, at the very start of the turn, every player still in the game gets
+  1 build pass (R6.3).
 
 ## R12. Types and combos
 
@@ -328,40 +350,46 @@ At the start of every turn from turn 2 on, in this order:
 ## R15. Influence actions
 
 - **R15.1** Influence actions are optional trades. Some can only be used a limited number of
-  times per game. You need enough of everything an action costs.
-
-  | Action | Limit per game |
-  |---|---|
-  | 4 influence → 2 funds | 1 |
-  | 4 influence → 1 quality | 1 |
-  | 4 influence → 1 satisfaction | 1 |
-  | 6 influence → 1 workforce | 1 |
-  | 1 fund → 1 influence | unlimited |
-  | 2 funds → 1 build pass; costs 1 more fund each time it is bought | unlimited |
-  | 5 influence → 1 build pass | 1 |
-  | Skip build (only if you have not played a card this turn): you cannot play a card for the rest of this turn, but you gain 1 build pass to use later | 3 |
-  | 1 influence + 1 quality → 1 satisfaction | 1 |
-  | 1 influence + 1 satisfaction → 1 quality | 1 |
-  | 2 influence + 1 product → 1 distribution + 1 satisfaction | 1 |
-  | 2 influence + 1 distribution + 1 satisfaction → 1 product | 1 |
-  | 2 influence + 1 quality → 1 workforce | 1 |
-  | 2 influence + 1 satisfaction → 1 workforce | 1 |
-  | 1 workforce → 1 satisfaction | 1 |
-  | 1 workforce → 1 quality | 1 |
-  | 2 quality → 1 satisfaction | unlimited |
-  | 2 satisfaction → 1 quality | unlimited |
-  | 4 quality → 1 workforce | unlimited |
-  | 4 satisfaction → 1 workforce | unlimited |
-  | 3 influence → draw a tier 1 card of a chosen kind | unlimited |
-  | 4 influence → draw a tier 2 card of a chosen kind | unlimited |
-  | 5 influence → draw a tier 3 card of a chosen kind | unlimited |
-
-- **R15.2** Each draw action is for one **kind** (R3.7) and one tier. That makes 5 kinds ×
-  3 tiers = 15 separate draw actions.
+  times per game. You need enough of everything an action costs. The influence actions are
+  exactly the lines of **`harness/spec/influence-actions.txt`**, which is part of these rules:
+  the game has every action written there and no other (R15.5). Its order is the order in which
+  the actions are listed on screen.
+- **R15.2** Each draw action is for one **kind** (R3.7) and the one tier its line names. Each
+  draw line therefore gives 5 separate draw actions, one per kind.
 - **R15.3** A draw action can only be used while the deck or the discard pile, as you see them
   (R5.5), holds a card of that kind and tier. The card is then found with the steps of R17.4.
 - **R15.4** If other players drew the last cards of that kind and tier earlier in the same main
   phase, the draw action gives a card of another tier (R17.4 step 3); the influence stays spent.
+- **R15.5** **The format of `influence-actions.txt`:** one action per line, nothing else in the
+  file, no empty lines. Each line has four parts separated by ` | `:
+
+  `name | pay costs | what you get | limit`
+
+  - **name:** lower-case letters, digits and spaces, different from every other line's name.
+    With its spaces written as underscores it is the action's name in messages and scenarios
+    (`influence to funds` is `influence_to_funds`).
+  - **pay costs:** `pay ` and one or more costs separated by `, `. A cost is a whole number from
+    1 to 99 and a stat of R2.1 (`fund` or `funds`, `income`, `influence`, `workforce`,
+    `quality`, `satisfaction`, `product`, `distribution`, `bonus`), for example
+    `pay 2 influence, 1 quality`.
+  - **what you get:** either `get ` and one or more gains separated by `, `, each a whole number
+    from 1 to 99 and a stat of R2.1 or `build pass` (`build passes`), for example
+    `get 1 distribution, 1 satisfaction`; or the fixed words
+    `draw a tier N card of a chosen kind`, with N 1, 2 or 3 (a draw action, R15.2).
+  - **limit:** `1 per game`, `N per game` with N from 2 to 99, or `no limit`.
+  - **The rising build pass:** a line that pays only funds and gets 1 build pass may add the
+    fixed words `1 more each time` as its last cost (`pay 2 funds, 1 more each time`): its price
+    goes up by 1 fund each time the player buys it, and undo puts the price back (R7.1).
+
+  A line whose third part is neither `get …` nor the draw words, or whose fixed words are not
+  those above, is an action the game has no rules for: it needs new code before it can be
+  played (R15.6). At most one line may be a draw action for each tier.
+- **R15.6** The game, the screens, the rulebook and the tutorial all take the influence actions
+  from this file; no other list of them exists. `npm run check` fails, naming the line and the
+  wrong word, when a line breaks R15.5, and fails with "needs new code" naming the action when
+  the game or the screen has no code for a line (HARNESS.md, "Checking the harness itself"). A
+  plain trade (stats or build passes for stats or build passes) needs no new code: the game and
+  the screen show and apply it from the file.
 
 ## R16. Projects
 
@@ -373,8 +401,8 @@ At the start of every turn from turn 2 on, in this order:
   | Culture campaign | 8 satisfaction |
   | Help the homeless | 8 workforce |
 
-- **R16.2** To complete one you need the required amount, and workforce, quality and satisfaction
-  must all be 0 or more.
+- **R16.2** To complete one you need the required amount, **at least 10 income**, and workforce,
+  quality and satisfaction must all be 0 or more.
 - **R16.3** Completing it:
   - uses up the 8 of that stat
   - gives income +1, funds +2, influence +3
@@ -445,6 +473,18 @@ At the start of every turn from turn 2 on, in this order:
   | 29 | 0% | 0% | 100% |
 
 - **R17.11** The turn draws belong to the turn that is starting, so they use its number.
+- **R17.12** **Redrawing the starting hand:** in turn 1, until their first main-phase action of
+  any kind (playing a card, selling, claim all, an influence action, a project, a quest, undo or
+  ending their turn), each player may redraw their starting hand up to **3 times**. A redraw puts
+  the whole hand back into the deck, shuffles the whole deck, and deals a new hand of the same
+  size exactly as R17.9 deals a starting hand, with the deck as it really is (R17.7). It is free
+  and is not a main-phase action: it does not count toward the action limit (R5.3), cannot be
+  undone (R7.3), and does not change total worth gained (R2.4). Players redraw on their own, at
+  the same time, without waiting for each other; the player keeps the hand they have at the end.
+  A redraw after the player's first action, in a later turn, or after their third redraw is
+  rejected (`redraw_too_late`, `no_redraw_left`). Others see it as a main-phase draw: it is
+  revealed when the main phase ends, as "redrew their starting hand" with how many times
+  (M3.3); the cards put back and drawn stay hidden.
 
 ## R18. The marketplace
 
@@ -477,7 +517,7 @@ At the start of every turn from turn 2 on, in this order:
   pay its real cost when you play it. Every card that comes into your hand during a turn, in the
   market phase or the main phase (from income, projects, quests or draw actions), is marked
   **new** until the end of that turn.
-- **R18.11** **Time:** you have 40 seconds for your market go. Time beyond the first 5 seconds
+- **R18.11** **Time:** you have 30 seconds for your market go. Time beyond the first 5 seconds
   of a go comes from your time bank (R9). If time runs out, your go ends without a draw and the
   next player's go starts. Your own main phase starts (R18.15), and your turn draw stays open as
   option (B) only (R18.16).
@@ -507,13 +547,13 @@ At the start of every turn from turn 2 on, in this order:
 
 - **R19.1** The **quests table** is shared by all players and has **4 places** for quests. At the
   start of turn 20 a 5th place is added and filled like any empty place.
-- **R19.2** There are 45 quests in the quest list (R20): 15 each of tier 1, 2 and 3. Higher-tier
-  quests are harder and give bigger rewards.
+- **R19.2** The quest list holds the quests of `quests.txt` (R20.7), each of tier 1, 2 or 3.
+  Higher-tier quests are harder and give bigger rewards.
 - **R19.3** When the game starts, the table gets 4 random tier 1 quests.
 - **R19.4** Each quest has a **requirement**: something you must have at that moment, such as an
   amount of a stat, a count of a type, or a number of cards of a sector or tier in your city.
   Nothing is used up. To complete a quest, workforce, quality and satisfaction must also all be
-  0 or more, as for projects (R16.2).
+  0 or more (R2.3).
 - **R19.5** Completing a quest is a main-phase action. Each player can complete each quest on the
   table once. The **reward** is given straight away. Any number of players can complete the same
   quest in the same turn.
@@ -552,67 +592,42 @@ How requirements and rewards are read:
   combos (including infinite ones), bonus-type points at the end of the game, and type
   requirements of quests. It is not a card: it does not count as a card in your city, and does
   not count for card-name combos or sector counts.
-- **R20.7** The quests are:
+- **R20.7** The quests are exactly the lines of **`harness/spec/quests.txt`**, which is part of
+  these rules: the game has every quest written there and no other. The order of the lines is
+  the order of the quest list, which the random picks of R19.3 and R19.8 use.
+- **R20.8** **The format of `quests.txt`:** one quest per line, nothing else in the file, no empty
+  lines. Each line has four parts separated by ` | `:
 
-  **Tier 1**
+  `Tier N | name | requirement | reward`
 
-  | Name | Requirement | Reward |
-  |---|---|---|
-  | Working district | 3 Residential cards and 1 Low Wealth | +1 quality |
-  | Farming industry | 2 Industry cards and 1 Farm | +1 workforce |
-  | Local services | 2 Service cards and 1 Service type | +1 satisfaction |
-  | Green city | 3 Public cards and 2 Beautification | +3 funds |
-  | Countryside | 1 Suburban Housing and 1 Farm | gain 1 Suburban Housing |
-  | Farmland | 1 Farm and 2 Food | gain 1 Farm |
-  | Fishing village | 1 Sea and 2 Food | gain 1 Sea, +1 fund |
-  | Sports town | 1 Leisure and 1 Health | gain 1 Health |
-  | High street | 2 Retail and 1 Suburban Housing | +1 satisfaction, +1 fund |
-  | Mining town | 1 Mine and 1 Low Wealth | gain 1 Mine |
-  | Workers' housing | 5 workforce and 1 Low Wealth | +1 fund, +3 influence |
-  | Tidy streets | 5 quality and 1 Beautification | +1 workforce |
-  | Healthy town | 4 satisfaction and 1 Health | +1 workforce |
-  | Trading post | Income of 4 and 1 Retail | +1 fund, +2 influence |
-  | Supply chain | Income of 5 and 1 Raw Material | draw 1 card |
-
-  **Tier 2**
-
-  | Name | Requirement | Reward |
-  |---|---|---|
-  | Growing suburbs | 2 Town Housing and 1 Low Wealth | +2 quality |
-  | Upmarket homes | 2 tier 2 or 3 Residential cards and 1 Luxury | +2 satisfaction |
-  | Modern industry | 2 tier 2 or 3 Industry cards and 1 Light Industry | +2 workforce |
-  | Service economy | 2 tier 2 or 3 Service cards and 1 Service type | +2 satisfaction |
-  | Culture hub | 3 tier 2 or 3 Public cards and 1 Culture | gain 1 Culture, +3 influence |
-  | Factory town | 2 Town Housing and 1 Light Industry | gain 1 Light Industry, +1 quality |
-  | Market town | 1 Town Housing, 1 Retail and 1 Food | gain 1 Retail, draw 1 card |
-  | Industrial zone | 2 Light Industry and 1 Raw Material | +4 funds |
-  | Shopping centre | 2 Retail, 1 Service type and 1 Leisure | +2 satisfaction |
-  | Leisure park | 2 Leisure and 1 Beautification | gain 1 Beautification, +2 funds |
-  | Culture district | 2 Culture and 1 Education | gain 1 Culture, +1 satisfaction |
-  | Safe streets | 6 quality and 1 Safety | +2 workforce |
-  | Happy residents | 6 satisfaction and 1 Leisure | +1 workforce, +1 quality |
-  | Civic pride | 1 completed project and 2 Beautification | +2 funds, +3 influence |
-  | Service boom | Income of 7 and 1 Service type | draw 2 cards |
-
-  **Tier 3**
-
-  | Name | Requirement | Reward |
-  |---|---|---|
-  | Penthouses | 3 tier 2 or 3 Residential cards, at least 1 of them tier 3, and 1 City Housing | +3 quality |
-  | Heavy industry | 3 tier 2 or 3 Industry cards and 1 Heavy Industry | +3 workforce |
-  | Office district | 3 tier 2 or 3 Service cards and 1 Office | +3 satisfaction |
-  | Public institutions | 4 tier 2 or 3 Public cards, 1 Safety and 1 Education | +2 quality, +3 influence |
-  | City living | 2 City Housing and 1 Luxury | gain 1 City Housing, +2 quality |
-  | Tech campus | 2 High Tech and 1 Education | gain 1 High Tech, draw 1 card |
-  | Commuter city | 1 City Housing and 1 Mass Transit | gain 1 Mass Transit, +1 quality |
-  | Business district | 2 Office and 1 Finance | +4 funds, +4 influence |
-  | Media city | 1 Mass Media, 1 Office and 1 Culture | gain 1 Mass Media, +2 satisfaction |
-  | Tech industry | 1 High Tech and 1 Heavy Industry | draw 2 cards |
-  | Metropolis | 1 tier 3 card in each of 3 different sectors | draw 3 cards |
-  | Balanced city | 3 cards of each sector and 1 Mass Transit | +4 funds, draw 2 cards |
-  | Cultural capital | 8 satisfaction and 1 Culture | +3 workforce |
-  | Civic leader | 2 completed projects and 1 Safety | +2 quality, +2 satisfaction |
-  | High-tech economy | Income of 10 and 1 High Tech | draw 3 cards |
+  - **Tier N:** `Tier 1`, `Tier 2` or `Tier 3`.
+  - **name:** letters, digits, spaces, apostrophes and hyphens, starting with a capital letter,
+    different from every other quest's name (capital letters ignored). It is the quest's name on
+    screen, in messages and in scenarios.
+  - **requirement:** one or more parts separated by `, `; all must be met (R20.1). N is a whole
+    number from 1 to 99, a sector is `Residential`, `Industry`, `Service` or `Public`, a type is
+    one of the 33 types of R21.7, and `card` or `cards`, `project` or `projects` may be
+    singular or plural:
+    - `N <sector> cards`: cards of that sector in your city (R20.2)
+    - `N tier 2 or 3 <sector> cards`, `N tier 3 <sector> cards`: cards of that sector and those
+      tiers in your city
+    - `N cards of each sector`: at least N cards of every sector in your city
+    - `N sectors with a tier 3 card`: a tier 3 card in your city in each of N different sectors
+    - `N <type>`: a type count (R20.3); the Service type is written `Service type`, so that it
+      is not read as a sector
+    - `N workforce`, `N quality`, `N satisfaction`: that much of the stat
+    - `income N`: income of at least N
+    - `N completed projects`: projects you have completed (R16)
+  - **reward:** one or more parts separated by `, `, given together:
+    - `+N <stat>`: that much of a stat of R2.1 (`fund` or `funds` and so on)
+    - `gain N <type>`: a gained type (R20.6), the Service type again written `Service type`
+    - `draw N cards`: N cards, tier by turn, each of a random sector (R20.5)
+- **R20.9** The game, the rules viewer and rulebook, the menus and the tutorial all take the
+  quests from this file; no other list of them exists. `npm run check` fails, naming the line
+  and the wrong word, when a line breaks R20.8, when two quests have the same name, when the
+  file has fewer than 4 tier 1 quests (R19.3 needs 4 to fill the starting table), or when a
+  quest the tutorial needs (T0.7) is missing or changed (HARNESS.md, "Checking the harness
+  itself").
 
 ## R21. End of the game and score
 
