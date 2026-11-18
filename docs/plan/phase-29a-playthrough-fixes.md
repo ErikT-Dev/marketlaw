@@ -245,7 +245,7 @@ These 35 required scenarios now assert the new rules (Q169) and must pass again:
     redraw must not change); 5, 7 and 10 any time; 8 and 9 before 11 and 13 (they reuse the
     sorting); 12 after 1b.
 
-- [ ] 1a. **The rule file reader and the harness check** (R15.5, R20.8, T0.7, `HARNESS.md`,
+- [x] 1a. **The rule file reader and the harness check** (R15.5, R20.8, T0.7, `HARNESS.md`,
   "Checking the harness itself"). **Large.**
   - One reader in `src/shared/` (pure; text in, a `Result` out, with file, line number and wrong
     word for each problem) turns `harness/spec/quests.txt` and `influence-actions.txt` into the
@@ -262,6 +262,29 @@ These 35 required scenarios now assert the new rules (Q169) and must pass again:
   - Reuse: `src/shared/catalogue/` (`TYPE_NAMES`, `Sector`, `Kind`, `QuestNeed`, `QuestReward`,
     `QuestTerms`), the `Trade` shape of `src/shared/TRADES.ts`, the stat names of R2.1.
   - Done when `npm run harness:check` passes.
+  - Done (2026-11-18). `npm run harness:check` passes (507 scenarios, 0 problems). Still failing
+    required scenarios after 1a: 11 of item 2 (build passes) and the 2 market-go ones of item 3
+    (30 seconds); nothing of 1a.
+  - As built: the reader is `src/shared/ruleFiles/`: `readQuestFile` gives `QuestLine`s (`tier`,
+    `name`, `terms` as `QuestTerms`), `readInfluenceActionFile` gives `InfluenceAction`s
+    (`trade`: `costs`, `gains`, `buildPasses` as a count, `isPriceRising`, `limitPerGame`;
+    `draw`: `costs`, `tier`, `limitPerGame`); names are plain strings, an action's name already
+    with underscores. Both return a `Result` with every `RuleFileProblem` (`line`, `word`,
+    `message`). Their tests compare the real files with `QUEST_TERMS`/`QUESTS` and
+    `TRADES`/`DRAW_ACTION_COSTS`: equal today. The tier 1 count and T0.7 are checked in
+    `tools/harness-check/checkRuleFiles.ts` and `checkTutorialQuests.ts` (names from
+    `TUTORIAL_SETUP.quests`, Trading post compared with `TUTORIAL_TRADING_POST_LINE`).
+  - Differs: `src/shared/` imports have no `.ts` extension, which plain Node cannot run, so
+    `npm run harness:check` now bundles the check with Vite first, as the replay export does
+    (`tools/harness-check/harnessCheckTool.ts` builds `checkHarnessEntry.ts`; about 2 seconds).
+    Trade names come from the file, no longer from `HARNESS.md` (`KnownNames.trades`).
+    Decided: a quest reward gaining more than 1 type fails with "needs new code" (Q170, R20.8).
+  - For later items: 1b deletes the code copies, so it also rewrites the comparisons with them
+    in `readQuestFile.test.ts`, `readInfluenceActionFile.test.ts` and
+    `tools/harness-runner/catalogueMatchesSpec.test.ts` (its quest test). A draw action's costs
+    may be any stats in the file, but the engine charges influence only (`DRAW_ACTION_COSTS`):
+    1b either applies any cost or makes other costs "needs new code". Getting more than 1 build
+    pass is a valid plain trade (R15.5), which `Trade.doesGiveBuildPass` cannot hold.
 
 - [ ] 1b. **Every user of the lists reads the files** (R15.6, R20.7, R20.9). **Large.**
   - The code copies go: `QUEST_TERMS*.ts`, `QUEST_NAMES_BY_TIER.ts` (and what is built on it:

@@ -3771,3 +3771,21 @@ file.
   `harness/HARNESS.md`, `scenario-format.yaml`, `invariants.yaml`, `budgets.yaml`,
   `coverage-exceptions.yaml`, `coverage.md`; `docs/plan/phase-29a-playthrough-fixes.md`,
   `docs/plan/README.md`, `docs/plan/phase-30-version-1-readiness.md`.
+
+## Q170. What does the rule file check do with a quest reward the game cannot give yet?
+
+- **Phase:** 29a, item 1a (the rule file reader and its check).
+- **Question:** R20.8 allows `gain N <type>` in a quest reward, but the game's quest reward
+  holds one gained type, gained once: `gain 2 Farm` or `gain 1 Farm, gain 1 Sea` cannot be
+  given without new code. R20.9 lists no "needs new code" failure for quests, unlike R15.6 for
+  influence actions. R20.8 also does not say what two parts for the same stat mean, or whether
+  `1 cards` is wrong.
+- **Solution:** decided without the owner, as for influence actions (Q169, 8): a reward that
+  gains more than 1 type fails the check with "needs new code", so a quest list the game cannot
+  play is never deployed; the owner's quest review (finding 10) learns this from the check's
+  message. Parts that give the same stat or draws add up (all parts are given together), and
+  the singular and plural of `card`, `fund`, `project` and `sector` are both accepted whatever
+  the number, since neither changes the meaning. Written into R20.8 and `HARNESS.md`
+  ("Checking the harness itself") first.
+- **Implemented:** `harness/spec/game-rules.md` R20.8, `harness/HARNESS.md`;
+  `src/shared/ruleFiles/`, `tools/harness-check/checkRuleFiles.ts`.

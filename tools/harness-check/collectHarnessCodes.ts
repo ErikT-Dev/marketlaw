@@ -29,7 +29,6 @@ export function collectHarnessCodes(harnessText: string): HarnessCodes {
       firstColumnWords(sectionBetween(harnessText, "## Reason codes", "## What passing means")),
     ),
     actions: new Set(firstColumnWords(actionsSection.slice(0, tradesStart))),
-    trades: new Set(backtickedWords(actionsSection.slice(tradesStart))),
     documentedWords: new Set(
       backtickedWords(harnessText).flatMap((word) => word.split(/[^a-z0-9_]+/)),
     ),
