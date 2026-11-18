@@ -385,3 +385,14 @@ These 35 required scenarios now assert the new rules (Q169) and must pass again:
 - [ ] Finish. The finisher adds the 17 remaining new scenarios and I28 and I29 to
   `harness/required.yaml`. Then the owner's quest review (Waiting for the owner, finding 10)
   comes before the releaser.
+
+### Helper log
+
+Filled in by the coordinator afterwards, from the helpers' completion notices (Q73). Tokens are
+each helper's conversation size at its end.
+
+| Job | Model, effort | Minutes | Tokens | Tool calls | Result |
+|---|---|---|---|---|---|
+| Planner (stopped by the owner) | Opus, medium | 1 | 107k | 19 | stopped |
+| Planner | Opus, medium | 22 | 326k | 124 | blocked (11 names, approved) |
+| Renames and starter | Opus, medium | 6 | 125k | 39 | done |
