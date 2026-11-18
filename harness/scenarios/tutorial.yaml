@@ -117,3 +117,14 @@
   then:
     rejected: not_this_step
     unchanged: true
+
+- name: the tutorial does not offer a redraw of the starting hand
+  covers: [T0.8, C4.4]
+  given:
+    accounts: [{name: Ann}]
+    tutorial: {player: Ann, step: T1.2}
+  when:
+    - {player: Ann, action: redraw_hand}
+  then:
+    rejected: not_this_step
+    unchanged: true

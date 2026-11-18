@@ -106,7 +106,7 @@
   given:
     seats:
       - seat: 1
-        stats: {quality: 8}
+        stats: {quality: 8, income: 10}
     random: [{sector: Service}]
   when:
     - {seat: 1, action: complete_project, project: quality}
@@ -237,5 +237,21 @@
     seats:
       - seat: 1
         stats: {funds: 7}
-        build_passes: 1
+        build_passes: 2
         build_passes_bought: 2
+
+- name: undo takes back a build pass bought with influence
+  covers: [R7.2, R15.1]
+  given:
+    seats:
+      - seat: 1
+        stats: {influence: 5}
+  when:
+    - {seat: 1, action: influence, trade: influence_to_build_pass}
+    - {seat: 1, action: undo}
+  then:
+    seats:
+      - seat: 1
+        stats: {influence: 5}
+        build_passes: 1
+        influence_uses: {}

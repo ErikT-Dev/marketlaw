@@ -3,14 +3,14 @@
   given:
     seats:
       - seat: 1
-        stats: {quality: 9}
+        stats: {quality: 9, income: 10}
     random: [{sector: Service}]
   when:
     - {seat: 1, action: complete_project, project: quality}
   then:
     seats:
       - seat: 1
-        stats: {quality: 1, income: 4, funds: 9, influence: 3}
+        stats: {quality: 1, income: 11, funds: 9, influence: 3}
         projects: [quality]
         hand: [Fast Food Restaurant]
 
@@ -19,7 +19,7 @@
   given:
     seats:
       - seat: 1
-        stats: {satisfaction: 7}
+        stats: {satisfaction: 7, income: 10}
   when:
     - {seat: 1, action: complete_project, project: satisfaction}
   then:
@@ -31,7 +31,7 @@
   given:
     seats:
       - seat: 1
-        stats: {workforce: 8, quality: -1}
+        stats: {workforce: 8, quality: -1, income: 10}
   when:
     - {seat: 1, action: complete_project, project: workforce}
   then:
@@ -43,7 +43,7 @@
   given:
     seats:
       - seat: 1
-        stats: {quality: 8}
+        stats: {quality: 8, income: 10}
         projects: [quality]
   when:
     - {seat: 1, action: complete_project, project: quality}
@@ -91,9 +91,9 @@
     quests: [{quest: Farmland}, {quest: Sports town}, {quest: Trading post}, {quest: Mining town}]
     seats:
       - seat: 1
-        stats: {quality: 8}
+        stats: {quality: 8, income: 10}
       - seat: 2
-        stats: {quality: 8}
+        stats: {quality: 8, income: 10}
     random: [{sector: Service}, {tier: 1}, {sector: Service}, {tier: 1}]
   when:
     - {seat: 1, action: complete_project, project: quality}
@@ -104,9 +104,9 @@
   then:
     seats:
       - seat: 1
-        stats: {funds: 15}
+        stats: {funds: 22}
       - seat: 2
-        stats: {funds: 15}
+        stats: {funds: 22}
       - seat: 3
         stats: {funds: 10}
     first_completions: [quality]
@@ -121,7 +121,7 @@
     quests: [{quest: Farmland}, {quest: Sports town}, {quest: Trading post}, {quest: Mining town}]
     seats:
       - seat: 2
-        stats: {quality: 8}
+        stats: {quality: 8, income: 10}
     random: [{sector: Service}, {tier: 1}]
   when:
     - {seat: 2, action: complete_project, project: quality}
@@ -130,4 +130,16 @@
   then:
     seats:
       - seat: 2
-        stats: {funds: 13}
+        stats: {funds: 20}
+
+- name: rejects a project with less than 10 income
+  covers: [R16.2]
+  given:
+    seats:
+      - seat: 1
+        stats: {quality: 8, income: 9}
+  when:
+    - {seat: 1, action: complete_project, project: quality}
+  then:
+    rejected: project_needs_not_met
+    unchanged: true

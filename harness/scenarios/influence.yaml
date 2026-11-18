@@ -77,7 +77,7 @@
     seats:
       - seat: 1
         stats: {funds: 1}
-        build_passes: 3
+        build_passes: 4
         build_passes_bought: 3
 
 - name: 5 influence buys 1 build pass once per game
@@ -94,7 +94,7 @@
     seats:
       - seat: 1
         stats: {influence: 5}
-        build_passes: 1
+        build_passes: 2
 
 - name: skip build gives a build pass and blocks playing cards this turn
   covers: [R15.1, R6.1]
@@ -390,3 +390,38 @@
         hand: [Dorm]
       - seat: 2
         hand: [Row House]
+
+- name: a bought build pass can be used straight away
+  covers: [R15.1, R6.3]
+  given:
+    seats:
+      - seat: 1
+        stats: {funds: 10}
+        build_passes: 0
+        played_this_turn: true
+        hand: [Orchard]
+  when:
+    - {seat: 1, action: influence, trade: buy_build_pass}
+    - {seat: 1, action: play_card, card: Orchard}
+  then:
+    seats:
+      - seat: 1
+        stats: {funds: 4}
+        build_passes: 0
+        city: [Orchard]
+
+- name: funds received and cards drawn add to total worth gained
+  covers: [R2.4]
+  given:
+    seats:
+      - seat: 1
+        stats: {influence: 7}
+  when:
+    - {seat: 1, action: influence, trade: influence_to_funds}
+    - {seat: 1, action: influence, trade: draw_tier_1, kind: Residential}
+  then:
+    seats:
+      - seat: 1
+        stats: {funds: 9, influence: 0}
+        hand: [Farm House]
+        worth_gained: 17

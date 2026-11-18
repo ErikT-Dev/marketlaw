@@ -302,6 +302,7 @@
 - name: an opponent's out of time status is shown live
   covers: [R5.4, M3.5]
   given:
+    turn: 2
     seats:
       - seat: 1
         time_bank_ms: 0
@@ -309,3 +310,20 @@
     - wait_ms: 75000
   then:
     view: {seat: 2, of_seat: 1, out_of_time: true}
+
+- name: the log shows a redraw of the starting hand once the main phase ends
+  covers: [M3.7, M3.3, R17.12]
+  given:
+    marketplace: [{place: residential, card: Row House}, {place: industry, card: Metal Mining}, {place: service, card: Liquor Shop}, {place: public_quality, card: Fire Station}, {place: public_satisfaction, card: Public Playground}, {place: open_1, card: Dentist}, {place: open_2, card: Apparel Store}, {place: open_3, card: Forest Plantation}]
+    quests: [{quest: Farmland}, {quest: Sports town}, {quest: Trading post}, {quest: Mining town}]
+    seats:
+      - seat: 1
+        hand: [Small Home, Orchard, Pub, Library, Cottage, Log House, Farm House]
+    deck: [Clinic, Dorm, Windmill Park, Nursery School, Fast Food Restaurant]
+    random: [{shuffle: [Small Home, Windmill Park, Pub, Library, Cottage, Fast Food Restaurant, Dorm, Orchard, Log House, Farm House, Clinic, Nursery School]}, {sector: Residential}, {sector: Service}, {tier: 1}, {sector: Residential}, {tier: 2}]
+  when:
+    - {seat: 1, action: redraw_hand}
+    - {seat: 1, action: end_turn}
+    - {seat: 2, action: end_turn}
+  then:
+    view: {seat: 2, log_contains: [{seat: 1, turn: 1, redrew: 1}]}
