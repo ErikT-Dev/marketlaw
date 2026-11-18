@@ -419,3 +419,4 @@ each helper's conversation size at its end.
 | Planner (stopped by the owner) | Opus, medium | 1 | 107k | 19 | stopped |
 | Planner | Opus, medium | 22 | 326k | 124 | blocked (11 names, approved) |
 | Renames and starter | Opus, medium | 6 | 125k | 39 | done |
+| Builder, item 1a | Opus, medium | 15 | 166k | 66 | done |
