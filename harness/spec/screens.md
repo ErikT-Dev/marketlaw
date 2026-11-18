@@ -448,7 +448,8 @@ None yet.
   turns", disabled "Not available while you are in a game, a room or the ranked queue". Only
   during a game, where a clock runs, do Rules and Card set say "Your clock keeps running while
   you read" and "… while you look" instead; in a waiting room or the ranked queue they keep their
-  lobby lines (Q159).
+  lobby lines (Q159). In the tutorial, which has no clock (C4.5), Rules and Card set keep their
+  lobby lines and Tutorial is disabled with the reason (Q168).
 - **S14.2** The **rules viewer** shows the rulebook's table of contents on the left, the current
   section on the right, links to related sections, and previous and next buttons. Opened during a
   game, it leaves the top bar visible and repeats the time left ("Your clock keeps running while

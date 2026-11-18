@@ -3588,3 +3588,18 @@ file.
   the only judge of the step's action (C4.4) and leave S15.3 reachable.
 - **Implemented:** `harness/spec/screens.md` S15.2; `src/client/screens/tutorial/TUTORIAL_FOCUS.ts`,
   `src/client/screens/game/Highlighted.tsx`; phase 29, item 6b.
+
+## Q168. What does the game menu say inside the tutorial?
+
+- **Phase:** 29 (review finding F2; S14.1, C4.5).
+- **Question:** S14.1 names the lobby, a game, a room and the ranked queue, but not the
+  tutorial. The tutorial used the game's menu lines, so Rules and Card set said the clock keeps
+  running, though the tutorial has no clock (C4.5).
+- **Solution:** in the tutorial, Rules and Card set keep their lobby lines, and Tutorial is
+  disabled with its reason ("Not available while you are in a game, a room or the ranked
+  queue"), since the player is already in one. Written into S14.1 first.
+- **Why:** the clock lines warn about a clock that runs; the tutorial has none. Starting the
+  tutorial again from its own menu would duplicate Restart.
+- **Implemented:** `src/client/screens/menu/gameMenuEntriesOf.ts` (place `tutorial`),
+  `src/client/screens/tutorial/TutorialTopBar.tsx`; test in
+  `src/client/screens/tutorial/tutorialPage.test.tsx`; phase 29, finding F2.
