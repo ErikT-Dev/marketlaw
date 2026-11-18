@@ -21,7 +21,14 @@ function idleHost(): GameHost {
 }
 
 function storeInLobby() {
-  writeSession({ token: "ann-token", playerId: null, name: "Ann", isGuest: false, roomCode: null });
+  writeSession({
+    token: "ann-token",
+    playerId: null,
+    name: "Ann",
+    isGuest: false,
+    roomCode: null,
+    isInTutorial: false,
+  });
   const sent: Array<{ readonly token: string; readonly intent: QueueIntent }> = [];
   const feeds: QueueFeedHandlers[] = [];
   const closed = vi.fn();

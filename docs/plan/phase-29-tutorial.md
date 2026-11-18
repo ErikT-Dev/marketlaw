@@ -256,7 +256,7 @@ These 17 scenarios are added to `harness/required.yaml` in this phase, by file a
     host handling in its own store layer). Starting from `game_over` leaves the room on the server
     (Q164) but the client still shows the room until 6a switches screens.
 
-- [ ] 6a. **Tutorial screen: start, top bar, text box, leave and restart** (S15.1, S15.2,
+- [x] 6a. **Tutorial screen: start, top bar, text box, leave and restart** (S15.1, S15.2,
   S15.5–S15.7, S15.4's leave dialog, C4.8; Q161, Q162). **Large.**
   - The game screen (`src/client/screens/game/`, `GameScreen.tsx`, `GamePage.tsx`) without
     opponents, timers or chat; top bar "Tutorial · turn N" and Leave tutorial (with the S15.4
@@ -265,6 +265,25 @@ These 17 scenarios are added to `harness/required.yaml` in this phase, by file a
   - Design boards: `design/export/tutorial/contents.md` ("Tutorial base 1920x940", "Tutorial:
     …"); they say "of 21" (S17). Reuse the existing modal and toast components.
   - Lazy-load the tutorial screen if it adds much to the first screen (B14, `npm run size`).
+  - Done (2026-11-18): store layer `TutorialStore` (between `LobbyFeedStore` and `ClientStore`)
+    owns the tutorial host (`openTutorialHost`, socket `/api/tutorials/<playerId>/socket`, the
+    fourth `ClientStore` argument). `startTutorial` opens it after `isOk`, leaving a
+    `game_over` room on the client first. `StoredSession.isInTutorial` (read as `false` from
+    older sessions) brings the player back to the tutorial when the site opens.
+    `ClientState.tutorial` holds the `TutorialView`; `CurrentScreen` shows `TutorialScreen` while
+    `isInTutorial`. Leave sends `leave_tutorial` and goes to the lobby on `removed` or `room_gone`.
+    A rejected Restart (`site_daily_cap`) or move shows the usual "Move rejected" toast
+    (`rejectedMove`). Screen in `src/client/screens/tutorial/`: `TutorialPage` (left column is the
+    text box only; `MiddleColumn`, `RightColumn`, `GameToasts`, `ConnectionNotices` reused),
+    `TutorialTopBar` (menu as place `game`, so Tutorial is disabled), `TutorialTextBox`, texts and
+    waiting-for words in `TUTORIAL_TEXTS.ts`, `tutorialTextBoxOf` (S15.6). New board tokens
+    `--color-board-tutorial-*`. `AskingLeaveButton` now shared by Leave game and Leave tutorial.
+    Not lazy-loaded: it reuses the game screen's components (`npm run size` passes).
+  - For later items: 6b adds the highlights, "Not this step" (the waiting-for words are in
+    `TUTORIAL_TEXTS`), and Tutorial complete: with `progress.kind === "complete"` the left column
+    is empty now. A move sent during a text step is rejected `not_this_step` and shown as
+    "Move rejected" with `REJECTION_MESSAGES`' "Not this step." until 6b. Continue and Restart are
+    not tracked as pending actions; a double click is rejected `stale_state` quietly.
 
 - [ ] 6b. **Tutorial screen: highlights, Not this step, Tutorial complete, browser test**
   (S15.2's highlights and disabled actions, S15.3, S15.4; "What you can see when it's done").

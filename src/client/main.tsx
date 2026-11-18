@@ -4,6 +4,7 @@ import { App } from "./App";
 import { openLobbyFeed } from "./openLobbyFeed";
 import { openQueueFeed } from "./openQueueFeed";
 import { openRoomHost } from "./openRoomHost";
+import { openTutorialHost } from "./openTutorialHost";
 import { keepCardSetInsideApp } from "./screens/cardSet/keepCardSetInsideApp";
 import { keepPrivacyNoticeInsideApp } from "./screens/privacy/keepPrivacyNoticeInsideApp";
 import { keepRecordPageInsideApp } from "./screens/records/keepRecordPageInsideApp";
@@ -22,7 +23,7 @@ keepPrivacyNoticeInsideApp();
 keepRecordPageInsideApp();
 keepRulesPageInsideApp();
 keepCardSetInsideApp();
-const store = new ClientStore(openRoomHost, openLobbyFeed, openQueueFeed);
+const store = new ClientStore(openRoomHost, openLobbyFeed, openQueueFeed, openTutorialHost);
 if (linkedSession !== null) {
   void store.startFromSeatLink(linkedSession, () =>
     window.confirm(

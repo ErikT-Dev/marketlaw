@@ -57,7 +57,14 @@ function type(container: HTMLElement, label: string, value: string): void {
 }
 
 function logInAsBea(): void {
-  writeSession({ token: "bea-token", playerId: null, name: "Bea", isGuest: false, roomCode: null });
+  writeSession({
+    token: "bea-token",
+    playerId: null,
+    name: "Bea",
+    isGuest: false,
+    roomCode: null,
+    isInTutorial: false,
+  });
 }
 
 beforeEach(() => {
@@ -198,6 +205,7 @@ describe("set a new password", () => {
       name: "Bea",
       isGuest: false,
       roomCode: null,
+      isInTutorial: false,
     };
     expect(readSession()).toEqual(session);
     expect(screen.getByLabelText("Your account").textContent).toContain("Bea");

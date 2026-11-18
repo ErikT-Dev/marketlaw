@@ -54,6 +54,7 @@ describe("record pages in the app", () => {
       name: "Ann",
       isGuest: false,
       roomCode: null,
+      isInTutorial: false,
     });
     render(<App store={new ClientStore(() => idleHost())} />);
     const createRoom = screen.getByRole("button", { name: "Create room" });

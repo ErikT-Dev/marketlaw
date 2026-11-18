@@ -42,6 +42,7 @@ function storeInLobby(): ClientStore {
     name: "Ann",
     isGuest: true,
     roomCode: null,
+    isInTutorial: false,
   });
   return new ClientStore(() => NO_HOST);
 }

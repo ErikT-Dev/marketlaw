@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { Button } from "../../components/Button";
+import { AskingLeaveButton } from "../../components/AskingLeaveButton";
 import { LeaveGameDialog } from "./LeaveGameDialog";
 
 type Props = {
@@ -8,29 +7,12 @@ type Props = {
 };
 
 export function LeaveGameButton({ onLeave, isDisabled }: Props) {
-  const [isAsking, setIsAsking] = useState(false);
   return (
-    <>
-      <Button
-        look="danger"
-        isDisabled={isDisabled}
-        onClick={() => {
-          setIsAsking(true);
-        }}
-      >
-        Leave game
-      </Button>
-      {isAsking && !isDisabled ? (
-        <LeaveGameDialog
-          onStay={() => {
-            setIsAsking(false);
-          }}
-          onLeave={() => {
-            setIsAsking(false);
-            onLeave();
-          }}
-        />
-      ) : null}
-    </>
+    <AskingLeaveButton
+      label="Leave game"
+      renderDialog={(handlers) => <LeaveGameDialog {...handlers} />}
+      onLeave={onLeave}
+      isDisabled={isDisabled}
+    />
   );
 }

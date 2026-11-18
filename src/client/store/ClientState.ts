@@ -13,11 +13,13 @@ import type { RejectedMove } from "./RejectedMove";
 import type { RemovalNotice } from "./RemovalNotice";
 import type { RoomChat } from "./RoomChat";
 import type { StoredSession } from "./StoredSession";
+import type { TutorialView } from "../../shared/TutorialView";
 
 export type ClientState = {
   readonly session: StoredSession | null;
   readonly connection: ConnectionStatus;
   readonly update: RoomUpdate | null;
+  readonly tutorial: TutorialView | null;
   readonly chat: RoomChat;
   readonly pendingActions: ReadonlyArray<PendingAction>;
   readonly rejectedMove: RejectedMove | null;

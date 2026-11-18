@@ -10,6 +10,7 @@ const STORED_SESSION = v.object({
   name: v.string(),
   isGuest: v.optional(v.boolean(), true),
   roomCode: v.nullable(RoomCode),
+  isInTutorial: v.optional(v.boolean(), false),
 });
 
 export function readSession(): StoredSession | null {

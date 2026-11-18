@@ -64,6 +64,7 @@ describe("logging in and signing up", () => {
       name: "Bea",
       isGuest: false,
       roomCode: null,
+      isInTutorial: false,
     };
     expect(store.getSnapshot().session).toEqual(session);
     expect(readSession()).toEqual(session);
@@ -87,7 +88,14 @@ describe("logging in and signing up", () => {
 
   it("signs up a guest with their token and keeps the room they are in", async () => {
     const roomCode = v.parse(RoomCode, "ABCDEF");
-    writeSession({ token: "guest-token", playerId: null, name: "Ann", isGuest: true, roomCode });
+    writeSession({
+      token: "guest-token",
+      playerId: null,
+      name: "Ann",
+      isGuest: true,
+      roomCode,
+      isInTutorial: false,
+    });
     const sent = serverAnswers({ ...ACCOUNT, token: "guest-token" });
     const store = new ClientStore(() => fakeHost());
     expect(await store.signUp(SIGNUP)).toBeNull();
@@ -101,6 +109,7 @@ describe("logging in and signing up", () => {
       name: "Bea",
       isGuest: false,
       roomCode,
+      isInTutorial: false,
     });
   });
 
@@ -112,6 +121,7 @@ describe("logging in and signing up", () => {
       name: "Ann",
       isGuest: true,
       roomCode: null,
+      isInTutorial: false,
     });
   });
 });

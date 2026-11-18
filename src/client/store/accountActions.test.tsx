@@ -18,6 +18,7 @@ const IN_ROOM = {
   name: "Ann",
   isGuest: true,
   roomCode: ROOM_CODE,
+  isInTutorial: false,
 };
 
 function hostWithEvents() {

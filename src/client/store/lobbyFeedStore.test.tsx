@@ -74,6 +74,7 @@ describe("the lobby socket in the client store", () => {
       name: "Ann",
       isGuest: false,
       roomCode: null,
+      isInTutorial: false,
     });
     const { feeds, identified, open } = storeWithLobbyFeed();
     open();
@@ -99,6 +100,7 @@ describe("the lobby socket in the client store", () => {
       name: "Ann",
       isGuest: false,
       roomCode: code,
+      isInTutorial: false,
     });
     const { store, feeds, identified, open, closes } = storeWithLobbyFeed();
     open();
@@ -121,6 +123,7 @@ describe("the lobby socket in the client store", () => {
       name: "Ann",
       isGuest: false,
       roomCode: null,
+      isInTutorial: false,
     });
     const { store, feeds } = storeWithLobbyFeed();
     answerEveryRequestWith({ isLoggedIn: false });

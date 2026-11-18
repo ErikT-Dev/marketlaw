@@ -100,13 +100,14 @@ export abstract class AccountSessionStore extends ObservableState<ClientState> {
       return answer.reason;
     }
     const current = this.state.session;
-    const roomCode = current?.token === answer.token ? current.roomCode : null;
+    const isSameToken = current?.token === answer.token;
     const session = {
       token: answer.token,
       playerId: answer.playerId,
       name: answer.name,
       isGuest,
-      roomCode,
+      roomCode: isSameToken ? current.roomCode : null,
+      isInTutorial: isSameToken && current.isInTutorial,
     };
     writeSession(session);
     this.change({ session, notice: null });

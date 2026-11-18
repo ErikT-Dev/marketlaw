@@ -2,7 +2,6 @@ import { playerIdOf } from "./playerIdOf";
 import type { PlayerId } from "../../../shared/PlayerId";
 import { useContext } from "react";
 import { Fragment } from "react";
-import type { GamePhase } from "../../../shared/GamePhase";
 import type { OwnSeatView } from "../../../shared/OwnSeatView";
 import type { PlayerView } from "../../../shared/PlayerView";
 import type { ActionIntent } from "../../../shared/protocol/ActionIntent";
@@ -18,6 +17,8 @@ import { orderBadgesOf } from "./orderBadgesOf";
 import { YourClock } from "./YourClock";
 import { GameMenu } from "../menu/GameMenu";
 import { gameMenuPlaceOf } from "./gameMenuPlaceOf";
+import { PHASE_NAMES } from "./PHASE_NAMES";
+import { phaseClassOf } from "./phaseClassOf";
 
 type Props = {
   readonly view: PlayerView;
@@ -28,19 +29,6 @@ type Props = {
   readonly isConnected: boolean;
   readonly account: AccountBinding;
 };
-
-const PHASE_NAMES: Readonly<Record<GamePhase, string>> = {
-  market: "Market phase",
-  main: "Main phase",
-  ended: "Game over",
-};
-
-function phaseClassOf(view: PlayerView): string {
-  if (view.phase !== "market") {
-    return "phase";
-  }
-  return view.marketGo === view.seat ? "yourGoPhase" : "marketPhase";
-}
 
 export function GameTopBar(props: Props) {
   const { view, seat, playerNames, isConnected } = props;

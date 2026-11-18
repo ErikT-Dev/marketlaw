@@ -9,6 +9,7 @@ describe("sessionFromLink", () => {
       name: "Ann",
       isGuest: true,
       roomCode: "K7QR2P",
+      isInTutorial: false,
     });
   });
 

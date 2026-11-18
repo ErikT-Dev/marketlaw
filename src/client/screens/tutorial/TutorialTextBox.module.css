@@ -1,0 +1,41 @@
+.box {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  align-self: start;
+  margin: 0;
+  padding: 20px;
+  border: 2px solid var(--color-board-tutorial-box-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-board-tutorial-box);
+}
+
+.step {
+  margin: 0;
+  color: var(--color-board-tutorial-step);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+}
+
+.text {
+  margin: 0;
+  color: var(--color-text-primary);
+  font-size: var(--font-size-md);
+}
+
+.action {
+  margin: 0;
+  color: var(--color-board-tutorial-action);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+}
+
+.next {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.restart {
+  display: flex;
+  justify-content: flex-start;
+}
