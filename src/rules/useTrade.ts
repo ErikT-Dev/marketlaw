@@ -15,7 +15,7 @@ function statsAfterTrade(seat: SeatState, trade: TradeName): Stats {
 }
 
 export function useTrade(seat: SeatState, trade: TradeName): SeatState {
-  const { buildPasses, isPriceRising, limitPerGame } = tradeOf(trade);
+  const { buildPasses, isPriceRising, limitPerGame, gains } = tradeOf(trade);
   return {
     ...seat,
     stats: statsAfterTrade(seat, trade),
@@ -26,5 +26,6 @@ export function useTrade(seat: SeatState, trade: TradeName): SeatState {
         ? seat.influenceUses
         : { ...seat.influenceUses, [trade]: (seat.influenceUses[trade] ?? 0) + 1 },
     actionsThisTurn: seat.actionsThisTurn + 1,
+    worthGained: seat.worthGained + (gains.funds ?? 0),
   };
 }

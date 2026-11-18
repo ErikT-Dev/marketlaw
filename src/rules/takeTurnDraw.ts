@@ -33,6 +33,7 @@ function withMarketCard(state: GameState, seat: SeatNumber, card: CardName): Gam
     hand: [...current.hand, card],
     newCards: [...current.newCards, card],
     knownInHand: [...current.knownInHand, card],
+    worthGained: current.worthGained + 1,
   }));
 }
 

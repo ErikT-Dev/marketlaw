@@ -22,6 +22,7 @@ export type OtherSeatView = {
   readonly influenceUses: InfluenceUses;
   readonly city: ReadonlyArray<CardName>;
   readonly buildPasses: number;
+  readonly worthGained: number;
   readonly isDone: boolean;
   readonly isOutOfTime: boolean;
   readonly hasLeft: boolean;

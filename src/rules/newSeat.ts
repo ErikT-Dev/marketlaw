@@ -1,6 +1,7 @@
 import type { SeatNumber } from "../shared/SeatNumber";
 import type { SeatState } from "./SeatState";
 import { STARTING_STATS } from "./STARTING_STATS";
+import { STARTING_WORTH_GAINED } from "./STARTING_WORTH_GAINED";
 import { TIME_BANK_MS } from "./TIME_BANK_MS";
 
 export function newSeat(seat: SeatNumber): SeatState {
@@ -34,5 +35,6 @@ export function newSeat(seat: SeatNumber): SeatState {
     undoPoints: [],
     isUndoBlocked: false,
     redrawsUsed: 0,
+    worthGained: STARTING_WORTH_GAINED,
   };
 }

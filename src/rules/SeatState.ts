@@ -39,4 +39,5 @@ export type SeatState = {
   readonly undoPoints: ReadonlyArray<SeatState>;
   readonly isUndoBlocked: boolean;
   readonly redrawsUsed: number;
+  readonly worthGained: number;
 };

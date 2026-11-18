@@ -27,6 +27,7 @@ function seatAtTurnStart(seat: SeatState, firsts: ReadonlyArray<ProjectName>): S
   const started = {
     ...afterSteps,
     stats: { ...afterSteps.stats, funds: afterSteps.stats.funds + firstFunds },
+    worthGained: afterSteps.worthGained + firstFunds,
     drawnThisPhase: [],
     newCards: [],
     hasHadMarketGo: false,

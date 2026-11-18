@@ -23,6 +23,7 @@ function rewardedSeat(seat: SeatState, quest: QuestName): SeatState {
     gainedTypes,
     questsCompleted: [...seat.questsCompleted, quest],
     actionsThisTurn: seat.actionsThisTurn + 1,
+    worthGained: seat.worthGained + (stats.funds ?? 0),
   };
 }
 

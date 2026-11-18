@@ -28,6 +28,7 @@ export type OwnSeatView = {
   readonly projectRejections: ProjectRejections;
   readonly city: ReadonlyArray<CardName>;
   readonly buildPasses: number;
+  readonly worthGained: number;
   readonly hasPlayedThisTurn: boolean;
   readonly influenceUses: InfluenceUses;
   readonly trades: ReadonlyArray<TradeStatus>;

@@ -433,7 +433,7 @@ These 35 required scenarios now assert the new rules (Q169) and must pass again:
   - Differs: `e2e/combosAndProjects.spec.ts` gives the player 10 income (not run locally: see
     item 3, the browser tests do not load since 1b).
 
-- [ ] 6. **Total worth gained** (R2.4, M3.5, I28). **Small.**
+- [x] 6. **Total worth gained** (R2.4, M3.5, I28). **Small.**
   - A seat count, 14 at setup, raised where funds are received (not selling) and cards gained;
     undo takes back what its action added; a redraw changes nothing. In the view for every seat,
     others' as at the start of their own main phase (R5.4; reuse how their other stats are held
@@ -441,6 +441,17 @@ These 35 required scenarios now assert the new rules (Q169) and must pass again:
     with 14 total worth gained", `playing-cards` "selling or playing a card does not change
     total worth gained", `influence` "funds received and cards drawn add to total worth gained".
     The F boxes on screen are item 9's.
+  - Done (2026-11-18). The 4 worth scenarios (with the turn-1 redraw one) and I28 pass (checked
+    on the required list locally, not committed); `npm run check` is green.
+  - As built: `SeatState.worthGained`, from `STARTING_WORTH_GAINED` (14) in `newSeat`; raised in
+    `cardsIntoHand` (every draw), `takeTurnDraw` (a marketplace card), `endOfTurnSteps` (income
+    and bonus funds), `endMainPhase` and `endGame` (first-completion funds), `completeProject`,
+    `completeQuest` and `useTrade` (the funds a trade gives). Dealing (setup, redraw) and selling
+    do not touch it; undo restores it with the seat. View: `worthGained` on own and other seats
+    (others' through `seatShownTo`, R5.4), in `SEAT_COMMON` of the view schema. I28 in
+    `worthGainedViolations.ts` (down only on the seat's own undo), simulated. Unit tests in
+    `worthGained.test.ts` (income at the next turn; another player's held-back value).
+  - For later items: 9 shows `worthGained` in the F boxes.
 
 - [ ] 7. **Player icons** (A2.5, S1.8, S5.1, S6.3). **Small.**
   - Usernames reach the client in the room's view (`playerNames` in

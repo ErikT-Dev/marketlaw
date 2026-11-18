@@ -23,5 +23,6 @@ export function endOfTurnSteps(seat: SeatState): SeatState {
       bonus: bonus - bonusFunds * BONUS_PER_FUND,
     },
     hasPlayedThisTurn: false,
+    worthGained: seat.worthGained + stats.income + bonusFunds,
   };
 }

@@ -30,6 +30,7 @@ const SEAT_COMMON = {
   stats: STATS,
   city: CARDS,
   buildPasses: COUNT,
+  worthGained: COUNT,
   isDone: v.boolean(),
   isOutOfTime: v.boolean(),
   hasLeft: v.boolean(),

@@ -26,6 +26,7 @@ export function completeProject(
     },
     projects: [...current.projects, project],
     projectsThisTurn: [...current.projectsThisTurn, project],
+    worthGained: current.worthGained + 2,
     actionsThisTurn: current.actionsThisTurn + 1,
   }));
   const drawn = drawRandomCard(rewarded, seat, "project", random);

@@ -43,6 +43,7 @@ const SEAT_STATE = v.object({
   undoPoints: v.tuple([]),
   isUndoBlocked: v.boolean(),
   redrawsUsed: v.optional(v.number(), 0),
+  worthGained: v.optional(v.number(), 14),
 });
 
 export const GAME_STATE_SCHEMA = v.object({

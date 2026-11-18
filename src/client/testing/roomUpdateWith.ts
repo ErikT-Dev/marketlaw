@@ -23,6 +23,7 @@ const SEAT_COMMON = {
   stats: STATS,
   city: [],
   buildPasses: 2,
+  worthGained: 14,
   isDone: false,
   isOutOfTime: false,
   hasLeft: false,

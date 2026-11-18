@@ -49,6 +49,7 @@ function turnStatusFromGiven(given: GivenSeat, start: SeatState) {
     isOutOfTime: given.out_of_time ?? start.isOutOfTime,
     isTurnDrawOpen: given.turn_draw_pending ?? start.isTurnDrawOpen,
     redrawsUsed: given.redraws_used ?? start.redrawsUsed,
+    worthGained: given.worth_gained ?? start.worthGained,
     logEntriesThisMainPhase: start.logEntriesThisMainPhase,
   };
 }

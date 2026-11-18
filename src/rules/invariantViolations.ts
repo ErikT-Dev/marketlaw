@@ -13,6 +13,7 @@ import { seatOf } from "./seatOf";
 import { stateInvariantViolations } from "./stateInvariantViolations";
 import { TIME_BANK_MS } from "./TIME_BANK_MS";
 import type { Transition } from "./Transition";
+import { worthGainedViolations } from "./worthGainedViolations";
 
 function seatsAfter(fromSeat: number, toSeat: number, count: number): number {
   return (toSeat - fromSeat + count) % count;
@@ -108,6 +109,7 @@ function acceptedViolations(transition: Transition, after: GameState): ReadonlyA
     ...incomeViolations(before, after),
     ...timeBankViolations(transition, after),
     ...redrawViolations(before, after),
+    ...worthGainedViolations(transition, after),
     ...gameEndViolations(before, after),
     ...stateInvariantViolations(after),
   ];

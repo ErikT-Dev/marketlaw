@@ -34,6 +34,7 @@ export function seatThen(
     out_of_time: seat.isOutOfTime,
     turn_draw_pending: seat.isTurnDrawOpen,
     redraws_used: seat.redrawsUsed,
+    worth_gained: seat.worthGained,
     left: seat.departure !== null,
     time_bank_ms: clock === null ? seat.timeBankMs : bankLeftAt(clock, now),
     timeouts_in_a_row: seat.timeoutsInARow,
