@@ -1,68 +1,95 @@
 import * as v from "valibot";
-import { applyTutorialAction } from "../../../src/rules/tutorial/applyTutorialAction.ts";
-import { startTutorial } from "../../../src/rules/tutorial/startTutorial.ts";
-import type { TutorialState } from "../../../src/rules/tutorial/TutorialState.ts";
-import { EpochMs } from "../../../src/shared/EpochMs.ts";
-import type { ReasonCode } from "../../../src/shared/ReasonCode.ts";
 import { isRecord } from "../../harness-check/isRecord.ts";
 import type { DriverSession } from "../DriverSession.ts";
 import { readEngineThen } from "../engine/readEngineThen.ts";
+import { givenRatingsOf } from "../room/givenRatingsOf.ts";
 import type { ScenarioDriver } from "../ScenarioDriver.ts";
 import type { ScenarioStep } from "../ScenarioStep.ts";
+import { playTutorialUntil } from "./playTutorialUntil.ts";
 import { TUTORIAL_GIVEN_SCHEMA } from "./TUTORIAL_GIVEN_SCHEMA.ts";
 import { tutorialActionFromStep } from "./tutorialActionFromStep.ts";
-import { tutorialAtStep } from "./tutorialAtStep.ts";
+import { tutorialRatingsThen } from "./tutorialRatingsThen.ts";
+import { TutorialSession } from "./TutorialSession.ts";
 
 const TUTORIAL_GAME_FIELDS = ["seats", "turn", "marketplace", "quests", "bonus_types"];
 const TUTORIAL_SEAT_FIELDS = new Set(["seat", "stats", "hand", "city", "quests_completed"]);
 
+function playerOf(step: Readonly<Record<string, unknown>>): string {
+  if (typeof step["player"] !== "string") {
+    throw new Error(`the tutorial step ${JSON.stringify(step)} names no player`);
+  }
+  return step["player"];
+}
+
+function runTutorialStep(session: TutorialSession, step: ScenarioStep): void {
+  if (!isRecord(step)) {
+    throw new Error(`the tutorial driver cannot run ${JSON.stringify(step)}`);
+  }
+  if (typeof step["wait_ms"] === "number") {
+    session.wait(step["wait_ms"]);
+  } else if (typeof step["disconnect"] === "string") {
+    session.disconnect();
+  } else if (step["action"] === "start_tutorial") {
+    session.start(playerOf(step));
+  } else if (step["action"] === "leave_tutorial") {
+    session.send(playerOf(step), { type: "leave_tutorial" });
+  } else {
+    session.send(playerOf(step), tutorialActionFromStep(step));
+  }
+}
+
+function readRoomThen(session: TutorialSession, field: string): unknown {
+  const { record } = session;
+  const stage = record?.tutorial.stage;
+  switch (field) {
+    case "tutorial_step":
+      return stage;
+    case "tutorial":
+      return stage === "complete" ? "ended" : stage;
+    default:
+      return record === undefined ? "deleted" : { seats: 1, player: record.player.name };
+  }
+}
+
+function readTutorialThen(session: TutorialSession, field: string, expected: unknown): unknown {
+  const { record, lastReply } = session;
+  switch (field) {
+    case "rejected":
+      return lastReply?.type === "rejected" ? lastReply.code : undefined;
+    case "unchanged":
+      return session.isLastStepUnchanged;
+    case "tutorial_step":
+    case "tutorial":
+    case "tutorial_room":
+      return readRoomThen(session, field);
+    case "record":
+      return session.records.rowCounts().records === 0 ? "none" : "saved";
+    case "ratings":
+      return tutorialRatingsThen(session, expected);
+    default:
+      if (record === undefined) {
+        throw new Error("the tutorial has not started");
+      }
+      return readEngineThen(record.tutorial.game, field, expected, session.now);
+  }
+}
+
 function startSession(rawGiven: Readonly<Record<string, unknown>>): DriverSession {
   const given = v.parse(TUTORIAL_GIVEN_SCHEMA, rawGiven);
-  let now = v.parse(EpochMs, 0);
-  let tutorial: TutorialState | undefined =
-    given.tutorial === undefined ? undefined : tutorialAtStep(given.tutorial.step, now);
-  let lastRejection: ReasonCode | undefined;
-  let isLastStepUnchanged = false;
-  function current(): TutorialState {
-    if (tutorial === undefined) {
-      throw new Error("the tutorial has not started");
-    }
-    return tutorial;
-  }
-  function runAction(step: Readonly<Record<string, unknown>>): void {
-    if (step["action"] === "start_tutorial") {
-      tutorial = startTutorial(now);
-      return;
-    }
-    const before = current();
-    const result = applyTutorialAction(before, tutorialActionFromStep(step), now);
-    lastRejection = result.isOk ? undefined : result.error.code;
-    tutorial = result.isOk ? result.value : before;
-    isLastStepUnchanged = tutorial === before;
+  const session = new TutorialSession();
+  givenRatingsOf(given, (name) => session.identityNamed(name)).forEach((rating) => {
+    session.records.giveRating(rating);
+  });
+  if (given.tutorial !== undefined) {
+    playTutorialUntil(session, given.tutorial.player, given.tutorial.step);
   }
   return {
-    runStep(step: ScenarioStep) {
-      if (!isRecord(step)) {
-        throw new Error(`the tutorial driver cannot run ${JSON.stringify(step)}`);
-      }
-      if (typeof step["wait_ms"] === "number") {
-        now = v.parse(EpochMs, now + step["wait_ms"]);
-        return;
-      }
-      runAction(step);
+    runStep: (step) => {
+      runTutorialStep(session, step);
     },
-    readThen(field, expected) {
-      if (field === "rejected") {
-        return lastRejection;
-      }
-      if (field === "unchanged") {
-        return isLastStepUnchanged;
-      }
-      if (field === "tutorial_step") {
-        return tutorial?.stage;
-      }
-      return readEngineThen(current().game, field, expected, now);
-    },
+    readThen: (field, expected) => readTutorialThen(session, field, expected),
+    measurements: () =>
+      session.fullTutorialRows === null ? [] : [{ budget: "B6", value: session.fullTutorialRows }],
   };
 }
 
@@ -71,6 +98,7 @@ export const TUTORIAL_DRIVER: ScenarioDriver = {
   givenFields: new Set(["accounts", "tutorial"]),
   steps: new Set([
     "start_tutorial",
+    "leave_tutorial",
     "continue",
     "play_card",
     "sell",
@@ -79,10 +107,20 @@ export const TUTORIAL_DRIVER: ScenarioDriver = {
     "claim_all",
     "complete_quest",
     "wait_ms",
+    "disconnect",
   ]),
-  thenFields: new Set(["tutorial_step", "rejected", "unchanged", ...TUTORIAL_GAME_FIELDS]),
+  thenFields: new Set([
+    "tutorial_step",
+    "tutorial",
+    "tutorial_room",
+    "rejected",
+    "unchanged",
+    "record",
+    "ratings",
+    ...TUTORIAL_GAME_FIELDS,
+  ]),
   nestedFields: new Map<string, ReadonlySet<string>>([
-    ["given.accounts", new Set(["name"])],
+    ["given.accounts", new Set(["name", "rating"])],
     ["given.tutorial", new Set(["player", "step"])],
     ["then.seats", TUTORIAL_SEAT_FIELDS],
     ["then.marketplace", new Set(["place", "card"])],

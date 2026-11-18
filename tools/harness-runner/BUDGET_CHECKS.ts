@@ -18,7 +18,11 @@ export const BUDGET_CHECKS: Readonly<Record<string, BudgetCheck>> = {
   },
   B4: { by: "harness", where: LEGAL_THREE_PLAYER_AVERAGE },
   B5: { by: "harness", where: "simulator, average over complete legal-bot 4-player games" },
-  B6: { by: "not built", where: "phase 29, the tutorial" },
+  B6: {
+    by: "harness",
+    where:
+      "tutorial scenarios, the rows the tutorial room wrote from its start to the end of T5.4: the record and its alarm at the start, and one row per accepted step",
+  },
   B7: {
     by: "harness",
     where:

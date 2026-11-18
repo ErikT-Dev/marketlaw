@@ -133,8 +133,26 @@ These 17 scenarios are added to `harness/required.yaml` in this phase, by file a
     engine-level driver; item 2 makes it pass through the room. The driver maps a step's
     `player` to seat 1.
 
-- [ ] 2. **Tutorial room** (C4.2, C4.5, C4.6, C4.8, C4.10; B6; scenarios `client` #12, #13, #14,
+- [x] 2. **Tutorial room** (C4.2, C4.5, C4.6, C4.8, C4.10; B6; scenarios `client` #12, #13, #14,
   #17; the item 1 scenarios through the room). **Large.**
+  - Done (2026-11-17), Q165: a new SQLite Durable Object class `TutorialRoom` (`v6`, binding
+    `TUTORIAL`), one per player (`idFromName(playerId)`), socket `/api/tutorials/<playerId>/socket`;
+    pure handling in `src/server/tutorial/` (`receiveTutorialMessage`, `startTutorialIn`,
+    `TutorialRecord`). Messages `resync`, `action`, and `tutorial` (`continue`,
+    `restart_tutorial`, `leave_tutorial`, versioned); answer `tutorial_update` (`TutorialView`),
+    leave answers `removed` and deletes the storage. `GameHost.sendTutorialAction`, `HostEvent`
+    `tutorial_update` (ClientStore ignores it for now). `PROTOCOL_VERSION` 26. One alarm: set at
+    start and when the last socket closes (30 min, `ROOM_TIMES.tutorialAwayMs`); firing with no
+    socket open deletes the room. B6 measured by the tutorial driver: 21 rows (limit 60).
+    `acceptRoomSocket` now shared by `GameRoom` and `TutorialRoom` (jscpd).
+  - The tutorial driver now runs through the room (`TutorialSession`): given steps are played as
+    messages; `start_tutorial` calls `startTutorialIn` directly.
+  - For later items: nothing calls `TutorialRoom.start(player)` yet; item 3 adds the lobby start
+    route (cap, busy places) and must also count Restart (`restart_tutorial` reaches only the room
+    today) and release the player when the room is left or deleted by its alarm (the room does
+    not report to the lobby yet). Item 3 should move the driver's `start_tutorial` onto the lobby
+    path. Finisher: add B6 to `required.yaml` budgets with the scenarios. Item 6a: the store
+    must handle `tutorial_update` and open a `RemoteGameHost` on the tutorial socket URL.
   - One seat, no record (A3), no rating (A10), no chat, no asking, no votes; deleted when left
     (C4.8) and by its one alarm 30 minutes after its last connection closed (C4.10; one alarm per
     room, `rules/cloudflare.md`). Persist before acknowledging, one write per accepted action
