@@ -3603,3 +3603,170 @@ file.
 - **Implemented:** `src/client/screens/menu/gameMenuEntriesOf.ts` (place `tutorial`),
   `src/client/screens/tutorial/TutorialTopBar.tsx`; test in
   `src/client/screens/tutorial/tutorialPage.test.tsx`; phase 29, finding F2.
+
+## Q169. What happens with the findings of the owner's notes of 2026-11-17?
+
+- **Phase:** 29 is done; the owner's notes are `docs/feedback-notes/2026.11.17 - ready.txt`
+  (18 findings). As Q78 says, the next "continue" plans a fix phase for them before any other
+  phase: **29a, Playthrough fixes**. Phase 30 now also depends on 29a.
+- **Question:** which findings change the rules, the protocol, the screens or the harness; how
+  do the findings that conflict with existing rules (1, 9, 12, 13) and the required scenario
+  names reach the spec; how are quests and influence actions written as files the owner edits
+  (6 to 8); and what do the points the notes leave open come to?
+- **Solution:** every finding follows the owner's notes; where it conflicts with a rule, the
+  rule is changed in the spec first (D19, `rules/workflow.md`).
+  - **1. 30-second market goes (rules).** Every market go has 30 seconds instead of 40; the first
+    5 seconds still do not use the bank (R9.2, R18.11, rulebook).
+  - **2. The combos list (screens).** One list, coloured and ordered as the note says (S6.1).
+    Decided without the owner: the group counts of part (b) take every combo in the list, the
+    ready ones of part (a) included, since a ready combo is still something the city needs; "the
+    game's fixed stat order" is the order of R2.1 (workforce, quality, satisfaction, the only
+    stats a combo gives, R12.5); "fewer cards needed" is the smaller type count.
+  - **3. Your own stats (screens).** Q, T and C boxes as in the opponents' tables, and the type
+    counts with the bonus types first, each part by count then name, bonus types highlighted
+    (S6.2). Decided without the owner: T counts the types of the cards in the city, a doubled
+    type twice, not types gained from quests, as Q126 decided for the opponents' T.
+  - **4. Projects need 10 income (rules).** R16.2; the help text, the projects pop-up, the
+    rejection text and the tutorial's T5.4 text. Decided without the owner: no new reason code;
+    `project_needs_not_met` covers it and its text names the income. R19.4 no longer says "as
+    for projects", since quests do not need the income.
+  - **5. Quick and detailed summary tables (screens).** The names are used in the spec (S3.1,
+    S3.2, S1.2, S5.1, S6.5, S13.4, glossary). The quick table gets T, C (and F, finding 17) and
+    the 5 most played types; both tables highlight bonus types. Decided without the owner: "most
+    played types in that opponent's city" are counted from the cards in their city, like T; the
+    5 are in count order only, with no bonus-first part (finding 15 names bonus-first only for
+    the type counts of notes 3 and 5).
+  - **6. Quests and influence actions as rule files (rules, harness, every part of the app).**
+    `harness/spec/quests.txt` and `harness/spec/influence-actions.txt` hold the two lists, one
+    line each, in a fixed wording (R20.8, R15.5); `game-rules.md` R20.7 and R15.1 and
+    `rulebook.md` point to them and keep no copy; the rules viewer fills the rulebook's marked
+    places with tables made from the files (S14.2); the game, the screens and the tutorial read
+    them (R15.6, R20.9). Decided without the owner: the files are read when the app is built, so
+    a deployed change is exactly what the files say; the line order is the list's order (the
+    quest list's random picks, the order on screen); influence action names are written in
+    lower case and, with underscores for spaces, are the names used in messages and scenarios,
+    so every existing scenario keeps its trade names; quest requirements and rewards use the
+    words of the old tables with the parts separated by commas, the Service type written
+    `Service type`, and Penthouses' "at least 1 of them tier 3" written as its own part
+    (`1 tier 3 Residential card`), which means the same. The files were written from the old
+    tables with no change to any quest or action, skip build left out (finding 9).
+  - **7. The check of the files (harness).** `npm run harness:check`, part of `npm run check`,
+    reads both files and fails with the file, line number and wrong word on every kind of error
+    the note lists, and on game sense: fewer than 4 tier 1 quests (the starting table, R19.3),
+    two draw actions for one tier, and a quest the tutorial needs that is missing or changed
+    (`HARNESS.md`). Decided without the owner: what the tutorial needs is written in the
+    tutorial's own spec (T0.7: Trading post exactly, and the 3 other tutorial quests as tier 1
+    quests; no influence action), as a requirement the check compares against; nothing reads
+    it as a list of quests, so it is not a second copy.
+  - **8. Plain trades and keywords (rules, screens).** A plain trade (`pay … | get …`, stats and
+    build passes) is applied and shown from the file with no new code (R15.6, S8.3). The fixed
+    words are the rising build pass (`1 more each time`) and the draw actions
+    (`draw a tier N card of a chosen kind`). Decided without the owner: a line whose third part
+    is neither `get …` nor the draw words is an action with rules of its own and fails the check
+    with "needs new code" and its name; a misspelt stat or type in a part fails as a wrong word.
+  - **9. Build passes (rules).** At the start of every turn, turn 1 included, every player gets
+    1 build pass; every card played uses one, the first card too; unused passes carry over with
+    no limit; both ways of buying a pass stay and a bought pass can be used at once (R6.1, R6.2,
+    new R6.3, R4.6, new R11.4, R10.1). Skip build is removed: the action, the state's flag, the
+    reason codes `build_skipped` and `skip_build_after_play`, and every mention in the spec,
+    rulebook and glossary; the tutorial's T1.3 text ("You can play one card per turn") now
+    explains build passes. Invariant I6 now says every card uses exactly 1 pass. Decided without
+    the owner: the turn's pass comes first in the start of the turn (before the marketplace), so
+    it is there for the whole market phase; in scenarios a seat starts with 1 pass unless it
+    says otherwise.
+  - **10. The owner reviews the quests before the deploy.** Written under "Waiting for the owner"
+    in the phase file, before the release: the phase stops when it is built and checked, the
+    owner edits `quests.txt`, scenarios follow the edits on the record, and the release goes on.
+  - **11. Claim all (N) (screens).** The number is the claims pressing it makes now: 1 per ready
+    one-time combo, and each time an infinite combo is ready (S6.6).
+  - **12. Redrawing the starting hand, and a longer turn 1 (rules).** New R17.12: up to 3 free
+    redraws in turn 1 before the player's first action, each putting the hand back, shuffling the
+    whole deck and dealing a new hand exactly as R17.9. Turn 1's limit is 5 minutes and its free
+    time 165 seconds (R9.1, R9.4). Decided without the owner: a redraw is not a main-phase action
+    (no action-limit cost) and cannot be undone, but it is saved like an action (one row, B2), at
+    most 3 per player per game, well within B4 and B5; "anything else" as a first action is every
+    main-phase action, End turn included; the redraw happens at once, with no confirmation;
+    others see "redrew their starting hand" and how many times when the main phase ends (M3.3,
+    M3.7, S7.2), never the cards, as for any main-phase draw; a redraw too late or a fourth one
+    is rejected as `redraw_too_late` or `no_redraw_left`; the tutorial offers no redraw (T0.8).
+    The free time given again after a pause in turn 1 is that turn's 165 seconds (R9.13).
+  - **13. Unused free time into the bank (rules).** New R9.15: on End turn, the unused part of
+    that turn's main-phase free time is added to the bank, never above 15 minutes. Invariant I19
+    now allows this growth. Decided without the owner: free time given again after a pause and a
+    market go's 5 seconds are never added, so "a paused player's bank used before the pause stays
+    used" stays true; a player made done when out of time has none left.
+  - **14. Quests completed last turn (screens).** The table also shows each quest's requirement
+    and reward (S5.5).
+  - **15. Sorting everywhere (screens).** New S1.7: every list of types with counts by count, then
+    name, inside each part where bonus types come first; every list of a player's combos as S6.1.
+    Decided without the owner: the combos printed on one card (big card, card set) are sorted by
+    the same keys as far as they apply (type combos first, then card-name combos by card name),
+    since "always" includes them but S6.1's grouping by city need does not fit one card.
+  - **16. Player icons (accounts, screens).** New A2.5 and S1.8: the first character of the
+    username in upper case on a colour fixed for the account; the quests and projects displays
+    show icons, with the name as tooltip and accessible name. Decided without the owner: the
+    server picks the colour from the account's id out of 12 icon colours of the design tokens,
+    so it is the same in every game and survives username changes, and the view carries it
+    (the client never picks it, `rules/frontend.md`); a username starting with a digit or
+    underscore shows that character; in the quests display, "could complete now" becomes a bold
+    orange border on the icon; the completed-last-turn table keeps usernames, since the note
+    names only the quests and projects displays and says everything else stays.
+  - **17. Total worth gained, F (rules, view, screens).** New R2.4: funds received (starting funds,
+    income, bonus funds, first-completion funds, funds from projects, quests and influence
+    actions; not selling) plus 1 per card gained (starting hand, draws, marketplace); 14 at the
+    start; shown as a red F box in your stats and the quick summary tables (S3.1, S6.2); public
+    (M3.5), shown as at the start of a player's own main phase like their other stats (R5.4).
+    Decided without the owner: a redraw changes nothing (the starting hand counts once); an undo
+    takes back what the undone action added, so "it only goes up" holds for every accepted move
+    (invariant I28).
+  - **18. Card-name combos on the big card (screens).** New S6.9. Decided without the owner: the
+    "!" counts both directions, the combos of your city's cards that need this card and the
+    combos printed on it that need a card in your city, since playing the card makes both ready;
+    the client works it out from your city, hand and combos in the view and the card data, as a
+    lookup that decides nothing (`rules/frontend.md`), so the view needs no new field.
+  - **Scenarios.** 23 scenarios added (513 now; the harness test still expects 490), and 35
+    required scenarios changed with their names kept, because the names stay true: 24 move from
+    turn 1 to turn 2 (turn 1's new times would change their numbers), 7 give the player 10
+    income to complete a project, and 4 count the new pass of each turn. The scenario format
+    gains the seat fields `redraws_used` and `worth_gained`, the action `redraw_hand`, the log
+    item `redrew` and the reason codes `redraw_too_late` and `no_redraw_left`, and loses
+    `skipped_build`; invariants I28 and I29 are new. Coverage exceptions for R15.5, R15.6, R20.8,
+    R20.9, T0.7 and A2.5 (checked by the rule file check and by server and client tests) are
+    added and R19.2's is reworded; they are Claude's under D19, for the owner's review with the
+    rest of version 1.
+  - **Required names (waiting for the owner).** 11 names on `harness/required.yaml` become
+    untrue: 6 are about skip build, 2 name the 40-second market go, 1 names 75 seconds of free
+    time for every main phase, and 2 say "a second card", which since finding 9 is no different
+    from the first. They are left unchanged until the owner approves; proposed (the 6 replacements
+    are already written as new scenarios):
+    - "the first player's market go has 40 seconds" → "the first player's market go has
+      30 seconds" (rename)
+    - "every later market go also has 40 seconds" → "every later market go also has 30 seconds"
+      (rename)
+    - "the first 75 seconds of a main phase do not use the time bank" → "from turn 2 the first
+      75 seconds of a main phase do not use the time bank" (rename, given turn 2)
+    - "rejects a second card in a turn without a build pass" → "rejects a card when the player
+      has no build pass left" (rename, given 0 passes)
+    - "a build pass allows a second card and is used up" → "playing a card uses up 1 build pass"
+      (rename)
+    - "rejects playing a card after skip build even with a build pass" → "a player with saved
+      build passes can play several cards in one turn"
+    - "skip build is reset at the end of the turn" → "every player gets 1 build pass at the start
+      of every turn"
+    - "skip build gives a build pass and blocks playing cards this turn" → "a bought build pass
+      can be used straight away"
+    - "skip build is rejected after playing a card this turn" → "unused build passes carry over
+      to later turns with no limit"
+    - "skip build can be used 3 times per game" → "every player starts turn 1 with 1 build pass"
+    - "undo takes back skip build and the build pass it gave" → "undo takes back a build pass
+      bought with influence"
+  - The spec and harness changes are on the branch `phase-29a-playthrough-fixes`, not on master,
+    as for 20a (Q74) and 25a (Q126): on their own they turn the check red until 29a builds them.
+- **Implemented:** `harness/spec/game-rules.md`, `multiplayer.md`, `accounts.md`, `screens.md`,
+  `rulebook.md`, `glossary.md`, `tutorial.md`, `quests.txt` (new), `influence-actions.txt` (new);
+  `harness/scenarios/setup.yaml`, `turns-and-time.yaml`, `playing-cards.yaml`,
+  `influence.yaml`, `undo.yaml`, `projects.yaml`, `drawing.yaml`, `visibility.yaml`,
+  `tutorial.yaml`, `client.yaml`, `connections-and-leaving.yaml`, `records-and-ratings.yaml`;
+  `harness/HARNESS.md`, `scenario-format.yaml`, `invariants.yaml`, `budgets.yaml`,
+  `coverage-exceptions.yaml`, `coverage.md`; `docs/plan/phase-29a-playthrough-fixes.md`,
+  `docs/plan/README.md`, `docs/plan/phase-30-version-1-readiness.md`.
