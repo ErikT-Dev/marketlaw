@@ -384,3 +384,4 @@ each helper's conversation size at its end.
 | Finisher | Sonnet, medium | 27 | 90k | 31 | done |
 | Phase reviewer | Opus, medium | 6 | 192k | 54 | done, 6 findings |
 | Fixer, F1 F4 F6 | Opus, medium | 8 | 110k | 37 | done |
+| Fixer, F2 F3 F5 | Opus, medium | 14 | 100k | 49 | done |
