@@ -474,8 +474,12 @@ None yet.
 - **S15.2** The left column shows the **tutorial text box**: "Step N of 19", the step's text from
   `tutorial.md`, the action asked for, **Continue** on text-only steps (**Finish** on the last),
   and **Restart**, as S15.5 to S15.7 say. The part of the screen the step is about is
-  highlighted, and every other action is disabled. **Restart** starts the tutorial again from
-  T1.1 without asking; it counts as starting a tutorial (A9.6) (Q161, Q162).
+  highlighted (a card, a button, a sector or a quest; the hand and the stats on T1.1, the
+  marketplace and the market go on T2.1), and the side of the table it is not on cannot be
+  used: on a hand, action or claim step only the hand and actions side, on a marketplace,
+  sector or quest step only the middle, on a text step neither. Another choice on the side
+  that can be used is answered with Not this step (S15.3). **Restart** starts the tutorial
+  again from T1.1 without asking; it counts as starting a tutorial (A9.6) (Q161, Q162, Q167).
 - **S15.3** Any other action shows "Not this step" with what the tutorial is waiting for (C4.4):
   "The tutorial is waiting for you to *waiting for*. Nothing changed." (S15.7).
 - **S15.4** After the last step, **Tutorial complete** says "You played your first turns, got your
