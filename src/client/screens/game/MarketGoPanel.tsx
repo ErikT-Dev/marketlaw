@@ -4,6 +4,7 @@ import { listedNames } from "./listedNames";
 import type { MarketGoState } from "./MarketGoState";
 import styles from "./MarketGoPanel.module.css";
 import { SectorButtons } from "./SectorButtons";
+import { Highlighted } from "./Highlighted";
 
 type Props = {
   readonly state: MarketGoState;
@@ -45,37 +46,39 @@ export function MarketGoPanel({ state, isBusy, onChooseSector }: Props) {
   const titleId = useId();
   const isYourGo = state.kind === "your_go";
   return (
-    <section
-      className={`${styles["panel"] ?? ""} ${isYourGo ? (styles["yourGo"] ?? "") : ""}`}
-      aria-labelledby={titleId}
-    >
-      <h2 id={titleId} className={styles["title"]}>
-        {titleOf(state)}
-      </h2>
-      {textsOf(state).map((text) => (
-        <p key={text} className={styles["text"]}>
-          {text}
-        </p>
-      ))}
-      {state.kind === "your_go" && state.isMarketplaceEmpty ? (
-        <SectorButtons isBusy={isBusy} onChoose={onChooseSector} />
-      ) : null}
-      {state.kind === "your_go" && !state.isMarketplaceEmpty ? (
-        <div className={styles["options"]}>
-          <div className={styles["option"]}>
-            <h3 className={styles["optionTitle"]}>A · Take a free card</h3>
-            <p className={styles["text"]}>
-              Select a card in the marketplace, then press Draw under it. You also draw 1 card of
-              the same sector from the deck.
-            </p>
+    <Highlighted part={{ kind: "panel", panel: "market_go" }} isBlock>
+      <section
+        className={`${styles["panel"] ?? ""} ${isYourGo ? (styles["yourGo"] ?? "") : ""}`}
+        aria-labelledby={titleId}
+      >
+        <h2 id={titleId} className={styles["title"]}>
+          {titleOf(state)}
+        </h2>
+        {textsOf(state).map((text) => (
+          <p key={text} className={styles["text"]}>
+            {text}
+          </p>
+        ))}
+        {state.kind === "your_go" && state.isMarketplaceEmpty ? (
+          <SectorButtons isBusy={isBusy} onChoose={onChooseSector} />
+        ) : null}
+        {state.kind === "your_go" && !state.isMarketplaceEmpty ? (
+          <div className={styles["options"]}>
+            <div className={styles["option"]}>
+              <h3 className={styles["optionTitle"]}>A · Take a free card</h3>
+              <p className={styles["text"]}>
+                Select a card in the marketplace, then press Draw under it. You also draw 1 card of
+                the same sector from the deck.
+              </p>
+            </div>
+            <div className={styles["option"]}>
+              <h3 className={styles["optionTitle"]}>B · Draw 2 cards of one sector</h3>
+              <p className={styles["text"]}>Choose the sector.</p>
+              <SectorButtons isBusy={isBusy} onChoose={onChooseSector} />
+            </div>
           </div>
-          <div className={styles["option"]}>
-            <h3 className={styles["optionTitle"]}>B · Draw 2 cards of one sector</h3>
-            <p className={styles["text"]}>Choose the sector.</p>
-            <SectorButtons isBusy={isBusy} onChoose={onChooseSector} />
-          </div>
-        </div>
-      ) : null}
-    </section>
+        ) : null}
+      </section>
+    </Highlighted>
   );
 }

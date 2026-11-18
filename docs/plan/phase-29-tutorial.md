@@ -285,7 +285,7 @@ These 17 scenarios are added to `harness/required.yaml` in this phase, by file a
     "Move rejected" with `REJECTION_MESSAGES`' "Not this step." until 6b. Continue and Restart are
     not tracked as pending actions; a double click is rejected `stale_state` quietly.
 
-- [ ] 6b. **Tutorial screen: highlights, Not this step, Tutorial complete, browser test**
+- [x] 6b. **Tutorial screen: highlights, Not this step, Tutorial complete, browser test**
   (S15.2's highlights and disabled actions, S15.3, S15.4; "What you can see when it's done").
   **Large.**
   - Each step highlights the part of the screen it is about (the boards' "Highlight" rect) and
@@ -296,6 +296,19 @@ These 17 scenarios are added to `harness/required.yaml` in this phase, by file a
     visitor, plays all 19 steps and finishes; screenshots of the tutorial screens at the three
     sizes, axe, no horizontal scroll, `getByRole` selectors. Locally run only this spec file
     with `--workers=2`.
+  - Done (2026-11-18), Q167 (written into S15.2 first): `TUTORIAL_FOCUS` (step id -> highlighted
+    `ScreenPart`s and the usable side). The game panels wrap their parts in `Highlighted`, which
+    draws the boards' yellow frame only when the `HighlightedParts` context (empty in games)
+    names the part. `TutorialColumns` makes the side the step is not on `inert` (both on text
+    steps and after the end). `not_this_step` shows an info toast "Not this step" with S15.7's
+    words (`notThisStepText`, through `GameToasts` children); other rejections stay "Move
+    rejected". `TutorialCompleteDialog` (no close button): Read the rules opens `#rules` and
+    leaves, Play it again restarts, Go to the lobby leaves. `e2e/tutorial.spec.ts` plays all 19
+    steps from the lobby menu as a new visitor (with one Not this step) and takes the
+    screenshots `tutorial`, `tutorial-not-this-step`, `tutorial-complete`; passed locally at all
+    three sizes, screenshots not committed (the finisher copies them from the branch check).
+  - For later items: in a long hand the highlighted card can sit below the hand panel's scroll at
+    1280x720 (T1.3 Hiking Trail); the player scrolls to it.
 
 ## Finish
 

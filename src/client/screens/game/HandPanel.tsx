@@ -4,6 +4,7 @@ import type { HandCardState } from "../../components/HandCardState";
 import { Panel } from "../../components/Panel";
 import type { HandChoice } from "./HandChoice";
 import styles from "./HandPanel.module.css";
+import { Highlighted } from "./Highlighted";
 import { HandPanelCard } from "./HandPanelCard";
 
 type Props = {
@@ -23,22 +24,26 @@ function stateOf(choice: HandChoice, card: CardName): HandCardState {
 
 export function HandPanel({ handDetails, newCards, choice, pendingCards, onPressCard }: Props) {
   return (
-    <Panel title={`Your hand · ${String(handDetails.length)} cards`}>
-      <ul className={styles["hand"]} aria-label="Your hand">
-        {handDetails.map((details) => (
-          <li key={details.card}>
-            <HandPanelCard
-              card={details.card}
-              realCost={details.realCost}
-              isPlayable={details.playRejection === null}
-              state={stateOf(choice, details.card)}
-              isNew={newCards.includes(details.card)}
-              isPending={pendingCards.includes(details.card)}
-              onPressCard={onPressCard}
-            />
-          </li>
-        ))}
-      </ul>
-    </Panel>
+    <Highlighted part={{ kind: "panel", panel: "hand" }} isBlock>
+      <Panel title={`Your hand · ${String(handDetails.length)} cards`}>
+        <ul className={styles["hand"]} aria-label="Your hand">
+          {handDetails.map((details) => (
+            <li key={details.card}>
+              <Highlighted part={{ kind: "hand_card", card: details.card }} isBlock>
+                <HandPanelCard
+                  card={details.card}
+                  realCost={details.realCost}
+                  isPlayable={details.playRejection === null}
+                  state={stateOf(choice, details.card)}
+                  isNew={newCards.includes(details.card)}
+                  isPending={pendingCards.includes(details.card)}
+                  onPressCard={onPressCard}
+                />
+              </Highlighted>
+            </li>
+          ))}
+        </ul>
+      </Panel>
+    </Highlighted>
   );
 }

@@ -6,6 +6,7 @@ import { MarketCardFace } from "./MarketCardFace";
 import styles from "./Marketplace.module.css";
 import { MARKETPLACE_PLACE_LABELS } from "./MARKETPLACE_PLACE_LABELS";
 import { SelectableMarketCard } from "./SelectableMarketCard";
+import { Highlighted } from "./Highlighted";
 
 type Props = {
   readonly slot: MarketplaceSlot;
@@ -29,12 +30,14 @@ export function MarketSlot({ slot, isSelected, onSelect, onDraw }: Props) {
           <MarketCardFace card={null} />
         </div>
       ) : (
-        <SelectableMarketCard
-          card={slot.card}
-          isSelected={isSelected}
-          onSelect={onSelect}
-          onDraw={onDraw}
-        />
+        <Highlighted part={{ kind: "market_card", card: slot.card }} isBlock>
+          <SelectableMarketCard
+            card={slot.card}
+            isSelected={isSelected}
+            onSelect={onSelect}
+            onDraw={onDraw}
+          />
+        </Highlighted>
       )}
     </li>
   );

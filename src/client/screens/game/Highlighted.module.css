@@ -1,0 +1,18 @@
+.block,
+.inline {
+  min-width: 0;
+  min-height: 0;
+  border-radius: 10px;
+  outline: 3px solid var(--color-board-tutorial-highlight);
+  outline-offset: 2px;
+}
+
+.block {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
+}
+
+.inline {
+  display: inline-flex;
+}

@@ -3565,3 +3565,26 @@ file.
   reach a room without leaving it first, so keeping them busy needs no extra rule.
 - **Implemented:** `src/server/api/startTutorialRoute.ts`, `src/server/lobby/countTutorialStart.ts`,
   `src/server/TutorialRoom.ts`; phase 29, item 3.
+
+## Q167. What does "every other action is disabled" in the tutorial mean, and when is Not this step shown?
+
+- **Phase:** 29 (item 6b; S15.2, S15.3, C4.4).
+- **Question:** S15.2 disables every action but the step's, and S15.3 shows Not this step for
+  any other action, which could never happen if everything else were disabled. The design
+  boards highlight one card or button and still show the other action buttons enabled on the
+  "not this step" board. The spec does not say what is highlighted on the text steps.
+- **Solution:** each step highlights its part of the screen with the boards' yellow frame: the
+  hand card to play or sell, the marketplace card to take, End turn, Claim all, the sector
+  button, the quest; the hand and the stats on T1.1; the marketplace and the market go on
+  T2.1; nothing on T5.4. The side of the table the step's part is not on cannot be used (it is
+  `inert`): the hand and actions side for marketplace, sector and quest steps, the middle for
+  hand, action and claim steps, both on text steps. The text box, the top bar and the menu stay
+  usable. Another choice on the usable side (another card, End turn too early, another sector)
+  is sent and answered `not_this_step`, shown as an info toast "Not this step" with S15.7's
+  words. Tutorial complete has no close button; its three buttons are the ways out. Written into
+  S15.2 first.
+- **Why:** disabling single buttons inside the shared game panels would spread tutorial checks
+  through the game screen's components; whole sides are one attribute each, keep the server as
+  the only judge of the step's action (C4.4) and leave S15.3 reachable.
+- **Implemented:** `harness/spec/screens.md` S15.2; `src/client/screens/tutorial/TUTORIAL_FOCUS.ts`,
+  `src/client/screens/game/Highlighted.tsx`; phase 29, item 6b.

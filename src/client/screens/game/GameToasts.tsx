@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import type { Notice } from "../../../shared/Notice";
 import type { OwnSeatView } from "../../../shared/OwnSeatView";
 import type { PlayerView } from "../../../shared/PlayerView";
@@ -22,6 +23,7 @@ type Props = {
   readonly onDismissTimeOutNotice: () => void;
   readonly onDismissRejection: () => void;
   readonly playerNames: ReadonlyArray<string>;
+  readonly children?: ReactNode;
 };
 
 export function GameToasts({ view, seat, timeOutNotice, rejectedMove, ...rest }: Props) {
@@ -67,6 +69,7 @@ export function GameToasts({ view, seat, timeOutNotice, rejectedMove, ...rest }:
           onClose={rest.onDismissRejection}
         />
       )}
+      {rest.children}
     </div>
   );
 }
