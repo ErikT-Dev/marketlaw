@@ -568,3 +568,4 @@ each helper's conversation size at its end.
 | Builder, e2e loading fix and item 4 (resumed after a usage limit) | Opus, medium | 41 | 228k | 152 | done |
 | Builder, items 6 and 7 | Opus, medium | 32 | 207k | 112 | done |
 | Builder, item 8 | Opus, medium | 11 | 133k | 54 | done |
+| Builder, item 9 | Opus, medium | 12 | 146k | 66 | done |
