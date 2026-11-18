@@ -37,7 +37,6 @@ const SEAT = v.strictObject({
   build_passes: v.optional(COUNT),
   build_passes_bought: v.optional(COUNT),
   played_this_turn: v.optional(v.boolean()),
-  skipped_build: v.optional(v.boolean()),
   influence_uses: v.optional(v.record(TradeName, COUNT)),
   actions_this_turn: v.optional(COUNT),
   done: v.optional(v.boolean()),

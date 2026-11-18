@@ -18,11 +18,7 @@ function amountParts(amounts: StatAmounts): ReadonlyArray<IconTextPart> {
 function tradeParts(trade: TradeName): ReadonlyArray<IconTextPart> {
   const { costs, gains, doesGiveBuildPass } = TRADES[trade];
   const paid: ReadonlyArray<IconTextPart> =
-    trade === "skip_build"
-      ? ["skip build"]
-      : trade === "buy_build_pass"
-        ? [{ stat: "funds" }]
-        : amountParts(costs);
+    trade === "buy_build_pass" ? [{ stat: "funds" }] : amountParts(costs);
   const got: ReadonlyArray<IconTextPart> = doesGiveBuildPass
     ? [{ stat: "buildPasses", value: 1 }]
     : amountParts(gains);

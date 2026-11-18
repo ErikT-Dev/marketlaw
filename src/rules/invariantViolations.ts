@@ -74,7 +74,7 @@ function acceptedViolations(transition: Transition, after: GameState): ReadonlyA
           ...(cardOf(action.card).tier > 1 && before.turn < FIRST_TURN_FOR_HIGHER_TIERS
             ? [`I5: ${action.card} was played in turn ${before.turn}`]
             : []),
-          ...(seat.hasSkippedBuild || (seat.hasPlayedThisTurn && seat.buildPasses === 0)
+          ...(seat.buildPasses === 0
             ? [`I6: seat ${action.seat} played more cards than its build passes allow`]
             : []),
         ]

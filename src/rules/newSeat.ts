@@ -22,7 +22,6 @@ export function newSeat(seat: SeatNumber): SeatState {
     buildPasses: 0,
     buildPassesBought: 0,
     hasPlayedThisTurn: false,
-    hasSkippedBuild: false,
     influenceUses: {},
     actionsThisTurn: 0,
     isDone: false,

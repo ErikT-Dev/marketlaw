@@ -17,7 +17,6 @@ export const TRADES: Readonly<Record<TradeName, Trade>> = {
   fund_to_influence: trade({ funds: 1 }, { influence: 1 }, null),
   buy_build_pass: buildPassTrade({ funds: 2 }, null),
   influence_to_build_pass: buildPassTrade({ influence: 5 }, 1),
-  skip_build: buildPassTrade({}, 3),
   quality_to_satisfaction_with_influence: trade(
     { influence: 1, quality: 1 },
     { satisfaction: 1 },

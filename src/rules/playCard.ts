@@ -14,7 +14,7 @@ export function playCard(seat: SeatState, name: CardName): SeatState {
     newCards: seat.newCards.filter((card) => card !== name),
     knownInHand: seat.knownInHand.filter((card) => card !== name),
     city: [...seat.city, name],
-    buildPasses: seat.hasPlayedThisTurn ? seat.buildPasses - 1 : seat.buildPasses,
+    buildPasses: seat.buildPasses - 1,
     hasPlayedThisTurn: true,
     actionsThisTurn: seat.actionsThisTurn + 1,
   };

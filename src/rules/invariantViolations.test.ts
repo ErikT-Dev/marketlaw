@@ -75,7 +75,7 @@ describe("invariantViolations", () => {
   });
 
   it("reports actions by a done seat and cards played beyond the rules", () => {
-    const before = withSeat1({ ...START, turn: 3 }, { isDone: true, hasPlayedThisTurn: true, hasSkippedBuild: true });
+    const before = withSeat1({ ...START, turn: 3 }, { isDone: true, hasPlayedThisTurn: true, buildPasses: 0 });
     const action: GameAction = { type: "play_card", seat: 1, card: "Brownstone" };
     expect(invariantViolations(transition(before, action, before))).toEqual([
       "I18: seat 1 took an action while done or after leaving",
@@ -149,9 +149,9 @@ describe("invariantViolations", () => {
   });
 
   it("reports an influence action used more often than its limit per game", () => {
-    const after = withSeat1(START, { influenceUses: { skip_build: 4, influence_to_funds: 1 } });
+    const after = withSeat1(START, { influenceUses: { influence_to_build_pass: 2, influence_to_funds: 1 } });
     expect(invariantViolations(transition(START, { type: "end_turn", seat: 1 }, after))).toEqual([
-      "I11: seat 1 used skip_build 4 times",
+      "I11: seat 1 used influence_to_build_pass 2 times",
     ]);
   });
 

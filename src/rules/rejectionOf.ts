@@ -77,11 +77,8 @@ function playRejection(state: GameState, seat: SeatState, action: PlayCard): Rea
   if (card.tier > 1 && state.turn < FIRST_TURN_FOR_HIGHER_TIERS) {
     return "tier_not_allowed";
   }
-  if (seat.hasPlayedThisTurn && seat.buildPasses === 0) {
+  if (seat.buildPasses === 0) {
     return "no_build_pass";
-  }
-  if (seat.hasSkippedBuild) {
-    return "build_skipped";
   }
   return seat.stats.funds < realCostOf(card, seat) ? "not_enough_funds" : undefined;
 }

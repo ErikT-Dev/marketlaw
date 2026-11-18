@@ -6,17 +6,15 @@ import { readInfluenceActionFile } from "./readInfluenceActionFile";
 
 const INFLUENCE_ACTION_FILE = readFileSync("harness/spec/influence-actions.txt", "utf8");
 
-const TRADES_OF_THE_FILE = Object.entries(TRADES)
-  .filter(([name]) => name !== "skip_build")
-  .map(([name, trade]) => ({
-    kind: "trade",
-    name,
-    costs: trade.costs,
-    gains: trade.gains,
-    buildPasses: trade.doesGiveBuildPass ? 1 : 0,
-    isPriceRising: name === "buy_build_pass",
-    limitPerGame: trade.limitPerGame,
-  }));
+const TRADES_OF_THE_FILE = Object.entries(TRADES).map(([name, trade]) => ({
+  kind: "trade",
+  name,
+  costs: trade.costs,
+  gains: trade.gains,
+  buildPasses: trade.doesGiveBuildPass ? 1 : 0,
+  isPriceRising: name === "buy_build_pass",
+  limitPerGame: trade.limitPerGame,
+}));
 
 const DRAWS_OF_THE_FILE = ([1, 2, 3] as const).map((tier) => ({
   kind: "draw",

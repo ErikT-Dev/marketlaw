@@ -25,7 +25,7 @@ function roomMessage(action: Readonly<Record<string, unknown>>): string {
 describe("parseClientMessage", () => {
   it("reads influence, quest, draw action and undo intents", () => {
     const intents = [
-      { type: "influence", trade: "skip_build" },
+      { type: "influence", trade: "buy_build_pass" },
       { type: "complete_quest", quest: "Trading post" },
       { type: "draw_action", kind: "Industry", tier: 2 },
       { type: "undo" },

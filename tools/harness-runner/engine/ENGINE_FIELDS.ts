@@ -7,7 +7,6 @@ const SEAT_FIELDS = [
   "build_passes",
   "build_passes_bought",
   "played_this_turn",
-  "skipped_build",
   "influence_uses",
   "actions_this_turn",
   "done",

@@ -22,7 +22,6 @@ export function useTrade(seat: SeatState, trade: TradeName): SeatState {
     buildPasses: doesGiveBuildPass ? seat.buildPasses + 1 : seat.buildPasses,
     buildPassesBought:
       trade === "buy_build_pass" ? seat.buildPassesBought + 1 : seat.buildPassesBought,
-    hasSkippedBuild: seat.hasSkippedBuild || trade === "skip_build",
     influenceUses:
       limitPerGame === null
         ? seat.influenceUses

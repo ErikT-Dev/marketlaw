@@ -67,7 +67,6 @@ const SEAT_VIEW = v.variant("kind", [
       workforce: v.nullable(ReasonCode),
     }),
     hasPlayedThisTurn: v.boolean(),
-    hasSkippedBuild: v.boolean(),
     influenceUses: v.record(TradeName, COUNT),
     trades: v.array(v.object({ trade: TradeName, rejection: v.nullable(ReasonCode) })),
     buildPassPrice: COUNT,

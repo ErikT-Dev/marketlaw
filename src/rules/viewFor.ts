@@ -41,7 +41,6 @@ function ownSeatView(state: GameState, seat: SeatState): OwnSeatView {
     city: seat.city,
     buildPasses: seat.buildPasses,
     hasPlayedThisTurn: seat.hasPlayedThisTurn,
-    hasSkippedBuild: seat.hasSkippedBuild,
     influenceUses: seat.influenceUses,
     trades: tradeStatusesOf(state, seat.seat),
     buildPassPrice: tradeCostsOf(seat, "buy_build_pass").funds ?? 0,

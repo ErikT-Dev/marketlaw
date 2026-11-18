@@ -27,7 +27,6 @@ export type SeatState = {
   readonly buildPasses: number;
   readonly buildPassesBought: number;
   readonly hasPlayedThisTurn: boolean;
-  readonly hasSkippedBuild: boolean;
   readonly influenceUses: InfluenceUses;
   readonly actionsThisTurn: number;
   readonly isDone: boolean;

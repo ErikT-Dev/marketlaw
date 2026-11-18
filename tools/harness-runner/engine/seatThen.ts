@@ -28,7 +28,6 @@ export function seatThen(
     build_passes: seat.buildPasses,
     build_passes_bought: seat.buildPassesBought,
     played_this_turn: seat.hasPlayedThisTurn,
-    skipped_build: seat.hasSkippedBuild,
     influence_uses: seat.influenceUses,
     actions_this_turn: seat.actionsThisTurn,
     done: seat.isDone,

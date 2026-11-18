@@ -302,7 +302,7 @@ These 35 required scenarios now assert the new rules (Q169) and must pass again:
   - A plain trade is applied and shown from its parsed parts, with no code per trade (R15.6,
     S8.3).
 
-- [ ] 2. **Build passes** (R6.1, R6.2, R6.3, R4.6, R11.4, R10.1, R7.2, I6, S16.3). **Large.**
+- [x] 2. **Build passes** (R6.1, R6.2, R6.3, R4.6, R11.4, R10.1, R7.2, I6, S16.3). **Large.**
   - Scenarios: `setup` "every player starts turn 1 with 1 build pass"; `turns-and-time` "every
     player gets 1 build pass at the start of every turn", "unused build passes carry over …",
     "end-of-turn steps … keep build passes"; `playing-cards` "rejects a card when the player has
@@ -320,6 +320,17 @@ These 35 required scenarios now assert the new rules (Q169) and must pass again:
     start-of-turn step, before the marketplace (Q169, 9); turn 1's comes after setup (R4.6,
     `setUpGame.ts`). The scenario runner's default seat has 1 build pass (`HARNESS.md`, seats
     row). Raises both versions (see 0).
+  - Done (2026-11-18). The 11 build-pass scenarios pass; still failing required scenarios: the
+    2 market-go ones of item 3 (30 seconds). `PROTOCOL_VERSION` is 27 and `SAVE_SCHEMA_VERSION`
+    18 now; later items do not raise them again.
+  - As built: `src/rules/withTurnBuildPass.ts` gives a seat still in the game its pass; used by
+    `setUpGame.ts` (after setup), `endMainPhase.ts` (first start-of-turn step) and the scenario
+    runner's default seat (`seatFromGiven.ts`, so `startTestRoom` in `e2e/` starts with 1 pass
+    too). `newSeat` still has 0 passes. Every card uses a pass (`playCard.ts`, `rejectionOf.ts`,
+    I6). The `no_build_pass` text follows S16.3. The Use influence pop-up has 19 trades
+    (`influenceAndUndo.test.tsx`); `e2e/influenceAndUndo.spec.ts` now expects 2 passes after
+    buying one (not run locally; the branch check runs it).
+  - For later items: `Trade.doesGiveBuildPass` is unchanged (1b replaces `TRADES`).
 
 - [ ] 3. **Time** (R9.1, R9.2, R9.4, R9.13, R9.15, R18.11, I19). **Small.**
   - `src/rules/TIME_RULES.ts`: `goLimitMs` 30 000; turn 1's main free time 165 s and limit 300 s

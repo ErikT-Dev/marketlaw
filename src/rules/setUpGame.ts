@@ -12,6 +12,7 @@ import type { Piles } from "./Piles";
 import type { Random } from "./Random";
 import { SEAT_NUMBERS } from "./SEAT_NUMBERS";
 import { withMainPhaseStart } from "./withMainPhaseStart";
+import { withTurnBuildPass } from "./withTurnBuildPass";
 import type { SeatsDealt } from "./SeatsDealt";
 
 const FIRST_TURN = 1;
@@ -41,7 +42,7 @@ export function setUpGame(setup: GameSetup, random: Random): GameState {
     turn: FIRST_TURN,
     phase: "main",
     firstPlayer: 1,
-    seats: dealt.seats,
+    seats: dealt.seats.map(withTurnBuildPass),
     deck: filled.piles.deck,
     discard: filled.piles.discard,
     holdingPile: [],

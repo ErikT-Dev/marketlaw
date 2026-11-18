@@ -8,7 +8,6 @@ export const TradeName = v.picklist([
   "fund_to_influence",
   "buy_build_pass",
   "influence_to_build_pass",
-  "skip_build",
   "quality_to_satisfaction_with_influence",
   "satisfaction_to_quality_with_influence",
   "product_to_distribution",

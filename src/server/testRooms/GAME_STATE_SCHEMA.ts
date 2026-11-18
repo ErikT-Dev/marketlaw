@@ -31,7 +31,6 @@ const SEAT_STATE = v.object({
   buildPasses: v.number(),
   buildPassesBought: v.number(),
   hasPlayedThisTurn: v.boolean(),
-  hasSkippedBuild: v.boolean(),
   influenceUses: v.record(TradeName, v.number()),
   actionsThisTurn: v.number(),
   isDone: v.boolean(),

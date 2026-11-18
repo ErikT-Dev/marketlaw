@@ -10,9 +10,6 @@ export function tradeRejection(seat: SeatState, trade: TradeName): ReasonCode | 
   if (limit !== null && (seat.influenceUses[trade] ?? 0) >= limit) {
     return "trade_limit_reached";
   }
-  if (trade === "skip_build" && seat.hasPlayedThisTurn) {
-    return "skip_build_after_play";
-  }
   const costs = tradeCostsOf(seat, trade);
   const canAfford = STAT_KEYS.every((stat) => {
     const cost = costs[stat];
