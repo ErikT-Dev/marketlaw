@@ -312,8 +312,13 @@ These 17 scenarios are added to `harness/required.yaml` in this phase, by file a
 
 ## Finish
 
-- [ ] Finisher: the phase's scenarios into `harness/required.yaml`, the full check and harness,
+- [x] Finisher: the phase's scenarios into `harness/required.yaml`, the full check and harness,
   the branch check, screenshots, `docs/enforcement.md`.
+  - Done (2026-11-18): the 17 scenarios and B6 are in `required.yaml` (`HARNESS: Phase 29
+    scenarios and B6 required`); local `npm run check` and `npm run harness` passed; branch check
+    GitHub run 44288904078 succeeded (check and all six browser jobs, no rerun). Screenshots copied
+    into `harness/screens/` (new: `tutorial`, `tutorial-not-this-step`, `tutorial-complete`);
+    `docs/enforcement.md` updated. No findings.
 
 ### Helper log
 
