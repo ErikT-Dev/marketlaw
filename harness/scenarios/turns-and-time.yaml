@@ -129,8 +129,10 @@
         time_bank_ms: 708000
         timeouts_in_a_row: 1
 
-- name: the first 75 seconds of a main phase do not use the time bank
+- name: from turn 2 the first 75 seconds of a main phase do not use the time bank
   covers: [R9.4, R9.5]
+  given:
+    turn: 2
   when:
     - wait_ms: 75000
     - {seat: 1, action: end_turn}
@@ -375,7 +377,7 @@
       - seat: 1
         timeouts_in_a_row: 0
 
-- name: the first player's market go has 40 seconds
+- name: the first player's market go has 30 seconds
   covers: [R9.2, R18.11]
   given:
     players: 2
@@ -383,9 +385,9 @@
     phase: market
     first_player: 2
   then:
-    market_go: {seat: 2, time_left_ms: 40000}
+    market_go: {seat: 2, time_left_ms: 30000}
 
-- name: every later market go also has 40 seconds
+- name: every later market go also has 30 seconds
   covers: [R9.2, R18.11]
   given:
     players: 2
@@ -397,7 +399,7 @@
   when:
     - {seat: 2, action: turn_draw, option: A, card: Row House}
   then:
-    market_go: {seat: 1, time_left_ms: 40000}
+    market_go: {seat: 1, time_left_ms: 30000}
 
 - name: a deadline while nobody is connected pauses the game instead
   covers: [R9.12, M5.5]
@@ -605,25 +607,6 @@
     phase: market
     first_player: 2
     market_go: {seat: 2}
-
-- name: skip build is reset at the end of the turn
-  covers: [R10.1]
-  given:
-    turn: 3
-    marketplace: [{place: residential, card: Row House}, {place: industry, card: Metal Mining}, {place: service, card: Liquor Shop}, {place: public_quality, card: Fire Station}, {place: public_satisfaction, card: Public Playground}, {place: open_1, card: Dentist}, {place: open_2, card: Apparel Store}, {place: open_3, card: Forest Plantation}]
-    quests: [{quest: Farmland}, {quest: Sports town}, {quest: Trading post}, {quest: Mining town}]
-    seats:
-      - seat: 1
-        skipped_build: true
-        build_passes: 1
-  when:
-    - {seat: 1, action: end_turn}
-    - {seat: 2, action: end_turn}
-  then:
-    seats:
-      - seat: 1
-        skipped_build: false
-        build_passes: 1
 
 - name: a market go can be paused and the player gets their free time again
   covers: [R9.12, R9.13]

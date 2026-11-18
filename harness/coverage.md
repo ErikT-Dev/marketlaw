@@ -42,11 +42,11 @@ it by hand.
 | R5.5 | drawing (2), visibility (3) | Covered |
 | R5.6 | turns-and-time (1) | Covered |
 | R5.7 | visibility (2) | Covered |
-| R6.1 | influence (1), playing-cards (9), undo (1) | Covered |
+| R6.1 | playing-cards (8), undo (1) | Covered |
 | R6.2 | playing-cards (5) | Covered |
 | R6.3 | influence (1), playing-cards (1), setup (1), turns-and-time (2) | Covered |
 | R7.1 | playing-cards (1), undo (5) | Covered |
-| R7.2 | undo (9) | Covered |
+| R7.2 | undo (8) | Covered |
 | R7.3 | undo (3) | Covered |
 | R7.4 | undo (1) | Covered |
 | R8.1 | playing-cards (1), turns-and-time (1) | Covered |
@@ -69,7 +69,7 @@ it by hand.
 | R9.13 | turns-and-time (6) | Covered |
 | R9.14 | turns-and-time (1) | Covered |
 | R9.15 | turns-and-time (4) | Covered |
-| R10.1 | projects (1), turns-and-time (4) | Covered |
+| R10.1 | projects (1), turns-and-time (3) | Covered |
 | R10.2 | quests (2) | Covered |
 | R10.3 | playing-cards (1), turns-and-time (1) | Covered |
 | R11.1 | turns-and-time (1) | Covered |
@@ -87,7 +87,7 @@ it by hand.
 | R14.1 | turns-and-time (1) | Covered |
 | R14.2 | turns-and-time (1) | Covered |
 | R14.3 | turns-and-time (3) | Covered |
-| R15.1 | influence (27), playing-cards (1), undo (4) | Covered |
+| R15.1 | influence (24), undo (3) | Covered |
 | R15.2 | influence (4), undo (1) | Covered |
 | R15.3 | influence (3) | Covered |
 | R15.4 | influence (1) | Covered |
@@ -366,6 +366,6 @@ it by hand.
 ## Summary
 
 - Rules: 329
-- Scenarios: 513
+- Scenarios: 507
 - Gaps: 0
 - Checked another way or also checked another way: R3.2, R3.5, R17.10, R19.2, M3.1, M3.6, M4.2, A6.4, A10.6, C5.1, C5.2, C5.3, A12.1, R15.5, R15.6, R20.8, R20.9, T0.7, A2.5

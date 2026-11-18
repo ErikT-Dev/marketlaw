@@ -44,18 +44,6 @@
       - seat: 1
         stats: {quality: 2, satisfaction: 0}
 
-- name: undo takes back skip build and the build pass it gave
-  covers: [R7.2, R15.1]
-  when:
-    - {seat: 1, action: influence, trade: skip_build}
-    - {seat: 1, action: undo}
-  then:
-    seats:
-      - seat: 1
-        skipped_build: false
-        build_passes: 0
-        influence_uses: {}
-
 - name: undo takes back completing a quest whose reward draws no card
   covers: [R7.2, R19.5]
   given:

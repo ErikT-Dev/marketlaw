@@ -59,9 +59,9 @@ scenarios:
     - rejects a card the player cannot afford at its real cost
     - rejects a tier 2 card before turn 5
     - a tier 2 card can be played from turn 5
-    - rejects a second card in a turn without a build pass
-    - a build pass allows a second card and is used up
-    - rejects playing a card after skip build even with a build pass
+    - rejects a card when the player has no build pass left
+    - playing a card uses up 1 build pass
+    - a player with saved build passes can play several cards in one turn
     - rejects a card that is not in the hand
     - selling several cards is one action and puts them in the holding pile
     - rejects any action after the 50th main-phase action but still allows ending the turn
@@ -84,6 +84,7 @@ scenarios:
     - the quests table starts with 4 random tier 1 quests and 2 different bonus types are picked
     - after setup the deck holds every card not dealt or on display
     - turn 1 starts with the main phase and every player can act
+    - every player starts turn 1 with 1 build pass
   turns-and-time:
     - ending the turn marks the player done and further actions are rejected
     - the main phase ends only when every player is done
@@ -92,7 +93,8 @@ scenarios:
     - negative stats lower the bonus and a negative bonus gives no funds
     - every full 10 bonus becomes 1 fund
     - players who left get no end-of-turn steps
-    - skip build is reset at the end of the turn
+    - every player gets 1 build pass at the start of every turn
+    - unused build passes carry over to later turns with no limit
     - the first player moves one seat on each turn
     - the first player in turn 3 of a 3-player game is seat 3
     - if the first player has left the next seat still in the game goes first
@@ -103,7 +105,7 @@ scenarios:
     - players made done at the same moment become done in player order
     - the main-phase time limit in turn 10 is 4 minutes 27 seconds
     - reaching the main-phase limit makes the player done
-    - the first 75 seconds of a main phase do not use the time bank
+    - from turn 2 the first 75 seconds of a main phase do not use the time bank
     - the time bank runs after the free time until the player ends their turn
     - with an empty bank a player only has the free time
     - a message received at the deadline is rejected and the time-out is applied
@@ -112,8 +114,8 @@ scenarios:
     - "every player sees every other player's bank counting down during the main phase"
     - a player whose time runs out is told how many time-outs in a row out of 3
     - ending the turn in time resets the time-out count
-    - "the first player's market go has 40 seconds"
-    - every later market go also has 40 seconds
+    - "the first player's market go has 30 seconds"
+    - every later market go also has 30 seconds
     - a deadline while nobody is connected pauses the game instead
     - a paused game goes on when a player reconnects and the timed-out player gets free time again
     - after the extra free time the paused player times out as normal
@@ -161,9 +163,7 @@ scenarios:
     - 1 fund buys 1 influence any number of times
     - a bought build pass costs 1 more fund each time
     - 5 influence buys 1 build pass once per game
-    - skip build gives a build pass and blocks playing cards this turn
-    - skip build is rejected after playing a card this turn
-    - skip build can be used 3 times per game
+    - a bought build pass can be used straight away
     - 1 influence and 1 quality buy 1 satisfaction
     - 1 influence and 1 satisfaction buy 1 quality
     - 2 influence and 1 product buy 1 distribution and 1 satisfaction
@@ -187,7 +187,7 @@ scenarios:
     - undo takes back playing a card
     - undo takes back claim all
     - undo takes back a trade that draws no card
-    - undo takes back skip build and the build pass it gave
+    - undo takes back a build pass bought with influence
     - undo takes back the latest action first
     - selling cannot be undone
     - completing a project cannot be undone
