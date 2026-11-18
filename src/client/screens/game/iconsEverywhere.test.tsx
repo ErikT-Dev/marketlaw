@@ -113,7 +113,7 @@ describe("stats and types as icons", () => {
     ["Projects", "Projects"],
     ["Use Influence", "Use Influence"],
     ["Claim all (1)", "Claim all combos"],
-    ["See Di's board ›", "Di's board"],
+    ["Detailed summary table of Di", "Detailed summary table of Di"],
   ])("shows no stat or type as a word in the pop-up opened by %s", async (button, dialog) => {
     await showGame();
     press(button);

@@ -1,10 +1,13 @@
 import type { OtherSeatView } from "../../../shared/OtherSeatView";
+import type { TypeName } from "../../../shared/catalogue/TypeName";
 import type { PlayerId } from "../../../shared/PlayerId";
 import { PlayerNameLink } from "../../components/PlayerNameLink";
 import { CountBox } from "../../components/CountBox";
 import { StatChip } from "../../components/StatChip";
 import type { StatName } from "../../icons/StatName";
 import { cityTypeTotalOf } from "./cityTypeTotalOf";
+import { typesInListOrder } from "../../sorting/typesInListOrder";
+import { TypeCountsList } from "./TypeCountsList";
 import { ClaimedCombosList } from "./ClaimedCombosList";
 import { combosClaimedCountOf } from "./combosClaimedCountOf";
 import { LiveBankChip } from "./LiveBankChip";
@@ -15,6 +18,7 @@ type Props = {
   readonly seat: OtherSeatView;
   readonly name: string;
   readonly playerId: PlayerId | null;
+  readonly bonusTypes: ReadonlyArray<TypeName>;
 };
 
 const BOARD_STATS = [
@@ -31,7 +35,7 @@ function turnStatus(seat: OtherSeatView): string {
   return seat.isDone ? "done this turn" : "playing, not done yet";
 }
 
-export function OpponentStatsBox({ seat, name, playerId }: Props) {
+export function OpponentStatsBox({ seat, name, playerId, bonusTypes }: Props) {
   return (
     <section className={styles["box"]} aria-label={`Stats of ${name}`}>
       <PlayerNameLink name={name} playerId={playerId} />
@@ -54,6 +58,12 @@ export function OpponentStatsBox({ seat, name, playerId }: Props) {
           label="Combos claimed"
         />
       </div>
+      <TypeCountsList
+        types={typesInListOrder(seat.typeCounts, bonusTypes)}
+        typeCounts={seat.typeCounts}
+        bonusTypes={bonusTypes}
+        label={`Type counts of ${name}, bonus types first`}
+      />
       <ClaimedCombosList combosClaimed={seat.combosClaimed} name={name} />
       <LiveBankChip timeBankMs={seat.timeBankMs} clock={seat.clock} label="Bank" />
       <p className={styles["status"]}>This turn: {turnStatus(seat)}</p>

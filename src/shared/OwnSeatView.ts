@@ -4,6 +4,7 @@ import type { ComboStatus } from "./ComboStatus";
 import type { DrawActionStatus } from "./DrawActionStatus";
 import type { InfluenceUses } from "./InfluenceUses";
 import type { ProjectName } from "./ProjectName";
+import type { QuestName } from "./catalogue/QuestName";
 import type { ProjectRejections } from "./ProjectRejections";
 import type { SeatTypeCounts } from "./SeatTypeCounts";
 import type { HandCardDetails } from "./HandCardDetails";
@@ -26,6 +27,7 @@ export type OwnSeatView = {
   readonly claimAllRejection: ReasonCode | null;
   readonly projects: ReadonlyArray<ProjectName>;
   readonly projectRejections: ProjectRejections;
+  readonly questsCompleted: ReadonlyArray<QuestName>;
   readonly city: ReadonlyArray<CardName>;
   readonly buildPasses: number;
   readonly worthGained: number;

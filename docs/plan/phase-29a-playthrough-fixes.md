@@ -502,12 +502,30 @@ These 35 required scenarios now assert the new rules (Q169) and must pass again:
     type names with `compareAlphabetically` (its type sorter can go in `src/client/sorting/`).
     `e2e/combosAndProjects.spec.ts` (Claim all (1), the combos-list screenshot) still matches.
 
-- [ ] 9. **Stats and summary tables** (S3.1, S3.2, S6.2, S1.7, S13.4). **Large.**
+- [x] 9. **Stats and summary tables** (S3.1, S3.2, S6.2, S1.7, S13.4). **Large.**
   - Q, T, C and F boxes in your stats (T counts the city's card types, a doubled type twice,
     Q169, 3); T, C, F and the 5 most played types in the quick summary table (count order only,
     Q169, 5); type counts by count, then name, with bonus types first and highlighted green. One
     pure S1.7 type sorter, which 13 reuses. The names "quick summary table" and "detailed
     summary table" on screen and in tests. Reuse `OpponentStatsBox.tsx` and `StatChip.tsx`.
+  - Done (2026-11-18). Unit tests in `src/client/screens/game/statsAndSummaryTables.test.tsx`
+    (your Q, T, C and F boxes and sorted, highlighted type counts; the quick table's T, C, F and
+    5 most played types; the detailed table's type counts) and a view assertion in
+    `hiddenDuringMainPhase.test.ts`; `npm run check` is green.
+  - As built: `src/client/sorting/typesInListOrder(typeCounts, firstTypes)` (S1.7: count, most
+    first, then name, inside the `firstTypes` part and the rest; `[]` for one part).
+    `TypeCountsList` takes the ordered types and marks bonus types (`bonusType` class, tokens
+    `--color-board-bonus-type` and `-border`). `CountBox` has F (token
+    `--color-board-worth-count`, a light red readable on the dark box). `OwnCountBoxes` in your
+    stats; `cityTypeCountsOf` counts the city's types for the quick table's top 5. Names: the
+    quick table is the article "Quick summary table of Di", its button "Detailed summary table ›"
+    (accessible name "Detailed summary table of Di"), the dialog "Detailed summary table of Di";
+    unit and browser tests use them. The screenshot name `opponent-board` is unchanged.
+  - Differs: the own seat's view had no completed quests, so `questsCompleted` moved into the
+    common part of the seat view (own seats too, within the phase's one protocol raise). The
+    detailed summary table had no type counts (S3.2); it now shows them, bonus types first.
+  - For later items: 13 sorts type lists with `typesInListOrder` and shows them with
+    `TypeCountsList`.
 
 - [ ] 10. **Quests completed last turn** (S5.5). **Small.**
   - Each quest with its requirement and reward as icons (S1.6), reusing how the quests table

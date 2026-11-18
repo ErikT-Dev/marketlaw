@@ -39,6 +39,7 @@ function ownSeatView(state: GameState, seat: SeatState): OwnSeatView {
     claimAllRejection: rejectionOf(state, { type: "claim_all", seat: seat.seat }) ?? null,
     projects: seat.projects,
     projectRejections: projectRejectionsOf(state, seat.seat),
+    questsCompleted: seat.questsCompleted,
     city: seat.city,
     buildPasses: seat.buildPasses,
     worthGained: seat.worthGained,

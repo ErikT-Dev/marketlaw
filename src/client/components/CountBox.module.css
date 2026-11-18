@@ -22,3 +22,7 @@
 .combos {
   color: var(--color-palette-green);
 }
+
+.worth {
+  color: var(--color-board-worth-count);
+}

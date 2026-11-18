@@ -31,6 +31,7 @@ export const OWN_SEAT_VIEW: OwnSeatView = {
     satisfaction: "project_needs_not_met",
     workforce: "project_needs_not_met",
   },
+  questsCompleted: [],
   city: [],
   buildPasses: 0,
   worthGained: 14,

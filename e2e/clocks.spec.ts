@@ -27,7 +27,9 @@ test("clocks count down, and a player out of time in a casual game keeps playing
   await expect(bar.getByRole("timer", { name: /^Time left 1:1\d$/ })).toBeVisible();
   await expect(bar.getByRole("timer", { name: "Bank 0:00" })).toBeVisible();
   await expect(
-    two.getByRole("article", { name: "Seat 1" }).getByRole("timer", { name: "Bank 0:00" }),
+    two
+      .getByRole("article", { name: "Quick summary table of Seat 1" })
+      .getByRole("timer", { name: "Bank 0:00" }),
   ).toBeVisible();
   await expectScreenFits(one, "game-clocks", testInfo);
 

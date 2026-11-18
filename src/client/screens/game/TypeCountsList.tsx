@@ -1,22 +1,20 @@
-import { TYPE_NAMES } from "../../../shared/catalogue/TYPE_NAMES";
 import type { TypeName } from "../../../shared/catalogue/TypeName";
 import type { SeatTypeCounts } from "../../../shared/SeatTypeCounts";
 import { TypeChip } from "../../components/TypeChip";
-import styles from "./YourStatsPanel.module.css";
+import styles from "./TypeCountsList.module.css";
 
 type Props = {
+  readonly types: ReadonlyArray<TypeName>;
   readonly typeCounts: SeatTypeCounts;
   readonly bonusTypes: ReadonlyArray<TypeName>;
   readonly label: string;
 };
 
-export function TypeCountsList({ typeCounts, bonusTypes, label }: Props) {
-  const others = TYPE_NAMES.filter((type) => !bonusTypes.includes(type));
-  const shown = [...bonusTypes, ...others].filter((type) => (typeCounts[type] ?? 0) > 0);
-  return shown.length === 0 ? null : (
+export function TypeCountsList({ types, typeCounts, bonusTypes, label }: Props) {
+  return types.length === 0 ? null : (
     <ul className={styles["types"]} aria-label={label}>
-      {shown.map((type) => (
-        <li key={type}>
+      {types.map((type) => (
+        <li key={type} className={bonusTypes.includes(type) ? styles["bonusType"] : styles["type"]}>
           <TypeChip type={type} count={typeCounts[type] ?? 0} />
         </li>
       ))}

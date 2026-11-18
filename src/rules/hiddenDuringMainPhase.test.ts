@@ -98,6 +98,8 @@ describe("what other players see during the main phase", () => {
       negativeStats: [],
     });
     expect(viewFor(after, 1).quests[0]).toHaveProperty("completeRejection", "quest_already_completed");
+    expect(viewFor(after, 1).seats[0]).toHaveProperty("questsCompleted", ["Trading post"]);
+    expect(seatOneSeenBySeatTwo(after)?.questsCompleted).toEqual([]);
   });
 
   it("shows a negative workforce, quality or satisfaction in the quest progress", () => {

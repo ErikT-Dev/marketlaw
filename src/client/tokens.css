@@ -22,6 +22,8 @@
   --color-board-chat-input-hint: #6b7280;
   --color-board-chat-input-text: #111827;
   --color-board-chat-input: #ffffff;
+  --color-board-bonus-type-border: #4ade80;
+  --color-board-bonus-type: #14532d;
   --color-board-chat-limit-text: #fca5a5;
   --color-board-chat-limit: #4c1414;
   --color-board-chat-muted: #2b2840;
@@ -70,6 +72,7 @@
   --color-board-tutorial-step: #c4b5fd;
   --color-board-type-count: #a5b4fc;
   --color-board-user-menu: #1e1b2e;
+  --color-board-worth-count: #ff8a7a;
   --color-board-your-go-text: #052e16;
   --color-board-your-go: #22c55e;
   --color-button-danger-base: #ef4444;

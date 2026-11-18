@@ -44,12 +44,12 @@ describe("usernames that open match histories", () => {
     expect(hrefOf(order.getByRole("link", { name: "Di" }))).toBe(historyOf(4));
   });
 
-  it("links an opponent card's username while the rest of the card still opens the board", () => {
+  it("links the username in a quick summary table while the rest of it still opens the detailed summary table", () => {
     render(<GamePage {...gamePageProps(roomUpdateWith({}))} />);
-    const cy = within(screen.getByRole("article", { name: "Cy" }));
+    const cy = within(screen.getByRole("article", { name: "Quick summary table of Cy" }));
     expect(hrefOf(cy.getByRole("link", { name: "Cy" }))).toBe(historyOf(3));
-    fireEvent.click(cy.getByRole("button", { name: "See Cy's board ›" }));
-    const board = within(screen.getByRole("dialog", { name: "Cy's board" }));
+    fireEvent.click(cy.getByRole("button", { name: "Detailed summary table of Cy" }));
+    const board = within(screen.getByRole("dialog", { name: "Detailed summary table of Cy" }));
     expect(hrefOf(board.getByRole("link", { name: "Cy" }))).toBe(historyOf(3));
   });
 

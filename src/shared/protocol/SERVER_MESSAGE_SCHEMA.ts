@@ -32,6 +32,7 @@ const SEAT_COMMON = {
   city: CARDS,
   buildPasses: COUNT,
   worthGained: COUNT,
+  questsCompleted: v.array(QuestName),
   isDone: v.boolean(),
   isOutOfTime: v.boolean(),
   hasLeft: v.boolean(),
@@ -101,7 +102,6 @@ const SEAT_VIEW = v.variant("kind", [
     typeCounts: TYPE_COUNTS,
     combosClaimed: v.array(v.object({ card: CardName, combo: COUNT, times: COUNT })),
     projects: PROJECTS,
-    questsCompleted: v.array(QuestName),
     influenceUses: v.record(TradeName, COUNT),
   }),
 ]);

@@ -1,6 +1,7 @@
 import type { PlayerId } from "../../../shared/PlayerId";
 import { useEffect, useRef, useState } from "react";
 import type { CardName } from "../../../shared/catalogue/CardName";
+import type { TypeName } from "../../../shared/catalogue/TypeName";
 import type { GamePhase } from "../../../shared/GamePhase";
 import type { OtherSeatView } from "../../../shared/OtherSeatView";
 import { Button } from "../../components/Button";
@@ -17,10 +18,11 @@ type Props = {
   readonly name: string;
   readonly playerId: PlayerId | null;
   readonly phase: GamePhase;
+  readonly bonusTypes: ReadonlyArray<TypeName>;
   readonly onClose: () => void;
 };
 
-export function OpponentBoardDialog({ seat, name, playerId, phase, onClose }: Props) {
+export function OpponentBoardDialog({ seat, name, playerId, phase, bonusTypes, onClose }: Props) {
   const closeArea = useRef<HTMLDivElement>(null);
   useEffect(() => {
     closeArea.current?.querySelector("button")?.focus();
@@ -28,7 +30,7 @@ export function OpponentBoardDialog({ seat, name, playerId, phase, onClose }: Pr
   const [lookedAt, setLookedAt] = useState<CardName | null>(null);
   const hand = `Their hand: ${counted(seat.handCount, "card")}.`;
   return (
-    <Modal title={`${name}'s board`} size="extraLarge" onClose={onClose}>
+    <Modal title={`Detailed summary table of ${name}`} size="extraLarge" onClose={onClose}>
       <p className={styles["note"]}>
         {phase === "main"
           ? `Shown as at the start of this main phase: what they do in it is revealed when the main phase ends. ${hand}`
@@ -36,7 +38,7 @@ export function OpponentBoardDialog({ seat, name, playerId, phase, onClose }: Pr
       </p>
       <div className={styles[lookedAt === null ? "board" : "boardWithCard"]}>
         {lookedAt === null ? (
-          <OpponentStatsBox seat={seat} name={name} playerId={playerId} />
+          <OpponentStatsBox seat={seat} name={name} playerId={playerId} bonusTypes={bonusTypes} />
         ) : (
           <LookedAtCardPanel
             card={lookedAt}

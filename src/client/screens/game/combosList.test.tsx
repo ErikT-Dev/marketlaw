@@ -112,10 +112,10 @@ describe("detailed summary table", () => {
     render(<GamePage {...gamePageProps(withClaimedCombosOfDi(roomUpdateWith({})))} />);
     fireEvent.click(
       within(screen.getByRole("region", { name: "Opponents" })).getByRole("button", {
-        name: "See Di's board ›",
+        name: "Detailed summary table of Di",
       }),
     );
-    const board = within(screen.getByRole("dialog", { name: "Di's board" }));
+    const board = within(screen.getByRole("dialog", { name: "Detailed summary table of Di" }));
     expect(comboRows(board.getByRole("list", { name: "Combos claimed by Di" }))).toEqual([
       "Large Country Manor · 1 [Farm], again at every multiple[Quality +1]×4",
       "Farm House · 1 [Farm][Workforce +1]",

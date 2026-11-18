@@ -28,6 +28,7 @@ export function OpponentsPanel({ view, playerNames, playerIds }: Props) {
             seat={seat}
             name={playerNameOf(playerNames, seat.seat)}
             playerId={playerIdOf(playerIds, seat.seat)}
+            bonusTypes={view.bonusTypes}
             onOpen={() => {
               setOpenSeat(seat.seat);
             }}
@@ -40,6 +41,7 @@ export function OpponentsPanel({ view, playerNames, playerIds }: Props) {
           name={playerNameOf(playerNames, opened.seat)}
           playerId={playerIdOf(playerIds, opened.seat)}
           phase={view.phase}
+          bonusTypes={view.bonusTypes}
           onClose={() => {
             setOpenSeat(null);
           }}
