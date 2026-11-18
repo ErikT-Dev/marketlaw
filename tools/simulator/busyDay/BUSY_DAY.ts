@@ -6,6 +6,7 @@ export const BUSY_DAY = {
   queueClosedConnections: 15,
   queueMessageMs: 2_000,
   chatMessages: 2000,
+  tutorials: 100,
   newGuests: 100,
   rowsPerNewGuest: 4,
   returningPlayers: 50,

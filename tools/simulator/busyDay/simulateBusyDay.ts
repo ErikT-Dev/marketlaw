@@ -35,6 +35,7 @@ import { useQueueWithoutGames } from "./useQueueWithoutGames.ts";
 import { busyDayPlayer } from "./busyDayPlayer.ts";
 import { busyDayRoomCode } from "./busyDayRoomCode.ts";
 import { matchThroughQueue } from "./matchThroughQueue.ts";
+import { playBusyDayTutorials } from "./playBusyDayTutorials.ts";
 import { startBusyDayRankedRoom } from "./startBusyDayRankedRoom.ts";
 
 const SIZES = [2, 3, 4] as const;
@@ -296,6 +297,11 @@ export function simulateBusyDay(): BusyDayCount {
     playRankedGame(day, roomGames + ranked, ranked);
   }
   useQueueWithoutGames(queue, day);
+  playBusyDayTutorials(
+    counter,
+    day,
+    BUSY_DAY.games + BUSY_DAY.queueLeavers + BUSY_DAY.queueClosedConnections,
+  );
   day.counter.count(
     "database",
     BUSY_DAY.newGuests * BUSY_DAY.rowsPerNewGuest +

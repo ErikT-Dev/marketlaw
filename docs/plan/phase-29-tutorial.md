@@ -215,10 +215,17 @@ These 17 scenarios are added to `harness/required.yaml` in this phase, by file a
     when the site opens (store it in the session as `roomCode` is for games) and handle a
     rejected Restart (`site_daily_cap`).
 
-- [ ] 4. **Busy day with tutorials** (B18). **Small.**
+- [x] 4. **Busy day with tutorials** (B18). **Small.**
   - `tools/simulator/busyDay/`: add the day's 100 tutorials (start, play, leave) through the
     lobby code, counting their lobby rows and alarm changes in B18; their room rows are B6's
     and stay out of B18 (the budget's text). Update B18's `where` text in `BUDGET_CHECKS.ts`.
+  - Done (2026-11-18): `playBusyDayTutorials.ts` plays 100 tutorials after the queue use, each
+    through the lobby and tutorial room code: `countTutorialStart` on the busy day's lobby, all
+    19 steps to Finish and `leave_tutorial` through `receiveTutorialMessage`, then
+    `releasePlayer`. It adds about 0.4 s to each busy-day run. Per tutorial B18 gains 2 lobby
+    rows (start, release), 1 alarm change (the alarm delete on leaving) and 1 room row (the storage delete on leaving): B6 stops at the end of T5.4, so the leave is
+    counted here, as a game room's cleanup delete is. Busy day 3,794 -> 4,194 rows (limit 5,000);
+    reads 7,539 -> 8,039.
 
 - [ ] 5. **Tutorial in the game menu** (C1.2, S14.1, Q159, Q164; scenario `client` #1).
   **Small.**
