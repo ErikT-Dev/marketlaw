@@ -209,6 +209,8 @@ export class ClientStore extends LobbyFeedStore {
       case "removed":
         this.receiveRemoval(event.reason, event.rejoinAt);
         return;
+      case "tutorial_update":
+        return;
     }
   };
 

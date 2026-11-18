@@ -38,6 +38,7 @@ function storeInRoom(): FakeHost {
       roomActions.push(action);
       return true;
     },
+    sendTutorialAction: () => null,
     requestResync: () => {
       resyncCount += 1;
     },
@@ -62,6 +63,7 @@ function fakeHost(): GameHost {
   return {
     sendAction: () => null,
     sendRoomAction: () => false,
+    sendTutorialAction: () => null,
     requestResync: () => undefined,
     subscribe: () => () => undefined,
     close: () => undefined,

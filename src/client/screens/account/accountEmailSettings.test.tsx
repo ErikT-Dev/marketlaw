@@ -37,6 +37,7 @@ function idleHost(): GameHost {
   return {
     sendAction: () => null,
     sendRoomAction: () => false,
+    sendTutorialAction: () => null,
     requestResync: () => undefined,
     subscribe: () => () => undefined,
     close: () => undefined,

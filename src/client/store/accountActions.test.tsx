@@ -26,6 +26,7 @@ function hostWithEvents() {
   const host: GameHost = {
     sendAction: () => null,
     sendRoomAction: () => true,
+    sendTutorialAction: () => null,
     requestResync: () => undefined,
     subscribe: (newListener) => {
       listener = newListener;

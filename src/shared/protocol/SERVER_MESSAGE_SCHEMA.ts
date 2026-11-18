@@ -19,6 +19,7 @@ import { GAME_RESULT_SCHEMA } from "./GAME_RESULT_SCHEMA";
 import { QUEST_PLACE_VIEW_SCHEMA } from "./QUEST_PLACE_VIEW_SCHEMA";
 import { SEAT_NUMBER_SCHEMA } from "./SEAT_NUMBER_SCHEMA";
 import { STATS_SCHEMA } from "./STATS_SCHEMA";
+import { TUTORIAL_PROGRESS_SCHEMA } from "./TUTORIAL_PROGRESS_SCHEMA";
 
 const COUNT = v.number();
 const SEAT = SEAT_NUMBER_SCHEMA;
@@ -196,6 +197,14 @@ export const SERVER_MESSAGE_SCHEMA = v.variant("type", [
     entries: v.array(CHAT_ENTRY_SCHEMA),
     mutedNames: v.array(v.string()),
     isFullList: v.boolean(),
+  }),
+  v.object({
+    type: v.literal("tutorial_update"),
+    protocolVersion: COUNT,
+    acceptedActionId: v.nullable(v.string()),
+    stateVersion: COUNT,
+    view: v.object({ progress: TUTORIAL_PROGRESS_SCHEMA, game: PLAYER_VIEW }),
+    serverNow: EpochMs,
   }),
   v.object({ type: v.literal("opened_elsewhere"), protocolVersion: COUNT }),
   v.object({

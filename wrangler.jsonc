@@ -22,7 +22,8 @@
     "bindings": [
       { "name": "ROOM", "class_name": "GameRoom" },
       { "name": "LOBBY", "class_name": "Lobby" },
-      { "name": "QUEUE", "class_name": "RankedQueue" }
+      { "name": "QUEUE", "class_name": "RankedQueue" },
+      { "name": "TUTORIAL", "class_name": "TutorialRoom" }
     ]
   },
   "migrations": [
@@ -30,7 +31,8 @@
     { "tag": "v2", "deleted_classes": ["CounterRoom"] },
     { "tag": "v3", "new_sqlite_classes": ["GameRoom"] },
     { "tag": "v4", "new_sqlite_classes": ["Lobby"] },
-    { "tag": "v5", "new_sqlite_classes": ["RankedQueue"] }
+    { "tag": "v5", "new_sqlite_classes": ["RankedQueue"] },
+    { "tag": "v6", "new_sqlite_classes": ["TutorialRoom"] }
   ],
   "d1_databases": [
     {

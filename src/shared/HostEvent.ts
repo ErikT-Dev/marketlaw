@@ -5,6 +5,7 @@ import type { ChatEntry } from "./protocol/ChatEntry";
 import type { RemovalReason } from "./protocol/RemovalReason";
 import type { RoomUpdate } from "./protocol/RoomUpdate";
 import type { ReasonCode } from "./ReasonCode";
+import type { TutorialView } from "./TutorialView";
 
 export type HostEvent =
   | {
@@ -18,6 +19,12 @@ export type HostEvent =
       readonly code: ReasonCode;
       readonly actionId: string | null;
       readonly sendAgainAt: EpochMs | null;
+    }
+  | {
+      readonly type: "tutorial_update";
+      readonly view: TutorialView;
+      readonly acceptedActionId: string | null;
+      readonly serverNow: EpochMs;
     }
   | { readonly type: "connection"; readonly status: ConnectionStatus }
   | { readonly type: "notice"; readonly notice: Notice }

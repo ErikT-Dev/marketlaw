@@ -3508,3 +3508,32 @@ file.
 - **Why:** C4.9 makes the tutorial count as a game for M2, and a player whose game is over may
   start another game.
 - **Implemented:** `harness/spec/client.md` C1.2; phase 29.
+
+## Q165. How is the tutorial room built, and how does the browser talk to it?
+
+- **Phase:** 29 (item 2; C4.2, C4.5, C4.8, C4.10, B6).
+- **Question:** the phase file leaves open whether the tutorial room is a new Durable Object
+  class or a mode of `GameRoom`, and how its messages differ from a game room's.
+- **Options:** a mode of `GameRoom` (288 lines, it would need splitting, and every room rule of
+  M1, M6, chat, votes and records would need a tutorial exception); a new SQLite Durable Object
+  class.
+- **Solution:** a new SQLite class `TutorialRoom` (migration `v6`, binding `TUTORIAL`), one per
+  player (`idFromName(playerId)`), reached at `/api/tutorials/<playerId>/socket`; the session
+  token in every message is still the proof of identity, and a message from anyone but the
+  tutorial's player is rejected with `not_in_game`. It stores one record (`TutorialRecord`: the
+  player, the engine's `TutorialState`, the state version and the last 20 accepted action ids)
+  as one key; every accepted step, Restart included, is one write before the answer. Messages:
+  `resync`, `action` (the game intents) and the new `tutorial` (`continue`, `restart_tutorial`,
+  `leave_tutorial`, with an action id and state version so a repeated Continue cannot skip a
+  step); the answer is the new `tutorial_update` with the `TutorialView`, and leaving answers
+  `removed` (`left`) and deletes the room's storage. `GameHost` gains `sendTutorialAction` and
+  `HostEvent` `tutorial_update`. `PROTOCOL_VERSION` 26. The room's one alarm is set at the start
+  and when its last socket closes, 30 minutes ahead (`ROOM_TIMES.tutorialAwayMs`); when it fires
+  with no socket open the room deletes its storage, otherwise it does nothing, so connecting
+  writes nothing. No time-out alarms, records or ratings are ever made.
+- **Why:** the tutorial shares none of the room rules (C4.2), so a separate class keeps
+  `GameRoom` unchanged and the tutorial small; per-player naming makes "one tutorial per
+  player" hold without a lookup. SQLite-backed Durable Objects are on the Workers Free plan, as
+  the other three classes are (https://developers.cloudflare.com/durable-objects/platform/pricing/).
+- **Implemented:** `src/server/TutorialRoom.ts`, `src/server/tutorial/`, `wrangler.jsonc`;
+  phase 29, item 2. B6 measures 21 rows (start: record and alarm; 19 steps).

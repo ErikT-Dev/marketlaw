@@ -1,12 +1,11 @@
 import { DurableObject } from "cloudflare:workers";
-import { acceptedSocketResponse } from "./acceptedSocketResponse";
+import { acceptRoomSocket } from "./acceptRoomSocket";
 import type { GameState } from "../rules/GameState";
 import type { PlayerId } from "../shared/PlayerId";
 import { parseClientMessage } from "../shared/protocol/parseClientMessage";
 import type { RoomCode } from "../shared/RoomCode";
 import { ROOM_GONE_CLOSE_CODE } from "../shared/ROOM_GONE_CLOSE_CODE";
 import { attachmentOf } from "./attachmentOf";
-import { NO_CONNECTION } from "./NO_CONNECTION";
 import { nowMs } from "./nowMs";
 import { alarmChangeFor } from "./room/alarmChangeFor";
 import { applyAlarmChange } from "./room/applyAlarmChange";
@@ -239,10 +238,7 @@ export class GameRoom extends DurableObject<Env> {
   }
 
   override fetch(request: Request): Response {
-    return acceptedSocketResponse(request, (server) => {
-      this.ctx.acceptWebSocket(server);
-      server.serializeAttachment(NO_CONNECTION);
-    });
+    return acceptRoomSocket(this.ctx, request);
   }
 
   override async webSocketMessage(socket: WebSocket, message: string | ArrayBuffer): Promise<void> {
