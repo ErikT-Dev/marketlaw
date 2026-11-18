@@ -316,6 +316,14 @@ These 35 required scenarios now assert the new rules (Q169) and must pass again:
   - Differs: the reader tests compare the real files' names line by line, no longer with code
     copies; `QUESTS.test.ts` went with `QUESTS`.
   - For later items: 12 builds its tables from `QUEST_LINES` and `INFLUENCE_ACTIONS`.
+  - Fixed afterwards (2026-11-18, the browser tests' loading of item 3): `e2e/startTestRoom.ts`
+    builds the test room's state from a Vite bundle of `e2e/testRoomRequestOf.ts`
+    (`tools/bundleForNode.ts`, once per Playwright worker), so the browser tests load again
+    (`BUG FIX:` a0e8263b). Run locally: `clocks`, `combosAndProjects`, `influenceAndUndo` and
+    `quests` pass. That run found two more: `combosAndProjects` expected turn 2's funds of the
+    old income (now 22, 8335960d), and 1b's draw actions were refused to a player below zero in
+    a stat they do not cost (`drawActionRejection.ts`, 8cc356b3, unit test
+    `drawActionCosts.test.ts`). The other browser specs were not run locally.
 
 - [x] 2. **Build passes** (R6.1, R6.2, R6.3, R4.6, R11.4, R10.1, R7.2, I6, S16.3). **Large.**
   - Scenarios: `setup` "every player starts turn 1 with 1 build pass"; `turns-and-time` "every
