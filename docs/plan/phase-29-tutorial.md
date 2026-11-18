@@ -385,3 +385,30 @@ each helper's conversation size at its end.
 | Phase reviewer | Opus, medium | 6 | 192k | 54 | done, 6 findings |
 | Fixer, F1 F4 F6 | Opus, medium | 8 | 110k | 37 | done |
 | Fixer, F2 F3 F5 | Opus, medium | 14 | 100k | 49 | done |
+
+## Report
+
+**Built.** The tutorial: a tutorial room on the server (one seat, fixed deck, marketplace, quests
+and random sequence, no time limits, no record, deleted when left or after 30 minutes without a
+connection), the 21 steps of `tutorial.md` where only the step's action is accepted and anything
+else is rejected with `not_this_step`, and the tutorial screen (top bar, "Step N of 21" text box,
+highlights, Continue, Restart, Tutorial complete, leave). The lobby and the game menu offer it
+(one thing at a time, daily cap, B6 and B18).
+
+**To try.** As a new visitor, start the tutorial from the menu, play all 5 turns and finish it;
+try a wrong action to see "Not this step"; leave and restart.
+
+**Differs from the phase file.**
+- F7: the feedback-notes commits `c9b1b0f1` and `e655ee05` (the owner's notes folder renamed to
+  `docs/feedback-notes/` with status file names; plan process updated) are not phase 29 work; the
+  owner asked for them on 2026-11-18.
+- Phase 29 is not a fix phase, so no feedback note is renamed.
+- The game menu in the tutorial has its own place with the lobby lines (S14.1, Q168).
+
+**Decisions.** Q161 to Q168.
+
+**Review.** F1 (logout, reset or deletion did not reach the tutorial room): fixed. F2 (menu said
+the clock runs): fixed, Q168. F3 (highlight out of sight at 1280x720): fixed, scrolled into view.
+F4 (C4.10 modelled by hand in the harness): fixed, pure functions used by room and harness. F5
+(nothing tested `inert`): fixed, tests added. F6 (rows written on a read): fixed. F7: no fix, see
+above.
