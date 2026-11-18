@@ -34,4 +34,5 @@ export type ClientState = {
   readonly queue: QueueView | null;
   readonly queueNotice: LobbyQueueNotice | null;
   readonly queueRejection: ReasonCode | null;
+  readonly tutorialRefusal: ReasonCode | null;
 };

@@ -23,5 +23,6 @@ export function initialClientState(session: StoredSession | null): ClientState {
     queue: null,
     queueNotice: null,
     queueRejection: null,
+    tutorialRefusal: null,
   };
 }

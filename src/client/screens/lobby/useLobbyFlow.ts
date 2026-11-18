@@ -3,14 +3,24 @@ import { requestGeneratedName } from "../../api/requestGeneratedName";
 import type { LobbyFlow } from "./LobbyFlow";
 import type { LobbyIntent } from "./LobbyIntent";
 
-export function useLobbyFlow(isLoggedIn: boolean, onJoin: (code: string) => void): LobbyFlow {
+export function useLobbyFlow(
+  isLoggedIn: boolean,
+  onJoin: (code: string) => void,
+  onStartTutorial: (() => void) | null,
+): LobbyFlow {
   const [guestPrompt, setGuestPrompt] = useState<LobbyFlow["guestPrompt"]>(null);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   function proceed(intent: LobbyIntent): void {
-    if (intent.kind === "join") {
-      onJoin(intent.code);
-    } else {
-      setIsCreateOpen(true);
+    switch (intent.kind) {
+      case "join":
+        onJoin(intent.code);
+        return;
+      case "create":
+        setIsCreateOpen(true);
+        return;
+      case "tutorial":
+        onStartTutorial?.();
+        return;
     }
   }
   return {

@@ -4,11 +4,13 @@ import { expectScreenFits } from "./expectScreenFits";
 import { openLobby } from "./openLobby";
 import { startTestRoom } from "./startTestRoom";
 
+const UNAVAILABLE_TUTORIAL = "Not available while you are in a game, a room or the ranked queue";
+
 async function openGameMenu(page: Page, buttonName: string) {
   await page.getByRole("button", { name: buttonName, exact: true }).click();
   const menu = page.getByRole("list", { name: "Game menu" });
   await expect(menu).toBeVisible();
-  await expect(menu.getByRole("button")).toHaveCount(2);
+  await expect(menu.getByRole("button")).toHaveCount(3);
   return menu;
 }
 
@@ -21,7 +23,12 @@ test("a visitor opens the rules and the card set from the game menu in the lobby
   await expect(
     menu.getByRole("button", { name: "Rules", description: "How to play, with examples" }),
   ).toBeVisible();
-  await expect(menu.getByRole("button", { name: "Tutorial" })).toHaveCount(0);
+  await expect(
+    menu.getByRole("button", {
+      name: "Tutorial",
+      description: "A guided one-player game that teaches the first turns",
+    }),
+  ).toBeEnabled();
   await expectScreenFits(visitor.page, "game-menu-lobby", testInfo);
 
   await menu.getByRole("button", { name: "Rules" }).click();
@@ -41,7 +48,7 @@ test("a visitor opens the rules and the card set from the game menu in the lobby
   await expect(visitor.page.getByRole("dialog", { name: "Card set" })).toBeVisible();
 });
 
-test("the game menu in a waiting room offers the rules and the card set", async ({
+test("the game menu in a waiting room offers the rules and the card set but not the tutorial", async ({
   browser,
   viewport,
 }) => {
@@ -51,6 +58,9 @@ test("the game menu in a waiting room offers the rules and the card set", async 
   await expect(
     menu.getByRole("button", { name: "Card set", description: /with filters and search/ }),
   ).toBeVisible();
+  await expect(
+    menu.getByRole("button", { name: "Tutorial", description: UNAVAILABLE_TUTORIAL }),
+  ).toBeDisabled();
   await menu.getByRole("button", { name: "Rules" }).click();
   await expect(owner.page.getByRole("dialog", { name: "Rules" })).toBeVisible();
 });
@@ -74,6 +84,9 @@ test("the menu during a game says the clock keeps running and opens the pages be
       description: "Your clock keeps running while you read",
     }),
   ).toBeVisible();
+  await expect(
+    menu.getByRole("button", { name: "Tutorial", description: UNAVAILABLE_TUTORIAL }),
+  ).toBeDisabled();
   await expectScreenFits(page, "game-menu-game", testInfo);
 
   await menu.getByRole("button", { name: "Rules" }).click();

@@ -12,6 +12,7 @@ import type { RemovalReason } from "../../shared/protocol/RemovalReason";
 import type { RoomIntent } from "../../shared/protocol/RoomIntent";
 import type { NewRoom } from "./NewRoom";
 import { requestTestSeat } from "../api/requestTestSeat";
+import { requestTutorialStart } from "../api/requestTutorialStart";
 import { chatAfterRefusal } from "./chatAfterRefusal";
 import { chatAfterSending } from "./chatAfterSending";
 import { CODES_THAT_RELOAD_THE_GAME } from "./CODES_THAT_RELOAD_THE_GAME";
@@ -102,6 +103,17 @@ export class ClientStore extends LobbyFeedStore {
       return;
     }
     this.enterRoom(session, response.code);
+  };
+
+  readonly startTutorial = (): void => {
+    const session = this.state.session;
+    if (session !== null) {
+      void this.requestTutorial(session.token);
+    }
+  };
+
+  readonly dismissTutorialRefusal = (): void => {
+    this.change({ tutorialRefusal: null });
   };
 
   readonly sendRoomAction = (action: RoomIntent): void => {
@@ -243,6 +255,11 @@ export class ClientStore extends LobbyFeedStore {
       this.enterRoom(session, session.roomCode);
     }
   };
+
+  private async requestTutorial(token: string): Promise<void> {
+    const answer = await requestTutorialStart(token);
+    this.change({ tutorialRefusal: answer.isOk ? null : answer.reason });
+  }
 
   private receiveRejection(rejection: Extract<HostEvent, { readonly type: "rejected" }>): void {
     const { code, actionId, sendAgainAt } = rejection;

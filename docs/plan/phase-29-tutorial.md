@@ -220,14 +220,16 @@ These 17 scenarios are added to `harness/required.yaml` in this phase, by file a
     lobby code, counting their lobby rows and alarm changes in B18; their room rows are B6's
     and stay out of B18 (the budget's text). Update B18's `where` text in `BUDGET_CHECKS.ts`.
   - Done (2026-11-18): `playBusyDayTutorials.ts` plays 100 tutorials after the queue use, each
-    through the lobby and tutorial room code: `countTutorialStart` on the busy day's lobby, all
-    19 steps to Finish and `leave_tutorial` through `receiveTutorialMessage`, then
-    `releasePlayer`. It adds about 0.4 s to each busy-day run. Per tutorial B18 gains 2 lobby
+    through the lobby and tutorial room code: `countTutorialStart` on the busy day's lobby,
+    `startTutorialIn`, `leave_tutorial` through `receiveTutorialMessage`, then `releasePlayer`.
+    Differs from the phase file: the 19 steps are not played in the busy day. Their rows are B6's
+    and change nothing B18 counts, and playing them made the busy-day test time out under the
+    check's load (about 0.4 s more per run); without them a run costs about 0.1 s more. Per tutorial B18 gains 2 lobby
     rows (start, release), 1 alarm change (the alarm delete on leaving) and 1 room row (the storage delete on leaving): B6 stops at the end of T5.4, so the leave is
     counted here, as a game room's cleanup delete is. Busy day 3,794 -> 4,194 rows (limit 5,000);
     reads 7,539 -> 8,039.
 
-- [ ] 5. **Tutorial in the game menu** (C1.2, S14.1, Q159, Q164; scenario `client` #1).
+- [x] 5. **Tutorial in the game menu** (C1.2, S14.1, Q159, Q164; scenario `client` #1).
   **Small.**
   - `gameMenuEntriesOf` (`src/client/screens/menu/`) adds Tutorial, "A guided one-player game
     that teaches the first turns", which starts the tutorial (item 3's start). In
@@ -238,6 +240,21 @@ These 17 scenarios are added to `harness/required.yaml` in this phase, by file a
     whether the player is queued (`LobbyTopBar.tsx`).
   - `e2e/gameMenu.spec.ts` line 24 expects no Tutorial button; change it to the disabled entry
     with its reason and add the lobby entry. The client driver's `open_menu` stays as it is.
+  - Done (2026-11-18): `GameMenuEntry` now has a `choice` (`page` with its hash, or `tutorial`);
+    `gameMenuEntriesOf` lists the entries a player can open (Tutorial in `lobby` and `game_over`),
+    and `gameMenuItemsOf` adds the disabled Tutorial (`aria-disabled`, the reason as its line)
+    everywhere else. `GameMenuPlace` gained `ranked_queue`: the lobby passes it while the player
+    is waiting or confirming in the queue. The menu starts the tutorial through the
+    `TutorialStart` context: `TutorialStartingScreen` (around `CurrentScreen` in `App`) provides
+    `ClientStore.startTutorial` (`POST /api/tutorials`, `requestTutorialStart`), and `LobbyPage`
+    wraps it in its flow, so a visitor chooses a guest name first (`LobbyIntent` `tutorial`). A
+    refusal is kept as `ClientState.tutorialRefusal` and shown by `TutorialRefusalToast` ("The
+    tutorial did not start" with the `REJECTION_MESSAGES` text) until closed. A started tutorial
+    shows nothing yet.
+  - For later items: item 6a opens the tutorial after `requestTutorialStart` answers `isOk` (in
+    `ClientStore.requestTutorial`; `ClientStore.ts` has 273 non-blank lines, so put the tutorial
+    host handling in its own store layer). Starting from `game_over` leaves the room on the server
+    (Q164) but the client still shows the room until 6a switches screens.
 
 - [ ] 6a. **Tutorial screen: start, top bar, text box, leave and restart** (S15.1, S15.2,
   S15.5–S15.7, S15.4's leave dialog, C4.8; Q161, Q162). **Large.**

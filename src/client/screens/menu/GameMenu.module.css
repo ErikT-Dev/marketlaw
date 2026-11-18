@@ -53,3 +53,22 @@
   color: var(--color-text-muted);
   font-size: var(--font-size-xs);
 }
+
+.entry[aria-disabled="true"] {
+  cursor: default;
+}
+
+.entry[aria-disabled="true"] .label {
+  color: var(--color-text-muted);
+}
+
+.entry[aria-disabled="true"]:hover {
+  background: transparent;
+}
+
+.toastPlace {
+  position: fixed;
+  top: var(--space-xxl);
+  right: var(--space-xl);
+  z-index: 60;
+}

@@ -1,6 +1,5 @@
 import { useSyncExternalStore } from "react";
 import styles from "./App.module.css";
-import { CurrentScreen } from "./CurrentScreen";
 import { LazyCardSetPage } from "./screens/cardSet/LazyCardSetPage";
 import { useCardSetPage } from "./screens/cardSet/useCardSetPage";
 import { EmailDialogIfOpen } from "./screens/email/EmailDialogIfOpen";
@@ -13,6 +12,7 @@ import { LazyRulesPage } from "./screens/rules/LazyRulesPage";
 import { useRulesPage } from "./screens/rules/useRulesPage";
 import { RoomNotFoundDialog } from "./screens/lobby/RoomNotFoundDialog";
 import type { ClientStore } from "./store/ClientStore";
+import { TutorialStartingScreen } from "./TutorialStartingScreen";
 
 type Props = {
   readonly store: ClientStore;
@@ -58,7 +58,7 @@ export function App({ store }: Props) {
             {notice}
           </p>
         )}
-        <CurrentScreen store={store} />
+        <TutorialStartingScreen store={store} />
         {goneRoomCode === null ? null : <RoomNotFoundDialog onClose={store.dismissRemoval} />}
         <EmailDialogIfOpen store={store} />
       </div>
