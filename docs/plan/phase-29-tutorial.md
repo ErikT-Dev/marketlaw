@@ -320,12 +320,17 @@ These 17 scenarios are added to `harness/required.yaml` in this phase, by file a
     into `harness/screens/` (new: `tutorial`, `tutorial-not-this-step`, `tutorial-complete`);
     `docs/enforcement.md` updated. No findings.
 - [x] Phase review (2026-11-18): ready after fixes; `npm run check` green. Findings:
-  - [ ] F1 (should fix): logging out, a password reset or deleting the account does not reach the
+  - [x] F1 (should fix): logging out, a password reset or deleting the account does not reach the
     tutorial room. `logOutOfRooms.ts` skips `TUTORIAL_PLACE` and `TutorialRoom` has no `logOut`,
     so an open tutorial socket keeps an invalidated token (`senderOfToken` uses the cached hash).
     Fix: `TutorialRoom.logOut(login)` closes matching sockets (`closeLoginSockets`), and with
     `isLeaving` removes the room and releases the player; call it from `logOutOfRooms`. Add a
     route test (the socket closes with `LOGGED_OUT_CLOSE_CODE`).
+    - Fixed: `TutorialRoom.logOut` closes the login's sockets (every login's on a reset or
+      deletion), removes the room and releases the player when leaving, and otherwise sets the
+      away alarm; `logOutOfRooms` calls it when the player is busy in the tutorial. Route tests
+      in `tools/route-tests/tutorialLogout.test.ts` (logout keeps the tutorial for the other
+      login; deletion closes the socket).
   - [ ] F2 (should fix): the menu in the tutorial uses `place="game"` (`TutorialTopBar.tsx`), so
     Rules and Card set say the clock keeps running (S14.1; C4.5 has no clocks). Fix: a `tutorial`
     menu place with the lobby lines and Tutorial disabled with its reason; test the lines.
@@ -334,18 +339,23 @@ These 17 scenarios are added to `harness/required.yaml` in this phase, by file a
     highlighted part into view in its panel when it first renders (`block: "nearest"`, no smooth
     scroll under reduced motion); `e2e/tutorial.spec.ts` asserts the highlight is in the viewport
     at T1.3 before clicking.
-  - [ ] F4 (should fix): C4.10's deletion and the alarm are inline in `TutorialRoom.ts`
+  - [x] F4 (should fix): C4.10's deletion and the alarm are inline in `TutorialRoom.ts`
     (`webSocketClose`, `alarm`) and only modelled by hand in `TutorialSession.ts`, so `client`
     #12 and #17 test a copy. The real room also counts sockets that never identified. Fix: pure
     functions in `src/server/tutorial/` (set the alarm on close; delete when it fires) that count
     only the tutorial player's identified sockets, used by both.
+    - Fixed: `tutorialAlarmAfterClose` and `isTutorialAbandoned` (with
+      `isTutorialPlayerConnected`) in `src/server/tutorial/`, used by `TutorialRoom` and by
+      the harness's `TutorialSession`; unit tests in `tutorialAlarmAfterClose.test.ts`.
   - [ ] F5 (should fix): nothing tests that the other side of the table cannot be used (`inert` in
     `TutorialColumns.tsx`; S15.2, Q167). Fix: `tutorialPage.test.tsx` asserts `inert` on the
     marketplace side at T1.2, the hand side at T2.2 and both at T1.1.
-  - [ ] F6 (suggestion, fixed): a resync to a missing tutorial room returns `closing`
+  - [x] F6 (suggestion): a resync to a missing tutorial room returns `closing`
     (`receiveTutorialMessage.ts`), which runs `deleteAlarm` and `deleteAll`: rows written on a
     read (`rules/cloudflare.md`). Fix: only close the sockets; delete storage only when a stored
     key exists.
+    - Fixed: `TutorialRoom.removeRoom` closes the open sockets and deletes the alarm and storage
+      only when it had a tutorial record or a stored key exists.
   - F7 (no fix): the feedback-notes commits (`c9b1b0f1`, `e655ee05`) are not phase 29 work; the
     owner asked for them on 2026-11-18. The releaser lists them in the report.
   - Fixers: F1, F4 and F6 (server) in one; F2, F3 and F5 (client) in the next.

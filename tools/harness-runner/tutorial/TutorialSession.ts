@@ -10,9 +10,11 @@ import { TUTORIAL_PLACE } from "../../../src/server/lobby/TUTORIAL_PLACE.ts";
 import type { ConnectionState } from "../../../src/server/room/ConnectionState.ts";
 import type { Identity } from "../../../src/server/room/Identity.ts";
 import { ROOM_TIMES } from "../../../src/server/room/ROOM_TIMES.ts";
+import { isTutorialAbandoned } from "../../../src/server/tutorial/isTutorialAbandoned.ts";
 import { receiveTutorialMessage } from "../../../src/server/tutorial/receiveTutorialMessage.ts";
 import { restartingPlayerOf } from "../../../src/server/tutorial/restartingPlayerOf.ts";
 import { startTutorialIn } from "../../../src/server/tutorial/startTutorialIn.ts";
+import { tutorialAlarmAfterClose } from "../../../src/server/tutorial/tutorialAlarmAfterClose.ts";
 import type { TutorialRecord } from "../../../src/server/tutorial/TutorialRecord.ts";
 import type { TutorialStorage } from "../../../src/server/tutorial/TutorialStorage.ts";
 import { EpochMs } from "../../../src/shared/EpochMs.ts";
@@ -124,8 +126,9 @@ export class TutorialSession {
 
   disconnect(): void {
     this.isConnected = false;
-    if (this.record !== undefined) {
-      this.setAlarm(this.now + ROOM_TIMES.tutorialAwayMs);
+    const alarmAt = tutorialAlarmAfterClose(this.record, [], this.now);
+    if (alarmAt !== null) {
+      this.setAlarm(alarmAt);
     }
   }
 
@@ -133,7 +136,7 @@ export class TutorialSession {
     this.now = v.parse(EpochMs, this.now + ms);
     if (this.alarmAt !== null && this.alarmAt <= this.now) {
       this.alarmAt = null;
-      if (!this.isConnected) {
+      if (isTutorialAbandoned(this.record, this.isConnected ? [this.connection] : [])) {
         this.storage.remove();
       }
     }

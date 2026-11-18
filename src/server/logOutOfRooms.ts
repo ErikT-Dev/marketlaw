@@ -3,6 +3,7 @@ import { TUTORIAL_PLACE } from "./lobby/TUTORIAL_PLACE";
 import { lobbyOf } from "./lobbyOf";
 import { queueOf } from "./queueOf";
 import type { Sender } from "./Sender";
+import { tutorialOf } from "./tutorialOf";
 
 export async function logOutOfRooms(
   env: Env,
@@ -26,6 +27,7 @@ export async function logOutOfRooms(
     ...[...new Set(codes)].map(async (code) =>
       env.ROOM.get(env.ROOM.idFromName(code)).logOut(login),
     ),
+    ...(busyPlace === TUTORIAL_PLACE ? [tutorialOf(env, playerId).logOut(login)] : []),
     queueOf(env).logOut(login),
     lobby.logOut(login.isEndingEveryLogin ? { playerId } : { tokenHash: login.sender.tokenHash }),
   ]);
