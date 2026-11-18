@@ -447,3 +447,4 @@ each helper's conversation size at its end.
 | Renames and starter | Opus, medium | 6 | 125k | 39 | done |
 | Builder, item 1a | Opus, medium | 15 | 166k | 66 | done |
 | Builder, item 2 | Opus, medium | 22 | 127k | 57 | done |
+| Builder, item 1b | Opus, medium | 12 | 173k | 59 | done |
