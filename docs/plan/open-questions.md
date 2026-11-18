@@ -3789,3 +3789,18 @@ file.
   ("Checking the harness itself") first.
 - **Implemented:** `harness/spec/game-rules.md` R20.8, `harness/HARNESS.md`;
   `src/shared/ruleFiles/`, `tools/harness-check/checkRuleFiles.ts`.
+
+## Q171. What does the game do with a draw action's costs and with a tier that has no draw line?
+
+- **Phase:** 29a, item 1b (every user of the lists reads the files).
+- **Question:** R15.5 lets a draw line pay any stats, but the game charged influence only, by
+  tier. R15.5 also allows a file without a draw line for some tier, which the game always
+  offered.
+- **Solution:** decided without the owner, from R15.1 ("you need enough of everything an action
+  costs") and R15.2 (each draw line gives the draw actions of its tier): a draw action needs and
+  pays every cost on its line, and a tier without a draw line has no draw actions. The Use
+  influence pop-up shows a column only for the tiers the file has, with the line's costs; a
+  `draw_action` message for a tier without a line is rejected as `unknown_action` (M9). No spec
+  change was needed.
+- **Implemented:** `src/rules/drawActionRejection.ts`, `useDrawAction.ts`,
+  `drawActionStatusesOf.ts`; `src/client/screens/game/DrawActionTable.tsx`.

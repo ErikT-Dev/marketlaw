@@ -286,7 +286,7 @@ These 35 required scenarios now assert the new rules (Q169) and must pass again:
     1b either applies any cost or makes other costs "needs new code". Getting more than 1 build
     pass is a valid plain trade (R15.5), which `Trade.doesGiveBuildPass` cannot hold.
 
-- [ ] 1b. **Every user of the lists reads the files** (R15.6, R20.7, R20.9). **Large.**
+- [x] 1b. **Every user of the lists reads the files** (R15.6, R20.7, R20.9). **Large.**
   - The code copies go: `QUEST_TERMS*.ts`, `QUEST_NAMES_BY_TIER.ts` (and what is built on it:
     `QUESTS.ts`, `QuestName`, `QuestNameOfTier`), `TRADES.ts`, `DRAW_ACTION_COSTS.ts`. Users:
     `src/rules/` (`useDrawAction.ts`, `drawActionRejection.ts`, `progressViolations.ts`, the
@@ -301,6 +301,21 @@ These 35 required scenarios now assert the new rules (Q169) and must pass again:
     (`rules/typescript.md`, casts only at schema-validated boundaries).
   - A plain trade is applied and shown from its parsed parts, with no code per trade (R15.6,
     S8.3).
+  - Done (2026-11-18). Still failing required scenarios: the 2 market-go ones of item 3.
+  - As built: `src/shared/ruleFiles/QUEST_LINES.ts` and `INFLUENCE_ACTIONS.ts` import the files
+    as `?raw` text (Vite for the client, tests and tools; wrangler's esbuild takes the same
+    import, checked with `wrangler deploy --dry-run`: the bundle holds both texts) and throw on a
+    broken file. `ruleFileText.d.ts` declares `*.txt?raw` for the engine and server configs
+    (`export =`, since default exports fail lint). `INFLUENCE_TRADES`, `INFLUENCE_DRAWS`,
+    `questOf`, `tradeOf`, `influenceDrawOfTier` look things up. `QuestName` and `TradeName` stay
+    as the validated boundary (picklists of the files' names; their type is now `string`).
+    `Trade` is the parsed trade (`buildPasses`, `isPriceRising`); `buy_build_pass` is no longer
+    named in code: the rising price, `buildPassesBought` and `buildPassPrice`
+    (`src/rules/buildPassPriceOf.ts`) follow `isPriceRising`. A draw action pays every cost on
+    its line, and a tier without a line has no draw actions (Q171).
+  - Differs: the reader tests compare the real files' names line by line, no longer with code
+    copies; `QUESTS.test.ts` went with `QUESTS`.
+  - For later items: 12 builds its tables from `QUEST_LINES` and `INFLUENCE_ACTIONS`.
 
 - [x] 2. **Build passes** (R6.1, R6.2, R6.3, R4.6, R11.4, R10.1, R7.2, I6, S16.3). **Large.**
   - Scenarios: `setup` "every player starts turn 1 with 1 build pass"; `turns-and-time` "every

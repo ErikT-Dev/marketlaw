@@ -1,5 +1,5 @@
 import type { QuestName } from "../shared/catalogue/QuestName";
-import { QUEST_TERMS } from "../shared/catalogue/QUEST_TERMS";
+import { questOf } from "../shared/ruleFiles/questOf";
 import type { ReasonCode } from "../shared/ReasonCode";
 import type { GameState } from "./GameState";
 import { negativeStatsOf } from "./negativeStatsOf";
@@ -21,7 +21,7 @@ export function questRejection(
   const typeCounts = typeCountsOf(seat);
   const isMet =
     negativeStatsOf(seat.stats).length === 0 &&
-    QUEST_TERMS[quest].needs.every(
+    questOf(quest).terms.needs.every(
     (need) => questNeedHave(seat, typeCounts, need) >= need.count,
   );
   return isMet ? undefined : "quest_needs_not_met";

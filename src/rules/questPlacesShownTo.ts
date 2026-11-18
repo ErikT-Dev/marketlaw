@@ -1,4 +1,4 @@
-import { QUEST_TERMS } from "../shared/catalogue/QUEST_TERMS";
+import { questOf } from "../shared/ruleFiles/questOf";
 import type { QuestPlaceView } from "../shared/QuestPlaceView";
 import type { SeatNumber } from "../shared/SeatNumber";
 import type { GameState } from "./GameState";
@@ -22,7 +22,7 @@ export function questPlacesShownTo(
     if (place === null) {
       return { quest: null };
     }
-    const { needs } = QUEST_TERMS[place.quest];
+    const { needs } = questOf(place.quest).terms;
     return {
       quest: place.quest,
       turnsLeft: QUEST_TABLE_RULES.turnsOnTable - place.turnsOnTable + 1,

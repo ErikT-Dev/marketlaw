@@ -1,28 +1,33 @@
 import type { MainPhaseLogEntry } from "../../../shared/MainPhaseLogEntry";
+import { tradeOf } from "../../../shared/ruleFiles/tradeOf";
 import type { StatAmounts } from "../../../shared/StatAmounts";
 import { STAT_KEYS } from "../../../shared/STAT_KEYS";
 import type { TradeName } from "../../../shared/TradeName";
-import { TRADES } from "../../../shared/TRADES";
 import type { IconText } from "../../components/IconText";
 import type { IconTextPart } from "../../components/IconTextPart";
 import { playerNameOf } from "./playerNameOf";
 import { PROJECT_TITLES } from "./PROJECT_TITLES";
 
-function amountParts(amounts: StatAmounts): ReadonlyArray<IconTextPart> {
+type StatPart = Extract<IconTextPart, { readonly stat: unknown }>;
+
+function statParts(amounts: StatAmounts): ReadonlyArray<StatPart> {
   return STAT_KEYS.flatMap((stat) => {
     const value = amounts[stat];
     return value === undefined ? [] : [{ stat, value }];
-  }).flatMap((part, index): ReadonlyArray<IconTextPart> => (index === 0 ? [part] : [" + ", part]));
+  });
 }
 
-function tradeParts(trade: TradeName): ReadonlyArray<IconTextPart> {
-  const { costs, gains, doesGiveBuildPass } = TRADES[trade];
-  const paid: ReadonlyArray<IconTextPart> =
-    trade === "buy_build_pass" ? [{ stat: "funds" }] : amountParts(costs);
-  const got: ReadonlyArray<IconTextPart> = doesGiveBuildPass
-    ? [{ stat: "buildPasses", value: 1 }]
-    : amountParts(gains);
-  return [...paid, " → ", ...got];
+function joinedParts(parts: ReadonlyArray<IconTextPart>): ReadonlyArray<IconTextPart> {
+  return parts.flatMap((part, index): ReadonlyArray<IconTextPart> =>
+    index === 0 ? [part] : [" + ", part],
+  );
+}
+
+function tradeParts(tradeName: TradeName): ReadonlyArray<IconTextPart> {
+  const { costs, gains, buildPasses, isPriceRising } = tradeOf(tradeName);
+  const paid = isPriceRising ? statParts(costs).map(({ stat }) => ({ stat })) : statParts(costs);
+  const passes = buildPasses > 0 ? [{ stat: "buildPasses" as const, value: buildPasses }] : [];
+  return [...joinedParts(paid), " → ", ...joinedParts([...statParts(gains), ...passes])];
 }
 
 export function mainPhaseLogText(

@@ -1,7 +1,8 @@
+import { tradeOf } from "../../../shared/ruleFiles/tradeOf";
 import type { TradeName } from "../../../shared/TradeName";
-import { TRADES } from "../../../shared/TRADES";
 import { StatAmountsIcons } from "../../components/StatAmountsIcons";
 import { StatChip } from "../../components/StatChip";
+import { tradeCostsShown } from "./tradeCostsShown";
 
 type Props = {
   readonly trade: TradeName;
@@ -9,16 +10,19 @@ type Props = {
 };
 
 export function TradeIcons({ trade, buildPassPrice }: Props) {
-  const { costs, gains, doesGiveBuildPass } = TRADES[trade];
+  const shown = tradeOf(trade);
+  const hasStatGains = Object.keys(shown.gains).length > 0;
   return (
     <span>
-      <StatAmountsIcons amounts={trade === "buy_build_pass" ? { funds: buildPassPrice } : costs} />
+      <StatAmountsIcons amounts={tradeCostsShown(shown, buildPassPrice)} />
       {" → "}
-      {doesGiveBuildPass ? (
-        <StatChip stat="buildPasses" value={1} />
-      ) : (
-        <StatAmountsIcons amounts={gains} />
-      )}
+      <StatAmountsIcons amounts={shown.gains} />
+      {shown.buildPasses > 0 ? (
+        <span>
+          {hasStatGains ? " + " : null}
+          <StatChip stat="buildPasses" value={shown.buildPasses} />
+        </span>
+      ) : null}
     </span>
   );
 }

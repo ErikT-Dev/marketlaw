@@ -1,20 +1,4 @@
-import type { Tier } from "../catalogue/Tier";
-import type { StatAmounts } from "../StatAmounts";
+import type { Trade } from "../Trade";
+import type { InfluenceDraw } from "./InfluenceDraw";
 
-export type InfluenceAction =
-  | {
-      readonly kind: "trade";
-      readonly name: string;
-      readonly costs: StatAmounts;
-      readonly gains: StatAmounts;
-      readonly buildPasses: number;
-      readonly isPriceRising: boolean;
-      readonly limitPerGame: number | null;
-    }
-  | {
-      readonly kind: "draw";
-      readonly name: string;
-      readonly costs: StatAmounts;
-      readonly tier: Tier;
-      readonly limitPerGame: number | null;
-    };
+export type InfluenceAction = Trade | InfluenceDraw;

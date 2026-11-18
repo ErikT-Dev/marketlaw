@@ -1,11 +1,11 @@
 import type { OwnSeatView } from "../../../shared/OwnSeatView";
 import type { TradeStatus } from "../../../shared/TradeStatus";
-import { TRADES } from "../../../shared/TRADES";
+import { tradeOf } from "../../../shared/ruleFiles/tradeOf";
 import type { IconText } from "../../components/IconText";
 import { REJECTION_MESSAGES } from "./REJECTION_MESSAGES";
 
 function usesLeftText(seat: OwnSeatView, status: TradeStatus): string {
-  const limit = TRADES[status.trade].limitPerGame;
+  const limit = tradeOf(status.trade).limitPerGame;
   if (limit === null) {
     return "unlimited uses";
   }

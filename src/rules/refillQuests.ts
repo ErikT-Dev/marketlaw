@@ -1,4 +1,4 @@
-import { QUESTS } from "../shared/catalogue/QUESTS";
+import { QUEST_LINES } from "../shared/ruleFiles/QUEST_LINES";
 import { pickTier } from "./pickTier";
 import { QUEST_TABLE_RULES } from "./QUEST_TABLE_RULES";
 import type { QuestTable } from "./QuestTable";
@@ -22,7 +22,7 @@ function fillPlace(table: QuestTable, index: number, turn: number, random: Rando
     turn,
     table.questList,
   );
-  const candidates = QUESTS.filter(
+  const candidates = QUEST_LINES.filter(
     (quest) => quest.tier === tier && table.questList.includes(quest.name),
   ).map(({ name }) => name);
   if (candidates.length === 0) {

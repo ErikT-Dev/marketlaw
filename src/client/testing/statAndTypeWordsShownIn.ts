@@ -1,5 +1,5 @@
 import { CARD_NAMES } from "../../shared/catalogue/CARD_NAMES";
-import { QUEST_NAMES_BY_TIER } from "../../shared/catalogue/QUEST_NAMES_BY_TIER";
+import { QUEST_LINES } from "../../shared/ruleFiles/QUEST_LINES";
 import { Sector } from "../../shared/catalogue/Sector";
 import { TYPE_NAMES } from "../../shared/catalogue/TYPE_NAMES";
 import { PROJECT_TITLES } from "../screens/game/PROJECT_TITLES";
@@ -21,7 +21,7 @@ const STAT_WORDS = [
 
 const NAMES_OF_OTHER_THINGS = [
   ...CARD_NAMES,
-  ...QUEST_NAMES_BY_TIER.flatMap(({ names }) => names),
+  ...QUEST_LINES.map(({ name }) => name),
   ...Sector.options,
   ...Object.values(PROJECT_TITLES),
   "Public quality",

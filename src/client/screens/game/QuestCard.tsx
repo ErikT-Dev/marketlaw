@@ -1,6 +1,5 @@
 import { useId } from "react";
-import { QUEST_TERMS } from "../../../shared/catalogue/QUEST_TERMS";
-import { questTierOf } from "../../../shared/catalogue/questTierOf";
+import { questOf } from "../../../shared/ruleFiles/questOf";
 import type { QuestPlaceView } from "../../../shared/QuestPlaceView";
 import type { SeatNumber } from "../../../shared/SeatNumber";
 import { Button } from "../../components/Button";
@@ -22,8 +21,8 @@ type Props = {
 
 export function QuestCard({ place, viewer, playerNames, isBusy, onComplete }: Props) {
   const nameId = useId();
-  const { needs, reward } = QUEST_TERMS[place.quest];
-  const tier = questTierOf(place.quest);
+  const { tier, terms } = questOf(place.quest);
+  const { needs, reward } = terms;
   const isReady = place.completeRejection === null;
   const isCompleted = place.progress.some(
     ({ seat, isCompleted }) => seat === viewer && isCompleted,

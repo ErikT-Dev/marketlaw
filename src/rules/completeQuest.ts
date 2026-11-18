@@ -1,5 +1,5 @@
 import type { QuestName } from "../shared/catalogue/QuestName";
-import { QUEST_TERMS } from "../shared/catalogue/QUEST_TERMS";
+import { questOf } from "../shared/ruleFiles/questOf";
 import { STAT_KEYS } from "../shared/STAT_KEYS";
 import type { SeatNumber } from "../shared/SeatNumber";
 import { drawRandomCard } from "./drawRandomCard";
@@ -9,7 +9,7 @@ import type { SeatState } from "./SeatState";
 import { updateSeat } from "./updateSeat";
 
 function rewardedSeat(seat: SeatState, quest: QuestName): SeatState {
-  const { stats, gainedType } = QUEST_TERMS[quest].reward;
+  const { stats, gainedType } = questOf(quest).terms.reward;
   const gainedTypes =
     gainedType === null
       ? seat.gainedTypes
@@ -33,7 +33,7 @@ export function completeQuest(
   random: Random,
 ): GameState {
   const rewarded = updateSeat(state, seat, (current) => rewardedSeat(current, quest));
-  return Array.from({ length: QUEST_TERMS[quest].reward.draws }).reduce<GameState>(
+  return Array.from({ length: questOf(quest).terms.reward.draws }).reduce<GameState>(
     (drawn) => drawRandomCard(drawn, seat, "quest", random),
     rewarded,
   );

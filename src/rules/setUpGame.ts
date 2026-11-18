@@ -1,5 +1,5 @@
 import { CARD_NAMES } from "../shared/catalogue/CARD_NAMES";
-import { QUESTS } from "../shared/catalogue/QUESTS";
+import { QUEST_LINES } from "../shared/ruleFiles/QUEST_LINES";
 import { dealStartingHand } from "./dealStartingHand";
 import { fillMarketplace } from "./fillMarketplace";
 import type { GameSetup } from "./GameSetup";
@@ -51,7 +51,7 @@ export function setUpGame(setup: GameSetup, random: Random): GameState {
     questsCompletedLastTurn: [],
     marketplace: filled.marketplace,
     quests: quests.map((quest) => ({ quest, turnsOnTable: 1 })),
-    questList: QUESTS.map(({ name }) => name).filter((name) => !quests.includes(name)),
+    questList: QUEST_LINES.map(({ name }) => name).filter((name) => !quests.includes(name)),
     bonusTypes: pickBonusTypes(random),
     doneOrder: [],
     leaveOrder: [],

@@ -1,17 +1,16 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { QUEST_TERMS } from "../catalogue/QUEST_TERMS";
-import { QUESTS } from "../catalogue/QUESTS";
 import { readQuestFile } from "./readQuestFile";
 
 const QUEST_FILE = readFileSync("harness/spec/quests.txt", "utf8");
 
 describe("readQuestFile", () => {
-  it("reads every quest of quests.txt in order with the terms the game uses", () => {
-    expect(readQuestFile(QUEST_FILE)).toEqual({
-      isOk: true,
-      value: QUESTS.map(({ name, tier }) => ({ tier, name, terms: QUEST_TERMS[name] })),
-    });
+  it("reads every line of quests.txt as one quest in the same order", () => {
+    const read = readQuestFile(QUEST_FILE);
+    const namesOfTheLines = QUEST_FILE.trimEnd()
+      .split(/\r?\n/)
+      .map((line) => line.split(" | ")[1]);
+    expect(read.isOk ? read.value.map(({ name }) => name) : read.error).toEqual(namesOfTheLines);
   });
 
   it("reads a file with Windows line breaks like one with plain line breaks", () => {

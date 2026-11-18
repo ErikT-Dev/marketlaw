@@ -1,6 +1,6 @@
 import { Kind } from "../shared/catalogue/Kind";
-import { Tier } from "../shared/catalogue/Tier";
 import type { DrawActionStatus } from "../shared/DrawActionStatus";
+import { INFLUENCE_DRAWS } from "../shared/ruleFiles/INFLUENCE_DRAWS";
 import { drawActionRejection } from "./drawActionRejection";
 import type { GameState } from "./GameState";
 import { kindTierKey } from "./kindTierKey";
@@ -15,7 +15,7 @@ export function drawActionStatusesOf(
   const turnRejection = turnRejectionOf(state, seat.seat, "draw_action");
   const kindTiersLeft = kindTiersLeftAsSeenBy(state, seat.seat);
   return Kind.options.flatMap((kind) =>
-    Tier.options.map((tier) => ({
+    INFLUENCE_DRAWS.map(({ tier }) => ({
       kind,
       tier,
       isAnyLeft: kindTiersLeft.includes(kindTierKey(kind, tier)),

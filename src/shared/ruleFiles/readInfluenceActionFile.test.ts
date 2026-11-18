@@ -1,34 +1,43 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { DRAW_ACTION_COSTS } from "../DRAW_ACTION_COSTS";
-import { TRADES } from "../TRADES";
 import { readInfluenceActionFile } from "./readInfluenceActionFile";
 
 const INFLUENCE_ACTION_FILE = readFileSync("harness/spec/influence-actions.txt", "utf8");
 
-const TRADES_OF_THE_FILE = Object.entries(TRADES).map(([name, trade]) => ({
-  kind: "trade",
-  name,
-  costs: trade.costs,
-  gains: trade.gains,
-  buildPasses: trade.doesGiveBuildPass ? 1 : 0,
-  isPriceRising: name === "buy_build_pass",
-  limitPerGame: trade.limitPerGame,
-}));
-
-const DRAWS_OF_THE_FILE = ([1, 2, 3] as const).map((tier) => ({
-  kind: "draw",
-  name: `draw_tier_${String(tier)}`,
-  costs: { influence: DRAW_ACTION_COSTS[tier] },
-  tier,
-  limitPerGame: null,
-}));
-
 describe("readInfluenceActionFile", () => {
-  it("reads every action of influence-actions.txt in order with the terms the game uses", () => {
-    expect(readInfluenceActionFile(INFLUENCE_ACTION_FILE)).toEqual({
+  it("reads every line of influence-actions.txt as one action in the same order", () => {
+    const read = readInfluenceActionFile(INFLUENCE_ACTION_FILE);
+    const namesOfTheLines = INFLUENCE_ACTION_FILE.trimEnd()
+      .split(/\r?\n/)
+      .map((line) => line.split(" | ")[0]?.replaceAll(" ", "_"));
+    expect(read.isOk ? read.value.map(({ name }) => name) : read.error).toEqual(namesOfTheLines);
+  });
+
+  it("reads a rising build pass and a draw action", () => {
+    expect(
+      readInfluenceActionFile(
+        "buy build pass | pay 2 funds, 1 more each time | get 1 build pass | no limit\ndraw tier 2 | pay 4 influence, 1 quality | draw a tier 2 card of a chosen kind | 3 per game",
+      ),
+    ).toEqual({
       isOk: true,
-      value: [...TRADES_OF_THE_FILE, ...DRAWS_OF_THE_FILE],
+      value: [
+        {
+          kind: "trade",
+          name: "buy_build_pass",
+          costs: { funds: 2 },
+          gains: {},
+          buildPasses: 1,
+          isPriceRising: true,
+          limitPerGame: null,
+        },
+        {
+          kind: "draw",
+          name: "draw_tier_2",
+          costs: { influence: 4, quality: 1 },
+          tier: 2,
+          limitPerGame: 3,
+        },
+      ],
     });
   });
 
