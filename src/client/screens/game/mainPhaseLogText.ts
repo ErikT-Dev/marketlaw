@@ -48,5 +48,7 @@ export function mainPhaseLogText(
       ];
     case "influence":
       return [`${name} used influence: `, ...tradeParts(entry.trade)];
+    case "redrew":
+      return `${name} redrew their starting hand ${String(entry.times)} ${entry.times === 1 ? "time" : "times"}`;
   }
 }

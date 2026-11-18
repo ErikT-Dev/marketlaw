@@ -41,6 +41,8 @@ export const OWN_SEAT_VIEW: OwnSeatView = {
     Tier.options.map((tier) => ({ kind, tier, isAnyLeft: true, rejection: null })),
   ),
   undoRejection: "nothing_to_undo",
+  redrawsLeft: 3,
+  redrawRejection: "redraw_too_late",
   hasHadMarketGo: false,
   turnDrawRejection: "wrong_phase",
   marketCardRejection: "wrong_phase",

@@ -21,6 +21,7 @@ const STEP_SCHEMA = v.variant("action", [
   v.strictObject({ seat: SEAT, action: v.literal("end_turn") }),
   v.strictObject({ seat: SEAT, action: v.literal("claim_all") }),
   v.strictObject({ seat: SEAT, action: v.literal("undo") }),
+  v.strictObject({ seat: SEAT, action: v.literal("redraw_hand") }),
   v.strictObject({ seat: SEAT, action: v.literal("leave_game") }),
   v.strictObject({ seat: SEAT, action: v.literal("call_vote") }),
   v.strictObject({ seat: SEAT, action: v.literal("vote"), vote: v.picklist(["yes", "no"]) }),
@@ -76,8 +77,30 @@ function turnDrawAction(
   );
 }
 
+const STEPS_WITHOUT_DETAILS = [
+  "end_turn",
+  "claim_all",
+  "undo",
+  "redraw_hand",
+  "leave_game",
+  "call_vote",
+] as const;
+
+type ParsedStep = v.InferOutput<typeof STEP_SCHEMA>;
+type StepWithoutDetails = Extract<
+  ParsedStep,
+  { readonly action: (typeof STEPS_WITHOUT_DETAILS)[number] }
+>;
+
+function hasNoDetails(step: ParsedStep): step is StepWithoutDetails {
+  return STEPS_WITHOUT_DETAILS.some((action) => action === step.action);
+}
+
 export function actionFromStep(step: Readonly<Record<string, unknown>>): GameAction {
   const parsed = v.parse(STEP_SCHEMA, step);
+  if (hasNoDetails(parsed)) {
+    return { type: parsed.action, seat: parsed.seat };
+  }
   switch (parsed.action) {
     case "play_card":
       return { type: "play_card", seat: parsed.seat, card: parsed.card };
@@ -88,16 +111,6 @@ export function actionFromStep(step: Readonly<Record<string, unknown>>): GameAct
       }
       return { type: "sell", seat: parsed.seat, cards: [first, ...rest] };
     }
-    case "end_turn":
-      return { type: "end_turn", seat: parsed.seat };
-    case "claim_all":
-      return { type: "claim_all", seat: parsed.seat };
-    case "undo":
-      return { type: "undo", seat: parsed.seat };
-    case "leave_game":
-      return { type: "leave_game", seat: parsed.seat };
-    case "call_vote":
-      return { type: "call_vote", seat: parsed.seat };
     case "vote":
       return { type: "vote", seat: parsed.seat, answer: parsed.vote };
     case "complete_project":

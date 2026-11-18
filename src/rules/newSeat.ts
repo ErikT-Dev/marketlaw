@@ -33,5 +33,6 @@ export function newSeat(seat: SeatNumber): SeatState {
     timeoutsInARow: 0,
     undoPoints: [],
     isUndoBlocked: false,
+    redrawsUsed: 0,
   };
 }

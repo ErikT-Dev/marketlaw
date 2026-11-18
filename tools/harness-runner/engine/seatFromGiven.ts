@@ -48,6 +48,7 @@ function turnStatusFromGiven(given: GivenSeat, start: SeatState) {
     isDone: given.done ?? start.isDone,
     isOutOfTime: given.out_of_time ?? start.isOutOfTime,
     isTurnDrawOpen: given.turn_draw_pending ?? start.isTurnDrawOpen,
+    redrawsUsed: given.redraws_used ?? start.redrawsUsed,
     logEntriesThisMainPhase: start.logEntriesThisMainPhase,
   };
 }

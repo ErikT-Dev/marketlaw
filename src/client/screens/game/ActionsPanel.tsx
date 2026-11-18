@@ -11,6 +11,7 @@ import { MarketPhaseNotice } from "./MarketPhaseNotice";
 import type { HandChoice } from "./HandChoice";
 import type { OpenDialog } from "./OpenDialog";
 import { ProgressButtons } from "./ProgressButtons";
+import { RedrawHandButton } from "./RedrawHandButton";
 
 type Props = {
   readonly seat: OwnSeatView;
@@ -53,6 +54,7 @@ export function ActionsPanel(props: Props) {
     <Panel title="Actions">
       <ActionNotices seat={seat} choice={choice} isBusy={isBusy} onAction={props.onAction} />
       <div className={styles["buttons"]}>
+        <RedrawHandButton seat={seat} isBusy={isBusy} onAction={props.onAction} />
         <Button
           look="menu"
           isDisabled={isBusy || !canPlaySelected(seat, choice)}

@@ -13,6 +13,7 @@ import { tradeStatusesOf } from "./tradeStatusesOf";
 import { phaseShownTo } from "./phaseShownTo";
 import { pilesShownTo } from "./pilesShownTo";
 import { projectRejectionsOf } from "./projectRejectionsOf";
+import { REDRAW_LIMIT } from "./REDRAW_LIMIT";
 import { rejectionOf } from "./rejectionOf";
 import { typeCountsOf } from "./typeCountsOf";
 import { marketGoOf } from "./marketGoOf";
@@ -46,6 +47,8 @@ function ownSeatView(state: GameState, seat: SeatState): OwnSeatView {
     buildPassPrice: buildPassPriceOf(seat),
     drawActions: drawActionStatusesOf(state, seat),
     undoRejection: rejectionOf(state, { type: "undo", seat: seat.seat }) ?? null,
+    redrawsLeft: REDRAW_LIMIT - seat.redrawsUsed,
+    redrawRejection: rejectionOf(state, { type: "redraw_hand", seat: seat.seat }) ?? null,
     hasHadMarketGo: seat.hasHadMarketGo,
     turnDrawRejection: turnRejectionOf(state, seat.seat, "turn_draw") ?? null,
     marketCardRejection: seat.isTurnDrawOpen

@@ -42,6 +42,7 @@ const SEAT = v.strictObject({
   done: v.optional(v.boolean()),
   out_of_time: v.optional(v.boolean()),
   turn_draw_pending: v.optional(v.boolean()),
+  redraws_used: v.optional(COUNT),
   left: v.optional(v.boolean()),
   time_bank_ms: v.optional(COUNT),
   timeouts_in_a_row: v.optional(COUNT),

@@ -54,6 +54,8 @@ export const REJECTION_MESSAGES: Readonly<Record<ReasonCode, IconText>> = {
   no_card_of_kind: "No card of that kind and tier is left in the deck or discard pile.",
   nothing_to_undo: "There is nothing to undo.",
   cannot_undo: "That action cannot be undone, because it drew a card or came after one that did.",
+  redraw_too_late: "You can only redraw your starting hand in turn 1, before your first action.",
+  no_redraw_left: "You have already redrawn your starting hand 3 times.",
   vote_too_soon: "The next vote is not possible yet.",
   vote_already_open: "A vote is already open.",
   no_vote_open: "There is no vote to answer.",

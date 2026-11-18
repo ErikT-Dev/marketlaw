@@ -42,6 +42,7 @@ const SEAT_STATE = v.object({
   timeoutsInARow: v.number(),
   undoPoints: v.tuple([]),
   isUndoBlocked: v.boolean(),
+  redrawsUsed: v.optional(v.number(), 0),
 });
 
 export const GAME_STATE_SCHEMA = v.object({

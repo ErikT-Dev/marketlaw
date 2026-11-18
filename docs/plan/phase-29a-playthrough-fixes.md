@@ -385,7 +385,7 @@ These 35 required scenarios now assert the new rules (Q169) and must pass again:
     and the branch check will fail on it until it is fixed (for example by bundling
     `stateFromGiven` with `tools/bundleForNode.ts`, as `npm run test-room` does).
 
-- [ ] 4. **Redrawing the starting hand** (R17.12, M3.3, M3.7, S6.6, S7.2, S16.3, T0.8, I29, B2).
+- [x] 4. **Redrawing the starting hand** (R17.12, M3.3, M3.7, S6.6, S7.2, S16.3, T0.8, I29, B2).
   **Large.**
   - The `redraw_hand` message in the intent schema (`src/shared/`) carries the action id and
     state version like any action (M9.4) and moves only the redrawer's own version. Only an
@@ -398,6 +398,26 @@ These 35 required scenarios now assert the new rules (Q169) and must pass again:
     (S6.6), from data in the view.
   - Scenarios: `drawing`, the 5 redraw ones; `visibility` "the log shows a redraw …";
     `tutorial` "the tutorial does not offer a redraw …".
+  - Done (2026-11-18). 6 of the 7 scenarios pass (checked on the required list locally, not
+    committed); "a player can redraw their starting hand in turn 1" also expects
+    `worth_gained: 14`, which the runner reads only after item 6; without that line it passes.
+    `npm run check` is green.
+  - As built: `SeatState.redrawsUsed`; `redrawRejection.ts` (`redraw_too_late` outside turn 1
+    or once `actionsThisTurn` > 0, which every accepted main-phase action raises, undo and End
+    turn included, then `no_redraw_left` at `REDRAW_LIMIT` 3); `redrawStartingHand.ts` shuffles
+    the hand into the deck and deals with `dealStartingHand` (R17.9), and moves the redrawer's
+    own `mainPhaseStart.piles` counts by the cards put back and drawn, so their draw actions see
+    the deck as it is while others see nothing (unit tests in `redrawStartingHand.test.ts`).
+    No undo point, not counted toward the action limit; the log entry `redrew` (`times`) is
+    replaced on each redraw. View: `redrawsLeft`, `redrawRejection` (the tutorial view sets
+    `not_this_step`, T0.8). Client: `RedrawHandButton.tsx` shows only while
+    `redrawRejection` is null. I29 in `redrawViolations.ts`, simulated. Bots redraw now and then
+    (`influenceOrUndoMove.ts`). `apply.ts` groups the actions that take income, to stay under
+    the complexity limit.
+  - Differs: the log reads "Ann redrew their starting hand 2 times" (Q172, S7.2 changed first).
+    Browser tests were not run for this item; in turn 1 test rooms the button now shows in the
+    Actions panel, which the branch check's screen-fit tests will judge.
+  - For later items: 6 adds `worth_gained` and must leave it unchanged by a redraw.
 
 - [x] 5. **Projects need 10 income** (R16.2, S6.3, S8.2, S16.3, T5.4). **Small.**
   - `src/rules/projectRejection.ts`, reason `project_needs_not_met`, whose text names the income

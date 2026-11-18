@@ -38,4 +38,5 @@ export type SeatState = {
   readonly timeoutsInARow: number;
   readonly undoPoints: ReadonlyArray<SeatState>;
   readonly isUndoBlocked: boolean;
+  readonly redrawsUsed: number;
 };

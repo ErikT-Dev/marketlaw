@@ -6,6 +6,7 @@ const INTENTS_WITHOUT_DETAILS = [
   "end_turn",
   "claim_all",
   "undo",
+  "redraw_hand",
   "leave_game",
   "call_vote",
 ] as const;

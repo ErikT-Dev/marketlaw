@@ -32,6 +32,8 @@ export const ReasonCode = v.picklist([
   "no_card_of_kind",
   "nothing_to_undo",
   "cannot_undo",
+  "redraw_too_late",
+  "no_redraw_left",
   "vote_too_soon",
   "vote_already_open",
   "no_vote_open",

@@ -22,6 +22,7 @@ import type { SystemAction } from "./SystemAction";
 import { isSystemAction } from "./isSystemAction";
 import { isVoteAction } from "./isVoteAction";
 import { rejectionOf } from "./rejectionOf";
+import { redrawStartingHand } from "./redrawStartingHand";
 import { resumeGame } from "./resumeGame";
 import { sellCards } from "./sellCards";
 import { takeIncome } from "./takeIncome";
@@ -62,6 +63,53 @@ function acceptedVoteAction(state: GameState, action: VoteAction, at: number): G
     : answerVote(state, action.seat, action.answer, at);
 }
 
+type IncomeAction = Extract<
+  GameAction,
+  {
+    readonly type:
+      | "play_card"
+      | "sell"
+      | "claim_all"
+      | "complete_project"
+      | "complete_quest"
+      | "influence"
+      | "draw_action";
+  }
+>;
+
+const INCOME_ACTIONS: ReadonlyArray<GameAction["type"]> = [
+  "play_card",
+  "sell",
+  "claim_all",
+  "complete_project",
+  "complete_quest",
+  "influence",
+  "draw_action",
+];
+
+function isIncomeAction(action: GameAction): action is IncomeAction {
+  return INCOME_ACTIONS.includes(action.type);
+}
+
+function changedBeforeIncome(state: GameState, action: IncomeAction, random: Random): GameState {
+  switch (action.type) {
+    case "play_card":
+      return updateSeat(state, action.seat, (seat) => playCard(seat, action.card));
+    case "sell":
+      return sellCards(state, action.seat, action.cards);
+    case "claim_all":
+      return updateSeat(state, action.seat, claimAll);
+    case "complete_project":
+      return completeProject(state, action.seat, action.project, random);
+    case "complete_quest":
+      return completeQuest(state, action.seat, action.quest, random);
+    case "influence":
+      return updateSeat(state, action.seat, (seat) => useTrade(seat, action.trade));
+    case "draw_action":
+      return useDrawAction(state, action, random);
+  }
+}
+
 function accepted(state: GameState, action: GameAction, random: Random, at: number): GameState {
   if (isSystemAction(action)) {
     return acceptedSystemAction(state, action, random, at);
@@ -69,41 +117,16 @@ function accepted(state: GameState, action: GameAction, random: Random, at: numb
   if (isVoteAction(action)) {
     return acceptedVoteAction(state, action, at);
   }
+  if (isIncomeAction(action)) {
+    return takeIncome(changedBeforeIncome(state, action, random), action.seat, random);
+  }
   switch (action.type) {
-    case "play_card":
-      return takeIncome(
-        updateSeat(state, action.seat, (seat) => playCard(seat, action.card)),
-        action.seat,
-        random,
-      );
-    case "sell":
-      return takeIncome(sellCards(state, action.seat, action.cards), action.seat, random);
     case "end_turn":
       return endTurn(state, action.seat, random, at);
-    case "claim_all":
-      return takeIncome(updateSeat(state, action.seat, claimAll), action.seat, random);
-    case "complete_project":
-      return takeIncome(
-        completeProject(state, action.seat, action.project, random),
-        action.seat,
-        random,
-      );
-    case "complete_quest":
-      return takeIncome(
-        completeQuest(state, action.seat, action.quest, random),
-        action.seat,
-        random,
-      );
-    case "influence":
-      return takeIncome(
-        updateSeat(state, action.seat, (seat) => useTrade(seat, action.trade)),
-        action.seat,
-        random,
-      );
-    case "draw_action":
-      return takeIncome(useDrawAction(state, action, random), action.seat, random);
     case "undo":
       return updateSeat(state, action.seat, undoLatest);
+    case "redraw_hand":
+      return redrawStartingHand(state, action.seat, random);
     case "turn_draw":
       return takeTurnDraw(state, action, random, at);
     case "leave_game":

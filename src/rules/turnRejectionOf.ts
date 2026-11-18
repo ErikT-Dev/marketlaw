@@ -51,7 +51,8 @@ export function turnRejectionOf(
     return "already_done";
   }
   const isOpenTurnDraw = actionType === "turn_draw" && seat.isTurnDrawOpen;
-  return actionType !== "end_turn" && !isOpenTurnDraw && seat.actionsThisTurn >= ACTION_LIMIT
+  const isLimited = actionType !== "end_turn" && actionType !== "redraw_hand" && !isOpenTurnDraw;
+  return isLimited && seat.actionsThisTurn >= ACTION_LIMIT
     ? "action_limit_reached"
     : undefined;
 }

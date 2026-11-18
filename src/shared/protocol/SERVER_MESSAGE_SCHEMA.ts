@@ -79,6 +79,8 @@ const SEAT_VIEW = v.variant("kind", [
       }),
     ),
     undoRejection: v.nullable(ReasonCode),
+    redrawsLeft: v.number(),
+    redrawRejection: v.nullable(ReasonCode),
     turnDrawRejection: v.nullable(ReasonCode),
     marketCardRejection: v.nullable(ReasonCode),
     actionsThisTurn: COUNT,

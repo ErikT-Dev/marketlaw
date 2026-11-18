@@ -34,6 +34,8 @@ export type OwnSeatView = {
   readonly buildPassPrice: number;
   readonly drawActions: ReadonlyArray<DrawActionStatus>;
   readonly undoRejection: ReasonCode | null;
+  readonly redrawsLeft: number;
+  readonly redrawRejection: ReasonCode | null;
   readonly hasHadMarketGo: boolean;
   readonly turnDrawRejection: ReasonCode | null;
   readonly marketCardRejection: ReasonCode | null;

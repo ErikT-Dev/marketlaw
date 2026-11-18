@@ -8,6 +8,7 @@ import { isVoteAction } from "./isVoteAction";
 import type { GameAction } from "./GameAction";
 import type { GameState } from "./GameState";
 import type { SeatNumber } from "../shared/SeatNumber";
+import { redrawViolations } from "./redrawViolations";
 import { seatOf } from "./seatOf";
 import { stateInvariantViolations } from "./stateInvariantViolations";
 import { TIME_BANK_MS } from "./TIME_BANK_MS";
@@ -106,6 +107,7 @@ function acceptedViolations(transition: Transition, after: GameState): ReadonlyA
     ...holdingPileViolations(before, after),
     ...incomeViolations(before, after),
     ...timeBankViolations(transition, after),
+    ...redrawViolations(before, after),
     ...gameEndViolations(before, after),
     ...stateInvariantViolations(after),
   ];

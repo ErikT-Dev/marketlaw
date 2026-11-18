@@ -11,6 +11,7 @@ import { realCostOf } from "./realCostOf";
 import { projectRejection } from "./projectRejection";
 import { questRejection } from "./questRejection";
 import { readyCombosOf } from "./readyCombosOf";
+import { redrawRejection } from "./redrawRejection";
 import { removeCards } from "./removeCards";
 import { tradeRejection } from "./tradeRejection";
 import { seatOf } from "./seatOf";
@@ -118,6 +119,8 @@ function seatActionRejection(
       );
     case "undo":
       return undoRejection(seat);
+    case "redraw_hand":
+      return redrawRejection(state, seat);
     case "turn_draw":
       return turnDrawRejection(state, seat, action);
   }
