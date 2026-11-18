@@ -258,7 +258,7 @@ None yet.
   the marketplace card taken or the sector chosen; and discard shuffles. Once each main phase
   ends, it also lists what each player did in it (M3.7): the cards they played, by name, the
   quests and projects they completed, the influence actions they used, and their redraws of the
-  starting hand ("Ann redrew her starting hand 2 times"), with stats as icons (S1.6).
+  starting hand ("Ann redrew their starting hand 2 times"), with stats as icons (S1.6).
 - **S7.3** **Chat** shows the messages since you joined, each with the sender, time and a **Mute**
   link; your own messages are highlighted; joins, leaves and similar events appear as grey lines:
   a player joined the room, left the room or left the game (also after 3 time-outs, R9.11), and

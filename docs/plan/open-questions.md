@@ -3808,3 +3808,14 @@ file.
   change was needed.
 - **Implemented:** `src/rules/drawActionRejection.ts`, `useDrawAction.ts`,
   `drawActionStatusesOf.ts`; `src/client/screens/game/DrawActionTable.tsx`.
+
+## Q172. Which words does the game log use for a redraw of the starting hand?
+
+- **Phase:** 29a, item 4 (redrawing the starting hand).
+- **Question:** S7.2's example reads "Ann redrew her starting hand 2 times", but the game knows
+  only usernames, not how a player wants to be called, and the example does not say how one
+  redraw reads.
+- **Solution:** decided without the owner: the log says "their" for every player and counts
+  "1 time" or "N times" ("Ann redrew their starting hand 2 times"). Written into S7.2's example
+  first (`HARNESS:` commit).
+- **Implemented:** `harness/spec/screens.md` S7.2; `src/client/screens/game/mainPhaseLogText.ts`.
