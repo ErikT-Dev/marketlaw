@@ -349,6 +349,7 @@ word, when:
 - `influence-actions.txt` has two draw actions for the same tier
 - an influence action is of a kind the game or the screen has no code for: the message reads
   "needs new code" and names the action (R15.6)
+- a quest reward gains more than 1 type: the message reads "needs new code" (R20.8)
 - a scenario names a quest or an influence action the files do not have
 
 So a list the game cannot handle can never be deployed: `npm run check` runs before every

@@ -622,6 +622,11 @@ How requirements and rewards are read:
     - `+N <stat>`: that much of a stat of R2.1 (`fund` or `funds` and so on)
     - `gain N <type>`: a gained type (R20.6), the Service type again written `Service type`
     - `draw N cards`: N cards, tier by turn, each of a random sector (R20.5)
+
+  A reward that gains more than 1 type (`gain N` with N above 1, or two `gain` parts) is one the
+  game has no rules for yet: it needs new code, and the check fails with "needs new code"
+  (Q170). Parts that give the same stat or draws add up, and `card`, `fund` and the other words
+  may be singular or plural whatever the number.
 - **R20.9** The game, the rules viewer and rulebook, the menus and the tutorial all take the
   quests from this file; no other list of them exists. `npm run check` fails, naming the line
   and the wrong word, when a line breaks R20.8, when two quests have the same name, when the
