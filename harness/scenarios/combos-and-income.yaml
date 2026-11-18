@@ -252,7 +252,7 @@
       - seat: 2
         time_bank_ms: 0
   when:
-    - wait_ms: 75000
+    - wait_ms: 165000
   then:
     turn: 2
     seats:

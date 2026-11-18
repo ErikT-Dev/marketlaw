@@ -3761,11 +3761,15 @@ file.
     - "skip build can be used 3 times per game" → "every player starts turn 1 with 1 build pass"
     - "undo takes back skip build and the build pass it gave" → "undo takes back a build pass
       bought with influence"
+  - **One more in turn 1 (29a, item 3).** The required scenario `combos-and-income` "a player
+    made done when time runs out also gets their ready combos claimed" waited 75 seconds in
+    turn 1 for both players to run out of time, which contradicts turn 1's 165 seconds of free
+    time (R9.4); it now waits 165 seconds, its name and checks unchanged.
   - The spec and harness changes are on the branch `phase-29a-playthrough-fixes`, not on master,
     as for 20a (Q74) and 25a (Q126): on their own they turn the check red until 29a builds them.
 - **Implemented:** `harness/spec/game-rules.md`, `multiplayer.md`, `accounts.md`, `screens.md`,
   `rulebook.md`, `glossary.md`, `tutorial.md`, `quests.txt` (new), `influence-actions.txt` (new);
-  `harness/scenarios/setup.yaml`, `turns-and-time.yaml`, `playing-cards.yaml`,
+  `harness/scenarios/setup.yaml`, `turns-and-time.yaml`, `combos-and-income.yaml`, `playing-cards.yaml`,
   `influence.yaml`, `undo.yaml`, `projects.yaml`, `drawing.yaml`, `visibility.yaml`,
   `tutorial.yaml`, `client.yaml`, `connections-and-leaving.yaml`, `records-and-ratings.yaml`;
   `harness/HARNESS.md`, `scenario-format.yaml`, `invariants.yaml`, `budgets.yaml`,
