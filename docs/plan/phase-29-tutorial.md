@@ -269,3 +269,4 @@ each helper's conversation size at its end.
 | Starter | Opus, medium | 8 | 151k | 78 | done |
 | Builder, item 1 | Opus, medium | 13 | 160k | 53 | done |
 | Builder, item 2 (finish and commit) | Opus, medium | 17 | 85k | 19 | done |
+| Builder, item 3 | Opus, medium | 19 | 221k | 96 | done |
