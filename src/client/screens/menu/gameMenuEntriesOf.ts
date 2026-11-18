@@ -43,6 +43,7 @@ export function gameMenuEntriesOf(place: GameMenuPlace): ReadonlyArray<GameMenuE
       return [...LOBBY_ENTRIES, TUTORIAL_ENTRY];
     case "waiting_room":
     case "ranked_queue":
+    case "tutorial":
       return LOBBY_ENTRIES;
     case "game":
       return GAME_ENTRIES;

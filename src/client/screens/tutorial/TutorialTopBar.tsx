@@ -15,7 +15,7 @@ export function TutorialTopBar({ view, onLeave, isConnected }: Props) {
   return (
     <header className={styles["topBar"]}>
       <div className={styles["turnInfo"]}>
-        <GameMenu place="game" buttonLabel="Menu" />
+        <GameMenu place="tutorial" buttonLabel="Menu" />
         <h1 className={styles["turn"]}>Tutorial · turn {view.turn}</h1>
         <span className={styles[phaseClassOf(view)]}>{PHASE_NAMES[view.phase]}</span>
       </div>

@@ -16,7 +16,7 @@ function tutorialEntryIn(buttonName: string) {
   return within(menu).getByRole("button", { name: "Tutorial" });
 }
 
-function showLobbyBar(place: Exclude<GameMenuPlace, "game">) {
+function showLobbyBar(place: Exclude<GameMenuPlace, "game" | "tutorial">) {
   const startTutorial = vi.fn();
   render(
     <TutorialStart.Provider value={startTutorial}>

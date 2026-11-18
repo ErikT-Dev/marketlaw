@@ -104,6 +104,48 @@ describe("the tutorial screen's highlights and steps", () => {
   });
 });
 
+function isInsideInert(name: string) {
+  return screen.getByRole("list", { name }).closest("[inert]") !== null;
+}
+
+describe("the side of the table the step is not on", () => {
+  it("makes the marketplace side unusable on a hand step", () => {
+    showTutorial({ kind: "step", step: "T1.2", number: 2 });
+    expect(isInsideInert("Marketplace places")).toBe(true);
+    expect(isInsideInert("Your hand")).toBe(false);
+  });
+
+  it("makes the hand side unusable on a marketplace step", () => {
+    showTutorial({ kind: "step", step: "T2.2", number: 6 });
+    expect(isInsideInert("Your hand")).toBe(true);
+    expect(isInsideInert("Marketplace places")).toBe(false);
+  });
+
+  it("makes both sides unusable on a text step", () => {
+    showTutorial({ kind: "step", step: "T1.1", number: 1 });
+    expect(isInsideInert("Your hand")).toBe(true);
+    expect(isInsideInert("Marketplace places")).toBe(true);
+  });
+});
+
+describe("the game menu in the tutorial", () => {
+  it("shows the lobby lines and the tutorial disabled with its reason", () => {
+    showTutorial({ kind: "step", step: "T1.2", number: 2 });
+    fireEvent.click(screen.getByRole("button", { name: "Menu" }));
+    const menu = screen.getByRole("list", { name: "Game menu" });
+    expect(within(menu).getByText("How to play, with examples")).toBeTruthy();
+    expect(within(menu).getByText("All 240 cards, with filters and search")).toBeTruthy();
+    expect(within(menu).queryByText(/clock keeps running/)).toBeNull();
+    const tutorial = within(menu).getByRole("button", { name: "Tutorial" });
+    expect(tutorial.getAttribute("aria-disabled")).toBe("true");
+    expect(
+      within(tutorial).getByText(
+        "Not available while you are in a game, a room or the ranked queue",
+      ),
+    ).toBeTruthy();
+  });
+});
+
 describe("tutorial complete", () => {
   it("says what the player did and offers the rules, another go and the lobby", () => {
     const props = showTutorial({ kind: "complete" });
