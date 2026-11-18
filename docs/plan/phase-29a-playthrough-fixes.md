@@ -1,6 +1,6 @@
 # Phase 29a: Playthrough fixes
 
-Status: approved
+Status: in progress
 Milestone: 6 Learning
 
 ## Goal
@@ -132,7 +132,7 @@ combos you can complete.
 ## Exit criteria
 
 - Every scenario of this phase passes, and the 35 required scenarios that now assert the new
-  rules pass again; the 11 of "Waiting for the owner" as the owner decides.
+  rules pass again; the 11 the owner approved on 2026-11-18 under their new names.
 - `npm run check` fails with a clear message on each kind of broken line in the two rule files
   (tested), and passes on the files as the owner leaves them.
 - The leak test passes with redraws (the cards put back and drawn stay hidden).
@@ -163,7 +163,8 @@ combos you can complete.
 ## Required scenarios
 
 These 23 scenarios are added to `harness/required.yaml` in this phase, by file and name
-(6 of them take the place of the skip-build scenarios above once the owner approves):
+(6 of them, in place of the skip-build scenarios, are on it since the owner's approval of
+2026-11-18; the finisher adds the other 17):
 
 - `setup`: every player starts turn 1 with 1 build pass; a new game starts every player with
   14 total worth gained
@@ -222,3 +223,165 @@ These 35 required scenarios now assert the new rules (Q169) and must pass again:
   1 build pass once per game (2 passes)
 
 ## Progress
+
+- [x] 0. Start (2026-11-18): the branch already held the spec and harness changes (Q169), and
+  the owner approved the 11 required names the same day (`HARNESS:` cdeee649, `PLAN:` 028f4f73).
+  The starter found no contradiction in the spec and no open decision (`decisions.md` has none
+  open); the readings below are everyday choices, not questions.
+  - **Counts now.** 507 scenarios (513 less the 6 deleted skip-build ones):
+    `tools/harness-runner/harness.test.ts` still expects 490; item 1a sets it to 507 (and any
+    item that adds a scenario raises it). `npm run harness:check` has 450 problems, all item 1's
+    (quest names read from R20.7's old tables, trade names from the old list in `HARNESS.md`).
+    Of the 23 new scenarios, 6 are already on `harness/required.yaml` (the approved
+    replacements); the finisher adds the other 17 and I28, I29.
+  - Until every item is built, `npm run check` fails on required scenarios of later items; a
+    builder reports which still fail and why, and checks that its own item's scenarios pass
+    (added to the required list locally, not committed) and fail without the change.
+  - **One raise each for the phase**, by item 2 (the first shape change) and not again:
+    `PROTOCOL_VERSION` 26 to 27 (`src/shared/PROTOCOL_VERSION.ts`, Q75) and
+    `SAVE_SCHEMA_VERSION` 17 to 18 (`src/rules/SAVE_SCHEMA_VERSION.ts`, D1).
+  - **Order.** 1a, 2, 1b (item 2 removes skip build before the trades come from the file, which
+    has no skip-build line); then 3, 4, 6 (the clock, then the redraw, then worth gained, which a
+    redraw must not change); 5, 7 and 10 any time; 8 and 9 before 11 and 13 (they reuse the
+    sorting); 12 after 1b.
+
+- [ ] 1a. **The rule file reader and the harness check** (R15.5, R20.8, T0.7, `HARNESS.md`,
+  "Checking the harness itself"). **Large.**
+  - One reader in `src/shared/` (pure; text in, a `Result` out, with file, line number and wrong
+    word for each problem) turns `harness/spec/quests.txt` and `influence-actions.txt` into the
+    quest list and the influence actions. `tools/harness-check/` uses the same reader:
+    `collectKnownNames.ts` (`collectQuestNames` reads R20.7 today; the trades come from
+    `HARNESS.md`) takes the names from the files, and every error kind of item 1 in Builds is a
+    problem, each tested in `tools/harness-check/`. Set the count in `harness.test.ts` to 507.
+  - Names: an influence action's name with underscores for spaces is its message and scenario
+    name (`influence to build pass` is `influence_to_build_pass`), so the existing trade names
+    stay (Q169, 6). Quest parts use the old tables' words (`Service type`,
+    `1 tier 3 Residential card`). A plain trade is `pay … | get …`; the keywords are
+    `1 more each time` and `draw a tier N card of a chosen kind`; any other third part is
+    "needs new code" with the action's name (Q169, 8).
+  - Reuse: `src/shared/catalogue/` (`TYPE_NAMES`, `Sector`, `Kind`, `QuestNeed`, `QuestReward`,
+    `QuestTerms`), the `Trade` shape of `src/shared/TRADES.ts`, the stat names of R2.1.
+  - Done when `npm run harness:check` passes.
+
+- [ ] 1b. **Every user of the lists reads the files** (R15.6, R20.7, R20.9). **Large.**
+  - The code copies go: `QUEST_TERMS*.ts`, `QUEST_NAMES_BY_TIER.ts` (and what is built on it:
+    `QUESTS.ts`, `QuestName`, `QuestNameOfTier`), `TRADES.ts`, `DRAW_ACTION_COSTS.ts`. Users:
+    `src/rules/` (`useDrawAction.ts`, `drawActionRejection.ts`, `progressViolations.ts`, the
+    trade code), the client (`TradeIcons.tsx`, `tradeLabel.ts`, `tradeMissingAmounts.ts`,
+    `tradeStatusText.ts`, `mainPhaseLogText.ts`, `DrawActionTable.tsx`,
+    `statAndTypeWordsShownIn.ts`) and the bots.
+  - Read when the app is built (Q169, 6). The client already imports `rulebook.md?raw` (Vite);
+    the Worker is bundled by wrangler, whose esbuild must take the files as text too: check with
+    `npx wrangler deploy --dry-run --outdir <scratchpad>` that the bundle holds the quest text.
+    Once names come from a file, a literal union of names may no longer be possible
+    (proposed rule "Ids from fixed lists"); the reader is then the validated boundary
+    (`rules/typescript.md`, casts only at schema-validated boundaries).
+  - A plain trade is applied and shown from its parsed parts, with no code per trade (R15.6,
+    S8.3).
+
+- [ ] 2. **Build passes** (R6.1, R6.2, R6.3, R4.6, R11.4, R10.1, R7.2, I6, S16.3). **Large.**
+  - Scenarios: `setup` "every player starts turn 1 with 1 build pass"; `turns-and-time` "every
+    player gets 1 build pass at the start of every turn", "unused build passes carry over …",
+    "end-of-turn steps … keep build passes"; `playing-cards` "rejects a card when the player has
+    no build pass left", "playing a card uses up 1 build pass", "a player with saved build
+    passes can play several cards in one turn"; `influence` "a bought build pass can be used
+    straight away", "a bought build pass costs 1 more fund each time", "5 influence buys 1 build
+    pass once per game"; `undo` "undo takes back a build pass bought with influence", "undoing a
+    bought build pass makes the next one cost the same again".
+  - Skip build goes: `hasSkippedBuild` (`SeatState.ts`, `newSeat.ts`, `endOfTurnSteps.ts`,
+    `rejectionOf.ts`, `invariantViolations.ts`), the `skip_build` trade (`TRADES.ts`,
+    `tradeRejection.ts`, the client trade files, `REJECTION_MESSAGES.ts`,
+    `src/bots/chaosBot.ts`), the reason codes `build_skipped` and `skip_build_after_play`
+    (`src/shared/ReasonCode.ts`), the view field and the log text. `hasPlayedThisTurn` stays
+    (R10.1 still resets it; End turn's highlight in S6 uses it). The turn's pass is the first
+    start-of-turn step, before the marketplace (Q169, 9); turn 1's comes after setup (R4.6,
+    `setUpGame.ts`). The scenario runner's default seat has 1 build pass (`HARNESS.md`, seats
+    row). Raises both versions (see 0).
+
+- [ ] 3. **Time** (R9.1, R9.2, R9.4, R9.13, R9.15, R18.11, I19). **Small.**
+  - `src/rules/TIME_RULES.ts`: `goLimitMs` 30 000; turn 1's main free time 165 s and limit 300 s
+    (210 + 90, R9.1), used by `mainPhaseLimitMs.ts`, `decisionOf.ts` and the free time again
+    after a pause (`ClockGrace.ts`: that turn's free time, R9.13). R9.15: End turn adds the
+    unused main free time to the bank, at most up to 15 minutes; never the pause's free time or
+    a market go's. I19 in `invariantViolations.ts` allows that growth.
+  - Scenarios: `turns-and-time` "the first player's market go has 30 seconds", "every later
+    market go also has 30 seconds", "from turn 2 the first 75 seconds …", "the main-phase time
+    limit in turn 1 is 5 minutes", "the first 165 seconds …", the 4 new ones on unused free time
+    and the 15-minute cap; and the 24 moved to turn 2. Browser tests that wait for 40-second
+    goes or the old turn-1 times follow (`e2e/`, for example `clocks.spec.ts`).
+
+- [ ] 4. **Redrawing the starting hand** (R17.12, M3.3, M3.7, S6.6, S7.2, S16.3, T0.8, I29, B2).
+  **Large.**
+  - The `redraw_hand` message in the intent schema (`src/shared/`) carries the action id and
+    state version like any action (M9.4) and moves only the redrawer's own version. Only an
+    accepted main-phase action (End turn included) ends the window; a rejected one does not.
+    New reason codes `redraw_too_late` and `no_redraw_left`; the tutorial room rejects it as
+    `not_this_step` (T0.8). Deal as R17.9 does (reuse the setup's dealing); one saved row (B2).
+  - Log item `redrew` with the count when the main phase ends (reuse the main-phase log
+    reveal); the leak test must pass (the cards put back and drawn stay hidden). The runner reads
+    `redraws_used` and the log item `redrew`. Client: the **Redraw hand (N left)** button
+    (S6.6), from data in the view.
+  - Scenarios: `drawing`, the 5 redraw ones; `visibility` "the log shows a redraw …";
+    `tutorial` "the tutorial does not offer a redraw …".
+
+- [ ] 5. **Projects need 10 income** (R16.2, S6.3, S8.2, S16.3, T5.4). **Small.**
+  - `src/rules/projectRejection.ts`, reason `project_needs_not_met`, whose text names the income
+    (no new code, Q169, 4); `REJECTION_MESSAGES.ts`, the projects help text and pop-up, the
+    tutorial's T5.4 text. Scenarios: `projects` "rejects a project with less than 10 income" and
+    the 7 with 10 income. The bots must not try a project below 10 income (`bots.test.ts`).
+
+- [ ] 6. **Total worth gained** (R2.4, M3.5, I28). **Small.**
+  - A seat count, 14 at setup, raised where funds are received (not selling) and cards gained;
+    undo takes back what its action added; a redraw changes nothing. In the view for every seat,
+    others' as at the start of their own main phase (R5.4; reuse how their other stats are held
+    back). The runner reads `worth_gained`. Scenarios: `setup` "a new game starts every player
+    with 14 total worth gained", `playing-cards` "selling or playing a card does not change
+    total worth gained", `influence` "funds received and cards drawn add to total worth gained".
+    The F boxes on screen are item 9's.
+
+- [ ] 7. **Player icons** (A2.5, S1.8, S5.1, S6.3). **Small.**
+  - Usernames reach the client in the room's view (`playerNames` in
+    `src/shared/protocol/RoomView.ts`, built in `src/server/room/updateFor.ts`), not in the
+    engine's state, so the icon colour goes beside them, per seat, as an index 0 to 11 that
+    `src/server/` picks from the account id; the client maps it to 12 icon colour tokens added
+    to `src/client/tokens.css`. The engine stays player-type agnostic. The quests and projects
+    displays show icons with the name as tooltip and accessible name; "could complete now"
+    becomes an orange border.
+
+- [ ] 8. **Combos list and Claim all** (S6.1, S6.6, S1.7, S8.1). **Large.**
+  - One coloured list in the order of S6.1 (group counts include ready combos; the stat order of
+    R2.1; fewer cards needed is the smaller type count, Q169, 2); the same order in the claim
+    pop-up and in the detailed summary table; **Claim all (N)**, N being 1 per ready one-time
+    combo plus each time an infinite combo is ready (Q169, 11), from the view. The S6.1 order is
+    one pure client function that items 11 and 13 reuse.
+
+- [ ] 9. **Stats and summary tables** (S3.1, S3.2, S6.2, S1.7, S13.4). **Large.**
+  - Q, T, C and F boxes in your stats (T counts the city's card types, a doubled type twice,
+    Q169, 3); T, C, F and the 5 most played types in the quick summary table (count order only,
+    Q169, 5); type counts by count, then name, with bonus types first and highlighted green. One
+    pure S1.7 type sorter, which 13 reuses. The names "quick summary table" and "detailed
+    summary table" on screen and in tests. Reuse `OpponentStatsBox.tsx` and `StatChip.tsx`.
+
+- [ ] 10. **Quests completed last turn** (S5.5). **Small.**
+  - Each quest with its requirement and reward as icons (S1.6), reusing how the quests table
+    shows them; usernames stay in this table (Q169, 16).
+
+- [ ] 11. **Card-name combos on the big card** (S6.9). **Large.**
+  - `src/client/components/BigCard*`: the red name with "!" (both directions, Q169, 18), its
+    tooltip with those combos and the total stats as icons, the red and orange highlights, for
+    hand, marketplace and other players' city cards. A pure lookup from the view and the card
+    data; no new view field.
+
+- [ ] 12. **Rulebook and tutorial texts** (S14.2, T1.3, T5.4, rulebook). **Small.**
+  - `src/client/screens/rules/PARSED_RULEBOOK.ts` fills `{influence-actions.txt}` (rulebook.md
+    line 271) and `{quests.txt}` (line 380) with tables made by 1a's reader; the tutorial's T1.3
+    text. Needs 1b.
+
+- [ ] 13. **Sorting everywhere** (S1.7, finding 15). **Small.**
+  - Every remaining list of types with counts, and every list of a player's or one card's combos
+    (big card, card set: type combos first, then card-name combos by card name, Q169, 15), uses
+    the sorters of 8 and 9.
+
+- [ ] Finish. The finisher adds the 17 remaining new scenarios and I28 and I29 to
+  `harness/required.yaml`. Then the owner's quest review (Waiting for the owner, finding 10)
+  comes before the releaser.
