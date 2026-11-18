@@ -1,10 +1,13 @@
 import { BONUS_PER_FUND } from "./BONUS_PER_FUND";
 import { cardOf } from "../shared/catalogue/cardOf";
+import { decisionOf } from "./decisionOf";
 import { FIRST_TURN_FOR_HIGHER_TIERS } from "./FIRST_TURN_FOR_HIGHER_TIERS";
 import { gameEndViolations } from "./gameEndViolations";
 import { isInOwnMainPhase } from "./isInOwnMainPhase";
 import { isVoteAction } from "./isVoteAction";
+import type { GameAction } from "./GameAction";
 import type { GameState } from "./GameState";
+import type { SeatNumber } from "../shared/SeatNumber";
 import { seatOf } from "./seatOf";
 import { stateInvariantViolations } from "./stateInvariantViolations";
 import { TIME_BANK_MS } from "./TIME_BANK_MS";
@@ -32,12 +35,18 @@ function holdingPileViolations(before: GameState, after: GameState): ReadonlyArr
     : [];
 }
 
-function timeBankViolations(before: GameState, after: GameState): ReadonlyArray<string> {
+function allowedBankGrowthMs(before: GameState, action: GameAction, seat: SeatNumber): number {
+  const isEndingOwnTurn = action.type === "end_turn" && action.seat === seat;
+  const hasFreeTimeAgain = before.grace.some((entry) => entry.seat === seat);
+  return isEndingOwnTurn && !hasFreeTimeAgain ? (decisionOf(before, seat)?.freeMs ?? 0) : 0;
+}
+
+function timeBankViolations({ before, action }: Transition, after: GameState): ReadonlyArray<string> {
   return after.seats.flatMap((afterSeat) => {
     const bank = afterSeat.timeBankMs;
     const bankBefore = seatOf(before, afterSeat.seat)?.timeBankMs ?? bank;
     const isOutOfRange = bank < 0 || bank > TIME_BANK_MS;
-    return isOutOfRange || bank > bankBefore
+    return isOutOfRange || bank > bankBefore + allowedBankGrowthMs(before, action, afterSeat.seat)
       ? [`I19: seat ${String(afterSeat.seat)} time bank went from ${String(bankBefore)} to ${String(bank)}`]
       : [];
   });
@@ -96,7 +105,7 @@ function acceptedViolations(transition: Transition, after: GameState): ReadonlyA
     ...firstPlayer,
     ...holdingPileViolations(before, after),
     ...incomeViolations(before, after),
-    ...timeBankViolations(before, after),
+    ...timeBankViolations(transition, after),
     ...gameEndViolations(before, after),
     ...stateInvariantViolations(after),
   ];

@@ -2,6 +2,7 @@ import type { SeatNumber } from "../shared/SeatNumber";
 import type { Decision } from "./Decision";
 import type { GameState } from "./GameState";
 import { isInOwnMainPhase } from "./isInOwnMainPhase";
+import { mainPhaseFreeMs } from "./mainPhaseFreeMs";
 import { mainPhaseLimitMs } from "./mainPhaseLimitMs";
 import { marketGoOf } from "./marketGoOf";
 import { seatOf } from "./seatOf";
@@ -23,7 +24,7 @@ export function decisionOf(state: GameState, seatNumber: SeatNumber): Decision |
   return isPlaying && seat.mainPhaseStartedAt !== null
     ? {
         startedAt: seat.mainPhaseStartedAt,
-        freeMs: TIME_RULES.mainFreeMs,
+        freeMs: mainPhaseFreeMs(state.turn),
         limitMs: mainPhaseLimitMs(state.turn),
       }
     : null;

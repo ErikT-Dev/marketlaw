@@ -20,7 +20,7 @@ import type { RoomStorage } from "./RoomStorage";
 import { NO_CHAT_CONTEXT } from "./NO_CHAT_CONTEXT";
 
 const STARTED_AT = 1_000_000;
-const FIRST_DEADLINE = STARTED_AT + 210_000;
+const FIRST_DEADLINE = STARTED_AT + 300_000;
 
 function playingRoom(): RoomRecord {
   const saved = startSavedGame(

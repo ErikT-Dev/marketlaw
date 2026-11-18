@@ -7,7 +7,7 @@ const FREE_TIME_MS = 75_000;
 async function seatPage(browser: Browser, link: string): Promise<Page> {
   const page = await (await browser.newContext()).newPage();
   await page.goto(link);
-  await expect(page.getByRole("heading", { name: "Turn 1 of 40" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Turn 2 of 40" })).toBeVisible();
   return page;
 }
 
@@ -18,6 +18,7 @@ test("clocks count down, and a player out of time in a casual game keeps playing
   test.setTimeout(FREE_TIME_MS + 60_000);
   const [seatOne = "", seatTwo = ""] = await startTestRoom(request, {
     players: 2,
+    turn: 2,
     seats: [{ seat: 1, time_bank_ms: 0 }],
   });
   const one = await seatPage(browser, seatOne);

@@ -1,8 +1,10 @@
 export const TIME_RULES = {
   mainFreeMs: 75_000,
+  mainFreeFirstTurnMs: 165_000,
   goFreeMs: 5_000,
-  goLimitMs: 40_000,
-  mainLimitFirstTurnSeconds: 210,
+  goLimitMs: 30_000,
+  mainLimitBaseSeconds: 210,
+  mainLimitFirstTurnExtraSeconds: 90,
   mainLimitMostSeconds: 330,
   mainLimitGrowthSeconds: 120,
   mainLimitGrowthTurns: 19,

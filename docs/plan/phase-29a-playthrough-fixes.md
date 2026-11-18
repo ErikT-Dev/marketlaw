@@ -347,7 +347,7 @@ These 35 required scenarios now assert the new rules (Q169) and must pass again:
     buying one (not run locally; the branch check runs it).
   - For later items: `Trade.doesGiveBuildPass` is unchanged (1b replaces `TRADES`).
 
-- [ ] 3. **Time** (R9.1, R9.2, R9.4, R9.13, R9.15, R18.11, I19). **Small.**
+- [x] 3. **Time** (R9.1, R9.2, R9.4, R9.13, R9.15, R18.11, I19). **Small.**
   - `src/rules/TIME_RULES.ts`: `goLimitMs` 30 000; turn 1's main free time 165 s and limit 300 s
     (210 + 90, R9.1), used by `mainPhaseLimitMs.ts`, `decisionOf.ts` and the free time again
     after a pause (`ClockGrace.ts`: that turn's free time, R9.13). R9.15: End turn adds the
@@ -358,6 +358,24 @@ These 35 required scenarios now assert the new rules (Q169) and must pass again:
     limit in turn 1 is 5 minutes", "the first 165 seconds …", the 4 new ones on unused free time
     and the 15-minute cap; and the 24 moved to turn 2. Browser tests that wait for 40-second
     goes or the old turn-1 times follow (`e2e/`, for example `clocks.spec.ts`).
+  - Done (2026-11-18). Every item 3 scenario passes and `npm run check` is green (no required
+    scenario fails any more).
+  - As built: `TIME_RULES` gains `mainFreeFirstTurnMs` and `mainLimitFirstTurnExtraSeconds`
+    (`mainLimitFirstTurnSeconds` is now `mainLimitBaseSeconds`); `mainPhaseFreeMs.ts` gives a
+    turn's free time; `bankAfterEndingTurn.ts` adds the unused free time on End turn, capped at
+    `TIME_BANK_MS`, and nothing while the seat has free time again after a pause (`grace`). I19
+    allows growth on the player's own `end_turn` up to that turn's free time (the transition
+    carries no time), unless the seat had free time again.
+  - Differs: one more required scenario waited 75 seconds in turn 1 (`combos-and-income`, "a
+    player made done when time runs out also gets their ready combos claimed"); it now waits
+    165 seconds (`HARNESS:` commit, recorded in Q169). `e2e/clocks.spec.ts` and the abandoned
+    test of `e2e/leaving.spec.ts` run in turn 2 (75 seconds of free time), not turn 1.
+  - For later items: the browser tests could not be run locally: since 1b every spec that
+    imports `e2e/startTestRoom.ts` fails to load, because it imports the scenario runner's
+    `stateFromGiven`, which reaches `src/shared/ruleFiles/` and its `?raw` imports, which
+    Playwright's loader parses as JavaScript ("quests.txt: Missing semicolon"). This is 1b's,
+    and the branch check will fail on it until it is fixed (for example by bundling
+    `stateFromGiven` with `tools/bundleForNode.ts`, as `npm run test-room` does).
 
 - [ ] 4. **Redrawing the starting hand** (R17.12, M3.3, M3.7, S6.6, S7.2, S16.3, T0.8, I29, B2).
   **Large.**

@@ -168,6 +168,21 @@ describe("invariantViolations", () => {
     ]);
   });
 
+  it("allows a time bank to grow by at most the free time when its player ends their turn", () => {
+    const spent = withSeat1(START, { timeBankMs: 600_000 });
+    const refilled = withSeat1(START, { timeBankMs: 765_000 });
+    const overfilled = withSeat1(START, { timeBankMs: 765_001 });
+    const found = [
+      ...invariantViolations(transition(spent, { type: "end_turn", seat: 1 }, refilled)),
+      ...invariantViolations(transition(spent, { type: "end_turn", seat: 1 }, overfilled)),
+      ...invariantViolations(transition(spent, { type: "end_turn", seat: 2 }, refilled)),
+    ].filter((violation) => violation.startsWith("I19"));
+    expect(found).toEqual([
+      "I19: seat 1 time bank went from 600000 to 765001",
+      "I19: seat 1 time bank went from 600000 to 765000",
+    ]);
+  });
+
   it("checks the score and places of a game that ends", () => {
     const ended = endGame({ ...START, turn: 40 }, 0);
     expect(endingViolations(ended)).toEqual([]);
