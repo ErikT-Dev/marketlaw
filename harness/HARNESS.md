@@ -59,7 +59,7 @@ Every scenario file is a list of scenarios. Every scenario has exactly these par
 | `phase` | `new_game` (not started yet), `market`, `main` or `ended` | `main` |
 | `first_player` | Seat number of this turn's first player | as R4.4 |
 | `market_go` | In the market phase: whose go it is | the first player's go |
-| `seats` | Per seat: `stats`, `hand`, `city`, `gained_types`, `build_passes`, `build_passes_bought`, `influence_uses`, `projects`, `quests_completed`, `combos_claimed`, `played_this_turn`, `skipped_build`, `actions_this_turn`, `done`, `left`, `connected`, `time_bank_ms`, `timeouts_in_a_row` (counted in ranked games only, R9.11), `out_of_time` (their main-phase time has run out and they are not done yet, R9.10), `turn_draw_pending` (their turn draw is still open after a time-out on their market go, R18.16), `market` (`in` before their market go this turn, `out` after it, when their own main phase has started, R18.15), `new_cards`, `state_version`, `actions_this_game` (accepted actions in this game so far, for A9.2), `player` (the account in that seat) | starting values (R2.1), empty hand and city, nothing used or claimed, connected |
+| `seats` | Per seat: `stats`, `hand`, `city`, `gained_types`, `build_passes`, `build_passes_bought`, `influence_uses`, `projects`, `quests_completed`, `combos_claimed`, `played_this_turn`, `redraws_used` (redraws of the starting hand so far, R17.12), `worth_gained` (total worth gained, R2.4), `actions_this_turn`, `done`, `left`, `connected`, `time_bank_ms`, `timeouts_in_a_row` (counted in ranked games only, R9.11), `out_of_time` (their main-phase time has run out and they are not done yet, R9.10), `turn_draw_pending` (their turn draw is still open after a time-out on their market go, R18.16), `market` (`in` before their market go this turn, `out` after it, when their own main phase has started, R18.15), `new_cards`, `state_version`, `actions_this_game` (accepted actions in this game so far, for A9.2), `player` (the account in that seat) | starting values (R2.1), 1 build pass (R6.3), total worth gained 14 (R2.4), empty hand and city, nothing used, claimed or redrawn, connected |
 | `deck` | The deck, top first, as card names | all cards not placed elsewhere, in `cards.json` order |
 | `discard` | The discard pile, as card names | empty |
 | `marketplace` | Each `place` and its `card`, plus `phases_shown`: how many market phases it has been on display | empty; `phases_shown` 0 |
@@ -134,7 +134,7 @@ it out, `player_to_mute` for a mute and `player_to_unmute` for an unmute.
 | `room`, `game`, `lobby_rooms`, `queue`, `match`, `accounts`, `players_online`, `chat`, `notified`, `emails_sent`, `logged_in`, `match_history`, `ranking`, `menu`, `card_set`, `card_detail` | The expected state of rooms, accounts, the lobby and client screens |
 | `view` | What one seat's view shows: `{seat: 2, of_seat: 1, stats: {...}, hand_count: 5, contains: [...], hides: [...]}` |
 | `message_to` | That a seat or player was sent a particular notice or text; the `timed_out` notice has `in_a_row` and `of` in a ranked game, and `keep_playing: true` in a casual game (R9.11) |
-| `log_contains`, `log_excludes` (inside `view`) | Public game-log entries that must or must not appear: draws (M3.3), and what a player did in a main phase (M3.7) as `played` (a card), `completed_quest`, `completed_project` or `influence` (a trade), each with `seat` and optionally `turn` |
+| `log_contains`, `log_excludes` (inside `view`) | Public game-log entries that must or must not appear: draws (M3.3), and what a player did in a main phase (M3.7) as `played` (a card), `completed_quest`, `completed_project`, `influence` (a trade) or `redrew` (how many redraws of the starting hand, R17.12), each with `seat` and optionally `turn` |
 | `discard_count` (inside `view`) | The number of cards in the discard pile as the seat sees it (R5.5); the view never holds which cards they are (M3.2), checked with `hides: [discard_cards]` |
 | `ended` | The game has ended: `winner`, `places` (seats, 1st first), `scores`, `bonus_type_points`, or `abandoned: true` |
 | `record` | The saved game record (A3) |
@@ -176,6 +176,7 @@ is compared whole, in order and with its length; `seats` lists only the seats it
 | `undo` | | R7 |
 | `end_turn` | | R8 |
 | `turn_draw` | `option: A` with `card`, or `option: B` with `sector` | R18.8 |
+| `redraw_hand` | | R17.12 |
 | `leave_game` | | M6 |
 | `call_vote`, `vote` | `vote`: `yes` or `no` | M7 |
 | `create_room`, `join_room`, `leave_room`, `change_size`, `accept_game`, `decline_game`, `ask_rematch` | room details | M1, M8 |
@@ -185,14 +186,10 @@ is compared whole, in order and with its length; `seats` lists only the seats it
 | `start_tutorial`, `leave_tutorial`, `continue` | | C4, T |
 | `open_site`, `open_lobby`, `open_game`, `open_menu`, `open_rules`, `open_card_set`, `open_card`, `filter_cards`, `search_cards`, `open_match_history`, `open_ranking`, `ask_generated_name` | screen details: `from` (where the menu is opened), `tab`, `card`, `sector`, `tier`, `type`, `text`, `of` (whose history), `jump_to_me` | A4–A7, C1–C3, M5.1 |
 
-Influence trades, in the order of R15.1: `influence_to_funds`, `influence_to_quality`,
-`influence_to_satisfaction`, `influence_to_workforce`, `fund_to_influence`, `buy_build_pass`,
-`influence_to_build_pass`, `skip_build`, `quality_to_satisfaction_with_influence`,
-`satisfaction_to_quality_with_influence`, `product_to_distribution`, `distribution_to_product`,
-`quality_to_workforce_with_influence`, `satisfaction_to_workforce_with_influence`,
-`workforce_to_satisfaction`, `workforce_to_quality`, `two_quality_to_satisfaction`,
-`two_satisfaction_to_quality`, `four_quality_to_workforce`, `four_satisfaction_to_workforce`,
-`draw_tier_1`, `draw_tier_2`, `draw_tier_3`.
+Influence trades are the names of the lines of `spec/influence-actions.txt` with their spaces
+written as underscores (R15.5), in the order of the file: `influence_to_funds`, `buy_build_pass`,
+`draw_tier_1` and so on. A draw action also takes `kind`. A scenario that names a trade the file
+no longer has fails the harness check.
 
 ## Reason codes
 
@@ -213,8 +210,8 @@ When several codes apply, the first one in this order wins:
    `room_full`, `room_not_waiting`, `no_vote_open`, `nothing_to_undo`, `nothing_to_claim`; for
    option A of a turn draw, `marketplace_empty` before `card_not_in_marketplace`
 9. every other rule-specific code; for playing a card, in the order of R6.1: `tier_not_allowed`,
-   `no_build_pass`, `build_skipped`; for influence actions, `trade_limit_reached` before
-   `skip_build_after_play` and `no_card_of_kind`
+   `no_build_pass`; for influence actions, `trade_limit_reached` before `no_card_of_kind`; for a
+   redraw, `redraw_too_late` before `no_redraw_left`
 10. `not_enough_funds`, `cannot_afford_trade`
 
 **Messages and identity**
@@ -248,8 +245,9 @@ A repeated action id is not rejected: it returns the original result again.
 | `card_not_in_hand` | The card is not in the player's hand |
 | `not_enough_funds` | The player cannot pay the real cost |
 | `tier_not_allowed` | A tier 2 or 3 card before turn 5 |
-| `no_build_pass` | A second card this turn without a build pass |
-| `build_skipped` | The player used skip build this turn |
+| `no_build_pass` | A card played with no build pass left (R6.1) |
+| `redraw_too_late` | A redraw of the starting hand after turn 1 or after the player's first action (R17.12) |
+| `no_redraw_left` | A fourth redraw of the starting hand (R17.12) |
 
 **Combos, influence, projects, quests and undo**
 
@@ -258,10 +256,9 @@ A repeated action id is not rejected: it returns the original result again.
 | `nothing_to_claim` | Claim all with no combo ready |
 | `trade_limit_reached` | The influence action was used as often as allowed |
 | `cannot_afford_trade` | The player lacks something the trade costs |
-| `skip_build_after_play` | Skip build after playing a card this turn |
 | `no_card_of_kind` | No card of that kind and tier in the deck or discard pile as the player sees them |
 | `project_already_completed` | The player already completed this project |
-| `project_needs_not_met` | Not enough of the stat, or a negative stat (R16.2) |
+| `project_needs_not_met` | Not enough of the stat, less than 10 income, or a negative stat (R16.2) |
 | `quest_not_on_table` | The quest is not on the quests table |
 | `quest_already_completed` | The player already completed this quest |
 | `quest_needs_not_met` | The requirement is not met |
@@ -338,6 +335,24 @@ A repeated action id is not rejected: it returns the original result again.
 - a scenario uses an action, influence trade or reason code not listed in this file
 - a link in the rulebook points to a section that does not exist
 - a rule has no scenario and no approved exception
+
+The same check reads the two rule files, `spec/quests.txt` (R20.8) and
+`spec/influence-actions.txt` (R15.5), and fails, naming the file, the line number and the wrong
+word, when:
+
+- a line does not have its four parts, or a part does not follow the format exactly (a typo, a
+  missing number or limit, an empty line, a broken line)
+- a word names a sector, type or stat that does not exist
+- two lines have the same name
+- `quests.txt` has fewer than 4 tier 1 quests (R19.3)
+- a quest the tutorial needs (T0.7) is missing or no longer has its tier, requirement and reward
+- `influence-actions.txt` has two draw actions for the same tier
+- an influence action is of a kind the game or the screen has no code for: the message reads
+  "needs new code" and names the action (R15.6)
+- a scenario names a quest or an influence action the files do not have
+
+So a list the game cannot handle can never be deployed: `npm run check` runs before every
+merge and deploy.
 
 ## What must pass now: `required.yaml`
 

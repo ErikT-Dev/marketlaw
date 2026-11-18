@@ -15,8 +15,8 @@
 
 - rule: R19.2
   kind: instead
-  how: "The quest list scenarios in `quests.yaml` have one scenario for each of the 45 quests."
-  approved: 2026-10-25
+  how: "The quest list scenarios in `quests.yaml` have one scenario for each quest of `quests.txt`, updated with every edit of the file (Q169)."
+  approved: 2026-11-18
 
 - rule: M3.1
   kind: instead
@@ -62,3 +62,33 @@
   kind: instead
   how: "The privacy notice is page text, not behaviour: a browser test opens the page from signup and from account settings and finds each part of A12.1 by its heading."
   approved: 2026-11-10
+
+- rule: R15.5
+  kind: instead
+  how: "Rule file check (HARNESS.md, Checking the harness itself): tests of the check with broken, misspelt and unknown lines of `influence-actions.txt`. The game reads the file itself, so every influence scenario uses it."
+  approved: 2026-11-18
+
+- rule: R15.6
+  kind: instead
+  how: "Rule file check: a test that an action of an unknown kind fails with needs new code, and a client test that a plain trade added to the file is shown and used with no screen change."
+  approved: 2026-11-18
+
+- rule: R20.8
+  kind: instead
+  how: "Rule file check: tests of the check with broken, misspelt and unknown lines of `quests.txt`."
+  approved: 2026-11-18
+
+- rule: R20.9
+  kind: instead
+  how: "Rule file check: tests that fewer than 4 tier 1 quests, a duplicate name and a changed tutorial quest fail it; client tests that the rules viewer and the quests panel show the quests of the file."
+  approved: 2026-11-18
+
+- rule: T0.7
+  kind: instead
+  how: "Rule file check: tests that removing or changing Trading post, or removing another tutorial quest, fails it."
+  approved: 2026-11-18
+
+- rule: A2.5
+  kind: instead
+  how: "Server tests that a seat's icon colour comes from the account id and stays the same in two games and after a username change; client tests of the icon in the quests and projects displays."
+  approved: 2026-11-18
