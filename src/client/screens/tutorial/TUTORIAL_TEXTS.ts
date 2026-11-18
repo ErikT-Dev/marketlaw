@@ -14,7 +14,7 @@ export const TUTORIAL_TEXTS: Readonly<Record<TutorialStepId, TutorialStepText>> 
     waitingFor: "play Row House",
   },
   "T1.3": {
-    text: "You can play one card per turn. Cards you don't need can be sold for 1 fund each. Sell Hiking Trail.",
+    text: "Every card you play uses a build pass. You get 1 every turn and keep the ones you don't use. Cards you don't need can be sold for 1 fund each. Sell Hiking Trail.",
     textAfter: null,
     waitingFor: "sell Hiking Trail",
   },

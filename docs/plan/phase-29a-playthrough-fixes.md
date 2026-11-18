@@ -543,10 +543,22 @@ These 35 required scenarios now assert the new rules (Q169) and must pass again:
     hand, marketplace and other players' city cards. A pure lookup from the view and the card
     data; no new view field.
 
-- [ ] 12. **Rulebook and tutorial texts** (S14.2, T1.3, T5.4, rulebook). **Small.**
+- [x] 12. **Rulebook and tutorial texts** (S14.2, T1.3, T5.4, rulebook). **Small.**
   - `src/client/screens/rules/PARSED_RULEBOOK.ts` fills `{influence-actions.txt}` (rulebook.md
     line 271) and `{quests.txt}` (line 380) with tables made by 1a's reader; the tutorial's T1.3
     text. Needs 1b.
+  - Done (2026-11-19). Unit tests in `src/client/screens/rules/ruleFileTables.test.tsx` (the
+    influence table, the 3 quest tables, no placeholder left) and `tutorialTextBox.test.tsx`
+    (T1.3); `rulesAndCardSet` and `tutorial` browser specs pass locally at 1920 and 2560;
+    `npm run check` is green.
+  - As built: `rulebookWithRuleFileTables` replaces each placeholder line with Markdown tables
+    before `parseRulebook`, so stats and types become icons as in the rest of the rulebook
+    (`influenceActionsTableText`: Action, Times per game, reusing `tradeLabel` and
+    `amountsText`; `questTablesText`: a bold Tier N line and a Quest, Needs, Reward table per
+    tier, reusing `questNeedLabel`). T5.4 already matched the spec (item 5).
+  - For later items: `e2e/tutorial.spec.ts` at 1280x720 fails locally at step 3 (the
+    highlighted Hiking Trail is 90% in view, line 48), at this item's start commit too, so it
+    comes from an earlier item (the taller stats panel of 9 most likely); GitHub's run decides.
 
 - [ ] 13. **Sorting everywhere** (S1.7, finding 15). **Small.**
   - Every remaining list of types with counts, and every list of a player's or one card's combos
