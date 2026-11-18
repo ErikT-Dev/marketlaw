@@ -45,6 +45,7 @@ async function playTurnOne(page: Page, testInfo: TestInfo): Promise<void> {
   await pressInTextBox(page, 1, "Continue");
   await playHandCard(page, 2, "Row House");
   await expectStep(page, 3);
+  await expect(page.getByTestId("tutorial-highlight")).toBeInViewport({ ratio: 1 });
   await page.getByRole("button", { name: "End turn" }).click();
   const notThisStep = page.getByRole("status").filter({ hasText: "Not this step" });
   await expect(notThisStep).toContainText(

@@ -1,5 +1,5 @@
 import { useContext, type ReactNode } from "react";
-import styles from "./Highlighted.module.css";
+import { HighlightFrame } from "./HighlightFrame";
 import { HighlightedParts } from "./HighlightedParts";
 import type { ScreenPart } from "./ScreenPart";
 import { screenPartKey } from "./screenPartKey";
@@ -16,9 +16,5 @@ export function Highlighted({ part, isBlock = false, children }: Props) {
   if (!highlighted.some((shown) => screenPartKey(shown) === key)) {
     return children;
   }
-  return (
-    <div className={styles[isBlock ? "block" : "inline"]} data-testid="tutorial-highlight">
-      {children}
-    </div>
-  );
+  return <HighlightFrame isBlock={isBlock}>{children}</HighlightFrame>;
 }

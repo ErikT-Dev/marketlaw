@@ -331,14 +331,20 @@ These 17 scenarios are added to `harness/required.yaml` in this phase, by file a
       away alarm; `logOutOfRooms` calls it when the player is busy in the tutorial. Route tests
       in `tools/route-tests/tutorialLogout.test.ts` (logout keeps the tutorial for the other
       login; deletion closes the socket).
-  - [ ] F2 (should fix): the menu in the tutorial uses `place="game"` (`TutorialTopBar.tsx`), so
+  - [x] F2 (should fix): the menu in the tutorial uses `place="game"` (`TutorialTopBar.tsx`), so
     Rules and Card set say the clock keeps running (S14.1; C4.5 has no clocks). Fix: a `tutorial`
     menu place with the lobby lines and Tutorial disabled with its reason; test the lines.
-  - [ ] F3 (should fix): at 1280x720 the highlighted hand card is out of sight (T1.3 Hiking Trail,
+    - Fixed: menu place `tutorial` (lobby lines, Tutorial disabled with its reason), written into
+      S14.1 first (Q168); `tutorialPage.test.tsx` checks the lines.
+  - [x] F3 (should fix): at 1280x720 the highlighted hand card is out of sight (T1.3 Hiking Trail,
     seen in `tutorial-not-this-step-1280x720.png`; likely T2.3, T3.2, T4.2 too). Fix: scroll a
     highlighted part into view in its panel when it first renders (`block: "nearest"`, no smooth
     scroll under reduced motion); `e2e/tutorial.spec.ts` asserts the highlight is in the viewport
     at T1.3 before clicking.
+    - Fixed: `HighlightFrame` scrolls the highlighted part into view when it first renders
+      (`block` and `inline` "nearest", no smooth scroll); `e2e/tutorial.spec.ts` asserts the
+      highlight is fully in the viewport at T1.3 (failed at 1280x720 before the fix, passes at all
+      three sizes after). jsdom has no `scrollIntoView`, so the frame calls it only where it exists.
   - [x] F4 (should fix): C4.10's deletion and the alarm are inline in `TutorialRoom.ts`
     (`webSocketClose`, `alarm`) and only modelled by hand in `TutorialSession.ts`, so `client`
     #12 and #17 test a copy. The real room also counts sockets that never identified. Fix: pure
@@ -347,9 +353,10 @@ These 17 scenarios are added to `harness/required.yaml` in this phase, by file a
     - Fixed: `tutorialAlarmAfterClose` and `isTutorialAbandoned` (with
       `isTutorialPlayerConnected`) in `src/server/tutorial/`, used by `TutorialRoom` and by
       the harness's `TutorialSession`; unit tests in `tutorialAlarmAfterClose.test.ts`.
-  - [ ] F5 (should fix): nothing tests that the other side of the table cannot be used (`inert` in
+  - [x] F5 (should fix): nothing tests that the other side of the table cannot be used (`inert` in
     `TutorialColumns.tsx`; S15.2, Q167). Fix: `tutorialPage.test.tsx` asserts `inert` on the
     marketplace side at T1.2, the hand side at T2.2 and both at T1.1.
+    - Fixed: `tutorialPage.test.tsx` asserts exactly that.
   - [x] F6 (suggestion): a resync to a missing tutorial room returns `closing`
     (`receiveTutorialMessage.ts`), which runs `deleteAlarm` and `deleteAll`: rows written on a
     read (`rules/cloudflare.md`). Fix: only close the sockets; delete storage only when a stored
