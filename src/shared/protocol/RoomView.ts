@@ -12,6 +12,7 @@ export type RoomView = {
   readonly ownerName: string;
   readonly playerNames: ReadonlyArray<string>;
   readonly playerIds: ReadonlyArray<PlayerId>;
+  readonly playerIconColors: ReadonlyArray<number>;
   readonly namesInRoom: ReadonlyArray<string>;
   readonly idsInRoom: ReadonlyArray<PlayerId>;
   readonly myName: string;

@@ -23,6 +23,7 @@ export type HostEvent =
   | {
       readonly type: "tutorial_update";
       readonly view: TutorialView;
+      readonly playerIconColor: number;
       readonly acceptedActionId: string | null;
       readonly serverNow: EpochMs;
     }

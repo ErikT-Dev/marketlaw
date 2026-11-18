@@ -120,6 +120,18 @@
   --color-panel-highlight: #33385a;
   --color-panel-raised: #262a40;
   --color-pending-overlay: #000000;
+  --color-player-icon-0: #b3372b;
+  --color-player-icon-1: #a85400;
+  --color-player-icon-2: #806600;
+  --color-player-icon-3: #4f7300;
+  --color-player-icon-4: #2a7a2a;
+  --color-player-icon-5: #00766a;
+  --color-player-icon-6: #006e8c;
+  --color-player-icon-7: #2a5fc2;
+  --color-player-icon-8: #5048c8;
+  --color-player-icon-9: #7d3dbf;
+  --color-player-icon-10: #a3307a;
+  --color-player-icon-11: #6e5c4c;
   --color-sector-industry-base: rgba(158, 72, 57, 0.8);
   --color-sector-industry-card: rgba(214, 55, 30, 0.4);
   --color-sector-industry-light: #c59188;

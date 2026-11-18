@@ -118,6 +118,7 @@ export abstract class TutorialStore extends LobbyFeedStore {
       case "tutorial_update":
         this.change({
           tutorial: event.view,
+          tutorialPlayerIconColor: event.playerIconColor,
           pendingActions: this.state.pendingActions.filter(
             (pending) => pending.id !== event.acceptedActionId,
           ),

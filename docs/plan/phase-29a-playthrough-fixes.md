@@ -453,7 +453,7 @@ These 35 required scenarios now assert the new rules (Q169) and must pass again:
     `worthGained.test.ts` (income at the next turn; another player's held-back value).
   - For later items: 9 shows `worthGained` in the F boxes.
 
-- [ ] 7. **Player icons** (A2.5, S1.8, S5.1, S6.3). **Small.**
+- [x] 7. **Player icons** (A2.5, S1.8, S5.1, S6.3). **Small.**
   - Usernames reach the client in the room's view (`playerNames` in
     `src/shared/protocol/RoomView.ts`, built in `src/server/room/updateFor.ts`), not in the
     engine's state, so the icon colour goes beside them, per seat, as an index 0 to 11 that
@@ -461,6 +461,23 @@ These 35 required scenarios now assert the new rules (Q169) and must pass again:
     to `src/client/tokens.css`. The engine stays player-type agnostic. The quests and projects
     displays show icons with the name as tooltip and accessible name; "could complete now"
     becomes an orange border.
+  - Done (2026-11-18). Unit tests in `quests.test.tsx`, `projectsAreaAndHelp.test.tsx` and
+    `src/server/room/playerIconColorOf.test.ts`; `e2e/quests.spec.ts` passes locally;
+    `npm run check` is green.
+  - As built: `src/server/room/playerIconColorOf.ts` hashes the account id to 0 to 11
+    (`PLAYER_ICON_COLOR_COUNT`); `RoomView.playerIconColors` (beside `playerNames`, per seat) and,
+    for the tutorial room, `playerIconColor` on the `tutorial_update` message (kept in the store
+    as `tutorialPlayerIconColor`). Tokens `--color-player-icon-0` to `-11` in `tokens.css` (white
+    text at 5.3:1 or more). `src/client/components/PlayerIcon.tsx`: the first character in upper
+    case (`playerIconLetterOf`, grapheme-safe), tooltip and accessible name, orange border when
+    marked. The colours reach the quests and projects displays through a context
+    (`PlayerIconColors`, provided in `GameBoard` and `TutorialPage`), not through props.
+  - Differs: the icon is a `button` that does nothing on click, since lint allows keyboard focus
+    (S1.8's tooltip on focus) only on interactive elements. Your own icon in a quest line shows
+    your username's letter and is named "You", as the rest of the screen names you. The old
+    "could complete it now" text stays as hidden text for screen readers.
+  - For later items: 10 keeps usernames (Q169, 16); any later display of icons reuses
+    `PlayerIcon` and `PlayerIconColors`.
 
 - [ ] 8. **Combos list and Claim all** (S6.1, S6.6, S1.7, S8.1). **Large.**
   - One coloured list in the order of S6.1 (group counts include ready combos; the stat order of

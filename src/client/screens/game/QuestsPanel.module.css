@@ -75,11 +75,6 @@
   font-weight: var(--font-weight-bold);
 }
 
-.playerWhoCanComplete {
-  color: var(--color-palette-orange);
-  font-weight: var(--font-weight-bold);
-}
-
 .visuallyHidden {
   position: absolute;
   width: 1px;

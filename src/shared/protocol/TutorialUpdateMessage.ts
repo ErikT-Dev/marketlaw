@@ -7,5 +7,6 @@ export type TutorialUpdateMessage = {
   readonly acceptedActionId: string | null;
   readonly stateVersion: number;
   readonly view: TutorialView;
+  readonly playerIconColor: number;
   readonly serverNow: EpochMs;
 };

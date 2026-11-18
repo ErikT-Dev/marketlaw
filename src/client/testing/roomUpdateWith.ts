@@ -97,6 +97,7 @@ export function roomUpdateWith(
       ownerName: "Ann",
       playerNames: ["Ann", "Bea", "Cy", "Di"],
       playerIds: [1, 2, 3, 4].map(testPlayerIdOf),
+      playerIconColors: [0, 3, 6, 9],
       namesInRoom: ["Ann", "Bea", "Cy", "Di"],
       idsInRoom: [1, 2, 3, 4].map(testPlayerIdOf),
       myName: "Bea",

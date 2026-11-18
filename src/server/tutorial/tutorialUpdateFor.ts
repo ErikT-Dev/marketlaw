@@ -2,6 +2,7 @@ import { tutorialViewFor } from "../../rules/tutorial/tutorialViewFor";
 import type { EpochMs } from "../../shared/EpochMs";
 import { PROTOCOL_VERSION } from "../../shared/PROTOCOL_VERSION";
 import type { TutorialUpdateMessage } from "../../shared/protocol/TutorialUpdateMessage";
+import { playerIconColorOf } from "../room/playerIconColorOf";
 import type { TutorialRecord } from "./TutorialRecord";
 
 export function tutorialUpdateFor(
@@ -15,6 +16,7 @@ export function tutorialUpdateFor(
     acceptedActionId,
     stateVersion: record.stateVersion,
     view: tutorialViewFor(record.tutorial),
+    playerIconColor: playerIconColorOf(record.player.playerId),
     serverNow: now,
   };
 }

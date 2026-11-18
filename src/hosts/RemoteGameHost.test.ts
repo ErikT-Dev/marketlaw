@@ -76,6 +76,7 @@ const ROOM_UPDATE_TEXT = JSON.stringify({
       ownerName: "Ann",
       playerNames: ["Ann"],
       playerIds: ["5b0f6a52-3d5e-4f7c-8a41-6c2b9e0d7f13"],
+      playerIconColors: [4],
       namesInRoom: ["Ann"],
       idsInRoom: ["5b0f6a52-3d5e-4f7c-8a41-6c2b9e0d7f13"],
       myName: "Ann",
@@ -96,6 +97,7 @@ const TUTORIAL_UPDATE_TEXT = JSON.stringify({
   protocolVersion: PROTOCOL_VERSION,
   acceptedActionId: "id-7",
   stateVersion: 4,
+  playerIconColor: 5,
   view: {
     progress: { kind: "step", step: "T1.2", number: 2 },
     game: {
@@ -294,6 +296,7 @@ describe("RemoteGameHost", () => {
       {
         type: "tutorial_update",
         acceptedActionId: "id-7",
+        playerIconColor: 5,
         serverNow: 6000,
         view: { progress: { kind: "step", step: "T1.2", number: 2 } },
       },

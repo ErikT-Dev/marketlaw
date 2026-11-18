@@ -7,6 +7,7 @@ import type { RejectedMove } from "../../store/RejectedMove";
 export type TutorialPageProps = {
   readonly tutorial: TutorialView;
   readonly playerName: string;
+  readonly playerIconColor: number;
   readonly pendingActions: ReadonlyArray<PendingAction>;
   readonly rejectedMove: RejectedMove | null;
   readonly connection: ConnectionStatus;

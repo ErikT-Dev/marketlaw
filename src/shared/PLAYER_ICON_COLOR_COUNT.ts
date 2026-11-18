@@ -1,0 +1,1 @@
+export const PLAYER_ICON_COLOR_COUNT = 12;

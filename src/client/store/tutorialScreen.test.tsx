@@ -110,6 +110,7 @@ function showStep(fake: FakeTutorial, step: "T1.1" | "T1.2", number: number): vo
   fake.emit({
     type: "tutorial_update",
     view: tutorialViewAt({ kind: "step", step, number }),
+    playerIconColor: 5,
     acceptedActionId: null,
     serverNow: v.parse(EpochMs, Date.now()),
   });

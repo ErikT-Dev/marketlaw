@@ -47,6 +47,7 @@ function room(changes: Partial<RoomView> = {}): RoomView {
     ownerName: "Quiet River Baron",
     playerNames: ["Quiet River Baron", "Ann", "Bea"],
     playerIds: [1, 2, 3].map(testPlayerIdOf),
+    playerIconColors: [0, 1, 2],
     namesInRoom: ["Quiet River Baron", "Ann", "Bea"],
     idsInRoom: [1, 2, 3].map(testPlayerIdOf),
     myName: "Ann",

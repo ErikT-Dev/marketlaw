@@ -52,9 +52,10 @@ describe("quests panel", () => {
     expect(lines).toEqual(["income 4 of 4 | Retail 1 of 1", "income 3 of 4 | Retail 0 of 1", ""]);
     expect(
       within(progress)
-        .getAllByText(/^(You|Ann|Cy)/)
-        .map((name) => name.textContent),
-    ).toEqual(["You", "Ann", "Cy · completed"]);
+        .getAllByRole("button")
+        .map((icon) => icon.getAttribute("aria-label")),
+    ).toEqual(["You", "Ann", "Cy"]);
+    expect(within(progress).getAllByRole("listitem")[2]?.textContent).toContain("· completed");
     expect(screen.getByText("Empty place")).toBeDefined();
   });
 
@@ -69,7 +70,9 @@ describe("quests panel", () => {
     showQuests([WORKING_DISTRICT]);
     const card = screen.getByRole("region", { name: "Working district" });
     expect(within(card).queryByRole("button", { name: "Complete" })).toBeNull();
-    expect(within(card).getByText("You · completed")).toBeDefined();
+    const line = within(card).getByRole("listitem");
+    expect(within(line).getByRole("button", { name: "You" })).toBeDefined();
+    expect(line.textContent).toContain("· completed");
     expect(within(card).getByText("Tier 1 · 1 turn left")).toBeDefined();
     expect(within(card).getByRole("img", { name: "3 Residential cards" })).toBeDefined();
   });
@@ -149,7 +152,18 @@ describe("quests panel", () => {
     expect(within(card).queryByRole("img", { name: /^Satisfaction/ })).toBeNull();
   });
 
-  it("writes the name of another player who could complete the quest now in orange", () => {
+  it("shows a player icon with the first letter of the username on the seat's icon colour", () => {
+    showQuests([TRADING_POST]);
+    const card = screen.getByRole("region", { name: "Trading post" });
+    const ann = within(card).getByRole("button", { name: "Ann" });
+    expect(ann.firstElementChild?.textContent).toBe("A");
+    expect(ann.style.background).toBe("var(--color-player-icon-0)");
+    const you = within(card).getByRole("button", { name: "You" });
+    expect(you.firstElementChild?.textContent).toBe("B");
+    expect(you.style.background).toBe("var(--color-player-icon-3)");
+  });
+
+  it("gives the icon of another player who could complete the quest now an orange border", () => {
     showQuests([
       {
         ...TRADING_POST,
@@ -160,9 +174,9 @@ describe("quests panel", () => {
       },
     ]);
     const card = screen.getByRole("region", { name: "Trading post" });
-    expect(within(card).getByText("Ann").className).toContain("playerWhoCanComplete");
+    expect(within(card).getByRole("button", { name: "Ann" }).className).toContain("marked");
     expect(within(card).getByText("could complete it now")).toBeDefined();
-    expect(within(card).getByText("You").className).not.toContain("playerWhoCanComplete");
+    expect(within(card).getByRole("button", { name: "You" }).className).not.toContain("marked");
   });
 
   it("shows a negative workforce, quality or satisfaction as a part not yet met", () => {
