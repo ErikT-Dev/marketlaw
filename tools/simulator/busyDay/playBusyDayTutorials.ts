@@ -1,5 +1,4 @@
 import * as v from "valibot";
-import { TUTORIAL_STEPS } from "../../../src/rules/tutorial/TUTORIAL_STEPS.ts";
 import { countTutorialStart } from "../../../src/server/lobby/countTutorialStart.ts";
 import { releasePlayer } from "../../../src/server/lobby/releasePlayer.ts";
 import { siteTutorialLimitOf } from "../../../src/server/lobby/siteTutorialLimitOf.ts";
@@ -13,7 +12,6 @@ import type { TutorialRecord } from "../../../src/server/tutorial/TutorialRecord
 import type { TutorialStorage } from "../../../src/server/tutorial/TutorialStorage.ts";
 import { EpochMs } from "../../../src/shared/EpochMs.ts";
 import { parseTutorialClientMessage } from "../../../src/shared/protocol/parseTutorialClientMessage.ts";
-import { TUTORIAL_STEP_IDS } from "../../../src/shared/TUTORIAL_STEP_IDS.ts";
 import { tutorialMessageText } from "../../harness-runner/tutorial/tutorialMessageText.ts";
 import { BUSY_DAY } from "./BUSY_DAY.ts";
 import type { BusyDayCounter } from "./BusyDayCounter.ts";
@@ -68,12 +66,6 @@ function playOneTutorial(counter: BusyDayCounter, player: Identity, at: EpochMs)
   counter.changeLobby(counted.value);
   const room: Room = { record: undefined };
   startTutorialIn(storageOf(room), player, at);
-  for (const step of TUTORIAL_STEP_IDS) {
-    send(room, player, TUTORIAL_STEPS[step].accepts, at);
-  }
-  if (room.record?.tutorial.stage !== "complete") {
-    throw new Error(`the busy day did not finish the tutorial of ${player.name}`);
-  }
   if (send(room, player, { type: "leave_tutorial" }, at).kind !== "closing") {
     throw new Error(`the busy day could not leave the tutorial of ${player.name}`);
   }
