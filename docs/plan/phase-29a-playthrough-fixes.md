@@ -701,6 +701,9 @@ These 35 required scenarios now assert the new rules (Q169) and must pass again:
     project", as no quest needs 1 card any more), `ruleFileTables.test.tsx`,
     `checkRuleFiles.test.ts`. No game code or tutorial text changed (Trading post is unchanged).
     `npm run check` is green locally. Open for the owner: renaming the Metropolis scenario (above).
+    GitHub run 44514843755 (branch check at e00a45f4): `check` and all 7 browser jobs pass, after
+    one rerun of "other tests 3 of 3" (`bigCardSwitch.spec.ts` timed out waiting for the room
+    heading at 2560x1440, a time-out, not a wrong result).
 
 ### Helper log
 
