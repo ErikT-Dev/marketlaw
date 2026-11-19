@@ -35,6 +35,12 @@ function isRisingPriceAllowed(action: InfluenceAction): boolean {
   );
 }
 
+function needsNewCode(action: InfluenceAction): boolean {
+  return action.kind === "draw"
+    ? action.limitPerGame !== null
+    : action.isPriceRising && !isRisingPriceAllowed(action);
+}
+
 function readInfluenceActionLine(
   [name, payText, gainText, limitText]: RuleFileParts,
   line: number,
@@ -72,7 +78,7 @@ function readInfluenceActionLine(
           buildPasses: gains.value.buildPasses,
           isPriceRising: pay.value.isPriceRising,
         };
-  return pay.value.isPriceRising && !isRisingPriceAllowed(action)
+  return needsNewCode(action)
     ? { isOk: false, error: [{ line, word: name, message: "needs new code" }] }
     : { isOk: true, value: action };
 }
@@ -97,6 +103,15 @@ function drawTierProblems(
   });
 }
 
+function secondRisingLineProblems(
+  entries: ReadonlyArray<RuleFileEntry<InfluenceAction>>,
+): ReadonlyArray<RuleFileProblem> {
+  const risingLines = entries.filter(({ value }) => value.kind === "trade" && value.isPriceRising);
+  return risingLines
+    .slice(1)
+    .map(({ line, value }) => ({ line, word: value.name, message: "needs new code" }));
+}
+
 export function readInfluenceActionFile(
   text: string,
 ): Result<ReadonlyArray<InfluenceAction>, ReadonlyArray<RuleFileProblem>> {
@@ -107,6 +122,7 @@ export function readInfluenceActionFile(
   const problems = [
     ...duplicateNameProblems(actions.value, ({ name }) => name),
     ...drawTierProblems(actions.value),
+    ...secondRisingLineProblems(actions.value),
   ];
   return problems.length > 0
     ? { isOk: false, error: problems }

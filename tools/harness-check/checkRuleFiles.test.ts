@@ -114,6 +114,10 @@ const BROKEN_ACTION_LINES = [
     "influence to funds | pay 4 influence, 1 more each time | get 1 build pass | no limit",
     'needs new code: "influence to funds"',
   ],
+  [
+    "influence to funds | pay 4 influence | draw a tier 1 card of a chosen kind | 2 per game",
+    'needs new code: "influence to funds"',
+  ],
 ] as const;
 
 describe("the rule file check", () => {
@@ -169,6 +173,17 @@ describe("the rule file check", () => {
   it("reports an influence action name used twice", () => {
     expect(problemsWithActionLine(`${FIRST_ACTION}\n${FIRST_ACTION}`)).toEqual([
       `${HARNESS_PATHS.influenceActions} | line 2 | the name is already used on line 1: "influence_to_funds"`,
+    ]);
+  });
+
+  it("reports a second line with a rising price as needing new code", () => {
+    const secondRising =
+      "influence to funds | pay 3 funds, 1 more each time | get 1 build pass | no limit";
+    const risingLine = INFLUENCE_ACTIONS_TEXT.split("\n").findIndex((line) =>
+      line.startsWith("buy build pass"),
+    );
+    expect(problemsWithActionLine(secondRising)).toEqual([
+      `${HARNESS_PATHS.influenceActions} | line ${String(risingLine + 1)} | needs new code: "buy_build_pass"`,
     ]);
   });
 
