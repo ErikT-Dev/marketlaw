@@ -348,7 +348,8 @@ word, when:
 - a quest the tutorial needs (T0.7) is missing or no longer has its tier, requirement and reward
 - `influence-actions.txt` has two draw actions for the same tier
 - an influence action is of a kind the game or the screen has no code for: the message reads
-  "needs new code" and names the action (R15.6)
+  "needs new code" and names the action (R15.6); so does a draw line whose limit is not
+  `no limit`, and a second line with `1 more each time` (R15.5)
 - a quest reward gains more than 1 type: the message reads "needs new code" (R20.8)
 - a scenario names a quest or an influence action the files do not have
 

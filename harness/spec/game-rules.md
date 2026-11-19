@@ -383,7 +383,10 @@ At the start of every turn from turn 2 on, in this order:
 
   A line whose third part is neither `get …` nor the draw words, or whose fixed words are not
   those above, is an action the game has no rules for: it needs new code before it can be
-  played (R15.6). At most one line may be a draw action for each tier.
+  played (R15.6). At most one line may be a draw action for each tier. A draw line's limit is
+  `no limit`, and at most one line may add `1 more each time`: the game counts no uses of draw
+  actions and keeps one build pass price, so a draw line with another limit, or a second line
+  with `1 more each time`, also needs new code (R15.6).
 - **R15.6** The game, the screens, the rulebook and the tutorial all take the influence actions
   from this file; no other list of them exists. `npm run check` fails, naming the line and the
   wrong word, when a line breaks R15.5, and fails with "needs new code" naming the action when

@@ -3822,3 +3822,22 @@ file.
   "1 time" or "N times" ("Ann redrew their starting hand 2 times"). Written into S7.2's example
   first (`HARNESS:` commit).
 - **Implemented:** `harness/spec/screens.md` S7.2; `src/client/screens/game/mainPhaseLogText.ts`.
+
+## Q173. What does the game do with a limited draw line and a second rising build pass line?
+
+- **Phase:** 29a, review findings R1 and R2.
+- **Question:** R15.5 lets every line, draw lines too, have a limit, and lets "a line" that buys
+  1 build pass for funds add `1 more each time`. The game reads a draw line's limit but never
+  counts draw uses (the screen, S8.3, has no uses left for the draw table either), and it keeps
+  one count of bought build passes and one build pass price, taken from the first rising line.
+  So a limit on a draw line, or a second rising line, would be printed in the rulebook and then
+  ignored or priced wrongly by the game.
+- **Solution:** decided without the owner, from R15.6 (the check fails with "needs new code"
+  when the game or the screen has no code for a line, so the game never plays a list it
+  cannot handle): a draw line whose limit is not `no limit`, and a second line with
+  `1 more each time`, fail the rule file check with "needs new code" naming the action. The
+  file as it is has neither, so nothing in the game changes. Counting draw uses per line (with
+  uses left in the draw table) and a price per rising line stay possible later as new code.
+  Written into R15.5 and `HARNESS.md` ("Checking the harness itself") first (`HARNESS:` commit).
+- **Implemented:** `harness/spec/game-rules.md` R15.5, `harness/HARNESS.md`;
+  `src/shared/ruleFiles/readInfluenceActionFile.ts`, `tools/harness-check/checkRuleFiles.test.ts`.
