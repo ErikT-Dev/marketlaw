@@ -8,6 +8,8 @@ import type { Random } from "./Random";
 import { seatOf } from "./seatOf";
 import { updateSeat } from "./updateSeat";
 
+const PROJECT_FUNDS_REWARD = 2;
+
 export function completeProject(
   state: GameState,
   seat: SeatNumber,
@@ -21,12 +23,12 @@ export function completeProject(
       ...current.stats,
       [project]: current.stats[project] - PROJECT_NEED,
       income: current.stats.income + (isThird ? 2 : 1),
-      funds: current.stats.funds + 2,
+      funds: current.stats.funds + PROJECT_FUNDS_REWARD,
       influence: current.stats.influence + 3,
     },
     projects: [...current.projects, project],
     projectsThisTurn: [...current.projectsThisTurn, project],
-    worthGained: current.worthGained + 2,
+    worthGained: current.worthGained + PROJECT_FUNDS_REWARD,
     actionsThisTurn: current.actionsThisTurn + 1,
   }));
   const drawn = drawRandomCard(rewarded, seat, "project", random);

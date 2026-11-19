@@ -11,6 +11,7 @@ import { MAIN_PHASE_LOG_ENTRY_SCHEMA } from "../../shared/protocol/MAIN_PHASE_LO
 import { MARKETPLACE_SLOT_SCHEMA } from "../../shared/protocol/MARKETPLACE_SLOT_SCHEMA";
 import { SEAT_NUMBER_SCHEMA } from "../../shared/protocol/SEAT_NUMBER_SCHEMA";
 import { STATS_SCHEMA } from "../../shared/protocol/STATS_SCHEMA";
+import { STARTING_WORTH_GAINED } from "../../rules/STARTING_WORTH_GAINED";
 
 const CARDS = v.array(CardName);
 const SEAT_STATE = v.object({
@@ -43,7 +44,7 @@ const SEAT_STATE = v.object({
   undoPoints: v.tuple([]),
   isUndoBlocked: v.boolean(),
   redrawsUsed: v.optional(v.number(), 0),
-  worthGained: v.optional(v.number(), 14),
+  worthGained: v.optional(v.number(), STARTING_WORTH_GAINED),
 });
 
 export const GAME_STATE_SCHEMA = v.object({
