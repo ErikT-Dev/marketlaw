@@ -731,3 +731,4 @@ each helper's conversation size at its end.
 | Phase reviewer | Opus, medium | 17 | 221k | 70 | done (8 findings) |
 | Fixer, R1, R2, R7, R8 | Opus, medium | 8 | 110k | 46 | done |
 | Fixer, R3, R4, R5, R6 | Opus, medium | 28 | 163k | 93 | done |
+| Fixer, quest review (finding 10) | Opus, medium | 31 | 147k | 58 | done |
