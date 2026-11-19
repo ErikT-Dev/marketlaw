@@ -7,6 +7,18 @@
   list-style: none;
 }
 
+.countsAndTypes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-sm) var(--space-lg);
+  margin: var(--space-md) 0 0;
+}
+
+.countsAndTypes > ul {
+  margin: 0;
+}
+
 .counts {
   display: flex;
   flex-wrap: wrap;

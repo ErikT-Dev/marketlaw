@@ -611,6 +611,14 @@ These 35 required scenarios now assert the new rules (Q169) and must pass again:
     failure as locally since item 12's start, so a wrong result, not a time-out (not rerun); it
     comes from an earlier item (the taller stats panel of 9 most likely). Needs a code fix (layout
     at 1280x720), not a test change. Other sizes pass.
+    - Fixed (2026-11-19): item 9's Q, T, C, F row put the type counts on a line of their own,
+      so at 1280x720 the hand's scroll area was 84 px high, less than one card (93 px), and the
+      highlighted card was clipped. Your stats now shows the count boxes and the type counts on
+      one wrapping line (`YourStatsPanel`, `countsAndTypes`); the hand's scroll area is 119 px.
+      `e2e/tutorial.spec.ts` passes locally at all three sizes; `npm run check` is green.
+      Known gap: late in a game with many types, the type counts still wrap to more lines and
+      the hand at 1280x720 can again be shorter than one card (stats keep all project lines
+      visible since e0599635).
   - Not done yet (wait for F1): copying the run's screenshots into `harness/screens/`; the
     releaser's passing branch check does that.
 

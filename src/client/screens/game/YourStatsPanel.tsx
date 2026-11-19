@@ -45,13 +45,15 @@ function YourStatsPanelContent({ seat, view, playerNames }: Props) {
             </li>
           ))}
         </ul>
-        <OwnCountBoxes seat={seat} />
-        <TypeCountsList
-          types={typesInListOrder(seat.typeCounts, view.bonusTypes)}
-          typeCounts={seat.typeCounts}
-          bonusTypes={view.bonusTypes}
-          label="Your type counts, bonus types first"
-        />
+        <div className={styles["countsAndTypes"]}>
+          <OwnCountBoxes seat={seat} />
+          <TypeCountsList
+            types={typesInListOrder(seat.typeCounts, view.bonusTypes)}
+            typeCounts={seat.typeCounts}
+            bonusTypes={view.bonusTypes}
+            label="Your type counts, bonus types first"
+          />
+        </div>
         <ProjectProgressList seat={seat} view={view} playerNames={playerNames} />
       </Panel>
     </Highlighted>
