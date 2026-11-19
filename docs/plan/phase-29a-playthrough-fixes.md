@@ -582,10 +582,22 @@ These 35 required scenarios now assert the new rules (Q169) and must pass again:
     highlighted Hiking Trail is 90% in view, line 48), at this item's start commit too, so it
     comes from an earlier item (the taller stats panel of 9 most likely); GitHub's run decides.
 
-- [ ] 13. **Sorting everywhere** (S1.7, finding 15). **Small.**
+- [x] 13. **Sorting everywhere** (S1.7, finding 15). **Small.**
   - Every remaining list of types with counts, and every list of a player's or one card's combos
     (big card, card set: type combos first, then card-name combos by card name, Q169, 15), uses
     the sorters of 8 and 9.
+  - Done (2026-11-19). Unit tests: `cardDetail.test.tsx` (the card set's combos in S1.7 order),
+    `cardNameCombos.test.tsx` (the big card's combos sorted, red and orange highlights still on
+    their combos), `records.test.tsx` (the game record's type counts by count, then name);
+    `npm run check` is green.
+  - As built: `src/client/sorting/combosOfOneCardInListOrder(combos)` sorts one card's printed
+    combos with `compareCombosOfOneCard` and keeps each one's `printedIndex`, which `BigCard`
+    uses for `comboHighlights` and as the key; the card set's `CardDetailCombos` uses it too.
+    The game record's "Type counts" row (`typeCountsText`) uses `typesInListOrder(typeCounts,
+    [])`, with no bonus part, as S1.7 asks bonus types first only in S3.2 and S6.2.
+  - Differs: the existing card detail and big card tests (`cards.test.tsx` too) expected the printed order; their
+    expected orders now follow S1.7. A card's own types (big card, card detail "Types") stay in
+    printed order: they are the card's types, not a list of types with counts.
 
 - [ ] Finish. The finisher adds the 17 remaining new scenarios and I28 and I29 to
   `harness/required.yaml`. Then the owner's quest review (Waiting for the owner, finding 10)

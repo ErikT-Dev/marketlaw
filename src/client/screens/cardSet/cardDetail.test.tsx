@@ -67,18 +67,18 @@ describe("card detail", () => {
     ).toEqual(["Town Housing", "Low Wealth", "Low Wealth"]);
   });
 
-  it("lists every combo and marks the infinite one", () => {
+  it("lists every combo with type combos first and card-name combos by card name and marks the infinite one", () => {
     const combos = within(factOf(showCardDetail(), "Combos")).getAllByRole("listitem");
     expect(
       combos.map((combo) => within(combo).getByRole("group").getAttribute("aria-label")),
     ).toEqual([
       "Combo: 1 Retail gives 1 workforce, again each time",
+      "Combo: Fish Market and Trade gives 1 quality",
       "Combo: Real Estate Agency gives 1 quality",
       "Combo: Recycling Center gives 1 quality",
-      "Combo: Fish Market and Trade gives 1 quality",
     ]);
     expect(combos[0]?.textContent).toContain("infinite");
-    expect(combos[1]?.textContent).toContain("Real Estate Agency in your city");
+    expect(combos[2]?.textContent).toContain("Real Estate Agency in your city");
   });
 
   it("shows stats and types only as icons", () => {

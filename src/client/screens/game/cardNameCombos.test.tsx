@@ -91,7 +91,7 @@ describe("card-name combos on the big card", () => {
     );
   });
 
-  it("highlights a combo red when its card is in your city and orange when it is only in your hand", async () => {
+  it("highlights a combo red when its card is in your city and orange when it is only in your hand, in the sorted combos", async () => {
     await showGame(ownSeat(["Hiking Trail", "Warehouse"], OPEN_COMBOS));
     fireEvent.click(
       within(screen.getByRole("list", { name: "Marketplace places" })).getByRole("button", {
@@ -103,8 +103,8 @@ describe("card-name combos on the big card", () => {
     expect(comboNames(region)).toEqual([
       "Combo: 1 Mercantile gives 1 satisfaction, again each time",
       "Combo: 1 Mass Transit gives 1 workforce",
-      "Combo: Warehouse gives 1 satisfaction, that card is in your hand",
       "Combo: Fire Station gives 1 quality, that card is in your city",
+      "Combo: Warehouse gives 1 satisfaction, that card is in your hand",
     ]);
     expect(textWithIconNames(shown.getByRole("tooltip"))).toContain("Total: [Quality 1]");
   });
@@ -129,8 +129,8 @@ describe("card-name combos on the big card", () => {
     const shown = within(region);
     expect(shown.getByRole("button", { name: "Loft!" })).toBeDefined();
     expect(comboNames(region).slice(2)).toEqual([
-      "Combo: Warehouse gives 1 satisfaction, that card is in your hand",
       "Combo: Fire Station gives 1 quality, that card is in your city",
+      "Combo: Warehouse gives 1 satisfaction, that card is in your hand",
     ]);
   });
 

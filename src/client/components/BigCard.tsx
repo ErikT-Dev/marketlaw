@@ -2,6 +2,7 @@ import type { Card } from "../../shared/catalogue/Card";
 import type { TypeName } from "../../shared/catalogue/TypeName";
 import { iconUrl } from "../icons/iconUrl";
 import { photoUrl } from "../icons/photoUrl";
+import { combosOfOneCardInListOrder } from "../sorting/combosOfOneCardInListOrder";
 import { STAT_ICONS } from "../icons/STAT_ICONS";
 import type { StatName } from "../icons/StatName";
 import styles from "./BigCard.module.css";
@@ -91,11 +92,11 @@ export function BigCard({ card, realCost, cardNameCombos }: Props) {
         ))}
       </div>
       <div className={styles["combos"]}>
-        {card.combos.map((combo, index) => (
+        {combosOfOneCardInListOrder(card.combos).map(({ combo, printedIndex }) => (
           <ComboLabel
-            key={String(index)}
+            key={String(printedIndex)}
             combo={combo}
-            highlight={cardNameCombos?.comboHighlights[index] ?? "none"}
+            highlight={cardNameCombos?.comboHighlights[printedIndex] ?? "none"}
           />
         ))}
       </div>

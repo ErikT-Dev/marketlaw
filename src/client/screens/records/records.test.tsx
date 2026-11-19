@@ -74,6 +74,7 @@ const RECORD = {
           score: 512,
           hasReachedEndGoal: true,
           projects: ["quality", "workforce"],
+          typeCounts: { Farm: 3, Retail: 5, Culture: 3 },
         },
       ),
       seat(2, { kind: "player", playerId: ANN, username: "Ann" }, { score: 487 }),
@@ -215,6 +216,21 @@ describe("the game record page", () => {
     expect(within(table).getAllByRole("img", { name: "Farm 3" })).toHaveLength(3);
     expect(within(table).getAllByRole("img", { name: "Workforce +9" })).toHaveLength(3);
     expect(page.textContent).toContain("Players who left are scored with their values");
+  });
+
+  it("lists each player's type counts by count and then by type name", async () => {
+    serverAnswers({ [`/api/records/${NEWER_GAME}`]: RECORD });
+    render(
+      <RecordsPage page={{ kind: "record", gameId: NEWER_GAME }} viewerId={ANN} token={null} />,
+    );
+    const table = await screen.findByRole("table", { name: "Players" });
+    const typeCounts = within(table).getByRole("row", { name: /^Type counts/ });
+    const beasCounts = within(typeCounts).getAllByRole("cell")[0] ?? typeCounts;
+    expect(
+      within(beasCounts)
+        .getAllByRole("img")
+        .map((icon) => icon.getAttribute("aria-label")),
+    ).toEqual(["Retail 5", "Culture 3", "Farm 3"]);
   });
 
   it("shows each player's rating before and its change in a ranked game", async () => {
