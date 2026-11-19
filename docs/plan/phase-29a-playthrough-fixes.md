@@ -628,10 +628,17 @@ These 35 required scenarios now assert the new rules (Q169) and must pass again:
       the rulebook would print a limit the game ignores (R15.1, R15.5, R15.6). Count draw uses
       per line and reject with `trade_limit_reached` (uses left in S8.3), or make any limit other
       than `no limit` on a draw line "needs new code" in the reader; test it either way.
+      - Fixed (2026-11-19): "needs new code" chosen, as R15.6 asks of a line the game or the
+        screen has no code for (S8.3 shows no uses left for draws); written into R15.5 and
+        `HARNESS.md` first (Q173, `HARNESS:` cee3c19c). The reader reports a draw line whose
+        limit is not `no limit` (`readInfluenceActionFile`); tests in `checkRuleFiles.test.ts`
+        and `readInfluenceActionFile.test.ts` (9b5ceee0). The file has none, so no game change.
     - **R2.** A second "1 more each time" line is accepted, but every rising line shares one
       `buildPassesBought` counter and `buildPassPriceOf`/`tradeCostsShown` use the first line's
       price (R15.5, R15.6). Reject a second rising line with "needs new code" (with a test), or
       count purchases per line.
+      - Fixed (2026-11-19): a second line with `1 more each time` fails with "needs new code"
+        naming it (Q173, R15.5, same commits as R1; test in `checkRuleFiles.test.ts`).
     - **R3.** Exit-criteria screenshots missing: the big card with a red name and its tooltip, and
       the projects display with an icon (`harness/screens/`, `e2e/`).
     - **R4.** New screen elements have no browser test by role and name (README "What every phase
@@ -646,8 +653,12 @@ These 35 required scenarios now assert the new rules (Q169) and must pass again:
       into the spec first, or follow S1.6.
     - **R7.** Suggestion: I6 (`invariantViolations.ts`) flags only a play with 0 passes; also
       require exactly 1 pass used on `play_card`.
+      - Fixed (2026-11-19): I6 also reports a card played that used other than exactly 1 build
+        pass in the same turn (`buildPassViolations`, unit test; 13634926).
     - **R8.** Suggestion: `GAME_STATE_SCHEMA.ts` repeats 14 instead of `STARTING_WORTH_GAINED`;
       `completeProject.ts` repeats the project's funds reward `2` for worth gained.
+      - Fixed (2026-11-19): `GAME_STATE_SCHEMA` uses `STARTING_WORTH_GAINED`;
+        `completeProject` names the reward once (`PROJECT_FUNDS_REWARD`).
 
 ### Helper log
 
