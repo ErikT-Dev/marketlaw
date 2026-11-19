@@ -3841,3 +3841,21 @@ file.
   Written into R15.5 and `HARNESS.md` ("Checking the harness itself") first (`HARNESS:` commit).
 - **Implemented:** `harness/spec/game-rules.md` R15.5, `harness/HARNESS.md`;
   `src/shared/ruleFiles/readInfluenceActionFile.ts`, `tools/harness-check/checkRuleFiles.test.ts`.
+
+## Q174. Are player icons tab stops, and what is your own icon named?
+
+- **Phase:** 29a, review finding R6.
+- **Question:** S1.6 says icons are not tab stops of their own, as a screen shows dozens, while
+  S1.8 says a player icon shows the name as a tooltip when it has keyboard focus, which needs a
+  tab stop. Item 7 built player icons as `button`s that do nothing on click (lint allows
+  keyboard focus only on interactive elements) and named your own icon "You", and settled both
+  only in its Progress note.
+- **Solution:** decided without the owner. S1.6's reason (dozens of stat and type icons on a
+  screen) does not hold for player icons: a screen shows only a few, and they stand where a name
+  used to be written, so without focus a keyboard user could not read whose line or completion
+  it is. S1.6 now says its rule is about stat and type icons, and S1.8 says a player icon is a
+  tab stop of its own that does nothing on click, and that your own icon shows your username's
+  first character and is named "You", as the game over table, the chat and the abandon vote
+  name you. Written into S1.6 and S1.8 first (`HARNESS:` commit); the code already does this.
+- **Implemented:** `harness/spec/screens.md` S1.6, S1.8; `src/client/components/PlayerIcon.tsx`,
+  `src/client/screens/game/QuestCard.tsx` (unchanged).

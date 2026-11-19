@@ -44,7 +44,8 @@ None yet.
   running text: rejection messages (S10.9, S16.3), notices, help texts and the rulebook in the
   rules viewer (S14.2). The texts in these rules name stats and types in words only to say which
   icon goes there. The name appears as a tooltip when the pointer is over the icon or the control
-  the icon is in has keyboard focus (icons are not tab stops of their own: a screen shows dozens),
+  the icon is in has keyboard focus (stat and type icons are not tab stops of their own: a screen
+  shows dozens; player icons are, S1.8),
   and is the icon's accessible name for screen readers, as in S6.2 (owner's rule, 2026-11-06).
 - **S1.7** **Sorting:** every list of types with their counts, on every screen, is sorted by
   count, most first, and then alphabetically by type name. Where the bonus types are shown first
@@ -56,7 +57,10 @@ None yet.
 - **S1.8** **Player icons:** a player's icon (A2.5) is a circle with the first character of
   their username in upper case, on their icon colour. Where a screen shows an icon instead of a
   name, the name appears as a tooltip when the pointer is over the icon or it has keyboard
-  focus, and is the icon's accessible name.
+  focus, and is the icon's accessible name. Unlike stat and type icons (S1.6), a player icon is a
+  tab stop of its own, since a screen shows only a few and the name is not written anywhere near
+  it; clicking it does nothing. Your own icon shows the first character of your username and is
+  named "You", as the rest of the screen names you (Q174).
 
 ## S2. Game screen: top bar
 
