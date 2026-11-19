@@ -122,5 +122,12 @@ test("a completed quest shows as completed, stays hidden from others until the m
   const completedLastTurn = one.getByRole("table", { name: "Completed last turn" });
   await completedLastTurn.scrollIntoViewIfNeeded();
   await expect(completedLastTurn).toBeInViewport();
+  for (const column of ["Requirement", "Reward"]) {
+    await expect(completedLastTurn.getByRole("columnheader", { name: column })).toBeVisible();
+  }
+  const tradingPost = completedLastTurn.getByRole("row", { name: /Trading post/ });
+  for (const part of ["4 income", "1 Retail", "+1 funds", "+2 influence"]) {
+    await expect(tradingPost.getByRole("img", { name: part })).toBeVisible();
+  }
   await expectScreenFits(one, "quests-completed-last-turn", testInfo);
 });
