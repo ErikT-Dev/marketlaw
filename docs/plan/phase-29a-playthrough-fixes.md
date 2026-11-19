@@ -641,16 +641,42 @@ These 35 required scenarios now assert the new rules (Q169) and must pass again:
         naming it (Q173, R15.5, same commits as R1; test in `checkRuleFiles.test.ts`).
     - **R3.** Exit-criteria screenshots missing: the big card with a red name and its tooltip, and
       the projects display with an icon (`harness/screens/`, `e2e/`).
+      - Fixed (2026-11-19): `e2e/cardNameCombos.spec.ts` saves `big-card-card-name-combos`
+        (the red "Hiking Trail !" with its tooltip, pointed at) and `e2e/countsAndPlayerIcons.spec.ts`
+        saves `projects-completed-by` (Clean up the streets "Completed by" Seat 2's icon, focused,
+        with its tooltip), each at every size with axe, 24 px targets and no horizontal scrolling.
+        Taking the first showed the red name was 20 px high, under the 24 px minimum: it now has
+        `min-height: 24px` (`CardNameWithCombos.module.css`; 56f65118, f4552a1a).
+        Noticed, not fixed: on keyboard focus the stat icons inside the name's tooltip show their
+        own name tooltips too (S1.6, "the control the icon is in has keyboard focus"), which
+        overlap the tooltip's lines; on pointer hover it is clean, which the screenshot shows.
+        GitHub run 44504263830 (branch check at d43267f9): `check` and all 7 browser jobs pass;
+        its screenshots are copied into `harness/screens/`, the two new screens included.
     - **R4.** New screen elements have no browser test by role and name (README "What every phase
       must meet"): Redraw hand (S6.6), the card-name "!" and tooltip (S6.9), projects-area icons
       (S6.3, S1.8), the quick summary table's T, C, F and 5 most played types (S3.1), your Q, T,
       C, F boxes (S6.2), the completed-last-turn table's requirement and reward columns (S5.5).
+      - Fixed (2026-11-19): by role and accessible name at every size: the red name button
+        "Hiking Trail!" and its `tooltip` on keyboard focus and on hover, with the combos, their
+        total as an icon and the red highlight, none on a card without card-name combos
+        (`cardNameCombos.spec.ts`); your Q, T, C, F boxes ("Your counts"), another player's Q, T,
+        C, F and the 5 most played types in order in the quick summary table, and the project
+        "Completed by" icon as a focusable button named "Seat 2"; Redraw hand from 3 left to gone
+        (`countsAndPlayerIcons.spec.ts`); the completed-last-turn table's Requirement and Reward
+        columns and their icons (`quests.spec.ts`). The three spec files pass locally.
     - **R5.** `docs/enforcement.md` does not mention the rule-file check of `npm run harness:check`
       (`checkRuleFiles.ts`, `checkTutorialQuests.ts`, names from the files, Vite bundling).
+      - Fixed (2026-11-19): the Harness runner row names the rule file check (the readers, line
+        and word, "needs new code", R19.3, T0.7, the scenario names, the `?raw` bundling and
+        `contentsOfRuleFile`), and the Playwright row the phase's new browser tests (d43267f9).
     - **R6.** Player icons are `button`s (tab stops) although S1.6 says icons are not tab stops,
       while S1.8 says the tooltip shows on keyboard focus; also your own icon named "You". Settled
       only under "Differs": record the question and solution in `open-questions.md` and write it
       into the spec first, or follow S1.6.
+      - Answered (2026-11-19): S1.6's reason (dozens of icons) is about stat and type icons; a
+        player icon stands where a name was and a screen shows few, so it stays a tab stop.
+        Written into S1.6 and S1.8 first, with your own icon named "You" (Q174, `HARNESS:`
+        0d6be018); the code already does this, so no code change.
     - **R7.** Suggestion: I6 (`invariantViolations.ts`) flags only a play with 0 passes; also
       require exactly 1 pass used on `play_card`.
       - Fixed (2026-11-19): I6 also reports a card played that used other than exactly 1 build
