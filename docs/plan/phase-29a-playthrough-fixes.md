@@ -1,6 +1,6 @@
 # Phase 29a: Playthrough fixes
 
-Status: in progress
+Status: done
 Milestone: 6 Learning
 
 ## Goal
