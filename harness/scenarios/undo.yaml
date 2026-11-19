@@ -138,7 +138,7 @@
     seats:
       - seat: 1
         stats: {income: 5}
-        city: [Metal Mining]
+        city: [Metal Mining, Stone Quarry]
     random: [{sector: Service}]
   when:
     - {seat: 1, action: complete_quest, quest: Supply chain}
