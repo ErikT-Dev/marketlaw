@@ -84,6 +84,17 @@ describe("invariantViolations", () => {
     ]);
   });
 
+  it("reports a card played without using exactly 1 build pass", () => {
+    const before = withSeat1(START, { buildPasses: 3 });
+    const action: GameAction = { type: "play_card", seat: 1, card: START.seats[0]?.hand[0] ?? "Pub" };
+    expect(invariantViolations(transition(before, action, before))).toEqual([
+      "I6: seat 1 used 0 build passes to play a card",
+    ]);
+    expect(invariantViolations(transition(before, action, withSeat1(START, { buildPasses: 1 })))).toEqual([
+      "I6: seat 1 used 2 build passes to play a card",
+    ]);
+  });
+
   it("reports a bonus of 10 or more kept after the end of the turn", () => {
     const after = withSeat1(
       { ...START, turn: 2, firstPlayer: 2 },

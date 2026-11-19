@@ -10,6 +10,7 @@ import type { GameState } from "./GameState";
 import type { SeatNumber } from "../shared/SeatNumber";
 import { redrawViolations } from "./redrawViolations";
 import { seatOf } from "./seatOf";
+import type { SeatState } from "./SeatState";
 import { stateInvariantViolations } from "./stateInvariantViolations";
 import { TIME_BANK_MS } from "./TIME_BANK_MS";
 import type { Transition } from "./Transition";
@@ -75,6 +76,20 @@ function actorViolations({ before, action }: Transition): ReadonlyArray<string> 
   return isActorOut ? [`I18: seat ${action.seat} took an action while done or after leaving`] : [];
 }
 
+function buildPassViolations(
+  seatBefore: SeatState,
+  before: GameState,
+  after: GameState,
+): ReadonlyArray<string> {
+  if (seatBefore.buildPasses === 0) {
+    return [`I6: seat ${String(seatBefore.seat)} played more cards than its build passes allow`];
+  }
+  const passesUsed = seatBefore.buildPasses - (seatOf(after, seatBefore.seat)?.buildPasses ?? 0);
+  return after.turn === before.turn && passesUsed !== 1
+    ? [`I6: seat ${String(seatBefore.seat)} used ${String(passesUsed)} build passes to play a card`]
+    : [];
+}
+
 function acceptedViolations(transition: Transition, after: GameState): ReadonlyArray<string> {
   const { before, action } = transition;
   const seat = seatOf(before, action.seat);
@@ -85,9 +100,7 @@ function acceptedViolations(transition: Transition, after: GameState): ReadonlyA
           ...(cardOf(action.card).tier > 1 && before.turn < FIRST_TURN_FOR_HIGHER_TIERS
             ? [`I5: ${action.card} was played in turn ${before.turn}`]
             : []),
-          ...(seat.buildPasses === 0
-            ? [`I6: seat ${action.seat} played more cards than its build passes allow`]
-            : []),
+          ...buildPassViolations(seat, before, after),
         ]
       : [];
   const bonus =
