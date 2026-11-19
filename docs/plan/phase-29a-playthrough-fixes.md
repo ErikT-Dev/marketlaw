@@ -1,6 +1,6 @@
 # Phase 29a: Playthrough fixes
 
-Status: in progress
+Status: waiting for the owner (quest review, finding 10)
 Milestone: 6 Learning
 
 ## Goal
@@ -115,6 +115,10 @@ in a `HARNESS:` commit and recorded in Q169; one that only disagrees with the co
 ## Known gaps after this phase
 
 - None beyond phase 29's. Uploading a picture as player icon is not part of it (finding 16).
+- With keyboard focus on a red card name, the stat icons inside its tooltip show their own
+  name tooltips, which overlap the tooltip's lines (S1.6); with the mouse it is clean.
+- Late in a game with many types, Your stats can wrap so far that the hand at 1280x720 is
+  shorter than one card (F1).
 
 ## What you can see when it's done
 
@@ -711,3 +715,4 @@ each helper's conversation size at its end.
 | Fixer, F1 | Opus, medium | 25 | 90k | 34 | done |
 | Phase reviewer | Opus, medium | 17 | 221k | 70 | done (8 findings) |
 | Fixer, R1, R2, R7, R8 | Opus, medium | 8 | 110k | 46 | done |
+| Fixer, R3, R4, R5, R6 | Opus, medium | 28 | 163k | 93 | done |
