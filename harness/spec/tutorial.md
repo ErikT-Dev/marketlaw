@@ -41,6 +41,12 @@ None yet.
   emptied in turn 4.
 - **T0.6** The deck order and the random sequence are fixed so that the marketplace above and
   every draw named in the steps below happen exactly as written, the same for every player.
+- **T0.7** **What the tutorial needs from the rule files** (R15.6, R20.9): `quests.txt` must hold
+  Working district, Green city and Fishing village as tier 1 quests, and Trading post as a tier 1
+  quest with exactly the requirement `income 4, 1 Retail` and the reward
+  `+1 fund, +2 influence` (T5.3). The tutorial uses no influence action. `npm run check` fails
+  when a file no longer gives the tutorial this.
+- **T0.8** The tutorial player never gets the redraw of R17.12: it is not a step (C4.4).
 
 ## T1. Turn 1: playing and selling
 
@@ -51,8 +57,9 @@ None yet.
   satisfaction −1. Text: "Every card also uses something up. Residents need quality and
   satisfaction, so those dropped below zero. While any of them is negative, you cannot earn
   income."
-- **T1.3** Action: **sell Hiking Trail**. Text before: "You can play one card per turn. Cards you
-  don't need can be sold for 1 fund each. Sell Hiking Trail." After: funds 4.
+- **T1.3** Action: **sell Hiking Trail**. Text before: "Every card you play uses a build pass. You
+  get 1 every turn and keep the ones you don't use. Cards you don't need can be sold for 1 fund
+  each. Sell Hiking Trail." After: funds 4.
 - **T1.4** Action: **end your turn**. Text before: "End your turn when you are done." After the
   end-of-turn steps: turn 2, funds 7, influence 1, bonus 1. Text: "At the end of every turn you
   get your income in funds, 1 influence, and bonus from your stats. Every full 10 bonus turns
@@ -106,7 +113,8 @@ None yet.
   the Retail type. Complete it." After: funds 1, influence 6. Text: "Each quest stays a few turns, and any
   player can complete it once."
 - **T5.4** Text: "Two more things to know. Projects: when you collect 8 quality, 8 satisfaction or
-  8 workforce, you can complete a project for income, funds and influence. The game ends after
+  8 workforce and have at least 10 income, you can complete a project for income, funds and
+  influence. The game ends after
   the turn in which a player has income 22 and all 3 projects; then the highest score wins. In a
   real game, you play against 1 to 3 other players at the same time, and every turn has a time
   limit. You can read all the rules any time from the menu." The player finishes, and the

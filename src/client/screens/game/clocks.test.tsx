@@ -58,7 +58,7 @@ describe("clocks", () => {
 
   it("shows another player's bank counting down live", () => {
     showWith({}, {});
-    const opponent = screen.getByRole("article", { name: "Cy" });
+    const opponent = screen.getByRole("article", { name: "Quick summary table of Cy" });
     expect(within(opponent).getByRole("timer", { name: "Bank 9:45" })).toBeDefined();
   });
 
@@ -118,7 +118,9 @@ describe("running out of time", () => {
       order.getAllByRole("listitem").find((item) => item.textContent.includes("Di"))?.textContent,
     ).toContain("out of time");
     expect(
-      within(screen.getByRole("article", { name: "Di" })).getByText("out of time"),
+      within(screen.getByRole("article", { name: "Quick summary table of Di" })).getByText(
+        "out of time",
+      ),
     ).toBeDefined();
   });
 

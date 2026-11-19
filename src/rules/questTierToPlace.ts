@@ -1,5 +1,5 @@
 import type { QuestName } from "../shared/catalogue/QuestName";
-import { QUESTS } from "../shared/catalogue/QUESTS";
+import { QUEST_LINES } from "../shared/ruleFiles/QUEST_LINES";
 import type { Tier } from "../shared/catalogue/Tier";
 import { QUEST_TABLE_RULES } from "./QUEST_TABLE_RULES";
 
@@ -13,7 +13,7 @@ export function questTierToPlace(
   const usable = TIERS.filter(
     (tier) =>
       turn >= QUEST_TABLE_RULES.firstTurnOfTier[tier] &&
-      QUESTS.some(({ name, tier: questTier }) => questTier === tier && questList.includes(name)),
+      QUEST_LINES.some(({ name, tier: questTier }) => questTier === tier && questList.includes(name)),
   );
   return [...usable].sort(
     (first, second) => Math.abs(first - picked) - Math.abs(second - picked) || first - second,

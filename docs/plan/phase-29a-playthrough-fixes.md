@@ -1,6 +1,6 @@
 # Phase 29a: Playthrough fixes
 
-Status: approved
+Status: in progress
 Milestone: 6 Learning
 
 ## Goal
@@ -115,6 +115,10 @@ in a `HARNESS:` commit and recorded in Q169; one that only disagrees with the co
 ## Known gaps after this phase
 
 - None beyond phase 29's. Uploading a picture as player icon is not part of it (finding 16).
+- With keyboard focus on a red card name, the stat icons inside its tooltip show their own
+  name tooltips, which overlap the tooltip's lines (S1.6); with the mouse it is clean.
+- Late in a game with many types, Your stats can wrap so far that the hand at 1280x720 is
+  shorter than one card (F1).
 
 ## What you can see when it's done
 
@@ -132,7 +136,7 @@ combos you can complete.
 ## Exit criteria
 
 - Every scenario of this phase passes, and the 35 required scenarios that now assert the new
-  rules pass again; the 11 of "Waiting for the owner" as the owner decides.
+  rules pass again; the 11 the owner approved on 2026-11-18 under their new names.
 - `npm run check` fails with a clear message on each kind of broken line in the two rule files
   (tested), and passes on the files as the owner leaves them.
 - The leak test passes with redraws (the cards put back and drawn stay hidden).
@@ -148,39 +152,9 @@ combos you can complete.
 
 ## Waiting for the owner
 
-- **Approve 11 required scenario names (Q169).** Findings 1 and 9 make these names on
-  `harness/required.yaml` untrue. Names leave the list only with your approval, so they are
-  left unchanged until you answer; until then the check cannot go green. Proposed:
-  - Renamed (the scenario is changed to the new rule under the new name):
-    - `turns-and-time`: "the first player's market go has 40 seconds" → "the first player's
-      market go has 30 seconds"
-    - `turns-and-time`: "every later market go also has 40 seconds" → "every later market go
-      also has 30 seconds"
-    - `turns-and-time`: "the first 75 seconds of a main phase do not use the time bank" →
-      "from turn 2 the first 75 seconds of a main phase do not use the time bank" (turn 1 now
-      has 165; the new "the first 165 seconds of the main phase in turn 1 do not use the time
-      bank" covers turn 1)
-    - `playing-cards`: "rejects a second card in a turn without a build pass" → "rejects a card
-      when the player has no build pass left"
-    - `playing-cards`: "a build pass allows a second card and is used up" → "playing a card uses
-      up 1 build pass"
-  - Replaced (skip build is gone; the old scenario is deleted and the new one, already written,
-    takes its place on the list):
-    - `playing-cards`: "rejects playing a card after skip build even with a build pass" → "a
-      player with saved build passes can play several cards in one turn"
-    - `turns-and-time`: "skip build is reset at the end of the turn" → "every player gets 1
-      build pass at the start of every turn"
-    - `influence`: "skip build gives a build pass and blocks playing cards this turn" → "a
-      bought build pass can be used straight away" (`influence`)
-    - `influence`: "skip build is rejected after playing a card this turn" → "unused build
-      passes carry over to later turns with no limit" (`turns-and-time`)
-    - `influence`: "skip build can be used 3 times per game" → "every player starts turn 1 with
-      1 build pass" (`setup`)
-    - `undo`: "undo takes back skip build and the build pass it gave" → "undo takes back a build
-      pass bought with influence" (`undo`)
-
-  Everything else in the phase goes on without the answer. Once you approve, one `HARNESS:`
-  commit makes these changes in the scenario files and in `harness/required.yaml` together.
+- The 11 required scenario names of Q169 (5 renamed, 6 skip-build scenarios replaced): the owner
+  approved all 11 on 2026-11-18 ("approve all 11"); they are changed in the scenario files and in
+  `harness/required.yaml` together.
 - **Your review of the quest list, before the release (finding 10).** When every item is built
   and the checks pass, and before the releaser merges and deploys, the phase stops and you go
   over `harness/spec/quests.txt` (and `influence-actions.txt` if you like) and edit it. Then the
@@ -189,11 +163,16 @@ combos you can complete.
   an edit removes or renames a quest that a required scenario name mentions (the
   "completing … gives its reward" scenarios of `quests.yaml`), that name change needs your
   approval too.
+  - Done 2026-11-19: your `quests.txt` is committed (0f6592c2) and the quest scenarios follow
+    it (Q169, 10); no quest was removed or renamed. One question for you, not blocking: the
+    required name "Metropolis needs tier 3 cards in 3 different sectors" is still true but now
+    undersells the rule (4 sectors); renaming it to "4 different sectors" needs your approval.
 
 ## Required scenarios
 
 These 23 scenarios are added to `harness/required.yaml` in this phase, by file and name
-(6 of them take the place of the skip-build scenarios above once the owner approves):
+(6 of them, in place of the skip-build scenarios, are on it since the owner's approval of
+2026-11-18; the finisher adds the other 17):
 
 - `setup`: every player starts turn 1 with 1 build pass; a new game starts every player with
   14 total worth gained
@@ -252,3 +231,526 @@ These 35 required scenarios now assert the new rules (Q169) and must pass again:
   1 build pass once per game (2 passes)
 
 ## Progress
+
+- [x] 0. Start (2026-11-18): the branch already held the spec and harness changes (Q169), and
+  the owner approved the 11 required names the same day (`HARNESS:` cdeee649, `PLAN:` 028f4f73).
+  The starter found no contradiction in the spec and no open decision (`decisions.md` has none
+  open); the readings below are everyday choices, not questions.
+  - **Counts now.** 507 scenarios (513 less the 6 deleted skip-build ones):
+    `tools/harness-runner/harness.test.ts` still expects 490; item 1a sets it to 507 (and any
+    item that adds a scenario raises it). `npm run harness:check` has 450 problems, all item 1's
+    (quest names read from R20.7's old tables, trade names from the old list in `HARNESS.md`).
+    Of the 23 new scenarios, 6 are already on `harness/required.yaml` (the approved
+    replacements); the finisher adds the other 17 and I28, I29.
+  - Until every item is built, `npm run check` fails on required scenarios of later items; a
+    builder reports which still fail and why, and checks that its own item's scenarios pass
+    (added to the required list locally, not committed) and fail without the change.
+  - **One raise each for the phase**, by item 2 (the first shape change) and not again:
+    `PROTOCOL_VERSION` 26 to 27 (`src/shared/PROTOCOL_VERSION.ts`, Q75) and
+    `SAVE_SCHEMA_VERSION` 17 to 18 (`src/rules/SAVE_SCHEMA_VERSION.ts`, D1).
+  - **Order.** 1a, 2, 1b (item 2 removes skip build before the trades come from the file, which
+    has no skip-build line); then 3, 4, 6 (the clock, then the redraw, then worth gained, which a
+    redraw must not change); 5, 7 and 10 any time; 8 and 9 before 11 and 13 (they reuse the
+    sorting); 12 after 1b.
+
+- [x] 1a. **The rule file reader and the harness check** (R15.5, R20.8, T0.7, `HARNESS.md`,
+  "Checking the harness itself"). **Large.**
+  - One reader in `src/shared/` (pure; text in, a `Result` out, with file, line number and wrong
+    word for each problem) turns `harness/spec/quests.txt` and `influence-actions.txt` into the
+    quest list and the influence actions. `tools/harness-check/` uses the same reader:
+    `collectKnownNames.ts` (`collectQuestNames` reads R20.7 today; the trades come from
+    `HARNESS.md`) takes the names from the files, and every error kind of item 1 in Builds is a
+    problem, each tested in `tools/harness-check/`. Set the count in `harness.test.ts` to 507.
+  - Names: an influence action's name with underscores for spaces is its message and scenario
+    name (`influence to build pass` is `influence_to_build_pass`), so the existing trade names
+    stay (Q169, 6). Quest parts use the old tables' words (`Service type`,
+    `1 tier 3 Residential card`). A plain trade is `pay … | get …`; the keywords are
+    `1 more each time` and `draw a tier N card of a chosen kind`; any other third part is
+    "needs new code" with the action's name (Q169, 8).
+  - Reuse: `src/shared/catalogue/` (`TYPE_NAMES`, `Sector`, `Kind`, `QuestNeed`, `QuestReward`,
+    `QuestTerms`), the `Trade` shape of `src/shared/TRADES.ts`, the stat names of R2.1.
+  - Done when `npm run harness:check` passes.
+  - Done (2026-11-18). `npm run harness:check` passes (507 scenarios, 0 problems). Still failing
+    required scenarios after 1a: 11 of item 2 (build passes) and the 2 market-go ones of item 3
+    (30 seconds); nothing of 1a.
+  - As built: the reader is `src/shared/ruleFiles/`: `readQuestFile` gives `QuestLine`s (`tier`,
+    `name`, `terms` as `QuestTerms`), `readInfluenceActionFile` gives `InfluenceAction`s
+    (`trade`: `costs`, `gains`, `buildPasses` as a count, `isPriceRising`, `limitPerGame`;
+    `draw`: `costs`, `tier`, `limitPerGame`); names are plain strings, an action's name already
+    with underscores. Both return a `Result` with every `RuleFileProblem` (`line`, `word`,
+    `message`). Their tests compare the real files with `QUEST_TERMS`/`QUESTS` and
+    `TRADES`/`DRAW_ACTION_COSTS`: equal today. The tier 1 count and T0.7 are checked in
+    `tools/harness-check/checkRuleFiles.ts` and `checkTutorialQuests.ts` (names from
+    `TUTORIAL_SETUP.quests`, Trading post compared with `TUTORIAL_TRADING_POST_LINE`).
+  - Differs: `src/shared/` imports have no `.ts` extension, which plain Node cannot run, so
+    `npm run harness:check` now bundles the check with Vite first, as the replay export does
+    (`tools/harness-check/harnessCheckTool.ts` builds `checkHarnessEntry.ts`; about 2 seconds).
+    Trade names come from the file, no longer from `HARNESS.md` (`KnownNames.trades`).
+    Decided: a quest reward gaining more than 1 type fails with "needs new code" (Q170, R20.8).
+  - For later items: 1b deletes the code copies, so it also rewrites the comparisons with them
+    in `readQuestFile.test.ts`, `readInfluenceActionFile.test.ts` and
+    `tools/harness-runner/catalogueMatchesSpec.test.ts` (its quest test). A draw action's costs
+    may be any stats in the file, but the engine charges influence only (`DRAW_ACTION_COSTS`):
+    1b either applies any cost or makes other costs "needs new code". Getting more than 1 build
+    pass is a valid plain trade (R15.5), which `Trade.doesGiveBuildPass` cannot hold.
+
+- [x] 1b. **Every user of the lists reads the files** (R15.6, R20.7, R20.9). **Large.**
+  - The code copies go: `QUEST_TERMS*.ts`, `QUEST_NAMES_BY_TIER.ts` (and what is built on it:
+    `QUESTS.ts`, `QuestName`, `QuestNameOfTier`), `TRADES.ts`, `DRAW_ACTION_COSTS.ts`. Users:
+    `src/rules/` (`useDrawAction.ts`, `drawActionRejection.ts`, `progressViolations.ts`, the
+    trade code), the client (`TradeIcons.tsx`, `tradeLabel.ts`, `tradeMissingAmounts.ts`,
+    `tradeStatusText.ts`, `mainPhaseLogText.ts`, `DrawActionTable.tsx`,
+    `statAndTypeWordsShownIn.ts`) and the bots.
+  - Read when the app is built (Q169, 6). The client already imports `rulebook.md?raw` (Vite);
+    the Worker is bundled by wrangler, whose esbuild must take the files as text too: check with
+    `npx wrangler deploy --dry-run --outdir <scratchpad>` that the bundle holds the quest text.
+    Once names come from a file, a literal union of names may no longer be possible
+    (proposed rule "Ids from fixed lists"); the reader is then the validated boundary
+    (`rules/typescript.md`, casts only at schema-validated boundaries).
+  - A plain trade is applied and shown from its parsed parts, with no code per trade (R15.6,
+    S8.3).
+  - Done (2026-11-18). Still failing required scenarios: the 2 market-go ones of item 3.
+  - As built: `src/shared/ruleFiles/QUEST_LINES.ts` and `INFLUENCE_ACTIONS.ts` import the files
+    as `?raw` text (Vite for the client, tests and tools; wrangler's esbuild takes the same
+    import, checked with `wrangler deploy --dry-run`: the bundle holds both texts) and throw on a
+    broken file. `ruleFileText.d.ts` declares `*.txt?raw` for the engine and server configs
+    (`export =`, since default exports fail lint). `INFLUENCE_TRADES`, `INFLUENCE_DRAWS`,
+    `questOf`, `tradeOf`, `influenceDrawOfTier` look things up. `QuestName` and `TradeName` stay
+    as the validated boundary (picklists of the files' names; their type is now `string`).
+    `Trade` is the parsed trade (`buildPasses`, `isPriceRising`); `buy_build_pass` is no longer
+    named in code: the rising price, `buildPassesBought` and `buildPassPrice`
+    (`src/rules/buildPassPriceOf.ts`) follow `isPriceRising`. A draw action pays every cost on
+    its line, and a tier without a line has no draw actions (Q171).
+  - Differs: the reader tests compare the real files' names line by line, no longer with code
+    copies; `QUESTS.test.ts` went with `QUESTS`.
+  - For later items: 12 builds its tables from `QUEST_LINES` and `INFLUENCE_ACTIONS`.
+  - Fixed afterwards (2026-11-18, the browser tests' loading of item 3): `e2e/startTestRoom.ts`
+    builds the test room's state from a Vite bundle of `e2e/testRoomRequestOf.ts`
+    (`tools/bundleForNode.ts`, once per Playwright worker), so the browser tests load again
+    (`BUG FIX:` a0e8263b). Run locally: `clocks`, `combosAndProjects`, `influenceAndUndo` and
+    `quests` pass. That run found two more: `combosAndProjects` expected turn 2's funds of the
+    old income (now 22, 8335960d), and 1b's draw actions were refused to a player below zero in
+    a stat they do not cost (`drawActionRejection.ts`, 8cc356b3, unit test
+    `drawActionCosts.test.ts`). The other browser specs were not run locally.
+
+- [x] 2. **Build passes** (R6.1, R6.2, R6.3, R4.6, R11.4, R10.1, R7.2, I6, S16.3). **Large.**
+  - Scenarios: `setup` "every player starts turn 1 with 1 build pass"; `turns-and-time` "every
+    player gets 1 build pass at the start of every turn", "unused build passes carry over …",
+    "end-of-turn steps … keep build passes"; `playing-cards` "rejects a card when the player has
+    no build pass left", "playing a card uses up 1 build pass", "a player with saved build
+    passes can play several cards in one turn"; `influence` "a bought build pass can be used
+    straight away", "a bought build pass costs 1 more fund each time", "5 influence buys 1 build
+    pass once per game"; `undo` "undo takes back a build pass bought with influence", "undoing a
+    bought build pass makes the next one cost the same again".
+  - Skip build goes: `hasSkippedBuild` (`SeatState.ts`, `newSeat.ts`, `endOfTurnSteps.ts`,
+    `rejectionOf.ts`, `invariantViolations.ts`), the `skip_build` trade (`TRADES.ts`,
+    `tradeRejection.ts`, the client trade files, `REJECTION_MESSAGES.ts`,
+    `src/bots/chaosBot.ts`), the reason codes `build_skipped` and `skip_build_after_play`
+    (`src/shared/ReasonCode.ts`), the view field and the log text. `hasPlayedThisTurn` stays
+    (R10.1 still resets it; End turn's highlight in S6 uses it). The turn's pass is the first
+    start-of-turn step, before the marketplace (Q169, 9); turn 1's comes after setup (R4.6,
+    `setUpGame.ts`). The scenario runner's default seat has 1 build pass (`HARNESS.md`, seats
+    row). Raises both versions (see 0).
+  - Done (2026-11-18). The 11 build-pass scenarios pass; still failing required scenarios: the
+    2 market-go ones of item 3 (30 seconds). `PROTOCOL_VERSION` is 27 and `SAVE_SCHEMA_VERSION`
+    18 now; later items do not raise them again.
+  - As built: `src/rules/withTurnBuildPass.ts` gives a seat still in the game its pass; used by
+    `setUpGame.ts` (after setup), `endMainPhase.ts` (first start-of-turn step) and the scenario
+    runner's default seat (`seatFromGiven.ts`, so `startTestRoom` in `e2e/` starts with 1 pass
+    too). `newSeat` still has 0 passes. Every card uses a pass (`playCard.ts`, `rejectionOf.ts`,
+    I6). The `no_build_pass` text follows S16.3. The Use influence pop-up has 19 trades
+    (`influenceAndUndo.test.tsx`); `e2e/influenceAndUndo.spec.ts` now expects 2 passes after
+    buying one (not run locally; the branch check runs it).
+  - For later items: `Trade.doesGiveBuildPass` is unchanged (1b replaces `TRADES`).
+
+- [x] 3. **Time** (R9.1, R9.2, R9.4, R9.13, R9.15, R18.11, I19). **Small.**
+  - `src/rules/TIME_RULES.ts`: `goLimitMs` 30 000; turn 1's main free time 165 s and limit 300 s
+    (210 + 90, R9.1), used by `mainPhaseLimitMs.ts`, `decisionOf.ts` and the free time again
+    after a pause (`ClockGrace.ts`: that turn's free time, R9.13). R9.15: End turn adds the
+    unused main free time to the bank, at most up to 15 minutes; never the pause's free time or
+    a market go's. I19 in `invariantViolations.ts` allows that growth.
+  - Scenarios: `turns-and-time` "the first player's market go has 30 seconds", "every later
+    market go also has 30 seconds", "from turn 2 the first 75 seconds …", "the main-phase time
+    limit in turn 1 is 5 minutes", "the first 165 seconds …", the 4 new ones on unused free time
+    and the 15-minute cap; and the 24 moved to turn 2. Browser tests that wait for 40-second
+    goes or the old turn-1 times follow (`e2e/`, for example `clocks.spec.ts`).
+  - Done (2026-11-18). Every item 3 scenario passes and `npm run check` is green (no required
+    scenario fails any more).
+  - As built: `TIME_RULES` gains `mainFreeFirstTurnMs` and `mainLimitFirstTurnExtraSeconds`
+    (`mainLimitFirstTurnSeconds` is now `mainLimitBaseSeconds`); `mainPhaseFreeMs.ts` gives a
+    turn's free time; `bankAfterEndingTurn.ts` adds the unused free time on End turn, capped at
+    `TIME_BANK_MS`, and nothing while the seat has free time again after a pause (`grace`). I19
+    allows growth on the player's own `end_turn` up to that turn's free time (the transition
+    carries no time), unless the seat had free time again.
+  - Differs: one more required scenario waited 75 seconds in turn 1 (`combos-and-income`, "a
+    player made done when time runs out also gets their ready combos claimed"); it now waits
+    165 seconds (`HARNESS:` commit, recorded in Q169). `e2e/clocks.spec.ts` and the abandoned
+    test of `e2e/leaving.spec.ts` run in turn 2 (75 seconds of free time), not turn 1.
+  - For later items: the browser tests could not be run locally: since 1b every spec that
+    imports `e2e/startTestRoom.ts` fails to load, because it imports the scenario runner's
+    `stateFromGiven`, which reaches `src/shared/ruleFiles/` and its `?raw` imports, which
+    Playwright's loader parses as JavaScript ("quests.txt: Missing semicolon"). This is 1b's,
+    and the branch check will fail on it until it is fixed (for example by bundling
+    `stateFromGiven` with `tools/bundleForNode.ts`, as `npm run test-room` does).
+
+- [x] 4. **Redrawing the starting hand** (R17.12, M3.3, M3.7, S6.6, S7.2, S16.3, T0.8, I29, B2).
+  **Large.**
+  - The `redraw_hand` message in the intent schema (`src/shared/`) carries the action id and
+    state version like any action (M9.4) and moves only the redrawer's own version. Only an
+    accepted main-phase action (End turn included) ends the window; a rejected one does not.
+    New reason codes `redraw_too_late` and `no_redraw_left`; the tutorial room rejects it as
+    `not_this_step` (T0.8). Deal as R17.9 does (reuse the setup's dealing); one saved row (B2).
+  - Log item `redrew` with the count when the main phase ends (reuse the main-phase log
+    reveal); the leak test must pass (the cards put back and drawn stay hidden). The runner reads
+    `redraws_used` and the log item `redrew`. Client: the **Redraw hand (N left)** button
+    (S6.6), from data in the view.
+  - Scenarios: `drawing`, the 5 redraw ones; `visibility` "the log shows a redraw …";
+    `tutorial` "the tutorial does not offer a redraw …".
+  - Done (2026-11-18). 6 of the 7 scenarios pass (checked on the required list locally, not
+    committed); "a player can redraw their starting hand in turn 1" also expects
+    `worth_gained: 14`, which the runner reads only after item 6; without that line it passes.
+    `npm run check` is green.
+  - As built: `SeatState.redrawsUsed`; `redrawRejection.ts` (`redraw_too_late` outside turn 1
+    or once `actionsThisTurn` > 0, which every accepted main-phase action raises, undo and End
+    turn included, then `no_redraw_left` at `REDRAW_LIMIT` 3); `redrawStartingHand.ts` shuffles
+    the hand into the deck and deals with `dealStartingHand` (R17.9), and moves the redrawer's
+    own `mainPhaseStart.piles` counts by the cards put back and drawn, so their draw actions see
+    the deck as it is while others see nothing (unit tests in `redrawStartingHand.test.ts`).
+    No undo point, not counted toward the action limit; the log entry `redrew` (`times`) is
+    replaced on each redraw. View: `redrawsLeft`, `redrawRejection` (the tutorial view sets
+    `not_this_step`, T0.8). Client: `RedrawHandButton.tsx` shows only while
+    `redrawRejection` is null. I29 in `redrawViolations.ts`, simulated. Bots redraw now and then
+    (`influenceOrUndoMove.ts`). `apply.ts` groups the actions that take income, to stay under
+    the complexity limit.
+  - Differs: the log reads "Ann redrew their starting hand 2 times" (Q172, S7.2 changed first).
+    Browser tests were not run for this item; in turn 1 test rooms the button now shows in the
+    Actions panel, which the branch check's screen-fit tests will judge.
+  - For later items: 6 adds `worth_gained` and must leave it unchanged by a redraw.
+
+- [x] 5. **Projects need 10 income** (R16.2, S6.3, S8.2, S16.3, T5.4). **Small.**
+  - `src/rules/projectRejection.ts`, reason `project_needs_not_met`, whose text names the income
+    (no new code, Q169, 4); `REJECTION_MESSAGES.ts`, the projects help text and pop-up, the
+    tutorial's T5.4 text. Scenarios: `projects` "rejects a project with less than 10 income" and
+    the 7 with 10 income. The bots must not try a project below 10 income (`bots.test.ts`).
+  - Done (2026-11-18). All 8 project scenarios pass; `npm run check` is green.
+  - As built: `src/shared/PROJECT_INCOME_NEED.ts` (10), used by `projectRejection.ts` and the
+    Projects pop-up, whose need line reads "Needs [stat 8] and at least [income 10] · you have
+    [stat] and [income]" (S8.2 "what you have" taken as both). The `project_needs_not_met`
+    text, the projects help (S6.3) and the tutorial's T5.4 text follow the spec. The bots
+    already choose projects from the view's `projectRejections`, so they needed no change.
+  - Differs: `e2e/combosAndProjects.spec.ts` gives the player 10 income (not run locally: see
+    item 3, the browser tests do not load since 1b).
+
+- [x] 6. **Total worth gained** (R2.4, M3.5, I28). **Small.**
+  - A seat count, 14 at setup, raised where funds are received (not selling) and cards gained;
+    undo takes back what its action added; a redraw changes nothing. In the view for every seat,
+    others' as at the start of their own main phase (R5.4; reuse how their other stats are held
+    back). The runner reads `worth_gained`. Scenarios: `setup` "a new game starts every player
+    with 14 total worth gained", `playing-cards` "selling or playing a card does not change
+    total worth gained", `influence` "funds received and cards drawn add to total worth gained".
+    The F boxes on screen are item 9's.
+  - Done (2026-11-18). The 4 worth scenarios (with the turn-1 redraw one) and I28 pass (checked
+    on the required list locally, not committed); `npm run check` is green.
+  - As built: `SeatState.worthGained`, from `STARTING_WORTH_GAINED` (14) in `newSeat`; raised in
+    `cardsIntoHand` (every draw), `takeTurnDraw` (a marketplace card), `endOfTurnSteps` (income
+    and bonus funds), `endMainPhase` and `endGame` (first-completion funds), `completeProject`,
+    `completeQuest` and `useTrade` (the funds a trade gives). Dealing (setup, redraw) and selling
+    do not touch it; undo restores it with the seat. View: `worthGained` on own and other seats
+    (others' through `seatShownTo`, R5.4), in `SEAT_COMMON` of the view schema. I28 in
+    `worthGainedViolations.ts` (down only on the seat's own undo), simulated. Unit tests in
+    `worthGained.test.ts` (income at the next turn; another player's held-back value).
+  - For later items: 9 shows `worthGained` in the F boxes.
+
+- [x] 7. **Player icons** (A2.5, S1.8, S5.1, S6.3). **Small.**
+  - Usernames reach the client in the room's view (`playerNames` in
+    `src/shared/protocol/RoomView.ts`, built in `src/server/room/updateFor.ts`), not in the
+    engine's state, so the icon colour goes beside them, per seat, as an index 0 to 11 that
+    `src/server/` picks from the account id; the client maps it to 12 icon colour tokens added
+    to `src/client/tokens.css`. The engine stays player-type agnostic. The quests and projects
+    displays show icons with the name as tooltip and accessible name; "could complete now"
+    becomes an orange border.
+  - Done (2026-11-18). Unit tests in `quests.test.tsx`, `projectsAreaAndHelp.test.tsx` and
+    `src/server/room/playerIconColorOf.test.ts`; `e2e/quests.spec.ts` passes locally;
+    `npm run check` is green.
+  - As built: `src/server/room/playerIconColorOf.ts` hashes the account id to 0 to 11
+    (`PLAYER_ICON_COLOR_COUNT`); `RoomView.playerIconColors` (beside `playerNames`, per seat) and,
+    for the tutorial room, `playerIconColor` on the `tutorial_update` message (kept in the store
+    as `tutorialPlayerIconColor`). Tokens `--color-player-icon-0` to `-11` in `tokens.css` (white
+    text at 5.3:1 or more). `src/client/components/PlayerIcon.tsx`: the first character in upper
+    case (`playerIconLetterOf`, grapheme-safe), tooltip and accessible name, orange border when
+    marked. The colours reach the quests and projects displays through a context
+    (`PlayerIconColors`, provided in `GameBoard` and `TutorialPage`), not through props.
+  - Differs: the icon is a `button` that does nothing on click, since lint allows keyboard focus
+    (S1.8's tooltip on focus) only on interactive elements. Your own icon in a quest line shows
+    your username's letter and is named "You", as the rest of the screen names you. The old
+    "could complete it now" text stays as hidden text for screen readers.
+  - For later items: 10 keeps usernames (Q169, 16); any later display of icons reuses
+    `PlayerIcon` and `PlayerIconColors`.
+
+- [x] 8. **Combos list and Claim all** (S6.1, S6.6, S1.7, S8.1). **Large.**
+  - One coloured list in the order of S6.1 (group counts include ready combos; the stat order of
+    R2.1; fewer cards needed is the smaller type count, Q169, 2); the same order in the claim
+    pop-up and in the detailed summary table; **Claim all (N)**, N being 1 per ready one-time
+    combo plus each time an infinite combo is ready (Q169, 11), from the view. The S6.1 order is
+    one pure client function that items 11 and 13 reuse.
+  - Done (2026-11-18). Unit tests in `src/client/screens/game/combosList.test.tsx` (order, what
+    stays, Claim all (5), the pop-up's order, the detailed summary table's list); `npm run check`
+    is green.
+  - As built: `src/client/sorting/`: `combosInListOrder(entries, isReady)` (S6.1, for any entries
+    with `card` and `combo`), `compareCombosOfOneCard(combo, other)` (S1.7's order for the
+    combos printed on one card: type combos first, infinite first, fewer needed, bigger reward,
+    R2.1 stat order, then card-name combos by card name) and `compareAlphabetically`.
+    `combosListOf` drops claimed one-time combos and sorts; the combos panel colours each combo
+    (tokens `--color-combo-*`), the Claim all pop-up keeps the list's order, and
+    `claimAllCountOf` sums `readyTimes`. The panel title still counts ready combos.
+  - Differs: the detailed summary table had no list of claimed combos (S3.2), only the C box; it
+    now has one under the T and C boxes (`ClaimedCombosList.tsx`, "Combos claimed by Di",
+    ×times when claimed more than once), sorted with `combosInListOrder`.
+  - For later items: 11 and 13 sort one card's combos with `compareCombosOfOneCard`; 9 sorts
+    type names with `compareAlphabetically` (its type sorter can go in `src/client/sorting/`).
+    `e2e/combosAndProjects.spec.ts` (Claim all (1), the combos-list screenshot) still matches.
+
+- [x] 9. **Stats and summary tables** (S3.1, S3.2, S6.2, S1.7, S13.4). **Large.**
+  - Q, T, C and F boxes in your stats (T counts the city's card types, a doubled type twice,
+    Q169, 3); T, C, F and the 5 most played types in the quick summary table (count order only,
+    Q169, 5); type counts by count, then name, with bonus types first and highlighted green. One
+    pure S1.7 type sorter, which 13 reuses. The names "quick summary table" and "detailed
+    summary table" on screen and in tests. Reuse `OpponentStatsBox.tsx` and `StatChip.tsx`.
+  - Done (2026-11-18). Unit tests in `src/client/screens/game/statsAndSummaryTables.test.tsx`
+    (your Q, T, C and F boxes and sorted, highlighted type counts; the quick table's T, C, F and
+    5 most played types; the detailed table's type counts) and a view assertion in
+    `hiddenDuringMainPhase.test.ts`; `npm run check` is green.
+  - As built: `src/client/sorting/typesInListOrder(typeCounts, firstTypes)` (S1.7: count, most
+    first, then name, inside the `firstTypes` part and the rest; `[]` for one part).
+    `TypeCountsList` takes the ordered types and marks bonus types (`bonusType` class, tokens
+    `--color-board-bonus-type` and `-border`). `CountBox` has F (token
+    `--color-board-worth-count`, a light red readable on the dark box). `OwnCountBoxes` in your
+    stats; `cityTypeCountsOf` counts the city's types for the quick table's top 5. Names: the
+    quick table is the article "Quick summary table of Di", its button "Detailed summary table ›"
+    (accessible name "Detailed summary table of Di"), the dialog "Detailed summary table of Di";
+    unit and browser tests use them. The screenshot name `opponent-board` is unchanged.
+  - Differs: the own seat's view had no completed quests, so `questsCompleted` moved into the
+    common part of the seat view (own seats too, within the phase's one protocol raise). The
+    detailed summary table had no type counts (S3.2); it now shows them, bonus types first.
+  - For later items: 13 sorts type lists with `typesInListOrder` and shows them with
+    `TypeCountsList`.
+
+- [x] 10. **Quests completed last turn** (S5.5). **Small.**
+  - Each quest with its requirement and reward as icons (S1.6), reusing how the quests table
+    shows them; usernames stay in this table (Q169, 16).
+  - Done (2026-11-19). Unit test in `quests.test.tsx` (columns, each quest's requirement and
+    reward parts); `e2e/quests.spec.ts` passes locally; `npm run check` is green.
+  - As built: the table has Quest, Tier, Requirement, Reward and Completed by columns; the
+    requirement parts come from `QuestNeedParts.tsx` (taken out of `QuestNeedsLine`), the reward
+    from `QuestRewardParts`. The table column is at most half the quests panel
+    (`fit-content(50%)`), so the quest cards stay readable at 1280x720 and the cells wrap.
+
+- [x] 11. **Card-name combos on the big card** (S6.9). **Large.**
+  - `src/client/components/BigCard*`: the red name with "!" (both directions, Q169, 18), its
+    tooltip with those combos and the total stats as icons, the red and orange highlights, for
+    hand, marketplace and other players' city cards. A pure lookup from the view and the card
+    data; no new view field.
+  - Done (2026-11-19). Unit tests in `src/client/screens/game/cardNameCombos.test.tsx` (both
+    directions and the total, red and orange highlights, claimed combos not counted, another
+    player's city card, none on your own city's cards); `lookingAtCards`, `bigCardSwitch` and
+    `tutorial` browser specs pass locally except the known tutorial failure at 1280x720 (item 12);
+    `npm run check` is green.
+  - As built: `src/client/screens/game/cardNameCombosShownOf(card, ownSeat)` gives a
+    `CardNameCombosShown`: the readying combos (your city's open combos that need the card, and
+    its printed combos that need a city card and are not yet ready or claimed under its name),
+    each as a card-name combo naming the other card, sorted with `compareCombosOfOneCard`; and a
+    `ComboHighlight` per printed combo. `BigCard` takes it as an optional `cardNameCombos`
+    (the card set passes none); `CardNameWithCombos.tsx` shows the name as a button "Name !"
+    (accessible name "Name!") with a `role="tooltip"` on hover and focus, the combos and
+    "Total:" as icons. `ComboLabel` takes `highlight`; its accessible name ends with ", that card
+    is in your city" or "in your hand". Tokens `--color-card-name-combos-*` (red text on a dark
+    pill, readable on every sector's title bar) and `--color-combo-needed-card-in-city-*` and
+    `-in-hand-*`. The detailed summary table passes your own seat (`OpponentStatsOrLookedAtCard.tsx`,
+    taken out of `OpponentBoardDialog` for its line limit).
+  - Differs: cards of your own city get no marks, as S6.9 lists only hand, marketplace and
+    other players' cities. A combo that is already ready (not yet claimed) does not count,
+    since playing the card does not make it ready.
+  - For later items: 13 sorts the big card's printed combos; `comboHighlights` is by the
+    printed combo's index in `card.combos`, so sorting must carry the index along.
+
+- [x] 12. **Rulebook and tutorial texts** (S14.2, T1.3, T5.4, rulebook). **Small.**
+  - `src/client/screens/rules/PARSED_RULEBOOK.ts` fills `{influence-actions.txt}` (rulebook.md
+    line 271) and `{quests.txt}` (line 380) with tables made by 1a's reader; the tutorial's T1.3
+    text. Needs 1b.
+  - Done (2026-11-19). Unit tests in `src/client/screens/rules/ruleFileTables.test.tsx` (the
+    influence table, the 3 quest tables, no placeholder left) and `tutorialTextBox.test.tsx`
+    (T1.3); `rulesAndCardSet` and `tutorial` browser specs pass locally at 1920 and 2560;
+    `npm run check` is green.
+  - As built: `rulebookWithRuleFileTables` replaces each placeholder line with Markdown tables
+    before `parseRulebook`, so stats and types become icons as in the rest of the rulebook
+    (`influenceActionsTableText`: Action, Times per game, reusing `tradeLabel` and
+    `amountsText`; `questTablesText`: a bold Tier N line and a Quest, Needs, Reward table per
+    tier, reusing `questNeedLabel`). T5.4 already matched the spec (item 5).
+  - For later items: `e2e/tutorial.spec.ts` at 1280x720 fails locally at step 3 (the
+    highlighted Hiking Trail is 90% in view, line 48), at this item's start commit too, so it
+    comes from an earlier item (the taller stats panel of 9 most likely); GitHub's run decides.
+
+- [x] 13. **Sorting everywhere** (S1.7, finding 15). **Small.**
+  - Every remaining list of types with counts, and every list of a player's or one card's combos
+    (big card, card set: type combos first, then card-name combos by card name, Q169, 15), uses
+    the sorters of 8 and 9.
+  - Done (2026-11-19). Unit tests: `cardDetail.test.tsx` (the card set's combos in S1.7 order),
+    `cardNameCombos.test.tsx` (the big card's combos sorted, red and orange highlights still on
+    their combos), `records.test.tsx` (the game record's type counts by count, then name);
+    `npm run check` is green.
+  - As built: `src/client/sorting/combosOfOneCardInListOrder(combos)` sorts one card's printed
+    combos with `compareCombosOfOneCard` and keeps each one's `printedIndex`, which `BigCard`
+    uses for `comboHighlights` and as the key; the card set's `CardDetailCombos` uses it too.
+    The game record's "Type counts" row (`typeCountsText`) uses `typesInListOrder(typeCounts,
+    [])`, with no bonus part, as S1.7 asks bonus types first only in S3.2 and S6.2.
+  - Differs: the existing card detail and big card tests (`cards.test.tsx` too) expected the printed order; their
+    expected orders now follow S1.7. A card's own types (big card, card detail "Types") stay in
+    printed order: they are the card's types, not a list of types with counts.
+
+- [ ] Finish. The finisher adds the 17 remaining new scenarios and I28 and I29 to
+  `harness/required.yaml`. Then the owner's quest review (Waiting for the owner, finding 10)
+  comes before the releaser.
+  - Finisher (2026-11-19): the 17 scenarios and I28, I29 are on `harness/required.yaml`
+    (`HARNESS:` 6d97a91b, Q169). `npm run check` passes locally and `npm run harness` passes
+    (507 scenarios, 0 problems; phase-end simulated games). GitHub run 44493146096 (branch check):
+    `check` and 6 of 7 browser jobs pass; "other tests 1 of 3" fails on one test.
+  - **F1.** `e2e/tutorial.spec.ts:48` at 1280x720 (tutorial step 3): the highlighted Hiking Trail
+    (`tutorial-highlight`) is only 90% in the viewport (`toBeInViewport({ ratio: 1 })`). The same
+    failure as locally since item 12's start, so a wrong result, not a time-out (not rerun); it
+    comes from an earlier item (the taller stats panel of 9 most likely). Needs a code fix (layout
+    at 1280x720), not a test change. Other sizes pass.
+    - Fixed (2026-11-19): item 9's Q, T, C, F row put the type counts on a line of their own,
+      so at 1280x720 the hand's scroll area was 84 px high, less than one card (93 px), and the
+      highlighted card was clipped. Your stats now shows the count boxes and the type counts on
+      one wrapping line (`YourStatsPanel`, `countsAndTypes`); the hand's scroll area is 119 px.
+      `e2e/tutorial.spec.ts` passes locally at all three sizes; `npm run check` is green.
+      Known gap: late in a game with many types, the type counts still wrap to more lines and
+      the hand at 1280x720 can again be shorter than one card (stats keep all project lines
+      visible since e0599635).
+      GitHub run 44495628956 (branch check at 5cb85df8): `check` and all 7 browser jobs pass.
+  - Screenshots of run 44495628956 copied into `harness/screens/` (after F1).
+  - **Phase review (2026-11-19):** ready after fixes; 6 should-fix findings and 2 suggestions.
+    Fixers: group A takes R1, R2, R7, R8; group B takes R3, R4, R5, R6.
+    - **R1.** Draw-action limits in `influence-actions.txt` are read (`InfluenceDraw.limitPerGame`)
+      but never applied (`drawActionRejection.ts`, `useDrawAction.ts`, `DrawActionTable.tsx`);
+      the rulebook would print a limit the game ignores (R15.1, R15.5, R15.6). Count draw uses
+      per line and reject with `trade_limit_reached` (uses left in S8.3), or make any limit other
+      than `no limit` on a draw line "needs new code" in the reader; test it either way.
+      - Fixed (2026-11-19): "needs new code" chosen, as R15.6 asks of a line the game or the
+        screen has no code for (S8.3 shows no uses left for draws); written into R15.5 and
+        `HARNESS.md` first (Q173, `HARNESS:` cee3c19c). The reader reports a draw line whose
+        limit is not `no limit` (`readInfluenceActionFile`); tests in `checkRuleFiles.test.ts`
+        and `readInfluenceActionFile.test.ts` (9b5ceee0). The file has none, so no game change.
+    - **R2.** A second "1 more each time" line is accepted, but every rising line shares one
+      `buildPassesBought` counter and `buildPassPriceOf`/`tradeCostsShown` use the first line's
+      price (R15.5, R15.6). Reject a second rising line with "needs new code" (with a test), or
+      count purchases per line.
+      - Fixed (2026-11-19): a second line with `1 more each time` fails with "needs new code"
+        naming it (Q173, R15.5, same commits as R1; test in `checkRuleFiles.test.ts`).
+    - **R3.** Exit-criteria screenshots missing: the big card with a red name and its tooltip, and
+      the projects display with an icon (`harness/screens/`, `e2e/`).
+      - Fixed (2026-11-19): `e2e/cardNameCombos.spec.ts` saves `big-card-card-name-combos`
+        (the red "Hiking Trail !" with its tooltip, pointed at) and `e2e/countsAndPlayerIcons.spec.ts`
+        saves `projects-completed-by` (Clean up the streets "Completed by" Seat 2's icon, focused,
+        with its tooltip), each at every size with axe, 24 px targets and no horizontal scrolling.
+        Taking the first showed the red name was 20 px high, under the 24 px minimum: it now has
+        `min-height: 24px` (`CardNameWithCombos.module.css`; 56f65118, f4552a1a).
+        Noticed, not fixed: on keyboard focus the stat icons inside the name's tooltip show their
+        own name tooltips too (S1.6, "the control the icon is in has keyboard focus"), which
+        overlap the tooltip's lines; on pointer hover it is clean, which the screenshot shows.
+        GitHub run 44504263830 (branch check at d43267f9): `check` and all 7 browser jobs pass;
+        its screenshots are copied into `harness/screens/`, the two new screens included.
+    - **R4.** New screen elements have no browser test by role and name (README "What every phase
+      must meet"): Redraw hand (S6.6), the card-name "!" and tooltip (S6.9), projects-area icons
+      (S6.3, S1.8), the quick summary table's T, C, F and 5 most played types (S3.1), your Q, T,
+      C, F boxes (S6.2), the completed-last-turn table's requirement and reward columns (S5.5).
+      - Fixed (2026-11-19): by role and accessible name at every size: the red name button
+        "Hiking Trail!" and its `tooltip` on keyboard focus and on hover, with the combos, their
+        total as an icon and the red highlight, none on a card without card-name combos
+        (`cardNameCombos.spec.ts`); your Q, T, C, F boxes ("Your counts"), another player's Q, T,
+        C, F and the 5 most played types in order in the quick summary table, and the project
+        "Completed by" icon as a focusable button named "Seat 2"; Redraw hand from 3 left to gone
+        (`countsAndPlayerIcons.spec.ts`); the completed-last-turn table's Requirement and Reward
+        columns and their icons (`quests.spec.ts`). The three spec files pass locally.
+    - **R5.** `docs/enforcement.md` does not mention the rule-file check of `npm run harness:check`
+      (`checkRuleFiles.ts`, `checkTutorialQuests.ts`, names from the files, Vite bundling).
+      - Fixed (2026-11-19): the Harness runner row names the rule file check (the readers, line
+        and word, "needs new code", R19.3, T0.7, the scenario names, the `?raw` bundling and
+        `contentsOfRuleFile`), and the Playwright row the phase's new browser tests (d43267f9).
+    - **R6.** Player icons are `button`s (tab stops) although S1.6 says icons are not tab stops,
+      while S1.8 says the tooltip shows on keyboard focus; also your own icon named "You". Settled
+      only under "Differs": record the question and solution in `open-questions.md` and write it
+      into the spec first, or follow S1.6.
+      - Answered (2026-11-19): S1.6's reason (dozens of icons) is about stat and type icons; a
+        player icon stands where a name was and a screen shows few, so it stays a tab stop.
+        Written into S1.6 and S1.8 first, with your own icon named "You" (Q174, `HARNESS:`
+        0d6be018); the code already does this, so no code change.
+    - **R7.** Suggestion: I6 (`invariantViolations.ts`) flags only a play with 0 passes; also
+      require exactly 1 pass used on `play_card`.
+      - Fixed (2026-11-19): I6 also reports a card played that used other than exactly 1 build
+        pass in the same turn (`buildPassViolations`, unit test; 13634926).
+    - **R8.** Suggestion: `GAME_STATE_SCHEMA.ts` repeats 14 instead of `STARTING_WORTH_GAINED`;
+      `completeProject.ts` repeats the project's funds reward `2` for worth gained.
+      - Fixed (2026-11-19): `GAME_STATE_SCHEMA` uses `STARTING_WORTH_GAINED`;
+        `completeProject` names the reward once (`PROJECT_FUNDS_REWARD`).
+  - **Owner's quest review (finding 10, 2026-11-19):** `quests.txt` 0f6592c2. Scenarios
+    follow it (`HARNESS:`, Q169 10): the "completing … gives its reward" scenarios, the
+    requirement, sector-count and tier rejections, the gained-type chain and undo's Supply chain;
+    no names changed (507 scenarios pass). Tests that named old quest values follow the file:
+    `quests.test.tsx` (the singular wording is now shown with Civic pride's "1 completed
+    project", as no quest needs 1 card any more), `ruleFileTables.test.tsx`,
+    `checkRuleFiles.test.ts`. No game code or tutorial text changed (Trading post is unchanged).
+    `npm run check` is green locally. Open for the owner: renaming the Metropolis scenario (above).
+    GitHub run 44514843755 (branch check at e00a45f4): `check` and all 7 browser jobs pass, after
+    one rerun of "other tests 3 of 3" (`bigCardSwitch.spec.ts` timed out waiting for the room
+    heading at 2560x1440, a time-out, not a wrong result).
+
+### Helper log
+
+Filled in by the coordinator afterwards, from the helpers' completion notices (Q73). Tokens are
+each helper's conversation size at its end.
+
+| Job | Model, effort | Minutes | Tokens | Tool calls | Result |
+|---|---|---|---|---|---|
+| Planner (stopped by the owner) | Opus, medium | 1 | 107k | 19 | stopped |
+| Planner | Opus, medium | 22 | 326k | 124 | blocked (11 names, approved) |
+| Renames and starter | Opus, medium | 6 | 125k | 39 | done |
+| Builder, item 1a | Opus, medium | 15 | 166k | 66 | done |
+| Builder, item 2 | Opus, medium | 22 | 127k | 57 | done |
+| Builder, item 1b | Opus, medium | 12 | 173k | 59 | done |
+| Builder, items 3 and 5 | Opus, medium | 24 | 150k | 89 | done |
+| Builder, e2e loading fix and item 4 (resumed after a usage limit) | Opus, medium | 41 | 228k | 152 | done |
+| Builder, items 6 and 7 | Opus, medium | 32 | 207k | 112 | done |
+| Builder, item 8 | Opus, medium | 11 | 133k | 54 | done |
+| Builder, item 9 | Opus, medium | 12 | 146k | 66 | done |
+| Builder, items 10 and 12 | Opus, medium | 20 | 132k | 66 | done |
+| Builder, item 11 | Opus, medium | 16 | 146k | 60 | done |
+| Builder, item 13 | Opus, medium | 11 | 96k | 34 | done |
+| Finisher | Sonnet, medium | 22 | 87k | 24 | partial (F1) |
+| Fixer, F1 | Opus, medium | 25 | 90k | 34 | done |
+| Phase reviewer | Opus, medium | 17 | 221k | 70 | done (8 findings) |
+| Fixer, R1, R2, R7, R8 | Opus, medium | 8 | 110k | 46 | done |
+| Fixer, R3, R4, R5, R6 | Opus, medium | 28 | 163k | 93 | done |
+| Fixer, quest review (finding 10) | Opus, medium | 31 | 147k | 58 | done |
+
+## Report
+
+**Built.** All 18 findings of the owner's notes of 2026-11-17 (see Builds and Progress): build
+passes (one per turn, each card uses one, no skip build), 30 second market goes, turn-1 redraws
+and 5 minutes, free-time bank refill, projects need 10 income, quests and influence actions from
+the owner's text files with exact check errors, coloured and ordered combos, Q/T/C/F stats and
+sorted, highlighted summary tables, Claim all count, player icons on the quests and projects
+displays, requirements and rewards in the completed-last-turn table, and combo marks on the big
+card.
+
+**To try.** The list under "What you can see when it's done", on the live site.
+
+**Differences from the phase file.** None beyond those recorded in Progress and
+`docs/plan/open-questions.md` (Q169 for the quest review).
+
+**Decisions.** The owner's reviewed quest list (finding 10) replaced the earlier quest values;
+scenarios and tests follow it. The required scenario "Metropolis needs tier 3 cards in 3
+different sectors" keeps its name; the owner may rename it later.
+
+**Review.** The phase reviewer found 8 findings (R1 to R8), all fixed (Progress lists each fix).
+GitHub branch check 44514843755 was green on every job; later commits touched only docs/plan.

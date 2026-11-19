@@ -23,7 +23,7 @@ const READY: Partial<OwnSeatView> = {
   projects: ["workforce"],
   stats: {
     funds: 7,
-    income: 3,
+    income: 10,
     influence: 0,
     workforce: 2,
     quality: 9,
@@ -41,7 +41,7 @@ function showGame(changes: Partial<OwnSeatView> = READY) {
 }
 
 describe("your city and combos", () => {
-  it("shows the city by sector and the combos with how many are ready", () => {
+  it("shows the city by sector and the combos with how many are ready, without claimed one-time combos", () => {
     showGame();
     expect(
       within(screen.getByRole("list", { name: "Your Residential cards" }))
@@ -51,7 +51,6 @@ describe("your city and combos", () => {
     const combos = within(screen.getByRole("region", { name: "Combos · 1 ready" }));
     expect(combos.getAllByRole("listitem").map(textWithIconNames)).toEqual([
       "Row House · 1 [Safety][Quality +1]ready",
-      "Row House · 1 [Rental Space][Satisfaction +1]claimed",
       "Fire Station · 1 [Suburban Housing][Quality +1]",
     ]);
   });
@@ -113,7 +112,9 @@ describe("projects", () => {
     fireEvent.click(screen.getByRole("button", { name: "Projects" }));
     const dialog = within(screen.getByRole("dialog", { name: "Projects" }));
     const streetsItem = dialog.getByRole("listitem", { name: "Clean up the streets" });
-    expect(textWithIconNames(streetsItem)).toContain("Needs [Quality 8] · you have [Quality 9]");
+    expect(textWithIconNames(streetsItem)).toContain(
+      "Needs [Quality 8] and at least [Income 10] · you have [Quality 9] and [Income 10]",
+    );
     const streets = within(streetsItem);
     const campaign = within(dialog.getByRole("listitem", { name: "Culture campaign" }));
     expect(campaign.getByRole("button", { name: "Need 4 more" })).toHaveProperty("disabled", true);
@@ -150,7 +151,7 @@ describe("projects", () => {
       true,
     );
     expect(textWithIconNames(streetsItem)).toContain(
-      "You need 8 of the stat, and no negative [Workforce], [Quality] or [Satisfaction].",
+      "You need 8 of the stat, at least 10 [Income], and no negative [Workforce], [Quality] or [Satisfaction].",
     );
   });
 

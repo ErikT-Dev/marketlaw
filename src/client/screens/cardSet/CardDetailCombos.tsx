@@ -1,5 +1,6 @@
 import type { Combo } from "../../../shared/catalogue/Combo";
 import { ComboLabel } from "../../components/ComboLabel";
+import { combosOfOneCardInListOrder } from "../../sorting/combosOfOneCardInListOrder";
 import styles from "./CardDetail.module.css";
 
 type Props = {
@@ -18,9 +19,9 @@ export function CardDetailCombos({ combos }: Props) {
     "none"
   ) : (
     <ul className={styles["combos"]}>
-      {combos.map((combo, index) => (
-        <li key={String(index)} className={styles["combo"]}>
-          <ComboLabel combo={combo} />
+      {combosOfOneCardInListOrder(combos).map(({ combo, printedIndex }) => (
+        <li key={String(printedIndex)} className={styles["combo"]}>
+          <ComboLabel combo={combo} highlight="none" />
           <span aria-hidden="true">{comboNote(combo)}</span>
         </li>
       ))}

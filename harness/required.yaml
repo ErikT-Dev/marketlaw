@@ -48,6 +48,11 @@ scenarios:
     - a discard shuffle in the main phase is shown to others only when the phase ends
     - the player who caused a discard shuffle sees it straight away
     - turn draws use the number of the turn that is starting
+    - a player can redraw their starting hand in turn 1
+    - a player can redraw their starting hand at most 3 times
+    - rejects a redraw after the player's first action
+    - rejects a redraw after turn 1
+    - another player's redraw is hidden until the main phase ends
   playing-cards:
     - playing a Residential card pays its cost and applies its stats and types
     - playing an Industry card gives product and uses workforce quality and satisfaction
@@ -59,15 +64,16 @@ scenarios:
     - rejects a card the player cannot afford at its real cost
     - rejects a tier 2 card before turn 5
     - a tier 2 card can be played from turn 5
-    - rejects a second card in a turn without a build pass
-    - a build pass allows a second card and is used up
-    - rejects playing a card after skip build even with a build pass
+    - rejects a card when the player has no build pass left
+    - playing a card uses up 1 build pass
+    - a player with saved build passes can play several cards in one turn
     - rejects a card that is not in the hand
     - selling several cards is one action and puts them in the holding pile
     - rejects any action after the 50th main-phase action but still allows ending the turn
     - a player at the action limit can end their turn
     - undo counts toward the action limit
     - sold cards join the discard pile when the main phase ends
+    - selling or playing a card does not change total worth gained
   projects:
     - completing a project uses up 8 of the stat and gives income funds influence and a card
     - rejects a project without enough of the stat
@@ -77,6 +83,7 @@ scenarios:
     - everyone who completes a project in the first turn anyone does gets 2 extra funds at the end of the turn
     - a project completed in a later turn gives no first-completion funds
     - rejects a project outside the main phase
+    - rejects a project with less than 10 income
   setup:
     - a new game gives every player the starting stats and time bank
     - starting hands are dealt from the top of the deck one player at a time in seat order
@@ -84,6 +91,8 @@ scenarios:
     - the quests table starts with 4 random tier 1 quests and 2 different bonus types are picked
     - after setup the deck holds every card not dealt or on display
     - turn 1 starts with the main phase and every player can act
+    - every player starts turn 1 with 1 build pass
+    - a new game starts every player with 14 total worth gained
   turns-and-time:
     - ending the turn marks the player done and further actions are rejected
     - the main phase ends only when every player is done
@@ -92,7 +101,8 @@ scenarios:
     - negative stats lower the bonus and a negative bonus gives no funds
     - every full 10 bonus becomes 1 fund
     - players who left get no end-of-turn steps
-    - skip build is reset at the end of the turn
+    - every player gets 1 build pass at the start of every turn
+    - unused build passes carry over to later turns with no limit
     - the first player moves one seat on each turn
     - the first player in turn 3 of a 3-player game is seat 3
     - if the first player has left the next seat still in the game goes first
@@ -103,7 +113,7 @@ scenarios:
     - players made done at the same moment become done in player order
     - the main-phase time limit in turn 10 is 4 minutes 27 seconds
     - reaching the main-phase limit makes the player done
-    - the first 75 seconds of a main phase do not use the time bank
+    - from turn 2 the first 75 seconds of a main phase do not use the time bank
     - the time bank runs after the free time until the player ends their turn
     - with an empty bank a player only has the free time
     - a message received at the deadline is rejected and the time-out is applied
@@ -112,8 +122,8 @@ scenarios:
     - "every player sees every other player's bank counting down during the main phase"
     - a player whose time runs out is told how many time-outs in a row out of 3
     - ending the turn in time resets the time-out count
-    - "the first player's market go has 40 seconds"
-    - every later market go also has 40 seconds
+    - "the first player's market go has 30 seconds"
+    - every later market go also has 30 seconds
     - a deadline while nobody is connected pauses the game instead
     - a paused game goes on when a player reconnects and the timed-out player gets free time again
     - after the extra free time the paused player times out as normal
@@ -128,6 +138,12 @@ scenarios:
     - in a casual game time-outs in a row do not count as leaving the game
     - in a casual game a player whose time runs out is told they can keep playing
     - a game paused for 24 hours is abandoned
+    - the main-phase time limit in turn 1 is 5 minutes
+    - the first 165 seconds of the main phase in turn 1 do not use the time bank
+    - unused free time is added to the time bank when the player ends their turn
+    - unused free time of turn 1 is added to the time bank
+    - the time bank never grows above 15 minutes
+    - free time given again after a pause is not added to the time bank
   visibility:
     - other players' hands are shown only as a number of cards
     - a player sees their own hand
@@ -153,6 +169,7 @@ scenarios:
     - a main-phase action is hidden from a player still waiting for their market go
     - a turn draw left open is shown to other players when the main phase ends
     - an opponent's out of time status is shown live
+    - the log shows a redraw of the starting hand once the main phase ends
   influence:
     - 4 influence buys 2 funds once per game
     - 4 influence buys 1 quality
@@ -161,9 +178,7 @@ scenarios:
     - 1 fund buys 1 influence any number of times
     - a bought build pass costs 1 more fund each time
     - 5 influence buys 1 build pass once per game
-    - skip build gives a build pass and blocks playing cards this turn
-    - skip build is rejected after playing a card this turn
-    - skip build can be used 3 times per game
+    - a bought build pass can be used straight away
     - 1 influence and 1 quality buy 1 satisfaction
     - 1 influence and 1 satisfaction buy 1 quality
     - 2 influence and 1 product buy 1 distribution and 1 satisfaction
@@ -183,11 +198,12 @@ scenarios:
     - a draw action for a Public kind draws only that kind
     - rejects a draw action when no card of that kind and tier is left
     - a draw action whose last card another player took this phase gives another tier
+    - funds received and cards drawn add to total worth gained
   undo:
     - undo takes back playing a card
     - undo takes back claim all
     - undo takes back a trade that draws no card
-    - undo takes back skip build and the build pass it gave
+    - undo takes back a build pass bought with influence
     - undo takes back the latest action first
     - selling cannot be undone
     - completing a project cannot be undone
@@ -510,6 +526,7 @@ scenarios:
     - tutorial turn 4 teaches product and the first bonus fund
     - tutorial turn 5 teaches income and quests and then ends
     - the tutorial rejects playing a different card than the step asks for
+    - the tutorial does not offer a redraw of the starting hand
 invariants:
   - I1
   - I2
@@ -538,6 +555,8 @@ invariants:
   - I25
   - I26
   - I27
+  - I28
+  - I29
 budgets:
   - B1
   - B2

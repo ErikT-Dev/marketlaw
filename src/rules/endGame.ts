@@ -15,10 +15,14 @@ export function endGame(
   const firsts = firstCompletionsOf(state);
   const rewarded = {
     ...state,
-    seats: state.seats.map((seat) => ({
-      ...seat,
-      stats: { ...seat.stats, funds: seat.stats.funds + firstCompletionFundsOf(seat, firsts) },
-    })),
+    seats: state.seats.map((seat) => {
+      const firstFunds = firstCompletionFundsOf(seat, firsts);
+      return {
+        ...seat,
+        stats: { ...seat.stats, funds: seat.stats.funds + firstFunds },
+        worthGained: seat.worthGained + firstFunds,
+      };
+    }),
     firstCompletions: [...state.firstCompletions, ...firsts],
     discard: [...state.discard, ...state.holdingPile],
     holdingPile: [],

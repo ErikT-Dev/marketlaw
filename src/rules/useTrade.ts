@@ -1,13 +1,13 @@
+import { tradeOf } from "../shared/ruleFiles/tradeOf";
 import type { Stats } from "../shared/Stats";
 import { STAT_KEYS } from "../shared/STAT_KEYS";
 import type { TradeName } from "../shared/TradeName";
-import { TRADES } from "../shared/TRADES";
 import type { SeatState } from "./SeatState";
 import { tradeCostsOf } from "./tradeCostsOf";
 
 function statsAfterTrade(seat: SeatState, trade: TradeName): Stats {
   const costs = tradeCostsOf(seat, trade);
-  const gains = TRADES[trade].gains;
+  const gains = tradeOf(trade).gains;
   return STAT_KEYS.reduce(
     (stats, stat) => ({ ...stats, [stat]: stats[stat] - (costs[stat] ?? 0) + (gains[stat] ?? 0) }),
     seat.stats,
@@ -15,18 +15,17 @@ function statsAfterTrade(seat: SeatState, trade: TradeName): Stats {
 }
 
 export function useTrade(seat: SeatState, trade: TradeName): SeatState {
-  const { doesGiveBuildPass, limitPerGame } = TRADES[trade];
+  const { buildPasses, isPriceRising, limitPerGame, gains } = tradeOf(trade);
   return {
     ...seat,
     stats: statsAfterTrade(seat, trade),
-    buildPasses: doesGiveBuildPass ? seat.buildPasses + 1 : seat.buildPasses,
-    buildPassesBought:
-      trade === "buy_build_pass" ? seat.buildPassesBought + 1 : seat.buildPassesBought,
-    hasSkippedBuild: seat.hasSkippedBuild || trade === "skip_build",
+    buildPasses: seat.buildPasses + buildPasses,
+    buildPassesBought: isPriceRising ? seat.buildPassesBought + 1 : seat.buildPassesBought,
     influenceUses:
       limitPerGame === null
         ? seat.influenceUses
         : { ...seat.influenceUses, [trade]: (seat.influenceUses[trade] ?? 0) + 1 },
     actionsThisTurn: seat.actionsThisTurn + 1,
+    worthGained: seat.worthGained + (gains.funds ?? 0),
   };
 }

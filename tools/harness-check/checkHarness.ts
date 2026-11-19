@@ -4,6 +4,7 @@ import { checkCodesAndActions } from "./checkCodesAndActions.ts";
 import { checkCoveredRulesExist } from "./checkCoveredRulesExist.ts";
 import { checkFieldsDocumented } from "./checkFieldsDocumented.ts";
 import { checkNames } from "./checkNames.ts";
+import { checkRuleFiles } from "./checkRuleFiles.ts";
 import { checkRulebookLinks } from "./checkRulebookLinks.ts";
 import { checkRulebookTypes } from "./checkRulebookTypes.ts";
 import { checkScenarioFormat } from "./checkScenarioFormat.ts";
@@ -18,6 +19,7 @@ export function checkHarness(): number {
   writeFileSync(HARNESS_PATHS.coverage, coverage.markdown);
   const problems: ReadonlyArray<HarnessProblem> = [
     ...loadProblems,
+    ...checkRuleFiles(files),
     ...checkScenarioFormat(files),
     ...checkUniqueNames(files),
     ...checkCoveredRulesExist(files),
@@ -44,5 +46,3 @@ export function checkHarness(): number {
   );
   return problems.length === 0 ? 0 : 1;
 }
-
-process.exitCode = checkHarness();

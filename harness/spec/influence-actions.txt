@@ -1,0 +1,22 @@
+influence to funds | pay 4 influence | get 2 funds | 1 per game
+influence to quality | pay 4 influence | get 1 quality | 1 per game
+influence to satisfaction | pay 4 influence | get 1 satisfaction | 1 per game
+influence to workforce | pay 6 influence | get 1 workforce | 1 per game
+fund to influence | pay 1 fund | get 1 influence | no limit
+buy build pass | pay 2 funds, 1 more each time | get 1 build pass | no limit
+influence to build pass | pay 5 influence | get 1 build pass | 1 per game
+quality to satisfaction with influence | pay 1 influence, 1 quality | get 1 satisfaction | 1 per game
+satisfaction to quality with influence | pay 1 influence, 1 satisfaction | get 1 quality | 1 per game
+product to distribution | pay 2 influence, 1 product | get 1 distribution, 1 satisfaction | 1 per game
+distribution to product | pay 2 influence, 1 distribution, 1 satisfaction | get 1 product | 1 per game
+quality to workforce with influence | pay 2 influence, 1 quality | get 1 workforce | 1 per game
+satisfaction to workforce with influence | pay 2 influence, 1 satisfaction | get 1 workforce | 1 per game
+workforce to satisfaction | pay 1 workforce | get 1 satisfaction | 1 per game
+workforce to quality | pay 1 workforce | get 1 quality | 1 per game
+two quality to satisfaction | pay 2 quality | get 1 satisfaction | no limit
+two satisfaction to quality | pay 2 satisfaction | get 1 quality | no limit
+four quality to workforce | pay 4 quality | get 1 workforce | no limit
+four satisfaction to workforce | pay 4 satisfaction | get 1 workforce | no limit
+draw tier 1 | pay 3 influence | draw a tier 1 card of a chosen kind | no limit
+draw tier 2 | pay 4 influence | draw a tier 2 card of a chosen kind | no limit
+draw tier 3 | pay 5 influence | draw a tier 3 card of a chosen kind | no limit

@@ -136,6 +136,12 @@ None.
   differs only in capital letters is a change; the same name exactly changes nothing and is not
   counted. A change is checked in this order: the name itself (A2.1, A2.3), the 4 changes in
   7 days (`username_change_too_soon`), then whether it is taken.
+- **A2.5** **Player icon:** every account, guest or registered, has an icon: the first character
+  of the username it shows in that place, in upper case, on a background colour that is fixed
+  for the account. The colour is one of 12 icon colours of the design tokens, picked by the
+  server from the account's id, so it is the same in every game and does not change when the
+  username does. The view of a game carries each seat's icon colour; the client never picks
+  it.
 
 ## A3. Game records
 

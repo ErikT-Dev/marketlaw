@@ -1,4 +1,5 @@
 import { newSeat } from "../../../src/rules/newSeat.ts";
+import { withTurnBuildPass } from "../../../src/rules/withTurnBuildPass.ts";
 import { cardOf } from "../../../src/shared/catalogue/cardOf.ts";
 import type { CardName } from "../../../src/shared/catalogue/CardName.ts";
 import type { SeatState } from "../../../src/rules/SeatState.ts";
@@ -36,7 +37,6 @@ function buildFromGiven(given: GivenSeat, start: SeatState) {
     buildPasses: given.build_passes ?? start.buildPasses,
     buildPassesBought: given.build_passes_bought ?? start.buildPassesBought,
     hasPlayedThisTurn: given.played_this_turn ?? start.hasPlayedThisTurn,
-    hasSkippedBuild: given.skipped_build ?? start.hasSkippedBuild,
     influenceUses: given.influence_uses ?? start.influenceUses,
   };
 }
@@ -48,6 +48,8 @@ function turnStatusFromGiven(given: GivenSeat, start: SeatState) {
     isDone: given.done ?? start.isDone,
     isOutOfTime: given.out_of_time ?? start.isOutOfTime,
     isTurnDrawOpen: given.turn_draw_pending ?? start.isTurnDrawOpen,
+    redrawsUsed: given.redraws_used ?? start.redrawsUsed,
+    worthGained: given.worth_gained ?? start.worthGained,
     logEntriesThisMainPhase: start.logEntriesThisMainPhase,
   };
 }
@@ -57,7 +59,7 @@ export function seatFromGiven(
   given: GivenSeat | undefined,
   turn: number,
 ): SeatState {
-  const start = newSeat(seat);
+  const start = withTurnBuildPass(newSeat(seat));
   if (given === undefined) {
     return start;
   }

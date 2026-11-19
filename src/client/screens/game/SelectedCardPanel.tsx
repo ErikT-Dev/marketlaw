@@ -5,6 +5,7 @@ import { BigCard } from "../../components/BigCard";
 import { Button } from "../../components/Button";
 import { StatChip } from "../../components/StatChip";
 import { TextWithIcons } from "../../components/TextWithIcons";
+import { cardNameCombosShownOf } from "./cardNameCombosShownOf";
 import { costExplanation } from "./costExplanation";
 import { rejectionMessage } from "./rejectionMessage";
 import styles from "./SelectedCardPanel.module.css";
@@ -25,7 +26,11 @@ export function SelectedCardPanel(props: Props) {
   const rejection = details.playRejection;
   return (
     <section className={className} aria-label={`Selected card: ${card.name}`}>
-      <BigCard card={card} realCost={details.realCost} />
+      <BigCard
+        card={card}
+        realCost={details.realCost}
+        cardNameCombos={cardNameCombosShownOf(card.name, seat)}
+      />
       <h3 className={styles["cost"]}>
         Costs <StatChip stat="funds" value={details.realCost} />
       </h3>

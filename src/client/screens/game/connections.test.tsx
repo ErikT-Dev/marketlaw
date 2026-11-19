@@ -17,7 +17,9 @@ describe("connections in a game", () => {
       .getAllByRole("listitem")
       .map((item) => item.textContent);
     expect(badges.find((badge) => badge.startsWith("Cy"))).toContain("away");
-    expect(screen.getByRole("article", { name: "Cy" }).textContent).toContain("away");
+    expect(
+      screen.getByRole("article", { name: "Quick summary table of Cy" }).textContent,
+    ).toContain("away");
   });
 
   it("says who gets free time again when the game goes on after a pause", () => {

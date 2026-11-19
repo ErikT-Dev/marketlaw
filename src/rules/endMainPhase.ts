@@ -15,17 +15,19 @@ import { questsCompletedThisTurnOf } from "./questsCompletedThisTurnOf";
 import type { Random } from "./Random";
 import type { SeatState } from "./SeatState";
 import { withMainPhaseStart } from "./withMainPhaseStart";
+import { withTurnBuildPass } from "./withTurnBuildPass";
 
 function isShownLongEnough(slot: MarketplaceSlot): boolean {
   return slot.card !== null && slot.phasesShown >= MARKET_PHASES_SHOWN;
 }
 
 function seatAtTurnStart(seat: SeatState, firsts: ReadonlyArray<ProjectName>): SeatState {
-  const afterSteps = endOfTurnSteps(seat);
+  const afterSteps = withTurnBuildPass(endOfTurnSteps(seat));
   const firstFunds = firstCompletionFundsOf(seat, firsts);
   const started = {
     ...afterSteps,
     stats: { ...afterSteps.stats, funds: afterSteps.stats.funds + firstFunds },
+    worthGained: afterSteps.worthGained + firstFunds,
     drawnThisPhase: [],
     newCards: [],
     hasHadMarketGo: false,

@@ -15,8 +15,9 @@
   why: >
     Only accepted actions, alarm changes, chat messages and room membership changes may cost a
     write; reading and showing the game must be free. Exceptions that count as accepted actions
-    under B1: a time-out (including one applied by an out-of-time rejection, R9.6), and a game
-    pausing or resuming (R9.12, R9.13).
+    under B1: a time-out (including one applied by an out-of-time rejection, R9.6), a game
+    pausing or resuming (R9.12, R9.13), and a redraw of the starting hand (R17.12), which is not
+    a main-phase action but is saved like one.
 
 - id: B3
   name: alarm changes per turn

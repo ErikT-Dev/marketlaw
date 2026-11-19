@@ -75,12 +75,23 @@ describe("invariantViolations", () => {
   });
 
   it("reports actions by a done seat and cards played beyond the rules", () => {
-    const before = withSeat1({ ...START, turn: 3 }, { isDone: true, hasPlayedThisTurn: true, hasSkippedBuild: true });
+    const before = withSeat1({ ...START, turn: 3 }, { isDone: true, hasPlayedThisTurn: true, buildPasses: 0 });
     const action: GameAction = { type: "play_card", seat: 1, card: "Brownstone" };
     expect(invariantViolations(transition(before, action, before))).toEqual([
       "I18: seat 1 took an action while done or after leaving",
       "I5: Brownstone was played in turn 3",
       "I6: seat 1 played more cards than its build passes allow",
+    ]);
+  });
+
+  it("reports a card played without using exactly 1 build pass", () => {
+    const before = withSeat1(START, { buildPasses: 3 });
+    const action: GameAction = { type: "play_card", seat: 1, card: START.seats[0]?.hand[0] ?? "Pub" };
+    expect(invariantViolations(transition(before, action, before))).toEqual([
+      "I6: seat 1 used 0 build passes to play a card",
+    ]);
+    expect(invariantViolations(transition(before, action, withSeat1(START, { buildPasses: 1 })))).toEqual([
+      "I6: seat 1 used 2 build passes to play a card",
     ]);
   });
 
@@ -149,9 +160,9 @@ describe("invariantViolations", () => {
   });
 
   it("reports an influence action used more often than its limit per game", () => {
-    const after = withSeat1(START, { influenceUses: { skip_build: 4, influence_to_funds: 1 } });
+    const after = withSeat1(START, { influenceUses: { influence_to_build_pass: 2, influence_to_funds: 1 } });
     expect(invariantViolations(transition(START, { type: "end_turn", seat: 1 }, after))).toEqual([
-      "I11: seat 1 used skip_build 4 times",
+      "I11: seat 1 used influence_to_build_pass 2 times",
     ]);
   });
 
@@ -165,6 +176,21 @@ describe("invariantViolations", () => {
     expect(found).toEqual([
       "I19: seat 1 time bank went from 900000 to 900001",
       "I19: seat 1 time bank went from 1000 to 900000",
+    ]);
+  });
+
+  it("allows a time bank to grow by at most the free time when its player ends their turn", () => {
+    const spent = withSeat1(START, { timeBankMs: 600_000 });
+    const refilled = withSeat1(START, { timeBankMs: 765_000 });
+    const overfilled = withSeat1(START, { timeBankMs: 765_001 });
+    const found = [
+      ...invariantViolations(transition(spent, { type: "end_turn", seat: 1 }, refilled)),
+      ...invariantViolations(transition(spent, { type: "end_turn", seat: 1 }, overfilled)),
+      ...invariantViolations(transition(spent, { type: "end_turn", seat: 2 }, refilled)),
+    ].filter((violation) => violation.startsWith("I19"));
+    expect(found).toEqual([
+      "I19: seat 1 time bank went from 600000 to 765001",
+      "I19: seat 1 time bank went from 600000 to 765000",
     ]);
   });
 

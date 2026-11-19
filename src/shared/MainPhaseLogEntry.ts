@@ -28,4 +28,10 @@ export type MainPhaseLogEntry =
       readonly turn: number;
       readonly seat: SeatNumber;
       readonly trade: TradeName;
+    }
+  | {
+      readonly kind: "redrew";
+      readonly turn: number;
+      readonly seat: SeatNumber;
+      readonly times: number;
     };

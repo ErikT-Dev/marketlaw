@@ -27,7 +27,9 @@ async function openPlayer(context: BrowserContext, link: string): Promise<Player
 }
 
 function opponent(page: Page, name: string) {
-  return page.getByRole("region", { name: "Opponents" }).getByRole("article", { name });
+  return page
+    .getByRole("region", { name: "Opponents" })
+    .getByRole("article", { name: `Quick summary table of ${name}` });
 }
 
 function roomCodeOf(link: string): string {

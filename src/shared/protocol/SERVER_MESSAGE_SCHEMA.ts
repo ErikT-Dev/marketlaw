@@ -19,6 +19,7 @@ import { GAME_RESULT_SCHEMA } from "./GAME_RESULT_SCHEMA";
 import { QUEST_PLACE_VIEW_SCHEMA } from "./QUEST_PLACE_VIEW_SCHEMA";
 import { SEAT_NUMBER_SCHEMA } from "./SEAT_NUMBER_SCHEMA";
 import { STATS_SCHEMA } from "./STATS_SCHEMA";
+import { PLAYER_ICON_COLOR_COUNT } from "../PLAYER_ICON_COLOR_COUNT";
 import { TUTORIAL_PROGRESS_SCHEMA } from "./TUTORIAL_PROGRESS_SCHEMA";
 
 const COUNT = v.number();
@@ -30,6 +31,8 @@ const SEAT_COMMON = {
   stats: STATS,
   city: CARDS,
   buildPasses: COUNT,
+  worthGained: COUNT,
+  questsCompleted: v.array(QuestName),
   isDone: v.boolean(),
   isOutOfTime: v.boolean(),
   hasLeft: v.boolean(),
@@ -37,6 +40,12 @@ const SEAT_COMMON = {
   clock: v.nullable(v.object({ bankMs: COUNT, freeUntil: EpochMs, deadline: EpochMs })),
   hasHadMarketGo: v.boolean(),
 };
+const PLAYER_ICON_COLOR = v.pipe(
+  v.number(),
+  v.integer(),
+  v.minValue(0),
+  v.maxValue(PLAYER_ICON_COLOR_COUNT - 1),
+);
 const TYPE_COUNTS = v.record(TypeName, COUNT);
 const PROJECTS = v.array(ProjectName);
 const SEAT_VIEW = v.variant("kind", [
@@ -67,7 +76,6 @@ const SEAT_VIEW = v.variant("kind", [
       workforce: v.nullable(ReasonCode),
     }),
     hasPlayedThisTurn: v.boolean(),
-    hasSkippedBuild: v.boolean(),
     influenceUses: v.record(TradeName, COUNT),
     trades: v.array(v.object({ trade: TradeName, rejection: v.nullable(ReasonCode) })),
     buildPassPrice: COUNT,
@@ -80,6 +88,8 @@ const SEAT_VIEW = v.variant("kind", [
       }),
     ),
     undoRejection: v.nullable(ReasonCode),
+    redrawsLeft: v.number(),
+    redrawRejection: v.nullable(ReasonCode),
     turnDrawRejection: v.nullable(ReasonCode),
     marketCardRejection: v.nullable(ReasonCode),
     actionsThisTurn: COUNT,
@@ -92,7 +102,6 @@ const SEAT_VIEW = v.variant("kind", [
     typeCounts: TYPE_COUNTS,
     combosClaimed: v.array(v.object({ card: CardName, combo: COUNT, times: COUNT })),
     projects: PROJECTS,
-    questsCompleted: v.array(QuestName),
     influenceUses: v.record(TradeName, COUNT),
   }),
 ]);
@@ -140,6 +149,7 @@ export const SERVER_MESSAGE_SCHEMA = v.variant("type", [
         ownerName: v.string(),
         playerNames: v.array(v.string()),
         playerIds: v.array(PlayerId),
+        playerIconColors: v.array(PLAYER_ICON_COLOR),
         namesInRoom: v.array(v.string()),
         idsInRoom: v.array(PlayerId),
         myName: v.string(),
@@ -204,6 +214,7 @@ export const SERVER_MESSAGE_SCHEMA = v.variant("type", [
     acceptedActionId: v.nullable(v.string()),
     stateVersion: COUNT,
     view: v.object({ progress: TUTORIAL_PROGRESS_SCHEMA, game: PLAYER_VIEW }),
+    playerIconColor: PLAYER_ICON_COLOR,
     serverNow: EpochMs,
   }),
   v.object({ type: v.literal("opened_elsewhere"), protocolVersion: COUNT }),

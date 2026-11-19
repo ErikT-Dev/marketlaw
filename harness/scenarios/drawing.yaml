@@ -231,3 +231,74 @@
     seats:
       - seat: 1
         hand: [Art Deco Skyrise, Idyllic View Condominium]
+
+- name: a player can redraw their starting hand in turn 1
+  covers: [R17.12, R17.9]
+  given:
+    seats:
+      - seat: 1
+        hand: [Row House, Orchard, Liquor Shop, Library, Small Home, Cottage, Pub]
+    deck: [Farm House, Log House, Metal Mining, Dentist, Fire Station, Clinic, Dorm]
+    random: [{shuffle: [Farm House, Metal Mining, Dentist, Fire Station, Log House, Pub, Dorm, Row House, Orchard, Liquor Shop, Library, Small Home, Cottage, Clinic]}, {sector: Residential}, {sector: Service}, {tier: 1}, {sector: Residential}, {tier: 2}]
+  when:
+    - {seat: 1, action: redraw_hand}
+  then:
+    seats:
+      - seat: 1
+        hand: [Farm House, Metal Mining, Dentist, Fire Station, Log House, Pub, Dorm]
+        redraws_used: 1
+        actions_this_turn: 0
+        worth_gained: 14
+    deck: [Row House, Orchard, Liquor Shop, Library, Small Home, Cottage, Clinic]
+
+- name: a player can redraw their starting hand at most 3 times
+  covers: [R17.12]
+  given:
+    seats:
+      - seat: 1
+        redraws_used: 3
+        hand: [Row House]
+  when:
+    - {seat: 1, action: redraw_hand}
+  then:
+    rejected: no_redraw_left
+    unchanged: true
+
+- name: rejects a redraw after the player's first action
+  covers: [R17.12]
+  given:
+    seats:
+      - seat: 1
+        actions_this_turn: 1
+        hand: [Row House]
+  when:
+    - {seat: 1, action: redraw_hand}
+  then:
+    rejected: redraw_too_late
+    unchanged: true
+
+- name: rejects a redraw after turn 1
+  covers: [R17.12]
+  given:
+    turn: 2
+    seats:
+      - seat: 1
+        hand: [Row House]
+  when:
+    - {seat: 1, action: redraw_hand}
+  then:
+    rejected: redraw_too_late
+    unchanged: true
+
+- name: another player's redraw is hidden until the main phase ends
+  covers: [R17.12, M3.3]
+  given:
+    seats:
+      - seat: 1
+        hand: [Row House, Orchard, Liquor Shop, Library, Small Home, Cottage, Pub]
+    deck: [Farm House, Log House, Metal Mining, Dentist, Fire Station, Clinic, Dorm]
+    random: [{shuffle: [Farm House, Metal Mining, Dentist, Fire Station, Log House, Pub, Dorm, Row House, Orchard, Liquor Shop, Library, Small Home, Cottage, Clinic]}, {sector: Residential}, {sector: Service}, {tier: 1}, {sector: Residential}, {tier: 2}]
+  when:
+    - {seat: 1, action: redraw_hand}
+  then:
+    view: {seat: 2, of_seat: 1, hand_count: 7, log_excludes: [{redrew: 1, seat: 1}], hides: [Farm House]}

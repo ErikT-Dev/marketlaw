@@ -89,14 +89,21 @@ test("a completed quest shows as completed, stays hidden from others until the m
   const one = await seatPage(browser, seatOne, 3);
   const two = await seatPage(browser, seatTwo, 3);
   await questCard(one, "Trading post").getByRole("button", { name: "Complete" }).click();
-  await expect(questCard(one, "Trading post").getByText("You · completed")).toBeVisible();
+  await expect(
+    questCard(one, "Trading post")
+      .getByRole("listitem")
+      .filter({ has: one.getByRole("button", { name: "You" }) }),
+  ).toContainText("· completed");
   await expect(
     questCard(one, "Trading post").getByRole("button", { name: "Complete" }),
   ).toHaveCount(0);
   await expect(
-    questCard(two, "Trading post").getByText("Seat 1 could complete it now"),
+    questCard(two, "Trading post").getByRole("button", { name: "Seat 1" }),
   ).toBeVisible();
-  await expect(questCard(two, "Trading post").getByText("Seat 1 · completed")).toHaveCount(0);
+  await expect(questCard(two, "Trading post").getByText("could complete it now")).toHaveCount(1);
+  await expect(
+    questCard(two, "Trading post").getByRole("listitem").filter({ hasText: "· completed" }),
+  ).toHaveCount(0);
   for (const page of [one, two]) {
     await page.getByRole("button", { name: "End turn" }).click();
   }
@@ -115,5 +122,12 @@ test("a completed quest shows as completed, stays hidden from others until the m
   const completedLastTurn = one.getByRole("table", { name: "Completed last turn" });
   await completedLastTurn.scrollIntoViewIfNeeded();
   await expect(completedLastTurn).toBeInViewport();
+  for (const column of ["Requirement", "Reward"]) {
+    await expect(completedLastTurn.getByRole("columnheader", { name: column })).toBeVisible();
+  }
+  const tradingPost = completedLastTurn.getByRole("row", { name: /Trading post/ });
+  for (const part of ["4 income", "1 Retail", "+1 funds", "+2 influence"]) {
+    await expect(tradingPost.getByRole("img", { name: part })).toBeVisible();
+  }
   await expectScreenFits(one, "quests-completed-last-turn", testInfo);
 });

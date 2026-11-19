@@ -36,7 +36,7 @@ test("trade influence, buy a build pass for a second card, undo it, and draw a c
   await influence.getByRole("button", { name: "2 funds → 1 build pass" }).click();
   await expect(influence.getByRole("button", { name: "3 funds → 1 build pass" })).toBeEnabled();
   await influence.getByRole("button", { name: "Close" }).click();
-  await expect(page.getByRole("img", { name: "Build passes 1" })).toBeVisible();
+  await expect(page.getByRole("img", { name: "Build passes 2" })).toBeVisible();
 
   await playFromHand(page, "Row House");
   await expect(residentialCity(page)).toHaveCount(1);

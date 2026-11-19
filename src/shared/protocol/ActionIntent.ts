@@ -20,6 +20,7 @@ export const ActionIntent = v.variant("type", [
   v.strictObject({ type: v.literal("influence"), trade: TradeName }),
   v.strictObject({ type: v.literal("draw_action"), kind: Kind, tier: Tier }),
   v.strictObject({ type: v.literal("undo") }),
+  v.strictObject({ type: v.literal("redraw_hand") }),
   v.strictObject({ type: v.literal("leave_game") }),
   v.strictObject({ type: v.literal("call_vote") }),
   v.strictObject({ type: v.literal("vote"), vote: v.picklist(["yes", "no"]) }),

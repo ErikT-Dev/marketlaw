@@ -50,7 +50,12 @@ describe("the projects area", () => {
   it("names the other players who completed a project instead of the +2", () => {
     show(withOthersCompleted(roomUpdateWith({}), "quality", [1, 3]));
     const row = projectRow("Clean up the streets");
-    expect(row.textContent).toContain("Completed by Ann, Cy");
+    expect(row.textContent).toContain("Completed by");
+    expect(
+      within(row)
+        .getAllByRole("button")
+        .map((icon) => icon.getAttribute("aria-label")),
+    ).toEqual(["Ann", "Cy"]);
     expect(row.textContent).not.toContain("First to complete");
     expect(within(row).queryByRole("img", { name: "Funds" })).toBeNull();
   });
@@ -99,6 +104,7 @@ describe("the help buttons", () => {
         .getAllByRole("img")
         .map((icon) => icon.getAttribute("aria-label")),
     ).toEqual([
+      "Income",
       "Workforce",
       "Quality",
       "Satisfaction",

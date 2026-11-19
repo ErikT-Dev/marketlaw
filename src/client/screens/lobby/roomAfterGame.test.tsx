@@ -31,6 +31,7 @@ function endedRoom(changes: Partial<RoomView> = {}): RoomView {
     ownerName: "Ann",
     playerNames: ["Ann", "Bea", "Cy"],
     playerIds: [1, 2, 3].map(testPlayerIdOf),
+    playerIconColors: [0, 1, 2],
     namesInRoom: ["Ann", "Bea"],
     idsInRoom: [1, 2].map(testPlayerIdOf),
     myName: "Ann",

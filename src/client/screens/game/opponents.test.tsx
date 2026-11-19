@@ -28,15 +28,19 @@ function opponents() {
   return within(screen.getByRole("region", { name: "Opponents" }));
 }
 
-describe("opponents overview", () => {
+describe("quick summary table", () => {
   it("shows a card for every other player with status, funds, income, hand and cards per sector", () => {
     render(<GamePage {...gamePageProps(withDiCity(roomUpdateWith({})))} />);
     expect(
       opponents()
         .getAllByRole("article")
         .map((card) => card.getAttribute("aria-label")),
-    ).toEqual(["Ann", "Cy", "Di"]);
-    const di = within(opponents().getByRole("article", { name: "Di" }));
+    ).toEqual([
+      "Quick summary table of Ann",
+      "Quick summary table of Cy",
+      "Quick summary table of Di",
+    ]);
+    const di = within(opponents().getByRole("article", { name: "Quick summary table of Di" }));
     expect(di.getByRole("img", { name: "Funds 7" })).toBeDefined();
     expect(di.getByRole("img", { name: "Income 14" })).toBeDefined();
     expect(di.getByRole("img", { name: "Influence 3" })).toBeDefined();
@@ -48,15 +52,19 @@ describe("opponents overview", () => {
         .map((item) => item.textContent),
     ).toEqual(["Residential 2", "Industry 0", "Service 1", "Public 0"]);
     expect(
-      within(opponents().getByRole("article", { name: "Cy" })).getByText("done"),
+      within(opponents().getByRole("article", { name: "Quick summary table of Cy" })).getByText(
+        "done",
+      ),
     ).toBeDefined();
     expect(
-      within(opponents().getByRole("article", { name: "Ann" })).getByText("left"),
+      within(opponents().getByRole("article", { name: "Quick summary table of Ann" })).getByText(
+        "left",
+      ),
     ).toBeDefined();
   });
 });
 
-describe("opponent's board", () => {
+describe("detailed summary table", () => {
   it("shows the type and combo counts and the five basic stats, with negative ones in a red table", () => {
     const update = roomUpdateWith({});
     const game = update.game;
@@ -87,8 +95,8 @@ describe("opponent's board", () => {
     render(
       <GamePage {...gamePageProps({ ...update, game: { ...game, view: { ...view, seats } } })} />,
     );
-    fireEvent.click(opponents().getByRole("button", { name: "See Di's board ›" }));
-    const board = within(screen.getByRole("dialog", { name: "Di's board" }));
+    fireEvent.click(opponents().getByRole("button", { name: "Detailed summary table of Di" }));
+    const board = within(screen.getByRole("dialog", { name: "Detailed summary table of Di" }));
     expect(board.getByRole("img", { name: "Types in their city 4" })).toBeDefined();
     expect(board.getByRole("img", { name: "Combos claimed 4" })).toBeDefined();
     const table = board.getByRole("list", { name: "Workforce, quality and satisfaction of Di" });
@@ -104,8 +112,8 @@ describe("opponent's board", () => {
 
   it("opens from the card, says it shows the start of the main phase, and lists the city by sector", () => {
     render(<GamePage {...gamePageProps(withDiCity(roomUpdateWith({})))} />);
-    fireEvent.click(opponents().getByRole("button", { name: "See Di's board ›" }));
-    const board = within(screen.getByRole("dialog", { name: "Di's board" }));
+    fireEvent.click(opponents().getByRole("button", { name: "Detailed summary table of Di" }));
+    const board = within(screen.getByRole("dialog", { name: "Detailed summary table of Di" }));
     expect(
       board.getByText(
         "Shown as at the start of this main phase: what they do in it is revealed when the main phase ends. Their hand: 5 cards.",
@@ -122,10 +130,10 @@ describe("opponent's board", () => {
 
   it("closes with Close or Escape", () => {
     render(<GamePage {...gamePageProps(roomUpdateWith({}))} />);
-    fireEvent.click(opponents().getByRole("button", { name: "See Cy's board ›" }));
+    fireEvent.click(opponents().getByRole("button", { name: "Detailed summary table of Cy" }));
     fireEvent.click(screen.getByRole("button", { name: "Close" }));
     expect(screen.queryByRole("dialog")).toBeNull();
-    fireEvent.click(opponents().getByRole("button", { name: "See Cy's board ›" }));
+    fireEvent.click(opponents().getByRole("button", { name: "Detailed summary table of Cy" }));
     fireEvent.keyDown(document, { key: "Escape" });
     expect(screen.queryByRole("dialog")).toBeNull();
   });

@@ -20,6 +20,7 @@ export type ClientState = {
   readonly connection: ConnectionStatus;
   readonly update: RoomUpdate | null;
   readonly tutorial: TutorialView | null;
+  readonly tutorialPlayerIconColor: number;
   readonly chat: RoomChat;
   readonly pendingActions: ReadonlyArray<PendingAction>;
   readonly rejectedMove: RejectedMove | null;

@@ -1,21 +1,15 @@
+import { readInfluenceActionFile } from "../../src/shared/ruleFiles/readInfluenceActionFile.ts";
+import { readQuestFile } from "../../src/shared/ruleFiles/readQuestFile.ts";
 import type { HarnessFiles } from "./HarnessFiles.ts";
 import { isRecord } from "./isRecord.ts";
 import type { KnownNames } from "./KnownNames.ts";
 
 const TYPE_FIELDS = ["type1", "type2", "type3", "type4", "type5", "doubleType1", "doubleType2"];
-const QUEST_ROW = /^\s*\| ([^|]+?) \| [^|]+ \| [^|]+ \|\s*$/;
 
-function collectQuestNames(gameRulesText: string): ReadonlySet<string> {
-  const start = gameRulesText.indexOf("## R20.");
-  const end = gameRulesText.indexOf("## R21.");
-  const questSection = gameRulesText.slice(start, end);
-  const names = questSection
-    .split("\n")
-    .map((line) => QUEST_ROW.exec(line)?.[1]?.trim())
-    .filter(
-      (name): name is string => name !== undefined && name !== "Name" && !name.startsWith("-"),
-    );
-  return new Set(names);
+function namesOf(
+  result: ReturnType<typeof readQuestFile> | ReturnType<typeof readInfluenceActionFile>,
+): ReadonlySet<string> {
+  return new Set(result.isOk ? result.value.map(({ name }) => name) : []);
 }
 
 export function collectKnownNames(files: HarnessFiles): KnownNames {
@@ -35,5 +29,10 @@ export function collectKnownNames(files: HarnessFiles): KnownNames {
       }
     }
   }
-  return { cards, quests: collectQuestNames(files.gameRulesText), types };
+  return {
+    cards,
+    quests: namesOf(readQuestFile(files.questsText)),
+    types,
+    trades: namesOf(readInfluenceActionFile(files.influenceActionsText)),
+  };
 }

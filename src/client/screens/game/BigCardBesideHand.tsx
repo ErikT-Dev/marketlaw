@@ -39,6 +39,7 @@ export function BigCardBesideHand(props: Props) {
   return (
     <LookedAtCardPanel
       card={lookedAt.card}
+      comboMarksAgainst={lookedAt.place === "marketplace" ? props.seat : undefined}
       className={className}
       onClose={() => {
         onLookAt(null);

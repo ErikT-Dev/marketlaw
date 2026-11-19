@@ -94,6 +94,7 @@ export const TUTORIAL_DRIVER: ScenarioDriver = {
     "turn_draw",
     "claim_all",
     "complete_quest",
+    "redraw_hand",
     "wait_ms",
     "disconnect",
   ]),

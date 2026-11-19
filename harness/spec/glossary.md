@@ -12,13 +12,14 @@ meanings. The rule where each term is defined is given in brackets.
 | Action | Anything a player does in the main phase that the server accepts: playing a card, selling, claim all, an influence action, completing a project or quest, undo (R5.1). Each counts toward the action limit of 50 per turn (R5.3); ending the turn does not. For the daily limit (A9.2), market goes and ending the turn count too. |
 | Bonus | A stat that grows at the end of every turn and turns into funds, 1 fund per full 10 (R14). |
 | Bonus types | The 2 different types picked at random for a game, which score points at the end (R21.6). |
-| Build pass | Lets a player play one more card in a turn than the usual one (R6.1). Bought with funds or influence, or gained by skip build (R15.1). |
+| Build pass | Needed to play a card: every card played uses one (R6.1). Every player gets 1 at the start of every turn, keeps unused ones, and can buy more with influence actions (R6.3, R15). |
 | Card | One of the 240 unique cards in `cards.json` (R3). |
 | Card-name combo | A combo that needs a named card in the player's own city (R12.3). |
 | City | All the cards a player has played. Same as "cards in play" (R1.2). |
 | Claim all | The action that claims every combo that is ready (R12.6). |
 | Combo | A bonus printed on a card that gives workforce, quality or satisfaction once its need is met (R12). |
 | Deck | The one shared, ordered pile of cards that all players draw from (R17.1, R17.2). |
+| Detailed summary table | The board that opens when you click another player's quick summary table, with everything about them (S3.2). |
 | Discard pile | The shared pile of sold cards and cards removed from the marketplace (R17.1). |
 | Distribution | A stat made by Service cards; with product, it becomes income (R13). |
 | Done | A player who has ended their turn, or was made done, in the current main phase (R8.1). |
@@ -27,7 +28,7 @@ meanings. The rule where each term is defined is given in brackets.
 | End goal | Income of at least 22 and all 3 projects completed (R1.3). |
 | First completion | The extra +2 funds for every player who completes a project in the first turn anyone completes it (R16.6). |
 | First player | The player who goes first in a turn (R4.4). |
-| Free time | The first 75 seconds of a player's main phase and the first 5 seconds of a market go, which do not use the time bank (R9.4). |
+| Free time | The first 75 seconds of a player's main phase (165 in turn 1) and the first 5 seconds of a market go, which do not use the time bank; unused main-phase free time goes into the bank (R9.4, R9.15). |
 | Game log | The list of public draws, and, after each main phase, what each player did in it (M3.3, M3.7). |
 | Funds | Money; a stat that pays for cards (R2.1). |
 | Gain a type | A quest reward that adds 1 to a type count without adding a card (R20.6). |
@@ -47,25 +48,28 @@ meanings. The rule where each term is defined is given in brackets.
 | Open place | One of the 3 marketplace places whose sector is picked at random each time it is filled (R18.4). |
 | Paused | A game whose clocks are stopped because a deadline came while no player was connected (R9.12). |
 | Place | A player's final position in a game (R21.8, A3.4). |
+| Player icon | A circle with the first letter of a player's username on their fixed icon colour (A2.5, S1.8). |
 | Player order | The order of seats in a turn, starting from the first player (R4.5). |
 | Product | A stat made by Industry cards; with distribution, it becomes income (R13). |
 | Project | One of the 3 goals each player can complete once: 8 quality, 8 satisfaction or 8 workforce (R16). |
 | Public quality card / satisfaction card | A Public card with more quality than satisfaction / all other Public cards (R3.6). |
 | Quality, satisfaction, workforce | The three stats that cards make and use up; all must be 0 or more for income and projects (R2.3). |
 | Quest | A shared task on the quests table that any player can complete once for a reward (R19). |
-| Quest list | All 45 quests that can be placed on the table (R20.7). |
+| Quest list | All quests of `quests.txt` that can be placed on the table (R20.7). |
 | Quests table | The shared places, 4 and from turn 20 5, that hold quests (R19.1). |
+| Quick summary table | The always visible card for each other player on the game screen (S3.1). |
 | Real cost | A card's base cost plus 1 for each card of the same sector and tier already in the player's city (R3.8). |
+| Redraw | Putting the starting hand back and getting a new one, up to 3 times in turn 1 before the first action (R17.12). |
 | Score | The number computed for each player at the end of the game (R21.4). |
 | Seat | A player's fixed number, 1 to N, given at random when the game starts (R4.3). |
 | Sector | Residential, Industry, Service or Public (R3.3). |
 | Sell | The action of selling cards from the hand for 1 fund each (R5.1). |
-| Skip build | An influence action: no more cards this turn, but 1 build pass for later (R15.1). |
 | Stats | Funds, income, influence, workforce, quality, satisfaction, product, distribution and bonus (R2.1). |
 | Tier | 1, 2 or 3; higher tiers are stronger and cost more (R3.3). |
 | Tier by turn | The rule that picks a random tier, with higher tiers more likely in later turns (R17.10). |
 | Time bank | A player's 15 minutes for the whole game, used after the free time (R9.3). |
 | Time-out | A player's time running out (R9.10). In the main phase the player is then out of time: they can keep playing until every other player is done or out of time. |
+| Total worth gained (F) | All funds a player received, except from selling, plus every card they gained (R2.4). |
 | Turn | One round of start of turn, market phase, main phase and end of turn (R4.1). |
 | Turn draw | What a player does on their market go: option A or option B (R18.8). |
 | Turn number | The number of the current turn, starting at 1 (R2.2). |

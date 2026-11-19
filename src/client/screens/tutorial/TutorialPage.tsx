@@ -1,5 +1,6 @@
 import styles from "../game/GamePage.module.css";
 import { HighlightedParts } from "../game/HighlightedParts";
+import { PlayerIconColors } from "../game/PlayerIconColors";
 import { ServerClockOffset } from "../game/ServerClockOffset";
 import { RULES_HASH } from "../rules/RULES_HASH";
 import { TUTORIAL_FOCUS } from "./TUTORIAL_FOCUS";
@@ -42,14 +43,16 @@ export function TutorialPage(props: Props) {
                 />
               ) : null}
             </div>
-            <TutorialColumns
-              view={view}
-              mine={mine}
-              playerNames={playerNames}
-              focus={focus}
-              pendingActions={props.pendingActions}
-              onAction={props.onAction}
-            />
+            <PlayerIconColors.Provider value={[props.playerIconColor]}>
+              <TutorialColumns
+                view={view}
+                mine={mine}
+                playerNames={playerNames}
+                focus={focus}
+                pendingActions={props.pendingActions}
+                onAction={props.onAction}
+              />
+            </PlayerIconColors.Provider>
           </main>
         </HighlightedParts.Provider>
         <TutorialNotices {...props} view={view} mine={mine} playerNames={playerNames} />

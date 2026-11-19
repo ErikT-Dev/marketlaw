@@ -57,6 +57,10 @@ cannot gain income or complete projects or quests**, so keep them balanced.
 
 Turns are numbered from 1, the same for everyone.
 
+**Total worth gained (F):** a count of everything of worth you have received in the game: every
+fund you received, except from selling cards, plus 1 for every card you gained. It starts at 14
+and only goes up. It is shown next to your stats and other players' stats, and no rule uses it.
+
 ## The cards
 
 There are 240 cards, all different. Each card has:
@@ -139,10 +143,13 @@ You can play a card when:
 
 - you have enough funds for its real cost
 - it is tier 1, or it is turn 5 or later
-- it is your first card this turn, or you have a **build pass** to spend on an extra card
-- you have not used "skip build" this turn
+- you have a **build pass** left: every card you play uses one, your first card of the turn too
 
-When you play it, you pay its real cost, it joins your city, its stat numbers are applied, its
+**Build passes:** at the start of every turn, turn 1 too, everyone gets 1 build pass. Passes you
+don't use are kept for later turns, as many as you save, so you can play several cards in one
+turn. You can also buy passes with [influence](#influence) and use them straight away.
+
+When you play a card, you pay its real cost and 1 build pass, it joins your city, its stat numbers are applied, its
 types are added to your type counts, and its combos become available.
 
 ## Undo
@@ -172,15 +179,17 @@ Players whose time runs out at the same moment become done in player order.
 
 | Turn | 1 | 5 | 10 | 15 | 20 and later |
 |---|---|---|---|---|---|
-| Main phase time limit | 3:30 | 3:55 | 4:27 | 4:58 | 5:30 |
+| Main phase time limit | 5:00 | 3:55 | 4:27 | 4:58 | 5:30 |
 
-The main phase limit grows by about 6 seconds each turn, and counts from the start of your own
-main phase. Each go in the market phase has a limit of 40 seconds.
+Turn 1 has 90 extra seconds, for redrawing your starting hand. From turn 2 (3:36) the main
+phase limit grows by about 6 seconds each turn, and counts from the start of your own main
+phase. Each go in the market phase has a limit of 30 seconds.
 
 You also have a **time bank of 15 minutes** for the whole game. The first 75 seconds of every
-main phase, and the first 5 seconds of every market go, are free. After that, your bank counts
+main phase (165 seconds in turn 1), and the first 5 seconds of every market go, are free. After that, your bank counts
 down until you end your turn or make your market choice. When your bank is empty, you only have
-the free time. Everyone can see everyone's bank.
+the free time. Everyone can see everyone's bank. Free time of the main phase that you don't use
+goes into your bank when you end your turn, but your bank never grows above 15 minutes.
 
 **When your time runs out:** in the main phase, you are **out of time**, but you can keep
 playing. You are made done automatically, with your ready combos claimed, once every other
@@ -208,7 +217,8 @@ After the main phase, in this order:
 
 ## The start of every turn
 
-From turn 2 on, in this order:
+Every turn, turn 1 too, starts with everyone getting 1 build pass. From turn 2 on, the start of
+the turn then goes on in this order:
 
 1. The marketplace removes cards that have been on display for 2 market phases and fills its
    empty places.
@@ -258,31 +268,7 @@ Negative stats lower it, and bonus can go below zero. Every full 10 bonus then t
 Influence buys optional trades. Some can only be used a limited number of times per game, and
 you need enough of everything an action costs.
 
-| Action | Times per game |
-|---|---|
-| 4 influence → 2 funds | 1 |
-| 4 influence → 1 quality | 1 |
-| 4 influence → 1 satisfaction | 1 |
-| 6 influence → 1 workforce | 1 |
-| 1 fund → 1 influence | any |
-| 2 funds → 1 build pass (costs 1 more fund each time you buy one) | any |
-| 5 influence → 1 build pass | 1 |
-| Skip build (before you play a card this turn): no more cards this turn, but you get a build pass for later | 3 |
-| 1 influence + 1 quality → 1 satisfaction | 1 |
-| 1 influence + 1 satisfaction → 1 quality | 1 |
-| 2 influence + 1 product → 1 distribution + 1 satisfaction | 1 |
-| 2 influence + 1 distribution + 1 satisfaction → 1 product | 1 |
-| 2 influence + 1 quality → 1 workforce | 1 |
-| 2 influence + 1 satisfaction → 1 workforce | 1 |
-| 1 workforce → 1 satisfaction | 1 |
-| 1 workforce → 1 quality | 1 |
-| 2 quality → 1 satisfaction | any |
-| 2 satisfaction → 1 quality | any |
-| 4 quality → 1 workforce | any |
-| 4 satisfaction → 1 workforce | any |
-| 3 influence → draw a tier 1 card of a kind you choose | any |
-| 4 influence → draw a tier 2 card of a kind you choose | any |
-| 5 influence → draw a tier 3 card of a kind you choose | any |
+{influence-actions.txt}
 
 You can only use a draw action while the deck or discard pile, as you see them, still has a
 card of that kind and tier. If other players took the last ones earlier in the same main phase,
@@ -298,7 +284,8 @@ Each player has 3 projects, and can complete each one once:
 | Culture campaign | 8 satisfaction |
 | Help the homeless | 8 workforce |
 
-You need the amount, and workforce, quality and satisfaction must all be 0 or more. Completing a
+You need the amount, at least **10 income**, and workforce, quality and satisfaction must all be
+0 or more. Completing a
 project uses up those 8, gives **+1 income, +2 funds and +3 influence**, and draws 1 card. Your
 third project gives another +1 income and 1 more card.
 
@@ -336,6 +323,11 @@ when the phase ends.
 
 **Starting hand:** 7 cards: one tier 1 card of each sector, plus three cards of random sectors:
 one tier 1, one tier 1 or 2, and one of any tier.
+
+**Redrawing your starting hand:** in turn 1, before your first action, you may redraw your
+starting hand up to 3 times, for free. Your whole hand goes back into the deck, the deck is
+shuffled, and you get a new hand dealt the same way. You keep the hand you have at the end.
+Everyone redraws on their own, without waiting for the others.
 
 ## The marketplace
 
@@ -385,65 +377,7 @@ with 4 tier 1 quests; tier 2 quests can appear from turn 5, tier 3 from turn 13.
 - **Gain a type** adds 1 to that type count, as if another card in your city had that type. It
   counts for type combos, bonus types and quests, but it is not a card.
 
-**Tier 1**
-
-| Quest | Needs | Reward |
-|---|---|---|
-| Working district | 3 Residential cards and 1 `Low Wealth` | +1 quality |
-| Farming industry | 2 Industry cards and 1 `Farm` | +1 workforce |
-| Local services | 2 Service cards and 1 `Service` type | +1 satisfaction |
-| Green city | 3 Public cards and 2 `Beautification` | +3 funds |
-| Countryside | 1 `Suburban Housing` and 1 `Farm` | gain 1 `Suburban Housing` |
-| Farmland | 1 `Farm` and 2 `Food` | gain 1 `Farm` |
-| Fishing village | 1 `Sea` and 2 `Food` | gain 1 `Sea`, +1 fund |
-| Sports town | 1 `Leisure` and 1 `Health` | gain 1 `Health` |
-| High street | 2 `Retail` and 1 `Suburban Housing` | +1 satisfaction, +1 fund |
-| Mining town | 1 `Mine` and 1 `Low Wealth` | gain 1 `Mine` |
-| Workers' housing | 5 workforce and 1 `Low Wealth` | +1 fund, +3 influence |
-| Tidy streets | 5 quality and 1 `Beautification` | +1 workforce |
-| Healthy town | 4 satisfaction and 1 `Health` | +1 workforce |
-| Trading post | Income of 4 and 1 `Retail` | +1 fund, +2 influence |
-| Supply chain | Income of 5 and 1 `Raw Material` | draw 1 card |
-
-**Tier 2**
-
-| Quest | Needs | Reward |
-|---|---|---|
-| Growing suburbs | 2 `Town Housing` and 1 `Low Wealth` | +2 quality |
-| Upmarket homes | 2 tier 2 or 3 Residential cards and 1 `Luxury` | +2 satisfaction |
-| Modern industry | 2 tier 2 or 3 Industry cards and 1 `Light Industry` | +2 workforce |
-| Service economy | 2 tier 2 or 3 Service cards and 1 `Service` type | +2 satisfaction |
-| Culture hub | 3 tier 2 or 3 Public cards and 1 `Culture` | gain 1 `Culture`, +3 influence |
-| Factory town | 2 `Town Housing` and 1 `Light Industry` | gain 1 `Light Industry`, +1 quality |
-| Market town | 1 `Town Housing`, 1 `Retail` and 1 `Food` | gain 1 `Retail`, draw 1 card |
-| Industrial zone | 2 `Light Industry` and 1 `Raw Material` | +4 funds |
-| Shopping centre | 2 `Retail`, 1 `Service` type and 1 `Leisure` | +2 satisfaction |
-| Leisure park | 2 `Leisure` and 1 `Beautification` | gain 1 `Beautification`, +2 funds |
-| Culture district | 2 `Culture` and 1 `Education` | gain 1 `Culture`, +1 satisfaction |
-| Safe streets | 6 quality and 1 `Safety` | +2 workforce |
-| Happy residents | 6 satisfaction and 1 `Leisure` | +1 workforce, +1 quality |
-| Civic pride | 1 completed project and 2 `Beautification` | +2 funds, +3 influence |
-| Service boom | Income of 7 and 1 `Service` type | draw 2 cards |
-
-**Tier 3**
-
-| Quest | Needs | Reward |
-|---|---|---|
-| Penthouses | 3 tier 2 or 3 Residential cards, at least 1 of them tier 3, and 1 `City Housing` | +3 quality |
-| Heavy industry | 3 tier 2 or 3 Industry cards and 1 `Heavy Industry` | +3 workforce |
-| Office district | 3 tier 2 or 3 Service cards and 1 `Office` | +3 satisfaction |
-| Public institutions | 4 tier 2 or 3 Public cards, 1 `Safety` and 1 `Education` | +2 quality, +3 influence |
-| City living | 2 `City Housing` and 1 `Luxury` | gain 1 `City Housing`, +2 quality |
-| Tech campus | 2 `High Tech` and 1 `Education` | gain 1 `High Tech`, draw 1 card |
-| Commuter city | 1 `City Housing` and 1 `Mass Transit` | gain 1 `Mass Transit`, +1 quality |
-| Business district | 2 `Office` and 1 `Finance` | +4 funds, +4 influence |
-| Media city | 1 `Mass Media`, 1 `Office` and 1 `Culture` | gain 1 `Mass Media`, +2 satisfaction |
-| Tech industry | 1 `High Tech` and 1 `Heavy Industry` | draw 2 cards |
-| Metropolis | 1 tier 3 card in each of 3 different sectors | draw 3 cards |
-| Balanced city | 3 cards of each sector and 1 `Mass Transit` | +4 funds, draw 2 cards |
-| Cultural capital | 8 satisfaction and 1 `Culture` | +3 workforce |
-| Civic leader | 2 completed projects and 1 `Safety` | +2 quality, +2 satisfaction |
-| High-tech economy | Income of 10 and 1 `High Tech` | draw 3 cards |
+{quests.txt}
 
 ## The end of the game
 

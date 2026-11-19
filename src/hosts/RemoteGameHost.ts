@@ -131,6 +131,7 @@ export class RemoteGameHost implements GameHost {
     this.receiveVersioned(message.stateVersion, {
       type: "tutorial_update",
       view: message.view,
+      playerIconColor: message.playerIconColor,
       acceptedActionId: message.acceptedActionId,
       serverNow: message.serverNow,
     });

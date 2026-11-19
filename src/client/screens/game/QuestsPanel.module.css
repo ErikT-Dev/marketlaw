@@ -75,11 +75,6 @@
   font-weight: var(--font-weight-bold);
 }
 
-.playerWhoCanComplete {
-  color: var(--color-palette-orange);
-  font-weight: var(--font-weight-bold);
-}
-
 .visuallyHidden {
   position: absolute;
   width: 1px;
@@ -126,7 +121,7 @@
 
 .withCompletedLastTurn {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) fit-content(50%);
   gap: var(--space-sm);
   align-items: start;
 }
@@ -142,6 +137,13 @@
   padding: 2px 6px;
   border-bottom: 1px solid var(--color-panel-border);
   text-align: left;
+}
+
+.completedLastTurnParts {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
 }
 
 .completedLastTurnTitle {

@@ -137,14 +137,14 @@ describe("BigCard", () => {
     expect(screen.getByRole("img", { name: "City Housing" })).toBeDefined();
   });
 
-  it("names every combo by type or card, including the ones that pay again each time", () => {
+  it("names every combo by type or card in sorted order, including the ones that pay again each time", () => {
     render(<BigCard card={LOFT} realCost={8} />);
     const combos = screen.getAllByRole("group").map((combo) => combo.getAttribute("aria-label"));
     expect(combos).toEqual([
       "Combo: 1 Mercantile gives 1 satisfaction, again each time",
       "Combo: 1 Mass Transit gives 1 workforce",
-      "Combo: Warehouse gives 1 satisfaction",
       "Combo: Fire Station gives 1 quality",
+      "Combo: Warehouse gives 1 satisfaction",
     ]);
   });
 

@@ -2,6 +2,7 @@ import type { ComboStatus } from "../../../shared/ComboStatus";
 import { cardOf } from "../../../shared/catalogue/cardOf";
 import { Button } from "../../components/Button";
 import { Modal } from "../../components/Modal";
+import { combosListOf } from "./combosListOf";
 import { StatChip } from "../../components/StatChip";
 import styles from "./GameDialogs.module.css";
 import { ReadyComboRow } from "./ReadyComboRow";
@@ -22,7 +23,7 @@ function totalOf(ready: ReadonlyArray<ComboStatus>, stat: (typeof STATS)[number]
 }
 
 export function ClaimAllDialog({ combos, onClaim, onClose }: Props) {
-  const ready = combos.filter(({ readyTimes }) => readyTimes > 0);
+  const ready = combosListOf(combos).filter(({ readyTimes }) => readyTimes > 0);
   return (
     <Modal title="Claim all combos" size="large" onClose={onClose}>
       <p className={styles["text"]}>

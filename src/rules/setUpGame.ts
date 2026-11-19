@@ -1,5 +1,5 @@
 import { CARD_NAMES } from "../shared/catalogue/CARD_NAMES";
-import { QUESTS } from "../shared/catalogue/QUESTS";
+import { QUEST_LINES } from "../shared/ruleFiles/QUEST_LINES";
 import { dealStartingHand } from "./dealStartingHand";
 import { fillMarketplace } from "./fillMarketplace";
 import type { GameSetup } from "./GameSetup";
@@ -12,6 +12,7 @@ import type { Piles } from "./Piles";
 import type { Random } from "./Random";
 import { SEAT_NUMBERS } from "./SEAT_NUMBERS";
 import { withMainPhaseStart } from "./withMainPhaseStart";
+import { withTurnBuildPass } from "./withTurnBuildPass";
 import type { SeatsDealt } from "./SeatsDealt";
 
 const FIRST_TURN = 1;
@@ -41,7 +42,7 @@ export function setUpGame(setup: GameSetup, random: Random): GameState {
     turn: FIRST_TURN,
     phase: "main",
     firstPlayer: 1,
-    seats: dealt.seats,
+    seats: dealt.seats.map(withTurnBuildPass),
     deck: filled.piles.deck,
     discard: filled.piles.discard,
     holdingPile: [],
@@ -50,7 +51,7 @@ export function setUpGame(setup: GameSetup, random: Random): GameState {
     questsCompletedLastTurn: [],
     marketplace: filled.marketplace,
     quests: quests.map((quest) => ({ quest, turnsOnTable: 1 })),
-    questList: QUESTS.map(({ name }) => name).filter((name) => !quests.includes(name)),
+    questList: QUEST_LINES.map(({ name }) => name).filter((name) => !quests.includes(name)),
     bonusTypes: pickBonusTypes(random),
     doneOrder: [],
     leaveOrder: [],

@@ -8,11 +8,12 @@ import { turnRejectionOf } from "./turnRejectionOf";
 import { comboStatusesOf } from "./comboStatusesOf";
 import { decisionClockOf } from "./decisionClockOf";
 import { drawActionStatusesOf } from "./drawActionStatusesOf";
-import { tradeCostsOf } from "./tradeCostsOf";
+import { buildPassPriceOf } from "./buildPassPriceOf";
 import { tradeStatusesOf } from "./tradeStatusesOf";
 import { phaseShownTo } from "./phaseShownTo";
 import { pilesShownTo } from "./pilesShownTo";
 import { projectRejectionsOf } from "./projectRejectionsOf";
+import { REDRAW_LIMIT } from "./REDRAW_LIMIT";
 import { rejectionOf } from "./rejectionOf";
 import { typeCountsOf } from "./typeCountsOf";
 import { marketGoOf } from "./marketGoOf";
@@ -38,15 +39,18 @@ function ownSeatView(state: GameState, seat: SeatState): OwnSeatView {
     claimAllRejection: rejectionOf(state, { type: "claim_all", seat: seat.seat }) ?? null,
     projects: seat.projects,
     projectRejections: projectRejectionsOf(state, seat.seat),
+    questsCompleted: seat.questsCompleted,
     city: seat.city,
     buildPasses: seat.buildPasses,
+    worthGained: seat.worthGained,
     hasPlayedThisTurn: seat.hasPlayedThisTurn,
-    hasSkippedBuild: seat.hasSkippedBuild,
     influenceUses: seat.influenceUses,
     trades: tradeStatusesOf(state, seat.seat),
-    buildPassPrice: tradeCostsOf(seat, "buy_build_pass").funds ?? 0,
+    buildPassPrice: buildPassPriceOf(seat),
     drawActions: drawActionStatusesOf(state, seat),
     undoRejection: rejectionOf(state, { type: "undo", seat: seat.seat }) ?? null,
+    redrawsLeft: REDRAW_LIMIT - seat.redrawsUsed,
+    redrawRejection: rejectionOf(state, { type: "redraw_hand", seat: seat.seat }) ?? null,
     hasHadMarketGo: seat.hasHadMarketGo,
     turnDrawRejection: turnRejectionOf(state, seat.seat, "turn_draw") ?? null,
     marketCardRejection: seat.isTurnDrawOpen
@@ -78,6 +82,7 @@ function otherSeatView(state: GameState, seat: SeatState, viewer: SeatNumber): O
     influenceUses: shown.influenceUses,
     city: shown.city,
     buildPasses: shown.buildPasses,
+    worthGained: shown.worthGained,
     isDone: seat.isDone,
     isOutOfTime: seat.isOutOfTime,
     hasLeft: seat.departure !== null,

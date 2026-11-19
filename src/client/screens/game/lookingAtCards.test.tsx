@@ -108,10 +108,10 @@ describe("looking at a card in the big card", () => {
     expect(cityCard("Row House").getAttribute("aria-pressed")).toBe("false");
   });
 
-  it("shows a card in another player's city inside their board, with Close back to the stats", async () => {
+  it("shows a card in another player's city inside their detailed summary table, with Close back to the stats", async () => {
     await showGame();
-    fireEvent.click(screen.getByRole("button", { name: "See Cy's board ›" }));
-    const board = within(screen.getByRole("dialog", { name: "Cy's board" }));
+    fireEvent.click(screen.getByRole("button", { name: "Detailed summary table of Cy" }));
+    const board = within(screen.getByRole("dialog", { name: "Detailed summary table of Cy" }));
     fireEvent.click(board.getByRole("button", { name: "Lake Park" }));
     const shown = within(board.getByRole("region", { name: "Selected card: Lake Park" }));
     expect(shown.getByRole("img", { name: "Cost 9" })).toBeDefined();
@@ -119,6 +119,6 @@ describe("looking at a card in the big card", () => {
     expect(board.queryByRole("region", { name: "Stats of Cy" })).toBeNull();
     fireEvent.click(shown.getByRole("button", { name: "Close" }));
     expect(board.getByRole("region", { name: "Stats of Cy" })).toBeDefined();
-    expect(screen.getByRole("dialog", { name: "Cy's board" })).toBeDefined();
+    expect(screen.getByRole("dialog", { name: "Detailed summary table of Cy" })).toBeDefined();
   });
 });

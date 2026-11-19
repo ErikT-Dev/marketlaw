@@ -1,14 +1,20 @@
 import { BONUS_PER_FUND } from "./BONUS_PER_FUND";
 import { cardOf } from "../shared/catalogue/cardOf";
+import { decisionOf } from "./decisionOf";
 import { FIRST_TURN_FOR_HIGHER_TIERS } from "./FIRST_TURN_FOR_HIGHER_TIERS";
 import { gameEndViolations } from "./gameEndViolations";
 import { isInOwnMainPhase } from "./isInOwnMainPhase";
 import { isVoteAction } from "./isVoteAction";
+import type { GameAction } from "./GameAction";
 import type { GameState } from "./GameState";
+import type { SeatNumber } from "../shared/SeatNumber";
+import { redrawViolations } from "./redrawViolations";
 import { seatOf } from "./seatOf";
+import type { SeatState } from "./SeatState";
 import { stateInvariantViolations } from "./stateInvariantViolations";
 import { TIME_BANK_MS } from "./TIME_BANK_MS";
 import type { Transition } from "./Transition";
+import { worthGainedViolations } from "./worthGainedViolations";
 
 function seatsAfter(fromSeat: number, toSeat: number, count: number): number {
   return (toSeat - fromSeat + count) % count;
@@ -32,12 +38,18 @@ function holdingPileViolations(before: GameState, after: GameState): ReadonlyArr
     : [];
 }
 
-function timeBankViolations(before: GameState, after: GameState): ReadonlyArray<string> {
+function allowedBankGrowthMs(before: GameState, action: GameAction, seat: SeatNumber): number {
+  const isEndingOwnTurn = action.type === "end_turn" && action.seat === seat;
+  const hasFreeTimeAgain = before.grace.some((entry) => entry.seat === seat);
+  return isEndingOwnTurn && !hasFreeTimeAgain ? (decisionOf(before, seat)?.freeMs ?? 0) : 0;
+}
+
+function timeBankViolations({ before, action }: Transition, after: GameState): ReadonlyArray<string> {
   return after.seats.flatMap((afterSeat) => {
     const bank = afterSeat.timeBankMs;
     const bankBefore = seatOf(before, afterSeat.seat)?.timeBankMs ?? bank;
     const isOutOfRange = bank < 0 || bank > TIME_BANK_MS;
-    return isOutOfRange || bank > bankBefore
+    return isOutOfRange || bank > bankBefore + allowedBankGrowthMs(before, action, afterSeat.seat)
       ? [`I19: seat ${String(afterSeat.seat)} time bank went from ${String(bankBefore)} to ${String(bank)}`]
       : [];
   });
@@ -64,6 +76,20 @@ function actorViolations({ before, action }: Transition): ReadonlyArray<string> 
   return isActorOut ? [`I18: seat ${action.seat} took an action while done or after leaving`] : [];
 }
 
+function buildPassViolations(
+  seatBefore: SeatState,
+  before: GameState,
+  after: GameState,
+): ReadonlyArray<string> {
+  if (seatBefore.buildPasses === 0) {
+    return [`I6: seat ${String(seatBefore.seat)} played more cards than its build passes allow`];
+  }
+  const passesUsed = seatBefore.buildPasses - (seatOf(after, seatBefore.seat)?.buildPasses ?? 0);
+  return after.turn === before.turn && passesUsed !== 1
+    ? [`I6: seat ${String(seatBefore.seat)} used ${String(passesUsed)} build passes to play a card`]
+    : [];
+}
+
 function acceptedViolations(transition: Transition, after: GameState): ReadonlyArray<string> {
   const { before, action } = transition;
   const seat = seatOf(before, action.seat);
@@ -74,9 +100,7 @@ function acceptedViolations(transition: Transition, after: GameState): ReadonlyA
           ...(cardOf(action.card).tier > 1 && before.turn < FIRST_TURN_FOR_HIGHER_TIERS
             ? [`I5: ${action.card} was played in turn ${before.turn}`]
             : []),
-          ...(seat.hasSkippedBuild || (seat.hasPlayedThisTurn && seat.buildPasses === 0)
-            ? [`I6: seat ${action.seat} played more cards than its build passes allow`]
-            : []),
+          ...buildPassViolations(seat, before, after),
         ]
       : [];
   const bonus =
@@ -96,7 +120,9 @@ function acceptedViolations(transition: Transition, after: GameState): ReadonlyA
     ...firstPlayer,
     ...holdingPileViolations(before, after),
     ...incomeViolations(before, after),
-    ...timeBankViolations(before, after),
+    ...timeBankViolations(transition, after),
+    ...redrawViolations(before, after),
+    ...worthGainedViolations(transition, after),
     ...gameEndViolations(before, after),
     ...stateInvariantViolations(after),
   ];

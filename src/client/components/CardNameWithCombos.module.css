@@ -1,0 +1,53 @@
+.name {
+  position: relative;
+  min-height: 24px;
+  padding: 0 var(--space-xs);
+  border: none;
+  border-radius: var(--radius-sm);
+  background: var(--color-card-name-combos-background);
+  color: var(--color-card-name-combos-text);
+  font: inherit;
+  font-weight: var(--font-weight-bold);
+  cursor: default;
+}
+
+.name:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 2px;
+}
+
+.tooltip {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  padding: var(--space-sm);
+  border-radius: var(--radius-sm);
+  background: var(--color-panel-highlight);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-regular);
+  text-align: left;
+  white-space: nowrap;
+  pointer-events: none;
+  visibility: hidden;
+  z-index: 10;
+}
+
+.name:hover .tooltip,
+.name:focus-visible .tooltip {
+  visibility: visible;
+}
+
+.title,
+.total {
+  font-weight: var(--font-weight-bold);
+}
+
+.combos {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}

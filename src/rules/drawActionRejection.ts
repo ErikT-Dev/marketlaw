@@ -1,7 +1,8 @@
 import type { Kind } from "../shared/catalogue/Kind";
 import type { Tier } from "../shared/catalogue/Tier";
-import { DRAW_ACTION_COSTS } from "../shared/DRAW_ACTION_COSTS";
 import type { ReasonCode } from "../shared/ReasonCode";
+import { influenceDrawOfTier } from "../shared/ruleFiles/influenceDrawOfTier";
+import { STAT_KEYS } from "../shared/STAT_KEYS";
 import { kindTierKey } from "./kindTierKey";
 import type { SeatState } from "./SeatState";
 
@@ -11,8 +12,16 @@ export function drawActionRejection(
   kind: Kind,
   tier: Tier,
 ): ReasonCode | undefined {
+  const draw = influenceDrawOfTier(tier);
+  if (draw === undefined) {
+    return "unknown_action";
+  }
   if (!kindTiersLeft.includes(kindTierKey(kind, tier))) {
     return "no_card_of_kind";
   }
-  return seat.stats.influence < DRAW_ACTION_COSTS[tier] ? "cannot_afford_trade" : undefined;
+  const canAfford = STAT_KEYS.every((stat) => {
+    const cost = draw.costs[stat];
+    return cost === undefined || seat.stats[stat] >= cost;
+  });
+  return canAfford ? undefined : "cannot_afford_trade";
 }

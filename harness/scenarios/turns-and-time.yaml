@@ -129,8 +129,10 @@
         time_bank_ms: 708000
         timeouts_in_a_row: 1
 
-- name: the first 75 seconds of a main phase do not use the time bank
+- name: from turn 2 the first 75 seconds of a main phase do not use the time bank
   covers: [R9.4, R9.5]
+  given:
+    turn: 2
   when:
     - wait_ms: 75000
     - {seat: 1, action: end_turn}
@@ -141,6 +143,8 @@
 
 - name: the time bank runs after the free time until the player ends their turn
   covers: [R9.5]
+  given:
+    turn: 2
   when:
     - wait_ms: 90000
     - {seat: 1, action: end_turn}
@@ -154,6 +158,7 @@
 - name: with an empty bank a player only has the free time
   covers: [R9.8, R9.10]
   given:
+    turn: 2
     seats:
       - seat: 1
         time_bank_ms: 0
@@ -168,6 +173,7 @@
 - name: a player out of time is not made done while another player still has time
   covers: [R9.10]
   given:
+    turn: 2
     players: 3
     seats:
       - seat: 1
@@ -185,6 +191,7 @@
 - name: a player out of time is made done once every other player is done
   covers: [R9.10, R8.2]
   given:
+    turn: 2
     players: 3
     marketplace: [{place: residential, card: Row House}, {place: industry, card: Metal Mining}, {place: service, card: Liquor Shop}, {place: public_quality, card: Fire Station}, {place: public_satisfaction, card: Public Playground}, {place: open_1, card: Dentist}, {place: open_2, card: Apparel Store}, {place: open_3, card: Forest Plantation}]
     quests: [{quest: Farmland}, {quest: Sports town}, {quest: Trading post}, {quest: Mining town}]
@@ -196,12 +203,13 @@
     - {seat: 2, action: end_turn}
     - {seat: 3, action: end_turn}
   then:
-    turn: 2
+    turn: 3
     phase: market
 
 - name: a player out of time is made done when the last player with time left runs out too
   covers: [R9.10]
   given:
+    turn: 2
     marketplace: [{place: residential, card: Row House}, {place: industry, card: Metal Mining}, {place: service, card: Liquor Shop}, {place: public_quality, card: Fire Station}, {place: public_satisfaction, card: Public Playground}, {place: open_1, card: Dentist}, {place: open_2, card: Apparel Store}, {place: open_3, card: Forest Plantation}]
     quests: [{quest: Farmland}, {quest: Sports town}, {quest: Trading post}, {quest: Mining town}]
     seats:
@@ -212,12 +220,13 @@
   when:
     - wait_ms: 85000
   then:
-    turn: 2
+    turn: 3
     phase: market
 
 - name: a main-phase action after the player's time ran out is accepted while another player is still playing
   covers: [R9.6, R9.10]
   given:
+    turn: 2
     seats:
       - seat: 1
         time_bank_ms: 0
@@ -258,6 +267,7 @@
 - name: a message received just before the deadline is accepted
   covers: [R9.6]
   given:
+    turn: 2
     seats:
       - seat: 1
         time_bank_ms: 0
@@ -273,6 +283,8 @@
 
 - name: banks are shown rounded down to whole seconds
   covers: [R9.7, R9.9]
+  given:
+    turn: 2
   when:
     - wait_ms: 76500
   then:
@@ -280,6 +292,8 @@
 
 - name: every player sees every other player's bank counting down during the main phase
   covers: [R9.9, R5.6]
+  given:
+    turn: 2
   when:
     - wait_ms: 90000
   then:
@@ -288,6 +302,7 @@
 - name: three main-phase time-outs in a row count as leaving the game
   covers: [R9.11, M5.4, M6.10]
   given:
+    turn: 2
     kind: ranked
     players: 3
     seats:
@@ -304,6 +319,7 @@
 - name: a player whose time runs out is told how many time-outs in a row out of 3
   covers: [R9.11]
   given:
+    turn: 2
     kind: ranked
     seats:
       - seat: 1
@@ -321,6 +337,7 @@
 - name: in a casual game time-outs in a row do not count as leaving the game
   covers: [R9.11, M5.4]
   given:
+    turn: 2
     players: 3
     seats:
       - seat: 1
@@ -337,6 +354,7 @@
 - name: in a casual game a player whose time runs out is told they can keep playing
   covers: [R9.11]
   given:
+    turn: 2
     seats:
       - seat: 1
         time_bank_ms: 0
@@ -359,7 +377,7 @@
       - seat: 1
         timeouts_in_a_row: 0
 
-- name: the first player's market go has 40 seconds
+- name: the first player's market go has 30 seconds
   covers: [R9.2, R18.11]
   given:
     players: 2
@@ -367,9 +385,9 @@
     phase: market
     first_player: 2
   then:
-    market_go: {seat: 2, time_left_ms: 40000}
+    market_go: {seat: 2, time_left_ms: 30000}
 
-- name: every later market go also has 40 seconds
+- name: every later market go also has 30 seconds
   covers: [R9.2, R18.11]
   given:
     players: 2
@@ -381,11 +399,12 @@
   when:
     - {seat: 2, action: turn_draw, option: A, card: Row House}
   then:
-    market_go: {seat: 1, time_left_ms: 40000}
+    market_go: {seat: 1, time_left_ms: 30000}
 
 - name: a deadline while nobody is connected pauses the game instead
   covers: [R9.12, M5.5]
   given:
+    turn: 2
     seats:
       - seat: 1
         time_bank_ms: 0
@@ -403,6 +422,7 @@
 - name: a paused game goes on when a player reconnects and the timed-out player gets free time again
   covers: [R9.13]
   given:
+    turn: 2
     paused: true
     seats:
       - seat: 1
@@ -423,6 +443,7 @@
 - name: after the extra free time the paused player times out as normal
   covers: [R9.13, R9.10]
   given:
+    turn: 2
     paused: true
     seats:
       - seat: 1
@@ -468,7 +489,6 @@
         stats: {funds: 5, income: 4, influence: 2, workforce: 2, quality: 1, satisfaction: -1, product: 1, distribution: 2, bonus: 5}
         build_passes: 1
         played_this_turn: true
-        skipped_build: false
   when:
     - {seat: 1, action: end_turn}
     - {seat: 2, action: end_turn}
@@ -477,7 +497,7 @@
     seats:
       - seat: 1
         stats: {funds: 10, influence: 3, bonus: 7}
-        build_passes: 1
+        build_passes: 2
         played_this_turn: false
       - seat: 2
         stats: {funds: 10, influence: 1, bonus: 0}
@@ -588,25 +608,6 @@
     first_player: 2
     market_go: {seat: 2}
 
-- name: skip build is reset at the end of the turn
-  covers: [R10.1]
-  given:
-    turn: 3
-    marketplace: [{place: residential, card: Row House}, {place: industry, card: Metal Mining}, {place: service, card: Liquor Shop}, {place: public_quality, card: Fire Station}, {place: public_satisfaction, card: Public Playground}, {place: open_1, card: Dentist}, {place: open_2, card: Apparel Store}, {place: open_3, card: Forest Plantation}]
-    quests: [{quest: Farmland}, {quest: Sports town}, {quest: Trading post}, {quest: Mining town}]
-    seats:
-      - seat: 1
-        skipped_build: true
-        build_passes: 1
-  when:
-    - {seat: 1, action: end_turn}
-    - {seat: 2, action: end_turn}
-  then:
-    seats:
-      - seat: 1
-        skipped_build: false
-        build_passes: 1
-
 - name: a market go can be paused and the player gets their free time again
   covers: [R9.12, R9.13]
   given:
@@ -631,6 +632,7 @@
 - name: when two players' time would run out together while nobody is connected both get their free time again
   covers: [R9.12, R9.13]
   given:
+    turn: 2
     seats:
       - seat: 1
         time_bank_ms: 0
@@ -653,6 +655,7 @@
 - name: a paused player's bank used before the pause stays used
   covers: [R9.8, R9.12, R9.13]
   given:
+    turn: 2
     seats:
       - seat: 1
         time_bank_ms: 30000
@@ -662,6 +665,127 @@
         connected: false
   when:
     - wait_ms: 105000
+    - reconnect: 1
+    - {seat: 1, action: end_turn}
+  then:
+    seats:
+      - seat: 1
+        done: true
+        time_bank_ms: 0
+
+- name: every player gets 1 build pass at the start of every turn
+  covers: [R6.3, R11.4]
+  given:
+    turn: 3
+    marketplace: [{place: residential, card: Row House}, {place: industry, card: Metal Mining}, {place: service, card: Liquor Shop}, {place: public_quality, card: Fire Station}, {place: public_satisfaction, card: Public Playground}, {place: open_1, card: Dentist}, {place: open_2, card: Apparel Store}, {place: open_3, card: Forest Plantation}]
+    quests: [{quest: Farmland}, {quest: Sports town}, {quest: Trading post}, {quest: Mining town}]
+    seats:
+      - seat: 1
+        build_passes: 0
+        played_this_turn: true
+  when:
+    - {seat: 1, action: end_turn}
+    - {seat: 2, action: end_turn}
+  then:
+    turn: 4
+    seats:
+      - seat: 1
+        build_passes: 1
+      - seat: 2
+        build_passes: 2
+
+- name: unused build passes carry over to later turns with no limit
+  covers: [R6.3, R10.1]
+  given:
+    turn: 3
+    marketplace: [{place: residential, card: Row House}, {place: industry, card: Metal Mining}, {place: service, card: Liquor Shop}, {place: public_quality, card: Fire Station}, {place: public_satisfaction, card: Public Playground}, {place: open_1, card: Dentist}, {place: open_2, card: Apparel Store}, {place: open_3, card: Forest Plantation}]
+    quests: [{quest: Farmland}, {quest: Sports town}, {quest: Trading post}, {quest: Mining town}]
+    seats:
+      - seat: 1
+        build_passes: 7
+  when:
+    - {seat: 1, action: end_turn}
+    - {seat: 2, action: end_turn}
+  then:
+    seats:
+      - seat: 1
+        build_passes: 8
+
+- name: the main-phase time limit in turn 1 is 5 minutes
+  covers: [R9.1, R9.4, R9.5]
+  when:
+    - wait_ms: 299999
+  then:
+    seats:
+      - seat: 1
+        done: false
+        time_bank_ms: 765001
+
+- name: the first 165 seconds of the main phase in turn 1 do not use the time bank
+  covers: [R9.4, R9.5]
+  when:
+    - wait_ms: 165000
+    - {seat: 1, action: end_turn}
+  then:
+    seats:
+      - seat: 1
+        time_bank_ms: 900000
+
+- name: unused free time is added to the time bank when the player ends their turn
+  covers: [R9.15]
+  given:
+    turn: 2
+    seats:
+      - seat: 1
+        time_bank_ms: 600000
+  when:
+    - wait_ms: 30000
+    - {seat: 1, action: end_turn}
+  then:
+    seats:
+      - seat: 1
+        time_bank_ms: 645000
+
+- name: unused free time of turn 1 is added to the time bank
+  covers: [R9.15, R9.4]
+  given:
+    seats:
+      - seat: 1
+        time_bank_ms: 600000
+  when:
+    - wait_ms: 65000
+    - {seat: 1, action: end_turn}
+  then:
+    seats:
+      - seat: 1
+        time_bank_ms: 700000
+
+- name: the time bank never grows above 15 minutes
+  covers: [R9.15, R9.3]
+  given:
+    turn: 2
+    seats:
+      - seat: 1
+        time_bank_ms: 890000
+  when:
+    - {seat: 1, action: end_turn}
+  then:
+    seats:
+      - seat: 1
+        time_bank_ms: 900000
+
+- name: free time given again after a pause is not added to the time bank
+  covers: [R9.15, R9.13]
+  given:
+    turn: 2
+    seats:
+      - seat: 1
+        time_bank_ms: 0
+        connected: false
+      - seat: 2
+        connected: false
+  when:
+    - wait_ms: 75000
     - reconnect: 1
     - {seat: 1, action: end_turn}
   then:

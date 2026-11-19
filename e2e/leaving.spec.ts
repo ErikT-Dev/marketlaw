@@ -83,7 +83,7 @@ test("when every player in a ranked game times out a third time at once, the gam
 }, testInfo) => {
   test.setTimeout(FREE_TIME_MS + 60_000);
   const seats = [1, 2].map((seat) => ({ seat, time_bank_ms: 0, timeouts_in_a_row: 2 }));
-  const links = await startTestRoom(request, { kind: "ranked", players: 2, seats });
+  const links = await startTestRoom(request, { kind: "ranked", players: 2, turn: 2, seats });
   const pages = await Promise.all(links.map(async (link) => openSeat(browser, viewport, link)));
   for (const page of pages) {
     const abandoned = page.getByRole("dialog", { name: "The game was abandoned" });

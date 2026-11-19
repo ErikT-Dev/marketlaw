@@ -1,7 +1,7 @@
 import styles from "./CountBox.module.css";
 
 type Props = {
-  readonly letter: "Q" | "T" | "C";
+  readonly letter: "Q" | "T" | "C" | "F";
   readonly count: number;
   readonly label: string;
 };
@@ -10,6 +10,7 @@ const LETTER_CLASSES = {
   Q: "quests",
   T: "types",
   C: "combos",
+  F: "worth",
 } as const satisfies Record<Props["letter"], string>;
 
 export function CountBox({ letter, count, label }: Props) {

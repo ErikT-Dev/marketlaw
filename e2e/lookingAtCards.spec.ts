@@ -44,8 +44,8 @@ test("every card in the marketplace and in the cities opens the big card", async
   await shownCityCard.getByRole("button", { name: "Close" }).click();
   await expect(ann.getByRole("region", { name: /^Selected card: / })).toHaveCount(0);
 
-  await ann.getByRole("button", { name: "See Seat 2's board ›" }).click();
-  const board = ann.getByRole("dialog", { name: "Seat 2's board" });
+  await ann.getByRole("button", { name: "Detailed summary table of Seat 2" }).click();
+  const board = ann.getByRole("dialog", { name: "Detailed summary table of Seat 2" });
   await board.getByRole("button", { name: "Lake Park" }).click();
   const shownInBoard = board.getByRole("region", { name: "Selected card: Lake Park" });
   await expect(shownInBoard.getByRole("img", { name: "Beautification" })).toHaveCount(2);

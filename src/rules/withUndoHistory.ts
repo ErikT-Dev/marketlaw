@@ -28,6 +28,7 @@ function isUndoable(before: GameState, action: GameAction, after: GameState): bo
 export function withUndoHistory(before: GameState, action: GameAction, after: GameState): GameState {
   const seatBefore = seatOf(before, action.seat);
   if (action.type === "undo" ||
+    action.type === "redraw_hand" ||
     action.type === "end_turn" ||
     (action.type === "turn_draw" && seatBefore?.isTurnDrawOpen !== true) ||
     action.type === "time_out" ||

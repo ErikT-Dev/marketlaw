@@ -97,3 +97,31 @@
         city: [Row House]
       - seat: 2
         city: [Small Home]
+
+- name: every player starts turn 1 with 1 build pass
+  covers: [R6.3, R4.6]
+  given:
+    phase: new_game
+    players: 2
+  when:
+    - start_game
+  then:
+    seats:
+      - seat: 1
+        build_passes: 1
+      - seat: 2
+        build_passes: 1
+
+- name: a new game starts every player with 14 total worth gained
+  covers: [R2.4]
+  given:
+    phase: new_game
+    players: 2
+  when:
+    - start_game
+  then:
+    seats:
+      - seat: 1
+        worth_gained: 14
+      - seat: 2
+        worth_gained: 14

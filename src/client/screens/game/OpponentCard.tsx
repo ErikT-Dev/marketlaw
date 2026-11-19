@@ -1,5 +1,6 @@
 import type { PlayerId } from "../../../shared/PlayerId";
 import { useContext } from "react";
+import type { TypeName } from "../../../shared/catalogue/TypeName";
 import type { OtherSeatView } from "../../../shared/OtherSeatView";
 import { PlayerBadge } from "../../components/PlayerBadge";
 import { CountBox } from "../../components/CountBox";
@@ -9,11 +10,19 @@ import styles from "./OpponentCard.module.css";
 import { sectorColor } from "../../components/sectorColor";
 import { AwaySeats } from "./AwaySeats";
 import { LiveBankChip } from "./LiveBankChip";
+import { typesInListOrder } from "../../sorting/typesInListOrder";
+import { cityTypeCountsOf } from "./cityTypeCountsOf";
+import { cityTypeTotalOf } from "./cityTypeTotalOf";
+import { combosClaimedCountOf } from "./combosClaimedCountOf";
+import { TypeCountsList } from "./TypeCountsList";
+
+const MOST_PLAYED_TYPES_SHOWN = 5;
 
 type Props = {
   readonly seat: OtherSeatView;
   readonly name: string;
   readonly playerId: PlayerId | null;
+  readonly bonusTypes: ReadonlyArray<TypeName>;
   readonly onOpen: () => void;
 };
 
@@ -30,11 +39,12 @@ function statusOf(seat: OtherSeatView, isAway: boolean) {
   return seat.isOutOfTime ? "outOfTime" : "none";
 }
 
-export function OpponentCard({ seat, name, playerId, onOpen }: Props) {
+export function OpponentCard({ seat, name, playerId, bonusTypes, onOpen }: Props) {
   const isAway = useContext(AwaySeats).includes(seat.seat);
+  const cityTypeCounts = cityTypeCountsOf(seat.city);
   return (
     <li className={styles["item"]}>
-      <article className={styles["card"]} aria-label={name}>
+      <article className={styles["card"]} aria-label={`Quick summary table of ${name}`}>
         <div className={styles["header"]}>
           <PlayerBadge name={name} playerId={playerId} status={statusOf(seat, isAway)} />
           <LiveBankChip timeBankMs={seat.timeBankMs} clock={seat.clock} label="Bank" />
@@ -44,6 +54,13 @@ export function OpponentCard({ seat, name, playerId, onOpen }: Props) {
           <StatChip stat="income" value={seat.stats.income} />
           <StatChip stat="influence" value={seat.stats.influence} />
           <CountBox letter="Q" count={seat.questsCompleted.length} label="Quests completed" />
+          <CountBox letter="T" count={cityTypeTotalOf(seat.city)} label="Types in their city" />
+          <CountBox
+            letter="C"
+            count={combosClaimedCountOf(seat.combosClaimed)}
+            label="Combos claimed"
+          />
+          <CountBox letter="F" count={seat.worthGained} label="Total worth gained" />
           <span className={styles["hand"]}>Hand {seat.handCount}</span>
         </div>
         <ul className={styles["sectors"]} aria-label={`Cards in play of ${name}`}>
@@ -57,8 +74,19 @@ export function OpponentCard({ seat, name, playerId, onOpen }: Props) {
             </li>
           ))}
         </ul>
-        <button className={styles["open"]} type="button" onClick={onOpen}>
-          See {name}&apos;s board ›
+        <TypeCountsList
+          types={typesInListOrder(cityTypeCounts, []).slice(0, MOST_PLAYED_TYPES_SHOWN)}
+          typeCounts={cityTypeCounts}
+          bonusTypes={bonusTypes}
+          label={`Types played most by ${name}`}
+        />
+        <button
+          className={styles["open"]}
+          type="button"
+          aria-label={`Detailed summary table of ${name}`}
+          onClick={onOpen}
+        >
+          Detailed summary table ›
         </button>
       </article>
     </li>

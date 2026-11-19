@@ -21,6 +21,7 @@
 - name: opening the menu during a game does not stop the clock
   covers: [C1.3]
   given:
+    turn: 2
     seats:
       - seat: 1
         player: Ann

@@ -44,18 +44,6 @@
       - seat: 1
         stats: {quality: 2, satisfaction: 0}
 
-- name: undo takes back skip build and the build pass it gave
-  covers: [R7.2, R15.1]
-  when:
-    - {seat: 1, action: influence, trade: skip_build}
-    - {seat: 1, action: undo}
-  then:
-    seats:
-      - seat: 1
-        skipped_build: false
-        build_passes: 0
-        influence_uses: {}
-
 - name: undo takes back completing a quest whose reward draws no card
   covers: [R7.2, R19.5]
   given:
@@ -106,7 +94,7 @@
   given:
     seats:
       - seat: 1
-        stats: {quality: 8}
+        stats: {quality: 8, income: 10}
     random: [{sector: Service}]
   when:
     - {seat: 1, action: complete_project, project: quality}
@@ -150,7 +138,7 @@
     seats:
       - seat: 1
         stats: {income: 5}
-        city: [Metal Mining]
+        city: [Metal Mining, Stone Quarry]
     random: [{sector: Service}]
   when:
     - {seat: 1, action: complete_quest, quest: Supply chain}
@@ -237,5 +225,21 @@
     seats:
       - seat: 1
         stats: {funds: 7}
-        build_passes: 1
+        build_passes: 2
         build_passes_bought: 2
+
+- name: undo takes back a build pass bought with influence
+  covers: [R7.2, R15.1]
+  given:
+    seats:
+      - seat: 1
+        stats: {influence: 5}
+  when:
+    - {seat: 1, action: influence, trade: influence_to_build_pass}
+    - {seat: 1, action: undo}
+  then:
+    seats:
+      - seat: 1
+        stats: {influence: 5}
+        build_passes: 1
+        influence_uses: {}

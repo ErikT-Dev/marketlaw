@@ -38,11 +38,11 @@
 
 - id: I6
   name: cards played per turn stay within build passes
-  covers: [R6.1, R15.1]
+  covers: [R6.1, R6.3, R15.1]
   when: after every action
   holds: >
-    In each turn, the number of cards a player has played is at most 1 plus the build passes they
-    used in that turn, and 0 if they used skip build before playing.
+    In each turn, the number of cards a player has played equals the build passes they used in
+    that turn: every card played uses up exactly 1 build pass.
 
 - id: I7
   name: funds, influence, build passes, product and distribution are never negative
@@ -137,11 +137,12 @@
     accepted from a player who has left the game. Chat and room actions are not game actions.
 
 - id: I19
-  name: time banks stay within 0 and 15 minutes and never grow
-  covers: [R9.3, R9.8]
+  name: time banks stay within 0 and 15 minutes and grow only from unused free time
+  covers: [R9.3, R9.8, R9.15]
   when: after every action
   holds: >
-    Every player's time bank is between 0 and 900,000 milliseconds and never goes up.
+    Every player's time bank is between 0 and 900,000 milliseconds. It goes up only when the
+    player ends their turn, and then by no more than the main-phase free time they had left.
 
 - id: I20
   name: the first player follows the seat rotation
@@ -217,3 +218,19 @@
     exactly as they were. The one exception is a rejection as out of time, which also applies
     that player's time-out and any other time-out due at that moment, in player order (R9.6,
     R8.4).
+
+- id: I28
+  name: total worth gained never goes down
+  covers: [R2.4]
+  when: after every action
+  holds: >
+    Every player's total worth gained is at least 14 and never goes down, except when an undo
+    takes back the action that raised it (R7.1).
+
+- id: I29
+  name: redraws happen only at the start of turn 1
+  covers: [R17.12]
+  when: after every action
+  holds: >
+    A player's redraws of the starting hand are at most 3, all in turn 1, and none after their
+    first main-phase action.

@@ -1,4 +1,4 @@
-import { QUESTS } from "../../shared/catalogue/QUESTS";
+import { QUEST_LINES } from "../../shared/ruleFiles/QUEST_LINES";
 import { MARKETPLACE_PLACE_ORDER } from "../MARKETPLACE_PLACE_ORDER";
 import { seededRandom } from "../seededRandom";
 import { setUpGame } from "../setUpGame";
@@ -25,7 +25,7 @@ export function startTutorial(startedAt: number): TutorialState {
       phasesShown: 0,
     })),
     quests: TUTORIAL_SETUP.quests.map((quest) => ({ quest, turnsOnTable: 1 })),
-    questList: QUESTS.map(({ name }) => name).filter(
+    questList: QUEST_LINES.map(({ name }) => name).filter(
       (name) => !TUTORIAL_SETUP.quests.includes(name),
     ),
     bonusTypes: TUTORIAL_SETUP.bonusTypes,

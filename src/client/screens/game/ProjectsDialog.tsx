@@ -1,6 +1,7 @@
 import type { OwnSeatView } from "../../../shared/OwnSeatView";
 import type { PlayerView } from "../../../shared/PlayerView";
 import { PROJECT_NAMES } from "../../../shared/PROJECT_NAMES";
+import { PROJECT_INCOME_NEED } from "../../../shared/PROJECT_INCOME_NEED";
 import { PROJECT_NEED } from "../../../shared/PROJECT_NEED";
 import type { ProjectName } from "../../../shared/ProjectName";
 import { Button } from "../../components/Button";
@@ -87,8 +88,10 @@ export function ProjectsDialog({ seat, view, playerNames, onComplete, onClose }:
             <div>
               <strong>{PROJECT_TITLES[project]}</strong>
               <span>
-                Needs <StatChip stat={project} value={PROJECT_NEED} /> · you have{" "}
-                <StatChip stat={project} value={seat.stats[project]} />
+                Needs <StatChip stat={project} value={PROJECT_NEED} /> and at least{" "}
+                <StatChip stat="income" value={PROJECT_INCOME_NEED} /> · you have{" "}
+                <StatChip stat={project} value={seat.stats[project]} /> and{" "}
+                <StatChip stat="income" value={seat.stats.income} />
               </span>
               <DialogNote
                 text={

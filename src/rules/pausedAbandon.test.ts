@@ -7,7 +7,7 @@ import { randomForNextAction } from "./randomForNextAction";
 import type { SavedGame } from "./SavedGame";
 import { startSavedGame } from "./startSavedGame";
 
-const PAUSED_AT = 210_000;
+const PAUSED_AT = 300_000;
 const DAY_MS = 86_400_000;
 
 function pausedGame(): SavedGame {

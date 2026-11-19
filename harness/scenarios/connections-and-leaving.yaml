@@ -21,6 +21,7 @@
 - name: an away player keeps their seat and their time runs as normal
   covers: [M5.3, R9.10]
   given:
+    turn: 2
     seats:
       - seat: 1
         time_bank_ms: 0
@@ -201,6 +202,7 @@
 - name: if every player leaves at the same moment the game is abandoned
   covers: [M6.9]
   given:
+    turn: 2
     kind: ranked
     players: 2
     seats:
@@ -309,6 +311,7 @@
 - name: timers keep running during a vote
   covers: [M7.3]
   given:
+    turn: 2
     players: 3
   when:
     - {seat: 1, action: call_vote}

@@ -1,0 +1,19 @@
+.types {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 8px;
+  margin: var(--space-md) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.type,
+.bonusType {
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+}
+
+.bonusType {
+  border-color: var(--color-board-bonus-type-border);
+  background: var(--color-board-bonus-type);
+}

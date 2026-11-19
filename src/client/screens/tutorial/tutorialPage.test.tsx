@@ -37,6 +37,7 @@ function showTutorial(progress: TutorialProgress, rejectedMove: RejectedMove | n
   const props = {
     tutorial: tutorialWithHand(progress),
     playerName: "Ann",
+    playerIconColor: 2,
     pendingActions: [],
     rejectedMove,
     connection: "open" as const,

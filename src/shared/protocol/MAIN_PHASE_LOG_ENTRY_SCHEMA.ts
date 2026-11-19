@@ -30,4 +30,10 @@ export const MAIN_PHASE_LOG_ENTRY_SCHEMA = v.variant("kind", [
     seat: SEAT_NUMBER_SCHEMA,
     trade: TradeName,
   }),
+  v.object({
+    kind: v.literal("redrew"),
+    turn: v.number(),
+    seat: SEAT_NUMBER_SCHEMA,
+    times: v.number(),
+  }),
 ]);

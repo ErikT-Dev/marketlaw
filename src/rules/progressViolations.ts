@@ -1,5 +1,5 @@
 import { cardOf } from "../shared/catalogue/cardOf";
-import { TRADES } from "../shared/TRADES";
+import { tradeOf } from "../shared/ruleFiles/tradeOf";
 import { TradeName } from "../shared/TradeName";
 import type { GameState } from "./GameState";
 import type { SeatState } from "./SeatState";
@@ -36,7 +36,7 @@ function questViolations(seat: SeatState): ReadonlyArray<string> {
 
 function influenceViolations(seat: SeatState): ReadonlyArray<string> {
   return TradeName.options.flatMap((trade) => {
-    const limit = TRADES[trade].limitPerGame;
+    const limit = tradeOf(trade).limitPerGame;
     const uses = seat.influenceUses[trade] ?? 0;
     return limit !== null && uses > limit
       ? [`I11: seat ${String(seat.seat)} used ${trade} ${String(uses)} times`]

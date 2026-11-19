@@ -42,7 +42,7 @@ describe("the tutorial text box", () => {
     const content = tutorialTextBoxOf("T1.3", 3);
     expect(content.paragraphs).toEqual([
       "Every card also uses something up. Residents need quality and satisfaction, so those dropped below zero. While any of them is negative, you cannot earn income.",
-      "You can play one card per turn. Cards you don't need can be sold for 1 fund each.",
+      "Every card you play uses a build pass. You get 1 every turn and keep the ones you don't use. Cards you don't need can be sold for 1 fund each.",
     ]);
     expect(content.actionLine).toBe("Sell Hiking Trail.");
   });

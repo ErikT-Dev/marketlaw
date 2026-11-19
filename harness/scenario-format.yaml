@@ -92,7 +92,8 @@ definitions:
       quests_completed: {type: array, items: {type: string}}
       combos_claimed: {type: array, items: {type: object}}
       played_this_turn: {type: boolean}
-      skipped_build: {type: boolean}
+      redraws_used: {type: integer, minimum: 0, maximum: 3}
+      worth_gained: {type: integer, minimum: 0}
       actions_this_turn: {type: integer, minimum: 0}
       done: {type: boolean}
       left: {type: boolean}
@@ -246,6 +247,7 @@ definitions:
       city: {type: array, items: {type: string}}
       type_counts: {type: object}
       build_passes: {type: integer}
+      worth_gained: {type: integer}
       influence_uses: {type: object}
       projects: {type: array}
       quests_completed: {type: array}

@@ -20,6 +20,7 @@ it by hand.
 | R2.1 | setup (1) | Covered |
 | R2.2 | setup (1), turns-and-time (1) | Covered |
 | R2.3 | combos-and-income (2), projects (1) | Covered |
+| R2.4 | influence (1), playing-cards (1), setup (1) | Covered |
 | R3.1 | setup (1) | Covered |
 | R3.2 | – | Checked another way: Card data check: `cards.json` is loaded and every card has a sector, tier, cost, stats, types and combos. *(approved by the owner, 2026-10-25)* |
 | R3.3 | playing-cards (1) | Covered |
@@ -33,7 +34,7 @@ it by hand.
 | R4.3 | rooms (1) | Covered |
 | R4.4 | turns-and-time (3) | Covered |
 | R4.5 | turns-and-time (2) | Covered |
-| R4.6 | setup (3) | Covered |
+| R4.6 | setup (4) | Covered |
 | R5.1 | hostile-client (3), playing-cards (4) | Covered |
 | R5.2 | playing-cards (1), turns-and-time (1) | Covered |
 | R5.3 | combos-and-income (1), marketplace (1), playing-cards (3) | Covered |
@@ -41,8 +42,9 @@ it by hand.
 | R5.5 | drawing (2), visibility (3) | Covered |
 | R5.6 | turns-and-time (1) | Covered |
 | R5.7 | visibility (2) | Covered |
-| R6.1 | influence (1), playing-cards (8), undo (1) | Covered |
+| R6.1 | playing-cards (8), undo (1) | Covered |
 | R6.2 | playing-cards (5) | Covered |
+| R6.3 | influence (1), playing-cards (1), setup (1), turns-and-time (2) | Covered |
 | R7.1 | playing-cards (1), undo (5) | Covered |
 | R7.2 | undo (8) | Covered |
 | R7.3 | undo (3) | Covered |
@@ -52,11 +54,11 @@ it by hand.
 | R8.3 | end-of-game (1), turns-and-time (1) | Covered |
 | R8.4 | end-of-game (1), turns-and-time (1) | Covered |
 | R8.5 | combos-and-income (3), marketplace (1) | Covered |
-| R9.1 | marketplace (1), turns-and-time (2) | Covered |
+| R9.1 | marketplace (1), turns-and-time (3) | Covered |
 | R9.2 | turns-and-time (2) | Covered |
-| R9.3 | setup (1) | Covered |
-| R9.4 | marketplace (2), turns-and-time (1) | Covered |
-| R9.5 | turns-and-time (3) | Covered |
+| R9.3 | setup (1), turns-and-time (1) | Covered |
+| R9.4 | marketplace (2), turns-and-time (4) | Covered |
+| R9.5 | turns-and-time (5) | Covered |
 | R9.6 | connections-and-leaving (1), turns-and-time (3) | Covered |
 | R9.7 | turns-and-time (1) | Covered |
 | R9.8 | turns-and-time (2) | Covered |
@@ -64,14 +66,16 @@ it by hand.
 | R9.10 | combos-and-income (1), connections-and-leaving (1), turns-and-time (8) | Covered |
 | R9.11 | turns-and-time (5) | Covered |
 | R9.12 | turns-and-time (4) | Covered |
-| R9.13 | turns-and-time (5) | Covered |
+| R9.13 | turns-and-time (6) | Covered |
 | R9.14 | turns-and-time (1) | Covered |
+| R9.15 | turns-and-time (4) | Covered |
 | R10.1 | projects (1), turns-and-time (3) | Covered |
 | R10.2 | quests (2) | Covered |
 | R10.3 | playing-cards (1), turns-and-time (1) | Covered |
 | R11.1 | turns-and-time (1) | Covered |
 | R11.2 | quests (1), turns-and-time (1) | Covered |
 | R11.3 | turns-and-time (1) | Covered |
+| R11.4 | turns-and-time (1) | Covered |
 | R12.1 | combos-and-income (2), playing-cards (1) | Covered |
 | R12.2 | combos-and-income (1) | Covered |
 | R12.3 | combos-and-income (5) | Covered |
@@ -83,12 +87,14 @@ it by hand.
 | R14.1 | turns-and-time (1) | Covered |
 | R14.2 | turns-and-time (1) | Covered |
 | R14.3 | turns-and-time (3) | Covered |
-| R15.1 | influence (26), playing-cards (1), undo (3) | Covered |
+| R15.1 | influence (24), undo (3) | Covered |
 | R15.2 | influence (4), undo (1) | Covered |
 | R15.3 | influence (3) | Covered |
 | R15.4 | influence (1) | Covered |
+| R15.5 | – | Checked another way: Rule file check (HARNESS.md, Checking the harness itself): tests of the check with broken, misspelt and unknown lines of `influence-actions.txt`. The game reads the file itself, so every influence scenario uses it. *(approved by the owner, 2026-11-18)* |
+| R15.6 | – | Checked another way: Rule file check: a test that an action of an unknown kind fails with needs new code, and a client test that a plain trade added to the file is shown and used with no screen change. *(approved by the owner, 2026-11-18)* |
 | R16.1 | projects (2) | Covered |
-| R16.2 | projects (3) | Covered |
+| R16.2 | projects (4) | Covered |
 | R16.3 | projects (1) | Covered |
 | R16.4 | end-of-game (1), projects (1) | Covered |
 | R16.5 | projects (2) | Covered |
@@ -101,9 +107,10 @@ it by hand.
 | R17.6 | drawing (1) | Covered |
 | R17.7 | connections-and-leaving (1), drawing (1), end-of-game (1), playing-cards (2) | Covered |
 | R17.8 | drawing (2), visibility (1) | Covered |
-| R17.9 | setup (1) | Covered |
+| R17.9 | drawing (1), setup (1) | Covered |
 | R17.10 | drawing (2) | Covered. Also: Scenarios check which tier is asked for and used; the percentages themselves are checked by a statistical test of 100,000 simulated draws per turn. *(approved by the owner, 2026-10-25)* |
 | R17.11 | drawing (1) | Covered |
+| R17.12 | drawing (5), visibility (1) | Covered |
 | R18.1 | setup (1) | Covered |
 | R18.2 | setup (1) | Covered |
 | R18.3 | marketplace (2) | Covered |
@@ -121,7 +128,7 @@ it by hand.
 | R18.15 | marketplace (3), visibility (1) | Covered |
 | R18.16 | marketplace (5), visibility (1) | Covered |
 | R19.1 | turns-and-time (1) | Covered |
-| R19.2 | – | Checked another way: The quest list scenarios in `quests.yaml` have one scenario for each of the 45 quests. *(approved by the owner, 2026-10-25)* |
+| R19.2 | – | Checked another way: The quest list scenarios in `quests.yaml` have one scenario for each quest of `quests.txt`, updated with every edit of the file (Q169). *(approved by the owner, 2026-11-18)* |
 | R19.3 | setup (1) | Covered |
 | R19.4 | quests (5) | Covered |
 | R19.5 | quests (50), undo (1) | Covered |
@@ -136,6 +143,8 @@ it by hand.
 | R20.5 | quests (2) | Covered |
 | R20.6 | combos-and-income (1), end-of-game (1), quests (3) | Covered |
 | R20.7 | quests (48) | Covered |
+| R20.8 | – | Checked another way: Rule file check: tests of the check with broken, misspelt and unknown lines of `quests.txt`. *(approved by the owner, 2026-11-18)* |
+| R20.9 | – | Checked another way: Rule file check: tests that fewer than 4 tier 1 quests, a duplicate name and a changed tutorial quest fail it; client tests that the rules viewer and the quests panel show the quests of the file. *(approved by the owner, 2026-11-18)* |
 | R21.1 | end-of-game (3), hostile-client (1) | Covered |
 | R21.2 | end-of-game (2) | Covered |
 | R21.3 | end-of-game (1) | Covered |
@@ -167,11 +176,11 @@ it by hand.
 | M2.2 | connections-and-leaving (1), rooms (1) | Covered |
 | M3.1 | – | Checked another way: A description of how players interact; each part is tested by its own rule. *(approved by the owner, 2026-10-25)* |
 | M3.2 | visibility (7) | Covered |
-| M3.3 | drawing (2), visibility (3) | Covered |
+| M3.3 | drawing (3), visibility (4) | Covered |
 | M3.4 | visibility (1) | Covered |
 | M3.5 | connections-and-leaving (1), quests (1), visibility (3) | Covered |
 | M3.6 | – | Checked another way: A pointer to A6; tested there. *(approved by the owner, 2026-10-25)* |
-| M3.7 | visibility (5) | Covered |
+| M3.7 | visibility (6) | Covered |
 | M4.1 | visibility (1) | Covered |
 | M4.2 | – | Checked another way: Replay export check: a running and an ended room are exported and replay exactly. *(approved by the owner, 2026-10-25)* |
 | M4.3 | visibility (2) | Covered |
@@ -233,6 +242,7 @@ it by hand.
 | A2.2 | accounts (1) | Covered |
 | A2.3 | accounts (1) | Covered |
 | A2.4 | accounts (7) | Covered |
+| A2.5 | – | Checked another way: Server tests that a seat's icon colour comes from the account id and stays the same in two games and after a username change; client tests of the icon in the quests and projects displays. *(approved by the owner, 2026-11-18)* |
 | A3.1 | connections-and-leaving (1), records-and-ratings (2) | Covered |
 | A3.2 | records-and-ratings (2) | Covered |
 | A3.3 | records-and-ratings (2) | Covered |
@@ -310,7 +320,7 @@ it by hand.
 | C4.1 | tutorial (1) | Covered |
 | C4.2 | client (1) | Covered |
 | C4.3 | tutorial (1) | Covered |
-| C4.4 | client (1), tutorial (1) | Covered |
+| C4.4 | client (1), tutorial (2) | Covered |
 | C4.5 | client (1) | Covered |
 | C4.6 | client (1), lobby-queue-and-limits (1), tutorial (1) | Covered |
 | C4.7 | client (1) | Covered |
@@ -331,6 +341,8 @@ it by hand.
 | T0.4 | tutorial (1) | Covered |
 | T0.5 | tutorial (1) | Covered |
 | T0.6 | tutorial (1) | Covered |
+| T0.7 | – | Checked another way: Rule file check: tests that removing or changing Trading post, or removing another tutorial quest, fails it. *(approved by the owner, 2026-11-18)* |
+| T0.8 | tutorial (1) | Covered |
 | T1.1 | tutorial (2) | Covered |
 | T1.2 | tutorial (2) | Covered |
 | T1.3 | tutorial (1) | Covered |
@@ -353,7 +365,7 @@ it by hand.
 
 ## Summary
 
-- Rules: 317
-- Scenarios: 490
+- Rules: 329
+- Scenarios: 507
 - Gaps: 0
-- Checked another way or also checked another way: R3.2, R3.5, R17.10, R19.2, M3.1, M3.6, M4.2, A6.4, A10.6, C5.1, C5.2, C5.3, A12.1
+- Checked another way or also checked another way: R3.2, R3.5, R17.10, R19.2, M3.1, M3.6, M4.2, A6.4, A10.6, C5.1, C5.2, C5.3, A12.1, R15.5, R15.6, R20.8, R20.9, T0.7, A2.5

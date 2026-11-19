@@ -1,11 +1,11 @@
-import { QUESTS } from "../shared/catalogue/QUESTS";
+import { QUEST_LINES } from "../shared/ruleFiles/QUEST_LINES";
 import type { GameState } from "./GameState";
 import { QUEST_TABLE_RULES } from "./QUEST_TABLE_RULES";
 
 function questPlaceViolations(state: GameState): ReadonlyArray<string> {
   const onTable = state.quests.flatMap((place) => (place === null ? [] : [place.quest]));
   const completed = state.seats.flatMap((seat) => seat.questsCompleted);
-  return QUESTS.flatMap(({ name }) => {
+  return QUEST_LINES.flatMap(({ name }) => {
     const places = [
       onTable.includes(name),
       state.questList.includes(name),
@@ -31,7 +31,7 @@ function questAgeViolations(state: GameState): ReadonlyArray<string> {
       if (place === null) {
         return [];
       }
-      const tier = QUESTS.find(({ name }) => name === place.quest)?.tier;
+      const tier = QUEST_LINES.find(({ name }) => name === place.quest)?.tier;
       if (tier === undefined) {
         return [`I16: ${place.quest} is not in the quest catalogue`];
       }

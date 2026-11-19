@@ -1,7 +1,9 @@
 import type { IconTextPart } from "../../components/IconTextPart";
 
 export const PROJECTS_HELP: ReadonlyArray<IconTextPart> = [
-  "You have 3 projects. In the main phase, complete one when you have 8 of its stat and ",
+  "You have 3 projects. In the main phase, complete one when you have 8 of its stat, at least 10 ",
+  { stat: "income" },
+  ", and ",
   { stat: "workforce" },
   ", ",
   { stat: "quality" },

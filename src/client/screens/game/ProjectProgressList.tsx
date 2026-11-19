@@ -1,10 +1,14 @@
+import { useContext } from "react";
 import type { OwnSeatView } from "../../../shared/OwnSeatView";
 import type { PlayerView } from "../../../shared/PlayerView";
 import { PROJECT_NAMES } from "../../../shared/PROJECT_NAMES";
 import { PROJECT_NEED } from "../../../shared/PROJECT_NEED";
 import type { ProjectName } from "../../../shared/ProjectName";
 import { HelpButton } from "../../components/HelpButton";
+import { PlayerIcon } from "../../components/PlayerIcon";
 import { StatChip } from "../../components/StatChip";
+import { playerIconColorOf } from "./playerIconColorOf";
+import { PlayerIconColors } from "./PlayerIconColors";
 import { playerNameOf } from "./playerNameOf";
 import { PROJECT_TITLES } from "./PROJECT_TITLES";
 import { PROJECTS_HELP } from "./PROJECTS_HELP";
@@ -18,15 +22,30 @@ type Props = {
 
 function othersNote(
   project: ProjectName,
-  ownSeat: OwnSeatView,
-  view: PlayerView,
-  playerNames: ReadonlyArray<string>,
+  { seat: ownSeat, view, playerNames }: Props,
+  playerIconColors: ReadonlyArray<number>,
 ) {
-  const names = view.seats
-    .filter((seat) => seat.kind === "other" && seat.projects.includes(project))
-    .map((seat) => playerNameOf(playerNames, seat.seat));
-  if (names.length > 0) {
-    return <> · Completed by {names.join(", ")}</>;
+  const completers = view.seats.filter(
+    (seat) => seat.kind === "other" && seat.projects.includes(project),
+  );
+  if (completers.length > 0) {
+    return (
+      <>
+        {" "}
+        · Completed by{" "}
+        {completers.map(({ seat }) => {
+          const name = playerNameOf(playerNames, seat);
+          return (
+            <PlayerIcon
+              key={seat}
+              name={name}
+              username={name}
+              colorIndex={playerIconColorOf(playerIconColors, seat)}
+            />
+          );
+        })}
+      </>
+    );
   }
   const isFirstStillPossible =
     !ownSeat.projects.includes(project) && !view.firstCompletions.includes(project);
@@ -38,7 +57,9 @@ function othersNote(
   ) : null;
 }
 
-export function ProjectProgressList({ seat, view, playerNames }: Props) {
+export function ProjectProgressList(props: Props) {
+  const { seat } = props;
+  const playerIconColors = useContext(PlayerIconColors);
   return (
     <div className={styles["projectsArea"]}>
       <div className={styles["projectsTitle"]}>
@@ -57,7 +78,7 @@ export function ProjectProgressList({ seat, view, playerNames }: Props) {
                 value={`${String(Math.min(seat.stats[project], PROJECT_NEED))}/${String(PROJECT_NEED)}`}
               />
             )}
-            {othersNote(project, seat, view, playerNames)}
+            {othersNote(project, props, playerIconColors)}
           </li>
         ))}
       </ul>

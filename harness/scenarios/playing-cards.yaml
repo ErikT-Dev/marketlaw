@@ -143,13 +143,13 @@
         stats: {funds: 0, workforce: 6, quality: -4, satisfaction: -3}
         city: [Brownstone]
 
-- name: rejects a second card in a turn without a build pass
+- name: rejects a card when the player has no build pass left
   covers: [R6.1]
   given:
     seats:
       - seat: 1
         stats: {funds: 20}
-        played_this_turn: true
+        build_passes: 0
         city: [Row House]
         hand: [Small Home]
   when:
@@ -158,13 +158,12 @@
     rejected: no_build_pass
     unchanged: true
 
-- name: a build pass allows a second card and is used up
+- name: playing a card uses up 1 build pass
   covers: [R6.1]
   given:
     seats:
       - seat: 1
         stats: {funds: 20}
-        played_this_turn: true
         build_passes: 1
         city: [Row House]
         hand: [Orchard]
@@ -175,20 +174,6 @@
       - seat: 1
         build_passes: 0
         city: [Row House, Orchard]
-
-- name: rejects playing a card after skip build even with a build pass
-  covers: [R6.1, R15.1]
-  given:
-    seats:
-      - seat: 1
-        skipped_build: true
-        build_passes: 1
-        hand: [Row House]
-  when:
-    - {seat: 1, action: play_card, card: Row House}
-  then:
-    rejected: build_skipped
-    unchanged: true
 
 - name: rejects a card that is not in the hand
   covers: [R5.1, R6.1]
@@ -282,3 +267,37 @@
       - seat: 1
         city: [Row House]
         actions_this_turn: 50
+
+- name: a player with saved build passes can play several cards in one turn
+  covers: [R6.1, R6.3]
+  given:
+    seats:
+      - seat: 1
+        stats: {funds: 20}
+        build_passes: 3
+        hand: [Row House, Orchard, Liquor Shop]
+  when:
+    - {seat: 1, action: play_card, card: Row House}
+    - {seat: 1, action: play_card, card: Orchard}
+    - {seat: 1, action: play_card, card: Liquor Shop}
+  then:
+    seats:
+      - seat: 1
+        stats: {funds: 8}
+        build_passes: 0
+        city: [Row House, Orchard, Liquor Shop]
+
+- name: selling or playing a card does not change total worth gained
+  covers: [R2.4]
+  given:
+    seats:
+      - seat: 1
+        hand: [Row House, Pub]
+  when:
+    - {seat: 1, action: play_card, card: Row House}
+    - {seat: 1, action: sell, cards: [Pub]}
+  then:
+    seats:
+      - seat: 1
+        stats: {funds: 4}
+        worth_gained: 14

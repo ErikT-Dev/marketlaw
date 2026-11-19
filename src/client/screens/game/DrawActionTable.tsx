@@ -1,9 +1,9 @@
 import { Kind } from "../../../shared/catalogue/Kind";
-import { Tier } from "../../../shared/catalogue/Tier";
-import { DRAW_ACTION_COSTS } from "../../../shared/DRAW_ACTION_COSTS";
+import type { Tier } from "../../../shared/catalogue/Tier";
 import type { DrawActionStatus } from "../../../shared/DrawActionStatus";
+import { INFLUENCE_DRAWS } from "../../../shared/ruleFiles/INFLUENCE_DRAWS";
 import { sectorColor } from "../../components/sectorColor";
-import { StatChip } from "../../components/StatChip";
+import { StatAmountsIcons } from "../../components/StatAmountsIcons";
 import { DrawActionCell } from "./DrawActionCell";
 import styles from "./InfluenceDialog.module.css";
 import { sectorOfKind } from "./sectorOfKind";
@@ -20,10 +20,10 @@ export function DrawActionTable({ drawActions, isBusy, onDraw }: Props) {
       <thead>
         <tr>
           <th scope="col">Kind</th>
-          {Tier.options.map((tier) => (
+          {INFLUENCE_DRAWS.map(({ tier, costs }) => (
             <th key={tier} scope="col">
               {`Tier ${String(tier)} · `}
-              <StatChip stat="influence" value={DRAW_ACTION_COSTS[tier]} />
+              <StatAmountsIcons amounts={costs} />
             </th>
           ))}
         </tr>
@@ -41,7 +41,7 @@ export function DrawActionTable({ drawActions, isBusy, onDraw }: Props) {
             >
               {kind}
             </th>
-            {Tier.options.map((tier) => (
+            {INFLUENCE_DRAWS.map(({ tier }) => (
               <td key={tier}>
                 <DrawActionCell
                   status={drawActions.find((entry) => entry.kind === kind && entry.tier === tier)}

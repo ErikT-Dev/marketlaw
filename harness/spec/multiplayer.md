@@ -79,13 +79,15 @@ None yet.
     play or sell it.
   - the option and sector a player chose for their turn draw (R18.8); a turn draw left open
     after a time-out on the market go (R18.16) is revealed when the main phase ends
+  - that a player redrew their starting hand, and how many times (R17.12), revealed when the
+    main phase ends; not which cards they put back or drew
 - **M3.4** Which card a player got from the deck is hidden. Because of the public information in
   M3.3, the sectors and tiers of the cards in every hand can largely be worked out, and a fallback
   draw (R17.4) can show that another player drew the last cards of a tier during the main phase.
   Both are part of the game; what stays hidden is which exact cards are in a hand.
 - **M3.5** **Everything else is public** and available to every player, including each player's
-  stats, cards in play, type counts, combos, influence action uses, build passes, completed
-  projects and quests, time bank, whether they are away (M5.2), whether they have had their
+  stats, total worth gained (R2.4), cards in play, type counts, combos, influence action uses,
+  build passes, completed projects and quests, their player icon (A2.5), time bank, whether they are away (M5.2), whether they have had their
   market go, whether they are out of time (R9.10) and whether they are done with the turn; which
   quests were completed in the turn before and by whom (R19.6); the marketplace, the quests table, the bonus types, and the number of cards in the discard
   pile and left in the deck (during the main phase, as described in R5.5). How this is shown on
@@ -93,8 +95,8 @@ None yet.
 - **M3.6** Hidden information outside a game is listed in A6.
 - **M3.7** **The game log:** when the main phase ends, the log (S7.2) gets, for each player in
   player order, what they did in that main phase: each card they played, each quest and each
-  project they completed, and each influence action they used (trades, build passes and skip
-  build), all with the turn number. Actions they undid are not in it (R5.7), and draw actions
+  project they completed, each influence action they used (trades and build passes), and their
+  redraws of the starting hand (R17.12), all with the turn number. Actions they undid are not in it (R5.7), and draw actions
   appear as draws (M3.3). Until the main phase ends nobody sees these entries, the player's own
   included. A game that ends during a main phase (M6.8, M6.9, M7.4, R9.14) ends that main
   phase too: its entries are written as the game ends. They are kept with the room's state and

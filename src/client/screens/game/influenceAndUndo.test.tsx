@@ -13,7 +13,6 @@ import { GamePage } from "../GamePage";
 const TRADE_REJECTIONS: Partial<Record<TradeName, ReasonCode>> = {
   influence_to_quality: "trade_limit_reached",
   influence_to_workforce: "cannot_afford_trade",
-  skip_build: "skip_build_after_play",
 };
 
 const SEAT: Partial<OwnSeatView> = {
@@ -60,7 +59,7 @@ describe("use influence", () => {
       "You have [Influence 4] and [Funds 7]. [Influence] actions can be used any time in the main phase.",
     );
     const tiles = within(dialog.getByRole("list", { name: "Trades" }));
-    expect(tiles.getAllByRole("button")).toHaveLength(20);
+    expect(tiles.getAllByRole("button")).toHaveLength(19);
     const funds = tiles.getByRole("button", { name: "4 influence → 2 funds" });
     expect(funds).toHaveProperty("disabled", false);
     expect(textWithIconNames(funds)).toBe("[Influence 4] → [Funds 2]1 use left");
@@ -76,9 +75,6 @@ describe("use influence", () => {
     expect(textWithIconNames(tiles.getByRole("button", { name: "3 funds → 1 build pass" }))).toBe(
       "[Funds 3] → [Build passes 1]unlimited uses",
     );
-    expect(
-      textWithIconNames(tiles.getByRole("button", { name: "Skip build → 1 build pass" })),
-    ).toBe("Skip build → [Build passes 1]You can only skip build before playing a card.");
     expect(
       textWithIconNames(
         tiles.getByRole("button", {

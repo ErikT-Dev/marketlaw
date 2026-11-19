@@ -31,6 +31,7 @@ export type GameAction =
       readonly tier: Tier;
     }
   | { readonly type: "undo"; readonly seat: SeatNumber }
+  | { readonly type: "redraw_hand"; readonly seat: SeatNumber }
   | { readonly type: "time_out"; readonly seat: SeatNumber }
   | { readonly type: "pause_game"; readonly seat: SeatNumber }
   | { readonly type: "resume_game"; readonly seat: SeatNumber }

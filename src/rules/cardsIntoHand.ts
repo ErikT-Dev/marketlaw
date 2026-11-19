@@ -23,6 +23,7 @@ export function cardsIntoHand(
     hand: [...current.hand, ...drawn.cards],
     drawnThisPhase: [...current.drawnThisPhase, ...drawn.cards],
     newCards: [...current.newCards, ...drawn.cards],
+    worthGained: current.worthGained + drawn.cards.length,
   }));
   const shuffles = drawn.shuffles.map(
     (shuffle): DrawLogEntry => ({ kind: "shuffle", turn: state.turn, seat, ...shuffle }),

@@ -14,6 +14,7 @@ export function TutorialScreen({ store, state, tutorial }: Props) {
     <TutorialPage
       tutorial={tutorial}
       playerName={state.session?.name ?? ""}
+      playerIconColor={state.tutorialPlayerIconColor}
       pendingActions={state.pendingActions}
       rejectedMove={state.rejectedMove}
       connection={state.connection}

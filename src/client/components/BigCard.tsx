@@ -2,9 +2,12 @@ import type { Card } from "../../shared/catalogue/Card";
 import type { TypeName } from "../../shared/catalogue/TypeName";
 import { iconUrl } from "../icons/iconUrl";
 import { photoUrl } from "../icons/photoUrl";
+import { combosOfOneCardInListOrder } from "../sorting/combosOfOneCardInListOrder";
 import { STAT_ICONS } from "../icons/STAT_ICONS";
 import type { StatName } from "../icons/StatName";
 import styles from "./BigCard.module.css";
+import type { CardNameCombosShown } from "./CardNameCombosShown";
+import { CardNameWithCombos } from "./CardNameWithCombos";
 import { ComboLabel } from "./ComboLabel";
 import { sectorColor } from "./sectorColor";
 import { TypeChip } from "./TypeChip";
@@ -12,6 +15,7 @@ import { TypeChip } from "./TypeChip";
 type Props = {
   readonly card: Card;
   readonly realCost: number;
+  readonly cardNameCombos?: CardNameCombosShown | undefined;
 };
 
 const CARD_STATS = ["workforce", "satisfaction", "quality", "product", "distribution"] as const;
@@ -40,7 +44,7 @@ function typeIcons(card: Card): ReadonlyArray<{ type: TypeName; key: string }> {
   );
 }
 
-export function BigCard({ card, realCost }: Props) {
+export function BigCard({ card, realCost, cardNameCombos }: Props) {
   return (
     <article
       className={styles["bigCard"]}
@@ -55,7 +59,10 @@ export function BigCard({ card, realCost }: Props) {
         }}
       >
         <strong>#{card.number}</strong>
-        {card.name}
+        <CardNameWithCombos
+          name={card.name}
+          readyingCombos={cardNameCombos?.readyingCombos ?? []}
+        />
       </div>
       <img
         key={card.name}
@@ -85,8 +92,12 @@ export function BigCard({ card, realCost }: Props) {
         ))}
       </div>
       <div className={styles["combos"]}>
-        {card.combos.map((combo, index) => (
-          <ComboLabel key={String(index)} combo={combo} />
+        {combosOfOneCardInListOrder(card.combos).map(({ combo, printedIndex }) => (
+          <ComboLabel
+            key={String(printedIndex)}
+            combo={combo}
+            highlight={cardNameCombos?.comboHighlights[printedIndex] ?? "none"}
+          />
         ))}
       </div>
     </article>

@@ -3677,6 +3677,17 @@ file.
   - **10. The owner reviews the quests before the deploy.** Written under "Waiting for the owner"
     in the phase file, before the release: the phase stops when it is built and checked, the
     owner edits `quests.txt`, scenarios follow the edits on the record, and the release goes on.
+    Done 2026-11-19: the owner's reviewed `quests.txt` (0f6592c2) made harder requirements and
+    new rewards. The scenarios that check specific quests follow it, no names changed (`HARNESS:`
+    commit after 0f6592c2): the 40 changed "completing … gives its reward" scenarios get cities
+    and stats that meet the new requirements and expect the new rewards; "a requirement means at
+    least that amount", "a type gained from one quest helps complete another", the two sector
+    count rejections, "tier 1 cards do not count …" and "Penthouses needs a tier 3 card …" get
+    cities that still fail or pass for the same reason; undo's Supply chain scenario gets a
+    second Raw Material. Decided without the owner: "Metropolis needs tier 3 cards in 3 different
+    sectors" (required) keeps its name and its city of 2 sectors, which is still rejected; the
+    name now undersells the rule (4 sectors), so renaming it to "4 different sectors" waits for
+    the owner's approval. No quest is removed or renamed.
   - **11. Claim all (N) (screens).** The number is the claims pressing it makes now: 1 per ready
     one-time combo, and each time an infinite combo is ready (S6.6).
   - **12. Redrawing the starting hand, and a longer turn 1 (rules).** New R17.12: up to 3 free
@@ -3734,11 +3745,12 @@ file.
     R20.9, T0.7 and A2.5 (checked by the rule file check and by server and client tests) are
     added and R19.2's is reworded; they are Claude's under D19, for the owner's review with the
     rest of version 1.
-  - **Required names (waiting for the owner).** 11 names on `harness/required.yaml` become
+  - **Required names (approved by the owner).** 11 names on `harness/required.yaml` become
     untrue: 6 are about skip build, 2 name the 40-second market go, 1 names 75 seconds of free
     time for every main phase, and 2 say "a second card", which since finding 9 is no different
-    from the first. They are left unchanged until the owner approves; proposed (the 6 replacements
-    are already written as new scenarios):
+    from the first. The owner approved all 11 at once on 2026-11-18 ("approve all 11"); the 5
+    renames and the 6 replacements (old scenario deleted, new one on the list in its place) are
+    made in the scenario files and `harness/required.yaml` together:
     - "the first player's market go has 40 seconds" → "the first player's market go has
       30 seconds" (rename)
     - "every later market go also has 40 seconds" → "every later market go also has 30 seconds"
@@ -3760,13 +3772,101 @@ file.
     - "skip build can be used 3 times per game" → "every player starts turn 1 with 1 build pass"
     - "undo takes back skip build and the build pass it gave" → "undo takes back a build pass
       bought with influence"
+  - **One more in turn 1 (29a, item 3).** The required scenario `combos-and-income` "a player
+    made done when time runs out also gets their ready combos claimed" waited 75 seconds in
+    turn 1 for both players to run out of time, which contradicts turn 1's 165 seconds of free
+    time (R9.4); it now waits 165 seconds, its name and checks unchanged.
   - The spec and harness changes are on the branch `phase-29a-playthrough-fixes`, not on master,
     as for 20a (Q74) and 25a (Q126): on their own they turn the check red until 29a builds them.
+  - The phase finisher (2026-11-19) added the 17 remaining new scenarios (turn 1 time and free time,
+    redraw, worth gained, 10 income) and invariants I28 and I29 to `harness/required.yaml`, as the
+    phase file lists them (`HARNESS:` commit).
 - **Implemented:** `harness/spec/game-rules.md`, `multiplayer.md`, `accounts.md`, `screens.md`,
   `rulebook.md`, `glossary.md`, `tutorial.md`, `quests.txt` (new), `influence-actions.txt` (new);
-  `harness/scenarios/setup.yaml`, `turns-and-time.yaml`, `playing-cards.yaml`,
+  `harness/scenarios/setup.yaml`, `turns-and-time.yaml`, `combos-and-income.yaml`, `playing-cards.yaml`,
   `influence.yaml`, `undo.yaml`, `projects.yaml`, `drawing.yaml`, `visibility.yaml`,
   `tutorial.yaml`, `client.yaml`, `connections-and-leaving.yaml`, `records-and-ratings.yaml`;
   `harness/HARNESS.md`, `scenario-format.yaml`, `invariants.yaml`, `budgets.yaml`,
   `coverage-exceptions.yaml`, `coverage.md`; `docs/plan/phase-29a-playthrough-fixes.md`,
   `docs/plan/README.md`, `docs/plan/phase-30-version-1-readiness.md`.
+
+## Q170. What does the rule file check do with a quest reward the game cannot give yet?
+
+- **Phase:** 29a, item 1a (the rule file reader and its check).
+- **Question:** R20.8 allows `gain N <type>` in a quest reward, but the game's quest reward
+  holds one gained type, gained once: `gain 2 Farm` or `gain 1 Farm, gain 1 Sea` cannot be
+  given without new code. R20.9 lists no "needs new code" failure for quests, unlike R15.6 for
+  influence actions. R20.8 also does not say what two parts for the same stat mean, or whether
+  `1 cards` is wrong.
+- **Solution:** decided without the owner, as for influence actions (Q169, 8): a reward that
+  gains more than 1 type fails the check with "needs new code", so a quest list the game cannot
+  play is never deployed; the owner's quest review (finding 10) learns this from the check's
+  message. Parts that give the same stat or draws add up (all parts are given together), and
+  the singular and plural of `card`, `fund`, `project` and `sector` are both accepted whatever
+  the number, since neither changes the meaning. Written into R20.8 and `HARNESS.md`
+  ("Checking the harness itself") first.
+- **Implemented:** `harness/spec/game-rules.md` R20.8, `harness/HARNESS.md`;
+  `src/shared/ruleFiles/`, `tools/harness-check/checkRuleFiles.ts`.
+
+## Q171. What does the game do with a draw action's costs and with a tier that has no draw line?
+
+- **Phase:** 29a, item 1b (every user of the lists reads the files).
+- **Question:** R15.5 lets a draw line pay any stats, but the game charged influence only, by
+  tier. R15.5 also allows a file without a draw line for some tier, which the game always
+  offered.
+- **Solution:** decided without the owner, from R15.1 ("you need enough of everything an action
+  costs") and R15.2 (each draw line gives the draw actions of its tier): a draw action needs and
+  pays every cost on its line, and a tier without a draw line has no draw actions. The Use
+  influence pop-up shows a column only for the tiers the file has, with the line's costs; a
+  `draw_action` message for a tier without a line is rejected as `unknown_action` (M9). No spec
+  change was needed.
+- **Implemented:** `src/rules/drawActionRejection.ts`, `useDrawAction.ts`,
+  `drawActionStatusesOf.ts`; `src/client/screens/game/DrawActionTable.tsx`.
+
+## Q172. Which words does the game log use for a redraw of the starting hand?
+
+- **Phase:** 29a, item 4 (redrawing the starting hand).
+- **Question:** S7.2's example reads "Ann redrew her starting hand 2 times", but the game knows
+  only usernames, not how a player wants to be called, and the example does not say how one
+  redraw reads.
+- **Solution:** decided without the owner: the log says "their" for every player and counts
+  "1 time" or "N times" ("Ann redrew their starting hand 2 times"). Written into S7.2's example
+  first (`HARNESS:` commit).
+- **Implemented:** `harness/spec/screens.md` S7.2; `src/client/screens/game/mainPhaseLogText.ts`.
+
+## Q173. What does the game do with a limited draw line and a second rising build pass line?
+
+- **Phase:** 29a, review findings R1 and R2.
+- **Question:** R15.5 lets every line, draw lines too, have a limit, and lets "a line" that buys
+  1 build pass for funds add `1 more each time`. The game reads a draw line's limit but never
+  counts draw uses (the screen, S8.3, has no uses left for the draw table either), and it keeps
+  one count of bought build passes and one build pass price, taken from the first rising line.
+  So a limit on a draw line, or a second rising line, would be printed in the rulebook and then
+  ignored or priced wrongly by the game.
+- **Solution:** decided without the owner, from R15.6 (the check fails with "needs new code"
+  when the game or the screen has no code for a line, so the game never plays a list it
+  cannot handle): a draw line whose limit is not `no limit`, and a second line with
+  `1 more each time`, fail the rule file check with "needs new code" naming the action. The
+  file as it is has neither, so nothing in the game changes. Counting draw uses per line (with
+  uses left in the draw table) and a price per rising line stay possible later as new code.
+  Written into R15.5 and `HARNESS.md` ("Checking the harness itself") first (`HARNESS:` commit).
+- **Implemented:** `harness/spec/game-rules.md` R15.5, `harness/HARNESS.md`;
+  `src/shared/ruleFiles/readInfluenceActionFile.ts`, `tools/harness-check/checkRuleFiles.test.ts`.
+
+## Q174. Are player icons tab stops, and what is your own icon named?
+
+- **Phase:** 29a, review finding R6.
+- **Question:** S1.6 says icons are not tab stops of their own, as a screen shows dozens, while
+  S1.8 says a player icon shows the name as a tooltip when it has keyboard focus, which needs a
+  tab stop. Item 7 built player icons as `button`s that do nothing on click (lint allows
+  keyboard focus only on interactive elements) and named your own icon "You", and settled both
+  only in its Progress note.
+- **Solution:** decided without the owner. S1.6's reason (dozens of stat and type icons on a
+  screen) does not hold for player icons: a screen shows only a few, and they stand where a name
+  used to be written, so without focus a keyboard user could not read whose line or completion
+  it is. S1.6 now says its rule is about stat and type icons, and S1.8 says a player icon is a
+  tab stop of its own that does nothing on click, and that your own icon shows your username's
+  first character and is named "You", as the game over table, the chat and the abandon vote
+  name you. Written into S1.6 and S1.8 first (`HARNESS:` commit); the code already does this.
+- **Implemented:** `harness/spec/screens.md` S1.6, S1.8; `src/client/components/PlayerIcon.tsx`,
+  `src/client/screens/game/QuestCard.tsx` (unchanged).

@@ -9,7 +9,7 @@ import { SEAT_NUMBERS } from "../../../src/rules/SEAT_NUMBERS.ts";
 import { withClocksStartedAt } from "../../../src/rules/withClocksStartedAt.ts";
 import { withMainPhaseStart } from "../../../src/rules/withMainPhaseStart.ts";
 import { CARD_NAMES } from "../../../src/shared/catalogue/CARD_NAMES.ts";
-import { QUESTS } from "../../../src/shared/catalogue/QUESTS.ts";
+import { QUEST_LINES } from "../../../src/shared/ruleFiles/QUEST_LINES.ts";
 import { TYPE_NAMES } from "../../../src/shared/catalogue/TYPE_NAMES.ts";
 import { EpochMs } from "../../../src/shared/EpochMs.ts";
 import type { Given } from "./Given.ts";
@@ -70,7 +70,7 @@ function questListLeftBy(
   quests: GameState["quests"],
   seats: GameState["seats"],
 ): GameState["questList"] {
-  return QUESTS.map(({ name }) => name).filter(
+  return QUEST_LINES.map(({ name }) => name).filter(
     (name) =>
       !quests.some((place) => place?.quest === name) &&
       !seats.some((seat) => seat.questsCompleted.includes(name)),

@@ -51,7 +51,7 @@ function illegalIntent(view: PlayerView, chooser: BotChooser): ActionIntent {
         choice: { option: "A", card: cardNotInMarketplace(view, chooser) },
       };
     case 5:
-      return { type: "influence", trade: oneOf(TradeName.options, chooser) ?? "skip_build" };
+      return { type: "influence", trade: oneOf(TradeName.options, chooser) ?? "fund_to_influence" };
     case 6:
       return {
         type: "draw_action",

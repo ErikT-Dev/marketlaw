@@ -1,0 +1,51 @@
+.icon {
+  position: relative;
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  box-sizing: border-box;
+  border: 2px solid transparent;
+  border-radius: 50%;
+  color: #ffffff;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  line-height: 1;
+  padding: 0;
+  cursor: default;
+  font-family: inherit;
+  vertical-align: middle;
+}
+
+.marked {
+  border: 3px solid var(--color-palette-orange);
+}
+
+.icon:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 2px;
+}
+
+.tooltip {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-sm);
+  background: var(--color-panel-highlight);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-regular);
+  white-space: nowrap;
+  pointer-events: none;
+  visibility: hidden;
+  z-index: 10;
+}
+
+.icon:hover .tooltip,
+.icon:focus-visible .tooltip {
+  visibility: visible;
+}
