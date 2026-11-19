@@ -75,3 +75,11 @@
   border-color: var(--color-combo-infinite-locked-border);
   background: var(--color-combo-infinite-locked-fill);
 }
+.neededCardInCity {
+  border-color: var(--color-combo-needed-card-in-city-border);
+  background: var(--color-combo-needed-card-in-city-fill);
+}
+.neededCardInHand {
+  border-color: var(--color-combo-needed-card-in-hand-border);
+  background: var(--color-combo-needed-card-in-hand-fill);
+}

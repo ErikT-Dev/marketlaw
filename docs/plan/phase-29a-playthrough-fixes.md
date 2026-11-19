@@ -537,11 +537,33 @@ These 35 required scenarios now assert the new rules (Q169) and must pass again:
     from `QuestRewardParts`. The table column is at most half the quests panel
     (`fit-content(50%)`), so the quest cards stay readable at 1280x720 and the cells wrap.
 
-- [ ] 11. **Card-name combos on the big card** (S6.9). **Large.**
+- [x] 11. **Card-name combos on the big card** (S6.9). **Large.**
   - `src/client/components/BigCard*`: the red name with "!" (both directions, Q169, 18), its
     tooltip with those combos and the total stats as icons, the red and orange highlights, for
     hand, marketplace and other players' city cards. A pure lookup from the view and the card
     data; no new view field.
+  - Done (2026-11-19). Unit tests in `src/client/screens/game/cardNameCombos.test.tsx` (both
+    directions and the total, red and orange highlights, claimed combos not counted, another
+    player's city card, none on your own city's cards); `lookingAtCards`, `bigCardSwitch` and
+    `tutorial` browser specs pass locally except the known tutorial failure at 1280x720 (item 12);
+    `npm run check` is green.
+  - As built: `src/client/screens/game/cardNameCombosShownOf(card, ownSeat)` gives a
+    `CardNameCombosShown`: the readying combos (your city's open combos that need the card, and
+    its printed combos that need a city card and are not yet ready or claimed under its name),
+    each as a card-name combo naming the other card, sorted with `compareCombosOfOneCard`; and a
+    `ComboHighlight` per printed combo. `BigCard` takes it as an optional `cardNameCombos`
+    (the card set passes none); `CardNameWithCombos.tsx` shows the name as a button "Name !"
+    (accessible name "Name!") with a `role="tooltip"` on hover and focus, the combos and
+    "Total:" as icons. `ComboLabel` takes `highlight`; its accessible name ends with ", that card
+    is in your city" or "in your hand". Tokens `--color-card-name-combos-*` (red text on a dark
+    pill, readable on every sector's title bar) and `--color-combo-needed-card-in-city-*` and
+    `-in-hand-*`. The detailed summary table passes your own seat (`OpponentStatsOrLookedAtCard.tsx`,
+    taken out of `OpponentBoardDialog` for its line limit).
+  - Differs: cards of your own city get no marks, as S6.9 lists only hand, marketplace and
+    other players' cities. A combo that is already ready (not yet claimed) does not count,
+    since playing the card does not make it ready.
+  - For later items: 13 sorts the big card's printed combos; `comboHighlights` is by the
+    printed combo's index in `card.combos`, so sorting must carry the index along.
 
 - [x] 12. **Rulebook and tutorial texts** (S14.2, T1.3, T5.4, rulebook). **Small.**
   - `src/client/screens/rules/PARSED_RULEBOOK.ts` fills `{influence-actions.txt}` (rulebook.md

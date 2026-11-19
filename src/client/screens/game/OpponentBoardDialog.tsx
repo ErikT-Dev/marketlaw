@@ -4,17 +4,18 @@ import type { CardName } from "../../../shared/catalogue/CardName";
 import type { TypeName } from "../../../shared/catalogue/TypeName";
 import type { GamePhase } from "../../../shared/GamePhase";
 import type { OtherSeatView } from "../../../shared/OtherSeatView";
+import type { OwnSeatView } from "../../../shared/OwnSeatView";
 import { Button } from "../../components/Button";
 import { Modal } from "../../components/Modal";
 import { PlayedCard } from "../../components/PlayedCard";
 import { cardsBySector } from "./cardsBySector";
 import { counted } from "./counted";
-import { LookedAtCardPanel } from "./LookedAtCardPanel";
 import styles from "./OpponentBoardDialog.module.css";
-import { OpponentStatsBox } from "./OpponentStatsBox";
+import { OpponentStatsOrLookedAtCard } from "./OpponentStatsOrLookedAtCard";
 
 type Props = {
   readonly seat: OtherSeatView;
+  readonly ownSeat: OwnSeatView | undefined;
   readonly name: string;
   readonly playerId: PlayerId | null;
   readonly phase: GamePhase;
@@ -22,7 +23,8 @@ type Props = {
   readonly onClose: () => void;
 };
 
-export function OpponentBoardDialog({ seat, name, playerId, phase, bonusTypes, onClose }: Props) {
+export function OpponentBoardDialog(props: Props) {
+  const { seat, name, phase, onClose } = props;
   const closeArea = useRef<HTMLDivElement>(null);
   useEffect(() => {
     closeArea.current?.querySelector("button")?.focus();
@@ -37,17 +39,13 @@ export function OpponentBoardDialog({ seat, name, playerId, phase, bonusTypes, o
           : hand}
       </p>
       <div className={styles[lookedAt === null ? "board" : "boardWithCard"]}>
-        {lookedAt === null ? (
-          <OpponentStatsBox seat={seat} name={name} playerId={playerId} bonusTypes={bonusTypes} />
-        ) : (
-          <LookedAtCardPanel
-            card={lookedAt}
-            className={styles["bigCard"]}
-            onClose={() => {
-              setLookedAt(null);
-            }}
-          />
-        )}
+        <OpponentStatsOrLookedAtCard
+          {...props}
+          lookedAt={lookedAt}
+          onCloseCard={() => {
+            setLookedAt(null);
+          }}
+        />
         {cardsBySector(seat.city).map(({ sector, cards }) => (
           <section
             key={sector}

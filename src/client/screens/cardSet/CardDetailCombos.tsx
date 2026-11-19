@@ -20,7 +20,7 @@ export function CardDetailCombos({ combos }: Props) {
     <ul className={styles["combos"]}>
       {combos.map((combo, index) => (
         <li key={String(index)} className={styles["combo"]}>
-          <ComboLabel combo={combo} />
+          <ComboLabel combo={combo} highlight="none" />
           <span aria-hidden="true">{comboNote(combo)}</span>
         </li>
       ))}

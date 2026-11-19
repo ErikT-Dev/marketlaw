@@ -19,6 +19,7 @@ export function OpponentsPanel({ view, playerNames, playerIds }: Props) {
   const [openSeat, setOpenSeat] = useState<SeatNumber | null>(null);
   const others = view.seats.flatMap((seat) => (seat.kind === "other" ? [seat] : []));
   const opened = others.find((seat) => seat.seat === openSeat);
+  const ownSeat = view.seats.flatMap((seat) => (seat.kind === "own" ? [seat] : []))[0];
   return (
     <Panel title="Opponents">
       <ul className={styles["list"]}>
@@ -38,6 +39,7 @@ export function OpponentsPanel({ view, playerNames, playerIds }: Props) {
       {opened === undefined ? null : (
         <OpponentBoardDialog
           seat={opened}
+          ownSeat={ownSeat}
           name={playerNameOf(playerNames, opened.seat)}
           playerId={playerIdOf(playerIds, opened.seat)}
           phase={view.phase}
