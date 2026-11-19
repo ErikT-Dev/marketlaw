@@ -623,3 +623,4 @@ each helper's conversation size at its end.
 | Builder, item 9 | Opus, medium | 12 | 146k | 66 | done |
 | Builder, items 10 and 12 | Opus, medium | 20 | 132k | 66 | done |
 | Builder, item 11 | Opus, medium | 16 | 146k | 60 | done |
+| Builder, item 13 | Opus, medium | 11 | 96k | 34 | done |
