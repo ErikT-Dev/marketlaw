@@ -621,6 +621,33 @@ These 35 required scenarios now assert the new rules (Q169) and must pass again:
       visible since e0599635).
       GitHub run 44495628956 (branch check at 5cb85df8): `check` and all 7 browser jobs pass.
   - Screenshots of run 44495628956 copied into `harness/screens/` (after F1).
+  - **Phase review (2026-11-19):** ready after fixes; 6 should-fix findings and 2 suggestions.
+    Fixers: group A takes R1, R2, R7, R8; group B takes R3, R4, R5, R6.
+    - **R1.** Draw-action limits in `influence-actions.txt` are read (`InfluenceDraw.limitPerGame`)
+      but never applied (`drawActionRejection.ts`, `useDrawAction.ts`, `DrawActionTable.tsx`);
+      the rulebook would print a limit the game ignores (R15.1, R15.5, R15.6). Count draw uses
+      per line and reject with `trade_limit_reached` (uses left in S8.3), or make any limit other
+      than `no limit` on a draw line "needs new code" in the reader; test it either way.
+    - **R2.** A second "1 more each time" line is accepted, but every rising line shares one
+      `buildPassesBought` counter and `buildPassPriceOf`/`tradeCostsShown` use the first line's
+      price (R15.5, R15.6). Reject a second rising line with "needs new code" (with a test), or
+      count purchases per line.
+    - **R3.** Exit-criteria screenshots missing: the big card with a red name and its tooltip, and
+      the projects display with an icon (`harness/screens/`, `e2e/`).
+    - **R4.** New screen elements have no browser test by role and name (README "What every phase
+      must meet"): Redraw hand (S6.6), the card-name "!" and tooltip (S6.9), projects-area icons
+      (S6.3, S1.8), the quick summary table's T, C, F and 5 most played types (S3.1), your Q, T,
+      C, F boxes (S6.2), the completed-last-turn table's requirement and reward columns (S5.5).
+    - **R5.** `docs/enforcement.md` does not mention the rule-file check of `npm run harness:check`
+      (`checkRuleFiles.ts`, `checkTutorialQuests.ts`, names from the files, Vite bundling).
+    - **R6.** Player icons are `button`s (tab stops) although S1.6 says icons are not tab stops,
+      while S1.8 says the tooltip shows on keyboard focus; also your own icon named "You". Settled
+      only under "Differs": record the question and solution in `open-questions.md` and write it
+      into the spec first, or follow S1.6.
+    - **R7.** Suggestion: I6 (`invariantViolations.ts`) flags only a play with 0 passes; also
+      require exactly 1 pass used on `play_card`.
+    - **R8.** Suggestion: `GAME_STATE_SCHEMA.ts` repeats 14 instead of `STARTING_WORTH_GAINED`;
+      `completeProject.ts` repeats the project's funds reward `2` for worth gained.
 
 ### Helper log
 
@@ -645,3 +672,4 @@ each helper's conversation size at its end.
 | Builder, item 13 | Opus, medium | 11 | 96k | 34 | done |
 | Finisher | Sonnet, medium | 22 | 87k | 24 | partial (F1) |
 | Fixer, F1 | Opus, medium | 25 | 90k | 34 | done |
+| Phase reviewer | Opus, medium | 17 | 221k | 70 | done (8 findings) |
