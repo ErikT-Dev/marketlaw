@@ -3677,6 +3677,17 @@ file.
   - **10. The owner reviews the quests before the deploy.** Written under "Waiting for the owner"
     in the phase file, before the release: the phase stops when it is built and checked, the
     owner edits `quests.txt`, scenarios follow the edits on the record, and the release goes on.
+    Done 2026-11-19: the owner's reviewed `quests.txt` (0f6592c2) made harder requirements and
+    new rewards. The scenarios that check specific quests follow it, no names changed (`HARNESS:`
+    commit after 0f6592c2): the 40 changed "completing … gives its reward" scenarios get cities
+    and stats that meet the new requirements and expect the new rewards; "a requirement means at
+    least that amount", "a type gained from one quest helps complete another", the two sector
+    count rejections, "tier 1 cards do not count …" and "Penthouses needs a tier 3 card …" get
+    cities that still fail or pass for the same reason; undo's Supply chain scenario gets a
+    second Raw Material. Decided without the owner: "Metropolis needs tier 3 cards in 3 different
+    sectors" (required) keeps its name and its city of 2 sectors, which is still rejected; the
+    name now undersells the rule (4 sectors), so renaming it to "4 different sectors" waits for
+    the owner's approval. No quest is removed or renamed.
   - **11. Claim all (N) (screens).** The number is the claims pressing it makes now: 1 per ready
     one-time combo, and each time an infinite combo is ready (S6.6).
   - **12. Redrawing the starting hand, and a longer turn 1 (rules).** New R17.12: up to 3 free

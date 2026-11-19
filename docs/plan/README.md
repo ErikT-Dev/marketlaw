@@ -317,7 +317,7 @@ The 427 scenarios cover all of version 1, but each phase implements only part of
 | 27 | [Ratings, ranking and players online](phase-27-ratings-ranking-and-players-online.md) | 5 Accounts and ranking | 26 | done |
 | 28 | [Game menu, rules viewer and card set](phase-28-menu-rules-and-card-set.md) | 6 Learning | 20a, 25a | done |
 | 29 | [Tutorial](phase-29-tutorial.md) | 6 Learning | 27, 28 | done |
-| 29a | [Playthrough fixes](phase-29a-playthrough-fixes.md) | 6 Learning | 29 | waiting for the owner |
+| 29a | [Playthrough fixes](phase-29a-playthrough-fixes.md) | 6 Learning | 29 | in progress |
 | 30 | [Version 1 readiness](phase-30-version-1-readiness.md) | 7 Launch | all, 29a included | approved |
 
 Phases run one at a time, in this order. Where the dependencies allow, the owner may reorder

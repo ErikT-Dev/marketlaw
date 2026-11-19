@@ -1,6 +1,6 @@
 # Phase 29a: Playthrough fixes
 
-Status: waiting for the owner (quest review, finding 10)
+Status: in progress
 Milestone: 6 Learning
 
 ## Goal
@@ -163,6 +163,10 @@ combos you can complete.
   an edit removes or renames a quest that a required scenario name mentions (the
   "completing … gives its reward" scenarios of `quests.yaml`), that name change needs your
   approval too.
+  - Done 2026-11-19: your `quests.txt` is committed (0f6592c2) and the quest scenarios follow
+    it (Q169, 10); no quest was removed or renamed. One question for you, not blocking: the
+    required name "Metropolis needs tier 3 cards in 3 different sectors" is still true but now
+    undersells the rule (4 sectors); renaming it to "4 different sectors" needs your approval.
 
 ## Required scenarios
 
@@ -689,6 +693,14 @@ These 35 required scenarios now assert the new rules (Q169) and must pass again:
       `completeProject.ts` repeats the project's funds reward `2` for worth gained.
       - Fixed (2026-11-19): `GAME_STATE_SCHEMA` uses `STARTING_WORTH_GAINED`;
         `completeProject` names the reward once (`PROJECT_FUNDS_REWARD`).
+  - **Owner's quest review (finding 10, 2026-11-19):** `quests.txt` 0f6592c2. Scenarios
+    follow it (`HARNESS:`, Q169 10): the "completing … gives its reward" scenarios, the
+    requirement, sector-count and tier rejections, the gained-type chain and undo's Supply chain;
+    no names changed (507 scenarios pass). Tests that named old quest values follow the file:
+    `quests.test.tsx` (the singular wording is now shown with Civic pride's "1 completed
+    project", as no quest needs 1 card any more), `ruleFileTables.test.tsx`,
+    `checkRuleFiles.test.ts`. No game code or tutorial text changed (Trading post is unchanged).
+    `npm run check` is green locally. Open for the owner: renaming the Metropolis scenario (above).
 
 ### Helper log
 
