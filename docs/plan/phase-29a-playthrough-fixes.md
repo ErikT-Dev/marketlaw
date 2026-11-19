@@ -619,8 +619,8 @@ These 35 required scenarios now assert the new rules (Q169) and must pass again:
       Known gap: late in a game with many types, the type counts still wrap to more lines and
       the hand at 1280x720 can again be shorter than one card (stats keep all project lines
       visible since e0599635).
-  - Not done yet (wait for F1): copying the run's screenshots into `harness/screens/`; the
-    releaser's passing branch check does that.
+      GitHub run 44495628956 (branch check at 5cb85df8): `check` and all 7 browser jobs pass.
+  - Screenshots of run 44495628956 copied into `harness/screens/` (after F1).
 
 ### Helper log
 
