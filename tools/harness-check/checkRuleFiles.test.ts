@@ -5,7 +5,8 @@ import { HARNESS_PATHS } from "./HARNESS_PATHS.ts";
 
 const QUESTS_TEXT = readFileSync(HARNESS_PATHS.quests, "utf8");
 const INFLUENCE_ACTIONS_TEXT = readFileSync(HARNESS_PATHS.influenceActions, "utf8");
-const FIRST_QUEST = "Tier 1 | Working district | 3 Residential cards, 1 Low Wealth | +1 quality";
+const FIRST_QUEST =
+  "Tier 1 | Working district | 3 Residential cards, 2 Low Wealth | +1 quality, +1 influence";
 const FIRST_ACTION = "influence to funds | pay 4 influence | get 2 funds | 1 per game";
 
 function messagesOf(questsText: string, influenceActionsText: string): ReadonlyArray<string> {

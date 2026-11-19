@@ -77,10 +77,10 @@ describe("quests panel", () => {
     expect(within(card).getByRole("img", { name: "3 Residential cards" })).toBeDefined();
   });
 
-  it("words a requirement of one card in the singular", () => {
+  it("words a requirement of one completed project in the singular", () => {
     showQuests([
       {
-        quest: "Penthouses",
+        quest: "Civic pride",
         turnsLeft: 5,
         completeRejection: "quest_needs_not_met",
         progress: [
@@ -88,18 +88,15 @@ describe("quests panel", () => {
             seat: 2,
             isCompleted: false,
             canCompleteNow: false,
-            have: [2, 0, 1],
+            have: [0, 2],
             negativeStats: [],
           },
         ],
       },
     ]);
-    const card = screen.getByRole("region", { name: "Penthouses" });
-    expect(
-      within(card).getByRole("img", { name: "3 tier 2 or 3 Residential cards" }),
-    ).toBeDefined();
-    expect(within(card).getByRole("img", { name: "1 tier 3 Residential card" })).toBeDefined();
-    expect(within(card).getByRole("img", { name: "tier 3 Residential card 0 of 1" })).toBeDefined();
+    const card = screen.getByRole("region", { name: "Civic pride" });
+    expect(within(card).getByRole("img", { name: "1 completed project" })).toBeDefined();
+    expect(within(card).getByRole("img", { name: "completed project 0 of 1" })).toBeDefined();
   });
 
   it("writes the sector name of a requirement in its sector colour", () => {
@@ -120,8 +117,8 @@ describe("quests panel", () => {
       },
     ]);
     const card = screen.getByRole("region", { name: "Penthouses" });
-    const need = within(card).getByRole("img", { name: "3 tier 2 or 3 Residential cards" });
-    expect(need.textContent).toBe("3tier 2 or 3 Residential cards");
+    const need = within(card).getByRole("img", { name: "4 tier 2 or 3 Residential cards" });
+    expect(need.textContent).toBe("4tier 2 or 3 Residential cards");
     expect(within(need).getByText("Residential").style.color).toBe(
       "var(--color-sector-residential-light)",
     );
@@ -236,12 +233,12 @@ describe("quests panel", () => {
       within(suburbs ?? table)
         .getAllByRole("img")
         .map((part) => part.getAttribute("aria-label")),
-    ).toEqual(["2 Town Housing", "1 Low Wealth", "+2 quality"]);
+    ).toEqual(["4 Town Housing", "2 Low Wealth", "+3 quality"]);
     expect(
       within(district ?? table)
         .getAllByRole("img")
         .map((part) => part.getAttribute("aria-label")),
-    ).toEqual(["3 Residential cards", "1 Low Wealth", "+1 quality"]);
+    ).toEqual(["3 Residential cards", "2 Low Wealth", "+1 influence", "+1 quality"]);
   });
 
   it("shows no completed last turn table when no quest was completed in the turn before", () => {

@@ -54,13 +54,13 @@ describe("rulebook tables from the rule files", () => {
     );
     expect(tables[0]?.rows[0]).toEqual([
       ["Working district"],
-      ["3 Residential cards and 1 ", { type: "Low Wealth" }],
-      ["+1 ", { stat: "quality" }],
+      ["3 Residential cards and 2 ", { type: "Low Wealth" }],
+      ["+1 ", { stat: "influence" }, ", +1 ", { stat: "quality" }],
     ]);
     expect(tables[1]?.rows[6]).toEqual([
       ["Market town"],
-      ["1 ", { type: "Town Housing" }, ", 1 ", { type: "Retail" }, " and 1 ", { type: "Food" }],
-      ["gain 1 ", { type: "Retail" }, ", draw 1 card"],
+      ["2 ", { type: "Town Housing" }, ", 2 ", { type: "Retail" }, " and 2 ", { type: "Food" }],
+      ["gain 1 ", { type: "Retail" }, ", draw 2 cards"],
     ]);
   });
 
