@@ -602,6 +602,17 @@ These 35 required scenarios now assert the new rules (Q169) and must pass again:
 - [ ] Finish. The finisher adds the 17 remaining new scenarios and I28 and I29 to
   `harness/required.yaml`. Then the owner's quest review (Waiting for the owner, finding 10)
   comes before the releaser.
+  - Finisher (2026-11-19): the 17 scenarios and I28, I29 are on `harness/required.yaml`
+    (`HARNESS:` 6d97a91b, Q169). `npm run check` passes locally and `npm run harness` passes
+    (507 scenarios, 0 problems; phase-end simulated games). GitHub run 44493146096 (branch check):
+    `check` and 6 of 7 browser jobs pass; "other tests 1 of 3" fails on one test.
+  - **F1.** `e2e/tutorial.spec.ts:48` at 1280x720 (tutorial step 3): the highlighted Hiking Trail
+    (`tutorial-highlight`) is only 90% in the viewport (`toBeInViewport({ ratio: 1 })`). The same
+    failure as locally since item 12's start, so a wrong result, not a time-out (not rerun); it
+    comes from an earlier item (the taller stats panel of 9 most likely). Needs a code fix (layout
+    at 1280x720), not a test change. Other sizes pass.
+  - Not done yet (wait for F1): copying the run's screenshots into `harness/screens/`; the
+    releaser's passing branch check does that.
 
 ### Helper log
 
