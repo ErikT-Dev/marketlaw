@@ -3767,6 +3767,9 @@ file.
     time (R9.4); it now waits 165 seconds, its name and checks unchanged.
   - The spec and harness changes are on the branch `phase-29a-playthrough-fixes`, not on master,
     as for 20a (Q74) and 25a (Q126): on their own they turn the check red until 29a builds them.
+  - The phase finisher (2026-11-19) added the 17 remaining new scenarios (turn 1 time and free time,
+    redraw, worth gained, 10 income) and invariants I28 and I29 to `harness/required.yaml`, as the
+    phase file lists them (`HARNESS:` commit).
 - **Implemented:** `harness/spec/game-rules.md`, `multiplayer.md`, `accounts.md`, `screens.md`,
   `rulebook.md`, `glossary.md`, `tutorial.md`, `quests.txt` (new), `influence-actions.txt` (new);
   `harness/scenarios/setup.yaml`, `turns-and-time.yaml`, `combos-and-income.yaml`, `playing-cards.yaml`,

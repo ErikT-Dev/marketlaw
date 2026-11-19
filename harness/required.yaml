@@ -48,6 +48,11 @@ scenarios:
     - a discard shuffle in the main phase is shown to others only when the phase ends
     - the player who caused a discard shuffle sees it straight away
     - turn draws use the number of the turn that is starting
+    - a player can redraw their starting hand in turn 1
+    - a player can redraw their starting hand at most 3 times
+    - rejects a redraw after the player's first action
+    - rejects a redraw after turn 1
+    - another player's redraw is hidden until the main phase ends
   playing-cards:
     - playing a Residential card pays its cost and applies its stats and types
     - playing an Industry card gives product and uses workforce quality and satisfaction
@@ -68,6 +73,7 @@ scenarios:
     - a player at the action limit can end their turn
     - undo counts toward the action limit
     - sold cards join the discard pile when the main phase ends
+    - selling or playing a card does not change total worth gained
   projects:
     - completing a project uses up 8 of the stat and gives income funds influence and a card
     - rejects a project without enough of the stat
@@ -77,6 +83,7 @@ scenarios:
     - everyone who completes a project in the first turn anyone does gets 2 extra funds at the end of the turn
     - a project completed in a later turn gives no first-completion funds
     - rejects a project outside the main phase
+    - rejects a project with less than 10 income
   setup:
     - a new game gives every player the starting stats and time bank
     - starting hands are dealt from the top of the deck one player at a time in seat order
@@ -85,6 +92,7 @@ scenarios:
     - after setup the deck holds every card not dealt or on display
     - turn 1 starts with the main phase and every player can act
     - every player starts turn 1 with 1 build pass
+    - a new game starts every player with 14 total worth gained
   turns-and-time:
     - ending the turn marks the player done and further actions are rejected
     - the main phase ends only when every player is done
@@ -130,6 +138,12 @@ scenarios:
     - in a casual game time-outs in a row do not count as leaving the game
     - in a casual game a player whose time runs out is told they can keep playing
     - a game paused for 24 hours is abandoned
+    - the main-phase time limit in turn 1 is 5 minutes
+    - the first 165 seconds of the main phase in turn 1 do not use the time bank
+    - unused free time is added to the time bank when the player ends their turn
+    - unused free time of turn 1 is added to the time bank
+    - the time bank never grows above 15 minutes
+    - free time given again after a pause is not added to the time bank
   visibility:
     - other players' hands are shown only as a number of cards
     - a player sees their own hand
@@ -155,6 +169,7 @@ scenarios:
     - a main-phase action is hidden from a player still waiting for their market go
     - a turn draw left open is shown to other players when the main phase ends
     - an opponent's out of time status is shown live
+    - the log shows a redraw of the starting hand once the main phase ends
   influence:
     - 4 influence buys 2 funds once per game
     - 4 influence buys 1 quality
@@ -183,6 +198,7 @@ scenarios:
     - a draw action for a Public kind draws only that kind
     - rejects a draw action when no card of that kind and tier is left
     - a draw action whose last card another player took this phase gives another tier
+    - funds received and cards drawn add to total worth gained
   undo:
     - undo takes back playing a card
     - undo takes back claim all
@@ -510,6 +526,7 @@ scenarios:
     - tutorial turn 4 teaches product and the first bonus fund
     - tutorial turn 5 teaches income and quests and then ends
     - the tutorial rejects playing a different card than the step asks for
+    - the tutorial does not offer a redraw of the starting hand
 invariants:
   - I1
   - I2
@@ -538,6 +555,8 @@ invariants:
   - I25
   - I26
   - I27
+  - I28
+  - I29
 budgets:
   - B1
   - B2
