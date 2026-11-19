@@ -732,3 +732,25 @@ each helper's conversation size at its end.
 | Fixer, R1, R2, R7, R8 | Opus, medium | 8 | 110k | 46 | done |
 | Fixer, R3, R4, R5, R6 | Opus, medium | 28 | 163k | 93 | done |
 | Fixer, quest review (finding 10) | Opus, medium | 31 | 147k | 58 | done |
+
+## Report
+
+**Built.** All 18 findings of the owner's notes of 2026-11-17 (see Builds and Progress): build
+passes (one per turn, each card uses one, no skip build), 30 second market goes, turn-1 redraws
+and 5 minutes, free-time bank refill, projects need 10 income, quests and influence actions from
+the owner's text files with exact check errors, coloured and ordered combos, Q/T/C/F stats and
+sorted, highlighted summary tables, Claim all count, player icons on the quests and projects
+displays, requirements and rewards in the completed-last-turn table, and combo marks on the big
+card.
+
+**To try.** The list under "What you can see when it's done", on the live site.
+
+**Differences from the phase file.** None beyond those recorded in Progress and
+`docs/plan/open-questions.md` (Q169 for the quest review).
+
+**Decisions.** The owner's reviewed quest list (finding 10) replaced the earlier quest values;
+scenarios and tests follow it. The required scenario "Metropolis needs tier 3 cards in 3
+different sectors" keeps its name; the owner may rename it later.
+
+**Review.** The phase reviewer found 8 findings (R1 to R8), all fixed (Progress lists each fix).
+GitHub branch check 44514843755 was green on every job; later commits touched only docs/plan.
