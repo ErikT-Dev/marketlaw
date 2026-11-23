@@ -22,17 +22,18 @@ Phase 29a.
 ## Covers
 
 - Notes: `docs/feedback-notes/2026.11.20 - ready.txt`, findings 1 to 34 and 45 to 50, with Q175,
-  Q176 and Q177 (Q178).
+  Q176 and Q177, and the owner's items 51 and 52 of 2026-11-23 (Q178).
 - Rules: R1.3, R2.1, R2.4, R2.5 (new), R4.6, R6.3, R7.2, R7.3, R7.4, R8.3, R10.1, R10.2, R11.2,
   R11.5 (new), R14 (rewritten), R15.5, R16.3, R16.4 and R16.6 (removed), R19.3, R19.5, R19.6,
   R19.7, R19.8, R19.10 (new), R19.11 (new), R20.8, R20.9, R21.2, R21.4, R21.5, R21.8, R21.9;
   M3.1, M3.5, M3.7; A2.5 (rewritten), A2.6 (new), A3.2, A3.3, A3.4, A12.1; T0.1, T1.3, T1.4,
   T2.5, T3.3, T4.3, T5.2, T5.3, T5.4.
 - Rule files: `harness/spec/quests.txt` (the new list, after the owner's approval) and its check
-  (R20.9: enough tier 1 quests for the starting table).
-- Screens: S1.6, S1.8, S1.9 (new), S1.10 (new), S2.2, S3.1, S3.2, S4.1, S4.7 (new), S5.1, S5.4,
+  (R20.9: enough tier 1 quests for the starting table); `influence-actions.txt` gains
+  `influence to fund` (item 51); the player icon folder and its check (A2.5).
+- Screens: S1.6, S1.8, S1.9 (new), S1.10 (new), S2.2, S3.1, S3.2, S3.3 (new), S4.1, S4.7 (new), S5.1, S5.4,
   S5.5 (replaced by the Last turn panel), S6.1, S6.2, S6.3, S6.4, S6.5, S6.6, S6.9, S6.10 (new),
-  S7.2, S8.1, S8.2, S9.5, S12.5, S12.8, S13.2, S15.2, S16.3, S16.4 (removed); the rulebook's
+  S7.2, S8.1, S8.2, S8.3, S9.5, S12.5, S12.8, S13.2, S15.2, S16.3, S16.4 (removed); the rulebook's
   goal, stats, turn, undo, ending, end and start of every turn, bonus (removed), projects,
   quests and end of the game sections.
 - Invariants: I10 (renamed, waiting for the owner), I15, I16, I22 and I28 (changed), I30 (new).
@@ -44,16 +45,23 @@ The spec and harness changes for this phase are already written, in `HARNESS:` c
 branch `phase-29b-playthrough-fixes` (Q178). The starter checks out that branch instead of
 creating it. On it, `npm run check` fails until the items below are built:
 
-- `npm run harness:check` fails: the scenario format no longer has the `bonus` stat or
-  `first_completions` (the 14 required scenarios of "Waiting for the owner" still use them until
-  the owner answers), and the rule file check does not yet know the new failure of R20.9 (too
-  few tier 1 quests for the starting table).
-- `tools/harness-runner/harness.test.ts` still expects the old number of scenarios, and required
-  scenarios now assert the new rules: funds with tenths, 2 build passes in turn 1, the end goal
+- `npm run harness:check` fails with 13 problems (545 scenarios), all from 8 of the required
+  scenarios of "Waiting for the owner": they still use the `bonus` stat and `first_completions`,
+  which the format no longer has, and cover R16.4 and R16.6, which are gone. They clear when the
+  owner's answer is applied. The rule file check does not yet know the new failure of R20.9 (too
+  few tier 1 quests for the starting table), nor the player icon folder check (item 8).
+- `tools/harness-runner/harness.test.ts` still expects 507 scenarios (there are now 545), and
+  required scenarios now assert the new rules: funds with tenths, 2 build passes in turn 1, the end goal
   at income 20, the score without base or turns, quests that stay their extra turn.
 - `quests.txt` holds the proposed new quest list (item 6), which the required "completing …
   gives its reward" scenarios of `quests.yaml` do not follow yet: they are changed to it only
-  once the owner approves the list.
+  once the owner approves the list. They also do not yet expect the +1 influence of a first
+  completion (R19.10), which every one of them is; item 6 adds it with the list. Until then item
+  5's builder runs them with the +1 locally to check, and reports them as item 6's.
+- Support (R11.5) is new in every turn change: a required scenario that ends a turn with two
+  players 10 or more apart in F now also gives Support. The scenarios written for this phase
+  include it; a builder who finds an older one that did not is facing a scenario that
+  contradicts the spec, and changes it on the record (Q178).
 
 The new scenarios are not on the required list yet; the finisher adds them (see Required
 scenarios). The 14 required names of "Waiting for the owner" are left exactly as they were until
@@ -135,6 +143,12 @@ the owner answers.
 18. **Rulebook** (rulebook, S14.2): the changed sections show in the rules viewer: stats
     without bonus, the funds tenths, Support, projects, quests, the end of the game and the
     score. Small.
+19. **Influence actions** (R15.1, S8.3, items 51 and 52): the new line
+    `influence to fund | pay 3 influence | get 1 fund | no limit` works from the file with no
+    new code (R15.6; the Use influence pop-up and the tests that count its tiles follow); the
+    pop-up's tiles get one background for actions with `no limit` and another for limited ones,
+    and colours that show whether you can take the action now, besides its disabled state, from
+    the design tokens (the builder picks them; a sketch only if the owner asks). Small.
 
 Every item that changes a message's shape raises `PROTOCOL_VERSION` (Q75); one raise for the
 phase is enough, as the items ship together; the state's shape change raises
@@ -249,8 +263,8 @@ the others; the 6 renames stay on it under their new names):
   1 more influence; completing a quest during its extra turn gives no extra influence; a tier 1
   quest stays on the table for 6 turns; a tier 3 quest stays on the table for 4 turns; a quest
   needing income is placed only once some player has that income minus 2; a quest needing
-  completed projects is placed only once some player has 8 income; the starting table holds
-  only quests the starting income allows
+  completed projects is placed only once some player has 8 income; a quest needing income is
+  placed once some player has that income minus 2
 - `end-of-game`: the end goal needs income 20 and all 3 projects; a player who reached the end
   goal places above a player with a higher score who did not; equal scores are broken by total
   worth gained; equal scores and total worth gained are broken by player order; the score has
@@ -262,6 +276,7 @@ the others; the 6 renames stay on it under their new names):
   joined
 - `visibility`: the view shows last turn's quests projects income and Support; another player's
   type counts show types gained from quests from the next turn
+- `influence`: 3 influence buy 1 fund as often as the player likes
 
 Invariant I30 is added to the required list.
 

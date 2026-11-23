@@ -4093,11 +4093,31 @@ file.
   - **Quest list (10, Q176).** The owner approves the new list before it is built: the phase
     writes it into `quests.txt` on its branch and shows its full text in
     `docs/plan/phase-29b-quest-list-proposal.md`; it is built only after the owner's answer.
+  - **Influence to fund (51, added by the owner on 2026-11-23).** The owner wrote "pay
+    3 influence, gain 1 F"; read as 1 fund, which also adds 1 to F under Q177's F rule, with no
+    limit. The owner confirmed this reading on 2026-11-23. The line
+    `influence to fund | pay 3 influence | get 1 fund | no limit` follows `influence to funds` in
+    `influence-actions.txt`; as a plain trade it needs no new code (R15.6).
+  - **Influence tile colours (52, added by the owner on 2026-11-23).** In the Use influence
+    pop-up, actions with `no limit` and limited ones have different backgrounds, and each tile's
+    colours also show whether the action can be taken now, besides its disabled state (S8.3).
+    Decided: the builder picks the colours from the design tokens; a sketch only if the owner
+    asks for one.
+  - **Support in older scenarios.** Support is given at every turn change, so a required scenario
+    that ends a turn with two players 10 or more apart in F now also gives Support. The
+    scenarios written for this phase include it; an older one found to leave it out contradicts
+    the spec and is changed on the record here.
   - **Required names.** 14 names on `harness/required.yaml` become untrue (13 scenarios and
     invariant I10). They are left exactly as they are until the owner approves the new names,
     listed in the phase file under "Waiting for the owner".
   - The spec and harness changes are on the branch `phase-29b-playthrough-fixes`, not on master,
     as for 29a (Q169): on their own they turn the check red until 29b builds them.
 - **Implemented:** `docs/plan/phase-29b-playthrough-fixes.md`, `docs/plan/README.md`,
-  `docs/plan/phase-30-version-1-readiness.md`; on the branch, `harness/spec/` and the harness
-  files the phase file lists.
+  `docs/plan/phase-30-version-1-readiness.md`; on the branch `phase-29b-playthrough-fixes`:
+  `harness/spec/game-rules.md`, `multiplayer.md`, `accounts.md`, `screens.md`, `tutorial.md`,
+  `glossary.md`, `rulebook.md`, `quests.txt` (the proposed list), `influence-actions.txt`;
+  `harness/HARNESS.md`, `scenario-format.yaml`, `invariants.yaml` (I15, I16, I30),
+  `budgets.yaml` (B18, B19), `coverage-exceptions.yaml` (A2.5); 38 new scenarios (545 now) and
+  the required scenarios that follow the new rules with their names kept, in `setup`,
+  `turns-and-time`, `projects`, `undo`, `quests`, `end-of-game`, `records-and-ratings`,
+  `accounts`, `visibility`, `influence` and `tutorial`.
