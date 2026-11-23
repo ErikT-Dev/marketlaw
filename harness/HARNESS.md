@@ -63,7 +63,7 @@ Every scenario file is a list of scenarios. Every scenario has exactly these par
 | `deck` | The deck, top first, as card names | all cards not placed elsewhere, in `cards.json` order |
 | `discard` | The discard pile, as card names | empty |
 | `marketplace` | Each `place` and its `card`, plus `phases_shown`: how many market phases it has been on display | empty; `phases_shown` 0 |
-| `quests` | Each quest on the table, `turns_on_table` so far, and `extra_turn: true` for a quest in its extra turn (R19.6) or `completed_this_turn: true` for one first completed in this turn | empty; `turns_on_table` 1; not completed |
+| `quests` | Each quest on the table, `turns_on_table` so far, and `extra_turn: true` for a quest in its extra turn (R19.6); a quest not in its extra turn that a seat's `quests_completed` names was first completed in this turn | empty; `turns_on_table` 1; not in its extra turn |
 | `quest_list` | Quests still in the quest list | all quests not on the table |
 | `bonus_types` | The 2 bonus types | the first 2 types in R21.7 |
 | `random` | The random results the rules will ask for, in the order they are asked. Each entry is one of `sector`, `tier`, `shuffle` (the resulting order), `quest`, `type` (a bonus type), `seats` (accounts in seat order), `generated_name` or `icon` (a new account's random icon, A2.5) | none; see below |

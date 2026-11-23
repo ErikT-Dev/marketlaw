@@ -4136,6 +4136,17 @@ file.
   that cannot be undone can be undone" (R7.4) used selling as its action that cannot be undone,
   which contradicts R7.2 now that selling can be undone. A `HARNESS:` commit keeps its name and
   puts a tier 1 draw action (R7.3) in the place of the sale, with the influence it costs.
+- **Quests on the table (item 5, 2026-11-23):** a `HARNESS:` commit makes six `quests.yaml`
+  scenarios follow R19.7 and R19.10, names kept: "a tier 2 quest picked before turn 5 …", "a
+  tier 3 quest picked before turn 13 …", "a tier with no quests left falls back …" and "empty
+  quest places are filled in table order" let their tier 1 quests leave after 6 turns
+  (`turns_on_table: 6`, was 5, R19.7); "a requirement means at least that amount …" expects the
+  +1 influence of a first completion (R19.10); the required "a completed quest leaves the table
+  for good after its extra turn …" lists the 4 random tiers of its two option B turn draws in
+  turn 4 (2 cards each, R18.8) and the refill's tier, where it listed 3. `HARNESS.md` drops the
+  given field `completed_this_turn`, which no scenario used: a quest on the table that a seat's
+  `quests_completed` names and that is not in its extra turn was first completed in this turn,
+  as the engine reads it (so undoing a first completion needs no change to the table).
 - **Implemented:** `docs/plan/phase-29b-playthrough-fixes.md`, `docs/plan/README.md`,
   `docs/plan/phase-30-version-1-readiness.md`; on the branch `phase-29b-playthrough-fixes`:
   `harness/spec/game-rules.md`, `multiplayer.md`, `accounts.md`, `screens.md`, `tutorial.md`,

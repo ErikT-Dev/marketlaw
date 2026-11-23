@@ -25,7 +25,7 @@
   then:
     seats:
       - seat: 1
-        stats: {workforce: 9, funds: 8, influence: 2}
+        stats: {workforce: 9, funds: 8, influence: 3}
         city: [Farm House, Cottage]
 
 - name: rejects completing the same quest twice
@@ -104,7 +104,7 @@
       - seat: 1
         stats: {income: 4}
         city: [Liquor Shop]
-    random: [{tier: 1}, {tier: 1}, {tier: 1}, {quest: Countryside}]
+    random: [{tier: 1}, {tier: 1}, {tier: 1}, {tier: 1}, {tier: 1}, {quest: Countryside}]
   when:
     - {seat: 1, action: complete_quest, quest: Trading post}
     - {seat: 1, action: end_turn}
@@ -171,7 +171,7 @@
   given:
     turn: 3
     marketplace: [{place: residential, card: Row House}, {place: industry, card: Metal Mining}, {place: service, card: Liquor Shop}, {place: public_quality, card: Fire Station}, {place: public_satisfaction, card: Public Playground}, {place: open_1, card: Dentist}, {place: open_2, card: Apparel Store}, {place: open_3, card: Forest Plantation}]
-    quests: [{quest: Trading post, turns_on_table: 5}, {quest: Farmland}, {quest: Sports town}, {quest: Mining town}]
+    quests: [{quest: Trading post, turns_on_table: 6}, {quest: Farmland}, {quest: Sports town}, {quest: Mining town}]
     random: [{tier: 2}, {quest: Countryside}]
   when:
     - {seat: 1, action: end_turn}
@@ -184,7 +184,7 @@
   given:
     turn: 11
     marketplace: [{place: residential, card: Row House}, {place: industry, card: Metal Mining}, {place: service, card: Liquor Shop}, {place: public_quality, card: Fire Station}, {place: public_satisfaction, card: Public Playground}, {place: open_1, card: Dentist}, {place: open_2, card: Apparel Store}, {place: open_3, card: Forest Plantation}]
-    quests: [{quest: Trading post, turns_on_table: 5}, {quest: Farmland}, {quest: Sports town}, {quest: Mining town}]
+    quests: [{quest: Trading post, turns_on_table: 6}, {quest: Farmland}, {quest: Sports town}, {quest: Mining town}]
     random: [{tier: 3}, {quest: Safe streets}]
   when:
     - {seat: 1, action: end_turn}
@@ -197,7 +197,7 @@
   given:
     turn: 20
     marketplace: [{place: residential, card: Row House}, {place: industry, card: Metal Mining}, {place: service, card: Liquor Shop}, {place: public_quality, card: Fire Station}, {place: public_satisfaction, card: Public Playground}, {place: open_1, card: Dentist}, {place: open_2, card: Apparel Store}, {place: open_3, card: Forest Plantation}]
-    quests: [{quest: Trading post, turns_on_table: 5}, {quest: Farmland}, {quest: Sports town}, {quest: Mining town}, {quest: Countryside}]
+    quests: [{quest: Trading post, turns_on_table: 6}, {quest: Farmland}, {quest: Sports town}, {quest: Mining town}, {quest: Countryside}]
     quest_list: [High street, Metropolis]
     random: [{tier: 2}, {quest: High street}]
   when:
@@ -1103,7 +1103,7 @@
   given:
     turn: 6
     marketplace: [{place: residential, card: Row House}, {place: industry, card: Metal Mining}, {place: service, card: Liquor Shop}, {place: public_quality, card: Fire Station}, {place: public_satisfaction, card: Public Playground}, {place: open_1, card: Dentist}, {place: open_2, card: Apparel Store}, {place: open_3, card: Forest Plantation}]
-    quests: [{quest: Trading post, turns_on_table: 5}, {quest: Farmland}, {quest: Sports town, turns_on_table: 5}, {quest: Mining town}]
+    quests: [{quest: Trading post, turns_on_table: 6}, {quest: Farmland}, {quest: Sports town, turns_on_table: 6}, {quest: Mining town}]
     random: [{tier: 1}, {quest: Countryside}, {tier: 1}, {quest: High street}]
   when:
     - {seat: 1, action: end_turn}
