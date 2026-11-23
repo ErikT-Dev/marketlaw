@@ -1,6 +1,6 @@
 # Phase 29b: Playthrough fixes
 
-Status: approved
+Status: in progress
 Milestone: 6 Learning
 
 ## Goal
@@ -291,4 +291,210 @@ approval of the list, the quest scenarios that name quest contents.
 
 ## Progress
 
-Filled in by the starter.
+- [x] 0. Start (2026-11-23): the branch already held the spec and harness changes (Q178).
+  The starter found no contradiction in the spec and no open decision (`decisions.md` has none
+  open; Q178 already decides every point the owner's answers left open); the readings below are
+  everyday choices, not questions.
+  - **Counts now.** `npm run harness:check`: 545 scenarios, 13 problems, all from the old
+    required scenarios of "Waiting for the owner" (`bonus`, `first_completions`, R16.4, R16.6);
+    item 20 clears them. `tools/harness-runner/harness.test.ts` still expects 507; item 1a sets
+    it to 545 (and any item that adds a scenario raises it).
+  - Until every item is built, and until the owner answers, `npm run check` fails on required
+    scenarios of later items and on the 13 problems above. A builder reports which still fail
+    and why, and checks that its own item's scenarios pass (added to the required list locally,
+    not committed) and fail without the change. The 8 replacement scenarios already exist under
+    their new names beside the old ones: the builder of the item they belong to makes the new
+    one pass; the old one is item 20's.
+  - **The proposed quest list is already live.** The code reads `harness/spec/quests.txt`
+    (29a item 1b), which now holds the proposed list, so the "completing … gives its reward"
+    scenarios of `quests.yaml` (old values, no +1 influence) fail until item 6. That failure is
+    item 6's, not a regression of any other item. All 15 tier 1 quests of the proposed list
+    are allowed on the starting table (none needs income above 5 or a project), and Trading post
+    is unchanged, so the tutorial's quest check (T0.7) still passes.
+  - **One raise each for the phase**, by item 1a (the first shape change) and not again:
+    `PROTOCOL_VERSION` 27 to 28 (`src/shared/PROTOCOL_VERSION.ts`, Q75) and
+    `SAVE_SCHEMA_VERSION` 18 to 19 (`src/rules/SAVE_SCHEMA_VERSION.ts`, D1).
+  - **Order.** Everything that does not wait for the owner comes first: 1a, 1b, 2, 3, 4, 5, 7
+    (rules, in this order: tenths first, as every later rule counts in them; F and Support on
+    the tenths; 7 after 2, as places use F); then the screens 8 to 19 in any order, except 12
+    after 2 and 5 (it shows Support and the quests' +1), 11 after 2 (F) and 16 after 1b and 3
+    (the tutorial's states). Last, the two that wait for the owner: 20 (the 14 required names)
+    and 6 (the quest list), in whichever order the answers come.
+
+- [ ] 1a. **Funds in tenths: engine, protocol and runner** (R2.1, R2.5, R10.1, R14, R15.5,
+  R21.4, I10, I7, finding 4). **Large.**
+  - The `bonus` stat leaves `Stats` (`src/shared/Stats.ts`, `STAT_KEYS.ts`,
+    `protocol/STATS_SCHEMA.ts`), `STARTING_STATS.ts`, `endOfTurnSteps.ts` and
+    `invariantViolations.ts`. Funds, income and every amount of funds (card costs and rewards,
+    sale values, build pass prices, influence action costs and gains, quest and project rewards,
+    starting funds) are kept in tenths: the rules and the rule files keep writing whole funds,
+    and the code multiplies by 10 where it reads them (one helper, reused; do not edit the card
+    data or rule files). The end-of-turn gain of R14 goes into funds in tenths, never below 0.
+  - F (`STARTING_WORTH_GAINED`, `worthGained*`) counts in the same tenths here (1 card = 10);
+    item 2 makes it exact and adds Support.
+  - The scenario runner (`tools/harness-runner/`) reads and compares funds and income written
+    with one decimal (`funds: 5.3`), per `scenario-format.yaml`. Raise both versions (Start).
+    Set the scenario count in `harness.test.ts` to 545. Bots follow the type change.
+  - Covers the new `turns-and-time` scenarios "the stats gain is added to funds in tenths of a
+    fund", "negative stats lower the funds gained at the end of the turn", "the stats gain never
+    takes funds below 0", and the required ones whose stats name funds (setup, visibility).
+  - Split from Builds item 1: 1a is everything up to the view; 1b the client.
+- [ ] 1b. **Funds in tenths: screens, bots and the tutorial's states** (S1.6, S1.9, S6.2,
+  R21.4). **Large.**
+  - Screens show funds, income and F with one decimal ("5.3", "7.0"); fixed amounts (costs,
+    rewards, sale values, trade costs) stay whole as written (S1.9). The bonus stat goes from
+    `src/client/icons/StatName.ts`, `STAT_ICONS.ts`, `YourStatsPanel`, `OpponentStatsBox`,
+    `ProjectsDialog`, `GameRecordSummary`, `rules/statWordParts.ts` and the test helpers
+    (`roomUpdateWith.ts`, `statAndTypeWordsShownIn.ts`, `OWN_SEAT_VIEW.ts`). One formatter for
+    tenths, reused everywhere.
+  - The tutorial's states (stats, costs) in tenths without bonus; its texts are item 16's.
+  - Decide in Progress whether 1a's commits already needed some of this to type-check (every
+    commit must type-check on its own, `proposed-rules.md`).
+- [ ] 2. **F exact and Support** (R2.4, R11.5, I28, I30, finding 27, Q177's F rule). **Medium.**
+  - F in tenths from every source of funds (starting funds, income, the positive stats gain,
+    projects, quests, influence actions, Support) and every card gained (starting hand, draws,
+    marketplace cards); selling does not change it; undo takes back exactly what it added.
+    Invariant I30 checks the exact sum after every simulated action (`invariantViolations.ts`,
+    `worthGainedViolations.ts`).
+  - Support from turn 2, right after the turn's build pass (`withTurnBuildPass.ts`) and before
+    the marketplace: compare with the highest F of the other players still in the game, all
+    taken before any Support is given; 10 tenths per full 100 tenths behind; fewer than 2
+    players in the game, none. Public at once; a log line; the view's Support per seat (for
+    item 12). Leak test must pass.
+  - Covers the `turns-and-time` Support scenarios and "a positive stats gain adds to total worth
+    gained and a negative one does not lower it".
+- [ ] 3. **Projects, end goal and build passes** (R1.3, R16.3, R4.6, R6.3, S6.3, S8.2, findings
+  6, 26, 48, 49). **Small.**
+  - Delete `firstCompletionFundsOf.ts`, `firstCompletionsOf.ts` and the first-completion state
+    (`GameState.ts`, `setUpGame.ts`, `endMainPhase.ts`, `endGame.ts`) and the third-project
+    extra; the pop-up's lines go (`ProjectsDialog`, `ProjectProgressList`, test builders
+    `botViewWith.ts`, `roomUpdateWith.ts`). End goal income 20 (`gameEndViolations.ts` and the
+    ending check). Turn 1 gives 2 build passes (`withTurnBuildPass.ts`).
+  - Covers the new `projects` scenarios and "the end goal needs income 20 and all 3 projects";
+    setup's "2 build passes" scenario is item 20's name.
+- [ ] 4. **Undo for selling** (R7.2, R7.3, R7.4, finding 24). **Small.**
+  - `sellCards.ts` becomes an undo point (`withUndoHistory.ts`, `undoLatest.ts`); undo moves the
+    cards from the holding pile back to the hand and takes back the funds; F unchanged both ways.
+  - Covers `undo`'s "undo takes back selling and puts the cards back in the hand".
+- [ ] 5. **Quests on the table** (R10.2, R19.3, R19.5 to R19.11, R20.9, I15, I16, findings 11,
+  12, 50). **Large.**
+  - Time by tier 6, 5, 4 (`QUEST_TABLE_RULES.ts`); the extra turn after the first completion
+    and the leaving rules of R19.6 (`endTurnForQuests.ts`, `QuestTable.ts`); +1 influence for
+    everyone completing it in the first turn anyone does, undone with the quest
+    (`completeQuest.ts`, `questsCompletedThisTurnOf.ts`); the income gate of R19.11 for the
+    refill and the starting table (`refillQuests.ts`, `pickStartingQuests.ts`), a fully held
+    back tier counts as empty (R19.8). The rule file check (`tools/harness-check/
+    checkRuleFiles.ts`) fails with a clear message under 4 allowed tier 1 quests, tested.
+  - The view needs each quest's turns left and whether it is in its extra turn (item 13).
+  - Covers the new `quests` scenarios, `undo`'s "+1 influence" one, and the two required ones
+    now using a tier 2 quest. Run the "completing … gives its reward" scenarios with the +1
+    locally and report them as item 6's (Start).
+- [ ] 7. **Places and score** (R21.4, R21.5, R21.8, R21.9, A3.3, A3.4, S9.5, I22, findings 25,
+  28). **Medium.** After 2.
+  - `scoreOf.ts`, `SCORE_HUNDREDTHS.ts`, `cardsInHandScoredOf.ts`, `scoredEndingOf.ts`: no 870
+    base and no turns part, whole funds only (tenths ÷ 10, rounded down). Places by end goal
+    reached, score, F, player order of the final turn; players who left last (A3.4); R8.3's done
+    order is still recorded but no longer breaks ties (`leavingPlaces.test.ts`, `endGame.ts`).
+  - The end-of-game table shows each score part by part (view and screen, S9.5).
+  - Covers the new `end-of-game` scenarios and the required score scenarios of `end-of-game`
+    and `records-and-ratings`.
+- [ ] 8. **Player icons** (A2.5, A2.6, A12.1, S1.8, S12.5, S12.8, B18, finding 22, Q175).
+  **Large.**
+  - Copy `design/assets/playericons/` (one artist folder `ffffff` and `license.txt`) into the
+    repository as `player-icons/`, in a place the client bundle and the Worker can both read
+    (as `src/shared/ruleFiles/INFLUENCE_ACTIONS.ts` reads with `?raw`); load pictures only when
+    shown. The folder check in `npm run check` (only SVG, `viewBox`, no script or outside
+    reference, at most 20 KB, every artist named in the licence), tested on bad files.
+  - The icon in D1 (a new migration after `0014_ratings.sql`), a random default for new and
+    existing accounts; `change_icon` with `unknown_icon`, `icon_colors_too_alike` (3:1),
+    `icon_change_too_soon` (10 in 24 hours: reuse the username change limit of
+    `0013_username_changes.sql` and `UsernameSetting`). Kept per room as A2.4 keeps usernames.
+  - The picker with a preview in account settings (`AccountSettingsDialog`), credits on the
+    privacy notice, `PlayerIcon` and `PlayerIconColors` show the picture everywhere.
+  - Covers the new `accounts` scenarios; B18 with icon changes. Likely 3 or more commits:
+    split it if it runs over (server first, then the client).
+- [ ] 9. **Card tiles** (S4.1, S6.1, S6.4, B19, findings 14, 19, 29, 33). **Large.**
+  - Small WebP pictures (about 100 px wide, at most 6 KB each, B19) made from the 240 photos in
+    `src/client/assets/cards/` (11 MB; never ship them on tiles) by a build step or committed
+    files, placed as `design/sketches/14-card-pictures/APPROVED.md` says, on hand, city and
+    marketplace tiles. Fixed tile sizes, smaller text for long names, a test that all 240 names
+    fit; 80% backgrounds. The hand sorted by sector, tier, card number (`useHandChoice`, the
+    sorting of `src/client/sorting/`); unplayable hand cards dimmed from the view's mark;
+    market cards show their turns left (Q178: counting the current market phase).
+  - Any new dependency for the pictures goes into `open-questions.md` (CLAUDE.md 10).
+- [ ] 10. **The big card** (S6.5, S6.9, S6.10, findings 5, 9, 13, 20, 45, 47). **Medium.**
+  - `BigCardBesideHand` and its parts: title bar in the stats bar's colour, more transparent;
+    thin black image border; + and − signs per R3.4; Sell for the shown card with "Sell for
+    1 fund?" as one sell action; a card-name combo's number names the card on pointing; the
+    combos playing the hand card would make ready are highlighted, infinite ones with "×N"
+    (from the view, never computed in the client; add to the view if missing).
+- [ ] 11. **Your counts and the tables** (S3.1, S3.2, S6.2, S9.5, S13.2, A3.2, findings 3, 17,
+  21, 23). **Medium.** After 2.
+  - A small "Your counts" table (Q, T, C, F and one "?" explaining them) above the opponents'
+    quick summary tables; those boxes leave `YourStatsPanel`. T and the 5 most played types
+    count types gained from quests for every viewer, others from the next turn (R5.4;
+    `visibility`'s new scenario). Q, T, C, F in the end-of-game table and the game record
+    (`records-and-ratings`' new scenario; `GameRecordSummary`).
+- [ ] 12. **The Last turn panel** (S5.5, S7.2, M3.5, M3.7, S16.4, finding 46, Q177's addition).
+  **Medium.** After 2 and 5.
+  - As `design/sketches/46-turn-notifications/APPROVED.md`: quests (with reward), projects,
+    income gains and Support of the turn before, all from the view, with log lines. It replaces
+    `QuestsCompletedLastTurnTable` and `useIncomeRiseNotice`. Covers `visibility`'s "the view
+    shows last turn's quests projects income and Support"; leak test passes.
+- [ ] 13. **Quest turns left and the market countdown** (S5.1, S4.7, findings 15, 16).
+  **Small.** After 5.
+  - The big coloured number of `design/sketches/15-quest-turns-left/APPROVED.md` on
+    `QuestCard` (red 1 in the extra turn); the big red countdown in `MarketplacePanel` during
+    your market go, pulsing in the last 5 seconds (not with reduced motion), red border.
+- [ ] 14. **Buttons and highlights** (S1.10, S6.1, S6.6, S3.2, findings 7, 18, 30, 31, 34).
+  **Small.**
+  - Claimed combos without card names; the Projects button highlighted while the view says a
+    project can be completed, Claim all while its number is above 0; "Use influence" with the
+    influence icon and amount; every button background at most 90% opaque (tokens).
+- [ ] 15. **Pictures and the browser tab** (S6.3, S8.2, S1.2, findings 1, 2). **Small.**
+  - Project pictures from `design/assets/projects/` at about 600 px wide, at most about 80 KB
+    each, in `ProjectsDialog` (lazy, not in the first screen's bundle); the logo of
+    `design/assets/logo/` as the tab icon. Check the bundle budget.
+- [ ] 16. **Tutorial messages and texts** (S15.2, T1.3 to T5.4, finding 8). **Medium.** After
+  1b and 3.
+  - Each message beside the area it highlights, with an arrow; the rest dimmed a little while
+    it waits for Continue (`TutorialPage`). `TUTORIAL_TEXTS.ts` in tenths, without bonus, with
+    2 build passes. The required `tutorial` scenarios pass (turn 4's name is item 20's).
+- [ ] 17. **Away at the start** (S2.2, finding 32). **Small.**
+  - Find why your own badge shows away when a game starts (a bug of the code, Q178), fix it,
+    with a browser test.
+- [ ] 18. **Rulebook** (rulebook, S14.2). **Small.**
+  - The changed sections of `harness/spec/rulebook.md` show in the rules viewer
+    (`PARSED_RULEBOOK.ts`, `statWordParts.ts`): no bonus, funds tenths, Support, projects,
+    quests, ending, score. Mostly tests that the viewer shows them.
+- [ ] 19. **Influence actions** (R15.1, S8.3, items 51, 52). **Small.**
+  - `influence to fund` already is in `influence-actions.txt`: check it works with no new code
+    (`influence`'s new scenario); the pop-up's tile counts in tests follow
+    (`influenceAndUndo.test.tsx` expects 19 tiles). Tiles get one background for `no limit` and
+    another for limited actions, and colours that show whether the action can be taken now,
+    from the design tokens (`InfluenceDialog`, `TradeTile`).
+- [ ] 20. **The 14 required names** (Waiting for the owner, Q178). **Small.** Only after the
+  owner's answer.
+  - One `HARNESS:` commit, recorded in Q178: the 6 renames (the scenario changed to the new rule
+    under the new name, in its file and in `harness/required.yaml`) and the 8 replacements (old
+    scenario deleted, the new one already written takes its place on the list), as the owner
+    approves them. `npm run harness:check` then has no problems; lower the count in
+    `harness.test.ts` by the deleted scenarios.
+- [ ] 6. **The new quest list** (R20.7, finding 10). **Small.** Only after the owner approves
+  `docs/plan/phase-29b-quest-list-proposal.md` (or edits it).
+  - Write the owner's list into `quests.txt` if it differs; then the "completing … gives its
+    reward" scenarios (with the +1 influence of R19.10) and other scenarios naming quest
+    contents follow it in a `HARNESS:` commit recorded in Q178; tests naming old quest values
+    follow. If the owner changes Trading post, the tutorial (T0.7) follows too.
+
+- [ ] Finish. The finisher adds the new scenarios of "Required scenarios" (not the 8
+  replacements, which item 20 adds) and I30 to `harness/required.yaml`, then follows
+  `phase-helpers.md`.
+
+### Helper log
+
+Filled in by the coordinator afterwards, from the helpers' completion notices (Q73). Tokens are
+each helper's conversation size at its end.
+
+| Job | Model, effort | Minutes | Tokens | Tool calls | Result |
+|---|---|---|---|---|---|
