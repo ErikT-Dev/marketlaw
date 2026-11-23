@@ -139,11 +139,10 @@
   given:
     seats:
       - seat: 1
-        stats: {quality: 2, satisfaction: 2}
-        hand: [Pub]
+        stats: {quality: 2, satisfaction: 2, influence: 3}
   when:
     - {seat: 1, action: influence, trade: two_quality_to_satisfaction}
-    - {seat: 1, action: sell, cards: [Pub]}
+    - {seat: 1, action: influence, trade: draw_tier_1, kind: Residential}
     - {seat: 1, action: influence, trade: two_satisfaction_to_quality}
     - {seat: 1, action: undo}
     - {seat: 1, action: undo}
@@ -151,7 +150,7 @@
     rejected: cannot_undo
     seats:
       - seat: 1
-        stats: {quality: 0, satisfaction: 3, funds: 8}
+        stats: {quality: 0, satisfaction: 3, influence: 0}
 
 - name: rejects undo when there is nothing to undo
   covers: [R7.1]

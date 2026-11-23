@@ -4132,6 +4132,10 @@ file.
   card, so they stay one card short of the lower needs. The +1 influence makes the reward
   scenarios fail until item 5 builds R19.10.
 - **Final quest list (2026-11-23, owner):** after the first approval the owner asked for more: every type required at least once (6 new quests), sector requirements naming exactly one tier, type requirements in proportion to the card set (`docs/plan/card-type-counts.md`), and product and distribution as rare requirements equal to the quest's tier. The approved 51-quest list is `docs/plan/phase-29b-quest-list-final.md`; built as item 6b.
+- **Undo for selling (item 4, 2026-11-23):** the required scenario "nothing before an action
+  that cannot be undone can be undone" (R7.4) used selling as its action that cannot be undone,
+  which contradicts R7.2 now that selling can be undone. A `HARNESS:` commit keeps its name and
+  puts a tier 1 draw action (R7.3) in the place of the sale, with the influence it costs.
 - **Implemented:** `docs/plan/phase-29b-playthrough-fixes.md`, `docs/plan/README.md`,
   `docs/plan/phase-30-version-1-readiness.md`; on the branch `phase-29b-playthrough-fixes`:
   `harness/spec/game-rules.md`, `multiplayer.md`, `accounts.md`, `screens.md`, `tutorial.md`,
