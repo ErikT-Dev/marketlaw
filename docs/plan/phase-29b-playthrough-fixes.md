@@ -198,6 +198,8 @@ yourself away at the start.
 
 ## Waiting for the owner
 
+Answered by the owner on 2026-11-23: the quest list is approved as proposed, and the 14 required names below are approved (Q178). Items 6 and 20 no longer wait. Nothing else waits for the owner.
+
 - **Approve the new quest list (finding 10, Q176).** The proposed list is in
   `docs/plan/phase-29b-quest-list-proposal.md` and, on the branch, in `harness/spec/quests.txt`.
   It keeps every quest name, so no required scenario name changes. Item 6 waits for your answer;
@@ -534,3 +536,4 @@ each helper's conversation size at its end.
 |---|---|---|---|---|---|
 | Planner | Opus, medium | 20 | 343,427 | 123 | blocked (owner answers) |
 | Starter | Opus, medium | 3 | 97,090 | 23 | done |
+| Builder 1a | Opus, medium | 20 | 203,436 | 89 | done |

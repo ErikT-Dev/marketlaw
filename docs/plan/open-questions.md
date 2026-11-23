@@ -4112,6 +4112,7 @@ file.
     listed in the phase file under "Waiting for the owner".
   - The spec and harness changes are on the branch `phase-29b-playthrough-fixes`, not on master,
     as for 29a (Q169): on their own they turn the check red until 29b builds them.
+- **Owner answers (2026-11-23):** the proposed quest list (`docs/plan/phase-29b-quest-list-proposal.md`) and the 14 required names of the phase file's "Waiting for the owner" are approved. Item 52's colours are no longer the builder's choice: they follow the approved sketch `design/sketches/52-influence-actions/APPROVED.md` (limited actions green, unlimited purple, each bright when it can be taken now and dark when not, with a "1× per game" or "∞" badge).
 - **Implemented:** `docs/plan/phase-29b-playthrough-fixes.md`, `docs/plan/README.md`,
   `docs/plan/phase-30-version-1-readiness.md`; on the branch `phase-29b-playthrough-fixes`:
   `harness/spec/game-rules.md`, `multiplayer.md`, `accounts.md`, `screens.md`, `tutorial.md`,
