@@ -593,6 +593,7 @@ approval of the list, the quest scenarios that name quest contents.
     building R19.10 makes them pass. `e2e/quests.spec.ts`'s five-quest test needs no change
     (every quest there still has three parts).
 
+- [ ] 6b. **The final quest list** (R20.7, R20.8, finding 10, Q178). **Medium.** The owner replaced the approved list on 2026-11-23 with 51 quests: `docs/plan/phase-29b-quest-list-final.md` is the brief (the list, the owner's requirements and the format changes). Write the spec first (`HARNESS:` commit, R20.8: `N tier T <sector> cards` means exactly tier T and replaces the "tier 2 or 3" and "tier 3" forms; `N product` and `N distribution` become stat requirements), then `quests.txt`, the rule file check, the requirement code, the quest scenarios (new quests, the changed requirements; required names stay), the tutorial check T0.7 (its four quests are unchanged) and the screens and rulebook that show requirements. Run after item 5.
 - [ ] Finish. The finisher adds the new scenarios of "Required scenarios" (not the 8
   replacements, which item 20 adds) and I30 to `harness/required.yaml`, then follows
   `phase-helpers.md`.
@@ -609,3 +610,4 @@ each helper's conversation size at its end.
 | Builder 1a | Opus, medium | 20 | 203,436 | 89 | done |
 | Builder 1b | Opus, medium | 21 | 144,132 | 78 | done |
 | Builder 20 and 6 | Opus, medium | 18 | 163,483 | 67 | done |
+| Builder 2 | Opus, medium | – | – | – | done |

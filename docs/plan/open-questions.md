@@ -4131,6 +4131,7 @@ file.
   needs Factory town's gained type; "tier 1 cards do not count …" and "Penthouses needs …" drop a
   card, so they stay one card short of the lower needs. The +1 influence makes the reward
   scenarios fail until item 5 builds R19.10.
+- **Final quest list (2026-11-23, owner):** after the first approval the owner asked for more: every type required at least once (6 new quests), sector requirements naming exactly one tier, type requirements in proportion to the card set (`docs/plan/card-type-counts.md`), and product and distribution as rare requirements equal to the quest's tier. The approved 51-quest list is `docs/plan/phase-29b-quest-list-final.md`; built as item 6b.
 - **Implemented:** `docs/plan/phase-29b-playthrough-fixes.md`, `docs/plan/README.md`,
   `docs/plan/phase-30-version-1-readiness.md`; on the branch `phase-29b-playthrough-fixes`:
   `harness/spec/game-rules.md`, `multiplayer.md`, `accounts.md`, `screens.md`, `tutorial.md`,
