@@ -54,6 +54,14 @@ const BROKEN_QUEST_LINES = [
   ],
   ["Tier 1 | Working district | 3 Residental cards | +1 quality", 'unknown sector: "Residental"'],
   [
+    "Tier 1 | Working district | 3 tier 4 Residential cards | +1 quality",
+    'needs tier 1, 2 or 3: "4"',
+  ],
+  [
+    "Tier 1 | Working district | 3 tier 2 or 3 Residential cards | +1 quality",
+    'unknown sector: "or 3 Residential"',
+  ],
+  [
     "Tier 1 | Working district | 3 Residential cards, 1 Low Welth | +1 quality",
     'unknown type, stat or sector: "Low Welth"',
   ],

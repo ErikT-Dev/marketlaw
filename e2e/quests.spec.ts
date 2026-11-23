@@ -27,7 +27,7 @@ test("five quests with three-part requirements and four players can all be reach
       { quest: "Trading post" },
       { quest: "Market town" },
       { quest: "Shopping centre" },
-      { quest: "Public institutions" },
+      { quest: "Penthouses" },
       { quest: "Media city" },
     ],
     seats: [

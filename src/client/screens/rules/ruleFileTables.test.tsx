@@ -50,7 +50,9 @@ describe("rulebook tables from the rule files", () => {
     const tables = tablesOf("The quest list");
     expect(tables).toHaveLength(3);
     expect(tables.flatMap(({ rows }) => rows.map((row) => row[0]))).toEqual(
-      QUEST_LINES.map(({ name }) => [name]),
+      [1, 2, 3].flatMap((tier) =>
+        QUEST_LINES.filter((quest) => quest.tier === tier).map(({ name }) => [name]),
+      ),
     );
     expect(tables[0]?.rows[0]).toEqual([
       ["Working district"],
@@ -59,7 +61,7 @@ describe("rulebook tables from the rule files", () => {
     ]);
     expect(tables[1]?.rows[6]).toEqual([
       ["Market town"],
-      ["2 ", { type: "Town Housing" }, ", 2 ", { type: "Retail" }, " and 1 ", { type: "Food" }],
+      ["2 ", { type: "Town Housing" }, ", 2 ", { type: "Retail" }, " and 1 ", { type: "Sea" }],
       ["gain 1 ", { type: "Alcohol" }, ", draw 1 card"],
     ]);
   });

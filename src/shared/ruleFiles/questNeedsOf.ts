@@ -1,8 +1,8 @@
 import * as v from "valibot";
 import type { QuestNeed } from "../catalogue/QuestNeed";
+import { QuestStat } from "../catalogue/QuestStat";
 import { Sector } from "../catalogue/Sector";
-import type { Tier } from "../catalogue/Tier";
-import { ProjectName } from "../ProjectName";
+import { Tier } from "../catalogue/Tier";
 import type { Result } from "../Result";
 import type { RuleFileProblem } from "./RuleFileProblem";
 import { typeNameOfWords } from "./typeNameOfWords";
@@ -12,11 +12,10 @@ type NeedsResult = Result<ReadonlyArray<QuestNeed>, RuleFileProblem>;
 
 const INCOME = /^income (\S+)$/;
 const COUNTED = /^(\S+) (.+)$/;
-const SECTOR_CARDS = /^(tier 2 or 3 |tier 3 )?(.+) cards?$/;
+const SECTOR_CARDS = /^(?:tier (\d+) )?(.+) cards?$/;
 const EACH_SECTOR = /^cards? of each sector$/;
 const SECTORS_WITH_TIER_3 = /^sectors? with a tier 3 card$/;
 const COMPLETED_PROJECTS = /^completed projects?$/;
-const LOWEST_TIER_OF_WORDS: Readonly<Record<string, Tier>> = { "tier 2 or 3 ": 2, "tier 3 ": 3 };
 
 function needs(...list: ReadonlyArray<QuestNeed>): NeedsResult {
   return { isOk: true, value: list };
@@ -29,8 +28,15 @@ function sectorCardsNeed(words: string, count: number, line: number): NeedsResul
     const word = match === null ? words : sectorWords;
     return { isOk: false, error: { line, word, message: "unknown sector" } };
   }
-  const lowestTier = LOWEST_TIER_OF_WORDS[match[1] ?? ""] ?? 1;
-  return needs({ kind: "cards", sector: sectorWords, lowestTier, count });
+  const tierWord = match[1];
+  if (tierWord === undefined) {
+    return needs({ kind: "cards", sector: sectorWords, tier: "any", count });
+  }
+  const tier = Number(tierWord);
+  if (!v.is(Tier, tier)) {
+    return { isOk: false, error: { line, word: tierWord, message: "needs tier 1, 2 or 3" } };
+  }
+  return needs({ kind: "cards", sector: sectorWords, tier, count });
 }
 
 function countedNeeds(words: string, count: number, line: number): NeedsResult {
@@ -39,7 +45,7 @@ function countedNeeds(words: string, count: number, line: number): NeedsResult {
       ...Sector.options.map((sector) => ({
         kind: "cards" as const,
         sector,
-        lowestTier: 1 as const,
+        tier: "any" as const,
         count,
       })),
     );
@@ -50,7 +56,7 @@ function countedNeeds(words: string, count: number, line: number): NeedsResult {
   if (COMPLETED_PROJECTS.test(words)) {
     return needs({ kind: "projects", count });
   }
-  if (v.is(ProjectName, words)) {
+  if (v.is(QuestStat, words)) {
     return needs({ kind: "stat", stat: words, count });
   }
   if (SECTOR_CARDS.test(words)) {

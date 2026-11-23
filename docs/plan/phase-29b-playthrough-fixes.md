@@ -660,7 +660,24 @@ approval of the list, the quest scenarios that name quest contents.
     building R19.10 makes them pass. `e2e/quests.spec.ts`'s five-quest test needs no change
     (every quest there still has three parts).
 
-- [ ] 6b. **The final quest list** (R20.7, R20.8, finding 10, Q178). **Medium.** The owner replaced the approved list on 2026-11-23 with 51 quests: `docs/plan/phase-29b-quest-list-final.md` is the brief (the list, the owner's requirements and the format changes). Write the spec first (`HARNESS:` commit, R20.8: `N tier T <sector> cards` means exactly tier T and replaces the "tier 2 or 3" and "tier 3" forms; `N product` and `N distribution` become stat requirements), then `quests.txt`, the rule file check, the requirement code, the quest scenarios (new quests, the changed requirements; required names stay), the tutorial check T0.7 (its four quests are unchanged) and the screens and rulebook that show requirements. Run after item 5.
+- [x] 6b. **The final quest list** (R20.7, R20.8, finding 10, Q178). **Medium.** The owner replaced the approved list on 2026-11-23 with 51 quests: `docs/plan/phase-29b-quest-list-final.md` is the brief (the list, the owner's requirements and the format changes). Write the spec first (`HARNESS:` commit, R20.8: `N tier T <sector> cards` means exactly tier T and replaces the "tier 2 or 3" and "tier 3" forms; `N product` and `N distribution` become stat requirements), then `quests.txt`, the rule file check, the requirement code, the quest scenarios (new quests, the changed requirements; required names stay), the tutorial check T0.7 (its four quests are unchanged) and the screens and rulebook that show requirements. Run after item 5.
+  - **Done (2026-11-23).** `quests.txt` holds the 51 quests in the owner's order (the 6 new
+    ones last). `QuestNeed`'s `cards` kind has `tier: Tier | "any"` (was `lowestTier`) and
+    `questNeedHave` counts exactly that tier; the `stat` kind reads `QuestStat` (workforce,
+    quality, satisfaction, product, distribution). `questNeedsOf` reads `tier T` and rejects a
+    tier outside 1 to 3; `questNeedLabel` writes "tier 2 Residential cards". Every `quests`
+    scenario passes (87), and `undo`'s draw-reward one; T0.7's check is unchanged and passes.
+  - **Differs from the phase file.** The rulebook's quest tables are per tier, so
+    `ruleFileTables.test.tsx` expects the file's quests grouped by tier (the new tier 1 quests
+    come after Supply chain there). `e2e/quests.spec.ts`'s five-quest test uses Penthouses in
+    place of Public institutions, which now has two parts; not run locally.
+    `harness.test.ts` counts 545 scenarios.
+  - **For later items.** A quest requirement can now be `product` or `distribution`: screens
+    showing need icons get them from `STAT_ICONS` (items 9, 13). Still failing in `npm run check`,
+    the same as after item 5 and none of them 6b's: required scenarios of items 7 (five
+    `end-of-game`, three `records-and-ratings`) and 16 (tutorial start's `build_passes`); unit
+    tests of items 9 (`reportBudgets` B19), 18 (`parseRulebook`, two) and 19 (`influenceAndUndo`,
+    `ruleFileTables`, two).
 - [ ] Finish. The finisher adds the new scenarios of "Required scenarios" (not the 8
   replacements, which item 20 adds) and I30 to `harness/required.yaml`, then follows
   `phase-helpers.md`.

@@ -121,8 +121,8 @@ describe("quests panel", () => {
       },
     ]);
     const card = screen.getByRole("region", { name: "Penthouses" });
-    const need = within(card).getByRole("img", { name: "3 tier 2 or 3 Residential cards" });
-    expect(need.textContent).toBe("3tier 2 or 3 Residential cards");
+    const need = within(card).getByRole("img", { name: "2 tier 3 Residential cards" });
+    expect(need.textContent).toBe("2tier 3 Residential cards");
     expect(within(need).getByText("Residential").style.color).toBe(
       "var(--color-sector-residential-light)",
     );
