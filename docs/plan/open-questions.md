@@ -4122,6 +4122,15 @@ file.
   (T4.3); invariant I10 is renamed and now states the lower bound the code checks (covers R14.1
   and R14.2). The 8 old scenarios are deleted and their replacements take their places on
   `harness/required.yaml`; `harness.test.ts` counts 537 scenarios.
+- **Quest list (item 6, 2026-11-23):** `quests.txt` already held the approved list word for
+  word, so it is unchanged. A `HARNESS:` commit makes `quests.yaml` follow it: every
+  "completing … gives its reward" scenario expects the new reward and the +1 influence of a first
+  completion (R19.10), with its gained type and only the random sectors its draws ask for; Safe
+  streets' city gets a Utility card (Landfill) for its new need; "a type gained from one quest
+  helps complete another" now starts with 2 Light Industry, so Industrial zone (3 Light Industry)
+  needs Factory town's gained type; "tier 1 cards do not count …" and "Penthouses needs …" drop a
+  card, so they stay one card short of the lower needs. The +1 influence makes the reward
+  scenarios fail until item 5 builds R19.10.
 - **Implemented:** `docs/plan/phase-29b-playthrough-fixes.md`, `docs/plan/README.md`,
   `docs/plan/phase-30-version-1-readiness.md`; on the branch `phase-29b-playthrough-fixes`:
   `harness/spec/game-rules.md`, `multiplayer.md`, `accounts.md`, `screens.md`, `tutorial.md`,

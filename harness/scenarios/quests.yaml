@@ -259,16 +259,16 @@
     quests: [{quest: Factory town}, {quest: Industrial zone}]
     seats:
       - seat: 1
-        city: [Row House, Small Apartment, Semi-detached, Winery, Leather Industry, Printing House]
+        city: [Row House, Small Apartment, Semi-detached, Winery, Leather Industry]
   when:
     - {seat: 1, action: complete_quest, quest: Factory town}
     - {seat: 1, action: complete_quest, quest: Industrial zone}
   then:
     seats:
       - seat: 1
-        gained_types: {Light Industry: 1}
-        type_counts: {Light Industry: 4, Raw Material: 2, Town Housing: 3}
-        stats: {funds: 12, quality: 2}
+        gained_types: {Light Industry: 1, Petroleum: 1}
+        type_counts: {Light Industry: 3, Raw Material: 2, Town Housing: 3}
+        stats: {funds: 9, quality: 1, influence: 2}
         quests_completed: [Factory town, Industrial zone]
 
 - name: completing Working district gives its reward
@@ -284,7 +284,7 @@
   then:
     seats:
       - seat: 1
-        stats: {quality: 1, influence: 1}
+        stats: {quality: 1, influence: 2}
         quests_completed: [Working district]
 
 - name: completing Farming industry gives its reward
@@ -300,7 +300,8 @@
   then:
     seats:
       - seat: 1
-        stats: {workforce: 1}
+        stats: {influence: 1}
+        gained_types: {Grain: 1}
         quests_completed: [Farming industry]
 
 - name: completing Local services gives its reward
@@ -316,7 +317,7 @@
   then:
     seats:
       - seat: 1
-        stats: {satisfaction: 1}
+        stats: {satisfaction: 1, influence: 1}
         quests_completed: [Local services]
 
 - name: completing Green city gives its reward
@@ -332,7 +333,7 @@
   then:
     seats:
       - seat: 1
-        stats: {funds: 9}
+        stats: {funds: 9, influence: 1}
         quests_completed: [Green city]
 
 - name: completing Countryside gives its reward
@@ -348,7 +349,8 @@
   then:
     seats:
       - seat: 1
-        gained_types: {Suburban Housing: 1}
+        stats: {influence: 1}
+        gained_types: {Forestry: 1}
         quests_completed: [Countryside]
 
 - name: completing Farmland gives its reward
@@ -364,6 +366,7 @@
   then:
     seats:
       - seat: 1
+        stats: {influence: 1}
         gained_types: {Farm: 1}
         quests_completed: [Farmland]
 
@@ -380,7 +383,7 @@
   then:
     seats:
       - seat: 1
-        stats: {funds: 8}
+        stats: {funds: 8, influence: 1}
         gained_types: {Sea: 1}
         quests_completed: [Fishing village]
 
@@ -397,6 +400,7 @@
   then:
     seats:
       - seat: 1
+        stats: {influence: 1}
         gained_types: {Health: 1}
         quests_completed: [Sports town]
 
@@ -413,7 +417,8 @@
   then:
     seats:
       - seat: 1
-        stats: {funds: 8, satisfaction: 1}
+        stats: {funds: 8, influence: 1}
+        gained_types: {Mercantile: 1}
         quests_completed: [High street]
 
 - name: completing Mining town gives its reward
@@ -429,6 +434,7 @@
   then:
     seats:
       - seat: 1
+        stats: {influence: 1}
         gained_types: {Mine: 1}
         quests_completed: [Mining town]
 
@@ -446,7 +452,7 @@
   then:
     seats:
       - seat: 1
-        stats: {funds: 8, influence: 2}
+        stats: {funds: 8, influence: 3}
         quests_completed: [Workers' housing]
 
 - name: completing Tidy streets gives its reward
@@ -463,7 +469,7 @@
   then:
     seats:
       - seat: 1
-        stats: {workforce: 1}
+        stats: {workforce: 1, influence: 1}
         quests_completed: [Tidy streets]
 
 - name: completing Healthy town gives its reward
@@ -480,7 +486,7 @@
   then:
     seats:
       - seat: 1
-        stats: {workforce: 1}
+        stats: {workforce: 1, influence: 1}
         quests_completed: [Healthy town]
 
 - name: completing Trading post gives its reward
@@ -497,7 +503,7 @@
   then:
     seats:
       - seat: 1
-        stats: {funds: 8, influence: 2}
+        stats: {funds: 8, influence: 3}
         quests_completed: [Trading post]
 
 - name: completing Supply chain gives its reward
@@ -515,6 +521,7 @@
   then:
     seats:
       - seat: 1
+        stats: {influence: 1}
         hand: [Idyllic View Condominium]
         quests_completed: [Supply chain]
 
@@ -531,7 +538,8 @@
   then:
     seats:
       - seat: 1
-        stats: {quality: 3}
+        stats: {quality: 1, influence: 1}
+        gained_types: {Town Housing: 1}
         quests_completed: [Growing suburbs]
 
 - name: completing Upmarket homes gives its reward
@@ -547,7 +555,8 @@
   then:
     seats:
       - seat: 1
-        stats: {satisfaction: 3}
+        stats: {satisfaction: 1, influence: 1}
+        gained_types: {Luxury: 1}
         quests_completed: [Upmarket homes]
 
 - name: completing Modern industry gives its reward
@@ -563,7 +572,8 @@
   then:
     seats:
       - seat: 1
-        stats: {workforce: 3}
+        stats: {workforce: 1, influence: 1}
+        gained_types: {Power Plant: 1}
         quests_completed: [Modern industry]
 
 - name: completing Service economy gives its reward
@@ -579,7 +589,8 @@
   then:
     seats:
       - seat: 1
-        stats: {satisfaction: 3}
+        stats: {satisfaction: 1, influence: 1}
+        gained_types: {Service: 1}
         quests_completed: [Service economy]
 
 - name: completing Culture hub gives its reward
@@ -595,8 +606,8 @@
   then:
     seats:
       - seat: 1
-        stats: {influence: 4}
-        gained_types: {Culture: 1}
+        stats: {influence: 3}
+        gained_types: {Education: 1}
         quests_completed: [Culture hub]
 
 - name: completing Factory town gives its reward
@@ -612,7 +623,7 @@
   then:
     seats:
       - seat: 1
-        stats: {quality: 2}
+        stats: {quality: 1, influence: 1}
         gained_types: {Light Industry: 1}
         quests_completed: [Factory town]
 
@@ -624,14 +635,15 @@
     seats:
       - seat: 1
         city: [Row House, Small Apartment, Liquor Shop, Apparel Store, Orchard, Slaughterhouse]
-    random: [{sector: Residential}, {sector: Industry}]
+    random: [{sector: Residential}]
   when:
     - {seat: 1, action: complete_quest, quest: Market town}
   then:
     seats:
       - seat: 1
-        gained_types: {Retail: 1}
-        hand: [Idyllic View Condominium, Hydroelectricity Dam]
+        stats: {influence: 1}
+        gained_types: {Alcohol: 1}
+        hand: [Idyllic View Condominium]
         quests_completed: [Market town]
 
 - name: completing Industrial zone gives its reward
@@ -647,7 +659,8 @@
   then:
     seats:
       - seat: 1
-        stats: {funds: 12}
+        stats: {funds: 9, influence: 1}
+        gained_types: {Petroleum: 1}
         quests_completed: [Industrial zone]
 
 - name: completing Shopping centre gives its reward
@@ -663,7 +676,8 @@
   then:
     seats:
       - seat: 1
-        stats: {satisfaction: 4, funds: 8}
+        stats: {satisfaction: 1, influence: 1}
+        gained_types: {Retail: 1}
         quests_completed: [Shopping centre]
 
 - name: completing Leisure park gives its reward
@@ -679,7 +693,7 @@
   then:
     seats:
       - seat: 1
-        stats: {funds: 11}
+        stats: {funds: 9, influence: 1}
         gained_types: {Beautification: 1}
         quests_completed: [Leisure park]
 
@@ -696,7 +710,7 @@
   then:
     seats:
       - seat: 1
-        stats: {satisfaction: 3}
+        stats: {satisfaction: 1, influence: 1}
         gained_types: {Culture: 1}
         quests_completed: [Culture district]
 
@@ -707,14 +721,15 @@
     quests: [{quest: Safe streets}]
     seats:
       - seat: 1
-        city: [Fire Station, Police Station, Green Park, Avenue]
+        city: [Fire Station, Police Station, Landfill]
         stats: {quality: 4}
   when:
     - {seat: 1, action: complete_quest, quest: Safe streets}
   then:
     seats:
       - seat: 1
-        stats: {workforce: 3}
+        stats: {workforce: 1, influence: 1}
+        gained_types: {Safety: 1}
         quests_completed: [Safe streets]
 
 - name: completing Happy residents gives its reward
@@ -731,7 +746,8 @@
   then:
     seats:
       - seat: 1
-        stats: {workforce: 2, quality: 1}
+        stats: {workforce: 1, influence: 1}
+        gained_types: {Leisure: 1}
         quests_completed: [Happy residents]
 
 - name: completing Civic pride gives its reward
@@ -748,7 +764,8 @@
   then:
     seats:
       - seat: 1
-        stats: {funds: 9, influence: 4}
+        stats: {influence: 4}
+        gained_types: {Utility: 1}
         quests_completed: [Civic pride]
 
 - name: completing Service boom gives its reward
@@ -760,13 +777,15 @@
       - seat: 1
         city: [Pub, Cafe, Gym, Liquor Shop, Apparel Store]
         stats: {income: 10}
-    random: [{sector: Residential}, {sector: Industry}, {sector: Service}]
+    random: [{sector: Residential}, {sector: Industry}]
   when:
     - {seat: 1, action: complete_quest, quest: Service boom}
   then:
     seats:
       - seat: 1
-        hand: [Idyllic View Condominium, Hydroelectricity Dam, Television Studio]
+        stats: {influence: 1}
+        gained_types: {Rental Space: 1}
+        hand: [Idyllic View Condominium, Hydroelectricity Dam]
         quests_completed: [Service boom]
 
 - name: completing Penthouses gives its reward
@@ -782,7 +801,8 @@
   then:
     seats:
       - seat: 1
-        stats: {quality: 6}
+        stats: {quality: 3, influence: 1}
+        gained_types: {City Housing: 1}
         quests_completed: [Penthouses]
 
 - name: completing Heavy industry gives its reward
@@ -798,7 +818,8 @@
   then:
     seats:
       - seat: 1
-        stats: {workforce: 5}
+        stats: {workforce: 2, influence: 1}
+        gained_types: {Raw Material: 1}
         quests_completed: [Heavy industry]
 
 - name: completing Office district gives its reward
@@ -814,7 +835,8 @@
   then:
     seats:
       - seat: 1
-        stats: {satisfaction: 6}
+        stats: {satisfaction: 3, influence: 1}
+        gained_types: {Office: 1}
         quests_completed: [Office district]
 
 - name: completing Public institutions gives its reward
@@ -830,7 +852,8 @@
   then:
     seats:
       - seat: 1
-        stats: {influence: 6, quality: 4}
+        stats: {quality: 2, influence: 4}
+        gained_types: {Safety: 1}
         quests_completed: [Public institutions]
 
 - name: completing City living gives its reward
@@ -846,8 +869,8 @@
   then:
     seats:
       - seat: 1
-        stats: {quality: 5}
-        gained_types: {City Housing: 1}
+        stats: {quality: 3, influence: 1}
+        gained_types: {Rental Space: 1}
         quests_completed: [City living]
 
 - name: completing Tech campus gives its reward
@@ -859,14 +882,15 @@
       - seat: 1
         city: [Smart City Development, Solar Energy, Library, Elementary School]
         gained_types: {High Tech: 1}
-    random: [{sector: Residential}, {sector: Industry}, {sector: Service}]
+    random: [{sector: Residential}, {sector: Industry}]
   when:
     - {seat: 1, action: complete_quest, quest: Tech campus}
   then:
     seats:
       - seat: 1
+        stats: {influence: 1}
         gained_types: {High Tech: 2}
-        hand: [Idyllic View Condominium, Hydroelectricity Dam, Television Studio]
+        hand: [Idyllic View Condominium, Hydroelectricity Dam]
         quests_completed: [Tech campus]
 
 - name: completing Commuter city gives its reward
@@ -882,7 +906,7 @@
   then:
     seats:
       - seat: 1
-        stats: {quality: 5}
+        stats: {quality: 2, influence: 1}
         gained_types: {Mass Transit: 1}
         quests_completed: [Commuter city]
 
@@ -900,7 +924,8 @@
   then:
     seats:
       - seat: 1
-        stats: {funds: 14, influence: 5}
+        stats: {funds: 11, influence: 3}
+        gained_types: {Finance: 2}
         quests_completed: [Business district]
 
 - name: completing Media city gives its reward
@@ -916,7 +941,7 @@
   then:
     seats:
       - seat: 1
-        stats: {satisfaction: 5}
+        stats: {satisfaction: 3, influence: 1}
         gained_types: {Mass Media: 1}
         quests_completed: [Media city]
 
@@ -928,13 +953,15 @@
     seats:
       - seat: 1
         city: [Smart City Development, Solar Energy, Home Appliances Factory, Steelworks]
-    random: [{sector: Residential}, {sector: Industry}, {sector: Service}, {sector: Public}]
+    random: [{sector: Residential}, {sector: Industry}]
   when:
     - {seat: 1, action: complete_quest, quest: Tech industry}
   then:
     seats:
       - seat: 1
-        hand: [Idyllic View Condominium, Hydroelectricity Dam, Television Studio, City Hall]
+        stats: {influence: 1}
+        gained_types: {Heavy Industry: 1}
+        hand: [Idyllic View Condominium, Hydroelectricity Dam]
         quests_completed: [Tech industry]
 
 - name: completing Metropolis gives its reward
@@ -945,13 +972,15 @@
     seats:
       - seat: 1
         city: [Garden Skyscraper, Nuclear Power Plant, Casino, City Hall]
-    random: [{sector: Residential}, {sector: Industry}, {sector: Service}]
+    random: [{sector: Residential}, {sector: Industry}]
   when:
     - {seat: 1, action: complete_quest, quest: Metropolis}
   then:
     seats:
       - seat: 1
-        hand: [Idyllic View Condominium, Hydroelectricity Dam, Television Studio]
+        stats: {influence: 1}
+        gained_types: {Utility: 1}
+        hand: [Idyllic View Condominium, Hydroelectricity Dam]
         quests_completed: [Metropolis]
 
 - name: completing Balanced city gives its reward
@@ -962,14 +991,13 @@
     seats:
       - seat: 1
         city: [Farm House, Cottage, Log House, Small Home, Orchard, Metal Mining, Winery, Stone Quarry, Liquor Shop, Dentist, Pub, Cafe, Bus Depot, Public Parking Lot, Fire Station, Clinic]
-    random: [{sector: Residential}, {sector: Industry}]
   when:
     - {seat: 1, action: complete_quest, quest: Balanced city}
   then:
     seats:
       - seat: 1
-        stats: {funds: 12}
-        hand: [Idyllic View Condominium, Hydroelectricity Dam]
+        stats: {funds: 10, influence: 1}
+        gained_types: {Sea: 1}
         quests_completed: [Balanced city]
 
 - name: completing Cultural capital gives its reward
@@ -986,7 +1014,8 @@
   then:
     seats:
       - seat: 1
-        stats: {workforce: 6}
+        stats: {workforce: 3, influence: 1}
+        gained_types: {Mass Media: 1}
         quests_completed: [Cultural capital]
 
 - name: completing Civic leader gives its reward
@@ -1003,7 +1032,8 @@
   then:
     seats:
       - seat: 1
-        stats: {quality: 4, satisfaction: 4}
+        stats: {quality: 2, satisfaction: 2, influence: 1}
+        gained_types: {Health: 1}
         quests_completed: [Civic leader]
 
 - name: completing High-tech economy gives its reward
@@ -1015,13 +1045,15 @@
       - seat: 1
         city: [Smart City Development, Solar Energy, Software Industry, AI and Data Analytics Industry, Publisher]
         stats: {income: 15}
-    random: [{sector: Residential}, {sector: Industry}, {sector: Service}, {sector: Public}, {sector: Residential}]
+    random: [{sector: Residential}, {sector: Industry}, {sector: Service}]
   when:
     - {seat: 1, action: complete_quest, quest: High-tech economy}
   then:
     seats:
       - seat: 1
-        hand: [Idyllic View Condominium, Hydroelectricity Dam, Television Studio, City Hall, Art Deco Skyrise]
+        stats: {influence: 1}
+        gained_types: {Mercantile: 1}
+        hand: [Idyllic View Condominium, Hydroelectricity Dam, Television Studio]
         quests_completed: [High-tech economy]
 
 - name: tier 1 cards do not count for a tier 2 or 3 card requirement
@@ -1031,7 +1063,7 @@
     quests: [{quest: Upmarket homes}]
     seats:
       - seat: 1
-        city: [Dorm, Brownstone, Garden Apartment, Designer Home]
+        city: [Dorm, Garden Apartment, Designer Home]
   when:
     - {seat: 1, action: complete_quest, quest: Upmarket homes}
   then:
@@ -1045,7 +1077,7 @@
     quests: [{quest: Penthouses}]
     seats:
       - seat: 1
-        city: [Dorm, Loft, Luxury Apartment, Garden Skyscraper]
+        city: [Dorm, Loft, Luxury Apartment]
   when:
     - {seat: 1, action: complete_quest, quest: Penthouses}
   then:
