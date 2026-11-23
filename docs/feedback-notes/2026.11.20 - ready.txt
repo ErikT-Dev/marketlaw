@@ -1,0 +1,40 @@
+1. I added picture arts for the projects at D:\03. Code\MarketLaw\design\assets\projects. Implement them such that when the projects window is opened each project is shown with the appropriate picture.
+2. I added logo icons at D:\03. Code\MarketLaw\design\assets\logo. Can we use it so it shows on the browser tabs.
+3. Add a single "?" next to the player stats where 'Q', 'T' etc are shown. Hovering over it should show an explanation as to what those 4 letters mean and what they show.
+4. Rule change: remove the stat named 'bonus' from the game. The original idea of bonus was that the game was meant as a board game where counting decimals or double digit numbers would have been too tiresome. Instead of players gaining bonus, keep the same system in terms of how much funds are gained, but bonus should instead just be decimal points of funds. So if a player gains 5 funds and 3 bonus instead they should just gain 5.3 of funds. This should just act primarely as a visual redesign of the game - gameplay itself - i.e. the income as well as the costs of everything should not be affected by this change.
+5. The displayed card's background color should be the same for the title bar as it is for the stats bar. Make it more transparent. Also add a slight black brder to the displayed card's image.
+6. Rule change - completing all 3 projects should not grant any extra reward. Otherwise this forces players to always complete all 3 projects in a row and decreases gameplay variety. 
+7. The played combos display should not show card names that granted you each combo. Only the requirements and rewards are needed.
+8. Fixes in tutorial: The tutorial text that appears is too far separated from the stats display and actions display that it highlights so players are not finding the right place in the screen they need to look at to continue the tutorial.
+9. The display card should also show a 'Sell' button so that you can quickly sell a card from your hand.
+10. Quests rework (confirm list with me before): more type rewards (but reduced stat rewards) in tier 2 and 3 quests. Try to make sure all types are more evenly represented in the quest requirements and rewards. Make tier 2 and tier quests slightly simpler to complete and give slightly smaller rewards.
+11. Quests need to stay on the board for 1 extra turn after a player completes them to allow other players to complete them, unless it's the final turn when that quest would still be on the board. The new quest will arrive to replace it when it is removed from the board.  To reward completing quests early: add a bonus reward of +1 influence to anyone who is among the first to complete any quest.
+12. Tier 1 quests should stay 6 turns, tier 2 5 turns, tier 3 4 turns.
+13. In the displayed card add + signs in front of all stats that give you and a minus sign in fron of stats that are negative.
+14. See design - try adding a small image of the card to each hand, city and marketplace card, positioned on the rightmost part of the card. The image should be low resolution and we should ensure the game doesn't become laggy from this. The way I would design this is imagine a diagonal line at some angle drawn through the card - one half would stay the card's name and the other half would be the picture. The picture would be roughly 20% of the card. All cards of same type (hand, market or city) needs to always be one fixed card size (including the card name and the image) with text for long card names made smaller. Also make all card have a 80% opacity background color instead of 100%.
+15. Quests should have a large number that shows how many more turns they are available with corresponding clour (Blue for max time left, yellow / green in middle, red for 1 turn left.
+16. Your time left on the market phase should be a big red countdown shown in the same area where market cards are so youc an easily see it while looking at market cards. Highlight something when only 5 seconds remain.
+17. Add the player's own summary table above the opponent's summary tables. There should only be shown the player's own Q, T, C and F. The idea is to make it easyer to compare your own state with your opponents so the comparison stats are in same area of the screen. Rest of stats board stays where it is.
+18. If a project is completable highlight the projects button. 
+19. Cards in hand should be sorted by sector (Residential then Industry, Serivce and Public)  and tier (lower tier first).
+20. Check if not implemented - on the displayed card, for card name combos, currently we show just the number of the required card's ID. When hovering over the number a text box should appear showing the required card's name.
+21. Bug: after I gained a type from completing a quest, the summary table of my most played types didn't acount for the gained type. My opponent's still saw my type count as it was before gaining the extra type from the quest, though it did update for me.
+22. Player icons: players can pick their own icon from the animal pictures I've added to D:\03. Code\MarketLaw\design\assets\playericons, and choose its background colour and picture colour. Uploading your own picture isn't possible. The pictures' artists are credited on the site. All players (existing and new) will get a random icon with random colours chosen as their default player icon, but they're able to change that from account settings.
+23. The end game or high score stats should also show the T, Q, F, C stats.
+24. Selling needs to be able to be undone.
+25. Use F for tie breaks instead of who completed first.
+26. Rule change - game ends when any player has 20 income and has completed 3 projects.
+27. Catch up mechaninc based on the F stat (total funds they have earned throughout game): at the start of each turn for every player - they gain 1 additional fund for every 10 F that they are behind both opponents.
+28. Game score update: remove the turns component and add a game score calculation explanation to the end game screen so players understand what contributed to their score.
+29. Dim cards in hand that you can't play.
+30. The claim combos button should become highlighted when there's combos to claim.
+31. I general make all buttons have at most 90% opacity background (currently 100% for most).
+32. Bug - when i start the game I see myself as 'away' (yellow).
+33. In market cards - show turns remaining on each card.
+34. In influence button also show how much influence you have.
+45. In displayed cards combos that require a specific card - when overing over the combo show the requred card's name.
+46. At the beginng of the turn show income gained by all players that gained income last turn.
+47. If displayed card is a hadn card then its combos should show which combos would be completed when the card would be played. For infite combos it should show the number of times it would be completed.
+48. Rule change - first to complete a project should not gain a reward.
+49. Rule change - palyers should start with 1 free extra build pass. 
+50. Rule change - quests that require a specific income can only appear once at least one of the players has that much income minus two. Quests that require completing a project can appear when at least one player has 8 income.
