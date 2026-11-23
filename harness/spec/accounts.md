@@ -139,7 +139,9 @@ None.
 - **A2.5** **Player icon:** every account, guest or registered, has an icon: a **picture** on a
   **background colour**, drawn in a **picture colour**. The pictures are exactly the SVG files of
   the folder `player-icons/` in the repository (animals from game-icons.net, CC BY 3.0, with the
-  folder's licence file); no other list of them exists, and players cannot upload pictures. The
+  folder's licence file); no other list of them is kept by hand (the code's list is written from
+  the folder by the harness check, Q180), and players cannot upload pictures. A picture is named
+  by its artist folder and file name (`delapouite/bat` for `delapouite/bat.svg`). The
   two colours are any colours (`#rrggbb`) whose contrast with each other is at least 3:1 (WCAG's
   contrast for graphics). A new account gets a random picture and random colours that pass the
   contrast check, and so does every account made before player icons had pictures. The view of
