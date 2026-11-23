@@ -27,7 +27,7 @@ function threePlayerGame(turn: number): GameState {
     seats: state.seats.map((seat) => ({
       ...seat,
       hand: ["Liquor Shop"],
-      stats: { ...STARTING_STATS, funds: 9, workforce: 1, quality: 1, product: 1 },
+      stats: { ...STARTING_STATS, funds: 90, workforce: 1, quality: 1, product: 1 },
     })),
   });
 }

@@ -8,6 +8,7 @@ import { isRecord } from "../../harness-check/isRecord.ts";
 import { absentLogItems } from "./absentLogItems.ts";
 import { gameLogOf } from "./gameLogOf.ts";
 import { matchingLogEntries } from "./matchingLogEntries.ts";
+import { statsWritten } from "./statsWritten.ts";
 
 const SEAT_NUMBERS: ReadonlyArray<SeatNumber> = [1, 2, 3, 4];
 
@@ -57,7 +58,7 @@ export function viewThen(
       ? {}
       : {
           of_seat: ofSeat.seat,
-          stats: ofSeat.stats,
+          stats: statsWritten(ofSeat.stats),
           hand: ofSeat.kind === "own" ? ofSeat.hand : undefined,
           hand_count: ofSeat.kind === "own" ? ofSeat.hand.length : ofSeat.handCount,
           known_in_hand: ofSeat.kind === "own" ? undefined : ofSeat.knownInHand,

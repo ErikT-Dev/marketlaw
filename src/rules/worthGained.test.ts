@@ -45,7 +45,7 @@ describe("total worth gained", () => {
     const fundsReceived = (after?.stats.funds ?? 0) - (before?.stats.funds ?? 0);
     expect(ended.state.turn).toBe(2);
     expect(fundsReceived).toBeGreaterThan(0);
-    expect(after?.worthGained).toBe(14 + fundsReceived);
+    expect(after?.worthGained).toBe(140 + fundsReceived);
   });
 
   it("shows another player's total worth gained as at the start of their main phase", () => {
@@ -54,7 +54,7 @@ describe("total worth gained", () => {
     ]);
     const ownView = viewFor(traded.state, 1).seats.find(({ seat }) => seat === 1);
     const otherView = viewFor(traded.state, 2).seats.find(({ seat }) => seat === 1);
-    expect(ownView?.worthGained).toBe(16);
-    expect(otherView?.worthGained).toBe(14);
+    expect(ownView?.worthGained).toBe(160);
+    expect(otherView?.worthGained).toBe(140);
   });
 });

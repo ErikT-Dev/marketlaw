@@ -17,7 +17,6 @@ const STATS = {
   satisfaction: 4,
   product: 2,
   distribution: 1,
-  bonus: 8,
 };
 const SEAT_COMMON = {
   stats: STATS,

@@ -9,5 +9,4 @@ export const STAT_KEYS: ReadonlyArray<keyof Stats> = [
   "satisfaction",
   "product",
   "distribution",
-  "bonus",
 ];

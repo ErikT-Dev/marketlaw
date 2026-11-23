@@ -42,7 +42,6 @@ describe("your stats panel", () => {
       "Satisfaction 4",
       "Product 2",
       "Distribution 1",
-      "Bonus 8",
       "Build passes 2",
       "Influence 3",
     ]);

@@ -15,7 +15,6 @@ const STATS: Stats = {
   satisfaction: 4,
   product: 2,
   distribution: 1,
-  bonus: 8,
 };
 
 function pageWithIncome(income: number) {

@@ -1,28 +1,22 @@
-import { BONUS_PER_FUND } from "./BONUS_PER_FUND";
+import { fundsInTenths } from "../shared/fundsInTenths";
 import type { SeatState } from "./SeatState";
+import { statsGainOf } from "./statsGainOf";
 
 export function endOfTurnSteps(seat: SeatState): SeatState {
   if (seat.departure !== null) {
     return seat;
   }
   const { stats } = seat;
-  const bonus =
-    stats.bonus +
-    stats.workforce +
-    stats.quality +
-    stats.satisfaction +
-    4 * stats.product +
-    3 * stats.distribution;
-  const bonusFunds = bonus > 0 ? Math.floor(bonus / BONUS_PER_FUND) : 0;
+  const income = fundsInTenths(stats.income);
+  const statsGain = statsGainOf(stats);
   return {
     ...seat,
     stats: {
       ...stats,
       influence: stats.influence + 1,
-      funds: stats.funds + stats.income + bonusFunds,
-      bonus: bonus - bonusFunds * BONUS_PER_FUND,
+      funds: Math.max(0, stats.funds + income + statsGain),
     },
     hasPlayedThisTurn: false,
-    worthGained: seat.worthGained + stats.income + bonusFunds,
+    worthGained: seat.worthGained + income + Math.max(0, statsGain),
   };
 }

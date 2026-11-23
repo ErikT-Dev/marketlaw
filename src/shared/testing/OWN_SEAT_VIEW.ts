@@ -15,7 +15,6 @@ export const OWN_SEAT_VIEW: OwnSeatView = {
     satisfaction: 0,
     product: 0,
     distribution: 0,
-    bonus: 0,
   },
   hand: [],
   newCards: [],

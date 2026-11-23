@@ -1,3 +1,4 @@
+import { fundsInTenths } from "../shared/fundsInTenths";
 import type { ProjectName } from "../shared/ProjectName";
 import type { SeatNumber } from "../shared/SeatNumber";
 import { drawRandomCard } from "./drawRandomCard";
@@ -8,7 +9,7 @@ import type { Random } from "./Random";
 import { seatOf } from "./seatOf";
 import { updateSeat } from "./updateSeat";
 
-const PROJECT_FUNDS_REWARD = 2;
+const PROJECT_FUNDS_REWARD = fundsInTenths(2);
 
 export function completeProject(
   state: GameState,

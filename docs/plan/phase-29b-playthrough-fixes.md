@@ -321,7 +321,7 @@ approval of the list, the quest scenarios that name quest contents.
     (the tutorial's states). Last, the two that wait for the owner: 20 (the 14 required names)
     and 6 (the quest list), in whichever order the answers come.
 
-- [ ] 1a. **Funds in tenths: engine, protocol and runner** (R2.1, R2.5, R10.1, R14, R15.5,
+- [x] 1a. **Funds in tenths: engine, protocol and runner** (R2.1, R2.5, R10.1, R14, R15.5,
   R21.4, I10, I7, finding 4). **Large.**
   - The `bonus` stat leaves `Stats` (`src/shared/Stats.ts`, `STAT_KEYS.ts`,
     `protocol/STATS_SCHEMA.ts`), `STARTING_STATS.ts`, `endOfTurnSteps.ts` and
@@ -339,6 +339,40 @@ approval of the list, the quest scenarios that name quest contents.
     fund", "negative stats lower the funds gained at the end of the turn", "the stats gain never
     takes funds below 0", and the required ones whose stats name funds (setup, visibility).
   - Split from Builds item 1: 1a is everything up to the view; 1b the client.
+  - **Done (2026-11-23).** One helper set in `src/shared/`: `TENTHS_PER_FUND`,
+    `fundsInTenths` (whole funds as written to tenths), `amountsInTenths` (a rule file's
+    `StatAmounts` with funds in tenths) and `wholeFundsOf` (tenths to whole funds, rounded
+    down). The stats gain is `src/rules/statsGainOf.ts`. `PROTOCOL_VERSION` is 28 and
+    `SAVE_SCHEMA_VERSION` 19; neither is raised again in this phase. The scenario runner reads
+    funds and `worth_gained` with one decimal (`tools/harness-runner/engine/FUNDS_IN_TENTHS.ts`)
+    and writes them back the same way (`fundsWritten.ts`, `statsWritten.ts`). The four new
+    stats gain scenarios of `turns-and-time` pass (run as required locally), and so do setup's and
+    visibility's required ones.
+  - **Differs from the phase file.** Only funds and F are stored in tenths; income stays a whole
+    number in the state and the view, since R2.5 keeps it whole, and the end-of-turn steps add it
+    as `fundsInTenths(income)`. Every comparison and rule that reads income (end goal, projects,
+    quests, score, I8) is unchanged that way. Fixed amounts in the view (`realCost`,
+    `buildPassPrice`, trade costs from the rule file) stay whole funds; the engine converts them
+    where it pays or compares. The score already uses whole funds (`wholeFundsOf` in
+    `scoreOf.ts`, `gameResultOf.ts` and I22's check), so item 7 only removes the base and
+    turns. I10 now checks that after every turn change each player still in the game has at
+    least max(0, funds + income + stats gain) of the turn before; a lower bound, so Support
+    (item 2) needs no change to it. Its name in `invariants.yaml` still waits for the owner
+    (item 20). To type-check, the bonus chip left `YourStatsPanel` and `OpponentStatsBox`
+    and `bonus` left the client test fixtures; everything else of the client is 1b's.
+  - **For later items.** Until 1b, screens show funds and F as raw tenths ("Funds 70"), so
+    browser tests naming funds (`combosAndProjects.spec.ts`, `handAndActionsScreens.spec.ts`)
+    and `gameScreenSizes.spec.ts` (which lists "Bonus") fail; 1b fixes them. Engine tests that
+    set funds write tenths (`funds: 90`) or `fundsInTenths(9)`. Still failing after 1a, none
+    of them 1a's: required scenarios of items 3 (end goal income 20), 5 (tutorial turn 5's +1
+    influence; the random quest of "the quests completed in the turn before can be seen" and
+    visibility's log scenario), 6 (every "completing … gives its reward", "a type gained from
+    one quest helps complete another", "tier 1 cards do not count …", "Penthouses needs …"),
+    7 (the four score scenarios of `end-of-game` and `records-and-ratings`), 16 (tutorial
+    start's `build_passes`) and 20 (the three bonus scenarios of `turns-and-time`, tutorial
+    turn 4, the 13 harness:check problems); unit tests of items 6 (`quests.test.tsx`,
+    `ruleFileTables` quests), 9 (`reportBudgets`: B19), 18 (`parseRulebook`) and 19
+    (`influenceAndUndo`: 20 tiles, `ruleFileTables` influence actions), all failing before 1a.
 - [ ] 1b. **Funds in tenths: screens, bots and the tutorial's states** (S1.6, S1.9, S6.2,
   R21.4). **Large.**
   - Screens show funds, income and F with one decimal ("5.3", "7.0"); fixed amounts (costs,

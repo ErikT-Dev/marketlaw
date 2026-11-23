@@ -1,3 +1,4 @@
+import { wholeFundsOf } from "../shared/wholeFundsOf";
 import { cardsInHandScoredOf } from "./cardsInHandScoredOf";
 import { SCORE_HUNDREDTHS } from "./SCORE_HUNDREDTHS";
 import type { SeatState } from "./SeatState";
@@ -14,7 +15,7 @@ export function scoreOf(seat: SeatState, endTurn: number, bonusTypePoints: numbe
     SCORE_HUNDREDTHS.satisfaction * stats.satisfaction +
     SCORE_HUNDREDTHS.product * stats.product +
     SCORE_HUNDREDTHS.distribution * stats.distribution +
-    SCORE_HUNDREDTHS.fundsAndCardsInHand * (stats.funds + cardsInHandScoredOf(seat)) +
+    SCORE_HUNDREDTHS.fundsAndCardsInHand * (wholeFundsOf(stats.funds) + cardsInHandScoredOf(seat)) +
     SCORE_HUNDREDTHS.bonusTypePoint * bonusTypePoints;
   return Math.floor(hundredths / 100);
 }

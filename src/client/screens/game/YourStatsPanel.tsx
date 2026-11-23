@@ -25,7 +25,6 @@ const SHOWN_STATS = [
   "satisfaction",
   "product",
   "distribution",
-  "bonus",
   "buildPasses",
   "influence",
 ] as const satisfies ReadonlyArray<StatName>;

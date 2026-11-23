@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { fundsInTenths } from "../shared/fundsInTenths";
 import { GAME_STARTED_AT } from "../shared/testing/GAME_STARTED_AT";
 import { apply } from "./apply";
 import { endGame } from "./endGame";
@@ -24,6 +25,16 @@ function withSeat1(state: GameState, change: Partial<GameState["seats"][number]>
   return {
     ...state,
     seats: state.seats.map((seat) => (seat.seat === 1 ? { ...seat, ...change } : seat)),
+  };
+}
+
+function withEndOfTurnFundsPaid(state: GameState): GameState {
+  return {
+    ...state,
+    seats: state.seats.map((seat) => ({
+      ...seat,
+      stats: { ...seat.stats, funds: seat.stats.funds + fundsInTenths(10) },
+    })),
   };
 }
 
@@ -95,16 +106,6 @@ describe("invariantViolations", () => {
     ]);
   });
 
-  it("reports a bonus of 10 or more kept after the end of the turn", () => {
-    const after = withSeat1(
-      { ...START, turn: 2, firstPlayer: 2 },
-      { stats: { ...STARTING_STATS, bonus: 12 } },
-    );
-    expect(invariantViolations(transition(START, { type: "end_turn", seat: 1 }, after))).toEqual([
-      "I10: seat 1 kept a bonus of 10 or more",
-    ]);
-  });
-
   it("reports a rejected action that changed the state", () => {
     const checked = {
       before: START,
@@ -119,14 +120,14 @@ describe("invariantViolations", () => {
   it("reports a holding pile kept after the main phase and income that went down", () => {
     const before = withSeat1(START, { stats: { ...STARTING_STATS, income: 5 } });
     const after = withSeat1(
-      {
+      withEndOfTurnFundsPaid({
         ...START,
         turn: 2,
         firstPlayer: 2,
         holdingPile: [START.deck[0] ?? "Pub"],
         deck: START.deck.slice(1),
-      },
-      { stats: { ...STARTING_STATS, income: 4 } },
+      }),
+      { stats: { ...STARTING_STATS, income: 4, funds: fundsInTenths(20) } },
     );
     expect(invariantViolations(transition(before, { type: "end_turn", seat: 1 }, after))).toEqual([
       "I2: the holding pile holds 1 cards outside the main phase",
@@ -227,7 +228,7 @@ describe("invariantViolations", () => {
   });
 
   it("reports a turn that starts with the wrong first player", () => {
-    const after = { ...START, turn: 2, firstPlayer: 1 as const };
+    const after = withEndOfTurnFundsPaid({ ...START, turn: 2, firstPlayer: 1 as const });
     expect(invariantViolations(transition(START, { type: "end_turn", seat: 1 }, after))).toEqual([
       "I20: turn 2 starts with seat 1 first",
     ]);

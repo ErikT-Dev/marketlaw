@@ -40,7 +40,7 @@ describe("gameRecordOf", () => {
   it("records every seat's result and values in place order", () => {
     const state = gameOf(2, 40, {
       stats: {
-        funds: 10,
+        funds: 100,
         income: 15,
         influence: 4,
         workforce: 3,
@@ -48,7 +48,6 @@ describe("gameRecordOf", () => {
         satisfaction: -1,
         product: 1,
         distribution: 2,
-        bonus: 0,
       },
       gainedTypes: { Farm: 2 },
       projects: ["workforce"],

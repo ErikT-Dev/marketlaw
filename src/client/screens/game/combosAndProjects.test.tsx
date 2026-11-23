@@ -30,7 +30,6 @@ const READY: Partial<OwnSeatView> = {
     satisfaction: 4,
     product: 0,
     distribution: 0,
-    bonus: 0,
   },
 };
 
@@ -136,7 +135,6 @@ describe("projects", () => {
         satisfaction: 4,
         product: 0,
         distribution: 0,
-        bonus: 0,
       },
       projectRejections: {
         quality: "project_needs_not_met",

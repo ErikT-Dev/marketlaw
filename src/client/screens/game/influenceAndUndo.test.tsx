@@ -25,7 +25,6 @@ const SEAT: Partial<OwnSeatView> = {
     satisfaction: 0,
     product: 0,
     distribution: 0,
-    bonus: 0,
   },
   influenceUses: { influence_to_quality: 1 },
   buildPassPrice: 3,

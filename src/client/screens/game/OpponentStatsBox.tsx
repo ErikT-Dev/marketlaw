@@ -21,12 +21,7 @@ type Props = {
   readonly bonusTypes: ReadonlyArray<TypeName>;
 };
 
-const BOARD_STATS = [
-  "funds",
-  "income",
-  "bonus",
-  "influence",
-] as const satisfies ReadonlyArray<StatName>;
+const BOARD_STATS = ["funds", "income", "influence"] as const satisfies ReadonlyArray<StatName>;
 
 function turnStatus(seat: OtherSeatView): string {
   if (seat.hasLeft) {

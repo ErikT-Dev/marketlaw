@@ -1,4 +1,5 @@
 import type { QuestName } from "../shared/catalogue/QuestName";
+import { amountsInTenths } from "../shared/amountsInTenths";
 import { questOf } from "../shared/ruleFiles/questOf";
 import { STAT_KEYS } from "../shared/STAT_KEYS";
 import type { SeatNumber } from "../shared/SeatNumber";
@@ -9,7 +10,9 @@ import type { SeatState } from "./SeatState";
 import { updateSeat } from "./updateSeat";
 
 function rewardedSeat(seat: SeatState, quest: QuestName): SeatState {
-  const { stats, gainedType } = questOf(quest).terms.reward;
+  const { reward } = questOf(quest).terms;
+  const { gainedType } = reward;
+  const stats = amountsInTenths(reward.stats);
   const gainedTypes =
     gainedType === null
       ? seat.gainedTypes

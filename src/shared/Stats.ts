@@ -7,5 +7,4 @@ export type Stats = {
   readonly satisfaction: number;
   readonly product: number;
   readonly distribution: number;
-  readonly bonus: number;
 };
