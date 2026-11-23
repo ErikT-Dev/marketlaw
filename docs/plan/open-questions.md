@@ -4170,3 +4170,20 @@ file.
   the required scenarios that follow the new rules with their names kept, in `setup`,
   `turns-and-time`, `projects`, `undo`, `quests`, `end-of-game`, `records-and-ratings`,
   `accounts`, `visibility`, `influence` and `tutorial`.
+
+## Q179. Can the quest list change freely, with random quests later?
+
+- **Phase:** asked by the owner on 2026-11-24, during phase 29b. Not part of 29b: a later phase,
+  planned after 29b is deployed.
+- **Question:** the owner will keep reworking the quest list and plans quests made from a random
+  requirement and a random reward (a list of each). Nothing should depend on a particular fixed
+  quest; the tutorial keeps its own fixed quest, used only in the tutorial.
+- **Options looked at:** do it inside 29b, or as its own phase after 29b. Today the tutorial needs
+  four quests from `quests.txt` (T0.7), about 15 scenario files name real quests (around 350
+  times), and quests are identified by their names in messages, saves and replays.
+- **Solution:** decided by the owner on 2026-11-24: 29b is finished with the current 51-quest
+  list. A later phase gives the tutorial its own quests outside `quests.txt`, lets scenarios
+  define the quests they use, and gives quests an identity that does not depend on a fixed list,
+  together with random quests once the owner has written the requirement and reward lists.
+- **Spec:** written in that phase.
+- **Implemented:** not yet.
