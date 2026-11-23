@@ -612,6 +612,8 @@ approval of the list, the quest scenarios that name quest contents.
     time from `iconWait`), posting to `/api/icon-changes`; rejection texts are in
     `REJECTION_MESSAGES`. Credits on the privacy notice (S12.8) from `playerIconArtistsOf` and
     `player-icons/license.txt?raw`. Browser tests for the picker and the privacy page.
+  - Stopped (2026-11-24): done so far nothing more (the stop request was set when the client
+    builder started); next the client part as in Next above; uncommitted changes: no.
 - [ ] 9. **Card tiles** (S4.1, S6.1, S6.4, B19, findings 14, 19, 29, 33). **Large.**
   - Small WebP pictures (about 100 px wide, at most 6 KB each, B19) made from the 240 photos in
     `src/client/assets/cards/` (11 MB; never ship them on tiles) by a build step or committed
