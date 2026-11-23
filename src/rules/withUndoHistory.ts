@@ -6,6 +6,7 @@ import { updateSeat } from "./updateSeat";
 
 const UNDOABLE_ACTIONS: ReadonlyArray<GameAction["type"]> = [
   "play_card",
+  "sell",
   "claim_all",
   "complete_quest",
   "influence",

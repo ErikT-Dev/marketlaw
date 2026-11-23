@@ -48,4 +48,32 @@ describe("undo", () => {
     const result = apply(nextTurn, { type: "undo", seat: 1 }, NO_RANDOM, GAME_STARTED_AT);
     expect(result.isOk ? null : result.error.code).toBe("nothing_to_undo");
   });
+
+  it("takes back only the seller's cards from a holding pile that holds another player's sale of the same card", () => {
+    const start = startSavedGame({ players: 2, kind: "casual", startedAt: GAME_STARTED_AT }, 7).state;
+    const sameHands = updateSeat(updateSeat(start, 1, (seat) => ({ ...seat, hand: ["Pub", "Cottage"] })), 2, (seat) => ({ ...seat, hand: ["Pub"] }));
+    const sellActions: ReadonlyArray<GameAction> = [
+      { type: "sell", seat: 1, cards: ["Pub"] },
+      { type: "sell", seat: 2, cards: ["Pub"] },
+      { type: "undo", seat: 1 },
+    ];
+    const undone = sellActions.reduce(accepted, sameHands);
+    expect(seatOf(undone, 1)?.hand).toEqual(["Pub", "Cottage"]);
+    expect(seatOf(undone, 1)?.stats.funds).toBe(seatOf(sameHands, 1)?.stats.funds);
+    expect(seatOf(undone, 2)?.hand).toEqual([]);
+    expect(undone.holdingPile).toEqual(["Pub"]);
+  });
+
+  it("undoing a played card leaves the holding pile as it is", () => {
+    const start = startSavedGame({ players: 2, kind: "casual", startedAt: GAME_STARTED_AT }, 7).state;
+    const ready = updateSeat(start, 1, (seat) => ({ ...seat, hand: ["Pub", "Cottage"] }));
+    const actions: ReadonlyArray<GameAction> = [
+      { type: "sell", seat: 1, cards: ["Pub"] },
+      { type: "play_card", seat: 1, card: "Cottage" },
+      { type: "undo", seat: 1 },
+    ];
+    const undone = actions.reduce(accepted, ready);
+    expect(seatOf(undone, 1)?.hand).toEqual(["Cottage"]);
+    expect(undone.holdingPile).toEqual(["Pub"]);
+  });
 });

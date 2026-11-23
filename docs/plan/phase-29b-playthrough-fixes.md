@@ -474,10 +474,27 @@ approval of the list, the quest scenarios that name quest contents.
     its scores (item 7). Tutorial start's `build_passes` (item 16) is 2 now in the engine; the
     runner's tutorial reader still cannot read it. `e2e/combosAndProjects.spec.ts` expects
     "Funds 20.1" at turn 2 and `e2e/gameOver.spec.ts` "Income 20"; neither was run locally.
-- [ ] 4. **Undo for selling** (R7.2, R7.3, R7.4, finding 24). **Small.**
+- [x] 4. **Undo for selling** (R7.2, R7.3, R7.4, finding 24). **Small.**
   - `sellCards.ts` becomes an undo point (`withUndoHistory.ts`, `undoLatest.ts`); undo moves the
     cards from the holding pile back to the hand and takes back the funds; F unchanged both ways.
   - Covers `undo`'s "undo takes back selling and puts the cards back in the hand".
+  - **Done (2026-11-23).** `sell` is in `withUndoHistory`'s undoable actions. Undo is
+    `src/rules/undoLatestAction.ts`: it restores the seat from its latest undo point (`undoLatest`,
+    unchanged) and takes the cards that left the hand, other than those now in the city, back out
+    of the holding pile (the last copy of each, so another player's sale of the same card stays).
+    Funds and F come back with the seat. The undo scenario passes (it failed before); two unit
+    tests in `undo.test.ts` cover a same-named sale by another player and an undone play after a
+    sale.
+  - **Differs from the phase file.** The required R7.4 scenario "nothing before an action that
+    cannot be undone can be undone" used selling as the action that cannot be undone; a
+    `HARNESS:` commit (recorded in Q178) puts a tier 1 draw action in its place, name kept.
+  - **For later items.** Still failing after 3 and 4, none of them theirs: required scenarios of
+    items 5 (the quest that leaves after its extra turn, the quests completed in the turn before,
+    visibility's log scenario, tutorial turn 5), 6b (the 45 "completing … gives its reward" and
+    "a type gained from one quest helps complete another"), 7 (the five score and tie-break
+    scenarios of `end-of-game`, the three of `records-and-ratings`) and 16 (tutorial start's
+    `build_passes`, which the runner cannot read yet); unit tests of items 9 (`reportBudgets`
+    B19), 18 (`parseRulebook`, two) and 19 (`influenceAndUndo`, `ruleFileTables`, two).
 - [ ] 5. **Quests on the table** (R10.2, R19.3, R19.5 to R19.11, R20.9, I15, I16, findings 11,
   12, 50). **Large.**
   - Time by tier 6, 5, 4 (`QUEST_TABLE_RULES.ts`); the extra turn after the first completion
