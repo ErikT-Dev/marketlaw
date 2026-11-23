@@ -498,3 +498,5 @@ each helper's conversation size at its end.
 
 | Job | Model, effort | Minutes | Tokens | Tool calls | Result |
 |---|---|---|---|---|---|
+| Planner | Opus, medium | 20 | 343,427 | 123 | blocked (owner answers) |
+| Starter | Opus, medium | 3 | 97,090 | 23 | done |
