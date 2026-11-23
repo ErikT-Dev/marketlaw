@@ -89,6 +89,6 @@
   approved: 2026-11-18
 
 - rule: A2.5
-  kind: instead
-  how: "Server tests that a seat's icon colour comes from the account id and stays the same in two games and after a username change; client tests of the icon in the quests and projects displays."
-  approved: 2026-11-18
+  kind: also
+  how: "Player icon folder check: tests that a non-SVG file, an SVG without viewBox, over 20 KB, with a script or an outside reference, or in an artist folder the licence file does not name fails it; client tests of the icon wherever a player icon shows."
+  approved: 2026-11-23

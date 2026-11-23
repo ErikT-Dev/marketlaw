@@ -162,9 +162,20 @@
   limit: 5000
   unit: rows written, Durable Object and D1, for a simulated busy day
   measured: >
-    simulator of a day with 50 games, 100 tutorials, 2,000 chat messages, room joins, queue use
-    and signups
+    simulator of a day with 50 games, 100 tutorials, 2,000 chat messages, room joins, queue use,
+    signups and 200 player icon changes (1 D1 row each, A2.6)
   why: >
     Rooms, the lobby, the queue and accounts share the rows left after B4, B6 and B7. The busy
     day includes the 2,000 chat messages of A9.6: the lobby's chat blocks and the deletes of the
     rooms' chat rows are counted here (Q79).
+
+- id: B19
+  name: card pictures on card tiles
+  limit: 6
+  unit: kilobytes per picture, the largest of the 240 small pictures of card tiles (S6.4)
+  measured: production build
+  why: >
+    Card tiles show a small, low-resolution picture of every card in the hand, the city and the
+    marketplace; dozens show at once, so each must stay tiny and they must never be the full
+    photos of the big card. They load only when shown, never as part of the initial download
+    (B14).
