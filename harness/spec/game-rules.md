@@ -619,7 +619,9 @@ At the start of every turn from turn 2 on, in this order:
 How requirements and rewards are read:
 
 - **R20.1** Every requirement means at least that amount.
-- **R20.2** A **sector count** such as "3 Residential cards" counts cards in your city.
+- **R20.2** A **sector count** such as "3 Residential cards" counts cards in your city. A tier
+  in it, such as "3 tier 2 Residential cards", counts only cards of exactly that tier: tier 1 and
+  tier 3 Residential cards do not count for it.
 - **R20.3** A **type requirement** such as "1 Low Wealth" or "2 Beautification" is a type count
   (R12.1). Types gained from quests count exactly like types from cards, so a type gained from
   one quest can help complete another.
@@ -650,13 +652,14 @@ How requirements and rewards are read:
     one of the 33 types of R21.7, and `card` or `cards`, `project` or `projects` may be
     singular or plural:
     - `N <sector> cards`: cards of that sector in your city (R20.2)
-    - `N tier 2 or 3 <sector> cards`, `N tier 3 <sector> cards`: cards of that sector and those
-      tiers in your city
+    - `N tier T <sector> cards`, with T 1, 2 or 3: cards of that sector and exactly that tier
+      in your city (R20.2)
     - `N cards of each sector`: at least N cards of every sector in your city
     - `N sectors with a tier 3 card`: a tier 3 card in your city in each of N different sectors
     - `N <type>`: a type count (R20.3); the Service type is written `Service type`, so that it
       is not read as a sector
-    - `N workforce`, `N quality`, `N satisfaction`: that much of the stat
+    - `N workforce`, `N quality`, `N satisfaction`, `N product`, `N distribution`: that
+      much of the stat
     - `income N`: income of at least N
     - `N completed projects`: projects you have completed (R16)
   - **reward:** one or more parts separated by `, `, given together:

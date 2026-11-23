@@ -1,45 +1,51 @@
 Tier 1 | Working district | 3 Residential cards, 2 Low Wealth | +1 quality, +1 influence
 Tier 1 | Farming industry | 2 Industry cards, 2 Farm | gain 1 Grain
-Tier 1 | Local services | 3 Service cards, 2 Service type | +1 satisfaction
+Tier 1 | Local services | 3 Service cards, 2 Service type, 1 distribution | +1 satisfaction
 Tier 1 | Green city | 3 Public cards, 2 Beautification | +2 funds
-Tier 1 | Countryside | 3 Suburban Housing, 1 Farm | gain 1 Forestry
+Tier 1 | Countryside | 3 Suburban Housing, 1 Raw Material | gain 1 Forestry
 Tier 1 | Farmland | 1 Farm, 2 Food | gain 1 Farm
-Tier 1 | Fishing village | 1 Sea, 2 Food | gain 1 Sea, +1 fund
+Tier 1 | Fishing village | 1 Sea, 2 Suburban Housing | gain 1 Sea, +1 fund
 Tier 1 | Sports town | 2 Leisure, 1 Health | gain 1 Health
 Tier 1 | High street | 2 Retail, 2 Suburban Housing | gain 1 Mercantile, +1 fund
-Tier 1 | Mining town | 2 Mine, 1 Low Wealth | gain 1 Mine
+Tier 1 | Mining town | 2 Mine, 1 Light Industry | gain 1 Mine
 Tier 1 | Workers' housing | 8 workforce, 2 Low Wealth | +1 fund, +2 influence
 Tier 1 | Tidy streets | 5 quality, 1 Beautification | +1 workforce
 Tier 1 | Healthy town | 4 satisfaction, 1 Health | +1 workforce
 Tier 1 | Trading post | income 4, 1 Retail | +1 fund, +2 influence
-Tier 1 | Supply chain | income 5, 2 Raw Material | draw 1 card
+Tier 1 | Supply chain | income 4, 2 Raw Material, 1 product | draw 1 card
 Tier 2 | Growing suburbs | 3 Town Housing, 2 Low Wealth | gain 1 Town Housing, +1 quality
-Tier 2 | Upmarket homes | 3 tier 2 or 3 Residential cards, 2 Luxury | gain 1 Luxury, +1 satisfaction
-Tier 2 | Modern industry | 3 tier 2 or 3 Industry cards, 2 Light Industry | gain 1 Power Plant, +1 workforce
-Tier 2 | Service economy | 3 tier 2 or 3 Service cards, 2 Service type | gain 1 Service type, +1 satisfaction
-Tier 2 | Culture hub | 3 tier 2 or 3 Public cards, 2 Culture | gain 1 Education, +2 influence
+Tier 2 | Upmarket homes | 3 tier 2 Residential cards, 2 Luxury | gain 1 Luxury, +1 satisfaction
+Tier 2 | Modern industry | 3 tier 2 Industry cards, 2 Heavy Industry | gain 1 Power Plant, +1 workforce
+Tier 2 | Service economy | 3 tier 2 Service cards, 2 Service type | gain 1 Service type, +1 satisfaction
+Tier 2 | Culture hub | 3 tier 2 Public cards, 2 Culture | gain 1 Education, +2 influence
 Tier 2 | Factory town | 3 Town Housing, 2 Light Industry | gain 1 Light Industry, +1 quality
-Tier 2 | Market town | 2 Town Housing, 2 Retail, 1 Food | gain 1 Alcohol, draw 1 card
-Tier 2 | Industrial zone | 3 Light Industry, 2 Raw Material | gain 1 Petroleum, +2 funds
-Tier 2 | Shopping centre | 2 Retail, 2 Service type, 1 Leisure | gain 1 Retail, +1 satisfaction
+Tier 2 | Market town | 2 Town Housing, 2 Retail, 1 Sea | gain 1 Alcohol, draw 1 card
+Tier 2 | Industrial zone | 3 Light Industry, 2 Raw Material, 2 product | gain 1 Petroleum, +2 funds
+Tier 2 | Shopping centre | 2 Retail, 2 Service type, 1 Leisure, 2 distribution | gain 1 Retail, +1 satisfaction
 Tier 2 | Leisure park | 2 Leisure, 2 Beautification | gain 1 Beautification, +2 funds
 Tier 2 | Culture district | 2 Culture, 2 Education | gain 1 Culture, +1 satisfaction
 Tier 2 | Safe streets | 2 Safety, 1 Utility, 3 quality | gain 1 Safety, +1 workforce
-Tier 2 | Happy residents | 2 Leisure, 2 Health, 3 satisfaction | gain 1 Leisure, +1 workforce
+Tier 2 | Happy residents | 2 Leisure, 2 Town Housing, 3 satisfaction | gain 1 Leisure, +1 workforce
 Tier 2 | Civic pride | 1 completed project, 2 Utility | gain 1 Utility, +3 influence
-Tier 2 | Service boom | 3 Service type, 2 Retail, income 9 | gain 1 Rental Space, draw 2 cards
-Tier 3 | Penthouses | 3 tier 2 or 3 Residential cards, 1 tier 3 Residential card, 2 City Housing | gain 1 City Housing, +3 quality
-Tier 3 | Heavy industry | 3 tier 2 or 3 Industry cards, 2 Heavy Industry | gain 1 Raw Material, +2 workforce
-Tier 3 | Office district | 3 tier 2 or 3 Service cards, 2 Office | gain 1 Office, +3 satisfaction
-Tier 3 | Public institutions | 4 tier 2 or 3 Public cards, 1 Safety, 2 Education | gain 1 Safety, +2 quality, +3 influence
+Tier 2 | Service boom | 3 Service type, 2 Utility, income 9 | gain 1 Rental Space, draw 2 cards
+Tier 3 | Penthouses | 2 tier 3 Residential cards, 2 Luxury, 2 City Housing | gain 1 City Housing, +3 quality
+Tier 3 | Heavy industry | 2 tier 3 Industry cards, 2 Heavy Industry | gain 1 Raw Material, +2 workforce
+Tier 3 | Office district | 2 tier 3 Service cards, 2 Office | gain 1 Office, +3 satisfaction
+Tier 3 | Public institutions | 2 tier 3 Public cards, 2 Education | gain 1 Safety, +2 quality, +3 influence
 Tier 3 | City living | 3 City Housing, 2 Luxury | gain 1 Rental Space, +3 quality
-Tier 3 | Tech campus | 2 High Tech, 2 Education | gain 1 High Tech, draw 2 cards
+Tier 3 | Tech campus | 2 High Tech, 2 Light Industry | gain 1 High Tech, draw 2 cards
 Tier 3 | Commuter city | 3 City Housing, 2 Mass Transit | gain 1 Mass Transit, +2 quality
-Tier 3 | Business district | 3 Office, 1 Finance | gain 1 Finance, +4 funds, +2 influence
-Tier 3 | Media city | 1 Mass Media, 2 Office, 2 Culture | gain 1 Mass Media, +3 satisfaction
-Tier 3 | Tech industry | 2 High Tech, 1 Power Plant | gain 1 Heavy Industry, draw 2 cards
+Tier 3 | Business district | 3 Office, 1 Finance, 2 City Housing | gain 1 Finance, +4 funds, +2 influence
+Tier 3 | Media city | 1 Mass Media, 2 Office, 2 High Tech | gain 1 Mass Media, +3 satisfaction
+Tier 3 | Tech industry | 2 High Tech, 2 Heavy Industry, 1 Power Plant | gain 1 Heavy Industry, draw 2 cards
 Tier 3 | Metropolis | 3 sectors with a tier 3 card | gain 1 Utility, draw 2 cards
 Tier 3 | Balanced city | 3 cards of each sector, 1 Mass Transit | gain 1 Sea, +3 funds
-Tier 3 | Cultural capital | 4 Culture, 2 Education, 4 satisfaction | gain 1 Mass Media, +3 workforce
+Tier 3 | Cultural capital | 4 Culture, 4 satisfaction | gain 1 Mass Media, +3 workforce
 Tier 3 | Civic leader | 3 completed projects, 2 Safety | gain 1 Health, +2 quality, +2 satisfaction
-Tier 3 | High-tech economy | 3 High Tech, 2 Office, income 13 | gain 1 Mercantile, draw 3 cards
+Tier 3 | High-tech economy | 3 High Tech, 2 Heavy Industry, income 13 | gain 1 Mercantile, draw 3 cards
+Tier 1 | Grain fields | 1 Grain, 2 Suburban Housing | gain 1 Food
+Tier 1 | Timber town | 1 Forestry, 2 Raw Material | +1 quality
+Tier 1 | Brewery town | 1 Alcohol, 1 Food | +1 satisfaction, +1 fund
+Tier 2 | Oil town | 1 Petroleum, 2 Light Industry | gain 1 Raw Material, +2 funds
+Tier 2 | Trading house | 1 Mercantile, 2 Town Housing | gain 1 Mercantile, +2 funds
+Tier 2 | Property market | 1 Rental Space, 2 Office | gain 1 Finance, +2 funds

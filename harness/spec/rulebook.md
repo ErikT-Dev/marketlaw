@@ -387,6 +387,8 @@ that needs completed projects only once some player has at least 8 income.
 
 - Every requirement means "at least".
 - "3 Residential cards" counts cards in your city.
+- "3 tier 2 Residential cards" counts only tier 2 Residential cards: tier 1 and tier 3 cards do
+  not count for it.
 - "1 `Low Wealth`" counts your type count, including types gained from quests.
 - Card counts and types are checked separately. *Example: "2 Service cards and 1 `Service` type"
   needs 2 Service cards and a `Service` type count of 1, from any card.*

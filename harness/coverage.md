@@ -131,20 +131,20 @@ it by hand.
 | R19.2 | – | Checked another way: The quest list scenarios in `quests.yaml` have one scenario for each quest of `quests.txt`, updated with every edit of the file (Q169). *(approved by the owner, 2026-11-18)* |
 | R19.3 | setup (1) | Covered |
 | R19.4 | quests (5) | Covered |
-| R19.5 | quests (51), undo (1) | Covered |
+| R19.5 | quests (57), undo (1) | Covered |
 | R19.6 | quests (7), visibility (1) | Covered |
 | R19.7 | quests (5) | Covered |
 | R19.8 | quests (6) | Covered |
 | R19.9 | quests (1) | Covered |
 | R19.10 | quests (2), undo (1) | Covered |
 | R19.11 | quests (3) | Covered |
-| R20.1 | quests (1) | Covered |
-| R20.2 | quests (4) | Covered |
+| R20.1 | quests (2) | Covered |
+| R20.2 | quests (6) | Covered |
 | R20.3 | quests (3) | Covered |
 | R20.4 | quests (2) | Covered |
 | R20.5 | quests (2) | Covered |
 | R20.6 | combos-and-income (1), end-of-game (1), quests (3) | Covered |
-| R20.7 | quests (48) | Covered |
+| R20.7 | quests (56) | Covered |
 | R20.8 | – | Checked another way: Rule file check: tests of the check with broken, misspelt and unknown lines of `quests.txt`. *(approved by the owner, 2026-11-18)* |
 | R20.9 | – | Checked another way: Rule file check: tests that fewer than 4 tier 1 quests, a duplicate name and a changed tutorial quest fail it; client tests that the rules viewer and the quests panel show the quests of the file. *(approved by the owner, 2026-11-18)* |
 | R21.1 | end-of-game (4), hostile-client (1) | Covered |
@@ -369,6 +369,6 @@ it by hand.
 ## Summary
 
 - Rules: 332
-- Scenarios: 537
+- Scenarios: 545
 - Gaps: 0
 - Checked another way or also checked another way: R3.2, R3.5, R17.10, R19.2, M3.1, M3.6, M4.2, A6.4, A10.6, C5.1, C5.2, C5.3, A12.1, R15.5, R15.6, R20.8, R20.9, T0.7, A2.5

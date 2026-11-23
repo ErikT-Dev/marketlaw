@@ -4132,6 +4132,20 @@ file.
   card, so they stay one card short of the lower needs. The +1 influence makes the reward
   scenarios fail until item 5 builds R19.10.
 - **Final quest list (2026-11-23, owner):** after the first approval the owner asked for more: every type required at least once (6 new quests), sector requirements naming exactly one tier, type requirements in proportion to the card set (`docs/plan/card-type-counts.md`), and product and distribution as rare requirements equal to the quest's tier. The approved 51-quest list is `docs/plan/phase-29b-quest-list-final.md`; built as item 6b.
+- **Final quest list (item 6b, 2026-11-23):** a `HARNESS:` commit writes the list into
+  `quests.txt` in the owner's order (the 6 new quests last), and R20.2, R20.8 and the rulebook
+  say that `N tier T <sector> cards` counts exactly tier T (it replaces `tier 2 or 3` and
+  `tier 3`) and that `N product` and `N distribution` are stat requirements. `quests.yaml`
+  follows it, names kept: the reward scenarios of the changed quests get cities (and product or
+  distribution) that meet the new needs; "a type gained from one quest helps complete another"
+  holds 2 product for Industrial zone; "tier 1 cards do not count …" now has 2 tier 2 and 1 tier 1
+  Residential card with 3 Luxury, and "Penthouses needs …" 1 tier 3 Residential card with its
+  Luxury and City Housing met, so each fails only on the tier. `undo`'s "completing a quest
+  whose reward draws a card cannot be undone" gives Supply chain its income 4 and 1 product.
+  8 new scenarios: the 6 new quests' reward scenarios, "tier 3 cards do not count for a tier 2
+  card requirement" and "a product or distribution requirement needs that much of the stat"
+  (545 scenarios). The old form `tier 2 or 3` now fails the rule file check as an unknown
+  sector ("or 3 Residential"), a tier other than 1 to 3 with "needs tier 1, 2 or 3".
 - **Undo for selling (item 4, 2026-11-23):** the required scenario "nothing before an action
   that cannot be undone can be undone" (R7.4) used selling as its action that cannot be undone,
   which contradicts R7.2 now that selling can be undone. A `HARNESS:` commit keeps its name and

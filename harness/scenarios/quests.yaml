@@ -260,6 +260,7 @@
     seats:
       - seat: 1
         city: [Row House, Small Apartment, Semi-detached, Winery, Leather Industry]
+        stats: {product: 2}
   when:
     - {seat: 1, action: complete_quest, quest: Factory town}
     - {seat: 1, action: complete_quest, quest: Industrial zone}
@@ -268,7 +269,7 @@
       - seat: 1
         gained_types: {Light Industry: 1, Petroleum: 1}
         type_counts: {Light Industry: 3, Raw Material: 2, Town Housing: 3}
-        stats: {funds: 9, quality: 1, influence: 2}
+        stats: {funds: 9, quality: 1, influence: 2, product: 2}
         quests_completed: [Factory town, Industrial zone]
 
 - name: completing Working district gives its reward
@@ -312,12 +313,13 @@
     seats:
       - seat: 1
         city: [Liquor Shop, Dentist, Pub, House of Worship]
+        stats: {distribution: 1}
   when:
     - {seat: 1, action: complete_quest, quest: Local services}
   then:
     seats:
       - seat: 1
-        stats: {satisfaction: 1, influence: 1}
+        stats: {satisfaction: 1, influence: 1, distribution: 1}
         quests_completed: [Local services]
 
 - name: completing Green city gives its reward
@@ -377,7 +379,7 @@
     quests: [{quest: Fishing village}]
     seats:
       - seat: 1
-        city: [Aquaculture, Slaughterhouse]
+        city: [Aquaculture, Farm House, Cottage]
   when:
     - {seat: 1, action: complete_quest, quest: Fishing village}
   then:
@@ -428,7 +430,7 @@
     quests: [{quest: Mining town}]
     seats:
       - seat: 1
-        city: [Metal Mining, Stone Quarry, Farm House]
+        city: [Metal Mining, Stone Quarry, Printing House]
   when:
     - {seat: 1, action: complete_quest, quest: Mining town}
   then:
@@ -514,14 +516,14 @@
     seats:
       - seat: 1
         city: [Metal Mining, Stone Quarry]
-        stats: {income: 5}
+        stats: {income: 4, product: 1}
     random: [{sector: Residential}]
   when:
     - {seat: 1, action: complete_quest, quest: Supply chain}
   then:
     seats:
       - seat: 1
-        stats: {influence: 1}
+        stats: {influence: 1, product: 1}
         hand: [Idyllic View Condominium]
         quests_completed: [Supply chain]
 
@@ -634,7 +636,7 @@
     quests: [{quest: Market town}]
     seats:
       - seat: 1
-        city: [Row House, Small Apartment, Liquor Shop, Apparel Store, Orchard, Slaughterhouse]
+        city: [Row House, Small Apartment, Liquor Shop, Apparel Store, Aquaculture]
     random: [{sector: Residential}]
   when:
     - {seat: 1, action: complete_quest, quest: Market town}
@@ -654,12 +656,13 @@
     seats:
       - seat: 1
         city: [Winery, Leather Industry, Printing House, Slaughterhouse]
+        stats: {product: 2}
   when:
     - {seat: 1, action: complete_quest, quest: Industrial zone}
   then:
     seats:
       - seat: 1
-        stats: {funds: 9, influence: 1}
+        stats: {funds: 9, influence: 1, product: 2}
         gained_types: {Petroleum: 1}
         quests_completed: [Industrial zone]
 
@@ -671,6 +674,7 @@
     seats:
       - seat: 1
         city: [Liquor Shop, Apparel Store, Shoe Store, Cafe, Gym]
+        stats: {distribution: 2}
   when:
     - {seat: 1, action: complete_quest, quest: Shopping centre}
   then:
@@ -739,7 +743,7 @@
     quests: [{quest: Happy residents}]
     seats:
       - seat: 1
-        city: [Public Playground, Tennis Court, Basketball Court, Clinic, Dentist]
+        city: [Public Playground, Tennis Court, Basketball Court, Row House, Small Apartment]
         stats: {satisfaction: 4}
   when:
     - {seat: 1, action: complete_quest, quest: Happy residents}
@@ -775,7 +779,7 @@
     quests: [{quest: Service boom}]
     seats:
       - seat: 1
-        city: [Pub, Cafe, Gym, Liquor Shop, Apparel Store]
+        city: [Pub, Cafe, Gym, Post Office, Radio Station]
         stats: {income: 10}
     random: [{sector: Residential}, {sector: Industry}]
   when:
@@ -795,7 +799,7 @@
     quests: [{quest: Penthouses}]
     seats:
       - seat: 1
-        city: [Dorm, Loft, Garden Skyscraper, Framed Tube]
+        city: [Loft, Luxury Skyscraper, Deluxe Seaside High-Rise]
   when:
     - {seat: 1, action: complete_quest, quest: Penthouses}
   then:
@@ -812,7 +816,7 @@
     quests: [{quest: Heavy industry}]
     seats:
       - seat: 1
-        city: [Saw Mill, Steelworks, Grist Mill, Cement Factory]
+        city: [Steelworks, Automotive Industry, Robotics Industry]
   when:
     - {seat: 1, action: complete_quest, quest: Heavy industry}
   then:
@@ -829,7 +833,7 @@
     quests: [{quest: Office district}]
     seats:
       - seat: 1
-        city: [Law Firm, Radio Station, Insurance Company, Publisher]
+        city: [Law Firm, Software Industry, AI and Data Analytics Industry]
   when:
     - {seat: 1, action: complete_quest, quest: Office district}
   then:
@@ -846,7 +850,7 @@
     quests: [{quest: Public institutions}]
     seats:
       - seat: 1
-        city: [Recycling Center, Police Station, Vocational School, High School, Theatre]
+        city: [Vocational School, University, Museum]
   when:
     - {seat: 1, action: complete_quest, quest: Public institutions}
   then:
@@ -880,7 +884,7 @@
     quests: [{quest: Tech campus}]
     seats:
       - seat: 1
-        city: [Smart City Development, Solar Energy, Library, Elementary School]
+        city: [Smart City Development, Solar Energy, Printing House, Leather Industry]
         gained_types: {High Tech: 1}
     random: [{sector: Residential}, {sector: Industry}]
   when:
@@ -917,7 +921,7 @@
     quests: [{quest: Business district}]
     seats:
       - seat: 1
-        city: [Publisher, Post Office, Law Firm, Insurance Company]
+        city: [Publisher, Post Office, Law Firm, Insurance Company, Garden Skyscraper, Framed Tube]
         gained_types: {Finance: 1}
   when:
     - {seat: 1, action: complete_quest, quest: Business district}
@@ -935,7 +939,7 @@
     quests: [{quest: Media city}]
     seats:
       - seat: 1
-        city: [Publisher, Newspaper Editor, Library, Theatre]
+        city: [Publisher, Newspaper Editor, Smart City Development, Solar Energy]
   when:
     - {seat: 1, action: complete_quest, quest: Media city}
   then:
@@ -1043,7 +1047,7 @@
     quests: [{quest: High-tech economy}]
     seats:
       - seat: 1
-        city: [Smart City Development, Solar Energy, Software Industry, AI and Data Analytics Industry, Publisher]
+        city: [Smart City Development, Solar Energy, Software Industry, AI and Data Analytics Industry, Steelworks]
         stats: {income: 15}
     random: [{sector: Residential}, {sector: Industry}, {sector: Service}]
   when:
@@ -1056,6 +1060,135 @@
         hand: [Idyllic View Condominium, Hydroelectricity Dam, Television Studio]
         quests_completed: [High-tech economy]
 
+- name: completing Grain fields gives its reward
+  covers: [R19.5, R20.7]
+  given:
+    turn: 30
+    quests: [{quest: Grain fields}]
+    seats:
+      - seat: 1
+        city: [Rice Fields, Farm House, Cottage]
+  when:
+    - {seat: 1, action: complete_quest, quest: Grain fields}
+  then:
+    seats:
+      - seat: 1
+        stats: {influence: 1}
+        gained_types: {Food: 1}
+        quests_completed: [Grain fields]
+
+- name: completing Timber town gives its reward
+  covers: [R19.5, R20.7]
+  given:
+    turn: 30
+    quests: [{quest: Timber town}]
+    seats:
+      - seat: 1
+        city: [Forest Plantation, Metal Mining]
+  when:
+    - {seat: 1, action: complete_quest, quest: Timber town}
+  then:
+    seats:
+      - seat: 1
+        stats: {quality: 1, influence: 1}
+        quests_completed: [Timber town]
+
+- name: completing Brewery town gives its reward
+  covers: [R19.5, R20.7]
+  given:
+    turn: 30
+    quests: [{quest: Brewery town}]
+    seats:
+      - seat: 1
+        city: [Winery, Slaughterhouse]
+  when:
+    - {seat: 1, action: complete_quest, quest: Brewery town}
+  then:
+    seats:
+      - seat: 1
+        stats: {satisfaction: 1, funds: 8, influence: 1}
+        quests_completed: [Brewery town]
+
+- name: completing Oil town gives its reward
+  covers: [R19.5, R20.7]
+  given:
+    turn: 30
+    quests: [{quest: Oil town}]
+    seats:
+      - seat: 1
+        city: [Gas Station, Printing House, Leather Industry]
+  when:
+    - {seat: 1, action: complete_quest, quest: Oil town}
+  then:
+    seats:
+      - seat: 1
+        stats: {funds: 9, influence: 1}
+        gained_types: {Raw Material: 1}
+        quests_completed: [Oil town]
+
+- name: completing Trading house gives its reward
+  covers: [R19.5, R20.7]
+  given:
+    turn: 30
+    quests: [{quest: Trading house}]
+    seats:
+      - seat: 1
+        city: [Warehouse, Row House, Small Apartment]
+  when:
+    - {seat: 1, action: complete_quest, quest: Trading house}
+  then:
+    seats:
+      - seat: 1
+        stats: {funds: 9, influence: 1}
+        gained_types: {Mercantile: 1}
+        quests_completed: [Trading house]
+
+- name: completing Property market gives its reward
+  covers: [R19.5, R20.7]
+  given:
+    turn: 30
+    quests: [{quest: Property market}]
+    seats:
+      - seat: 1
+        city: [Convention Center, Publisher]
+  when:
+    - {seat: 1, action: complete_quest, quest: Property market}
+  then:
+    seats:
+      - seat: 1
+        stats: {funds: 9, influence: 1}
+        gained_types: {Finance: 1}
+        quests_completed: [Property market]
+
+- name: tier 3 cards do not count for a tier 2 card requirement
+  covers: [R20.2, R20.7]
+  given:
+    turn: 30
+    quests: [{quest: Upmarket homes}]
+    seats:
+      - seat: 1
+        city: [Garden Apartment, Renovated Apartment, Luxury Skyscraper]
+  when:
+    - {seat: 1, action: complete_quest, quest: Upmarket homes}
+  then:
+    rejected: quest_needs_not_met
+    unchanged: true
+
+- name: a product or distribution requirement needs that much of the stat
+  covers: [R20.1, R20.7]
+  given:
+    turn: 30
+    quests: [{quest: Shopping centre}]
+    seats:
+      - seat: 1
+        city: [Liquor Shop, Apparel Store, Shoe Store, Cafe, Gym]
+        stats: {distribution: 1}
+  when:
+    - {seat: 1, action: complete_quest, quest: Shopping centre}
+  then:
+    rejected: quest_needs_not_met
+    unchanged: true
+
 - name: tier 1 cards do not count for a tier 2 or 3 card requirement
   covers: [R20.7, R20.2]
   given:
@@ -1063,7 +1196,7 @@
     quests: [{quest: Upmarket homes}]
     seats:
       - seat: 1
-        city: [Dorm, Garden Apartment, Designer Home]
+        city: [Garden Apartment, Renovated Apartment, Designer Home]
   when:
     - {seat: 1, action: complete_quest, quest: Upmarket homes}
   then:
@@ -1071,13 +1204,13 @@
     unchanged: true
 
 - name: Penthouses needs a tier 3 card among its Residential cards
-  covers: [R20.7]
+  covers: [R20.7, R20.2]
   given:
     turn: 15
     quests: [{quest: Penthouses}]
     seats:
       - seat: 1
-        city: [Dorm, Loft, Luxury Apartment]
+        city: [Luxury Apartment, Loft, Luxury Skyscraper]
   when:
     - {seat: 1, action: complete_quest, quest: Penthouses}
   then:
