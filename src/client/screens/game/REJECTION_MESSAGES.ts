@@ -91,6 +91,9 @@ export const REJECTION_MESSAGES: Readonly<Record<ReasonCode, IconText>> = {
   email_invalid: "Enter a whole email address, such as name@example.com.",
   password_invalid: "Use 8 to 64 characters for the password.",
   username_change_too_soon: "You can change your username at most 4 times in 7 days.",
+  unknown_icon: "That picture is not one of the player icons.",
+  icon_colors_too_alike: "These colours are too alike.",
+  icon_change_too_soon: "You can change your icon at most 10 times in 24 hours.",
   email_limit_reached:
     "No more emails can be sent for this account or to this address today. Try again after 00:00 UTC.",
   not_registered: "Sign up first.",

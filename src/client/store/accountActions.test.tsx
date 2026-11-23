@@ -1,4 +1,5 @@
 import * as v from "valibot";
+import { TEST_PLAYER_ICON } from "../../shared/testing/TEST_PLAYER_ICON";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { GameHost } from "../../shared/GameHost";
 import type { HostEvent } from "../../shared/HostEvent";
@@ -166,6 +167,8 @@ describe("logging out and changing the username", () => {
       isLoggedIn: true,
       name: "Ann",
       usernameWait: null,
+      icon: TEST_PLAYER_ICON,
+      iconWait: null,
       email: null,
       rating: null,
     };

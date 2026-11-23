@@ -1,4 +1,5 @@
 import * as v from "valibot";
+import { TEST_PLAYER_ICON } from "../../shared/testing/TEST_PLAYER_ICON";
 import { describe, expect, it } from "vitest";
 import { endGame } from "../../rules/endGame";
 import { randomForNextAction } from "../../rules/randomForNextAction";
@@ -30,6 +31,7 @@ function playingRoom(): RoomRecord {
   const players = [1, 2].map((seat) => ({
     playerId: v.parse(PlayerId, crypto.randomUUID()),
     name: `Seat ${String(seat)}`,
+    icon: TEST_PLAYER_ICON,
   }));
   return {
     schemaVersion: ROOM_SCHEMA_VERSION,
@@ -47,6 +49,7 @@ function playingRoom(): RoomRecord {
         seat: seat.seat,
         playerId: players[index]?.playerId ?? v.parse(PlayerId, crypto.randomUUID()),
         name: players[index]?.name ?? "",
+        icon: players[index]?.icon ?? TEST_PLAYER_ICON,
         stateVersion: 0,
         acceptedActionIds: [],
       })),

@@ -1,4 +1,5 @@
 import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { TEST_PLAYER_ICON } from "../../../shared/testing/TEST_PLAYER_ICON";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { GameHost } from "../../../shared/GameHost";
 import { App } from "../../App";
@@ -29,7 +30,15 @@ const CONFIRMED = {
 function accountAnswer(email: EmailDetails): Answer {
   return {
     status: 200,
-    body: { isLoggedIn: true, name: "Bea", usernameWait: null, email, rating: null },
+    body: {
+      isLoggedIn: true,
+      name: "Bea",
+      usernameWait: null,
+      icon: TEST_PLAYER_ICON,
+      iconWait: null,
+      email,
+      rating: null,
+    },
   };
 }
 

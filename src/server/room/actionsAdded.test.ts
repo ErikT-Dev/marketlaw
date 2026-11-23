@@ -1,4 +1,5 @@
 import * as v from "valibot";
+import { TEST_PLAYER_ICON } from "../../shared/testing/TEST_PLAYER_ICON";
 import { describe, expect, it } from "vitest";
 import { randomForNextAction } from "../../rules/randomForNextAction";
 import type { TimedAction } from "../../rules/TimedAction";
@@ -21,7 +22,7 @@ import { NO_CHAT_CONTEXT } from "./NO_CHAT_CONTEXT";
 
 const NOW = v.parse(EpochMs, 1_761_436_800_000);
 function identityNamed(name: string): Identity {
-  return { playerId: v.parse(PlayerId, crypto.randomUUID()), name };
+  return { playerId: v.parse(PlayerId, crypto.randomUUID()), name, icon: TEST_PLAYER_ICON };
 }
 
 const ANN = identityNamed("Ann");

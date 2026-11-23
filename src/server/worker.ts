@@ -24,6 +24,7 @@ import { sessionRoute } from "./api/sessionRoute";
 import { sendAgainRoute } from "./api/sendAgainRoute";
 import { signupRoute } from "./api/signupRoute";
 import { startTutorialRoute } from "./api/startTutorialRoute";
+import { iconChangeRoute } from "./api/iconChangeRoute";
 import { usernameChangeRoute } from "./api/usernameChangeRoute";
 import { removeUnusedGuests } from "./deletion/removeUnusedGuests";
 import { removeOldEmailRecords } from "./email/removeOldEmailRecords";
@@ -93,6 +94,7 @@ const POST_ROUTES: Readonly<Record<string, (request: Request, env: Env) => Promi
   "/api/reset-emails": resetEmailRoute,
   "/api/password-resets": newPasswordRoute,
   "/api/username-changes": usernameChangeRoute,
+  "/api/icon-changes": iconChangeRoute,
   "/api/session": sessionRoute,
   "/api/test-rooms": createTestRoom,
   "/api/test-room-seats": confirmTestSeat,

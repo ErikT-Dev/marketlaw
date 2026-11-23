@@ -26,7 +26,7 @@ export function startRankedRoomIn(
     code: room.code,
     size: room.size,
     isPublic: false,
-    players: room.playersInQueueOrder.map(({ playerId, name }) => ({ playerId, name })),
+    players: room.playersInQueueOrder.map(({ playerId, name, icon }) => ({ playerId, name, icon })),
     waiting: NO_WAITING,
     game: null,
     chat: NO_CHAT,

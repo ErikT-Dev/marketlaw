@@ -1,4 +1,5 @@
 import * as v from "valibot";
+import { TEST_PLAYER_ICON } from "../../shared/testing/TEST_PLAYER_ICON";
 import { describe, expect, it } from "vitest";
 import { randomForNextAction } from "../../rules/randomForNextAction";
 import { EpochMs } from "../../shared/EpochMs";
@@ -18,8 +19,16 @@ import { withConnection } from "./withConnection";
 import { NO_CHAT_CONTEXT } from "./NO_CHAT_CONTEXT";
 
 const START = v.parse(EpochMs, 1_000_000);
-const ANN: Identity = { playerId: v.parse(PlayerId, crypto.randomUUID()), name: "Ann" };
-const BEA: Identity = { playerId: v.parse(PlayerId, crypto.randomUUID()), name: "Bea" };
+const ANN: Identity = {
+  playerId: v.parse(PlayerId, crypto.randomUUID()),
+  name: "Ann",
+  icon: TEST_PLAYER_ICON,
+};
+const BEA: Identity = {
+  playerId: v.parse(PlayerId, crypto.randomUUID()),
+  name: "Bea",
+  icon: TEST_PLAYER_ICON,
+};
 const BOTH = [ANN.playerId, BEA.playerId];
 
 function memoryStorage(): RoomStorage & { readonly stored: () => RoomRecord | undefined } {

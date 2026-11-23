@@ -1,4 +1,5 @@
 import * as v from "valibot";
+import { TEST_PLAYER_ICON } from "../../shared/testing/TEST_PLAYER_ICON";
 import { describe, expect, it } from "vitest";
 import { endGame } from "../../rules/endGame";
 import type { GameEnding } from "../../shared/GameEnding";
@@ -15,6 +16,7 @@ const CODE = v.parse(RoomCode, "R4NK3D");
 const ANN: RankedPlayer = {
   playerId: v.parse(PlayerId, crypto.randomUUID()),
   name: "Ann",
+  icon: TEST_PLAYER_ICON,
   rating: 1043,
   rankedGames: 12,
   highestRating: 1060,
@@ -22,6 +24,7 @@ const ANN: RankedPlayer = {
 const BEA: RankedPlayer = {
   playerId: v.parse(PlayerId, crypto.randomUUID()),
   name: "Bea",
+  icon: TEST_PLAYER_ICON,
   rating: 1000,
   rankedGames: 0,
   highestRating: 1000,
@@ -61,7 +64,7 @@ describe("a ranked room", () => {
   it("is private, owned by the longest waiting player and plays a ranked game at once", () => {
     const room = startedRoom([ANN, BEA]);
     expect(room?.isPublic).toBe(false);
-    expect(room?.players[0]).toEqual({ playerId: ANN.playerId, name: "Ann" });
+    expect(room?.players[0]).toEqual({ playerId: ANN.playerId, name: "Ann", icon: ANN.icon });
     expect(room?.waiting.asking).toBeNull();
     expect(room?.game?.kind).toBe("ranked");
     expect(room?.game?.saved.state.kind).toBe("ranked");

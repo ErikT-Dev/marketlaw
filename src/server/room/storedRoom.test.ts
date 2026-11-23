@@ -1,4 +1,5 @@
 import * as v from "valibot";
+import { TEST_PLAYER_ICON } from "../../shared/testing/TEST_PLAYER_ICON";
 import { describe, expect, it } from "vitest";
 import { startSavedGame } from "../../rules/startSavedGame";
 import { EpochMs } from "../../shared/EpochMs";
@@ -21,6 +22,7 @@ function startedRoom(): RoomRecord {
   const players = ["Ann", "Bea"].map((name) => ({
     playerId: v.parse(PlayerId, crypto.randomUUID()),
     name,
+    icon: TEST_PLAYER_ICON,
   }));
   return {
     schemaVersion: ROOM_SCHEMA_VERSION,
@@ -38,6 +40,7 @@ function startedRoom(): RoomRecord {
         seat: seat.seat,
         playerId: players[index]?.playerId ?? v.parse(PlayerId, crypto.randomUUID()),
         name: players[index]?.name ?? "",
+        icon: players[index]?.icon ?? TEST_PLAYER_ICON,
         stateVersion: 0,
         acceptedActionIds: [],
       })),

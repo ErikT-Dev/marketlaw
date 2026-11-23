@@ -1,4 +1,5 @@
 import { gameStartInJoinOrder } from "./gameStartInJoinOrder.ts";
+import { identityWithDefaultIcon } from "../../src/server/accounts/identityWithDefaultIcon.ts";
 import * as v from "valibot";
 import type { BotChooser } from "../../src/bots/BotChooser.ts";
 import { chaosBot } from "../../src/bots/chaosBot.ts";
@@ -86,13 +87,12 @@ export class GameSimulation {
     this.chooser = options.chooser;
     this.stored = options.stored;
     const saved = startSavedGame({ players, kind: "casual", startedAt: v.parse(EpochMs, 0) }, seed);
-    const identities: ReadonlyArray<Identity> = saved.state.seats.map((seat) => ({
-      playerId: playerIdFor(seed, seat.seat),
-      name: `Bot ${String(seat.seat)}`,
-    }));
+    const identities: ReadonlyArray<Identity> = saved.state.seats.map((seat) =>
+      identityWithDefaultIcon(playerIdFor(seed, seat.seat), `Bot ${String(seat.seat)}`),
+    );
     this.seats = saved.state.seats.map((seat, index) => ({
       seat: seat.seat,
-      identity: identities[index] ?? { playerId: playerIdFor(seed, seat.seat), name: "Bot" },
+      identity: identities[index] ?? identityWithDefaultIcon(playerIdFor(seed, seat.seat), "Bot"),
       connection: { identity: null, rejectionTimes: [] },
       view: null,
       stateVersion: 0,

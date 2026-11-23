@@ -586,6 +586,32 @@ approval of the list, the quest scenarios that name quest contents.
     privacy notice, `PlayerIcon` and `PlayerIconColors` show the picture everywhere.
   - Covers the new `accounts` scenarios; B18 with icon changes. Likely 3 or more commits:
     split it if it runs over (server first, then the client).
+  - **Partial (2026-11-24), server done.** The folder is `player-icons/<artist>/<name>.svg` with
+    `license.txt` at the top of the repository; a picture is named `delapouite/bat` (Q180, A2.5
+    amended). `npm run harness:check` checks the folder (`checkPlayerIconFolder.ts`, tested on bad
+    files) and writes `src/shared/playerIcons/PLAYER_ICON_PICTURES.ts` from it, failing once when
+    it differed. Migration `0015_player_icons.sql` (`icon`, `icon_changes_ms`); new accounts get
+    `randomPlayerIcon()`, older ones `iconOfOlderAccount(playerId)` (Q181). `Identity` and
+    `SeatPlayer` carry `icon`, so rooms, ranked rooms and tutorials keep the icon a player joined
+    with (`ROOM_SCHEMA_VERSION` 6, `TUTORIAL_SCHEMA_VERSION` 2). `POST /api/icon-changes`
+    (`IconChangeRequest`, `IconChangeResponse`, `decideIconChange`: picture, contrast, then
+    `ICON_CHANGE_LIMIT`; the username limit now shares `changeAllowedAtUnder`/`changesWithUnder`)
+    and `/api/account` returns `icon` and `iconWait`. B18's busy day counts 200 icon changes
+    (4,394 rows of 5,000). The five new `accounts` scenarios pass (run as required locally) and
+    failed before ("cannot run yet").
+  - **Next (client, a fresh builder).** Views: `RoomView.playerIconColors` and the tutorial's
+    `playerIconColor` become each seat's `PlayerIconChoice` from the room's `SeatPlayer.icon` /
+    `record.player.icon` (`updateFor.ts`, `tutorialUpdateFor.ts`, `SERVER_MESSAGE_SCHEMA`,
+    `HostEvent`, `RemoteGameHost`, `ClientState`, `PlayerIconColors` context); then remove
+    `src/server/room/playerIconColorOf.ts`, `PLAYER_ICON_COLOR_COUNT` and the letter
+    (`playerIconLetterOf`). `PlayerIcon` draws the picture as a CSS mask in the picture colour on
+    the background colour, loading the SVG only when shown (`import.meta.glob` over
+    `player-icons/*/*.svg` with `?url`). The picker in `AccountSettingsDialog` (S12.5: every
+    picture as a button named by the picture, two colour inputs, a preview, Save disabled with
+    "These colours are too alike." under 3:1 from `areIconColorsTooAlike`, and the next allowed
+    time from `iconWait`), posting to `/api/icon-changes`; rejection texts are in
+    `REJECTION_MESSAGES`. Credits on the privacy notice (S12.8) from `playerIconArtistsOf` and
+    `player-icons/license.txt?raw`. Browser tests for the picker and the privacy page.
 - [ ] 9. **Card tiles** (S4.1, S6.1, S6.4, B19, findings 14, 19, 29, 33). **Large.**
   - Small WebP pictures (about 100 px wide, at most 6 KB each, B19) made from the 240 photos in
     `src/client/assets/cards/` (11 MB; never ship them on tiles) by a build step or committed

@@ -37,6 +37,7 @@ export function lobbyRoomThen(
     public: record.isPublic,
     owner: record.players[0]?.name,
     players: record.players.map(({ name }) => name),
+    icons: Object.fromEntries(record.players.map(({ name, icon }) => [name, icon])),
     state: stateOf(record),
     accepted: (record.waiting.asking?.accepted ?? []).map((id) => nameOf(record, id)),
     code_format: codeFormatOf(record, expected),

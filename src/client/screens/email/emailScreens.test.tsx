@@ -1,4 +1,5 @@
 import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { TEST_PLAYER_ICON } from "../../../shared/testing/TEST_PLAYER_ICON";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { GameHost } from "../../../shared/GameHost";
 import { App } from "../../App";
@@ -118,7 +119,14 @@ describe("email links", () => {
   it("offers to send a new link to a logged-in player whose address is unconfirmed", async () => {
     logInAsBea();
     const email = { address: "bea@example.com", isConfirmed: false, pendingAddress: null };
-    const account = { isLoggedIn: true, name: "Bea", usernameWait: null, rating: null };
+    const account = {
+      isLoggedIn: true,
+      name: "Bea",
+      usernameWait: null,
+      icon: TEST_PLAYER_ICON,
+      iconWait: null,
+      rating: null,
+    };
     const accountBody = { ...account, email: { ...email, wasRemoved: false } };
     serverAnswers({
       "/api/email-confirmations": [LINK_EXPIRED],

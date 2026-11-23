@@ -42,7 +42,10 @@ function roomInState(
     code: v.parse(RoomCode, room.code),
     size: room.size,
     isPublic: room.public,
-    players: room.players.map(identityNamed),
+    players: room.players.map((name) => {
+      const identity = identityNamed(name);
+      return { ...identity, icon: room.icons?.[name] ?? identity.icon };
+    }),
     waiting: NO_WAITING,
     game: null,
     chat: NO_CHAT,

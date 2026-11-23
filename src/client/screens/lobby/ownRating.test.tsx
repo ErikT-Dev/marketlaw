@@ -1,4 +1,5 @@
 import { act, render, screen } from "@testing-library/react";
+import { TEST_PLAYER_ICON } from "../../../shared/testing/TEST_PLAYER_ICON";
 import { describe, expect, it, vi } from "vitest";
 import type { AccountRating } from "../../../shared/api/AccountRating";
 import type { AccountBinding } from "../account/AccountBinding";
@@ -22,6 +23,8 @@ function registeredAccount(ratings: ReadonlyArray<AccountRating>): AccountBindin
         isLoggedIn: true as const,
         name: "Ann",
         usernameWait: null,
+        icon: TEST_PLAYER_ICON,
+        iconWait: null,
         email: null,
         rating,
       });

@@ -1,13 +1,9 @@
-import { recentUsernameChangesOf } from "./recentUsernameChangesOf";
-import { USERNAME_CHANGE_WAIT_MS } from "./USERNAME_CHANGE_WAIT_MS";
-import { USERNAME_CHANGES_IN_WAIT } from "./USERNAME_CHANGES_IN_WAIT";
+import { changeAllowedAtUnder } from "./changeAllowedAtUnder";
+import { USERNAME_CHANGE_LIMIT } from "./USERNAME_CHANGE_LIMIT";
 
 export function usernameChangeAllowedAt(
   changesMs: ReadonlyArray<number>,
   now: number,
 ): number | null {
-  const recent = recentUsernameChangesOf(changesMs, now);
-  return recent.length < USERNAME_CHANGES_IN_WAIT
-    ? null
-    : Math.min(...recent.slice(-USERNAME_CHANGES_IN_WAIT)) + USERNAME_CHANGE_WAIT_MS;
+  return changeAllowedAtUnder(USERNAME_CHANGE_LIMIT, changesMs, now);
 }

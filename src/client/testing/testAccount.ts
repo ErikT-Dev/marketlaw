@@ -1,4 +1,5 @@
 import * as v from "valibot";
+import { TEST_PLAYER_ICON } from "../../shared/testing/TEST_PLAYER_ICON";
 import { vi } from "vitest";
 import { PlayerId } from "../../shared/PlayerId";
 import type { AccountBinding } from "../screens/account/AccountBinding";
@@ -16,6 +17,8 @@ export function testAccount(changes: Partial<AccountBinding> = {}): AccountBindi
         isLoggedIn: true as const,
         name: "Bea",
         usernameWait: null,
+        icon: TEST_PLAYER_ICON,
+        iconWait: null,
         email: null,
         rating: null,
       }),

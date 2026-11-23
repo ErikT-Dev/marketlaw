@@ -4209,3 +4209,21 @@ file.
 - **Spec:** A2.5.
 - **Implemented:** `tools/harness-check/checkPlayerIconFolder.ts`, `checkPlayerIconList.ts`,
   `src/shared/playerIcons/PLAYER_ICON_PICTURES.ts`.
+
+## Q181. Which icon does an account made before player icons had pictures get?
+
+- **Phase:** 29b, item 8 (player icons), decided without the owner.
+- **Question:** A2.5 gives every account made before player icons had pictures a random picture
+  and random colours that pass the contrast check. Writing one into every existing row would
+  need the list of pictures inside a migration, and writing it on first use costs a row write
+  where nothing else is written.
+- **Solution:** the migration adds `players.icon` (empty for older accounts) and
+  `players.icon_changes_ms`. An account whose `icon` is empty, or holds a picture no longer in the
+  folder, has the icon drawn from a random sequence seeded by its player id: random-looking, the
+  same every time, from the current folder, with no write. A new account gets a truly random icon
+  (`crypto.getRandomValues`) stored when it is made. The first change stores the chosen icon.
+  Rooms and tutorials keep each player's icon in their saved state, so `ROOM_SCHEMA_VERSION`
+  goes from 5 to 6 and `TUTORIAL_SCHEMA_VERSION` from 1 to 2 (rooms of an older deploy close, D1).
+- **Spec:** A2.5 (unchanged).
+- **Implemented:** `migrations/0015_player_icons.sql`, `src/server/accounts/storedPlayerIconOf.ts`,
+  `iconOfOlderAccount.ts`, `randomPlayerIcon.ts`.

@@ -1,1 +1,1 @@
-export const TUTORIAL_SCHEMA_VERSION = 1;
+export const TUTORIAL_SCHEMA_VERSION = 2;

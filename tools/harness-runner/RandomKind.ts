@@ -6,6 +6,7 @@ export const RANDOM_KINDS = [
   "type",
   "seats",
   "generated_name",
+  "icon",
 ] as const;
 
 export type RandomKind = (typeof RANDOM_KINDS)[number];

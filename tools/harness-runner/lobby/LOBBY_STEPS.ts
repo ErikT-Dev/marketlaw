@@ -12,6 +12,7 @@ export const LOBBY_STEPS: ReadonlySet<string> = new Set([
   "log_out",
   "sign_up",
   "change_username",
+  "change_icon",
   "confirm_email",
   "change_email",
   "delete_account",

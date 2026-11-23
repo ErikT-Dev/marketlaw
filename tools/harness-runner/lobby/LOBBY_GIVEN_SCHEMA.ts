@@ -1,4 +1,5 @@
 import * as v from "valibot";
+import { GIVEN_ICON } from "./GIVEN_ICON.ts";
 import { TUTORIAL_STEP_IDS } from "../../../src/shared/TUTORIAL_STEP_IDS.ts";
 
 const GIVEN_ROOM = v.strictObject({
@@ -12,6 +13,7 @@ const GIVEN_ROOM = v.strictObject({
   kind: v.optional(v.picklist(["casual", "ranked"])),
   chat: v.optional(v.array(v.strictObject({ from: v.string(), text: v.string() }))),
   messages_sent: v.optional(v.record(v.string(), v.number())),
+  icons: v.optional(v.record(v.string(), GIVEN_ICON)),
 });
 
 const GIVEN_RECORD = v.strictObject({
@@ -58,6 +60,8 @@ export const LOBBY_GIVEN_SCHEMA = v.strictObject({
         password: v.optional(v.string()),
         last_used_ms: v.optional(v.number()),
         username_changes_ms: v.optional(v.array(v.number())),
+        icon: v.optional(GIVEN_ICON),
+        icon_changes_ms: v.optional(v.array(v.number())),
         actions_today: v.optional(v.number()),
         games_started_today: v.optional(v.number()),
         emails_today: v.optional(v.number()),
