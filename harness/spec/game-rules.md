@@ -19,7 +19,8 @@ chat are in `accounts.md` (rules `A…`). The card data is `cards.json`.
 
 1. **Game length** (R9, R21). Currently: the time bank (15 minutes) and the turn limit
    (40 turns) assume a game of about 25 turns. A first simulation suggests reaching the end goal
-   (income 22 and 3 projects) may take noticeably longer. To be checked with the game simulator
+   (then income 22 and 3 projects; now income 20, R1.3) may take noticeably longer. To be
+   checked with the game simulator
    once the engine exists; the end goal, time bank or turn limit may need adjusting then. The
    quest thresholds in R20 were set from the same simulation and should be rechecked with it too.
    Since marketplace cards are free (R18.8), funds are spent only on playing cards, build passes
@@ -35,7 +36,7 @@ chat are in `accounts.md` (rules `A…`). The card data is `cards.json`.
   with the highest score wins (R21).
 - **R1.2** Your **city** is all the cards you have played. "In your city" and "your cards in
   play" mean the same thing throughout these rules.
-- **R1.3** A player reaches the **end goal** when they have **income of at least 22** and all
+- **R1.3** A player reaches the **end goal** when they have **income of at least 20** and all
   **3 projects completed** (R16). The game ends after the main phase of the turn in which a
   player reaches it (R21.1).
 - **R1.4** All players play the **same turn at the same time** (R4). A main phase ends once every
@@ -48,26 +49,38 @@ chat are in `accounts.md` (rules `A…`). The card data is `cards.json`.
   | Stat | Starts at | What it does |
   |---|---|---|
   | Funds | 7 | Money. Pays for cards. |
-  | Income | 3 | Funds gained at the end of every turn. 22 is part of the end goal. |
+  | Income | 3 | Funds gained at the end of every turn. 20 is part of the end goal. |
   | Influence | 0 | +1 every turn. Spent on influence actions (R15). |
   | Workforce | 0 | Made by Residential cards, used up by the other sectors. |
   | Quality | 0 | Made by Public cards, used up by the other sectors. |
   | Satisfaction | 0 | Made by Public cards, used up by the other sectors. |
   | Product | 0 | Made by Industry cards. Turned into income (R13). |
   | Distribution | 0 | Made by Service cards. Turned into income (R13). |
-  | Bonus | 0 | Builds up each turn and turns into extra funds (R14). |
 
 - **R2.2** The **turn number** starts at 1 and goes up by 1 at the end of every turn (R10.3). It
   is the same for all players.
 - **R2.3** Workforce, quality and satisfaction can go below zero. While any of them is negative
   you cannot gain income (R13) or complete projects (R16).
 - **R2.4** **Total worth gained (F):** each player also has a running count of everything of
-  worth they have received in the game: every fund they received (the starting funds, income,
-  bonus turned into funds, first-completion funds, and funds from projects, quests and influence
-  actions; not funds from selling cards) plus 1 for every card they gained (the starting hand, and every card drawn or
-  taken from the marketplace). It starts at 14 (7 funds and 7 cards). Selling or playing a card
-  does not change it, and a redraw of the starting hand (R17.12) does not change it either, so it
-  only goes up. It is shown, not used by any rule.
+  worth they have received in the game, kept in tenths of a fund like funds (R2.5). At every
+  moment it equals exactly the sum of:
+  - every fund they have received, however they got it: the starting funds, income, a positive
+    stats gain (R14), Support (R11.5), and funds from projects, quests, influence actions and any
+    other source; not funds from selling cards
+  - 1 fund for every card they have gained: the starting hand, every card drawn, and every card
+    taken from the marketplace, which counts as drawn
+
+  It starts at 14 (7 funds and 7 cards). Selling a card does not change it: the card was already
+  counted as 1 and its fund replaces it. Playing a card, a negative stats gain and a redraw of
+  the starting hand (R17.12) do not change it either, so it only goes up; undoing an action takes
+  back exactly what that action added (R7.1). Every player sees every other player's F as at the
+  start of that player's own main phase, like their other stats (R5.4). It is used for Support
+  (R11.5) and to break equal scores (R21.9).
+- **R2.5** **Funds in tenths:** funds and income are kept in tenths of a fund, and so is every
+  amount of funds the game gives or takes. These rules write amounts in whole funds (7 funds, a
+  real cost of 5, +2 funds), each 10 tenths; only the stats gain (R14) gives amounts that are not
+  whole. Income always stays a whole number of funds. Screens show funds, income and total worth
+  gained with one decimal (5.3, 7.0).
 
 ## R3. Cards
 
@@ -131,7 +144,7 @@ chat are in `accounts.md` (rules `A…`). The card data is `cards.json`.
 - **R4.6** **Setup order:** when a game starts, these happen in this order: seats are given
   (R4.3), the deck is shuffled (R17.2), starting hands are dealt (R17.9), the marketplace is
   filled (R18.5), the quests table is filled (R19.3), and the bonus types are picked (R21.6).
-  Then every player gets the build pass of turn 1 (R6.3).
+  Then every player gets the **2 build passes** of turn 1 (R6.3).
 
 ## R5. The main phase
 
@@ -180,8 +193,8 @@ chat are in `accounts.md` (rules `A…`). The card data is `cards.json`.
   - the stat changes from R3.4 are applied
   - its types are added to your type counts (R12.1)
   - its combos become available to you (R12)
-- **R6.3** **Build passes:** at the start of every turn, turn 1 included, every player still in
-  the game gets **1 build pass** (R4.6, R11.4). Unused passes are kept for later turns, with no
+- **R6.3** **Build passes:** every player starts turn 1 with **2 build passes** (R4.6), and at
+  the start of every later turn every player still in the game gets **1 build pass** (R11.4). Unused passes are kept for later turns, with no
   limit, so a player who saves passes can play several cards in one turn. Passes can also be
   bought with influence actions (R15); a bought pass can be used straight away.
 
@@ -193,14 +206,16 @@ chat are in `accounts.md` (rules `A…`). The card data is `cards.json`.
 - **R7.2** Only these actions can be undone, and only if neither they nor anything they cause
   draws a card:
   - playing a card
+  - selling cards: the sold cards go back into the hand from the holding pile, and the funds
+    they gave are taken back
   - claim all
   - influence actions that do not draw a card (trades and build passes)
   - completing a quest whose reward does not draw a card
 
   An action after which income is taken (R13) counts as drawing a card, even when no card is
   left to draw.
-- **R7.3** All other actions cannot be undone: selling, completing a project, draw actions and
-  ending your turn. A redraw of the starting hand (R17.12) is not an action and cannot be undone
+- **R7.3** All other actions cannot be undone: completing a project, draw actions and ending
+  your turn. A redraw of the starting hand (R17.12) is not an action and cannot be undone
   either.
 - **R7.4** Once an action that cannot be undone has happened, nothing before it can be undone
   either.
@@ -210,8 +225,7 @@ chat are in `accounts.md` (rules `A…`). The card data is `cards.json`.
 - **R8.1** When you end your turn you are marked as **done**. Done is final: you can take no more
   main-phase actions this turn.
 - **R8.2** The main phase ends once **every** player still in the game is done.
-- **R8.3** The order in which players became done is recorded; it breaks ties at the end of the
-  game (R21.8).
+- **R8.3** The order in which players became done is recorded in the game's action log.
 - **R8.4** Players who are made done at the same moment (R9.10) become done in player order
   (R4.5).
 - **R8.5** **Nothing is lost by ending:** when a player becomes done, by ending their turn or by
@@ -287,13 +301,13 @@ chat are in `accounts.md` (rules `A…`). The card data is `cards.json`.
 
 After the main phase, in this order:
 
-- **R10.1** For each player still in the game: influence +1; funds + income; bonus is added and
-  turned into funds (R14); first-completion project rewards are given (R16.6); "played a card
-  this turn" is reset (unused build passes are kept, R6.3). Players who left get no end-of-turn
-  steps.
-- **R10.2** Quests completed this turn leave the table for good. Quests at the end of their 5th
-  turn on the table that nobody completed leave it, and go back into the quest list only after
-  the start-of-turn refill (R19.7, R11.2).
+- **R10.1** For each player still in the game: influence +1; funds + income; then the stats gain
+  is added to funds (R14); "played a card this turn" is reset (unused build passes are kept,
+  R6.3). Players who left get no end-of-turn steps.
+- **R10.2** Quests leave the table: a quest whose extra turn this was (R19.6), a quest first
+  completed this turn in its last turn on the table, and a quest at the end of its last turn on
+  the table (R19.7) that nobody completed. Completed quests leave for good; quests nobody
+  completed go back into the quest list only after the start-of-turn refill (R19.7, R11.2).
 - **R10.3** The turn number goes up by 1.
 
 ## R11. Start of a turn
@@ -303,11 +317,17 @@ At the start of every turn from turn 2 on, in this order:
 - **R11.1** The marketplace removes cards that have been on display during 2 market phases and
   refills its empty places (R18.14).
 - **R11.2** At the start of turn 20, a 5th quest place is added. The empty quest places are
-  refilled (R19.8). Then the quests that left the table after 5 turns at the end of the turn
-  before go back into the quest list (R19.7).
+  refilled (R19.8). Then the quests that left the table uncompleted at the end of the turn before
+  go back into the quest list (R19.7).
 - **R11.3** The **market phase** takes place, which includes every player's turn draw (R18).
 - **R11.4** Before R11.1, at the very start of the turn, every player still in the game gets
   1 build pass (R6.3).
+- **R11.5** **Support:** right after R11.4, every player still in the game compares their total
+  worth gained (R2.4) with the highest total worth gained among the other players still in the
+  game, and gets **1 fund for every full 10** they are behind (behind by 23.5: +2 funds). Every
+  player is compared as they were before any Support of that turn. With fewer than 2 players
+  still in the game, nobody gets Support. Support counts toward total worth gained, and is
+  public as soon as it is given (M3.5).
 
 ## R12. Types and combos
 
@@ -338,14 +358,18 @@ At the start of every turn from turn 2 on, in this order:
 - **R13.2** This repeats as long as it is still possible. It is checked after every action you
   take.
 
-## R14. Bonus
+## R14. Stats gain
 
-- **R14.1** At the end of every turn, bonus goes up by:
+- **R14.1** At the end of every turn, after income (R10.1), funds go up by the **stats gain**, in
+  tenths of a fund (R2.5):
 
   workforce + quality + satisfaction + 4 × product + 3 × distribution
 
-- **R14.2** Negative stats lower it, and the bonus can go below zero.
-- **R14.3** Then, for every full 10 bonus, 10 bonus is turned into 1 fund.
+  A stats gain of 23 is +2.3 funds.
+- **R14.2** Negative stats lower it, and it can be below zero: funds then go down by that many
+  tenths, but never below 0.
+- **R14.3** A positive stats gain counts toward total worth gained (R2.4); a negative one does
+  not lower it.
 
 ## R15. Influence actions
 
@@ -370,7 +394,7 @@ At the start of every turn from turn 2 on, in this order:
     (`influence to funds` is `influence_to_funds`).
   - **pay costs:** `pay ` and one or more costs separated by `, `. A cost is a whole number from
     1 to 99 and a stat of R2.1 (`fund` or `funds`, `income`, `influence`, `workforce`,
-    `quality`, `satisfaction`, `product`, `distribution`, `bonus`), for example
+    `quality`, `satisfaction`, `product`, `distribution`), for example
     `pay 2 influence, 1 quality`.
   - **what you get:** either `get ` and one or more gains separated by `, `, each a whole number
     from 1 to 99 and a stat of R2.1 or `build pass` (`build passes`), for example
@@ -410,11 +434,8 @@ At the start of every turn from turn 2 on, in this order:
   - uses up the 8 of that stat
   - gives income +1, funds +2, influence +3
   - draws 1 card of a random sector, tier by turn (R17.10)
-- **R16.4** Completing your third project gives an extra income +1 and draws 1 more card.
-- **R16.5** Completing a project is a main-phase action.
-- **R16.6** **First completion:** for each project, in the first turn in which any player
-  completes it, every player who completes it in that turn also gets **+2 funds**, at the end of
-  the turn. In later turns, that project gives only the normal reward.
+- **R16.5** Completing a project is a main-phase action. Every completion gives the reward of
+  R16.3, the third project and the first completion of a project by anyone included.
 
 ## R17. The deck and drawing cards
 
@@ -552,29 +573,46 @@ At the start of every turn from turn 2 on, in this order:
   start of turn 20 a 5th place is added and filled like any empty place.
 - **R19.2** The quest list holds the quests of `quests.txt` (R20.7), each of tier 1, 2 or 3.
   Higher-tier quests are harder and give bigger rewards.
-- **R19.3** When the game starts, the table gets 4 random tier 1 quests.
+- **R19.3** When the game starts, the table gets 4 random tier 1 quests, out of those R19.11
+  allows with every player's starting income of 3.
 - **R19.4** Each quest has a **requirement**: something you must have at that moment, such as an
   amount of a stat, a count of a type, or a number of cards of a sector or tier in your city.
   Nothing is used up. To complete a quest, workforce, quality and satisfaction must also all be
   0 or more (R2.3).
 - **R19.5** Completing a quest is a main-phase action. Each player can complete each quest on the
-  table once. The **reward** is given straight away. Any number of players can complete the same
-  quest in the same turn.
-- **R19.6** At the end of a turn, every quest that at least one player completed leaves the table
-  for good. During the next turn, every player can still see which quests were completed in the
-  turn before and by whom (M3.5).
-- **R19.7** A quest stays on the table for at most **5 turns**. At the end of its 5th turn on the
-  table, if nobody completed it, it leaves the table. It goes back into the quest list only
-  after the empty places have been refilled at the start of the next turn (R11.2, R19.8), so it
-  cannot come straight back.
+  table once. The **reward** is given straight away, with +1 influence more in the turn the quest
+  is first completed (R19.10). Any number of players can complete the same quest in the same
+  turn.
+- **R19.6** **Extra turn:** after the turn in which a quest is first completed, it stays on the
+  table for one more turn, its **extra turn**, so that other players can still complete it; at
+  the end of its extra turn it leaves the table for good. A quest completed again during its
+  extra turn does not stay longer. A quest first completed in its last turn on the table (R19.7)
+  gets no extra turn and leaves for good at the end of that turn. During the next turn, every
+  player can still see which quests were completed in the turn before and by whom (M3.5).
+- **R19.7** A quest stays on the table for at most **6 turns** if it is tier 1, **5 turns** if
+  tier 2 and **4 turns** if tier 3, the turn it was placed in counting as its first. At the end
+  of its last turn on the table, if nobody completed it, it leaves the table. It goes back into
+  the quest list only after the empty places have been refilled at the start of the next turn
+  (R11.2, R19.8), so it cannot come straight back.
 - **R19.8** At the start of the next turn, the empty places are filled one at a time, in table
-  order (place 1 first, the 5th place last), each with a random quest from the list. A tier is
+  order (place 1 first, the 5th place last), each with a random quest from the list that
+  R19.11 allows. A tier is
   picked only while the list still has quests. Its tier is set by the tier by turn rule (R17.10), but tier 2 quests can only be placed
   from turn 5 and tier 3 quests only from turn 13. If the tier picked is not allowed yet or has
   no quests left, the nearest allowed tier that still has quests is used, the lower one first.
   If no allowed tier has quests left, the place stays empty until the next turn.
 - **R19.9** When the list has no quests left, empty places stay empty until quests go back into
   it.
+- **R19.10** **First completion of a quest:** every player who completes a quest in the turn it
+  is first completed gets **+1 influence** on top of its reward, straight away. Completing it
+  during its extra turn (R19.6) gives only the reward. Undoing the completion takes back the
+  +1 too (R7.1).
+- **R19.11** **Quests held back:** a quest whose requirement names an income N can be placed on
+  the table (R19.3, R19.8) only while at least one player still in the game has income of at
+  least N − 2; a quest whose requirement names completed projects only while at least one
+  player still in the game has income of at least 8. Incomes are taken as they are at that
+  moment. A quest held back stays in the quest list and is skipped by the pick; a tier whose
+  quests in the list are all held back counts as a tier with no quests left (R19.8).
 
 ## R20. Quest list
 
@@ -633,7 +671,8 @@ How requirements and rewards are read:
 - **R20.9** The game, the rules viewer and rulebook, the menus and the tutorial all take the
   quests from this file; no other list of them exists. `npm run check` fails, naming the line
   and the wrong word, when a line breaks R20.8, when two quests have the same name, when the
-  file has fewer than 4 tier 1 quests (R19.3 needs 4 to fill the starting table), or when a
+  file has fewer than 4 tier 1 quests that R19.11 allows at the start of a game (needing at most
+  income 5 and no completed project; R19.3 needs 4 to fill the starting table), or when a
   quest the tutorial needs (T0.7) is missing or changed (HARNESS.md, "Checking the harness
   itself").
 
@@ -641,30 +680,27 @@ How requirements and rewards are read:
 
 - **R21.1** The game ends after the main phase of the turn in which any player reaches the end
   goal (R1.3) and is still in the game when that main phase ends.
-- **R21.2** The end-of-turn steps (R10) are not carried out for that turn: no income, bonus or
-  influence, and the turn number stays as it is. First-completion project rewards earned in that
-  turn (R16.6) are still given. Then every player gets a score.
+- **R21.2** The end-of-turn steps (R10) are not carried out for that turn: no influence, income
+  or stats gain, and the turn number stays as it is. Then every player gets a score.
 - **R21.3** **Turn limit:** if no player has reached the end goal in turn 40, the game ends after
   that turn's main phase anyway, in the same way, and is scored as normal.
 - **R21.4** **Score:** computed exactly, in hundredths of a point, then rounded down to a whole
   number; a negative score is rounded down too, so −3.5 becomes −4:
 
   ```
-  870
-  − 25   × (turn number − 1)
-  + 6.5  × income
+  6.5  × income
   + 0.7  × workforce
   + 0.55 × quality
   + 0.5  × satisfaction
   + 2.75 × product
   + 2.25 × distribution
-  + 0.2  × (funds + cards in hand)
+  + 0.2  × (whole funds + cards in hand)
   + bonus-type points
   ```
 
-- **R21.5** "Turn number − 1" is the number of completed turns. That part is the same for all
-  players in a game. It stays in the formula so that a player's scores can be compared from one
-  game to the next.
+- **R21.5** **Whole funds** are funds without their tenths (R2.5): 5.9 funds count as 5. Income
+  is always whole. The score has no base and no part for the turn number, so how long a game
+  lasted changes no score.
 - **R21.6** **Bonus types:** when a game starts, 2 different types of the 33 are picked at random
   as bonus types for that game, the same for every player.
 - **R21.7** Each type has a point value of 2, 3 or 4. At the end, each player gets that value for
@@ -676,8 +712,11 @@ How requirements and rewards are read:
   | 3 | Raw Material, Forestry, Farm, Power Plant, Mine, Food, Sea, Utility, Mass Transit, Health, Mercantile, Beautification, Safety, Education |
   | 4 | Alcohol, Grain, Petroleum, Mass Media, Finance, Rental Space |
 
-- **R21.8** **Places:** all players still in the game are ranked by score, highest first; players
-  who left come after them (A3.4). The player in 1st place is the **winner**.
-- **R21.9** If several players have the same score, the one who became done earliest in the final
-  turn is placed higher (R8.3). If that is also the same, the one who comes earlier in that
-  turn's player order is placed higher.
+- **R21.8** **Places:** all players still in the game are placed first, and players who left
+  after them (A3.4). Among the players still in the game, every player who has reached the end
+  goal (R1.3) when the game ends places above every player who has not, whatever their scores;
+  inside each of these two groups, players are ranked by score, highest first. The player in 1st
+  place is the **winner**.
+- **R21.9** If several players in the same group have the same score, the one with the higher
+  total worth gained (R2.4) is placed higher. If that is also the same, the one who comes earlier
+  in the final turn's player order (R4.5) is placed higher.

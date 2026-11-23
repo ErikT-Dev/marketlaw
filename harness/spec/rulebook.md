@@ -18,7 +18,7 @@ places, turn your city's output into income, and finish ahead of the other mayor
 11. [The start of every turn](#the-start-of-every-turn)
 12. [Types and combos](#types-and-combos)
 13. [Income](#income)
-14. [Bonus](#bonus)
+14. [Stats gain and Support](#stats-gain-and-support)
 15. [Influence](#influence)
 16. [Projects](#projects)
 17. [The deck and drawing cards](#the-deck-and-drawing-cards)
@@ -33,7 +33,7 @@ Each player builds their own **city**: all the cards you have played. When the g
 player with the highest score wins (see [The end of the game](#the-end-of-the-game)).
 
 The game ends after the turn in which a player reaches the **end goal**: **income of at least
-22** and all **3 projects** completed.
+20** and all **3 projects** completed.
 
 Everyone plays the same turn at the same time. A turn's main phase ends when every player is
 done, so if you are quick you may wait a little for the others.
@@ -43,23 +43,28 @@ done, so if you are quick you may wait a little for the others.
 | Stat | You start with | What it is for |
 |---|---|---|
 | Funds | 7 | Your money. You pay for cards with it. |
-| Income | 3 | The funds you get at the end of every turn. You need 22 for the end goal. |
+| Income | 3 | The funds you get at the end of every turn. You need 20 for the end goal. |
 | Influence | 0 | You get 1 every turn. Spend it on [influence actions](#influence). |
 | Workforce | 0 | Made by Residential cards, used by all other cards. |
 | Quality | 0 | Made by Public cards, used by the other sectors. |
 | Satisfaction | 0 | Made by Public cards, used by the other sectors. |
 | Product | 0 | Made by Industry cards. Becomes [income](#income). |
 | Distribution | 0 | Made by Service cards. Becomes [income](#income). |
-| Bonus | 0 | Grows every turn and turns into extra funds (see [Bonus](#bonus)). |
 
 Workforce, quality and satisfaction can drop below zero. **While any of them is negative, you
 cannot gain income or complete projects or quests**, so keep them balanced.
 
 Turns are numbered from 1, the same for everyone.
 
+**Funds in tenths:** funds are counted in tenths, so you may have 5.3 funds. Prices, rewards and
+income are whole funds; the tenths come from your stats at the end of every turn (see
+[Stats gain and Support](#stats-gain-and-support)).
+
 **Total worth gained (F):** a count of everything of worth you have received in the game: every
-fund you received, except from selling cards, plus 1 for every card you gained. It starts at 14
-and only goes up. It is shown next to your stats and other players' stats, and no rule uses it.
+fund you received, however you got it, except from selling cards, plus 1 for every card you
+gained (drawn or taken from the marketplace). It starts at 14 and only goes up. It is shown next
+to your stats and other players' stats. Players far behind in F get Support, and on equal scores
+the higher F places higher.
 
 ## The cards
 
@@ -107,7 +112,8 @@ Every turn after that has three parts:
    where each player in turn draws cards, one at a time.
 2. **Main phase:** everyone plays at the same time, each in their own city. Your main phase
    starts as soon as your own market go is over, while later players still have their go.
-3. **End of the turn:** once everyone is done, income, influence and bonus are paid out.
+3. **End of the turn:** once everyone is done, income, influence and the stats gain are paid
+   out.
 
 **Who goes first:** at the start of the game, players get seats 1, 2, 3… in a random order.
 Seat 1 goes first in turn 1, seat 2 in turn 2, and so on, round and round. The order in a turn
@@ -145,7 +151,8 @@ You can play a card when:
 - it is tier 1, or it is turn 5 or later
 - you have a **build pass** left: every card you play uses one, your first card of the turn too
 
-**Build passes:** at the start of every turn, turn 1 too, everyone gets 1 build pass. Passes you
+**Build passes:** everyone starts turn 1 with 2 build passes, and gets 1 more at the start of
+every later turn. Passes you
 don't use are kept for later turns, as many as you save, so you can play several cards in one
 turn. You can also buy passes with [influence](#influence) and use them straight away.
 
@@ -159,12 +166,13 @@ back everything the move changed, including the price of your next bought build 
 undo:
 
 - playing a card
+- selling cards
 - claim all
 - influence actions that don't draw a card
 - completing a quest whose reward doesn't draw a card
 
-Nothing that draws a card can be undone, and neither can selling, completing a project or ending
-your turn. Once one of those has happened, nothing before it can be undone either.
+Nothing that draws a card can be undone, and neither can completing a project or ending your
+turn. Once one of those has happened, nothing before it can be undone either.
 
 ## Ending your turn
 
@@ -172,7 +180,6 @@ When you end your turn you are **done** for this turn; you can't take more actio
 that are ready are claimed for you first, so you never lose one by ending your turn. The main
 phase ends when every player is done.
 
-The order in which players became done is remembered: it breaks ties at the end of the game.
 Players whose time runs out at the same moment become done in player order.
 
 ## Time
@@ -207,23 +214,25 @@ and ratings stay the same.
 
 After the main phase, in this order:
 
-1. Every player gets +1 influence, gets their income in funds, and adds their bonus (see
-   [Bonus](#bonus)). Players who were among the first to complete a project this turn get their
-   extra 2 funds (see [Projects](#projects)). Unused build passes are kept.
-2. Quests that someone completed this turn leave the table for good. Quests that have been on
-   the table for 5 turns without being completed leave it too, and go back into the quest list
-   after the next turn's empty places are filled, so they cannot come straight back.
+1. Every player gets +1 influence, gets their income in funds, and then the stats gain (see
+   [Stats gain and Support](#stats-gain-and-support)). Unused build passes are kept.
+2. Quests whose extra turn this was leave the table for good, and so do quests first completed
+   in their last turn on the table. Quests whose time on the table is over without being
+   completed leave it too, and go back into the quest list after the next turn's empty places
+   are filled, so they cannot come straight back.
 3. The next turn begins.
 
 ## The start of every turn
 
-Every turn, turn 1 too, starts with everyone getting 1 build pass. From turn 2 on, the start of
-the turn then goes on in this order:
+From turn 2 on, the start of every turn goes in this order:
 
-1. The marketplace removes cards that have been on display for 2 market phases and fills its
+1. Everyone gets 1 build pass.
+2. Players far behind in total worth gained get Support (see
+   [Stats gain and Support](#stats-gain-and-support)).
+3. The marketplace removes cards that have been on display for 2 market phases and fills its
    empty places.
-2. Empty quest places are filled. From turn 20 there are 5 quest places instead of 4.
-3. The market phase, including everyone's turn draw.
+4. Empty quest places are filled. From turn 20 there are 5 quest places instead of 4.
+5. The market phase, including everyone's turn draw.
 
 ## Types and combos
 
@@ -254,14 +263,19 @@ satisfaction are all **0 or more**, this happens by itself:
 
 This repeats as long as it can, and is checked after every action.
 
-## Bonus
+## Stats gain and Support
 
-At the end of every turn, your bonus grows by:
+At the end of every turn, after your income, your stats add tenths of a fund to your funds, the
+**stats gain**:
 
 workforce + quality + satisfaction + 4 × product + 3 × distribution
 
-Negative stats lower it, and bonus can go below zero. Every full 10 bonus then turns into
-1 fund. *Example: bonus 23 becomes 2 funds, and 3 bonus stays.*
+*Example: a stats gain of 23 is +2.3 funds.* Negative stats lower it; if it is below zero, your
+funds go down by that many tenths, but never below 0.
+
+**Support:** at the start of every turn from turn 2 on, every player compares their total worth
+gained (F) with the highest F among the other players still in the game, and gets 1 fund for
+every full 10 they are behind. *Example: 23.5 behind gives +2 funds.* Support counts toward F.
 
 ## Influence
 
@@ -286,11 +300,8 @@ Each player has 3 projects, and can complete each one once:
 
 You need the amount, at least **10 income**, and workforce, quality and satisfaction must all be
 0 or more. Completing a
-project uses up those 8, gives **+1 income, +2 funds and +3 influence**, and draws 1 card. Your
-third project gives another +1 income and 1 more card.
-
-**Be first:** in the first turn in which anyone completes a project, everyone who completes that
-project in the same turn gets **+2 funds** extra at the end of the turn.
+project uses up those 8, gives **+1 income, +2 funds and +3 influence**, and draws 1 card, every
+time, whoever was first.
 
 ## The deck and drawing cards
 
@@ -354,7 +365,9 @@ market phases.
 ## Quests
 
 The **quests table** has 4 quests (5 from turn 20) that everyone can complete. The game starts
-with 4 tier 1 quests; tier 2 quests can appear from turn 5, tier 3 from turn 13.
+with 4 tier 1 quests; tier 2 quests can appear from turn 5, tier 3 from turn 13. A quest that
+needs an income appears only once some player has at least that income minus 2, and a quest
+that needs completed projects only once some player has at least 8 income.
 
 - A quest asks you to **have** something right now, such as a stat amount, a type count or
   certain cards in your city. Nothing is used up. Workforce, quality and satisfaction must all be
@@ -362,9 +375,13 @@ with 4 tier 1 quests; tier 2 quests can appear from turn 5, tier 3 from turn 13.
 - Completing a quest is a main-phase action, and you get the reward at once.
 - Each player can complete each quest once, and any number of players can complete it in the
   same turn.
-- A completed quest leaves the table at the end of that turn.
-- A quest stays at most 5 turns. If nobody completed it, it goes back into the quest list, but
-  not in time for the next turn's refill.
+- **Be first:** everyone who completes a quest in the turn it is first completed gets
+  **+1 influence** on top of the reward.
+- A completed quest stays for one more turn, its **extra turn**, so others can still complete
+  it, and then leaves the table for good. A quest first completed in its last turn leaves at the
+  end of that turn.
+- A tier 1 quest stays at most 6 turns, a tier 2 quest 5 and a tier 3 quest 4. If nobody
+  completed it, it goes back into the quest list, but not in time for the next turn's refill.
 
 ## The quest list
 
@@ -382,27 +399,24 @@ with 4 tier 1 quests; tier 2 quests can appear from turn 5, tier 3 from turn 13.
 ## The end of the game
 
 The game ends after the main phase of the turn in which a player still in the game reaches the
-end goal (income 22 and all 3 projects). That turn's end-of-turn payouts are skipped, except the
-extra funds for being first to a project. If nobody reaches the end goal, the game ends after
-turn 40's main phase.
+end goal (income 20 and all 3 projects). That turn's end-of-turn payouts are skipped. If nobody
+reaches the end goal, the game ends after turn 40's main phase.
 
 **Score:**
 
 ```
-870
-− 25   × (turn number − 1)
-+ 6.5  × income
+6.5  × income
 + 0.7  × workforce
 + 0.55 × quality
 + 0.5  × satisfaction
 + 2.75 × product
 + 2.25 × distribution
-+ 0.2  × (funds + cards in hand)
++ 0.2  × (whole funds + cards in hand)
 + bonus-type points
 ```
 
-The result is rounded down to a whole number. The "turn number" part is the same for every
-player in a game; it makes scores comparable between games.
+Only whole funds count: 5.9 funds count as 5. The result is rounded down to a whole number. The
+end-of-game screen shows each part of your score.
 
 **Bonus types:** at the start of every game, 2 different types are picked at random. At the end,
 you score points for every count of those types in your type counts, including types gained
@@ -414,6 +428,7 @@ from quests:
 | 3 | `Raw Material`, `Forestry`, `Farm`, `Power Plant`, `Mine`, `Food`, `Sea`, `Utility`, `Mass Transit`, `Health`, `Mercantile`, `Beautification`, `Safety`, `Education` |
 | 4 | `Alcohol`, `Grain`, `Petroleum`, `Mass Media`, `Finance`, `Rental Space` |
 
-**Winner:** players are ranked by score, and the highest score wins. Players who left the game
-come last. On a tie, the player who became done earlier in the final turn places higher; if
-that is also equal, the one earlier in that turn's player order.
+**Winner:** every player who reached the end goal places above every player who did not,
+whatever the scores; then players are ranked by score, and the first place wins. Players who
+left the game come last. On equal scores, the higher total worth gained (F) places higher; if
+that is also equal, the one earlier in the final turn's player order.

@@ -136,12 +136,24 @@ None.
   differs only in capital letters is a change; the same name exactly changes nothing and is not
   counted. A change is checked in this order: the name itself (A2.1, A2.3), the 4 changes in
   7 days (`username_change_too_soon`), then whether it is taken.
-- **A2.5** **Player icon:** every account, guest or registered, has an icon: the first character
-  of the username it shows in that place, in upper case, on a background colour that is fixed
-  for the account. The colour is one of 12 icon colours of the design tokens, picked by the
-  server from the account's id, so it is the same in every game and does not change when the
-  username does. The view of a game carries each seat's icon colour; the client never picks
-  it.
+- **A2.5** **Player icon:** every account, guest or registered, has an icon: a **picture** on a
+  **background colour**, drawn in a **picture colour**. The pictures are exactly the SVG files of
+  the folder `player-icons/` in the repository (animals from game-icons.net, CC BY 3.0, with the
+  folder's licence file); no other list of them exists, and players cannot upload pictures. The
+  two colours are any colours (`#rrggbb`) whose contrast with each other is at least 3:1 (WCAG's
+  contrast for graphics). A new account gets a random picture and random colours that pass the
+  contrast check, and so does every account made before player icons had pictures. The view of
+  a game carries each seat's icon; the client never picks it. `npm run check` fails when the
+  folder holds a file that is not an SVG with a `viewBox`, an SVG over 20 KB or with a script or
+  a reference to anything outside it, or a picture in an artist folder the licence file does not
+  name.
+- **A2.6** **Changing the icon:** any player, guest or registered, can change their icon in
+  account settings, at most **10 times in any 24 hours**. A change is checked in this order: the
+  picture is in the folder (`unknown_icon`), the colours pass the contrast check
+  (`icon_colors_too_alike`), then the 10 changes (`icon_change_too_soon`). Choosing the icon
+  they already have changes nothing and is not counted. Inside a room the player keeps the icon
+  they had when they joined it, as for usernames (A2.4); the new icon shows everywhere else at
+  once, and in every room they join afterwards.
 
 ## A3. Game records
 
@@ -161,6 +173,8 @@ None.
     - their result: **won**, **lost** or **left** (they left the game before it ended)
     - their place among all players who took part (A3.4)
     - their score, and whether they reached the end goal
+    - their Q, T, C and F counts (S3.1): quests completed, types in their city with types gained
+      from quests, combos claimed, and total worth gained (R2.4)
     - their final income, funds plus cards in hand, workforce, quality, satisfaction, product,
       distribution and influence
     - their bonus-type points
@@ -168,12 +182,13 @@ None.
     - the total workforce, quality and satisfaction they gained from combos
     - their type counts
 - **A3.3** For a player who left, the record holds their values at the moment they left, and their
-  score is the score formula (R21.4) applied to those values, using the turn number at the moment
-  they left. Leaving empties their hand (M6), so their funds plus cards in hand count the cards
+  score is the score formula (R21.4) applied to those values; the end-of-game screen shows them
+  with that score too. Leaving empties their hand (M6), so their funds plus cards in hand count the cards
   they held when they left; their values do not change after they left. The record also holds
   the turn in which they left.
-- **A3.4** **Places:** players who stayed are ranked by score (R21.8, R21.9), and players who left
-  come after them, the one who left first last.
+- **A3.4** **Places:** players who stayed are placed as R21.8 and R21.9 say (the end goal first,
+  then score, total worth gained and player order), and players who left come after them, the
+  one who left first last.
 - **A3.5** Usernames in game records always show the player's current username, so a username
   change updates every record.
 
@@ -389,7 +404,7 @@ None.
   - **Who runs MarketLaw:** the person who runs the site, reachable at the contact address shown
     on the page.
   - **What is stored and why:**
-    - Your username and account, to know who is playing.
+    - Your username, your player icon and account, to know who is playing.
     - For registered users: your email address (and a new one waiting for confirmation), only to
       confirm it and to send password resets (A1.8), and a one-way hash of your password, to log
       you in. Your password itself is never stored.
@@ -410,6 +425,8 @@ None.
   - **Who else handles it:** Cloudflare runs the site and the human check (Turnstile), which sees
     your IP address; MarketLaw does not store it. Cloudflare keeps request logs for at most
     3 days. The email service sends the emails and sees your email address.
-  - **Your choices:** see and change your username and email address in account settings, and
-    delete your account there (A1.15): your email address and password hash are removed at once.
-    For anything else, write to the contact address.
+  - **Picture credits:** the player icon pictures are by the artists of game-icons.net, named
+    with the licence (Creative Commons Attribution 3.0), as the folder's licence file lists them.
+  - **Your choices:** see and change your username, player icon and email address in account
+    settings, and delete your account there (A1.15): your email address and password hash are
+    removed at once. For anything else, write to the contact address.
