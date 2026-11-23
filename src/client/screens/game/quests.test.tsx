@@ -8,6 +8,7 @@ import { GamePage } from "../GamePage";
 const TRADING_POST: QuestPlaceView = {
   quest: "Trading post",
   turnsLeft: 3,
+  isInExtraTurn: false,
   completeRejection: null,
   progress: [
     { seat: 1, isCompleted: false, canCompleteNow: false, have: [3, 0], negativeStats: [] },
@@ -19,6 +20,7 @@ const TRADING_POST: QuestPlaceView = {
 const WORKING_DISTRICT: QuestPlaceView = {
   quest: "Working district",
   turnsLeft: 1,
+  isInExtraTurn: false,
   completeRejection: "quest_already_completed",
   progress: [
     { seat: 2, isCompleted: true, canCompleteNow: false, have: [3, 1], negativeStats: [] },
@@ -82,6 +84,7 @@ describe("quests panel", () => {
       {
         quest: "Civic pride",
         turnsLeft: 5,
+        isInExtraTurn: false,
         completeRejection: "quest_needs_not_met",
         progress: [
           {
@@ -104,6 +107,7 @@ describe("quests panel", () => {
       {
         quest: "Penthouses",
         turnsLeft: 5,
+        isInExtraTurn: false,
         completeRejection: "quest_needs_not_met",
         progress: [
           {
@@ -129,6 +133,7 @@ describe("quests panel", () => {
       {
         quest: "Workers' housing",
         turnsLeft: 2,
+        isInExtraTurn: false,
         completeRejection: "quest_needs_not_met",
         progress: [
           {

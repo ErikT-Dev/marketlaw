@@ -75,7 +75,7 @@ describe("what other players see during the main phase", () => {
     const base = gameWith(["Landfill"], []);
     const start = withMainPhaseStart({
       ...base,
-      quests: [{ quest: "Trading post", turnsOnTable: 1 }],
+      quests: [{ quest: "Trading post", turnsOnTable: 1, isInExtraTurn: false }],
       seats: base.seats.map((seat) =>
         seat.seat === 1
           ? { ...seat, city: ["Apparel Store"], stats: { ...seat.stats, income: 4 } }
@@ -106,7 +106,7 @@ describe("what other players see during the main phase", () => {
     const base = gameWith(["Landfill"], []);
     const start = withMainPhaseStart({
       ...base,
-      quests: [{ quest: "Trading post", turnsOnTable: 1 }],
+      quests: [{ quest: "Trading post", turnsOnTable: 1, isInExtraTurn: false }],
       seats: base.seats.map((seat) =>
         seat.seat === 1
           ? {
@@ -134,7 +134,7 @@ describe("what other players see during the main phase", () => {
     const base = gameWith(["Landfill"], []);
     const start = withMainPhaseStart({
       ...base,
-      quests: [{ quest: "Trading post", turnsOnTable: 1 }],
+      quests: [{ quest: "Trading post", turnsOnTable: 1, isInExtraTurn: false }],
       seats: base.seats.map((seat) =>
         seat.seat === 1
           ? {

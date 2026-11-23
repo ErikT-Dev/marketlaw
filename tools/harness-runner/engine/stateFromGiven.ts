@@ -54,8 +54,11 @@ function seatsFrom(given: Given, players: number, turn: number): GameState["seat
 }
 
 function questsFrom(given: Given): GameState["quests"] {
-  return (given.quests ?? []).map(({ quest, turns_on_table: turnsOnTable }) =>
-    quest === null ? null : { quest, turnsOnTable: turnsOnTable ?? 1 },
+  return (given.quests ?? []).map(
+    ({ quest, turns_on_table: turnsOnTable, extra_turn: isInExtraTurn }) =>
+      quest === null
+        ? null
+        : { quest, turnsOnTable: turnsOnTable ?? 1, isInExtraTurn: isInExtraTurn ?? false },
   );
 }
 

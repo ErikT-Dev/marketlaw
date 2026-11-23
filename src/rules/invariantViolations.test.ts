@@ -246,7 +246,7 @@ describe("invariantViolations", () => {
     const after = {
       ...withSeat1(START, { questsCompleted: ["Supply chain", "Supply chain"] }),
       questList: START.questList.filter((quest) => quest !== first && quest !== "Supply chain"),
-      quests: [...START.quests, ...(second === undefined ? [] : [{ quest: second, turnsOnTable: 1 }])],
+      quests: [...START.quests, ...(second === undefined ? [] : [{ quest: second, turnsOnTable: 1, isInExtraTurn: false }])],
     };
     const found = invariantViolations(transition(START, { type: "end_turn", seat: 1 }, after)).filter(
       (violation) => /^I1[25]/.test(violation),
@@ -264,8 +264,8 @@ describe("invariantViolations", () => {
       turn: 4,
       quests: [
         ...START.quests.slice(0, 3),
-        { quest: "Safe streets" as const, turnsOnTable: 1 },
-        { quest: "Metropolis" as const, turnsOnTable: 6 },
+        { quest: "Safe streets" as const, turnsOnTable: 1, isInExtraTurn: false },
+        { quest: "Metropolis" as const, turnsOnTable: 6, isInExtraTurn: false },
       ],
       questList: START.questList.filter((quest) => quest !== "Safe streets" && quest !== "Metropolis"),
     };

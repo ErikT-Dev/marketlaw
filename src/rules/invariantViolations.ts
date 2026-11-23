@@ -8,6 +8,7 @@ import { isVoteAction } from "./isVoteAction";
 import type { GameAction } from "./GameAction";
 import type { GameState } from "./GameState";
 import type { SeatNumber } from "../shared/SeatNumber";
+import { questPlacementViolations } from "./questPlacementViolations";
 import { redrawViolations } from "./redrawViolations";
 import { seatOf } from "./seatOf";
 import type { SeatState } from "./SeatState";
@@ -138,6 +139,7 @@ function acceptedViolations(transition: Transition, after: GameState): ReadonlyA
     ...worthGainedViolations(transition, after),
     ...worthGainedSumViolations(transition, after),
     ...gameEndViolations(before, after),
+    ...questPlacementViolations(before, after),
     ...stateInvariantViolations(after),
   ];
 }

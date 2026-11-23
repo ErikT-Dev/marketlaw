@@ -7,6 +7,7 @@ import type { GameState } from "./GameState";
 import { MARKETPLACE_PLACE_ORDER } from "./MARKETPLACE_PLACE_ORDER";
 import { newSeat } from "./newSeat";
 import { pickBonusTypes } from "./pickBonusTypes";
+import { highestIncomeInGameOf } from "./highestIncomeInGameOf";
 import { pickStartingQuests } from "./pickStartingQuests";
 import type { Piles } from "./Piles";
 import type { Random } from "./Random";
@@ -36,7 +37,7 @@ export function setUpGame(setup: GameSetup, random: Random): GameState {
     phasesShown: 0,
   }));
   const filled = fillMarketplace(emptyMarketplace, dealt.piles, FIRST_TURN, random);
-  const quests = pickStartingQuests(random);
+  const quests = pickStartingQuests(highestIncomeInGameOf(dealt.seats), random);
   return withMainPhaseStart({
     kind: setup.kind,
     turn: FIRST_TURN,
@@ -50,7 +51,7 @@ export function setUpGame(setup: GameSetup, random: Random): GameState {
     mainPhaseLog: [],
     questsCompletedLastTurn: [],
     marketplace: filled.marketplace,
-    quests: quests.map((quest) => ({ quest, turnsOnTable: 1 })),
+    quests: quests.map((quest) => ({ quest, turnsOnTable: 1, isInExtraTurn: false })),
     questList: QUEST_LINES.map(({ name }) => name).filter((name) => !quests.includes(name)),
     bonusTypes: pickBonusTypes(random),
     doneOrder: [],

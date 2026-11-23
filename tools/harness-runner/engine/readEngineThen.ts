@@ -77,7 +77,11 @@ export function readEngineThen(
       state.quests.map((place) =>
         place === null
           ? { quest: null }
-          : { quest: place.quest, turns_on_table: place.turnsOnTable },
+          : {
+              quest: place.quest,
+              turns_on_table: place.turnsOnTable,
+              extra_turn: place.isInExtraTurn,
+            },
       ),
     quest_list: () => state.questList,
     quest_list_excludes: () => {

@@ -32,7 +32,7 @@ describe("the quests table at the start of a turn", () => {
     const state = withMainPhaseStart({
       ...start,
       turn: 3,
-      quests: [{ quest: "Trading post", turnsOnTable: 1 }],
+      quests: [{ quest: "Trading post", turnsOnTable: 6, isInExtraTurn: false }],
       questList: ["Safe streets", "Metropolis"],
       seats: start.seats.map((seat) =>
         seat.seat === 1

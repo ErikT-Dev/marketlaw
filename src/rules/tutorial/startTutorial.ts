@@ -24,7 +24,7 @@ export function startTutorial(startedAt: number): TutorialState {
       card: TUTORIAL_SETUP.marketplace[place],
       phasesShown: 0,
     })),
-    quests: TUTORIAL_SETUP.quests.map((quest) => ({ quest, turnsOnTable: 1 })),
+    quests: TUTORIAL_SETUP.quests.map((quest) => ({ quest, turnsOnTable: 1, isInExtraTurn: false })),
     questList: QUEST_LINES.map(({ name }) => name).filter(
       (name) => !TUTORIAL_SETUP.quests.includes(name),
     ),

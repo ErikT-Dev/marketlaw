@@ -495,7 +495,7 @@ approval of the list, the quest scenarios that name quest contents.
     scenarios of `end-of-game`, the three of `records-and-ratings`) and 16 (tutorial start's
     `build_passes`, which the runner cannot read yet); unit tests of items 9 (`reportBudgets`
     B19), 18 (`parseRulebook`, two) and 19 (`influenceAndUndo`, `ruleFileTables`, two).
-- [ ] 5. **Quests on the table** (R10.2, R19.3, R19.5 to R19.11, R20.9, I15, I16, findings 11,
+- [x] 5. **Quests on the table** (R10.2, R19.3, R19.5 to R19.11, R20.9, I15, I16, findings 11,
   12, 50). **Large.**
   - Time by tier 6, 5, 4 (`QUEST_TABLE_RULES.ts`); the extra turn after the first completion
     and the leaving rules of R19.6 (`endTurnForQuests.ts`, `QuestTable.ts`); +1 influence for
@@ -508,6 +508,38 @@ approval of the list, the quest scenarios that name quest contents.
   - Covers the new `quests` scenarios, `undo`'s "+1 influence" one, and the two required ones
     now using a tier 2 quest. Run the "completing … gives its reward" scenarios with the +1
     locally and report them as item 6's (Start).
+  - **Done (2026-11-23).** `QuestOnTable` has `isInExtraTurn`; `QUEST_TABLE_RULES` has
+    `turnsOnTableOfTier` (6, 5, 4), read through `turnsOnTableOf(quest)`. A quest is first
+    completed this turn when it is not in its extra turn and some seat's `questsCompleted`
+    names it (`isFirstCompletedThisTurn`), so undoing a completion needs nothing on the table.
+    `endTurnForQuests`: an extra-turn quest leaves for good; a first-completed one gets its extra
+    turn, or leaves for good in its last turn; an uncompleted one in its last turn goes back to
+    the list after the refill. `completeQuest` adds +1 influence unless the quest is in its extra
+    turn. `questsCompletedThisTurnOf` reads the turn's `completed_quest` log entries, so an
+    extra-turn quest names only that turn's completers. The income gate is
+    `src/shared/ruleFiles/incomeToPlaceQuestOf.ts` (the income some player needs: N − 2 for
+    `income N`, 8 for projects) with `isQuestPlaceable` and `highestIncomeInGameOf`; refills
+    and the starting table pick only placeable quests, and a tier whose quests are all held
+    back counts as empty. None of this names a quest, so it holds for any `quests.txt` (6b).
+    The view's quest places carry `isInExtraTurn` and `turnsLeft` by tier (1 in the extra
+    turn). I16 also checks that no quest stays past its extra turn and that no quest was
+    placed while held back (`questPlacementViolations.ts`). The rule file check counts only
+    tier 1 quests placeable at starting income 3. The runner reads and writes `extra_turn`.
+    Every `quests` scenario passes, the 45 reward scenarios, "a type gained …", visibility's
+    two quest ones and tutorial turn 5 too; unit tests in `questsHeldBack.test.ts` use quests
+    found by their needs, not by name.
+  - **Differs from the phase file.** A `HARNESS:` commit (Q178) changes six `quests.yaml`
+    scenarios that contradicted R19.7, R19.10 or R18.8 (names kept) and drops `HARNESS.md`'s
+    unused given field `completed_this_turn`. `questTable.test.ts`'s Trading post now completes
+    in its last turn (it relied on a completed quest leaving at once), and
+    `applyTutorialAction.test.ts` expects influence 7 after T5.3, as T5.3 says.
+  - **For later items.** Item 13: `QuestPlaceView.isInExtraTurn` and `turnsLeft` are ready.
+    Item 6b: the quest code reads only kinds `income` and `projects` for the gate; any new
+    requirement kind goes into `incomeToPlaceQuestOf`'s switch (the compiler asks for it).
+    Still failing, none of them item 5's: required scenarios of items 7 (the five score and
+    tie-break scenarios of `end-of-game`, the three of `records-and-ratings`) and 16 (tutorial
+    start's `build_passes`); unit tests of items 9 (`reportBudgets` B19), 18 (`parseRulebook`,
+    two) and 19 (`influenceAndUndo`, `ruleFileTables`, two). E2e tests not run locally.
 - [ ] 7. **Places and score** (R21.4, R21.5, R21.8, R21.9, A3.3, A3.4, S9.5, I22, findings 25,
   28). **Medium.** After 2.
   - `scoreOf.ts`, `SCORE_HUNDREDTHS.ts`, `cardsInHandScoredOf.ts`, `scoredEndingOf.ts`: no 870

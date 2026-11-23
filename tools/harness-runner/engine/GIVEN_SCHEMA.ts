@@ -79,7 +79,13 @@ export const GIVEN_SCHEMA = v.strictObject({
   discard: v.optional(CARDS),
   marketplace: v.optional(v.array(MARKETPLACE_SLOT)),
   quests: v.optional(
-    v.array(v.strictObject({ quest: v.nullable(QUEST_NAME), turns_on_table: v.optional(COUNT) })),
+    v.array(
+      v.strictObject({
+        quest: v.nullable(QUEST_NAME),
+        turns_on_table: v.optional(COUNT),
+        extra_turn: v.optional(v.boolean()),
+      }),
+    ),
   ),
   quest_list: v.optional(v.array(QUEST_NAME)),
   bonus_types: v.optional(v.array(TypeName)),

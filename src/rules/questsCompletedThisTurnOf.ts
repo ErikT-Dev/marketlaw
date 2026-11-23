@@ -7,7 +7,15 @@ export function questsCompletedThisTurnOf(state: GameState): ReadonlyArray<Quest
       return [];
     }
     const seats = state.seats
-      .filter((seat) => seat.questsCompleted.includes(place.quest))
+      .filter((seat) =>
+        state.mainPhaseLog.some(
+          (entry) =>
+            entry.kind === "completed_quest" &&
+            entry.turn === state.turn &&
+            entry.seat === seat.seat &&
+            entry.quest === place.quest,
+        ),
+      )
       .map((seat) => seat.seat);
     return seats.length === 0 ? [] : [{ quest: place.quest, seats }];
   });

@@ -11,6 +11,7 @@ export const QUEST_PLACE_VIEW_SCHEMA = v.union([
   v.object({
     quest: QuestName,
     turnsLeft: COUNT,
+    isInExtraTurn: v.boolean(),
     completeRejection: v.nullable(ReasonCode),
     progress: v.array(
       v.object({

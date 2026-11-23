@@ -1,35 +1,45 @@
+import type { QuestName } from "../shared/catalogue/QuestName";
 import type { QuestOnTable } from "../shared/QuestOnTable";
 import type { GameState } from "./GameState";
-import { QUEST_TABLE_RULES } from "./QUEST_TABLE_RULES";
+import { highestIncomeInGameOf } from "./highestIncomeInGameOf";
+import { isFirstCompletedThisTurn } from "./isFirstCompletedThisTurn";
 import type { QuestTable } from "./QuestTable";
 import type { Random } from "./Random";
 import { refillQuests } from "./refillQuests";
+import { turnsOnTableOf } from "./turnsOnTableOf";
 
-function isCompletedByAnyone(state: GameState, place: QuestOnTable): boolean {
-  return state.seats.some((seat) => seat.questsCompleted.includes(place.quest));
-}
+type PlaceAtTurnEnd = {
+  readonly place: QuestOnTable | null;
+  readonly returned: ReadonlyArray<QuestName>;
+};
 
-function hasHadItsTurns(place: QuestOnTable): boolean {
-  return place.turnsOnTable >= QUEST_TABLE_RULES.turnsOnTable;
+function placeAtTurnEnd(state: GameState, place: QuestOnTable | null): PlaceAtTurnEnd {
+  if (place === null || place.isInExtraTurn) {
+    return { place: null, returned: [] };
+  }
+  const isLastTurn = place.turnsOnTable >= turnsOnTableOf(place.quest);
+  if (isFirstCompletedThisTurn(state, place)) {
+    return {
+      place: isLastTurn
+        ? null
+        : { ...place, turnsOnTable: place.turnsOnTable + 1, isInExtraTurn: true },
+      returned: [],
+    };
+  }
+  return isLastTurn
+    ? { place: null, returned: [place.quest] }
+    : { place: { ...place, turnsOnTable: place.turnsOnTable + 1 }, returned: [] };
 }
 
 export function endTurnForQuests(state: GameState, turn: number, random: Random): QuestTable {
-  const returned = state.quests.flatMap((place) =>
-    place !== null && hasHadItsTurns(place) && !isCompletedByAnyone(state, place)
-      ? [place.quest]
-      : [],
-  );
+  const ended = state.quests.map((place) => placeAtTurnEnd(state, place));
   const refilled = refillQuests(
-    {
-      quests: state.quests.map((place) =>
-        place === null || hasHadItsTurns(place) || isCompletedByAnyone(state, place)
-          ? null
-          : { ...place, turnsOnTable: place.turnsOnTable + 1 },
-      ),
-      questList: state.questList,
-    },
-    turn,
+    { quests: ended.map(({ place }) => place), questList: state.questList },
+    { turn, highestIncome: highestIncomeInGameOf(state.seats) },
     random,
   );
-  return { ...refilled, questList: [...refilled.questList, ...returned] };
+  return {
+    ...refilled,
+    questList: [...refilled.questList, ...ended.flatMap(({ returned }) => returned)],
+  };
 }

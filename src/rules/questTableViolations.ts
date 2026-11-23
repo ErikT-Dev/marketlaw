@@ -1,6 +1,7 @@
 import { QUEST_LINES } from "../shared/ruleFiles/QUEST_LINES";
 import type { GameState } from "./GameState";
 import { QUEST_TABLE_RULES } from "./QUEST_TABLE_RULES";
+import { turnsOnTableOf } from "./turnsOnTableOf";
 
 function questPlaceViolations(state: GameState): ReadonlyArray<string> {
   const onTable = state.quests.flatMap((place) => (place === null ? [] : [place.quest]));
@@ -37,7 +38,7 @@ function questAgeViolations(state: GameState): ReadonlyArray<string> {
       }
       const placedTurn = state.turn - place.turnsOnTable + 1;
       return [
-        ...(place.turnsOnTable > QUEST_TABLE_RULES.turnsOnTable
+        ...(place.turnsOnTable > turnsOnTableOf(place.quest)
           ? [`I16: ${place.quest} has been on the table for ${String(place.turnsOnTable)} turns`]
           : []),
         ...(placedTurn < QUEST_TABLE_RULES.firstTurnOfTier[tier]
@@ -48,6 +49,28 @@ function questAgeViolations(state: GameState): ReadonlyArray<string> {
   ];
 }
 
+function questStayViolations(state: GameState): ReadonlyArray<string> {
+  return state.quests.flatMap((place) => {
+    if (place === null) {
+      return [];
+    }
+    const completedTurns = state.mainPhaseLog.flatMap((entry) =>
+      entry.kind === "completed_quest" && entry.quest === place.quest ? [entry.turn] : [],
+    );
+    const firstCompletedTurn = Math.min(Number.POSITIVE_INFINITY, ...completedTurns);
+    const isTooLate =
+      firstCompletedTurn < state.turn - 1 ||
+      (firstCompletedTurn === state.turn - 1 && !place.isInExtraTurn);
+    return isTooLate
+      ? [`I16: ${place.quest} is still on the table after the turn after it was first completed`]
+      : [];
+  });
+}
+
 export function questTableViolations(state: GameState): ReadonlyArray<string> {
-  return [...questPlaceViolations(state), ...questAgeViolations(state)];
+  return [
+    ...questPlaceViolations(state),
+    ...questAgeViolations(state),
+    ...questStayViolations(state),
+  ];
 }

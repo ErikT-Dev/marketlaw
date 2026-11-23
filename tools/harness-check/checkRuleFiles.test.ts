@@ -153,7 +153,25 @@ describe("the rule file check", () => {
       .filter((line) => !line.startsWith("Tier 1") || kept.some((name) => line.includes(name)))
       .join("\n");
     expect(messagesOf(fewer, INFLUENCE_ACTIONS_TEXT)).toEqual([
-      `${HARNESS_PATHS.quests} | whole file | 3 tier 1 quests; the starting table needs 4 (R19.3)`,
+      `${HARNESS_PATHS.quests} | whole file | 3 tier 1 quests can be placed at the start (at most income 5 and no completed project); the starting table needs 4 (R19.3, R19.11)`,
+      `${HARNESS_PATHS.quests} | Green city | the tutorial (T0.7) needs this tier 1 quest`,
+    ]);
+  });
+
+  it("counts only the tier 1 quests that can be placed at the start", () => {
+    const kept = ["Working district", "Fishing village", "Trading post"];
+    const heldBack = [
+      "Tier 1 | Rich town | income 6 | +1 fund",
+      "Tier 1 | Planned town | 1 completed project | +1 fund",
+    ];
+    const fewer = [
+      ...heldBack,
+      ...QUESTS_TEXT.split("\n").filter(
+        (line) => !line.startsWith("Tier 1") || kept.some((name) => line.includes(name)),
+      ),
+    ].join("\n");
+    expect(messagesOf(fewer, INFLUENCE_ACTIONS_TEXT)).toEqual([
+      `${HARNESS_PATHS.quests} | whole file | 3 tier 1 quests can be placed at the start (at most income 5 and no completed project); the starting table needs 4 (R19.3, R19.11)`,
       `${HARNESS_PATHS.quests} | Green city | the tutorial (T0.7) needs this tier 1 quest`,
     ]);
   });

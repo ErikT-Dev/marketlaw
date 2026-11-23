@@ -25,7 +25,7 @@ const SEAT_FIELDS = [
 ];
 
 const SLOT_FIELDS = new Set(["place", "card", "phases_shown"]);
-const QUEST_FIELDS = new Set(["quest", "turns_on_table"]);
+const QUEST_FIELDS = new Set(["quest", "turns_on_table", "extra_turn"]);
 
 export const ENGINE_FIELDS = {
   givenFields: new Set([

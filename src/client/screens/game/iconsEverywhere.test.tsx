@@ -38,6 +38,7 @@ const VIEW: Partial<PlayerView> = {
     {
       quest: "Trading post",
       turnsLeft: 3,
+      isInExtraTurn: false,
       completeRejection: "quest_needs_not_met",
       progress: [
         {
