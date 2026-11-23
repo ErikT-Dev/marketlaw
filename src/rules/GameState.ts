@@ -6,7 +6,6 @@ import type { MainPhaseLogEntry } from "../shared/MainPhaseLogEntry";
 import type { GameKind } from "../shared/GameKind";
 import type { GamePhase } from "../shared/GamePhase";
 import type { GameResult } from "../shared/GameResult";
-import type { ProjectName } from "../shared/ProjectName";
 import type { MarketplaceSlot } from "../shared/MarketplaceSlot";
 import type { QuestCompletedLastTurn } from "../shared/QuestCompletedLastTurn";
 import type { QuestOnTable } from "../shared/QuestOnTable";
@@ -32,7 +31,6 @@ export type GameState = {
   readonly bonusTypes: ReadonlyArray<TypeName>;
   readonly doneOrder: ReadonlyArray<SeatNumber>;
   readonly leaveOrder: ReadonlyArray<SeatNumber>;
-  readonly firstCompletions: ReadonlyArray<ProjectName>;
   readonly drawLog: ReadonlyArray<DrawLogEntry>;
   readonly mainPhaseLog: ReadonlyArray<MainPhaseLogEntry>;
   readonly questsCompletedLastTurn: ReadonlyArray<QuestCompletedLastTurn>;

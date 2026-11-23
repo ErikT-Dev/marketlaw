@@ -11,7 +11,7 @@ async function openSeat(browser: Browser, viewport: ViewportSize | null, link: s
   return page;
 }
 
-test("claim combos with the totals, complete a project, and get the first-completion funds", async ({
+test("claim combos with the totals, complete a project, and get its funds without a first-completion extra", async ({
   browser,
   viewport,
   request,
@@ -41,9 +41,7 @@ test("claim combos with the totals, complete a project, and get the first-comple
   await expectAllProjectsInView(ann);
 
   const projectsArea = ann.getByRole("list", { name: "Your projects" });
-  await expect(projectsArea.getByRole("listitem").first()).toContainText(
-    "First to complete gets +2",
-  );
+  await expect(projectsArea.getByRole("listitem").first()).not.toContainText("First to complete");
   await ann.getByRole("button", { name: "How projects work" }).click();
   await expect(ann.getByRole("region", { name: "How projects work" })).toContainText(
     "You have 3 projects.",
@@ -55,7 +53,7 @@ test("claim combos with the totals, complete a project, and get the first-comple
   await ann.getByRole("button", { name: "Projects", exact: true }).click();
   const projects = ann.getByRole("dialog", { name: "Projects" });
   const streets = projects.getByRole("listitem", { name: "Clean up the streets" });
-  await expect(streets).toContainText("Nobody has completed it yet");
+  await expect(streets).not.toContainText("Nobody has completed it yet");
   await expectScreenFits(ann, "projects", testInfo);
   await streets.getByRole("button", { name: "Complete" }).click();
   await expect(ann.getByRole("img", { name: "Funds 9.0", exact: true })).toBeVisible();
@@ -64,6 +62,6 @@ test("claim combos with the totals, complete a project, and get the first-comple
   await ann.getByRole("button", { name: "End turn" }).click();
   await bea.getByRole("button", { name: "End turn" }).click();
   await expect(ann.getByRole("heading", { name: "Turn 2 of 40" })).toBeVisible();
-  await expect(ann.getByRole("img", { name: "Funds 22.1", exact: true })).toBeVisible();
+  await expect(ann.getByRole("img", { name: "Funds 20.1", exact: true })).toBeVisible();
   await Promise.all([ann, bea].map(async (page) => page.context().close()));
 });

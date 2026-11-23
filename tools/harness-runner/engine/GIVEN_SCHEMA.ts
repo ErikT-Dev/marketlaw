@@ -83,7 +83,6 @@ export const GIVEN_SCHEMA = v.strictObject({
   ),
   quest_list: v.optional(v.array(QUEST_NAME)),
   bonus_types: v.optional(v.array(TypeName)),
-  first_completions: v.optional(v.array(ProjectName)),
   clock_ms: v.optional(COUNT),
   paused: v.optional(v.boolean()),
   last_vote_turn: v.optional(COUNT),

@@ -1,12 +1,9 @@
 import type { DrawLogEntry } from "../shared/DrawLogEntry";
 import type { MarketplaceSlot } from "../shared/MarketplaceSlot";
-import type { ProjectName } from "../shared/ProjectName";
 import { endMarketPhase } from "./endMarketPhase";
 import { endOfTurnSteps } from "./endOfTurnSteps";
 import { endTurnForQuests } from "./endTurnForQuests";
 import { fillMarketplace } from "./fillMarketplace";
-import { firstCompletionFundsOf } from "./firstCompletionFundsOf";
-import { firstCompletionsOf } from "./firstCompletionsOf";
 import { firstPlayerOf } from "./firstPlayerOf";
 import type { GameState } from "./GameState";
 import { MARKET_PHASES_SHOWN } from "./MARKET_PHASES_SHOWN";
@@ -22,13 +19,10 @@ function isShownLongEnough(slot: MarketplaceSlot): boolean {
   return slot.card !== null && slot.phasesShown >= MARKET_PHASES_SHOWN;
 }
 
-function seatAtTurnStart(seat: SeatState, firsts: ReadonlyArray<ProjectName>): SeatState {
+function seatAtTurnStart(seat: SeatState): SeatState {
   const afterSteps = withTurnBuildPass(endOfTurnSteps(seat));
-  const firstFunds = firstCompletionFundsOf(seat, firsts);
   const started = {
     ...afterSteps,
-    stats: { ...afterSteps.stats, funds: afterSteps.stats.funds + firstFunds },
-    worthGained: afterSteps.worthGained + firstFunds,
     drawnThisPhase: [],
     newCards: [],
     hasHadMarketGo: false,
@@ -56,8 +50,7 @@ export function endMainPhase(state: GameState, random: Random, at: number): Game
     (shuffle): DrawLogEntry => ({ kind: "shuffle", turn, seat: null, ...shuffle }),
   );
   const questTable = endTurnForQuests(state, turn, random);
-  const firsts = firstCompletionsOf(state);
-  const startedSeats = state.seats.map((seat) => seatAtTurnStart(seat, firsts));
+  const startedSeats = state.seats.map(seatAtTurnStart);
   const supported = withSupport({
     seats: startedSeats,
     turn,
@@ -75,7 +68,6 @@ export function endMainPhase(state: GameState, random: Random, at: number): Game
     quests: questTable.quests,
     questList: questTable.questList,
     doneOrder: [],
-    firstCompletions: [...state.firstCompletions, ...firsts],
     questsCompletedLastTurn: questsCompletedThisTurnOf(state),
     drawLog: [...state.drawLog, ...refillShuffles],
     clockStartedAt: at,

@@ -22,39 +22,29 @@ type Props = {
 
 function othersNote(
   project: ProjectName,
-  { seat: ownSeat, view, playerNames }: Props,
+  { view, playerNames }: Props,
   playerIconColors: ReadonlyArray<number>,
 ) {
   const completers = view.seats.filter(
     (seat) => seat.kind === "other" && seat.projects.includes(project),
   );
-  if (completers.length > 0) {
-    return (
-      <>
-        {" "}
-        · Completed by{" "}
-        {completers.map(({ seat }) => {
-          const name = playerNameOf(playerNames, seat);
-          return (
-            <PlayerIcon
-              key={seat}
-              name={name}
-              username={name}
-              colorIndex={playerIconColorOf(playerIconColors, seat)}
-            />
-          );
-        })}
-      </>
-    );
-  }
-  const isFirstStillPossible =
-    !ownSeat.projects.includes(project) && !view.firstCompletions.includes(project);
-  return isFirstStillPossible ? (
+  return completers.length === 0 ? null : (
     <>
       {" "}
-      · First to complete gets +2 <StatChip stat="funds" />
+      · Completed by{" "}
+      {completers.map(({ seat }) => {
+        const name = playerNameOf(playerNames, seat);
+        return (
+          <PlayerIcon
+            key={seat}
+            name={name}
+            username={name}
+            colorIndex={playerIconColorOf(playerIconColors, seat)}
+          />
+        );
+      })}
     </>
-  ) : null;
+  );
 }
 
 export function ProjectProgressList(props: Props) {

@@ -447,7 +447,7 @@ approval of the list, the quest scenarios that name quest contents.
     `last_turn`. Item 3: removing the first-completion funds needs no change to Support or
     I30 (both read funds as they are). Item 7: the tie-break scenarios read F; Support
     already counts in it.
-- [ ] 3. **Projects, end goal and build passes** (R1.3, R16.3, R4.6, R6.3, S6.3, S8.2, findings
+- [x] 3. **Projects, end goal and build passes** (R1.3, R16.3, R4.6, R6.3, S6.3, S8.2, findings
   6, 26, 48, 49). **Small.**
   - Delete `firstCompletionFundsOf.ts`, `firstCompletionsOf.ts` and the first-completion state
     (`GameState.ts`, `setUpGame.ts`, `endMainPhase.ts`, `endGame.ts`) and the third-project
@@ -456,6 +456,24 @@ approval of the list, the quest scenarios that name quest contents.
     ending check). Turn 1 gives 2 build passes (`withTurnBuildPass.ts`).
   - Covers the new `projects` scenarios and "the end goal needs income 20 and all 3 projects";
     setup's "2 build passes" scenario is item 20's name.
+  - **Done (2026-11-23).** `firstCompletionFundsOf`, `firstCompletionsOf` and
+    `FIRST_COMPLETION_FUNDS` are gone, and `firstCompletions` left the state, the view, both
+    schemas, the test builders and the scenario runner (`first_completions`). Every project
+    gives income +1, funds +2, influence +3 and 1 card (`completeProject.ts`). `END_GOAL` is
+    income 20, also in the end-of-game text. `setUpGame` gives 2 build passes in turn 1. The
+    projects area and pop-up lost the first-completion lines and the third-project warning; the
+    pop-up's intro and the help text say "every time" and "income 20" (S6.3), and the pop-up no
+    longer takes the view or the names. The runner reads `ended.end_goal` (the seats that
+    reached the end goal). The three new `projects` scenarios, setup's "2 build passes" and
+    "the end goal needs income 20 and all 3 projects" pass (the last run as required locally);
+    the first four failed before.
+  - **Differs from the phase file.** `projectsThisTurn` stays on the seat (written by
+    `completeProject`, cleared at the turn change, read by nothing now): item 12 can use it for
+    last turn's projects, or remove it if it builds them from the log.
+  - **For later items.** End-of-game's "reaching the end goal ends the game …" now fails only on
+    its scores (item 7). Tutorial start's `build_passes` (item 16) is 2 now in the engine; the
+    runner's tutorial reader still cannot read it. `e2e/combosAndProjects.spec.ts` expects
+    "Funds 20.1" at turn 2 and `e2e/gameOver.spec.ts` "Income 20"; neither was run locally.
 - [ ] 4. **Undo for selling** (R7.2, R7.3, R7.4, finding 24). **Small.**
   - `sellCards.ts` becomes an undo point (`withUndoHistory.ts`, `undoLatest.ts`); undo moves the
     cards from the holding pile back to the hand and takes back the funds; F unchanged both ways.

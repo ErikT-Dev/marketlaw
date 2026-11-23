@@ -1,5 +1,4 @@
 import type { OwnSeatView } from "../../../shared/OwnSeatView";
-import type { PlayerView } from "../../../shared/PlayerView";
 import type { ActionIntent } from "../../../shared/protocol/ActionIntent";
 import { ClaimAllDialog } from "./ClaimAllDialog";
 import { InfluenceDialog } from "./InfluenceDialog";
@@ -9,15 +8,13 @@ import { ProjectsDialog } from "./ProjectsDialog";
 type Props = {
   readonly dialog: OpenDialog;
   readonly seat: OwnSeatView;
-  readonly view: PlayerView;
-  readonly playerNames: ReadonlyArray<string>;
   readonly isBusy: boolean;
   readonly onAction: (action: ActionIntent) => void;
   readonly onClose: () => void;
 };
 
 export function ProgressDialogs(props: Props) {
-  const { dialog, seat, view, playerNames, isBusy, onAction, onClose } = props;
+  const { dialog, seat, isBusy, onAction, onClose } = props;
   switch (dialog) {
     case "none":
       return null;
@@ -50,8 +47,6 @@ export function ProgressDialogs(props: Props) {
       return (
         <ProjectsDialog
           seat={seat}
-          view={view}
-          playerNames={playerNames}
           onComplete={(project) => {
             onAction({ type: "complete_project", project });
             onClose();

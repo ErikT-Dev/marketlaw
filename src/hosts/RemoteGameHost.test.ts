@@ -117,7 +117,6 @@ const TUTORIAL_UPDATE_TEXT = JSON.stringify({
       drawLog: [],
       mainPhaseLog: [],
       questsCompletedLastTurn: [],
-      firstCompletions: [],
       vote: null,
       nextVoteTurn: 1,
       result: null,

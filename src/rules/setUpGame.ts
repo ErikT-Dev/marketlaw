@@ -12,10 +12,10 @@ import type { Piles } from "./Piles";
 import type { Random } from "./Random";
 import { SEAT_NUMBERS } from "./SEAT_NUMBERS";
 import { withMainPhaseStart } from "./withMainPhaseStart";
-import { withTurnBuildPass } from "./withTurnBuildPass";
 import type { SeatsDealt } from "./SeatsDealt";
 
 const FIRST_TURN = 1;
+const FIRST_TURN_BUILD_PASSES = 2;
 
 function dealSeats(setup: GameSetup, piles: Piles, random: Random): SeatsDealt {
   return SEAT_NUMBERS.slice(0, setup.players).reduce<SeatsDealt>(
@@ -42,7 +42,7 @@ export function setUpGame(setup: GameSetup, random: Random): GameState {
     turn: FIRST_TURN,
     phase: "main",
     firstPlayer: 1,
-    seats: dealt.seats.map(withTurnBuildPass),
+    seats: dealt.seats.map((seat) => ({ ...seat, buildPasses: FIRST_TURN_BUILD_PASSES })),
     deck: filled.piles.deck,
     discard: filled.piles.discard,
     holdingPile: [],
@@ -55,7 +55,6 @@ export function setUpGame(setup: GameSetup, random: Random): GameState {
     bonusTypes: pickBonusTypes(random),
     doneOrder: [],
     leaveOrder: [],
-    firstCompletions: [],
     clockStartedAt: setup.startedAt,
     pause: null,
     vote: null,

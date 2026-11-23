@@ -60,7 +60,6 @@ const VIEW: Partial<PlayerView> = {
       asked: { by: "sector", sector: "Service", tier: 1 },
     },
   ],
-  firstCompletions: ["satisfaction"],
 };
 
 const ENDED: GameResult = {

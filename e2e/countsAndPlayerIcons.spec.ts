@@ -28,7 +28,6 @@ test("your counts, another player's counts and most played types, and a project 
   const [seatOne = ""] = await startTestRoom(request, {
     players: 2,
     turn: 2,
-    first_completions: ["quality"],
     seats: [
       {
         seat: 1,

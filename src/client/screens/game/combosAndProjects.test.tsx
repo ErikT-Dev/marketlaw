@@ -67,11 +67,11 @@ describe("your stats", () => {
       .getAllByRole("listitem")
       .map((row) => row.textContent);
     expect(projects[0]).toContain("Clean up the streets");
-    expect(projects[0]).toContain("First to complete gets +2");
+    expect(projects[0]).toBe("Clean up the streets 8/8Quality");
     expect(projects[2]).toBe("Help the homeless · you completed ✓");
   });
 
-  it("shows a project completed this turn as completed, without the first-completion note", () => {
+  it("shows a project completed this turn as completed", () => {
     showGame({ ...READY, projects: ["quality"] });
     const projects = within(screen.getByRole("list", { name: "Your projects" }))
       .getAllByRole("listitem")
@@ -153,11 +153,14 @@ describe("projects", () => {
     );
   });
 
-  it("says when the next project would be the third", () => {
+  it("gives the third project the same reward as the others", () => {
     showGame({ ...READY, projects: ["workforce", "satisfaction"] });
     fireEvent.click(screen.getByRole("button", { name: "Projects" }));
-    expect(textWithIconNames(screen.getByRole("dialog", { name: "Projects" }))).toContain(
-      "This would be your 3rd project: it also gives [Income +1] more and 1 more card.",
+    const dialog = textWithIconNames(screen.getByRole("dialog", { name: "Projects" }));
+    expect(dialog).toContain(
+      "gives [Income +1], [Funds +2], [Influence +3] and 1 card, every time.",
     );
+    expect(dialog).not.toContain("3rd project");
+    expect(dialog).not.toContain("first-completion");
   });
 });

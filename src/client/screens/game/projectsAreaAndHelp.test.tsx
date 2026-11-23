@@ -38,16 +38,15 @@ function show(update: RoomUpdate) {
 }
 
 describe("the projects area", () => {
-  it("has the PROJECTS title and offers the first-completion funds while nobody has completed", () => {
+  it("has the PROJECTS title and shows only your progress while nobody has completed", () => {
     show(roomUpdateWith({}));
     expect(screen.getByRole("heading", { name: "Projects" })).toBeDefined();
     const row = projectRow("Clean up the streets");
-    expect(row.textContent).toContain("First to complete gets +2");
-    expect(within(row).getByRole("img", { name: "Funds" })).toBeDefined();
+    expect(within(row).queryByRole("img", { name: "Funds" })).toBeNull();
     expect(row.textContent).not.toContain("Completed by");
   });
 
-  it("names the other players who completed a project instead of the +2", () => {
+  it("names the other players who completed a project", () => {
     show(withOthersCompleted(roomUpdateWith({}), "quality", [1, 3]));
     const row = projectRow("Clean up the streets");
     expect(row.textContent).toContain("Completed by");
@@ -56,8 +55,6 @@ describe("the projects area", () => {
         .getAllByRole("button")
         .map((icon) => icon.getAttribute("aria-label")),
     ).toEqual(["Ann", "Cy"]);
-    expect(row.textContent).not.toContain("First to complete");
-    expect(within(row).queryByRole("img", { name: "Funds" })).toBeNull();
   });
 
   it("shows neither line when only you have completed a project", () => {
@@ -65,11 +62,6 @@ describe("the projects area", () => {
     expect(projectRow("Clean up the streets").textContent).toBe(
       "Clean up the streets · you completed ✓",
     );
-  });
-
-  it("drops the +2 once a first completion was made", () => {
-    show(roomUpdateWith({ firstCompletions: ["quality"] }));
-    expect(projectRow("Clean up the streets").textContent).not.toContain("First to complete");
   });
 });
 
@@ -98,7 +90,9 @@ describe("the help buttons", () => {
     fireEvent.click(button);
     const help = screen.getByRole("region", { name: "How projects work" });
     expect(help.textContent).toContain("You have 3 projects.");
-    expect(help.textContent).toContain("The end goal needs all 3 projects and");
+    expect(help.textContent).toContain(
+      "and 1 card, every time. The end goal needs all 3 projects and Income 20.",
+    );
     expect(
       within(help)
         .getAllByRole("img")
@@ -111,8 +105,6 @@ describe("the help buttons", () => {
       "Income",
       "Funds",
       "Influence",
-      "Income",
-      "Funds",
       "Income",
     ]);
     fireEvent.keyDown(document, { key: "Escape" });

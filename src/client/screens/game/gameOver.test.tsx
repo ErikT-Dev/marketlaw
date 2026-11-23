@@ -44,7 +44,7 @@ describe("end-of-game screen", () => {
     showResult(END_GOAL);
     const dialog = screen.getByRole("dialog", { name: "Cy wins!" });
     expect(textWithIconNames(dialog)).toContain(
-      "Cy reached [Income 22] and all 3 projects in turn 24, so the game ended after that main phase.",
+      "Cy reached [Income 20] and all 3 projects in turn 24, so the game ended after that main phase.",
     );
     const rows = within(dialog)
       .getAllByRole("row")

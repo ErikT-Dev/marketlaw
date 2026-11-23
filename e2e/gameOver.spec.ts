@@ -16,7 +16,7 @@ test("a game played to the end goal shows the winner, the places and the scores"
   const [seatOne = "", seatTwo = ""] = await startTestRoom(request, {
     players: 2,
     turn: 12,
-    seats: [{ seat: 1, stats: { income: 22 }, projects: ["quality", "satisfaction", "workforce"] }],
+    seats: [{ seat: 1, stats: { income: 20 }, projects: ["quality", "satisfaction", "workforce"] }],
   });
   const one = await seatPage(browser, seatOne);
   const two = await seatPage(browser, seatTwo);
@@ -27,7 +27,7 @@ test("a game played to the end goal shows the winner, the places and the scores"
     const dialog = page.getByRole("dialog", { name: "Seat 1 wins!" });
     await expect(dialog).toBeVisible();
     const why = dialog.getByText(/reached .* and all 3 projects in turn 12/);
-    await expect(why.getByRole("img", { name: "Income 22" })).toBeVisible();
+    await expect(why.getByRole("img", { name: "Income 20" })).toBeVisible();
     await expect(dialog.getByRole("row")).toHaveCount(3);
   }
   await expectScreenFits(one, "game-over-end-goal", testInfo);

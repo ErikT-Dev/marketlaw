@@ -68,7 +68,6 @@ export const GAME_STATE_SCHEMA = v.object({
     v.array(v.object({ quest: QuestName, seats: v.array(SEAT_NUMBER_SCHEMA) })),
     [],
   ),
-  firstCompletions: v.array(ProjectName),
   clockStartedAt: EpochMs,
   pause: v.optional(v.null(), null),
   vote: v.optional(v.null(), null),

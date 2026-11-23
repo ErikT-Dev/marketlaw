@@ -27,7 +27,6 @@ const NAMES_OF_OTHER_THINGS = [
   "Public satisfaction",
   "bonus types",
   "bonus-type",
-  "first-completion bonus",
 ];
 
 const LONGEST_NAMES_FIRST = [...NAMES_OF_OTHER_THINGS].sort(

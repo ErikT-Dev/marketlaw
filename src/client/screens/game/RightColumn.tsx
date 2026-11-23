@@ -67,8 +67,6 @@ export function RightColumn(props: Props) {
       <ProgressDialogs
         dialog={dialog}
         seat={seat}
-        view={view}
-        playerNames={playerNames}
         isBusy={isBusy}
         onAction={onAction}
         onClose={() => {
