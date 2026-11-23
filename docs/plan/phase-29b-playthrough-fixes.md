@@ -559,3 +559,4 @@ each helper's conversation size at its end.
 | Planner | Opus, medium | 20 | 343,427 | 123 | blocked (owner answers) |
 | Starter | Opus, medium | 3 | 97,090 | 23 | done |
 | Builder 1a | Opus, medium | 20 | 203,436 | 89 | done |
+| Builder 1b | Opus, medium | 21 | 144,132 | 78 | done |
