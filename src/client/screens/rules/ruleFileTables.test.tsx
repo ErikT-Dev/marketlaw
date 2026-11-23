@@ -59,8 +59,8 @@ describe("rulebook tables from the rule files", () => {
     ]);
     expect(tables[1]?.rows[6]).toEqual([
       ["Market town"],
-      ["2 ", { type: "Town Housing" }, ", 2 ", { type: "Retail" }, " and 2 ", { type: "Food" }],
-      ["gain 1 ", { type: "Retail" }, ", draw 2 cards"],
+      ["2 ", { type: "Town Housing" }, ", 2 ", { type: "Retail" }, " and 1 ", { type: "Food" }],
+      ["gain 1 ", { type: "Alcohol" }, ", draw 1 card"],
     ]);
   });
 

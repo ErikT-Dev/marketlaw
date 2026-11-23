@@ -551,12 +551,21 @@ approval of the list, the quest scenarios that name quest contents.
     extra turn …" (item 5: the engine still refills at turn 4); the leaver's score 40 and the 2
     end-of-game tie-break replacements (item 7). Locally, the 3 `tools/route-tests/` files
     sometimes fail in the full check with "fetch failed: bad port"; they pass when run alone.
-- [ ] 6. **The new quest list** (R20.7, finding 10). **Small.** Only after the owner approves
+- [x] 6. **The new quest list** (R20.7, finding 10). **Small.** Only after the owner approves
   `docs/plan/phase-29b-quest-list-proposal.md` (or edits it).
   - Write the owner's list into `quests.txt` if it differs; then the "completing … gives its
     reward" scenarios (with the +1 influence of R19.10) and other scenarios naming quest
     contents follow it in a `HARNESS:` commit recorded in Q178; tests naming old quest values
     follow. If the owner changes Trading post, the tutorial (T0.7) follows too.
+  - **Done (2026-11-23).** The owner approved the list unchanged, and `quests.txt` already held
+    it, so it and the tutorial are unchanged. `quests.yaml` follows it (Q178): every reward
+    scenario now differs from the engine only by the +1 influence; "tier 1 cards do not count
+    …" and "Penthouses needs …" pass again. `quests.test.tsx` (Penthouses' need, Growing
+    suburbs' row) and `ruleFileTables`' Market town row follow the new list and pass.
+  - **For later items.** Item 5: the 45 "completing … gives its reward" scenarios and "a type
+    gained from one quest helps complete another" fail only on influence (the +1 of R19.10);
+    building R19.10 makes them pass. `e2e/quests.spec.ts`'s five-quest test needs no change
+    (every quest there still has three parts).
 
 - [ ] Finish. The finisher adds the new scenarios of "Required scenarios" (not the 8
   replacements, which item 20 adds) and I30 to `harness/required.yaml`, then follows

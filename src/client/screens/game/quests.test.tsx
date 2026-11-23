@@ -117,8 +117,8 @@ describe("quests panel", () => {
       },
     ]);
     const card = screen.getByRole("region", { name: "Penthouses" });
-    const need = within(card).getByRole("img", { name: "4 tier 2 or 3 Residential cards" });
-    expect(need.textContent).toBe("4tier 2 or 3 Residential cards");
+    const need = within(card).getByRole("img", { name: "3 tier 2 or 3 Residential cards" });
+    expect(need.textContent).toBe("3tier 2 or 3 Residential cards");
     expect(within(need).getByText("Residential").style.color).toBe(
       "var(--color-sector-residential-light)",
     );
@@ -233,7 +233,7 @@ describe("quests panel", () => {
       within(suburbs ?? table)
         .getAllByRole("img")
         .map((part) => part.getAttribute("aria-label")),
-    ).toEqual(["4 Town Housing", "2 Low Wealth", "+3 quality"]);
+    ).toEqual(["3 Town Housing", "2 Low Wealth", "gain 1 Town Housing", "+1 quality"]);
     expect(
       within(district ?? table)
         .getAllByRole("img")
