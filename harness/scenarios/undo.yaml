@@ -76,19 +76,6 @@
       - seat: 1
         stats: {quality: 0, satisfaction: 3}
 
-- name: selling cannot be undone
-  covers: [R7.3]
-  given:
-    seats:
-      - seat: 1
-        hand: [Pub]
-  when:
-    - {seat: 1, action: sell, cards: [Pub]}
-    - {seat: 1, action: undo}
-  then:
-    rejected: cannot_undo
-    unchanged: true
-
 - name: completing a project cannot be undone
   covers: [R7.3]
   given:

@@ -67,11 +67,12 @@
     workforce, quality and satisfaction are all 0 or more.
 
 - id: I10
-  name: bonus is turned into funds at the end of every turn
-  covers: [R14.3]
+  name: the stats gain goes into funds at the end of every turn
+  covers: [R14.1, R14.2]
   when: after the end-of-turn steps
   holds: >
-    After the end-of-turn steps, every player's bonus is less than 10.
+    After the end-of-turn steps, every player still in the game has at least the larger of 0 and
+    their funds plus income plus stats gain of the turn before.
 
 - id: I11
   name: limited influence actions stay within their limits

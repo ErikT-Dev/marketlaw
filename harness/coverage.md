@@ -48,12 +48,12 @@ it by hand.
 | R6.3 | influence (1), playing-cards (1), setup (1), turns-and-time (2) | Covered |
 | R7.1 | playing-cards (1), undo (7) | Covered |
 | R7.2 | undo (9) | Covered |
-| R7.3 | undo (3) | Covered |
+| R7.3 | undo (2) | Covered |
 | R7.4 | undo (1) | Covered |
 | R8.1 | playing-cards (1), turns-and-time (1) | Covered |
 | R8.2 | turns-and-time (2) | Covered |
-| R8.3 | end-of-game (1), turns-and-time (1) | Covered |
-| R8.4 | end-of-game (1), turns-and-time (1) | Covered |
+| R8.3 | turns-and-time (1) | Covered |
+| R8.4 | turns-and-time (1) | Covered |
 | R8.5 | combos-and-income (3), marketplace (1) | Covered |
 | R9.1 | marketplace (1), turns-and-time (3) | Covered |
 | R9.2 | turns-and-time (2) | Covered |
@@ -70,7 +70,7 @@ it by hand.
 | R9.13 | turns-and-time (6) | Covered |
 | R9.14 | turns-and-time (1) | Covered |
 | R9.15 | turns-and-time (4) | Covered |
-| R10.1 | projects (2), turns-and-time (4) | Covered |
+| R10.1 | projects (1), turns-and-time (4) | Covered |
 | R10.2 | quests (5) | Covered |
 | R10.3 | playing-cards (1), turns-and-time (1) | Covered |
 | R11.1 | turns-and-time (1) | Covered |
@@ -87,8 +87,8 @@ it by hand.
 | R13.1 | combos-and-income (4), undo (1) | Covered |
 | R13.2 | combos-and-income (1) | Covered |
 | R14.1 | turns-and-time (2) | Covered |
-| R14.2 | turns-and-time (3) | Covered |
-| R14.3 | turns-and-time (4) | Covered |
+| R14.2 | turns-and-time (2) | Covered |
+| R14.3 | turns-and-time (1) | Covered |
 | R15.1 | influence (25), undo (3) | Covered |
 | R15.2 | influence (4), undo (1) | Covered |
 | R15.3 | influence (3) | Covered |
@@ -154,8 +154,8 @@ it by hand.
 | R21.5 | end-of-game (3) | Covered |
 | R21.6 | setup (1) | Covered |
 | R21.7 | end-of-game (2) | Covered |
-| R21.8 | end-of-game (3) | Covered |
-| R21.9 | end-of-game (4) | Covered |
+| R21.8 | end-of-game (2) | Covered |
+| R21.9 | end-of-game (2) | Covered |
 
 ## Multiplayer (M)
 
@@ -369,6 +369,6 @@ it by hand.
 ## Summary
 
 - Rules: 332
-- Scenarios: 545
+- Scenarios: 537
 - Gaps: 0
 - Checked another way or also checked another way: R3.2, R3.5, R17.10, R19.2, M3.1, M3.6, M4.2, A6.4, A10.6, C5.1, C5.2, C5.3, A12.1, R15.5, R15.6, R20.8, R20.9, T0.7, A2.5

@@ -478,15 +478,15 @@
     ended: {abandoned: true}
     ratings: unchanged
 
-- name: end-of-turn steps pay influence income and bonus and keep build passes
-  covers: [R10.1, R10.3, R14.1, R14.3, R2.2]
+- name: end-of-turn steps pay influence income and the stats gain and keep build passes
+  covers: [R10.1, R10.3, R14.1, R2.2]
   given:
     turn: 3
     marketplace: [{place: residential, card: Row House}, {place: industry, card: Metal Mining}, {place: service, card: Liquor Shop}, {place: public_quality, card: Fire Station}, {place: public_satisfaction, card: Public Playground}, {place: open_1, card: Dentist}, {place: open_2, card: Apparel Store}, {place: open_3, card: Forest Plantation}]
     quests: [{quest: Farmland}, {quest: Sports town}, {quest: Trading post}, {quest: Mining town}]
     seats:
       - seat: 1
-        stats: {funds: 5, income: 4, influence: 2, workforce: 2, quality: 1, satisfaction: -1, product: 1, distribution: 2, bonus: 5}
+        stats: {funds: 5, income: 4, influence: 2, workforce: 2, quality: 1, satisfaction: -1, product: 1, distribution: 2}
         build_passes: 1
         played_this_turn: true
   when:
@@ -496,45 +496,11 @@
     turn: 4
     seats:
       - seat: 1
-        stats: {funds: 10, influence: 3, bonus: 7}
+        stats: {funds: 10.2, influence: 3}
         build_passes: 2
         played_this_turn: false
       - seat: 2
-        stats: {funds: 10, influence: 1, bonus: 0}
-
-- name: negative stats lower the bonus and a negative bonus gives no funds
-  covers: [R14.2, R14.3]
-  given:
-    turn: 3
-    marketplace: [{place: residential, card: Row House}, {place: industry, card: Metal Mining}, {place: service, card: Liquor Shop}, {place: public_quality, card: Fire Station}, {place: public_satisfaction, card: Public Playground}, {place: open_1, card: Dentist}, {place: open_2, card: Apparel Store}, {place: open_3, card: Forest Plantation}]
-    quests: [{quest: Farmland}, {quest: Sports town}, {quest: Trading post}, {quest: Mining town}]
-    seats:
-      - seat: 1
-        stats: {workforce: -5, quality: 1, satisfaction: 0, bonus: 2}
-  when:
-    - {seat: 1, action: end_turn}
-    - {seat: 2, action: end_turn}
-  then:
-    seats:
-      - seat: 1
-        stats: {funds: 10, bonus: -2}
-
-- name: every full 10 bonus becomes 1 fund
-  covers: [R14.3]
-  given:
-    turn: 3
-    marketplace: [{place: residential, card: Row House}, {place: industry, card: Metal Mining}, {place: service, card: Liquor Shop}, {place: public_quality, card: Fire Station}, {place: public_satisfaction, card: Public Playground}, {place: open_1, card: Dentist}, {place: open_2, card: Apparel Store}, {place: open_3, card: Forest Plantation}]
-    quests: [{quest: Farmland}, {quest: Sports town}, {quest: Trading post}, {quest: Mining town}]
-    seats:
-      - seat: 1
-        stats: {product: 4, bonus: 4}
-  when:
-    - {seat: 1, action: end_turn}
-    - {seat: 2, action: end_turn}
-  then:
-    seats:
-      - seat: 1
-        stats: {funds: 12, bonus: 0}
+        stats: {funds: 10, influence: 1}
 
 - name: players who left get no end-of-turn steps
   covers: [R10.1, M6.4]

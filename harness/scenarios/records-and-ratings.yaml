@@ -50,7 +50,7 @@
         - {username: Cat, result: left, place: 2}
         - {username: Bea, result: left, place: 3, score: 39, funds_plus_hand: 4}
 
-- name: a player who left in an earlier turn is scored with the turn they left
+- name: a player who left in an earlier turn is scored with their values when they left
   covers: [A3.3, R21.4]
   given:
     players: 3
@@ -80,7 +80,7 @@
       players:
         - {username: Ann, result: won, place: 1}
         - {username: Cat, result: lost, place: 2}
-        - {username: Bea, result: left, place: 3, left_in_turn: 39, score: -40, funds_plus_hand: 5}
+        - {username: Bea, result: left, place: 3, left_in_turn: 39, score: 40, funds_plus_hand: 5}
 
 - name: an abandoned game saves no game record
   covers: [A3.1]

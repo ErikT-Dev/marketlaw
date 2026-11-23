@@ -94,7 +94,7 @@
       - seat: 2
         quests_completed: [Trading post]
 
-- name: a completed quest leaves the table for good and the place is refilled next turn
+- name: a completed quest leaves the table for good after its extra turn and the place is refilled
   covers: [R19.6, R19.8, R10.2]
   given:
     turn: 3
@@ -104,12 +104,17 @@
       - seat: 1
         stats: {income: 4}
         city: [Liquor Shop]
-    random: [{tier: 1}, {quest: Countryside}]
+    random: [{tier: 1}, {tier: 1}, {tier: 1}, {quest: Countryside}]
   when:
     - {seat: 1, action: complete_quest, quest: Trading post}
     - {seat: 1, action: end_turn}
     - {seat: 2, action: end_turn}
+    - {seat: 2, action: turn_draw, option: B, sector: Service}
+    - {seat: 1, action: turn_draw, option: B, sector: Service}
+    - {seat: 1, action: end_turn}
+    - {seat: 2, action: end_turn}
   then:
+    turn: 5
     quests: [{quest: Countryside, turns_on_table: 1}, {quest: Farmland}, {quest: Sports town}, {quest: Mining town}]
     quest_list_excludes: [Trading post]
 

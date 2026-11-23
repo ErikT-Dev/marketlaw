@@ -79,9 +79,9 @@ scenarios:
     - rejects a project without enough of the stat
     - rejects a project while another stat is negative
     - rejects completing the same project twice
-    - the third project gives an extra income and an extra card
-    - everyone who completes a project in the first turn anyone does gets 2 extra funds at the end of the turn
-    - a project completed in a later turn gives no first-completion funds
+    - the third project gives the same reward as the others
+    - completing a project first gives no extra funds
+    - a project completed in a later turn gives the same reward
     - rejects a project outside the main phase
     - rejects a project with less than 10 income
   setup:
@@ -91,15 +91,15 @@ scenarios:
     - the quests table starts with 4 random tier 1 quests and 2 different bonus types are picked
     - after setup the deck holds every card not dealt or on display
     - turn 1 starts with the main phase and every player can act
-    - every player starts turn 1 with 1 build pass
+    - every player starts turn 1 with 2 build passes
     - a new game starts every player with 14 total worth gained
   turns-and-time:
     - ending the turn marks the player done and further actions are rejected
     - the main phase ends only when every player is done
     - the order in which players become done is recorded
-    - end-of-turn steps pay influence income and bonus and keep build passes
-    - negative stats lower the bonus and a negative bonus gives no funds
-    - every full 10 bonus becomes 1 fund
+    - end-of-turn steps pay influence income and the stats gain and keep build passes
+    - negative stats lower the funds gained at the end of the turn
+    - the stats gain is added to funds in tenths of a fund
     - players who left get no end-of-turn steps
     - every player gets 1 build pass at the start of every turn
     - unused build passes carry over to later turns with no limit
@@ -205,7 +205,7 @@ scenarios:
     - undo takes back a trade that draws no card
     - undo takes back a build pass bought with influence
     - undo takes back the latest action first
-    - selling cannot be undone
+    - undo takes back selling and puts the cards back in the hand
     - completing a project cannot be undone
     - a draw action cannot be undone
     - playing a card that triggers income cannot be undone because income draws a card
@@ -245,7 +245,7 @@ scenarios:
     - rejects a quest that is not on the table
     - rejects completing a quest outside the main phase
     - several players can complete the same quest in the same turn
-    - a completed quest leaves the table for good and the place is refilled next turn
+    - a completed quest leaves the table for good after its extra turn and the place is refilled
     - a quest nobody completed in 5 turns goes back into the quest list
     - a tier 2 quest picked before turn 5 is replaced by a tier 1 quest
     - a tier 3 quest picked before turn 13 is replaced by the nearest allowed tier
@@ -314,8 +314,8 @@ scenarios:
     - the game ends after the main phase of turn 40 and is scored with the formula
     - the score is computed exactly before rounding down
     - bonus types score their point value for every count in the type counts including gained types
-    - equal scores are broken by who became done earlier in the final turn
-    - players made done at the same moment in the final turn are placed in player order
+    - equal scores are broken by total worth gained
+    - equal scores and total worth gained are broken by player order
     - players who left come after every player still in the game
     - cards sold in the final turn join the discard pile when the game ends
     - an end goal reached by a player who then leaves does not end the game
@@ -485,7 +485,7 @@ scenarios:
   records-and-ratings:
     - a finished game saves a game record with every player's result and values
     - a player who left is recorded with their values when they left
-    - a player who left in an earlier turn is scored with the turn they left
+    - a player who left in an earlier turn is scored with their values when they left
     - an abandoned game saves no game record
     - game records always show the current username
     - the match history lists games newest first with a short overview
@@ -523,7 +523,7 @@ scenarios:
     - tutorial turn 1 teaches playing selling and ending the turn
     - tutorial turn 2 teaches the market and combos
     - tutorial turn 3 teaches drawing from the deck and real cost
-    - tutorial turn 4 teaches product and the first bonus fund
+    - tutorial turn 4 teaches product and the funds the stats add
     - tutorial turn 5 teaches income and quests and then ends
     - the tutorial rejects playing a different card than the step asks for
     - the tutorial does not offer a redraw of the starting hand

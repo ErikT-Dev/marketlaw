@@ -107,31 +107,6 @@
   then:
     ended: {bonus_type_points: {1: 8, 2: 0}}
 
-- name: equal scores are broken by who became done earlier in the final turn
-  covers: [R21.8, R21.9, R8.3]
-  given:
-    turn: 40
-  when:
-    - {seat: 1, action: end_turn}
-    - {seat: 2, action: end_turn}
-  then:
-    ended: {winner: 1, places: [1, 2], scores: {1: -85, 2: -85}}
-
-- name: players made done at the same moment in the final turn are placed in player order
-  covers: [R21.9, R8.4]
-  given:
-    turn: 40
-    first_player: 2
-    seats:
-      - seat: 1
-        time_bank_ms: 0
-      - seat: 2
-        time_bank_ms: 0
-  when:
-    - wait_ms: 75000
-  then:
-    ended: {winner: 2, places: [2, 1]}
-
 - name: players who left come after every player still in the game
   covers: [R21.8, A3.4]
   given:

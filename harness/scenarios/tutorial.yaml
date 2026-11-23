@@ -72,7 +72,7 @@
         city: [Row House, Fire Station, Public Playground]
         hand: [Stone Quarry, Liquor Shop, Library, Cottage, Pub, Elementary School, Tennis Court]
 
-- name: tutorial turn 4 teaches product and the first bonus fund
+- name: tutorial turn 4 teaches product and the funds the stats add
   covers: [T4.1, T4.2, T4.3]
   given:
     accounts: [{name: Ann}]
@@ -86,7 +86,7 @@
     turn: 5
     seats:
       - seat: 1
-        stats: {funds: 4, influence: 4, workforce: 1, quality: 1, satisfaction: 0, product: 1, bonus: 5}
+        stats: {funds: 4.5, influence: 4, workforce: 1, quality: 1, satisfaction: 0, product: 1}
         city: [Row House, Fire Station, Public Playground, Orchard]
         hand: [Stone Quarry, Liquor Shop, Library, Cottage, Pub, Elementary School, Tennis Court, Extensive Wheat Farm]
 

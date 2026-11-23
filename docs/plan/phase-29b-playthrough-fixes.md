@@ -531,13 +531,26 @@ approval of the list, the quest scenarios that name quest contents.
     (`influenceAndUndo.test.tsx` expects 19 tiles). Tiles get one background for `no limit` and
     another for limited actions, and colours that show whether the action can be taken now,
     from the design tokens (`InfluenceDialog`, `TradeTile`).
-- [ ] 20. **The 14 required names** (Waiting for the owner, Q178). **Small.** Only after the
+- [x] 20. **The 14 required names** (Waiting for the owner, Q178). **Small.** Only after the
   owner's answer.
   - One `HARNESS:` commit, recorded in Q178: the 6 renames (the scenario changed to the new rule
     under the new name, in its file and in `harness/required.yaml`) and the 8 replacements (old
     scenario deleted, the new one already written takes its place on the list), as the owner
     approves them. `npm run harness:check` then has no problems; lower the count in
     `harness.test.ts` by the deleted scenarios.
+  - **Done (2026-11-23).** `npm run harness:check`: 537 scenarios, 0 problems;
+    `harness.test.ts` counts 537. Renamed and passing now: turns-and-time's end-of-turn
+    scenario (funds 10.2), tutorial turn 4 (funds 4.5), I10 (its text now states the lower bound
+    1a's code checks). The two replacements of `turns-and-time` pass.
+  - **Differs from the phase file.** The quests rename needed more than a name: the scenario now
+    plays the extra turn (turn 4, with both turn draws and their random tiers) and expects the
+    refill at turn 5.
+  - **For later items.** Required scenarios of item 20's changes that still fail, each owned by
+    the item that builds its rule: setup's "2 build passes" and the 3 project replacements
+    (item 3); "undo takes back selling …" (item 4); quests' "leaves the table for good after its
+    extra turn …" (item 5: the engine still refills at turn 4); the leaver's score 40 and the 2
+    end-of-game tie-break replacements (item 7). Locally, the 3 `tools/route-tests/` files
+    sometimes fail in the full check with "fetch failed: bad port"; they pass when run alone.
 - [ ] 6. **The new quest list** (R20.7, finding 10). **Small.** Only after the owner approves
   `docs/plan/phase-29b-quest-list-proposal.md` (or edits it).
   - Write the owner's list into `quests.txt` if it differs; then the "completing … gives its

@@ -4113,6 +4113,15 @@ file.
   - The spec and harness changes are on the branch `phase-29b-playthrough-fixes`, not on master,
     as for 29a (Q169): on their own they turn the check red until 29b builds them.
 - **Owner answers (2026-11-23):** the proposed quest list (`docs/plan/phase-29b-quest-list-proposal.md`) and the 14 required names of the phase file's "Waiting for the owner" are approved. Item 52's colours are no longer the builder's choice: they follow the approved sketch `design/sketches/52-influence-actions/APPROVED.md` (limited actions green, unlimited purple, each bright when it can be taken now and dark when not, with a "1× per game" or "∞" badge).
+- **Required names (item 20, 2026-11-23):** one `HARNESS:` commit makes the 14 approved changes.
+  The 6 renames: setup's build pass scenario now expects 2 build passes; turns-and-time's
+  end-of-turn scenario drops `bonus` and expects funds 10.2 (stats gain 12); quests' "leaves the
+  table for good" scenario now completes the quest, plays its extra turn (with the two turn draws
+  of turn 4 and their random tiers) and expects the refill at turn 5; records-and-ratings' leaver
+  expects score 40 (no base, no turns); tutorial turn 4 drops `bonus` and expects funds 4.5
+  (T4.3); invariant I10 is renamed and now states the lower bound the code checks (covers R14.1
+  and R14.2). The 8 old scenarios are deleted and their replacements take their places on
+  `harness/required.yaml`; `harness.test.ts` counts 537 scenarios.
 - **Implemented:** `docs/plan/phase-29b-playthrough-fixes.md`, `docs/plan/README.md`,
   `docs/plan/phase-30-version-1-readiness.md`; on the branch `phase-29b-playthrough-fixes`:
   `harness/spec/game-rules.md`, `multiplayer.md`, `accounts.md`, `screens.md`, `tutorial.md`,
