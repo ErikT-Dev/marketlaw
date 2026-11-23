@@ -34,4 +34,10 @@ export type MainPhaseLogEntry =
       readonly turn: number;
       readonly seat: SeatNumber;
       readonly times: number;
+    }
+  | {
+      readonly kind: "support";
+      readonly turn: number;
+      readonly seat: SeatNumber;
+      readonly funds: number;
     };

@@ -408,7 +408,7 @@ approval of the list, the quest scenarios that name quest contents.
     build pass price (19), `quests.test.tsx` and `ruleFileTables` quests (6), `parseRulebook`
     (18), `reportBudgets` B19 (9); required scenarios and the 13 harness:check problems as 1a
     lists them.
-- [ ] 2. **F exact and Support** (R2.4, R11.5, I28, I30, finding 27, Q177's F rule). **Medium.**
+- [x] 2. **F exact and Support** (R2.4, R11.5, I28, I30, finding 27, Q177's F rule). **Medium.**
   - F in tenths from every source of funds (starting funds, income, the positive stats gain,
     projects, quests, influence actions, Support) and every card gained (starting hand, draws,
     marketplace cards); selling does not change it; undo takes back exactly what it added.
@@ -421,6 +421,32 @@ approval of the list, the quest scenarios that name quest contents.
     item 12). Leak test must pass.
   - Covers the `turns-and-time` Support scenarios and "a positive stats gain adds to total worth
     gained and a negative one does not lower it".
+  - **Done (2026-11-23).** F was already counted from every source in 1a (starting funds,
+    income, positive stats gain, projects, quests, influence actions, draws, marketplace cards;
+    selling and redraws add nothing; undo restores the seat). Support is `src/rules/supportOf.ts`
+    (per seat) and `withSupport.ts`, applied in `endMainPhase.ts` after the end-of-turn steps,
+    the build pass and the first-completion funds of every seat, before the market phase; it
+    writes a `support` entry (funds in tenths) to the public log at once, in player order, and
+    the view carries `supportThisTurn` (tenths, 0 if none) for every seat, own and others, from
+    those log entries (`supportThisTurnOf.ts`). The log reads "<name> got Support: +2.0"
+    with the funds icon. I30 is `worthGainedSumViolations.ts`: after each action, each seat's
+    F must change by 10 per card gained (new `draw`/`turn_draw` log entries, +1 for a market
+    card) plus the funds received (the funds change, plus funds paid for a card, a trade or a
+    draw action, minus selling, plus what the zero floor took at a turn change); after an undo
+    it must equal the F of the restored point. I30 is in `SIMULATED_INVARIANTS` and found
+    nothing in the check's simulated games. The four Support scenarios and the stats gain one
+    pass (the two that expect Support failed before).
+  - **Differs from the phase file.** `seatsInPlayerOrderOf` now takes only seats and first
+    player, so Support can use it before the state is built. Because
+    `invariantViolations.test.ts` sat at its 300-line limit, its two I22 tests moved
+    unchanged into `gameEndViolations.test.ts`; its tests of made-up transitions now also
+    expect the I30 line their states cause.
+  - **For later items.** Item 12 reads Support from `supportThisTurn` per seat (or the
+    `support` log entries of the current turn) and builds `last_turn`; visibility's "the
+    view shows last turn's quests projects income and Support" is still `not_yet` on
+    `last_turn`. Item 3: removing the first-completion funds needs no change to Support or
+    I30 (both read funds as they are). Item 7: the tie-break scenarios read F; Support
+    already counts in it.
 - [ ] 3. **Projects, end goal and build passes** (R1.3, R16.3, R4.6, R6.3, S6.3, S8.2, findings
   6, 26, 48, 49). **Small.**
   - Delete `firstCompletionFundsOf.ts`, `firstCompletionsOf.ts` and the first-completion state

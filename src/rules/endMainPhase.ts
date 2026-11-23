@@ -15,6 +15,7 @@ import { questsCompletedThisTurnOf } from "./questsCompletedThisTurnOf";
 import type { Random } from "./Random";
 import type { SeatState } from "./SeatState";
 import { withMainPhaseStart } from "./withMainPhaseStart";
+import { withSupport } from "./withSupport";
 import { withTurnBuildPass } from "./withTurnBuildPass";
 
 function isShownLongEnough(slot: MarketplaceSlot): boolean {
@@ -56,13 +57,17 @@ export function endMainPhase(state: GameState, random: Random, at: number): Game
   );
   const questTable = endTurnForQuests(state, turn, random);
   const firsts = firstCompletionsOf(state);
-  const seats = state.seats.map((seat) => seatAtTurnStart(seat, firsts));
+  const startedSeats = state.seats.map((seat) => seatAtTurnStart(seat, firsts));
+  const supported = withSupport({
+    seats: startedSeats,
+    turn,
+    firstPlayer: firstPlayerOf(turn, startedSeats),
+    mainPhaseLog: state.mainPhaseLog,
+  });
   const started = withMainPhaseStart({
     ...state,
-    turn,
+    ...supported,
     phase: "market",
-    firstPlayer: firstPlayerOf(turn, seats),
-    seats,
     deck: refilled.piles.deck,
     discard: refilled.piles.discard,
     holdingPile: [],

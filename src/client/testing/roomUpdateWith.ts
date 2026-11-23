@@ -23,6 +23,7 @@ const SEAT_COMMON = {
   city: [],
   buildPasses: 2,
   worthGained: 140,
+  supportThisTurn: 0,
   isDone: false,
   isOutOfTime: false,
   hasLeft: false,

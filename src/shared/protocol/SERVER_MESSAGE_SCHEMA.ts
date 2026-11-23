@@ -32,6 +32,7 @@ const SEAT_COMMON = {
   city: CARDS,
   buildPasses: COUNT,
   worthGained: COUNT,
+  supportThisTurn: COUNT,
   questsCompleted: v.array(QuestName),
   isDone: v.boolean(),
   isOutOfTime: v.boolean(),

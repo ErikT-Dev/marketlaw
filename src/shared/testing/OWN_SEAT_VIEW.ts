@@ -34,6 +34,7 @@ export const OWN_SEAT_VIEW: OwnSeatView = {
   city: [],
   buildPasses: 0,
   worthGained: 140,
+  supportThisTurn: 0,
   hasPlayedThisTurn: false,
   influenceUses: {},
   trades: TradeName.options.map((trade) => ({ trade, rejection: null })),

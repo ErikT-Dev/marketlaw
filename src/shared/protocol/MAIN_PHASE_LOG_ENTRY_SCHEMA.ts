@@ -36,4 +36,10 @@ export const MAIN_PHASE_LOG_ENTRY_SCHEMA = v.variant("kind", [
     seat: SEAT_NUMBER_SCHEMA,
     times: v.number(),
   }),
+  v.object({
+    kind: v.literal("support"),
+    turn: v.number(),
+    seat: SEAT_NUMBER_SCHEMA,
+    funds: v.number(),
+  }),
 ]);

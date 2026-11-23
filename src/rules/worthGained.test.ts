@@ -57,4 +57,34 @@ describe("total worth gained", () => {
     expect(ownView?.worthGained).toBe(160);
     expect(otherView?.worthGained).toBe(140);
   });
+
+  it("gives Support at the start of the turn and shows it to every player", () => {
+    const saved = startSavedGame({ players: 2, kind: "casual", startedAt: GAME_STARTED_AT }, 5);
+    const behind = {
+      ...saved,
+      state: {
+        ...saved.state,
+        seats: saved.state.seats.map((seat) =>
+          seat.seat === 2 ? { ...seat, worthGained: seat.worthGained + 255 } : seat,
+        ),
+      },
+    };
+    const ended = afterActions(behind, [
+      { type: "end_turn", seat: 1 },
+      { type: "end_turn", seat: 2 },
+    ]);
+    const supportShown = ([1, 2] as const).map((viewer) =>
+      viewFor(ended.state, viewer).seats.map(({ seat, supportThisTurn }) => ({ seat, supportThisTurn })),
+    );
+    expect(supportShown).toEqual([
+      [
+        { seat: 1, supportThisTurn: 20 },
+        { seat: 2, supportThisTurn: 0 },
+      ],
+      [
+        { seat: 1, supportThisTurn: 20 },
+        { seat: 2, supportThisTurn: 0 },
+      ],
+    ]);
+  });
 });

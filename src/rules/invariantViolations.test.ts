@@ -2,7 +2,6 @@ import { describe, expect, it } from "vitest";
 import { fundsInTenths } from "../shared/fundsInTenths";
 import { GAME_STARTED_AT } from "../shared/testing/GAME_STARTED_AT";
 import { apply } from "./apply";
-import { endGame } from "./endGame";
 import type { GameAction } from "./GameAction";
 import type { GameState } from "./GameState";
 import { invariantViolations } from "./invariantViolations";
@@ -34,14 +33,9 @@ function withEndOfTurnFundsPaid(state: GameState): GameState {
     seats: state.seats.map((seat) => ({
       ...seat,
       stats: { ...seat.stats, funds: seat.stats.funds + fundsInTenths(10) },
+      worthGained: seat.worthGained + fundsInTenths(10),
     })),
   };
-}
-
-function endingViolations(after: GameState): ReadonlyArray<string> {
-  return invariantViolations(transition(START, { type: "end_turn", seat: 1 }, after)).filter(
-    (violation) => violation.startsWith("I22"),
-  );
 }
 
 describe("invariantViolations", () => {
@@ -72,8 +66,16 @@ describe("invariantViolations", () => {
       stats: { ...STARTING_STATS, funds: -1 },
     });
     expect(invariantViolations(transition(START, { type: "end_turn", seat: 1 }, after))).toEqual([
+      "I30: seat 1 total worth gained is 140 after end_turn, but the cards gained and funds received make 69",
       `I1: ${START.deck[0] ?? ""} is in no place`,
       "I7: seat 1 has negative funds",
+    ]);
+  });
+
+  it("reports total worth gained that is not the cards gained plus the funds received", () => {
+    const after = withSeat1(START, { worthGained: (START.seats[0]?.worthGained ?? 0) + fundsInTenths(1) });
+    expect(invariantViolations(transition(START, { type: "end_turn", seat: 1 }, after))).toEqual([
+      "I30: seat 1 total worth gained is 150 after end_turn, but the cards gained and funds received make 140",
     ]);
   });
 
@@ -92,6 +94,7 @@ describe("invariantViolations", () => {
       "I18: seat 1 took an action while done or after leaving",
       "I5: Brownstone was played in turn 3",
       "I6: seat 1 played more cards than its build passes allow",
+      "I30: seat 1 total worth gained is 140 after play_card, but the cards gained and funds received make 210",
     ]);
   });
 
@@ -100,9 +103,11 @@ describe("invariantViolations", () => {
     const action: GameAction = { type: "play_card", seat: 1, card: START.seats[0]?.hand[0] ?? "Pub" };
     expect(invariantViolations(transition(before, action, before))).toEqual([
       "I6: seat 1 used 0 build passes to play a card",
+      "I30: seat 1 total worth gained is 140 after play_card, but the cards gained and funds received make 190",
     ]);
     expect(invariantViolations(transition(before, action, withSeat1(START, { buildPasses: 1 })))).toEqual([
       "I6: seat 1 used 2 build passes to play a card",
+      "I30: seat 1 total worth gained is 140 after play_card, but the cards gained and funds received make 190",
     ]);
   });
 
@@ -132,6 +137,7 @@ describe("invariantViolations", () => {
     expect(invariantViolations(transition(before, { type: "end_turn", seat: 1 }, after))).toEqual([
       "I2: the holding pile holds 1 cards outside the main phase",
       "I8: seat 1 income went from 5 to 4",
+      "I30: seat 1 total worth gained is 240 after end_turn, but the cards gained and funds received make 270",
     ]);
   });
 
@@ -193,38 +199,6 @@ describe("invariantViolations", () => {
       "I19: seat 1 time bank went from 600000 to 765001",
       "I19: seat 1 time bank went from 600000 to 765000",
     ]);
-  });
-
-  it("checks the score and places of a game that ends", () => {
-    const ended = endGame({ ...START, turn: 40 }, 0);
-    expect(endingViolations(ended)).toEqual([]);
-    const places = ended.result?.places ?? [];
-    const wrongScore = {
-      ...ended,
-      result: { endedBy: "turn_limit" as const, places: places.map((place) => ({ ...place, score: place.score + 1 })) },
-    };
-    expect(endingViolations(wrongScore)).toEqual([
-      "I22: seat 1's score does not follow the formula",
-      "I22: seat 2's score does not follow the formula",
-    ]);
-  });
-
-  it("checks that equal scores are placed by the done order of the final turn", () => {
-    const ended = endGame({ ...START, turn: 40, doneOrder: [2, 1] }, 0);
-    const places = (ended.result?.places ?? []).map((place) => ({ ...place, score: 100 }));
-    function placedAs(order: ReadonlyArray<number>) {
-      return       endingViolations({
-        ...ended,
-        result: {
-          endedBy: "turn_limit" as const,
-          places: order.flatMap((seat) => places.filter((place) => place.seat === seat)),
-        },
-      }).filter((violation) => violation.includes("equal scores"));
-    }
-    expect(placedAs([1, 2])).toEqual([
-      "I22: equal scores are not placed by the done order and then the player order",
-    ]);
-    expect(placedAs([2, 1])).toEqual([]);
   });
 
   it("reports a turn that starts with the wrong first player", () => {

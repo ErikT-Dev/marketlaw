@@ -1,6 +1,7 @@
 import type { DrawLogEntry } from "../../../src/shared/DrawLogEntry.ts";
 import type { MainPhaseLogEntry } from "../../../src/shared/MainPhaseLogEntry.ts";
 import { isRecord } from "../../harness-check/isRecord.ts";
+import { fundsWritten } from "./fundsWritten.ts";
 import type { GameLogEntry } from "./GameLogEntry.ts";
 
 function turnDrawFieldsOf(entry: DrawLogEntry): Readonly<Record<string, unknown>> {
@@ -38,6 +39,8 @@ function mainPhaseFieldsOf(entry: MainPhaseLogEntry): Readonly<Record<string, un
       return { ...common, influence: entry.trade };
     case "redrew":
       return { ...common, redrew: entry.times };
+    case "support":
+      return { ...common, support: fundsWritten(entry.funds) };
   }
 }
 
@@ -52,6 +55,7 @@ function scenarioFieldsOf(entry: GameLogEntry): Readonly<Record<string, unknown>
     case "completed_project":
     case "influence":
     case "redrew":
+    case "support":
       return mainPhaseFieldsOf(entry);
   }
 }
