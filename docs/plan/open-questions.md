@@ -4187,3 +4187,25 @@ file.
   together with random quests once the owner has written the requirement and reward lists.
 - **Spec:** written in that phase.
 - **Implemented:** not yet.
+
+## Q180. How do the Worker and the client know which pictures the icon folder holds?
+
+- **Phase:** 29b, item 8 (player icons), decided without the owner.
+- **Question:** A2.5 makes the folder `player-icons/` the only list of pictures. The server must
+  know the list to refuse an unknown picture (`unknown_icon`) and to pick a random one, but the
+  Worker is bundled by wrangler, which cannot list a folder at build time (only Vite's
+  `import.meta.glob` can, and the Worker is not built with Vite).
+- **Options looked at:** a list kept by hand (what A2.5 rules out); a list written at every build
+  (every tool, the type check and the linter would need it first); a list written from the folder
+  by the harness check and committed.
+- **Solution:** the folder is copied as `player-icons/` at the top of the repository (each artist
+  folder of `design/assets/playericons/ffffff/transparent/1x1/` with `license.txt`). A picture is
+  named `<artist folder>/<file name>` (`delapouite/bat`), as the scenarios already name them.
+  `npm run harness:check` (part of `npm run check`) checks the folder as A2.5 says and writes
+  `src/shared/playerIcons/PLAYER_ICON_PICTURES.ts` from it; when that file differed from the
+  folder, it is rewritten and the check fails once, so a changed folder can never be deployed
+  with an old list. No one edits the list. The client loads each picture only when shown, with
+  Vite's `import.meta.glob` over the same folder. A2.5 says so (`HARNESS:` commit).
+- **Spec:** A2.5.
+- **Implemented:** `tools/harness-check/checkPlayerIconFolder.ts`, `checkPlayerIconList.ts`,
+  `src/shared/playerIcons/PLAYER_ICON_PICTURES.ts`.
