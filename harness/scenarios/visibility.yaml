@@ -119,7 +119,7 @@
   given:
     seats:
       - seat: 1
-        stats: {funds: 9, income: 5, influence: 2, workforce: 1, quality: 2, satisfaction: 3, product: 1, distribution: 0, bonus: 4}
+        stats: {funds: 9, income: 5, influence: 2, workforce: 1, quality: 2, satisfaction: 3, product: 1, distribution: 0}
         city: [Row House]
         build_passes: 1
         influence_uses: {influence_to_funds: 1}
@@ -127,7 +127,7 @@
         quests_completed: [Farmland]
         time_bank_ms: 600000
   then:
-    view: {seat: 2, of_seat: 1, stats: {funds: 9, income: 5, influence: 2, workforce: 1, quality: 2, satisfaction: 3, product: 1, distribution: 0, bonus: 4}, city: [Row House], type_counts: {Town Housing: 1}, build_passes: 1, influence_uses: {influence_to_funds: 1}, projects: [quality], quests_completed: [Farmland], time_bank_ms: 600000, away: false}
+    view: {seat: 2, of_seat: 1, stats: {funds: 9, income: 5, influence: 2, workforce: 1, quality: 2, satisfaction: 3, product: 1, distribution: 0}, city: [Row House], type_counts: {Town Housing: 1}, build_passes: 1, influence_uses: {influence_to_funds: 1}, projects: [quality], quests_completed: [Farmland], time_bank_ms: 600000, away: false}
 
 - name: no player receives the random seed or the deck order
   covers: [M3.2, M4.1]
@@ -253,7 +253,6 @@
       - seat: 1
         stats: {income: 4, influence: 4}
         city: [Liquor Shop]
-    random: [{tier: 1}, {quest: Countryside}]
   when:
     - {seat: 1, action: complete_quest, quest: Trading post}
     - {seat: 1, action: influence, trade: influence_to_funds}
@@ -327,3 +326,42 @@
     - {seat: 2, action: end_turn}
   then:
     view: {seat: 2, log_contains: [{seat: 1, turn: 1, redrew: 1}]}
+
+- name: the view shows last turn's quests projects income and Support
+  covers: [M3.5, M3.7, R19.6, R11.5]
+  given:
+    turn: 3
+    marketplace: [{place: residential, card: Row House}, {place: industry, card: Metal Mining}, {place: service, card: Liquor Shop}, {place: public_quality, card: Fire Station}, {place: public_satisfaction, card: Public Playground}, {place: open_1, card: Dentist}, {place: open_2, card: Apparel Store}, {place: open_3, card: Forest Plantation}]
+    quests: [{quest: Farmland}, {quest: Sports town}, {quest: Trading post}, {quest: Mining town}]
+    seats:
+      - seat: 1
+        stats: {income: 10, quality: 8}
+        city: [Liquor Shop]
+      - seat: 2
+        worth_gained: 40
+    random: [{sector: Service}, {tier: 1}]
+  when:
+    - {seat: 1, action: complete_quest, quest: Trading post}
+    - {seat: 1, action: complete_project, project: quality}
+    - {seat: 1, action: end_turn}
+    - {seat: 2, action: end_turn}
+  then:
+    turn: 4
+    view: {seat: 2, last_turn: {quests: [{quest: Trading post, seats: [1]}], projects: [{project: quality, seats: [1]}], income: {1: 1}, support: {1: 1}}}
+
+- name: another player's type counts show types gained from quests from the next turn
+  covers: [R5.4, R12.1, M3.5]
+  given:
+    turn: 3
+    marketplace: [{place: residential, card: Row House}, {place: industry, card: Metal Mining}, {place: service, card: Liquor Shop}, {place: public_quality, card: Fire Station}, {place: public_satisfaction, card: Public Playground}, {place: open_1, card: Dentist}, {place: open_2, card: Apparel Store}, {place: open_3, card: Forest Plantation}]
+    quests: [{quest: Farmland}, {quest: Sports town}, {quest: Trading post}, {quest: Mining town}]
+    seats:
+      - seat: 1
+        gained_types: {Farm: 1, Food: 2}
+  when:
+    - {seat: 1, action: complete_quest, quest: Farmland}
+    - {seat: 1, action: end_turn}
+    - {seat: 2, action: end_turn}
+  then:
+    turn: 4
+    view: {seat: 2, of_seat: 1, type_counts: {Farm: 2, Food: 2}}

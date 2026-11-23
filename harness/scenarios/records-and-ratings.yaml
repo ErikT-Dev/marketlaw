@@ -22,8 +22,8 @@
       bonus_types: [Farm, Finance]
       ranked: false
       players:
-        - {username: Ann, result: won, place: 1, score: 11, reached_end_goal: false, income: 15, funds_plus_hand: 13, workforce: 3, quality: 2, satisfaction: -1, product: 1, distribution: 2, bonus_type_points: 6}
-        - {username: Bea, result: lost, place: 2, score: -85}
+        - {username: Ann, result: won, place: 1, score: 116, reached_end_goal: false, income: 15, funds_plus_hand: 13, workforce: 3, quality: 2, satisfaction: -1, product: 1, distribution: 2, bonus_type_points: 6}
+        - {username: Bea, result: lost, place: 2, score: 20}
 
 - name: a player who left is recorded with their values when they left
   covers: [A3.2, A3.3, A3.4]
@@ -48,7 +48,7 @@
       players:
         - {username: Ann, result: won, place: 1}
         - {username: Cat, result: left, place: 2}
-        - {username: Bea, result: left, place: 3, score: 684, funds_plus_hand: 4}
+        - {username: Bea, result: left, place: 3, score: 39, funds_plus_hand: 4}
 
 - name: a player who left in an earlier turn is scored with the turn they left
   covers: [A3.3, R21.4]
@@ -320,3 +320,25 @@
   then:
     ended: {abandoned: true}
     ratings: unchanged
+
+- name: the game record holds every player's Q T C and F counts
+  covers: [A3.2]
+  given:
+    turn: 40
+    seats:
+      - seat: 1
+        player: Ann
+        city: [Orchard, Livestock Farm]
+        gained_types: {Sea: 1}
+        quests_completed: [Farmland]
+        worth_gained: 30.5
+      - seat: 2
+        player: Bea
+  when:
+    - {seat: 1, action: end_turn}
+    - {seat: 2, action: end_turn}
+  then:
+    record:
+      players:
+        - {username: Ann, q: 1, t: 6, c: 0, f: 30.5}
+        - {username: Bea, q: 0, t: 0, c: 0, f: 14}

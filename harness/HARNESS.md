@@ -66,10 +66,10 @@ Every scenario file is a list of scenarios. Every scenario has exactly these par
 | `quests` | Each quest on the table, `turns_on_table` so far, and `extra_turn: true` for a quest in its extra turn (R19.6) or `completed_this_turn: true` for one first completed in this turn | empty; `turns_on_table` 1; not completed |
 | `quest_list` | Quests still in the quest list | all quests not on the table |
 | `bonus_types` | The 2 bonus types | the first 2 types in R21.7 |
-| `random` | The random results the rules will ask for, in the order they are asked. Each entry is one of `sector`, `tier`, `shuffle` (the resulting order), `quest`, `type` (a bonus type), `seats` (accounts in seat order) or `generated_name` | none; see below |
+| `random` | The random results the rules will ask for, in the order they are asked. Each entry is one of `sector`, `tier`, `shuffle` (the resulting order), `quest`, `type` (a bonus type), `seats` (accounts in seat order), `generated_name` or `icon` (a new account's random icon, A2.5) | none; see below |
 | `clock_ms` | The server time at the start, in milliseconds | 0 |
 | `paused`, `last_vote_turn` | Whether the game is paused (R9.12); the turn of the last abandon vote (M7.2) | not paused; no vote yet |
-| `room`, `other_rooms` | A room's `code`, `size`, `public`, `owner`, `players`, `state` (`waiting`, `accepting`, `playing`, `ended`), `kind` of its last game, `chat`, `messages_sent` per player, `ended_ms` | none |
+| `room`, `other_rooms` | A room's `code`, `size`, `public`, `owner`, `players`, `state` (`waiting`, `accepting`, `playing`, `ended`), `kind` of its last game, `chat`, `messages_sent` per player, `icons` (each player's icon as the room keeps it, A2.6), `ended_ms` | none |
 | `accounts` | Each account's `name`, `kind` (`guest` or `registered`), `email`, `email_confirmed`, `pending_email`, `password`, `rating`, `ranked_games`, `highest_rating`, `games` (how many game records), `online`, `in_game`, `ranking_place`, `last_used_ms`, `username_changes_ms` (the times of their username changes, oldest first, A2.4), `icon` (`{picture, background, color}`, A2.5) and `icon_changes_ms` (the times of their icon changes, oldest first, A2.6), and today's counts `actions_today`, `games_started_today`, `emails_today` | none |
 | `email_counts` | Emails sent to each address today (A1.9) | none |
 | `queue`, `match`, `queue_count` | Players in the ranked queue in order, each a name (game size 3 only) or `{player, sizes}`; a match being confirmed; the queue count, a total or `{total, by_size}` | empty |
@@ -135,10 +135,10 @@ it out, `player_to_mute` for a mute and `player_to_unmute` for an unmute.
 | `room`, `game`, `lobby_rooms`, `queue`, `match`, `accounts`, `players_online`, `chat`, `notified`, `emails_sent`, `logged_in`, `match_history`, `ranking`, `menu`, `card_set`, `card_detail` | The expected state of rooms, accounts, the lobby and client screens |
 | `view` | What one seat's view shows: `{seat: 2, of_seat: 1, stats: {...}, hand_count: 5, contains: [...], hides: [...]}` |
 | `message_to` | That a seat or player was sent a particular notice or text; the `timed_out` notice has `in_a_row` and `of` in a ranked game, and `keep_playing: true` in a casual game (R9.11) |
-| `log_contains`, `log_excludes` (inside `view`) | Public game-log entries that must or must not appear: draws (M3.3), and what a player did in a main phase (M3.7) as `played` (a card), `completed_quest`, `completed_project`, `influence` (a trade) or `redrew` (how many redraws of the starting hand, R17.12), and at the start of a turn `income_gained` and `support` (with `amount`), each with `seat` and optionally `turn` |
+| `log_contains`, `log_excludes` (inside `view`) | Public game-log entries that must or must not appear: draws (M3.3), and what a player did in a main phase (M3.7) as `played` (a card), `completed_quest`, `completed_project`, `influence` (a trade) or `redrew` (how many redraws of the starting hand, R17.12), and at the start of a turn `income_gained` and `support`, each with its amount as its value (`{seat: 1, support: 3}`), each with `seat` and optionally `turn` |
 | `discard_count` (inside `view`) | The number of cards in the discard pile as the seat sees it (R5.5); the view never holds which cards they are (M3.2), checked with `hides: [discard_cards]` |
 | `ended` | The game has ended: `winner`, `places` (seats, 1st first), `scores`, `bonus_type_points`, `end_goal` (the seats that reached it), `score_parts` (per seat, each part of R21.4), or `abandoned: true` |
-| `record` | The saved game record (A3) |
+| `record` | The saved game record (A3); per player also `q`, `t`, `c` and `f`, the counts of S3.1 |
 | `ratings` | ELO ratings after the game (A10) |
 | `tutorial_step` | The tutorial step the player is on (T…) |
 

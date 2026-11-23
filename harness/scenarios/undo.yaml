@@ -243,3 +243,38 @@
         stats: {influence: 5}
         build_passes: 1
         influence_uses: {}
+
+- name: undo takes back selling and puts the cards back in the hand
+  covers: [R7.2, R7.1]
+  given:
+    seats:
+      - seat: 1
+        hand: [Cottage, Pub]
+  when:
+    - {seat: 1, action: sell, cards: [Cottage]}
+    - {seat: 1, action: undo}
+  then:
+    seats:
+      - seat: 1
+        stats: {funds: 7}
+        hand: [Cottage, Pub]
+        worth_gained: 14
+    holding_pile: []
+
+- name: undo takes back the extra influence of completing a quest first
+  covers: [R19.10, R7.1]
+  given:
+    turn: 3
+    quests: [{quest: Farmland}, {quest: Sports town}, {quest: Trading post}, {quest: Mining town}]
+    seats:
+      - seat: 1
+        stats: {income: 4}
+        city: [Liquor Shop]
+  when:
+    - {seat: 1, action: complete_quest, quest: Trading post}
+    - {seat: 1, action: undo}
+  then:
+    seats:
+      - seat: 1
+        stats: {funds: 7, influence: 0}
+        quests_completed: []

@@ -517,3 +517,51 @@
     - {player: Ann, action: sign_up, email: player@example.com, password: "correct horse", human_check: passed}
   then:
     rejected: site_daily_cap
+
+- name: a new account gets a random animal icon and colours
+  covers: [A2.5]
+  given:
+    random: [{icon: {picture: delapouite/bat, background: "#1e3a8a", color: "#fde68a"}}]
+  when:
+    - {visitor: v1, action: create_guest, username: Ann, human_check: passed}
+  then:
+    accounts: [{name: Ann, kind: guest, icon: {picture: delapouite/bat, background: "#1e3a8a", color: "#fde68a"}}]
+
+- name: a player can change their icon at most 10 times in 24 hours
+  covers: [A2.6]
+  given:
+    accounts: [{name: Ann, kind: guest, icon_changes_ms: [0, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000]}]
+  when:
+    - wait_ms: 86399000
+    - {player: Ann, action: change_icon, icon: {picture: delapouite/bear-head, background: "#000000", color: "#ffffff"}}
+  then:
+    rejected: icon_change_too_soon
+
+- name: rejects an icon whose colours are too alike
+  covers: [A2.5, A2.6]
+  given:
+    accounts: [{name: Ann, kind: guest}]
+  when:
+    - {player: Ann, action: change_icon, icon: {picture: delapouite/bear-head, background: "#777777", color: "#888888"}}
+  then:
+    rejected: icon_colors_too_alike
+
+- name: rejects an icon picture that is not in the icon folder
+  covers: [A2.5, A2.6]
+  given:
+    accounts: [{name: Ann, kind: guest}]
+  when:
+    - {player: Ann, action: change_icon, icon: {picture: delapouite/unicorn-made-up, background: "#000000", color: "#ffffff"}}
+  then:
+    rejected: unknown_icon
+
+- name: a room keeps the icon a player had when they joined
+  covers: [A2.6]
+  given:
+    room: {code: K7QR2P, size: 3, public: true, owner: Bea, players: [Bea, Ann], state: waiting, icons: {Ann: {picture: delapouite/bat, background: "#1e3a8a", color: "#fde68a"}}}
+    accounts: [{name: Bea}, {name: Ann, kind: guest, icon: {picture: delapouite/bat, background: "#1e3a8a", color: "#fde68a"}}]
+  when:
+    - {player: Ann, action: change_icon, icon: {picture: delapouite/bear-head, background: "#000000", color: "#ffffff"}}
+  then:
+    accounts: [{name: Bea}, {name: Ann, kind: guest, icon: {picture: delapouite/bear-head, background: "#000000", color: "#ffffff"}}]
+    room: {icons: {Ann: {picture: delapouite/bat, background: "#1e3a8a", color: "#fde68a"}}}
