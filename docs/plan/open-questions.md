@@ -3870,3 +3870,148 @@ file.
   name you. Written into S1.6 and S1.8 first (`HARNESS:` commit); the code already does this.
 - **Implemented:** `harness/spec/screens.md` S1.6, S1.8; `src/client/components/PlayerIcon.tsx`,
   `src/client/screens/game/QuestCard.tsx` (unchanged).
+
+## Q175. Can players upload their own icon images?
+
+- **Phase:** none yet. Asked by the owner on 2026-11-21, before phase 30. Built in the fix phase
+  for the owner's notes of 2026-11-20 (`docs/feedback-notes/2026.11.20 - …`), as the owner asked.
+  When that note is ready and its fix phase is planned, this item is part of it, as if it were
+  one more finding.
+- **Question:** the owner asked for players to be able to upload their icon images, and set one
+  requirement: it stays free of cost.
+- **Options looked at:** uploads stored as small WebP images in D1 (already bound and free:
+  1 row per upload, about 150 MB for 10,000 players, a few hundred Worker requests a day); R2
+  (needs a payment method on the account and bills overage, so it is not guaranteed free);
+  Cloudflare Images (storage is paid only); KV (1,000 writes a day). Uploads would be free, but
+  anyone could upload offensive or illegal images, which the site would have to moderate.
+- **Solution:** decided by the owner on 2026-11-21: no uploads. Players choose their icon from
+  built-in pictures, which the owner supplies as SVG files from game-icons.net (CC BY 3.0, the
+  animals pack, about 188 pictures before the owner removes the ones they do not want) with
+  their licence file, plus a background colour and a picture colour. The owner writes this into
+  the 2026-11-20 notes (picture choice, the folder as the only list of pictures, credits on the
+  privacy notice, a check of the folder in `npm run check`, and the colour choice with a
+  contrast check, at most 10 changes a day, kept per room as usernames are). The colour choice
+  replaces A2.5's server-picked colour. No image storage, no moderation, no new Cloudflare
+  product or dependency; the pictures are static files loaded only when shown.
+- **Spec:** written in the fix phase for those notes, from the notes, before it is built.
+- **Implemented:** not yet.
+
+## Q176. How are the open points of the 2026-11-20 notes decided?
+
+- **Phase:** none yet. Asked by the owner on 2026-11-21, before phase 30. Part of the fix phase
+  for the owner's notes of 2026-11-20 (`docs/feedback-notes/2026.11.20 - …`), as if it were one
+  more finding; the spec for each point is written in that phase before it is built.
+- **Question:** reviewing the notes, eight points were open: how bonus becomes decimal funds
+  (item 4), the big card's colours (5), the big card's Sell button (9), multi-type quest rewards
+  (10), quests that stay a turn after completion (11), the turns-left colours (15), the score of
+  a player who did not finish (17) and which screens "high score" means (23).
+- **Solution:** decided by the owner on 2026-11-21:
+  - **Item 4:** every amount of funds is counted in tenths: all funds, incomes, costs, rewards
+    and sale values are multiplied by 10 in the rules and the engine, so the old bonus becomes
+    the last digit of funds and stays a whole number (income 4 is 40 tenths; 5 funds and 3 bonus
+    are 53 tenths). Screens show funds and income as decimals (5.3). The bonus stat is removed
+    from the rules (R2.1, R14, R15.5, the score and every screen); the end-of-turn gain of R14.1
+    is added to funds in tenths. A negative gain lowers funds; the owner accepts this, since no
+    card makes it outweigh the income gained in the same step. Gameplay otherwise stays the same.
+    The score counts whole funds only (0.2 × whole funds), so scores do not change. Total worth
+    gained (F) counts funds in the same tenths. Bonus types (R21.6) keep their name.
+  - **Item 5:** the title bar takes the stats bar's colour, made more transparent.
+  - **Item 9:** Sell on the big card asks "Sell for X funds?" before selling.
+  - **Item 10:** a quest reward gains at most one type. The new quest list is shown to the owner
+    for approval before it is built.
+  - **Item 11:** a quest completed during its extra turn does not stay longer again; a quest
+    completed in its last turn on the table leaves as it would anyway; each player still
+    completes each quest at most once.
+  - **Item 15:** blue at the full number of turns, green above half, yellow from 2 up to half,
+    red at 1.
+  - **Item 17:** every player who left (including after 3 time-outs in a row) gets score 0 in
+    the record and the match history; places and rating changes stay as now.
+  - **Item 22:** credits on the privacy notice, at most 10 icon changes a day, a contrast check
+    between the two colours (Q175); a new player gets a random animal and random colours.
+  - **Item 23:** the T, Q, F and C counts are added to the end-of-game table (S9.5) and the game
+    record (S13.2).
+- **Spec:** written in the fix phase for those notes, before it is built.
+- **Implemented:** not yet.
+
+## Q177. How are the remaining points of the 2026-11-20 notes read?
+
+- **Phase:** none yet. Asked by the owner on 2026-11-23, before phase 30. Part of the fix phase
+  for the owner's notes of 2026-11-20 (`docs/feedback-notes/2026.11.20 - …`), as if it were one
+  more finding; the spec for each point is written in that phase before it is built. Where this
+  differs from Q176, this wins.
+- **Question:** the owner asked for Claude's reading of every unclear point and confirmed or
+  corrected it point by point.
+- **Solution:** decided by the owner on 2026-11-23 (item numbers are the note's):
+  - **Item 1:** each project in the Projects pop-up shows its picture from
+    `design/assets/projects/`.
+  - **Item 3:** one "?" next to your own Q, T, C and F (in the table of item 17); pointing at it
+    explains the four letters.
+  - **Items 6 and 48:** the third project's extra income and card (R16.4) and the first-completion
+    +2 funds (R16.6) are removed; every project completion gives the same reward.
+  - **Item 7:** the claimed combos list shows only each combo's requirement and reward, no card
+    names.
+  - **Item 8:** each tutorial message sits right next to the area it highlights, with an arrow
+    pointing at it. While a message waits for its Continue button, the rest of the screen is
+    greyed out a little.
+  - **Item 11:** besides Q176, everyone who completes a quest in the first turn anyone completes
+    it gets +1 influence on top of the reward, straight away.
+  - **Item 14:** built from the approved sketch `design/sketches/14-card-pictures/APPROVED.md`.
+  - **Item 15:** replaces Q176's item 15: built from the approved sketch
+    `design/sketches/15-quest-turns-left/APPROVED.md` (a big number in a rounded box; blue at
+    full time, green above half, yellow from 2 up to half, red at 1; tier 1, 2, 3 quests stay
+    6, 5, 4 turns, item 12). A quest in its extra turn after completion (item 11) shows a red 1.
+  - **Item 16:** a big red countdown in the marketplace area during the market phase, besides
+    the existing timer; in the last 5 seconds the number pulses (no pulse with reduced motion)
+    and the marketplace border turns red.
+  - **Item 17:** a small table with only your own Q, T, C and F, above the opponents' quick
+    summary tables; those four boxes leave your stats board, the rest of it stays.
+    Q176's item 17 (score 0 for players who left) is withdrawn: a player who left gets the score
+    their stats give at the end of the game, and is shown with it; places and ratings stay as now.
+  - **Item 19:** the hand is sorted by sector (Residential, Industry, Service, Public), then tier
+    (lowest first), then card number.
+  - **Items 20 and 45:** the same point: pointing at a card-name combo's card number shows the
+    card's name.
+  - **Item 21:** types gained from quests count in the "most played types" icons and in T for
+    every viewer, as in your own view; other players see the change from the next turn, like
+    every other stat (R5.4).
+  - **Item 24:** selling can be undone like playing a card.
+  - **Item 25 and a new rule:** if any player reached the end goal, every player who reached it
+    places above every player who did not, whatever the scores. Among equal places by that rule,
+    the higher score places higher; on equal scores, the higher F; then player order.
+  - **Item 26:** the end goal becomes income 20 (was 22) and all 3 projects.
+  - **Item 27:** at the start of every turn, each player still in the game compares their F with
+    the highest F among the other players still in the game and gets +1 fund for every full 10
+    they are behind. These funds count in F.
+  - **F (new rule the game must always keep):** at every moment a player's F equals all funds
+    they have received in the game, however they got them (starting funds, income, catch-up,
+    projects, quests, influence actions and any other source), plus every card they have gained
+    (the starting hand, every card drawn, and every card taken from the marketplace, which
+    counts as drawn). Selling a card does not change F: the card was already counted as 1 and
+    its fund replaces it. Undoing an action takes back exactly what it added. Players see their
+    opponents' correct F at the start of every turn. The fix phase writes this into R2.4 and adds
+    an invariant that checks this sum after every simulated action, not only that F never goes
+    down (today's I28).
+  - **Item 28:** the score loses both the 870 base and the −25 per completed turn; the end-of-game
+    screen shows each player's score part by part. This also ends the case found in room 4SQBK6
+    (2026-11-22), where a player who left in turn 19 scored 492, above the winner's 445, only
+    because fewer turns were subtracted.
+  - **Item 46:** at the start of each turn a short notice and a log line list every player whose
+    income went up in the turn before, and by how much.
+  - **Item 47:** a hand card on the big card highlights its own combos that playing it would make
+    ready, infinite ones with the number of times ("×3").
+  - **Item 49:** every player starts turn 1 with 2 build passes instead of 1.
+  - **Item 50:** a quest needing income N can be placed only once some player has at least N−2
+    income; a quest needing completed projects only once some player has at least 8 income.
+    Quests not allowed yet are skipped by the refill pick.
+  - **Items 2, 12, 13, 18, 29, 30, 31, 32, 33, 34:** clear as written.
+- **Checked on request:** the owner asked whether Trilobite's large F lead in room 4SQBK6
+  (2026-11-22) was a bug. Replaying the game through the engine, every F change in all 1,102
+  checked steps equalled the cards gained plus the funds received; the lead came from income
+  rising from 7 to 11 in turn 17 and staying ahead. Not a bug.
+- **Spec:** written in the fix phase for those notes, before it is built.
+- **Implemented:** not yet.
+- **Added on 2026-11-23 (owner):** the catch-up funds of item 27 are called **Support**
+  everywhere. All start-of-turn news goes into one area (extends item 46): quests completed,
+  projects completed, income gained and Support gained in the turn before, built from the
+  approved sketch `design/sketches/46-turn-notifications/APPROVED.md`. It replaces the "completed
+  last turn" table beside the quests and the separate income notice.
