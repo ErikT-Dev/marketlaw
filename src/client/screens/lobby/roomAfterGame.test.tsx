@@ -9,12 +9,14 @@ import { NO_ROOM_CHAT } from "../../store/NO_ROOM_CHAT";
 import { testAccount } from "../../testing/testAccount";
 import { RoomAfterGamePage } from "./RoomAfterGamePage";
 import { testPlayerIdOf } from "../../testing/testPlayerIdOf";
+import { scorePartsAddingUpTo } from "../../testing/scorePartsAddingUpTo";
 
 const RESULT: GameResult = {
   endedBy: "end_goal",
   places: ([2, 1, 3] as const).map((seat) => ({
     seat,
     score: 600 - seat * 50,
+    scorePartsInHundredths: scorePartsAddingUpTo(600 - seat * 50),
     bonusTypePoints: 4,
     leftInTurn: null,
     hasReachedEndGoal: seat === 2,

@@ -4,12 +4,14 @@ import type { GameResult } from "../../../shared/GameResult";
 import { gamePageProps } from "../../testing/gamePageProps";
 import { roomUpdateWith } from "../../testing/roomUpdateWith";
 import { GamePage } from "../GamePage";
+import { scorePartsAddingUpTo } from "../../testing/scorePartsAddingUpTo";
 
 const LAST_PLAYER: GameResult = {
   endedBy: "last_player",
   places: ([2, 4, 3, 1] as const).map((seat) => ({
     seat,
     score: 400 - seat,
+    scorePartsInHundredths: scorePartsAddingUpTo(400 - seat),
     bonusTypePoints: 3,
     leftInTurn: seat === 2 ? null : 10,
     hasReachedEndGoal: false,
@@ -21,6 +23,7 @@ const LAST_PLAYER: GameResult = {
 const LAST_PLACE = LAST_PLAYER.places[0] ?? {
   seat: 2,
   score: 0,
+  scorePartsInHundredths: scorePartsAddingUpTo(0),
   bonusTypePoints: 0,
   leftInTurn: null,
   hasReachedEndGoal: false,

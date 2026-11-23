@@ -49,3 +49,9 @@
 .table td.ratingLoss {
   color: var(--color-board-rating-loss);
 }
+
+.caption {
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-bold);
+  text-align: left;
+}

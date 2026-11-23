@@ -14,12 +14,14 @@ import { GameOverTable } from "./game/GameOverTable";
 import { GamePage } from "./GamePage";
 import { PublicRoomsList } from "./lobby/PublicRoomsList";
 import { WaitingPlayers } from "./lobby/WaitingPlayers";
+import { scorePartsAddingUpTo } from "../testing/scorePartsAddingUpTo";
 
 const RESULT: GameResult = {
   endedBy: "end_goal",
   places: ([3, 2, 1] as const).map((seat) => ({
     seat,
     score: 600 - seat * 50,
+    scorePartsInHundredths: scorePartsAddingUpTo(600 - seat * 50),
     bonusTypePoints: 4,
     leftInTurn: null,
     hasReachedEndGoal: false,

@@ -5,6 +5,7 @@ import { gamePageProps } from "../../testing/gamePageProps";
 import { roomUpdateWith } from "../../testing/roomUpdateWith";
 import { textWithIconNames } from "../../testing/textWithIconNames";
 import { GamePage } from "../GamePage";
+import { scorePartsAddingUpTo } from "../../testing/scorePartsAddingUpTo";
 
 function place(
   seat: 1 | 2 | 3 | 4,
@@ -14,6 +15,7 @@ function place(
   return {
     seat,
     score,
+    scorePartsInHundredths: scorePartsAddingUpTo(score),
     bonusTypePoints: 6,
     leftInTurn: null,
     hasReachedEndGoal: false,
@@ -46,7 +48,7 @@ describe("end-of-game screen", () => {
     expect(textWithIconNames(dialog)).toContain(
       "Cy reached [Income 20] and all 3 projects in turn 24, so the game ended after that main phase.",
     );
-    const rows = within(dialog)
+    const rows = within(within(dialog).getByRole("table", { name: "Places" }))
       .getAllByRole("row")
       .slice(1)
       .map((row) =>
@@ -55,19 +57,67 @@ describe("end-of-game screen", () => {
           .map((cell) => cell.textContent),
       );
     expect(rows).toEqual([
-      ["1st", "won", "512", "yes", "23.0", "20", "6"],
-      ["2nd", "lost", "487", "no", "15.0", "20", "6"],
-      ["3rd", "lost", "455", "no", "15.0", "20", "6"],
-      ["4th", "left", "301", "no", "15.0", "20", "6"],
+      ["1st", "won", "512", "yes"],
+      ["2nd", "lost", "487", "no"],
+      ["3rd", "lost", "455", "no"],
+      ["4th", "left", "301", "no"],
     ]);
     expect(
       within(dialog)
         .getAllByRole("rowheader")
         .map((header) => header.textContent),
-    ).toEqual(["Cy", "You", "Di", "Ann"]);
+    ).toEqual(["Cy", "You", "Di", "Ann", "Cy", "You", "Di", "Ann"]);
+    expect(dialog.textContent).toContain(
+      "Players who reached the end goal place first, then the higher score, then the higher total worth gained (F), then the earlier place in the final turn's player order.",
+    );
     expect(dialog.textContent).toContain(
       "Players who left are placed by when they left: the one who left first is last.",
     );
+  });
+
+  it("explains every player's score part by part adding up to the score", () => {
+    const parts = {
+      income: 13_000,
+      workforce: 280,
+      quality: 385,
+      satisfaction: -150,
+      product: 550,
+      distribution: 0,
+      fundsAndHand: 420,
+      bonusTypes: 600,
+    };
+    showResult({
+      endedBy: "turn_limit",
+      places: [place(2, 150, { scorePartsInHundredths: parts }), place(1, 12)],
+    });
+    const table = within(screen.getByRole("dialog", { name: "Bea wins!" })).getByRole("table", {
+      name: "How each score adds up",
+    });
+    expect(within(table).getAllByRole("columnheader").map(textWithIconNames)).toEqual([
+      "Player",
+      "[Income]",
+      "[Workforce]",
+      "[Quality]",
+      "[Satisfaction]",
+      "[Product]",
+      "[Distribution]",
+      "[Funds] + hand",
+      "Bonus types",
+      "Total",
+    ]);
+    const rows = within(table)
+      .getAllByRole("row")
+      .slice(1)
+      .map((row) => [
+        within(row).getByRole("rowheader").textContent,
+        ...within(row)
+          .getAllByRole("cell")
+          .map((cell) => cell.textContent),
+      ]);
+    expect(rows).toEqual([
+      ["You", "130", "2.8", "3.85", "−1.5", "5.5", "0", "4.2", "6", "150.85"],
+      ["Ann", "0", "0", "0", "0", "0", "0", "0", "12", "12"],
+    ]);
   });
 
   it("says when the game ended at the turn limit", () => {
@@ -99,7 +149,7 @@ describe("end-of-game screen", () => {
     expect(dialog.textContent).toContain("Ranked game: ratings changed.");
     expect(dialog.textContent).not.toContain("Casual game");
     expect(within(dialog).getByRole("columnheader", { name: "Rating" })).toBeTruthy();
-    const ratingCells = within(dialog)
+    const ratingCells = within(within(dialog).getByRole("table", { name: "Places" }))
       .getAllByRole("row")
       .slice(1)
       .map((row) => within(row).getAllByRole("cell").at(-1)?.textContent);

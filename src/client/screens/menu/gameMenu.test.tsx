@@ -7,6 +7,7 @@ import { gamePageProps } from "../../testing/gamePageProps";
 import { roomUpdateWith } from "../../testing/roomUpdateWith";
 import { GamePage } from "../GamePage";
 import { LobbyTopBar } from "../lobby/LobbyTopBar";
+import { scorePartsAddingUpTo } from "../../testing/scorePartsAddingUpTo";
 
 const NOW = 1_000_000;
 
@@ -131,6 +132,7 @@ describe("the game menu", () => {
       places: ([2, 3, 4, 1] as const).map((seat, index) => ({
         seat,
         score: 400 - index,
+        scorePartsInHundredths: scorePartsAddingUpTo(400 - index),
         bonusTypePoints: 6,
         leftInTurn: null,
         hasReachedEndGoal: false,

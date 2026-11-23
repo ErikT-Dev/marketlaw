@@ -1,8 +1,10 @@
+import type { ScorePartsInHundredths } from "./ScorePartsInHundredths";
 import type { SeatNumber } from "./SeatNumber";
 
 export type PlaceResult = {
   readonly seat: SeatNumber;
   readonly score: number;
+  readonly scorePartsInHundredths: ScorePartsInHundredths;
   readonly bonusTypePoints: number;
   readonly leftInTurn: number | null;
   readonly hasReachedEndGoal: boolean;

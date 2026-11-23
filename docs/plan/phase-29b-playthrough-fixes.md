@@ -540,7 +540,7 @@ approval of the list, the quest scenarios that name quest contents.
     tie-break scenarios of `end-of-game`, the three of `records-and-ratings`) and 16 (tutorial
     start's `build_passes`); unit tests of items 9 (`reportBudgets` B19), 18 (`parseRulebook`,
     two) and 19 (`influenceAndUndo`, `ruleFileTables`, two). E2e tests not run locally.
-- [ ] 7. **Places and score** (R21.4, R21.5, R21.8, R21.9, A3.3, A3.4, S9.5, I22, findings 25,
+- [x] 7. **Places and score** (R21.4, R21.5, R21.8, R21.9, A3.3, A3.4, S9.5, I22, findings 25,
   28). **Medium.** After 2.
   - `scoreOf.ts`, `SCORE_HUNDREDTHS.ts`, `cardsInHandScoredOf.ts`, `scoredEndingOf.ts`: no 870
     base and no turns part, whole funds only (tenths ÷ 10, rounded down). Places by end goal
@@ -549,6 +549,28 @@ approval of the list, the quest scenarios that name quest contents.
   - The end-of-game table shows each score part by part (view and screen, S9.5).
   - Covers the new `end-of-game` scenarios and the required score scenarios of `end-of-game`
     and `records-and-ratings`.
+  - **Done (2026-11-24).** `SCORE_HUNDREDTHS` lost its base and turns part; `scorePartsOf`
+    gives each part of R21.4 in hundredths (`ScorePartsInHundredths` in `src/shared/`) and
+    `scoreOf` adds them up and rounds down. `PlaceResult` (and `GAME_RESULT_SCHEMA`) carries
+    `scorePartsInHundredths`; a leaver's parts use their values when they left (A3.3). Places
+    (`gameResultOf`): still in the game first, then end goal reached, score, F, the final turn's
+    player order; leavers last, the first to leave last. `doneOrder` is still kept but breaks no
+    tie. I22 (`gameEndViolations`) checks the same order without the base and turns. The
+    end-of-game screen has a second table, "How each score adds up" (each part's points, the
+    exact total), "The score is the total rounded down", and a line under the places table on
+    how places are decided. All four new `end-of-game` scenarios (run as required locally) and
+    the eight required score scenarios of `end-of-game` and `records-and-ratings` pass; they
+    failed before. `e2e/gameOver.spec.ts` passes locally at all three sizes.
+  - **Differs from the phase file.** The places table (now named "Places") lost its income,
+    funds + hand and bonus-type columns, which S9.5 does not list; those values are in the score
+    table as points. `PlaceResult` keeps `income`, `fundsAndHand` and `bonusTypePoints` for
+    the game record. Browser tests counting the dialog's rows (`gameOver.spec.ts`,
+    `leaving.spec.ts`, `playFullGame.ts`) now count the Places table's rows.
+  - **For later items.** Item 11 adds Q, T, C, F to the Places table (`GameOverTable.tsx`), not
+    to the score table. Client test fixtures build a `PlaceResult`'s parts with
+    `src/client/testing/scorePartsAddingUpTo.ts`. Still failing in `npm run check`, none of
+    them item 7's: tutorial start's `build_passes` (16); unit tests of items 9 (`reportBudgets`
+    B19), 18 (`parseRulebook`, two) and 19 (`influenceAndUndo`, `ruleFileTables`, two).
 - [ ] 8. **Player icons** (A2.5, A2.6, A12.1, S1.8, S12.5, S12.8, B18, finding 22, Q175).
   **Large.**
   - Copy `design/assets/playericons/` (one artist folder `ffffff` and `license.txt`) into the
@@ -697,4 +719,4 @@ each helper's conversation size at its end.
 | Builder 2 | Opus, medium | 18 | 198,477 | 108 | done |
 | Builder 3 and 4 | Opus, medium | 23 | 163,360 | 91 | done |
 | Builder 5 | Opus, medium | 20 | 182,764 | 97 | done |
-| Builder 6b | Opus, medium | 14 | – | – | done |
+| Builder 6b | Opus, medium | 14 | 162,084 | 82 | done |

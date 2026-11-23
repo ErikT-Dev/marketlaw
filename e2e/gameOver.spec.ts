@@ -28,7 +28,7 @@ test("a game played to the end goal shows the winner, the places and the scores"
     await expect(dialog).toBeVisible();
     const why = dialog.getByText(/reached .* and all 3 projects in turn 12/);
     await expect(why.getByRole("img", { name: "Income 20" })).toBeVisible();
-    await expect(dialog.getByRole("row")).toHaveCount(3);
+    await expect(dialog.getByRole("table", { name: "Places" }).getByRole("row")).toHaveCount(3);
   }
   await expectScreenFits(one, "game-over-end-goal", testInfo);
   await one.getByRole("button", { name: "Close" }).click();

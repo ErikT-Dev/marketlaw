@@ -14,6 +14,16 @@ export const GAME_RESULT_SCHEMA = v.object({
     v.object({
       seat: SEAT_NUMBER_SCHEMA,
       score: v.number(),
+      scorePartsInHundredths: v.object({
+        income: v.number(),
+        workforce: v.number(),
+        quality: v.number(),
+        satisfaction: v.number(),
+        product: v.number(),
+        distribution: v.number(),
+        fundsAndHand: v.number(),
+        bonusTypes: v.number(),
+      }),
       bonusTypePoints: v.number(),
       leftInTurn: v.nullable(v.number()),
       hasReachedEndGoal: v.boolean(),

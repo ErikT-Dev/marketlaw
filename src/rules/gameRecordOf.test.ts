@@ -70,7 +70,7 @@ describe("gameRecordOf", () => {
       result: "won",
       place: 1,
       leftInTurn: null,
-      score: 4,
+      score: 109,
       hasReachedEndGoal: false,
       income: 15,
       fundsAndHand: 10,
@@ -98,7 +98,7 @@ describe("gameRecordOf", () => {
       result: "left",
       place: 3,
       leftInTurn: 12,
-      score: 616,
+      score: 21,
       fundsAndHand: 9,
     });
   });

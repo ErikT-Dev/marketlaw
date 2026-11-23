@@ -10,6 +10,7 @@ import { roomUpdateWith } from "../../testing/roomUpdateWith";
 import { statAndTypeWordsShownIn } from "../../testing/statAndTypeWordsShownIn";
 import { GamePage } from "../GamePage";
 import { PhotoLoading } from "./PhotoLoading";
+import { scorePartsAddingUpTo } from "../../testing/scorePartsAddingUpTo";
 
 const OWN: Partial<OwnSeatView> = {
   hand: ["Farm House", "Loft"],
@@ -69,6 +70,7 @@ const ENDED: GameResult = {
     {
       seat: 3,
       score: 512,
+      scorePartsInHundredths: scorePartsAddingUpTo(512),
       bonusTypePoints: 6,
       leftInTurn: null,
       hasReachedEndGoal: true,
@@ -78,6 +80,7 @@ const ENDED: GameResult = {
     {
       seat: 2,
       score: 487,
+      scorePartsInHundredths: scorePartsAddingUpTo(487),
       bonusTypePoints: 6,
       leftInTurn: null,
       hasReachedEndGoal: false,

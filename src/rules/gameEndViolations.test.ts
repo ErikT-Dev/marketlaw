@@ -34,8 +34,15 @@ describe("gameEndViolations", () => {
     ]);
   });
 
-  it("checks that equal scores are placed by the done order of the final turn", () => {
-    const ended = endGame({ ...START, turn: 40, doneOrder: [2, 1] }, 0);
+  it("checks that equal scores are placed by total worth gained", () => {
+    const ended = endGame(
+      {
+        ...START,
+        turn: 40,
+        seats: START.seats.map((seat) => (seat.seat === 2 ? { ...seat, worthGained: seat.worthGained + 10 } : seat)),
+      },
+      0,
+    );
     const places = (ended.result?.places ?? []).map((place) => ({ ...place, score: 100 }));
     function placedAs(order: ReadonlyArray<number>) {
       return       endingViolations({
@@ -47,8 +54,38 @@ describe("gameEndViolations", () => {
       }).filter((violation) => violation.includes("equal scores"));
     }
     expect(placedAs([1, 2])).toEqual([
-      "I22: equal scores are not placed by the done order and then the player order",
+      "I22: equal scores are not placed by total worth gained and then the player order",
     ]);
     expect(placedAs([2, 1])).toEqual([]);
+  });
+
+  it("checks that a player who reached the end goal is placed above a higher score", () => {
+    const ended = endGame(
+      {
+        ...START,
+        turn: 12,
+        seats: START.seats.map((seat) =>
+          seat.seat === 1
+            ? {
+                ...seat,
+                stats: { ...seat.stats, income: 20 },
+                projects: ["quality", "satisfaction", "workforce"] as const,
+              }
+            : { ...seat, stats: { ...seat.stats, income: 30 } },
+        ),
+      },
+      0,
+    );
+    const places = ended.result?.places ?? [];
+    expect(places.map((place) => place.seat)).toEqual([1, 2]);
+    expect(endingViolations(ended)).toEqual([]);
+    expect(
+      endingViolations({
+        ...ended,
+        result: { endedBy: "end_goal" as const, places: [...places].reverse() },
+      }),
+    ).toEqual([
+      "I22: the places are not by end goal and then score with players who left last, the first to leave last",
+    ]);
   });
 });
