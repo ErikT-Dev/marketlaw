@@ -14,6 +14,8 @@ import styles from "./GameDialogs.module.css";
 import { playerNameOf } from "./playerNameOf";
 import { PROJECT_TITLES } from "./PROJECT_TITLES";
 import { REJECTION_MESSAGES } from "./REJECTION_MESSAGES";
+import { tenthsShown } from "../../components/tenthsShown";
+import { fundsInTenths } from "../../../shared/fundsInTenths";
 
 type Props = {
   readonly seat: OwnSeatView;
@@ -91,7 +93,7 @@ export function ProjectsDialog({ seat, view, playerNames, onComplete, onClose }:
                 Needs <StatChip stat={project} value={PROJECT_NEED} /> and at least{" "}
                 <StatChip stat="income" value={PROJECT_INCOME_NEED} /> · you have{" "}
                 <StatChip stat={project} value={seat.stats[project]} /> and{" "}
-                <StatChip stat="income" value={seat.stats.income} />
+                <StatChip stat="income" value={tenthsShown(fundsInTenths(seat.stats.income))} />
               </span>
               <DialogNote
                 text={

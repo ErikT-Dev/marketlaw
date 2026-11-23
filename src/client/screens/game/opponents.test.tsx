@@ -41,8 +41,8 @@ describe("quick summary table", () => {
       "Quick summary table of Di",
     ]);
     const di = within(opponents().getByRole("article", { name: "Quick summary table of Di" }));
-    expect(di.getByRole("img", { name: "Funds 7" })).toBeDefined();
-    expect(di.getByRole("img", { name: "Income 14" })).toBeDefined();
+    expect(di.getByRole("img", { name: "Funds 7.0" })).toBeDefined();
+    expect(di.getByRole("img", { name: "Income 14.0" })).toBeDefined();
     expect(di.getByRole("img", { name: "Influence 3" })).toBeDefined();
     expect(di.getByRole("img", { name: "Quests completed 0" })).toBeDefined();
     expect(di.getByText("Hand 5")).toBeDefined();

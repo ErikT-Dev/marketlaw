@@ -55,10 +55,10 @@ describe("end-of-game screen", () => {
           .map((cell) => cell.textContent),
       );
     expect(rows).toEqual([
-      ["1st", "won", "512", "yes", "23", "20", "6"],
-      ["2nd", "lost", "487", "no", "15", "20", "6"],
-      ["3rd", "lost", "455", "no", "15", "20", "6"],
-      ["4th", "left", "301", "no", "15", "20", "6"],
+      ["1st", "won", "512", "yes", "23.0", "20", "6"],
+      ["2nd", "lost", "487", "no", "15.0", "20", "6"],
+      ["3rd", "lost", "455", "no", "15.0", "20", "6"],
+      ["4th", "left", "301", "no", "15.0", "20", "6"],
     ]);
     expect(
       within(dialog)

@@ -22,7 +22,7 @@ const READY: Partial<OwnSeatView> = {
   },
   projects: ["workforce"],
   stats: {
-    funds: 7,
+    funds: 70,
     income: 10,
     influence: 0,
     workforce: 2,
@@ -112,7 +112,7 @@ describe("projects", () => {
     const dialog = within(screen.getByRole("dialog", { name: "Projects" }));
     const streetsItem = dialog.getByRole("listitem", { name: "Clean up the streets" });
     expect(textWithIconNames(streetsItem)).toContain(
-      "Needs [Quality 8] and at least [Income 10] · you have [Quality 9] and [Income 10]",
+      "Needs [Quality 8] and at least [Income 10] · you have [Quality 9] and [Income 10.0]",
     );
     const streets = within(streetsItem);
     const campaign = within(dialog.getByRole("listitem", { name: "Culture campaign" }));
@@ -127,7 +127,7 @@ describe("projects", () => {
     showGame({
       ...READY,
       stats: {
-        funds: 7,
+        funds: 70,
         income: 3,
         influence: 0,
         workforce: -1,

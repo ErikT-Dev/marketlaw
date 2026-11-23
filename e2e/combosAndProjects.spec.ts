@@ -58,12 +58,12 @@ test("claim combos with the totals, complete a project, and get the first-comple
   await expect(streets).toContainText("Nobody has completed it yet");
   await expectScreenFits(ann, "projects", testInfo);
   await streets.getByRole("button", { name: "Complete" }).click();
-  await expect(ann.getByRole("img", { name: "Funds 9" })).toBeVisible();
+  await expect(ann.getByRole("img", { name: "Funds 9.0", exact: true })).toBeVisible();
   await expect(ann.getByRole("img", { name: "Quality 1" })).toBeVisible();
 
   await ann.getByRole("button", { name: "End turn" }).click();
   await bea.getByRole("button", { name: "End turn" }).click();
   await expect(ann.getByRole("heading", { name: "Turn 2 of 40" })).toBeVisible();
-  await expect(ann.getByRole("img", { name: "Funds 22" })).toBeVisible();
+  await expect(ann.getByRole("img", { name: "Funds 22.1", exact: true })).toBeVisible();
   await Promise.all([ann, bea].map(async (page) => page.context().close()));
 });

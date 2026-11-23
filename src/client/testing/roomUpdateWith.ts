@@ -9,7 +9,7 @@ import { OWN_SEAT_VIEW } from "../../shared/testing/OWN_SEAT_VIEW";
 import { testPlayerIdOf } from "./testPlayerIdOf";
 
 const STATS = {
-  funds: 7,
+  funds: 70,
   income: 14,
   influence: 3,
   workforce: 6,
@@ -22,7 +22,7 @@ const SEAT_COMMON = {
   stats: STATS,
   city: [],
   buildPasses: 2,
-  worthGained: 14,
+  worthGained: 140,
   isDone: false,
   isOutOfTime: false,
   hasLeft: false,

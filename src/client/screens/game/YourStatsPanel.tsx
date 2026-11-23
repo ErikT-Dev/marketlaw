@@ -10,6 +10,8 @@ import { ProjectProgressList } from "./ProjectProgressList";
 import { TypeCountsList } from "./TypeCountsList";
 import styles from "./YourStatsPanel.module.css";
 import { Highlighted } from "./Highlighted";
+import { tenthsShown } from "../../components/tenthsShown";
+import { fundsInTenths } from "../../../shared/fundsInTenths";
 
 type Props = {
   readonly seat: OwnSeatView;
@@ -29,8 +31,14 @@ const SHOWN_STATS = [
   "influence",
 ] as const satisfies ReadonlyArray<StatName>;
 
-function valueOf(seat: OwnSeatView, stat: (typeof SHOWN_STATS)[number]): number {
-  return stat === "buildPasses" ? seat.buildPasses : seat.stats[stat];
+function valueOf(seat: OwnSeatView, stat: (typeof SHOWN_STATS)[number]): number | string {
+  if (stat === "buildPasses") {
+    return seat.buildPasses;
+  }
+  if (stat === "funds") {
+    return tenthsShown(seat.stats.funds);
+  }
+  return stat === "income" ? tenthsShown(fundsInTenths(seat.stats.income)) : seat.stats[stat];
 }
 
 function YourStatsPanelContent({ seat, view, playerNames }: Props) {

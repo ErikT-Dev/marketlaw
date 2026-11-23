@@ -10,6 +10,8 @@ import styles from "./GameOverDialog.module.css";
 import { placeOrdinal } from "./placeOrdinal";
 import { playerNameOf } from "./playerNameOf";
 import { RatingCell } from "./RatingCell";
+import { tenthsShown } from "../../components/tenthsShown";
+import { fundsInTenths } from "../../../shared/fundsInTenths";
 
 type Props = {
   readonly result: GameResult;
@@ -61,7 +63,7 @@ export function GameOverTable({ result, viewer, playerNames, playerIds, ratings 
               <td>{place.leftInTurn !== null ? "left" : index === 0 ? "won" : "lost"}</td>
               <td>{place.score}</td>
               <td>{place.hasReachedEndGoal ? "yes" : "no"}</td>
-              <td>{place.income}</td>
+              <td>{tenthsShown(fundsInTenths(place.income))}</td>
               <td>{place.fundsAndHand}</td>
               <td>{place.bonusTypePoints}</td>
               {ratings === null ? null : (

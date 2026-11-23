@@ -2,6 +2,7 @@ import type { OwnSeatView } from "../../../shared/OwnSeatView";
 import { CountBox } from "../../components/CountBox";
 import { cityTypeTotalOf } from "./cityTypeTotalOf";
 import styles from "./YourStatsPanel.module.css";
+import { tenthsShown } from "../../components/tenthsShown";
 
 type Props = {
   readonly seat: OwnSeatView;
@@ -21,7 +22,7 @@ export function OwnCountBoxes({ seat }: Props) {
         <CountBox letter="C" count={combosClaimed} label="Combos claimed" />
       </li>
       <li>
-        <CountBox letter="F" count={seat.worthGained} label="Total worth gained" />
+        <CountBox letter="F" count={tenthsShown(seat.worthGained)} label="Total worth gained" />
       </li>
     </ul>
   );

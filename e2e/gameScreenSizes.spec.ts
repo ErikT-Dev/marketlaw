@@ -23,10 +23,14 @@ const STAT_NAMES = [
   "Satisfaction",
   "Product",
   "Distribution",
-  "Bonus",
   "Build passes",
   "Influence",
 ];
+const STATS_IN_TENTHS = ["Funds", "Income"];
+
+function statValuePattern(stat: string): RegExp {
+  return new RegExp(`^${stat} ${STATS_IN_TENTHS.includes(stat) ? "\\d+\\.\\d" : "-?\\d+"}$`);
+}
 
 async function expectTableElements(page: Page, names: ReadonlyArray<string>): Promise<void> {
   const order = page.getByRole("list", { name: "Player order" });
@@ -45,7 +49,7 @@ async function expectTableElements(page: Page, names: ReadonlyArray<string>): Pr
   ).toBeVisible();
   const stats = page.getByRole("region", { name: "Your stats" });
   for (const stat of STAT_NAMES) {
-    await expect(stats.getByRole("img", { name: new RegExp(`^${stat} -?\\d+$`) })).toBeVisible();
+    await expect(stats.getByRole("img", { name: statValuePattern(stat) })).toBeVisible();
   }
 }
 

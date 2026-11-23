@@ -17,7 +17,7 @@ const TRADE_REJECTIONS: Partial<Record<TradeName, ReasonCode>> = {
 
 const SEAT: Partial<OwnSeatView> = {
   stats: {
-    funds: 7,
+    funds: 70,
     income: 3,
     influence: 4,
     workforce: 0,
@@ -55,7 +55,7 @@ describe("use influence", () => {
     showGame();
     const dialog = within(openInfluence());
     expect(textWithIconNames(dialog.getByText(/^You have/))).toBe(
-      "You have [Influence 4] and [Funds 7]. [Influence] actions can be used any time in the main phase.",
+      "You have [Influence 4] and [Funds 7.0]. [Influence] actions can be used any time in the main phase.",
     );
     const tiles = within(dialog.getByRole("list", { name: "Trades" }));
     expect(tiles.getAllByRole("button")).toHaveLength(19);

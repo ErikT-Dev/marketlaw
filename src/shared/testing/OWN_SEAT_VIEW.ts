@@ -7,7 +7,7 @@ export const OWN_SEAT_VIEW: OwnSeatView = {
   kind: "own",
   seat: 1,
   stats: {
-    funds: 7,
+    funds: 70,
     income: 3,
     influence: 0,
     workforce: 0,
@@ -33,7 +33,7 @@ export const OWN_SEAT_VIEW: OwnSeatView = {
   questsCompleted: [],
   city: [],
   buildPasses: 0,
-  worthGained: 14,
+  worthGained: 140,
   hasPlayedThisTurn: false,
   influenceUses: {},
   trades: TradeName.options.map((trade) => ({ trade, rejection: null })),

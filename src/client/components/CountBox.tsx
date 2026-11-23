@@ -2,7 +2,7 @@ import styles from "./CountBox.module.css";
 
 type Props = {
   readonly letter: "Q" | "T" | "C" | "F";
-  readonly count: number;
+  readonly count: number | string;
   readonly label: string;
 };
 

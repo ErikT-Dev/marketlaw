@@ -4,7 +4,6 @@ import type { PlayerId } from "../../../shared/PlayerId";
 import { PlayerNameLink } from "../../components/PlayerNameLink";
 import { CountBox } from "../../components/CountBox";
 import { StatChip } from "../../components/StatChip";
-import type { StatName } from "../../icons/StatName";
 import { cityTypeTotalOf } from "./cityTypeTotalOf";
 import { typesInListOrder } from "../../sorting/typesInListOrder";
 import { TypeCountsList } from "./TypeCountsList";
@@ -13,6 +12,8 @@ import { combosClaimedCountOf } from "./combosClaimedCountOf";
 import { LiveBankChip } from "./LiveBankChip";
 import { OpponentBasicStats } from "./OpponentBasicStats";
 import styles from "./OpponentBoardDialog.module.css";
+import { tenthsShown } from "../../components/tenthsShown";
+import { fundsInTenths } from "../../../shared/fundsInTenths";
 
 type Props = {
   readonly seat: OtherSeatView;
@@ -20,8 +21,6 @@ type Props = {
   readonly playerId: PlayerId | null;
   readonly bonusTypes: ReadonlyArray<TypeName>;
 };
-
-const BOARD_STATS = ["funds", "income", "influence"] as const satisfies ReadonlyArray<StatName>;
 
 function turnStatus(seat: OtherSeatView): string {
   if (seat.hasLeft) {
@@ -35,11 +34,15 @@ export function OpponentStatsBox({ seat, name, playerId, bonusTypes }: Props) {
     <section className={styles["box"]} aria-label={`Stats of ${name}`}>
       <PlayerNameLink name={name} playerId={playerId} />
       <ul className={styles["stats"]}>
-        {BOARD_STATS.map((stat) => (
-          <li key={stat}>
-            <StatChip stat={stat} value={seat.stats[stat]} />
-          </li>
-        ))}
+        <li>
+          <StatChip stat="funds" value={tenthsShown(seat.stats.funds)} />
+        </li>
+        <li>
+          <StatChip stat="income" value={tenthsShown(fundsInTenths(seat.stats.income))} />
+        </li>
+        <li>
+          <StatChip stat="influence" value={seat.stats.influence} />
+        </li>
         <li>
           <StatChip stat="buildPasses" value={seat.buildPasses} />
         </li>

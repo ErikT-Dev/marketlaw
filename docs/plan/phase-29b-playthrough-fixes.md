@@ -375,7 +375,7 @@ approval of the list, the quest scenarios that name quest contents.
     turn 4, the 13 harness:check problems); unit tests of items 6 (`quests.test.tsx`,
     `ruleFileTables` quests), 9 (`reportBudgets`: B19), 18 (`parseRulebook`) and 19
     (`influenceAndUndo`: 20 tiles, `ruleFileTables` influence actions), all failing before 1a.
-- [ ] 1b. **Funds in tenths: screens, bots and the tutorial's states** (S1.6, S1.9, S6.2,
+- [x] 1b. **Funds in tenths: screens, bots and the tutorial's states** (S1.6, S1.9, S6.2,
   R21.4). **Large.**
   - Screens show funds, income and F with one decimal ("5.3", "7.0"); fixed amounts (costs,
     rewards, sale values, trade costs) stay whole as written (S1.9). The bonus stat goes from
@@ -386,6 +386,28 @@ approval of the list, the quest scenarios that name quest contents.
   - The tutorial's states (stats, costs) in tenths without bonus; its texts are item 16's.
   - Decide in Progress whether 1a's commits already needed some of this to type-check (every
     commit must type-check on its own, `proposed-rules.md`).
+  - **Done (2026-11-23).** 1a's commit already took the bonus chip out of `YourStatsPanel` and
+    `OpponentStatsBox` and `bonus` out of the fixtures, as it needed to type-check; 1b did the
+    rest. One formatter, `src/client/components/tenthsShown.ts` (tenths to one decimal);
+    income, whole in the view, is shown as `tenthsShown(fundsInTenths(income))`. Funds, income
+    and F show one decimal in your stats, the opponent cards and boards, the count boxes, the
+    influence pop-up, the projects pop-up's "you have", the not-enough-funds message, and the
+    income column of the end-of-game table and the game record. The bonus stat left
+    `StatName`, `STAT_ICONS` (and `BONUS.png`), `statWordParts` and
+    `statAndTypeWordsShownIn`. Test fixtures hold funds and F in tenths (`funds: 70`,
+    `worthGained: 140`). Bots read no funds, so needed no change. The tutorial's states come
+    from the engine and are in tenths already: its turn 1 to 3 scenarios pass; turn 4 is item
+    20's, turn 5 item 5's, its texts item 16's.
+  - **Readings (no spec change).** A quest's progress ("7/10" income) is a count toward a fixed
+    need and stays whole; "funds + hand" in the end-of-game table and the record is a score
+    part in whole funds (R21.4) and stays whole until item 7 reworks that table.
+  - **For later items.** `e2e/combosAndProjects.spec.ts` expects "Funds 22.1" at turn 2, which
+    still holds the first-completion +2; item 3 makes it 20.1. `e2e/gameOver.spec.ts`'s
+    "Income 22" is the end goal (item 3). Unit tests still failing, all owned elsewhere and
+    failing before 1b: `influenceAndUndo` 20 tiles and `ruleFileTables` influence actions and
+    build pass price (19), `quests.test.tsx` and `ruleFileTables` quests (6), `parseRulebook`
+    (18), `reportBudgets` B19 (9); required scenarios and the 13 harness:check problems as 1a
+    lists them.
 - [ ] 2. **F exact and Support** (R2.4, R11.5, I28, I30, finding 27, Q177's F rule). **Medium.**
   - F in tenths from every source of funds (starting funds, income, the positive stats gain,
     projects, quests, influence actions, Support) and every card gained (starting hand, draws,

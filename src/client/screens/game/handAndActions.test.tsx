@@ -181,7 +181,7 @@ describe("pending and rejected moves", () => {
       code: "not_enough_funds",
     });
     expect(textWithIconNames(screen.getByRole("alert"))).toContain(
-      "You need [Funds 6]; you have [Funds 7].",
+      "You need [Funds 6]; you have [Funds 7.0].",
     );
     fireEvent.click(screen.getByRole("button", { name: "Close: Move rejected" }));
     expect(onDismissRejection).toHaveBeenCalledTimes(1);

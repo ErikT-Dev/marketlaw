@@ -13,7 +13,6 @@ const STAT_WORDS = [
   "satisfaction",
   "product",
   "distribution",
-  "bonus",
   "influence",
   "build pass",
   "build passes",

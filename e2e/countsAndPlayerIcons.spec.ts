@@ -52,13 +52,13 @@ test("your counts, another player's counts and most played types, and a project 
   await expect(yourCounts.getByRole("img", { name: "Quests completed 1" })).toBeVisible();
   await expect(yourCounts.getByRole("img", { name: "Types in your city 5" })).toBeVisible();
   await expect(yourCounts.getByRole("img", { name: "Combos claimed 0" })).toBeVisible();
-  await expect(yourCounts.getByRole("img", { name: "Total worth gained 17" })).toBeVisible();
+  await expect(yourCounts.getByRole("img", { name: "Total worth gained 17.0" })).toBeVisible();
 
   const bea = ann.getByRole("article", { name: "Quick summary table of Seat 2" });
   await expect(bea.getByRole("img", { name: "Quests completed 2" })).toBeVisible();
   await expect(bea.getByRole("img", { name: "Types in their city 13" })).toBeVisible();
   await expect(bea.getByRole("img", { name: "Combos claimed 1" })).toBeVisible();
-  await expect(bea.getByRole("img", { name: "Total worth gained 20" })).toBeVisible();
+  await expect(bea.getByRole("img", { name: "Total worth gained 20.0" })).toBeVisible();
   const mostPlayed = bea
     .getByRole("list", { name: "Types played most by Seat 2" })
     .getByRole("img");

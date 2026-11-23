@@ -15,6 +15,8 @@ import { cityTypeCountsOf } from "./cityTypeCountsOf";
 import { cityTypeTotalOf } from "./cityTypeTotalOf";
 import { combosClaimedCountOf } from "./combosClaimedCountOf";
 import { TypeCountsList } from "./TypeCountsList";
+import { tenthsShown } from "../../components/tenthsShown";
+import { fundsInTenths } from "../../../shared/fundsInTenths";
 
 const MOST_PLAYED_TYPES_SHOWN = 5;
 
@@ -50,8 +52,8 @@ export function OpponentCard({ seat, name, playerId, bonusTypes, onOpen }: Props
           <LiveBankChip timeBankMs={seat.timeBankMs} clock={seat.clock} label="Bank" />
         </div>
         <div className={styles["stats"]}>
-          <StatChip stat="funds" value={seat.stats.funds} />
-          <StatChip stat="income" value={seat.stats.income} />
+          <StatChip stat="funds" value={tenthsShown(seat.stats.funds)} />
+          <StatChip stat="income" value={tenthsShown(fundsInTenths(seat.stats.income))} />
           <StatChip stat="influence" value={seat.stats.influence} />
           <CountBox letter="Q" count={seat.questsCompleted.length} label="Quests completed" />
           <CountBox letter="T" count={cityTypeTotalOf(seat.city)} label="Types in their city" />
@@ -60,7 +62,7 @@ export function OpponentCard({ seat, name, playerId, bonusTypes, onOpen }: Props
             count={combosClaimedCountOf(seat.combosClaimed)}
             label="Combos claimed"
           />
-          <CountBox letter="F" count={seat.worthGained} label="Total worth gained" />
+          <CountBox letter="F" count={tenthsShown(seat.worthGained)} label="Total worth gained" />
           <span className={styles["hand"]}>Hand {seat.handCount}</span>
         </div>
         <ul className={styles["sectors"]} aria-label={`Cards in play of ${name}`}>

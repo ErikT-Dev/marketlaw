@@ -7,7 +7,6 @@ export type StatName =
   | "satisfaction"
   | "product"
   | "distribution"
-  | "bonus"
   | "buildPasses"
   | "cost"
   | "tier";

@@ -17,7 +17,7 @@ const DI_CHANGES: Partial<OtherSeatView> = {
     { card: "Lake Park", combo: 1, times: 3 },
   ],
   questsCompleted: ["Trading post"],
-  worthGained: 52,
+  worthGained: 523,
 };
 
 const OWN_CHANGES: Partial<OwnSeatView> = {
@@ -28,7 +28,7 @@ const OWN_CHANGES: Partial<OwnSeatView> = {
     { card: "Lake Park", combo: 1, claimedTimes: 3, readyTimes: 0 },
   ],
   questsCompleted: ["Trading post"],
-  worthGained: 31,
+  worthGained: 310,
 };
 
 function showGame() {
@@ -69,7 +69,7 @@ describe("your stats", () => {
       "Quests completed 1",
       "Types in your city 4",
       "Combos claimed 4",
-      "Total worth gained 31",
+      "Total worth gained 31.0",
     ]);
   });
 
@@ -94,7 +94,7 @@ describe("quick summary table", () => {
     expect(di.getByRole("img", { name: "Quests completed 1" })).toBeDefined();
     expect(di.getByRole("img", { name: "Types in their city 13" })).toBeDefined();
     expect(di.getByRole("img", { name: "Combos claimed 4" })).toBeDefined();
-    expect(di.getByRole("img", { name: "Total worth gained 52" })).toBeDefined();
+    expect(di.getByRole("img", { name: "Total worth gained 52.3" })).toBeDefined();
   });
 
   it("shows the five types played most in the city, ties by name, a bonus type highlighted", () => {

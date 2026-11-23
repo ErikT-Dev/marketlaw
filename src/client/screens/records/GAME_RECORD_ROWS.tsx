@@ -4,12 +4,14 @@ import type { GameRecordRow } from "./GameRecordRow";
 import { projectsText } from "./projectsText";
 import { seatResultText } from "./seatResultText";
 import { typeCountsText } from "./typeCountsText";
+import { tenthsShown } from "../../components/tenthsShown";
+import { fundsInTenths } from "../../../shared/fundsInTenths";
 
 export const GAME_RECORD_ROWS: ReadonlyArray<GameRecordRow> = [
   { label: "Place and result", valueOf: seatResultText },
   { label: "Score", valueOf: (seat) => seat.score },
   { label: "Reached the end goal", valueOf: (seat) => (seat.hasReachedEndGoal ? "yes" : "no") },
-  { label: [{ stat: "income" }], valueOf: (seat) => seat.income },
+  { label: [{ stat: "income" }], valueOf: (seat) => tenthsShown(fundsInTenths(seat.income)) },
   { label: [{ stat: "funds" }, " + cards in hand"], valueOf: (seat) => seat.fundsAndHand },
   { label: [{ stat: "workforce" }], valueOf: (seat) => seat.workforce },
   { label: [{ stat: "quality" }], valueOf: (seat) => seat.quality },
