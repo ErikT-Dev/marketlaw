@@ -1,0 +1,82 @@
+# Phase 29b: proposed quest list (finding 10)
+
+For your approval before it is built (Q176, Q178). On the branch `phase-29b-playthrough-fixes`
+this is the text of `harness/spec/quests.txt`. Answer "approve the quest list", or edit the
+lines and say so; the phase builds whatever you approve.
+
+## What changed, and why
+
+- **Every quest keeps its name and tier,** so no required scenario name changes and the
+  tutorial's four quests (Working district, Green city, Fishing village, Trading post) stay;
+  Trading post is exactly as before (T0.7).
+- **Tier 2 and 3 quests are slightly simpler:** each type, card or stat requirement is about one
+  lower than now (for example Growing suburbs 3 Town Housing instead of 4, Penthouses 1 tier 3
+  Residential card instead of 2, Metropolis 3 sectors with a tier 3 card instead of 4, Balanced
+  city 3 cards of each sector instead of 4), and income needs are lower (Service boom 9 instead
+  of 10, High-tech economy 13 instead of 15).
+- **Tier 2 and 3 rewards are slightly smaller, with more types:** every tier 2 and tier 3 quest
+  now gains 1 type (never more, Q176), and its stat, fund, influence or draw reward is about half
+  of today's (for example Growing suburbs: gain 1 Town Housing and +1 quality instead of
+  +3 quality).
+- **Types are spread more evenly.** Today 7 types appear in no quest (Power Plant, Mercantile,
+  Forestry, Petroleum, Rental Space, Alcohol, Grain) while Retail and Culture appear 6 times.
+  Now every one of the 33 types appears at least once, in a requirement or as a gained type, and
+  no type appears more than 6 times. The rarest types (few cards have them) are only given as
+  rewards, never asked for, so no quest becomes nearly impossible.
+- **Tier 1 changes only three rewards** to bring in missing types: Farming industry gains
+  1 Grain (was +1 workforce), Countryside gains 1 Forestry (was 1 Suburban Housing), High street
+  gains 1 Mercantile and +1 fund (was +1 satisfaction and +1 fund).
+- **Item 50 fits:** every tier 1 quest asks for at most income 5 and no project, so all 15 can be
+  on the starting table; Service boom (income 9) appears once someone has income 7, High-tech
+  economy (income 13) once someone has 11, and Civic pride and Civic leader (completed projects)
+  once someone has income 8.
+
+## The list
+
+```
+Tier 1 | Working district | 3 Residential cards, 2 Low Wealth | +1 quality, +1 influence
+Tier 1 | Farming industry | 2 Industry cards, 2 Farm | gain 1 Grain
+Tier 1 | Local services | 3 Service cards, 2 Service type | +1 satisfaction
+Tier 1 | Green city | 3 Public cards, 2 Beautification | +2 funds
+Tier 1 | Countryside | 3 Suburban Housing, 1 Farm | gain 1 Forestry
+Tier 1 | Farmland | 1 Farm, 2 Food | gain 1 Farm
+Tier 1 | Fishing village | 1 Sea, 2 Food | gain 1 Sea, +1 fund
+Tier 1 | Sports town | 2 Leisure, 1 Health | gain 1 Health
+Tier 1 | High street | 2 Retail, 2 Suburban Housing | gain 1 Mercantile, +1 fund
+Tier 1 | Mining town | 2 Mine, 1 Low Wealth | gain 1 Mine
+Tier 1 | Workers' housing | 8 workforce, 2 Low Wealth | +1 fund, +2 influence
+Tier 1 | Tidy streets | 5 quality, 1 Beautification | +1 workforce
+Tier 1 | Healthy town | 4 satisfaction, 1 Health | +1 workforce
+Tier 1 | Trading post | income 4, 1 Retail | +1 fund, +2 influence
+Tier 1 | Supply chain | income 5, 2 Raw Material | draw 1 card
+Tier 2 | Growing suburbs | 3 Town Housing, 2 Low Wealth | gain 1 Town Housing, +1 quality
+Tier 2 | Upmarket homes | 3 tier 2 or 3 Residential cards, 2 Luxury | gain 1 Luxury, +1 satisfaction
+Tier 2 | Modern industry | 3 tier 2 or 3 Industry cards, 2 Light Industry | gain 1 Power Plant, +1 workforce
+Tier 2 | Service economy | 3 tier 2 or 3 Service cards, 2 Service type | gain 1 Service type, +1 satisfaction
+Tier 2 | Culture hub | 3 tier 2 or 3 Public cards, 2 Culture | gain 1 Education, +2 influence
+Tier 2 | Factory town | 3 Town Housing, 2 Light Industry | gain 1 Light Industry, +1 quality
+Tier 2 | Market town | 2 Town Housing, 2 Retail, 1 Food | gain 1 Alcohol, draw 1 card
+Tier 2 | Industrial zone | 3 Light Industry, 2 Raw Material | gain 1 Petroleum, +2 funds
+Tier 2 | Shopping centre | 2 Retail, 2 Service type, 1 Leisure | gain 1 Retail, +1 satisfaction
+Tier 2 | Leisure park | 2 Leisure, 2 Beautification | gain 1 Beautification, +2 funds
+Tier 2 | Culture district | 2 Culture, 2 Education | gain 1 Culture, +1 satisfaction
+Tier 2 | Safe streets | 2 Safety, 1 Utility, 3 quality | gain 1 Safety, +1 workforce
+Tier 2 | Happy residents | 2 Leisure, 2 Health, 3 satisfaction | gain 1 Leisure, +1 workforce
+Tier 2 | Civic pride | 1 completed project, 2 Utility | gain 1 Utility, +3 influence
+Tier 2 | Service boom | 3 Service type, 2 Retail, income 9 | gain 1 Rental Space, draw 2 cards
+Tier 3 | Penthouses | 3 tier 2 or 3 Residential cards, 1 tier 3 Residential card, 2 City Housing | gain 1 City Housing, +3 quality
+Tier 3 | Heavy industry | 3 tier 2 or 3 Industry cards, 2 Heavy Industry | gain 1 Raw Material, +2 workforce
+Tier 3 | Office district | 3 tier 2 or 3 Service cards, 2 Office | gain 1 Office, +3 satisfaction
+Tier 3 | Public institutions | 4 tier 2 or 3 Public cards, 1 Safety, 2 Education | gain 1 Safety, +2 quality, +3 influence
+Tier 3 | City living | 3 City Housing, 2 Luxury | gain 1 Rental Space, +3 quality
+Tier 3 | Tech campus | 2 High Tech, 2 Education | gain 1 High Tech, draw 2 cards
+Tier 3 | Commuter city | 3 City Housing, 2 Mass Transit | gain 1 Mass Transit, +2 quality
+Tier 3 | Business district | 3 Office, 1 Finance | gain 1 Finance, +4 funds, +2 influence
+Tier 3 | Media city | 1 Mass Media, 2 Office, 2 Culture | gain 1 Mass Media, +3 satisfaction
+Tier 3 | Tech industry | 2 High Tech, 1 Power Plant | gain 1 Heavy Industry, draw 2 cards
+Tier 3 | Metropolis | 3 sectors with a tier 3 card | gain 1 Utility, draw 2 cards
+Tier 3 | Balanced city | 3 cards of each sector, 1 Mass Transit | gain 1 Sea, +3 funds
+Tier 3 | Cultural capital | 4 Culture, 2 Education, 4 satisfaction | gain 1 Mass Media, +3 workforce
+Tier 3 | Civic leader | 3 completed projects, 2 Safety | gain 1 Health, +2 quality, +2 satisfaction
+Tier 3 | High-tech economy | 3 High Tech, 2 Office, income 13 | gain 1 Mercantile, draw 3 cards
+```

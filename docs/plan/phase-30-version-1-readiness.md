@@ -10,14 +10,14 @@ screen size, and the owner's decision to make version 1 public.
 
 ## Depends on
 
-All earlier phases, 29a included.
+All earlier phases, 29b included.
 
 ## Covers
 
 - Rules: every rule in `harness/spec/`.
 - Scenarios: all 427 on `harness/required.yaml`; the "not yet" allowance of `rules/testing.md`
   ends.
-- Invariants: all 29 over the phase-end games of `npm run harness` (D25). Budgets: all 18.
+- Invariants: all 30 over the phase-end games of `npm run harness` (D25). Budgets: all 19.
 - Checks: every point of "What passing means" in `HARNESS.md`, 0 to 7.
 - Screens: every screen at every size decided in O2, with screenshots in `harness/screens/`.
 

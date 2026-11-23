@@ -4015,3 +4015,89 @@ file.
   projects completed, income gained and Support gained in the turn before, built from the
   approved sketch `design/sketches/46-turn-notifications/APPROVED.md`. It replaces the "completed
   last turn" table beside the quests and the separate income notice.
+
+## Q178. What happens with the owner's notes of 2026-11-20?
+
+- **Phase:** 29a is done; the owner's notes are `docs/feedback-notes/2026.11.20 - ready.txt`
+  (findings 1 to 34 and 45 to 50), with the owner's answers in Q175, Q176 and Q177 (Q177 wins
+  where they differ). As Q78 says, the next "continue" plans a fix phase for them before any
+  other phase: **29b, Playthrough fixes**. Phase 30 now also depends on 29b.
+- **Question:** which findings change the rules, the protocol, the screens or the harness; how do
+  the findings that conflict with existing rules reach the spec; which required scenario names
+  become untrue; and what do the points the owner's answers still leave open come to?
+- **Solution:** every finding follows the notes as Q175 to Q177 read them; where it conflicts with
+  a rule, the rule is changed in the spec first (D19, `rules/workflow.md`). The owner decided the
+  rules; the points below are decided without the owner, each the reading closest to the owner's
+  words:
+  - **Funds in tenths (4, Q176).** New R2.5: funds, income and every amount of funds are kept in
+    tenths; the rules keep writing whole funds (7 funds, a cost of 5), each 10 tenths. Screens show
+    funds, income and F with one decimal ("5.3", "7.0"), as the owner asked for funds and income;
+    fixed amounts (costs, rewards, sale values, trade costs) stay whole numbers as written. The
+    end-of-turn gain of R14 goes into funds straight away in tenths. Decided: funds never go below
+    0 from it (a gain that would take funds below 0 leaves them at 0), so I7 still holds; the
+    owner's "no card makes it outweigh the income" is then a guarantee, not a hope.
+  - **F in tenths (4, Q177 F).** F counts in the same tenths, each card gained as 1 fund. A
+    positive end-of-turn gain is funds received and adds to F; a negative one is not received and
+    leaves F as it is, so "F only goes up" (I28) still holds. The exact sum of Q177 becomes
+    invariant I30.
+  - **Support (27, Q177).** New R11.5, from turn 2 on, right after the turn's build pass and
+    before the marketplace: every player still in the game compares their F with the highest F of
+    the other players still in the game, all taken before any Support of that turn is given, and
+    gets 1 fund (10 tenths) for every full 10 F behind. Fewer than 2 players in the game: no
+    Support. Support is public at once, like the start of the turn, and is shown in the Last turn
+    panel of that turn, since it comes from the turn before.
+  - **Quests (11, 12, 50, Q176, Q177).** A quest stays on the table 6, 5 or 4 turns by tier
+    (R19.7). The first turn anyone completes it, everyone completing it that turn gets +1 influence
+    with the reward (R19.10); it then stays for exactly one more turn, its **extra turn**, in which
+    only players who have not completed it can, without the +1; a quest completed in its last turn
+    on the table leaves at the end of that turn (R19.6). Undo takes back the +1 with the quest.
+    The gate of item 50 (R19.11) looks at income as it really is at the refill, of every player
+    still in the game, and applies to the starting table too, where every income is 3: tier 1
+    quests needing more than income 5, or a completed project, are skipped. A tier whose quests
+    are all held back counts as a tier with no quests (R19.8's fallback). The rule file check
+    fails when `quests.txt` has fewer than 4 tier 1 quests the starting table allows.
+  - **Ending and places (25, 26, 28, Q177).** End goal income 20 (R1.3). Places: players still
+    in the game who reached the end goal, then the others still in the game, then players who
+    left (A3.4); inside each group by score, then F, then player order of the final turn
+    (R21.8, R21.9). R8.3 keeps recording the done order, which no longer breaks ties. Score: no
+    870 base and no turns part; whole funds only (0.2 × (whole funds + cards in hand)). A player
+    who left keeps the score of their values when they left (A3.3), which no longer depends on
+    the turn.
+  - **Projects (6, 48).** R16.4 and R16.6 are removed, with the first-completion state, the "First
+    to complete gets +2" line and the pop-up's first-completion and third-project lines; M3.1 no
+    longer lists first-completion rewards.
+  - **Build passes and selling (49, 24).** Turn 1 starts with 2 build passes (R4.6, R6.3), the
+    tutorial too. Selling can be undone (R7.2): the cards go back into the hand from the holding
+    pile and the funds go back; F does not change either way.
+  - **Player icons (22, Q175, Q176).** A2.5 rewritten: a picture from the folder `player-icons/`
+    in the repository (copied by the phase from `design/assets/playericons/`, with its licence
+    file; the folder is the only list), a background colour and a picture colour, each any
+    `#rrggbb`, with a contrast of at least 3:1 between them (WCAG's contrast for graphics). A new
+    account, and every existing one once, gets a random picture and random colours that pass the
+    check. At most 10 changes in any 24 hours (`icon_change_too_soon`), checked after the picture
+    (`unknown_icon`) and the contrast (`icon_colors_too_alike`). A room keeps the icon a player had
+    when they joined, as A2.4 does for usernames. Credits for the pictures' artists, with the
+    licence, on the privacy notice. `npm run check` checks the folder: only SVG files, each with a
+    `viewBox`, no script or outside reference, at most 20 KB, every artist folder named in the
+    licence file. The icon replaces the letter of 29a everywhere a player icon shows.
+  - **Screens.** Findings 1, 2, 3, 5, 7, 8, 9, 13, 14, 15, 16, 17, 18, 19, 20 and 45, 21, 23, 29,
+    30, 31, 32, 33, 34, 46 and 47 as Q177 and the three approved sketches say (S1 to S16).
+    Decided: a marketplace card shows the market phases it still has on display, counting the
+    current one until it ends ("2 turns left", "1 turn left") (33); Use influence reads "Use
+    influence" with the influence icon and amount (34); the Projects button is highlighted while
+    the view says a project can be completed, Claim all while its number is above 0 (18, 30);
+    item 9's Sell sells only the card shown, as one sell action, after "Sell for 1 fund?"; item
+    13's signs follow R3.4 (+ for what the card gives, − for what it uses up); item 29's dimming
+    is the "unplayable" mark of S6.4, from the view; item 32 is a bug of the code (S2.2 already
+    shows away only for players who are not connected), with a browser test.
+  - **Quest list (10, Q176).** The owner approves the new list before it is built: the phase
+    writes it into `quests.txt` on its branch and shows its full text in
+    `docs/plan/phase-29b-quest-list-proposal.md`; it is built only after the owner's answer.
+  - **Required names.** 14 names on `harness/required.yaml` become untrue (13 scenarios and
+    invariant I10). They are left exactly as they are until the owner approves the new names,
+    listed in the phase file under "Waiting for the owner".
+  - The spec and harness changes are on the branch `phase-29b-playthrough-fixes`, not on master,
+    as for 29a (Q169): on their own they turn the check red until 29b builds them.
+- **Implemented:** `docs/plan/phase-29b-playthrough-fixes.md`, `docs/plan/README.md`,
+  `docs/plan/phase-30-version-1-readiness.md`; on the branch, `harness/spec/` and the harness
+  files the phase file lists.
