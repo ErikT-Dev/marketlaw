@@ -792,11 +792,29 @@ approval of the list, the quest scenarios that name quest contents.
     `combosAndProjects.spec.ts` checks the three pictures load, `lobby.spec.ts` the tab icon;
     both pass locally at all three sizes. `npm run check` still fails only on items 16, 18
     and 19.
-- [ ] 16. **Tutorial messages and texts** (S15.2, T1.3 to T5.4, finding 8). **Medium.** After
+- [x] 16. **Tutorial messages and texts** (S15.2, T1.3 to T5.4, finding 8). **Medium.** After
   1b and 3.
   - Each message beside the area it highlights, with an arrow; the rest dimmed a little while
     it waits for Continue (`TutorialPage`). `TUTORIAL_TEXTS.ts` in tenths, without bonus, with
     2 build passes. The required `tutorial` scenarios pass (turn 4's name is item 20's).
+  - **Done (2026-11-24).** The engine already started the tutorial with 2 build passes; only the
+    runner's tutorial driver could not read `build_passes` (now in its seat fields), so tutorial
+    start passes and every `tutorial` scenario passes. `TUTORIAL_TEXTS.ts` follows `tutorial.md`
+    (T1.3 "You start with 2", T1.4 and T4.3 the end-of-turn gain in place of bonus, T5.3 the first
+    completer's +1 influence, T5.4 income 20). `TutorialMessage` places the text box beside the
+    highlighted parts (`useTutorialMessageLayout`, `tutorialMessagePlacementOf`): left of the
+    column the part is in, and left of a big card shown beside the hand, its middle level with the
+    part, inside the window, with an arrow (`TutorialArrow`) to it; with nothing highlighted
+    (T5.4) it stays in the left column. While a step waits for Continue or Finish, the rest of
+    the screen is dimmed except the highlighted parts (`TutorialDimmer`, an SVG with holes,
+    `--color-board-tutorial-dim`). It reads the frames by `data-highlight-frame`, the big card by
+    `data-big-card` and the columns by `data-tutorial-column`. Unit test
+    `tutorialMessagePlacement.test.tsx`; `e2e/tutorial.spec.ts` checks the dimming on step 1 only,
+    and the message, arrow and highlight side by side on steps 1 to 3; it passes locally at all
+    three sizes (the screenshot `tutorial` shows the message with its arrow).
+  - **For later items.** Locally the tutorial browser test failed once at 1280 × 720 under three
+    workers with step 1 still shown after Continue, and passed in the three runs after; watch
+    for it in the branch check.
 - [x] 17. **Away at the start** (S2.2, finding 32). **Small.**
   - Find why your own badge shows away when a game starts (a bug of the code, Q178), fix it,
     with a browser test.

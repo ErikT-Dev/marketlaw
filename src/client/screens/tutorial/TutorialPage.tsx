@@ -10,7 +10,7 @@ import type { TutorialFocus } from "./TutorialFocus";
 import type { TutorialPageProps } from "./TutorialPageProps";
 import tutorialStyles from "./TutorialPage.module.css";
 import { TutorialNotices } from "./TutorialNotices";
-import { TutorialTextBox } from "./TutorialTextBox";
+import { TutorialMessage } from "./TutorialMessage";
 import { tutorialTextBoxOf } from "./tutorialTextBoxOf";
 import { TutorialTopBar } from "./TutorialTopBar";
 
@@ -35,7 +35,7 @@ export function TutorialPage(props: Props) {
           <main className={styles["table"]} inert={!isConnected || props.isOutdated}>
             <div className={tutorialStyles["left"]}>
               {progress.kind === "step" ? (
-                <TutorialTextBox
+                <TutorialMessage
                   content={tutorialTextBoxOf(progress.step, progress.number)}
                   isConnected={isConnected}
                   onContinue={props.onContinue}

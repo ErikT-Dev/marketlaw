@@ -17,7 +17,7 @@ type Props = {
 export function LookedAtCardPanel({ card, comboMarksAgainst, className, onClose }: Props) {
   const { baseCost } = cardOf(card);
   return (
-    <section className={className} aria-label={`Selected card: ${card}`}>
+    <section className={className} aria-label={`Selected card: ${card}`} data-big-card>
       <BigCard
         card={cardOf(card)}
         realCost={baseCost}

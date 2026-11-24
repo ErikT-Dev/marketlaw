@@ -41,10 +41,33 @@ async function drawSector(page: Page, step: number, sector: string): Promise<voi
   await page.getByRole("button", { name: sector, exact: true }).click();
 }
 
+async function expectMessageBesideHighlight(page: Page): Promise<void> {
+  const message = await page.getByRole("region", { name: /^Step [0-9]+ of 19$/ }).boundingBox();
+  const arrow = await page.getByTestId("tutorial-arrow").boundingBox();
+  const highlight = await page.getByTestId("tutorial-highlight").first().boundingBox();
+  expect(message).not.toBeNull();
+  expect(arrow).not.toBeNull();
+  expect(highlight).not.toBeNull();
+  if (message === null || arrow === null || highlight === null) {
+    return;
+  }
+  expect(Math.abs(arrow.x - (message.x + message.width))).toBeLessThan(2);
+  expect(highlight.x - (arrow.x + arrow.width)).toBeGreaterThanOrEqual(0);
+  expect(highlight.x - (arrow.x + arrow.width)).toBeLessThan(12);
+  const arrowY = arrow.y + arrow.height / 2;
+  expect(arrowY).toBeGreaterThan(message.y);
+  expect(arrowY).toBeLessThan(message.y + message.height);
+}
+
 async function playTurnOne(page: Page, testInfo: TestInfo): Promise<void> {
+  await expect(page.getByTestId("tutorial-dimmer")).toBeVisible();
   await pressInTextBox(page, 1, "Continue");
+  await expectStep(page, 2);
+  await expect(page.getByTestId("tutorial-dimmer")).toHaveCount(0);
+  await expectMessageBesideHighlight(page);
   await playHandCard(page, 2, "Row House");
   await expectStep(page, 3);
+  await expectMessageBesideHighlight(page);
   await expect(page.getByTestId("tutorial-highlight")).toBeInViewport({ ratio: 1 });
   await page.getByRole("button", { name: "End turn" }).click();
   const notThisStep = page.getByRole("status").filter({ hasText: "Not this step" });
@@ -109,6 +132,7 @@ test("a new visitor starts the tutorial from the lobby menu, plays all its steps
     timeout: HUMAN_CHECK_MS,
   });
   await expectStep(page, 1);
+  await expectMessageBesideHighlight(page);
   await expectScreenFits(page, "tutorial", testInfo);
 
   await playTurnOne(page, testInfo);

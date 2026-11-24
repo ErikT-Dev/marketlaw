@@ -27,7 +27,7 @@ export function SelectedCardPanel(props: Props) {
   const card = cardOf(details.card);
   const rejection = details.playRejection;
   return (
-    <section className={className} aria-label={`Selected card: ${card.name}`}>
+    <section className={className} aria-label={`Selected card: ${card.name}`} data-big-card>
       <BigCard
         card={card}
         realCost={details.realCost}

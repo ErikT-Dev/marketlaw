@@ -1,5 +1,6 @@
-import { useId } from "react";
+import { useId, type Ref } from "react";
 import { Button } from "../../components/Button";
+import type { TutorialBoxPosition } from "./TutorialBoxPosition";
 import type { TutorialTextBoxContent } from "./TutorialTextBoxContent";
 import styles from "./TutorialTextBox.module.css";
 
@@ -8,12 +9,20 @@ type Props = {
   readonly isConnected: boolean;
   readonly onContinue: () => void;
   readonly onRestart: () => void;
+  readonly boxRef: Ref<HTMLElement>;
+  readonly position: TutorialBoxPosition | null;
 };
 
-export function TutorialTextBox({ content, isConnected, onContinue, onRestart }: Props) {
+export function TutorialTextBox(props: Props) {
+  const { content, isConnected, onContinue, onRestart, boxRef, position } = props;
   const stepId = useId();
   return (
-    <section className={styles["box"]} aria-labelledby={stepId}>
+    <section
+      ref={boxRef}
+      className={styles[position === null ? "box" : "boxBeside"]}
+      style={position ?? undefined}
+      aria-labelledby={stepId}
+    >
       <h2 id={stepId} className={styles["step"]}>
         {content.stepLine}
       </h2>
