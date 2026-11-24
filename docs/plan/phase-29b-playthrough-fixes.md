@@ -988,3 +988,31 @@ each helper's conversation size at its end.
 | Phase reviewer | Opus, medium | 14 | 167,515 | 67 | done (4 findings) |
 | Fixer 1 (F1) | Opus, medium | 33 | 89,200 | 36 | done |
 | Fixer 2 (R1 to R4) | Opus, medium | 25 | 100,212 | 50 | done |
+
+## Report
+
+**Built.** Everything of the owner's notes of 2026-11-20 (Q178): funds, income and F in tenths
+with no bonus stat; F kept exact and Support for players behind; end goal income 20; projects
+with the same reward every time; 2 build passes in turn 1; selling can be undone; quests by tier
+with an extra turn after the first completion, +1 influence for the first completers and held
+back until someone's income allows them; the final 51-quest list; places and score without base
+and turns, with the score shown part by part; player icons (server and picker); card tile
+pictures; the big card with Sell and combo marks; Your counts and Q, T, C, F in the tables and
+the record; the Last turn panel; quest turns left and the market countdown; highlighted buttons;
+project pictures and the tab icon; tutorial messages beside their areas with dimming; the away
+badge fix; the changed rulebook sections; new influence action and tile colours.
+
+**To try.** The list under "What you can see when it's done", on the live site. Open Account
+settings, Change icon, and pick a picture and colours.
+
+**Differences from the phase file.** Those recorded in Progress and `docs/plan/open-questions.md`
+(Q178 to Q187). For the icon-picker browser test: to pass axe's skip-link rule it scrolls the
+privacy link into view at 1280x720, because the guest's Account settings dialog scrolls at that
+size (R1).
+
+**Decisions.** `PROTOCOL_VERSION` is 28 and `SAVE_SCHEMA_VERSION` 19 (one raise each for the
+phase); card and project pictures are committed WebP files made by scripts, no new dependency.
+
+**Review.** The phase reviewer found 4 findings (R1 to R4), all fixed; the finisher's F1 (a
+browser test waiting on lazy images) was fixed too. Branch run 45426087085 on ec32e5d7: all
+jobs passed. Later commits touched only docs and `harness/screens/`.
