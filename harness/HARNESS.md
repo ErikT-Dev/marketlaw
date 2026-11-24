@@ -59,7 +59,7 @@ Every scenario file is a list of scenarios. Every scenario has exactly these par
 | `phase` | `new_game` (not started yet), `market`, `main` or `ended` | `main` |
 | `first_player` | Seat number of this turn's first player | as R4.4 |
 | `market_go` | In the market phase: whose go it is | the first player's go |
-| `seats` | Per seat: `stats`, `hand`, `city`, `gained_types`, `build_passes`, `build_passes_bought`, `influence_uses`, `projects`, `quests_completed`, `combos_claimed`, `played_this_turn`, `redraws_used` (redraws of the starting hand so far, R17.12), `worth_gained` (total worth gained, R2.4), `actions_this_turn`, `done`, `left`, `connected`, `time_bank_ms`, `timeouts_in_a_row` (counted in ranked games only, R9.11), `out_of_time` (their main-phase time has run out and they are not done yet, R9.10), `turn_draw_pending` (their turn draw is still open after a time-out on their market go, R18.16), `market` (`in` before their market go this turn, `out` after it, when their own main phase has started, R18.15), `new_cards`, `state_version`, `actions_this_game` (accepted actions in this game so far, for A9.2), `player` (the account in that seat) | starting values (R2.1), 1 build pass (R6.3), total worth gained 14.0 (R2.4), empty hand and city, nothing used, claimed or redrawn, connected |
+| `seats` | Per seat: `stats`, `hand`, `city`, `gained_types`, `build_passes`, `build_passes_bought`, `influence_uses`, `projects`, `quests_completed`, `combos_claimed`, `played_this_turn`, `redraws_used` (redraws of the starting hand so far, R17.12), `worth_gained` (total worth gained, R2.4), `actions_this_turn`, `done`, `left`, `connected`, `time_bank_ms`, `timeouts_in_a_row` (counted in ranked games only, R9.11), `out_of_time` (their main-phase time has run out and they are not done yet, R9.10), `turn_draw_pending` (their turn draw is still open after a time-out on their market go, R18.16), `market` (`in` before their market go this turn, `out` after it, when their own main phase has started, R18.15), `new_cards`, `state_version`, `actions_this_game` (accepted actions in this game so far, for A9.2), `player` (the account in that seat) | starting values (R2.1), 1 build pass (R6.3), total worth gained 140 (R2.4), empty hand and city, nothing used, claimed or redrawn, connected |
 | `deck` | The deck, top first, as card names | all cards not placed elsewhere, in `cards.json` order |
 | `discard` | The discard pile, as card names | empty |
 | `marketplace` | Each `place` and its `card`, plus `phases_shown`: how many market phases it has been on display | empty; `phases_shown` 0 |
@@ -80,8 +80,8 @@ Every scenario file is a list of scenarios. Every scenario has exactly these par
 
 Cards are always named exactly as in `cards.json`. Stats are written as numbers, for example
 `stats: {funds: 10, workforce: -1}`; the stat names are `funds`, `income`, `influence`, `workforce`,
-`quality`, `satisfaction`, `product` and `distribution`. Funds and `worth_gained` may have one
-decimal, as they are kept in tenths (R2.5): `funds: 5.3`.
+`quality`, `satisfaction`, `product` and `distribution`. Funds, income and `worth_gained` are whole
+numbers (R2.5): `funds: 53`.
 
 Random results: a random pick with only one possible result (for example the tier in turn 1) is
 not asked for and takes no entry in `random`. A shuffle is given as the resulting order of the
@@ -259,7 +259,7 @@ A repeated action id is not rejected: it returns the original result again.
 | `cannot_afford_trade` | The player lacks something the trade costs |
 | `no_card_of_kind` | No card of that kind and tier in the deck or discard pile as the player sees them |
 | `project_already_completed` | The player already completed this project |
-| `project_needs_not_met` | Not enough of the stat, less than 10 income, or a negative stat (R16.2) |
+| `project_needs_not_met` | Not enough of the stat, less than 100 income, or a negative stat (R16.2) |
 | `quest_not_on_table` | The quest is not on the quests table |
 | `quest_already_completed` | The player already completed this quest |
 | `quest_needs_not_met` | The requirement is not met |
@@ -349,12 +349,14 @@ word, when:
 - a word names a sector, type or stat that does not exist
 - two lines have the same name
 - `quests.txt` has fewer than 4 tier 1 quests that R19.11 allows at the start of a game: needing
-  at most income 5 and no completed project (R19.3, R20.9)
+  at most income 50 and no completed project (R19.3, R20.9)
 - a quest the tutorial needs (T0.7) is missing or no longer has its tier, requirement and reward
 - `influence-actions.txt` has two draw actions for the same tier
+- a rising price is written in other words than `10 more each time`, the old `1 more each time`
+  among them (R15.5)
 - an influence action is of a kind the game or the screen has no code for: the message reads
   "needs new code" and names the action (R15.6); so does a draw line whose limit is not
-  `no limit`, and a second line with `1 more each time` (R15.5)
+  `no limit`, and a second line with `10 more each time` (R15.5)
 - a quest reward gains more than 1 type: the message reads "needs new code" (R20.8)
 - a scenario names a quest or an influence action the files do not have
 

@@ -4464,3 +4464,16 @@ file.
     set uses them.
   - The game-rules open question 1's simulator funds are written in today's funds (120, 230,
     670 to 910) and its end goal as income 200.
+- **Harness changes of item 1a (phase 29c, 2026-11-24):** `cards.json` every `cost` × 10 (240
+  cards); `quests.txt` every `income N` requirement and `+N fund(s)` reward × 10 (no quest has an
+  income reward; a `+1 fund` became `+10 funds`); `influence-actions.txt` `get 20 funds`,
+  `get 10 funds`, `pay 10 funds` and `pay 20 funds, 10 more each time`; `HARNESS.md` (funds,
+  income and `worth_gained` whole numbers, F starts at 140, projects need 100 income, the starting
+  table's income 50, the rising price's words, which the check now names when other words such
+  as the old `1 more each time` are used); `scenario-format.yaml` (`funds` and `worth_gained`
+  integers); invariants I8 (income at least 30), I16 (N − 20, 80), I28 (F at least 140), I30 (in
+  funds, first completions named among the sources); budget B19 (16 KB, 200 × 172 pictures).
+  Decided while building: the rising price's step (10) is one constant shared by the file's
+  fixed words, the engine's price and the rulebook table's text, and quest numbers up to 999 are
+  read by their own reader, as `influence-actions.txt` keeps 1 to 99 (R15.5, R20.8). The card
+  check's tier cost ranges follow R3.5 (30–60, 70–90, 110–130).

@@ -1,10 +1,10 @@
-influence to funds | pay 4 influence | get 2 funds | 1 per game
-influence to fund | pay 3 influence | get 1 fund | no limit
+influence to funds | pay 4 influence | get 20 funds | 1 per game
+influence to fund | pay 3 influence | get 10 funds | no limit
 influence to quality | pay 4 influence | get 1 quality | 1 per game
 influence to satisfaction | pay 4 influence | get 1 satisfaction | 1 per game
 influence to workforce | pay 6 influence | get 1 workforce | 1 per game
-fund to influence | pay 1 fund | get 1 influence | no limit
-buy build pass | pay 2 funds, 1 more each time | get 1 build pass | no limit
+fund to influence | pay 10 funds | get 1 influence | no limit
+buy build pass | pay 20 funds, 10 more each time | get 1 build pass | no limit
 influence to build pass | pay 5 influence | get 1 build pass | 1 per game
 quality to satisfaction with influence | pay 1 influence, 1 quality | get 1 satisfaction | 1 per game
 satisfaction to quality with influence | pay 1 influence, 1 satisfaction | get 1 quality | 1 per game
