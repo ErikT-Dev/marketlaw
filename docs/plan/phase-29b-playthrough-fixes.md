@@ -787,3 +787,4 @@ each helper's conversation size at its end.
 | Builder 8 (part 1) | Opus, medium | 33 | 253,963 | 133 | partial |
 | Builder 8 (client) | Opus, medium | 1 | – | – | stopped |
 | Builder 8 (client) | Opus, medium | 25 | 179,426 | 103 | done |
+| Builder 9 | Opus, medium | 24 | 201,107 | 123 | done |
