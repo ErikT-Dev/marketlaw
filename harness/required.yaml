@@ -328,6 +328,8 @@ scenarios:
     - a quest needing income is placed only once some player has that income minus 20
     - a quest needing completed projects is placed only once some player has 80 income
     - a quest needing income is placed once some player has that income minus 20
+    - a tier 3 quest's first completion gives 6 extra funds
+    - the extra funds of a first completion add to total worth gained
   end-of-game:
     - reaching the end goal ends the game after that main phase without end-of-turn steps
     - the game goes on until the main phase ends after the end goal is reached
@@ -343,6 +345,7 @@ scenarios:
     - a player who reached the end goal places above a player with a higher score who did not
     - the score has no base and no part for turns
     - the score counts 0.02 points for every fund
+    - the score counts 0.65 points for every income
   accounts:
     - joining without being logged in offers a free generated name and creates a guest user
     - creating a guest user needs the human check
