@@ -14,14 +14,14 @@ export const TUTORIAL_TEXTS: Readonly<Record<TutorialStepId, TutorialStepText>> 
     waitingFor: "play Row House",
   },
   "T1.3": {
-    text: "Every card you play uses a build pass. You get 1 every turn and keep the ones you don't use. Cards you don't need can be sold for 1 fund each. Sell Hiking Trail.",
+    text: "Every card you play uses a build pass. You start with 2, get 1 more every turn and keep the ones you don't use. Cards you don't need can be sold for 1 fund each. Sell Hiking Trail.",
     textAfter: null,
     waitingFor: "sell Hiking Trail",
   },
   "T1.4": {
     text: "End your turn when you are done.",
     textAfter:
-      "At the end of every turn you get your income in funds, 1 influence, and bonus from your stats. Every full 10 bonus turns into 1 fund.",
+      "At the end of every turn you get your income in funds, 1 influence, and a little more from your stats: each workforce, quality or satisfaction adds 0.1 fund.",
     waitingFor: "end your turn",
   },
   "T2.1": {
@@ -65,7 +65,8 @@ export const TUTORIAL_TEXTS: Readonly<Record<TutorialStepId, TutorialStepText>> 
   },
   "T4.3": {
     text: null,
-    textAfter: "Your bonus passed 10, so 10 bonus became 1 fund.",
+    textAfter:
+      "Product adds the most at the end of a turn: 0.4 fund each, so your stats added 0.6 this time.",
     waitingFor: "end your turn",
   },
   "T5.1": { text: null, textAfter: null, waitingFor: "draw 2 Service cards from the deck" },
@@ -77,11 +78,12 @@ export const TUTORIAL_TEXTS: Readonly<Record<TutorialStepId, TutorialStepText>> 
   },
   "T5.3": {
     text: "Quests on the table give rewards to every player who meets them. Trading post needs income 4 and the Retail type. Liquor Shop has the Retail type. Complete it.",
-    textAfter: "Each quest stays a few turns, and any player can complete it once.",
+    textAfter:
+      "You were the first to complete it, so you got 1 influence more. Each quest stays a few turns, and any player can complete it once.",
     waitingFor: "complete Trading post",
   },
   "T5.4": {
-    text: "Two more things to know. Projects: when you collect 8 quality, 8 satisfaction or 8 workforce and have at least 10 income, you can complete a project for income, funds and influence. The game ends after the turn in which a player has income 22 and all 3 projects; then the highest score wins. In a real game, you play against 1 to 3 other players at the same time, and every turn has a time limit. You can read all the rules any time from the menu.",
+    text: "Two more things to know. Projects: when you collect 8 quality, 8 satisfaction or 8 workforce and have at least 10 income, you can complete a project for income, funds and influence. The game ends after the turn in which a player has income 20 and all 3 projects; then the highest score wins. In a real game, you play against 1 to 3 other players at the same time, and every turn has a time limit. You can read all the rules any time from the menu.",
     textAfter: null,
     waitingFor: "press Finish",
   },
