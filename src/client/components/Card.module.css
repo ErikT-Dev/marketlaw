@@ -11,12 +11,22 @@
   text-align: left;
   cursor: pointer;
   box-sizing: border-box;
+  position: relative;
+  overflow: hidden;
+}
+
+.handCard > .number,
+.handCard > .name,
+.handCard > .cost,
+.playedCard > .number,
+.playedCard > .name {
+  position: relative;
+  max-width: 62%;
 }
 
 .handCard {
-  position: relative;
-  min-height: 84px;
-  padding: 14px 18px 14px 14px;
+  height: 102px;
+  padding: 10px 18px 10px 14px;
   border-right-width: 4px;
 }
 .playable {
@@ -24,6 +34,7 @@
 }
 .unplayable {
   border-right-color: var(--color-card-tile-unplayable-edge);
+  filter: saturate(0.45) brightness(0.7);
 }
 .isNew {
   border-color: var(--color-card-tile-new-border);
@@ -44,22 +55,34 @@
 }
 
 .playedCard {
-  width: 100%;
-  min-height: 62px;
-  padding: 12px 14px;
+  width: 140px;
+  height: 94px;
+  padding: 10px 14px;
 }
 
 .number {
   font-size: var(--font-size-xs);
+  line-height: 1.2;
   color: var(--color-card-tile-id-text);
 }
 .name {
   font-weight: var(--font-weight-bold);
   font-size: var(--font-size-sm);
+  line-height: 1.15;
+  hyphens: auto;
+  overflow-wrap: anywhere;
+}
+.small {
+  font-size: var(--font-size-xs);
+}
+.smallest {
+  font-size: 11px;
+  line-height: 1.1;
 }
 .cost {
   font-weight: var(--font-weight-bold);
   font-size: var(--font-size-sm);
+  line-height: 1.2;
   color: var(--color-card-tile-cost-text);
 }
 .tag {

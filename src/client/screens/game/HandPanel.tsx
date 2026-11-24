@@ -2,6 +2,7 @@ import type { CardName } from "../../../shared/catalogue/CardName";
 import type { HandCardDetails } from "../../../shared/HandCardDetails";
 import type { HandCardState } from "../../components/HandCardState";
 import { Panel } from "../../components/Panel";
+import { handInListOrder } from "../../sorting/handInListOrder";
 import type { HandChoice } from "./HandChoice";
 import styles from "./HandPanel.module.css";
 import { Highlighted } from "./Highlighted";
@@ -27,7 +28,7 @@ export function HandPanel({ handDetails, newCards, choice, pendingCards, onPress
     <Highlighted part={{ kind: "panel", panel: "hand" }} isBlock>
       <Panel title={`Your hand · ${String(handDetails.length)} cards`}>
         <ul className={styles["hand"]} aria-label="Your hand">
-          {handDetails.map((details) => (
+          {handInListOrder(handDetails).map((details) => (
             <li key={details.card}>
               <Highlighted part={{ kind: "hand_card", card: details.card }} isBlock>
                 <HandPanelCard

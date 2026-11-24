@@ -67,8 +67,10 @@
   flex-direction: column;
   align-items: flex-start;
   gap: 2px;
-  min-height: 72px;
+  position: relative;
+  height: 84px;
   padding: 8px;
+  overflow: hidden;
   border: 1px solid transparent;
   border-radius: var(--radius-md);
   color: var(--color-text-primary);
@@ -100,14 +102,19 @@
   border: 1px dashed var(--color-panel-border);
 }
 
-.tier {
-  font-size: 10px;
+.card:not(.empty) > :not([aria-hidden="true"]) {
+  position: relative;
+  max-width: 62%;
 }
 
-.name {
-  font-size: 13px;
-  font-weight: var(--font-weight-bold);
-  overflow-wrap: break-word;
+.tier {
+  font-size: 10px;
+  line-height: 1.2;
+}
+
+.turnsLeft {
+  color: var(--color-text-secondary);
+  font-size: 11px;
 }
 
 .emptyText {

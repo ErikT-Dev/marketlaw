@@ -1,7 +1,7 @@
 import { cardOf } from "../../../shared/catalogue/cardOf";
 import type { CardName } from "../../../shared/catalogue/CardName";
 import { Button } from "../../components/Button";
-import { sectorColor } from "../../components/sectorColor";
+import { cardTileBackground } from "../../components/cardTileBackground";
 import { MarketCardFace } from "./MarketCardFace";
 import styles from "./Marketplace.module.css";
 
@@ -19,7 +19,7 @@ export function SelectableMarketCard({ card, isSelected, onSelect, onDraw }: Pro
       <button
         type="button"
         className={`${styles["card"] ?? ""} ${styles[isSelected ? "selected" : "selectable"] ?? ""}`}
-        style={{ background: sectorColor(sector, tier) }}
+        style={{ background: cardTileBackground(sector, tier) }}
         aria-label={card}
         aria-pressed={isSelected}
         onClick={() => {

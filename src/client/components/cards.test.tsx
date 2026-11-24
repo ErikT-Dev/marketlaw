@@ -120,6 +120,33 @@ describe("PlayedCard", () => {
   });
 });
 
+describe("card tile pictures", () => {
+  it("shows a small decorative picture of the card on hand and city tiles", () => {
+    render(
+      <>
+        <HandCard
+          card={LOFT}
+          realCost={8}
+          isPlayable
+          state="default"
+          isNew={false}
+          isPending={false}
+          onSelect={vi.fn()}
+        />
+        <PlayedCard card={LOFT} isSelected={false} onSelect={vi.fn()} />
+      </>,
+    );
+    const pictures = screen.getAllByRole("presentation", { hidden: true });
+    expect(pictures.map((picture) => picture.getAttribute("src"))).toEqual([
+      expect.stringMatching(/card-tiles\/[^/]+\.webp$/),
+      expect.stringMatching(/card-tiles\/[^/]+\.webp$/),
+    ]);
+    expect(pictures.map((picture) => picture.getAttribute("alt"))).toEqual(["", ""]);
+    expect(screen.queryAllByRole("img")).toEqual([]);
+    expect(screen.queryAllByRole("presentation")).toEqual([]);
+  });
+});
+
 describe("BigCard", () => {
   it("shows the tier, the real cost and only the stats the card has", () => {
     render(<BigCard card={LOFT} realCost={11} />);

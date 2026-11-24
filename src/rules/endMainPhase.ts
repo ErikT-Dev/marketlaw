@@ -6,7 +6,7 @@ import { endTurnForQuests } from "./endTurnForQuests";
 import { fillMarketplace } from "./fillMarketplace";
 import { firstPlayerOf } from "./firstPlayerOf";
 import type { GameState } from "./GameState";
-import { MARKET_PHASES_SHOWN } from "./MARKET_PHASES_SHOWN";
+import { MARKET_PHASES_SHOWN } from "../shared/MARKET_PHASES_SHOWN";
 import { marketGoOf } from "./marketGoOf";
 import { questsCompletedThisTurnOf } from "./questsCompletedThisTurnOf";
 import type { Random } from "./Random";

@@ -1,5 +1,6 @@
 import { act, fireEvent, render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
+import type { CardName } from "../../../shared/catalogue/CardName";
 import type { OwnSeatView } from "../../../shared/OwnSeatView";
 import type { PendingAction } from "../../store/PendingAction";
 import type { RejectedMove } from "../../store/RejectedMove";
@@ -41,6 +42,10 @@ async function photosDecoded() {
   await act(async () => Promise.resolve());
 }
 
+function playableDetailsOf(card: CardName) {
+  return { card, realCost: 5, sameSectorAndTierInCity: 0, playRejection: null };
+}
+
 function handCard(name: string) {
   return within(screen.getByRole("list", { name: "Your hand" })).getByRole("button", { name });
 }
@@ -52,6 +57,32 @@ describe("hand", () => {
     expect(
       screen.getByRole("button", { name: "Loft", description: /cannot be played/ }),
     ).toBeDefined();
+  });
+
+  it("sorts the hand by sector, then tier, then card number", () => {
+    const hand: ReadonlyArray<CardName> = [
+      "Green Park",
+      "Law Firm",
+      "Loft",
+      "Saw Mill",
+      "Trauma Center",
+      "Log House",
+      "Farm House",
+    ];
+    showGame({ hand, handDetails: hand.map(playableDetailsOf) });
+    expect(
+      within(screen.getByRole("list", { name: "Your hand" }))
+        .getAllByRole("button")
+        .map((card) => card.getAttribute("aria-label")),
+    ).toEqual([
+      "Farm House",
+      "Log House",
+      "Loft",
+      "Saw Mill",
+      "Law Firm",
+      "Trauma Center",
+      "Green Park",
+    ]);
   });
 });
 

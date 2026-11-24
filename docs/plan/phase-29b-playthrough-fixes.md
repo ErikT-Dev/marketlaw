@@ -632,7 +632,7 @@ approval of the list, the quest scenarios that name quest contents.
     `npm run check`, none of them item 8's: tutorial start's `build_passes` (16); unit tests
     of items 9 (`reportBudgets` B19), 18 (`parseRulebook`, two) and 19 (`influenceAndUndo`,
     `ruleFileTables`, two).
-- [ ] 9. **Card tiles** (S4.1, S6.1, S6.4, B19, findings 14, 19, 29, 33). **Large.**
+- [x] 9. **Card tiles** (S4.1, S6.1, S6.4, B19, findings 14, 19, 29, 33). **Large.**
   - Small WebP pictures (about 100 px wide, at most 6 KB each, B19) made from the 240 photos in
     `src/client/assets/cards/` (11 MB; never ship them on tiles) by a build step or committed
     files, placed as `design/sketches/14-card-pictures/APPROVED.md` says, on hand, city and
@@ -641,6 +641,23 @@ approval of the list, the quest scenarios that name quest contents.
     sorting of `src/client/sorting/`); unplayable hand cards dimmed from the view's mark;
     market cards show their turns left (Q178: counting the current market phase).
   - Any new dependency for the pictures goes into `open-questions.md` (CLAUDE.md 10).
+  - **Done (2026-11-24).** Committed pictures in `src/client/assets/card-tiles/` (100 × 86 WebP,
+    largest 4.2 KB, made by `npm run design:card-tiles` with the Chromium of `playwright-core`,
+    no new dependency); B19 is checked by `tools/design-export/cardTilePictures.test.ts` (Q183).
+    `CardTilePicture` on hand, city (also the opponent's detailed table) and marketplace tiles;
+    `cardTileBackground` (80%); `cardNameSizeOf` picks 14, 12 or 11 px per kind from the name's
+    length. Hand tiles 102 px high, city 140 × 94, marketplace 84 px high; hand and marketplace
+    tiles are as wide as their column (S6.4 amended, Q183). The hand is sorted in the client
+    (`handInListOrder`), unplayable cards dimmed with a filter. Marketplace cards show "2 turns
+    left", "1 turn left" or "Leaves next turn" under the tile (S4.1 amended);
+    `MARKET_PHASES_SHOWN` moved to `src/shared/`. Browser test `e2e/cardTiles.spec.ts` (all 240
+    names in hand, city and marketplace tiles fit, one size per kind, screenshot `card-tiles`)
+    passes locally at all three sizes, as do `marketPhase`, `handAndActionsScreens` and
+    `gameScreenSizes`.
+  - **For later items.** Hand and marketplace tiles are taller, so at 1280 × 720 the hand shows
+    fewer rows while the stats panel still holds the Q, T, C, F boxes (item 11 moves them).
+    Playwright's Chromium does not hyphenate (no dictionary), so long words break without a
+    hyphen in screenshots; a browser with the dictionary hyphenates them.
 - [ ] 10. **The big card** (S6.5, S6.9, S6.10, findings 5, 9, 13, 20, 45, 47). **Medium.**
   - `BigCardBesideHand` and its parts: title bar in the stats bar's colour, more transparent;
     thin black image border; + and − signs per R3.4; Sell for the shown card with "Sell for
