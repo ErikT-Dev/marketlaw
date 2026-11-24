@@ -7,8 +7,8 @@ export function lastTurnBoxesOf(lastTurn: LastTurn): ReadonlyArray<LastTurnBox> 
     {
       title: "Quests completed",
       iconFile: "MEDAL",
-      rows: lastTurn.quests.flatMap(({ quest, seats }) =>
-        seats.map((seat): LastTurnRow => ({ kind: "quest", seat, quest })),
+      rows: lastTurn.quests.flatMap(({ quest, seats, firstCompletionFunds }) =>
+        seats.map((seat): LastTurnRow => ({ kind: "quest", seat, quest, firstCompletionFunds })),
       ),
     },
     {

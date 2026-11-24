@@ -3,14 +3,13 @@ import { questOf } from "../shared/ruleFiles/questOf";
 import { STAT_KEYS } from "../shared/STAT_KEYS";
 import type { SeatNumber } from "../shared/SeatNumber";
 import { drawRandomCard } from "./drawRandomCard";
+import { firstCompletionFundsOf } from "./firstCompletionFundsOf";
 import type { GameState } from "./GameState";
 import type { Random } from "./Random";
 import type { SeatState } from "./SeatState";
 import { updateSeat } from "./updateSeat";
 
-const FIRST_COMPLETION_INFLUENCE = 1;
-
-function rewardedSeat(seat: SeatState, quest: QuestName, extraInfluence: number): SeatState {
+function rewardedSeat(seat: SeatState, quest: QuestName, extraFunds: number): SeatState {
   const { reward } = questOf(quest).terms;
   const { gainedType } = reward;
   const { stats } = reward;
@@ -22,13 +21,14 @@ function rewardedSeat(seat: SeatState, quest: QuestName, extraInfluence: number)
     (current, key) => ({ ...current, [key]: current[key] + (stats[key] ?? 0) }),
     seat.stats,
   );
+  const fundsGained = (stats.funds ?? 0) + extraFunds;
   return {
     ...seat,
-    stats: { ...rewardedStats, influence: rewardedStats.influence + extraInfluence },
+    stats: { ...rewardedStats, funds: rewardedStats.funds + extraFunds },
     gainedTypes,
     questsCompleted: [...seat.questsCompleted, quest],
     actionsThisTurn: seat.actionsThisTurn + 1,
-    worthGained: seat.worthGained + (stats.funds ?? 0),
+    worthGained: seat.worthGained + fundsGained,
   };
 }
 
@@ -42,10 +42,8 @@ export function completeQuest(
   quest: QuestName,
   random: Random,
 ): GameState {
-  const extraInfluence = isInExtraTurn(state, quest) ? 0 : FIRST_COMPLETION_INFLUENCE;
-  const rewarded = updateSeat(state, seat, (current) =>
-    rewardedSeat(current, quest, extraInfluence),
-  );
+  const extraFunds = isInExtraTurn(state, quest) ? 0 : firstCompletionFundsOf(quest);
+  const rewarded = updateSeat(state, seat, (current) => rewardedSeat(current, quest, extraFunds));
   return Array.from({ length: questOf(quest).terms.reward.draws }).reduce<GameState>(
     (drawn) => drawRandomCard(drawn, seat, "quest", random),
     rewarded,

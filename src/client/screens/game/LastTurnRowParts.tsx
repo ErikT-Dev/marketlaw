@@ -1,3 +1,5 @@
+import type { QuestName } from "../../../shared/catalogue/QuestName";
+import type { QuestReward } from "../../../shared/catalogue/QuestReward";
 import { questOf } from "../../../shared/ruleFiles/questOf";
 import { tenthsShown } from "../../components/tenthsShown";
 import { wholeFundsShown } from "../../components/wholeFundsShown";
@@ -8,6 +10,18 @@ import styles from "./LastTurnPanel.module.css";
 import type { LastTurnRow } from "./LastTurnRow";
 import { PROJECT_TITLES } from "./PROJECT_TITLES";
 import { QuestRewardParts } from "./QuestRewardParts";
+
+function rewardWithFirstCompletionFunds(
+  quest: QuestName,
+  firstCompletionFunds: number,
+): QuestReward {
+  const { reward } = questOf(quest).terms;
+  if (firstCompletionFunds === 0) {
+    return reward;
+  }
+  const funds = (reward.stats.funds ?? 0) + firstCompletionFunds;
+  return { ...reward, stats: { ...reward.stats, funds } };
+}
 
 type Props = {
   readonly row: LastTurnRow;
@@ -20,7 +34,9 @@ export function LastTurnRowParts({ row }: Props) {
         <>
           <span className={styles["what"]}>{row.quest}</span>
           <span className={styles["gain"]}>
-            <QuestRewardParts reward={questOf(row.quest).terms.reward} />
+            <QuestRewardParts
+              reward={rewardWithFirstCompletionFunds(row.quest, row.firstCompletionFunds)}
+            />
           </span>
         </>
       );

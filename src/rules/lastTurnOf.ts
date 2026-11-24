@@ -1,6 +1,8 @@
 import type { LastTurn } from "../shared/LastTurn";
+import type { QuestName } from "../shared/catalogue/QuestName";
 import type { MainPhaseLogEntry } from "../shared/MainPhaseLogEntry";
 import type { SeatNumber } from "../shared/SeatNumber";
+import { firstCompletionFundsOf } from "./firstCompletionFundsOf";
 import type { GameState } from "./GameState";
 
 type Completion<Name> = { readonly name: Name; readonly seat: SeatNumber };
@@ -24,6 +26,14 @@ function entriesOfTurn(
   return log.filter((entry) => entry.turn === turn);
 }
 
+function firstCompletionFundsIn(state: GameState, quest: QuestName): number {
+  const wasCompletedBefore = state.mainPhaseLog.some(
+    (entry) =>
+      entry.kind === "completed_quest" && entry.quest === quest && entry.turn < state.turn - 1,
+  );
+  return wasCompletedBefore ? 0 : firstCompletionFundsOf(quest);
+}
+
 export function lastTurnOf(state: GameState): LastTurn {
   const before = entriesOfTurn(state.mainPhaseLog, state.turn - 1);
   const atStart = entriesOfTurn(state.mainPhaseLog, state.turn);
@@ -32,7 +42,11 @@ export function lastTurnOf(state: GameState): LastTurn {
       before.flatMap((entry) =>
         entry.kind === "completed_quest" ? [{ name: entry.quest, seat: entry.seat }] : [],
       ),
-    ).map(({ name, seats }) => ({ quest: name, seats })),
+    ).map(({ name, seats }) => ({
+      quest: name,
+      seats,
+      firstCompletionFunds: firstCompletionFundsIn(state, name),
+    })),
     projects: groupedBySeats(
       before.flatMap((entry) =>
         entry.kind === "completed_project" ? [{ name: entry.project, seat: entry.seat }] : [],
