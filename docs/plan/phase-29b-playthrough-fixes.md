@@ -615,7 +615,7 @@ approval of the list, the quest scenarios that name quest contents.
   - Stopped (2026-11-24): done so far nothing more (the stop request was set when the client
     builder started); next the client part as in Next above; uncommitted changes: no.
   - **Done (2026-11-24), client.** `RoomView.playerIcons` and the tutorial update's `playerIcon`
-    carry each seat's `PlayerIconChoice` (`PROTOCOL_VERSION` 29); the letter, the 12 colour
+    carry each seat's `PlayerIconChoice` (`PROTOCOL_VERSION` 29, back to 28 by R3); the letter, the 12 colour
     tokens, `playerIconColorOf` and `PLAYER_ICON_COLOR_COUNT` are gone. `PlayerIcon` draws the
     picture as a CSS mask (`PlayerIconFace`, URL from `playerIconPictureUrl` with Vite's
     `new URL` pattern, so a picture loads only when shown). Account settings has a "Player icon"
@@ -933,17 +933,27 @@ approval of the list, the quest scenarios that name quest contents.
       45422377599 (commit b12b07a0): all 8 jobs passed, the 2 player games included.
   - **Phase review (2026-11-24).** Ready after fixes; `npm run check` and `npm run harness` pass,
     no spec deviation in the engine. Findings (besides F1):
-    - [ ] R1. No icon picker screenshot (an exit criterion): `e2e/playerIcon.spec.ts` should call
+    - [x] R1. No icon picker screenshot (an exit criterion): `e2e/playerIcon.spec.ts` should call
       `expectScreenFits(..., "icon-picker", testInfo)` with the picker open; screens from the
       branch run into `harness/screens/icon-picker/`; name it in `docs/enforcement.md`.
-    - [ ] R2. `projectsThisTurn` in `SeatState` is dead state (written in `completeProject`,
+      - Fixed: the browser test takes `icon-picker` with the picker open, scrolled to the privacy
+        link first (at 1280x720 the guest's dialog scrolls, and axe's skip-link rule flags the
+        `#privacy` link while it is off screen); screens from the branch run; named in
+        `docs/enforcement.md`.
+    - [x] R2. `projectsThisTurn` in `SeatState` is dead state (written in `completeProject`,
       `endMainPhase`, `newSeat`, read only by tests): remove it (the save version is already
       raised for this phase).
-    - [ ] R3. `PROTOCOL_VERSION` raised twice (27 → 28 by 1a, → 29 by item 8) though the phase
+      - Fixed: removed from `SeatState`, the three writers, the test room schema and the
+        runner's `seatFromGiven`.
+    - [x] R3. `PROTOCOL_VERSION` raised twice (27 → 28 by 1a, → 29 by item 8) though the phase
       ships as one deploy: set it back to 28, or correct the 1a note.
-    - [ ] R4. `src/rules/undo.test.ts:52-64` puts "Pub" in two hands (R3.1: cards are unique):
+      - Fixed: `PROTOCOL_VERSION` is 28 again (master deploys 27, nothing of this phase shipped);
+        its test only asks for a positive number, every other test reads the constant.
+    - [x] R4. `src/rules/undo.test.ts:52-64` puts "Pub" in two hands (R3.1: cards are unique):
       replace with two players selling different cards, the undo restoring only the undoer's card,
       asserting the exact holding pile and funds in tenths.
+      - Fixed: seat 1 sells Pub, seat 2 Farm House, seat 1 undoes: hands, funds 70 and 80 tenths
+        and the holding pile `["Farm House"]` asserted.
   - **Fixers.** Fixer 1: F1. Fixer 2: R1 to R4.
 
 ### Helper log

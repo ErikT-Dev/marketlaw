@@ -1,9 +1,13 @@
 import { expect, test } from "@playwright/test";
 import { becomeGuest } from "./becomeGuest";
+import { expectScreenFits } from "./expectScreenFits";
 import { openLobby } from "./openLobby";
 import { SIGNING_IN_TEST_MS } from "./SIGNING_IN_TEST_MS";
 
-test("a guest changes their player icon in account settings", async ({ browser, viewport }) => {
+test("a guest changes their player icon in account settings", async ({
+  browser,
+  viewport,
+}, testInfo) => {
   test.setTimeout(SIGNING_IN_TEST_MS);
   const guest = await openLobby(browser, "Icon Ann", viewport ?? undefined);
   await guest.page.getByRole("button", { name: "Create room" }).click();
@@ -30,6 +34,8 @@ test("a guest changes their player icon in account settings", async ({ browser, 
     .evaluate((face) => getComputedStyle(face).maskImage.replace(/^url\("?|"?\)$/gu, ""));
   expect(pictureUrl).toContain("wolf-head");
   expect((await guest.page.request.get(pictureUrl)).ok()).toBe(true);
+  await settings.getByRole("link", { name: "Privacy notice" }).scrollIntoViewIfNeeded();
+  await expectScreenFits(guest.page, "icon-picker", testInfo);
   const saved = guest.page.waitForResponse((response) =>
     response.url().endsWith("/api/icon-changes"),
   );
