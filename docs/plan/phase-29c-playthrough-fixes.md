@@ -109,6 +109,9 @@ in a `HARNESS:` commit and recorded in Q188; one that only disagrees with the co
 - Game records saved before this phase keep the amounts they were saved with (income and funds
   in the old units); they are not converted (D1: stored data may be wiped before version 1).
 - The players online list (S10.2) shows names without icons, as before (Q188, point 1).
+- A one-word card name too wide for its tile (on city and card set tiles: Telecommunication,
+  Hydroelectricity, Slaughterhouse, Pharmaceutical and a few more) still breaks inside the word,
+  against S6.4: no readable font size fits it (Q188, finding R2).
 
 ## What you can see when it's done
 
@@ -558,9 +561,15 @@ scenarios, which expect the first completers' funds instead of influence.
   on every page load and login, one more Worker request and D1 read, and the box shows an empty
   circle until it answers. Item 5 said to add the icon to the existing response: add `icon` to
   `SessionResponse` (`src/shared/api/SessionResponse.ts`) and drop the extra request.
+  - Fixed: `/api/session` and every answer that starts a session (guest, login, signup, username
+    change, new password) carry `icon`; the store takes it from them and no longer asks
+    `/api/account` (Q188). The icon route test checks the session answer holds a changed icon.
 - **R2.** Long one-word card names break mid-word ("Brownston e") on city and card set tiles
   (`overflow-wrap: anywhere`, `src/client/components/Card.module.css` line 73), against S6.4
   (every name fits). Fix it, or list it under "Known gaps after this phase" and in Q188.
+  - Answered: not fixed, listed under "Known gaps after this phase" and in Q188. Shrinking cannot
+    fit it: the name area of a 140 px tile is about 67 px, and Telecommunication is 87 px wide
+    even at 10 px bold; a fix needs hyphen break points per long word or a wider name area.
 
 ### Helper log
 

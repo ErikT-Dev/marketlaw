@@ -4529,3 +4529,19 @@ file.
   change), keeps it in its state and replaces it when an icon change is accepted. Every user box
   (lobby, waiting room, game, after the game) shows it; until it is loaded the box shows an
   empty icon circle, not a letter.
+- **Your icon after the phase review, finding R1 (phase 29c, 2026-11-25):** the extra
+  `/api/account` request of item 5 is gone. The icon now comes with the answers that check or
+  start a session: `/api/session` (`SessionResponse`) and the answers of a guest start, login,
+  signup, username change and new password (`GuestResponse`) each gain `icon`, the account's
+  player icon (S1.8). The store takes it from them, so the user box shows it with the first
+  answer, without a second Worker request or D1 read; an accepted icon change still replaces
+  it. These are HTTP answers, not room or lobby messages, so `PROTOCOL_VERSION` is not raised
+  for them; a browser tab of the previous deploy reloads anyway, since this phase raises
+  `PROTOCOL_VERSION` for the change of units.
+- **Long one-word card names, finding R2 (phase 29c, 2026-11-25):** not fixed; a known gap of
+  the phase. On a city tile and a card set tile (140 × 94) the name may use about 67 px; the
+  longest words of the 240 names are wider even at 10 px bold (Telecommunication 87 px,
+  Hydroelectricity 72, Slaughterhouse 70, Pharmaceutical 69), so no font size that stays
+  readable makes every word fit (S6.4), and such a word still breaks inside the word.
+  A clean fix needs either break points chosen per long word (shown with a hyphen) or a wider
+  name area, both a change of S6.4's tile; left for a later phase.
