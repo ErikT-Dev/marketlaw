@@ -912,6 +912,17 @@ approval of the list, the quest scenarios that name quest contents.
 - [ ] Finish. The finisher adds the new scenarios of "Required scenarios" (not the 8
   replacements, which item 20 adds) and I30 to `harness/required.yaml`, then follows
   `phase-helpers.md`.
+  - **Finisher (2026-11-24).** Added 30 scenarios and I30 to `harness/required.yaml` (the
+    `projects` ones were already on it); `harness:check`: 545 scenarios, 0 problems. Local
+    `npm run check` and `npm run harness` passed. GitHub run 45405672973: `check` and 6 of 7
+    browser jobs passed (tutorial and `influenceAndUndo` specs included); screenshots copied into
+    `harness/screens/`, `docs/enforcement.md` updated.
+  - **F1.** `browser-tests (full games, 2 players)` fails twice (run, then `gh run rerun
+    --failed`): the 1280x720 game passes in 60 s, then the job hangs until the 15 minute action
+    limit (no failure line is printed; the 1920x1080 or 2560x1440 game does not finish). 3 and 4
+    player games pass at all sizes. Locally the same test shows the first test failing at 0 ms and
+    then hanging. A fixer must find where the 2 player game stalls (run it with one size and a
+    trace).
 
 ### Helper log
 
