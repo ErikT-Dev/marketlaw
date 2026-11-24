@@ -711,12 +711,34 @@ approval of the list, the quest scenarios that name quest contents.
     `PlaceResult` need `counts` (`NO_SUMMARY_COUNTS` in `src/shared/testing/`). The finisher
     adds the new screen `your-counts` to `docs/enforcement.md`. `npm run check` still fails only
     on items 16, 18 and 19.
-- [ ] 12. **The Last turn panel** (S5.5, S7.2, M3.5, M3.7, S16.4, finding 46, Q177's addition).
+- [x] 12. **The Last turn panel** (S5.5, S7.2, M3.5, M3.7, S16.4, finding 46, Q177's addition).
   **Medium.** After 2 and 5.
   - As `design/sketches/46-turn-notifications/APPROVED.md`: quests (with reward), projects,
     income gains and Support of the turn before, all from the view, with log lines. It replaces
     `QuestsCompletedLastTurnTable` and `useIncomeRiseNotice`. Covers `visibility`'s "the view
     shows last turn's quests projects income and Support"; leak test passes.
+  - **Done (2026-11-24).** When the main phase ends, each income rise (income now minus income
+    at the start of the player's main phase) becomes a public log line `income_gained` of the
+    new turn, before the Support lines (`incomeGainEntriesOf`). `PlayerView.lastTurn` (quests,
+    projects, income gains, Support; `LAST_TURN_SCHEMA`) is read from the log by `lastTurnOf`;
+    `GameState.questsCompletedLastTurn` and `questsCompletedThisTurnOf` are gone. `LastTurnPanel`
+    sits between the marketplace and the quests from turn 2 on (market and main phase), a region
+    "Last turn" with four lists; empty turns say "Nothing new last turn.". The income notice and
+    the completed-last-turn table are gone. The log line "Ann gained income: +1.0"; Support now
+    "+1", a whole number (S1.9). The runner reads `view.last_turn` and `income_gained` log
+    entries. `visibility`'s new scenario passes (run as required locally) and could not run
+    before ("then view.last_turn").
+  - **Differs from the note above (Q185):** the Projects completed title has no icon (each row
+    has the project's stat icon); below 800 px of window height the panel is compact (about
+    85 px; boxes scroll inside), so at 1280 × 720 the quests and the city keep about 110 and
+    95 px. Unit tests `lastTurnPanel.test.tsx`, `mainPhaseLog.test.ts` (income lines); the
+    income notice test now checks that no notice shows. Browser tests: `quests.spec.ts` checks
+    the panel (screenshot `last-turn`) and now plays turn 4 before the quest leaves (it stays its
+    extra turn since item 5, so the test failed before this item); `incomeNotice.spec.ts` became
+    `endTurnHighlight.spec.ts`. Both pass locally at all three sizes. The screens
+    `income-notice` and `quests-completed-last-turn` are removed from `harness/screens/`.
+  - **For later items.** The finisher adds the screen `last-turn` to `docs/enforcement.md` if
+    screens are listed there. `npm run check` still fails only on items 16, 18 and 19.
 - [ ] 13. **Quest turns left and the market countdown** (S5.1, S4.7, findings 15, 16).
   **Small.** After 5.
   - The big coloured number of `design/sketches/15-quest-turns-left/APPROVED.md` on

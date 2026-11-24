@@ -4284,3 +4284,26 @@ file.
 - **Spec:** S3.3, S9.5, S13.2, A3.2 (unchanged).
 - **Implemented:** `summaryCountsOf` (rules), `PlaceResult.counts`, `SeatRecord.counts`,
   `SummaryCountBoxes`, `RecordedCounts`, `OwnCountBoxes` in the Opponents panel.
+
+## Q185. How does the Last turn panel know each income gain, and how does it show its amounts at small screens?
+
+- **Phase:** 29b, item 12 (the Last turn panel), decided without the owner.
+- **Questions:** (1) M3.5 and S5.5 show "how much each player's income went up in the turn
+  before", but the state kept no income of the turn's start. (2) S1.9 shows income with one
+  decimal and Support as a whole number; the Support log line of item 2 showed "+1.0". (3) The
+  approved sketch puts "the project's stat icon" in the Projects completed title, but a turn can
+  hold several projects. (4) At 1280 × 720 the panel's 160 px left the quests and the city about
+  half their height.
+- **Solution:** (1) When the main phase ends, each player's income is compared with their
+  income at the start of their main phase (the seat other players saw during the turn, R5.4);
+  a rise becomes a public log line `income_gained` of the new turn, in player order, next to
+  the Support lines, and the view's `lastTurn` is read from the log: quests and projects of the
+  turn before, income gains and Support of this turn. The engine's separate
+  `questsCompletedLastTurn` is gone. (2) Income gains show one decimal ("+1.0"), Support a whole
+  number ("+1"), in the panel and the log. (3) The Projects completed title has no icon; each
+  row shows the project's name with its stat icon. (4) Below 800 px of window height the panel
+  is compact (smaller titles on one line, each box about 50 px high and scrolling inside), about
+  85 px in all; player icons keep their 24 px click size.
+- **Spec:** S5.5, S7.2, M3.5, M3.7 (unchanged).
+- **Implemented:** `incomeGainEntriesOf`, `lastTurnOf` (rules), `PlayerView.lastTurn`,
+  `LAST_TURN_SCHEMA`, `LastTurnPanel`, `wholeFundsShown`.

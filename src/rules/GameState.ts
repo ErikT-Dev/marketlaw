@@ -7,7 +7,6 @@ import type { GameKind } from "../shared/GameKind";
 import type { GamePhase } from "../shared/GamePhase";
 import type { GameResult } from "../shared/GameResult";
 import type { MarketplaceSlot } from "../shared/MarketplaceSlot";
-import type { QuestCompletedLastTurn } from "../shared/QuestCompletedLastTurn";
 import type { QuestOnTable } from "../shared/QuestOnTable";
 import type { SeatNumber } from "../shared/SeatNumber";
 import type { ClockGrace } from "./ClockGrace";
@@ -33,7 +32,6 @@ export type GameState = {
   readonly leaveOrder: ReadonlyArray<SeatNumber>;
   readonly drawLog: ReadonlyArray<DrawLogEntry>;
   readonly mainPhaseLog: ReadonlyArray<MainPhaseLogEntry>;
-  readonly questsCompletedLastTurn: ReadonlyArray<QuestCompletedLastTurn>;
   readonly mainPhaseStart: MainPhaseStart;
   readonly clockStartedAt: number;
   readonly pause: PausedClock | null;

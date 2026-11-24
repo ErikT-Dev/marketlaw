@@ -214,48 +214,4 @@ describe("quests panel", () => {
     expect(within(card).getByRole("img", { name: "Satisfaction -2 of 0" })).toBeDefined();
     expect(within(card).queryByRole("img", { name: /^quality/ })).toBeNull();
   });
-
-  it("lists the quests completed in the turn before with tier, requirement, reward and who completed them", () => {
-    render(
-      <GamePage
-        {...gamePageProps(
-          roomUpdateWith({
-            quests: [TRADING_POST],
-            questsCompletedLastTurn: [
-              { quest: "Growing suburbs", seats: [1, 3] },
-              { quest: "Working district", seats: [2] },
-            ],
-          }),
-        )}
-      />,
-    );
-    const table = screen.getByRole("table", { name: "Completed last turn" });
-    expect(
-      within(table)
-        .getAllByRole("columnheader")
-        .map((header) => header.textContent),
-    ).toEqual(["Quest", "Tier", "Requirement", "Reward", "Completed by"]);
-    const [, suburbs, district] = within(table).getAllByRole("row");
-    expect(
-      within(suburbs ?? table)
-        .getAllByRole("cell")
-        .map((cell) => cell.textContent),
-    ).toEqual(["2", expect.any(String), expect.any(String), "Ann, Cy"]);
-    expect(within(suburbs ?? table).getByRole("rowheader").textContent).toBe("Growing suburbs");
-    expect(
-      within(suburbs ?? table)
-        .getAllByRole("img")
-        .map((part) => part.getAttribute("aria-label")),
-    ).toEqual(["3 Town Housing", "2 Low Wealth", "gain 1 Town Housing", "+1 quality"]);
-    expect(
-      within(district ?? table)
-        .getAllByRole("img")
-        .map((part) => part.getAttribute("aria-label")),
-    ).toEqual(["3 Residential cards", "2 Low Wealth", "+1 influence", "+1 quality"]);
-  });
-
-  it("shows no completed last turn table when no quest was completed in the turn before", () => {
-    showQuests([TRADING_POST]);
-    expect(screen.queryByRole("table", { name: "Completed last turn" })).toBeNull();
-  });
 });

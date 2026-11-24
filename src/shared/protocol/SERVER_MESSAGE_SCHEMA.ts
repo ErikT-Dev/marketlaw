@@ -13,6 +13,7 @@ import { TradeName } from "../TradeName";
 import { RemovalReason } from "./RemovalReason";
 import { CHAT_ENTRY_SCHEMA } from "./CHAT_ENTRY_SCHEMA";
 import { DRAW_LOG_ENTRY_SCHEMA } from "./DRAW_LOG_ENTRY_SCHEMA";
+import { LAST_TURN_SCHEMA } from "./LAST_TURN_SCHEMA";
 import { MAIN_PHASE_LOG_ENTRY_SCHEMA } from "./MAIN_PHASE_LOG_ENTRY_SCHEMA";
 import { MARKETPLACE_SLOT_SCHEMA } from "./MARKETPLACE_SLOT_SCHEMA";
 import { GAME_RESULT_SCHEMA } from "./GAME_RESULT_SCHEMA";
@@ -116,7 +117,7 @@ const PLAYER_VIEW = v.object({
   playerOrder: v.array(SEAT),
   drawLog: v.array(DRAW_LOG_ENTRY_SCHEMA),
   mainPhaseLog: v.array(MAIN_PHASE_LOG_ENTRY_SCHEMA),
-  questsCompletedLastTurn: v.array(v.object({ quest: QuestName, seats: v.array(SEAT) })),
+  lastTurn: LAST_TURN_SCHEMA,
   vote: v.nullable(
     v.object({
       caller: SEAT,

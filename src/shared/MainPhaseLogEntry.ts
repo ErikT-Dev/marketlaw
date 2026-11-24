@@ -36,6 +36,12 @@ export type MainPhaseLogEntry =
       readonly times: number;
     }
   | {
+      readonly kind: "income_gained";
+      readonly turn: number;
+      readonly seat: SeatNumber;
+      readonly income: number;
+    }
+  | {
       readonly kind: "support";
       readonly turn: number;
       readonly seat: SeatNumber;

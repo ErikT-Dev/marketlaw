@@ -4,6 +4,7 @@ import type { PlayerView } from "../../../shared/PlayerView";
 import type { ActionIntent } from "../../../shared/protocol/ActionIntent";
 import { CityPanel } from "./CityPanel";
 import { CombosPanel } from "./CombosPanel";
+import { LastTurnPanel } from "./LastTurnPanel";
 import type { LookedAtCard } from "./LookedAtCard";
 import styles from "./GamePage.module.css";
 import { MarketGoPanel } from "./MarketGoPanel";
@@ -28,6 +29,11 @@ function lookedAtIn(lookedAt: LookedAtCard | null, place: LookedAtCard["place"])
   return lookedAt !== null && lookedAt.place === place ? lookedAt.card : null;
 }
 
+function middleLayoutOf(view: PlayerView): string {
+  const layout = view.phase === "market" ? "middleInMarketPhase" : "middle";
+  return view.turn > 1 ? `${layout}WithLastTurn` : layout;
+}
+
 export function MiddleColumn(props: Props) {
   const { view, seat, playerNames, isBusy, lookedAt, onLookAt, onAction } = props;
   const canTakeMarketCard = seat.marketCardRejection === null;
@@ -38,7 +44,7 @@ export function MiddleColumn(props: Props) {
     onAction({ type: "turn_draw", choice: { option: "A", card } });
   }
   return (
-    <div className={styles[view.phase === "market" ? "middleInMarketPhase" : "middle"]}>
+    <div className={styles[middleLayoutOf(view)]}>
       {view.phase === "market" ? (
         <MarketPhaseBanner
           goText={marketGoText(view, seat, playerNames)}
@@ -55,9 +61,9 @@ export function MiddleColumn(props: Props) {
         }}
         onDraw={canTakeMarketCard && !isBusy ? drawMarketCard : null}
       />
+      <LastTurnPanel view={view} playerNames={playerNames} />
       <QuestsPanel
         quests={view.quests}
-        completedLastTurn={view.questsCompletedLastTurn}
         viewer={view.seat}
         playerNames={playerNames}
         isBusy={isBusy}

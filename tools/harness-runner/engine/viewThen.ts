@@ -7,6 +7,7 @@ import type { SeatNumber } from "../../../src/shared/SeatNumber.ts";
 import { isRecord } from "../../harness-check/isRecord.ts";
 import { absentLogItems } from "./absentLogItems.ts";
 import { gameLogOf } from "./gameLogOf.ts";
+import { lastTurnWritten } from "./lastTurnWritten.ts";
 import { matchingLogEntries } from "./matchingLogEntries.ts";
 import { statsWritten } from "./statsWritten.ts";
 
@@ -81,7 +82,8 @@ export function viewThen(
     hides: namesOf(asked["hides"]).filter((name) => isHidden(name, text, state)),
     log_contains: matchingLogEntries(gameLogOf(view), asked["log_contains"]),
     log_excludes: absentLogItems(gameLogOf(view), asked["log_excludes"]),
-    quests_completed_last_turn: view.questsCompletedLastTurn,
+    quests_completed_last_turn: view.lastTurn.quests,
+    last_turn: lastTurnWritten(view.lastTurn),
     vote_answers: view.vote === null ? null : { answered: view.vote.answered, of: view.vote.of },
     ...seatFields,
   };

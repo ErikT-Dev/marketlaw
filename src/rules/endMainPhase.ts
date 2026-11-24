@@ -7,8 +7,8 @@ import { fillMarketplace } from "./fillMarketplace";
 import { firstPlayerOf } from "./firstPlayerOf";
 import type { GameState } from "./GameState";
 import { MARKET_PHASES_SHOWN } from "../shared/MARKET_PHASES_SHOWN";
+import { incomeGainEntriesOf } from "./incomeGainEntriesOf";
 import { marketGoOf } from "./marketGoOf";
-import { questsCompletedThisTurnOf } from "./questsCompletedThisTurnOf";
 import type { Random } from "./Random";
 import type { SeatState } from "./SeatState";
 import { withMainPhaseStart } from "./withMainPhaseStart";
@@ -51,11 +51,12 @@ export function endMainPhase(state: GameState, random: Random, at: number): Game
   );
   const questTable = endTurnForQuests(state, turn, random);
   const startedSeats = state.seats.map(seatAtTurnStart);
+  const firstPlayer = firstPlayerOf(turn, startedSeats);
   const supported = withSupport({
     seats: startedSeats,
     turn,
-    firstPlayer: firstPlayerOf(turn, startedSeats),
-    mainPhaseLog: state.mainPhaseLog,
+    firstPlayer,
+    mainPhaseLog: [...state.mainPhaseLog, ...incomeGainEntriesOf(state, { turn, firstPlayer })],
   });
   const started = withMainPhaseStart({
     ...state,
@@ -68,7 +69,6 @@ export function endMainPhase(state: GameState, random: Random, at: number): Game
     quests: questTable.quests,
     questList: questTable.questList,
     doneOrder: [],
-    questsCompletedLastTurn: questsCompletedThisTurnOf(state),
     drawLog: [...state.drawLog, ...refillShuffles],
     clockStartedAt: at,
   });

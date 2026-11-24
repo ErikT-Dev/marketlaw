@@ -43,7 +43,7 @@ export function botViewWith(own: Partial<OwnSeatView>): PlayerView {
     playerOrder: [1],
     drawLog: [],
     mainPhaseLog: [],
-    questsCompletedLastTurn: [],
+    lastTurn: { quests: [], projects: [], incomeGains: [], support: [] },
     vote: null,
     nextVoteTurn: 1,
     result: null,

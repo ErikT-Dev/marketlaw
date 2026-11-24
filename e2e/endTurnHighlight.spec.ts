@@ -1,11 +1,7 @@
 import { expect, test } from "@playwright/test";
-import { expectScreenFits } from "./expectScreenFits";
 import { startTestRoom } from "./startTestRoom";
 
-test("playing a card highlights End turn and a rise in income shows a notice that closes after 3 seconds", async ({
-  page,
-  request,
-}, testInfo) => {
+test("playing a card highlights End turn", async ({ page, request }) => {
   const [seatOne = ""] = await startTestRoom(request, {
     players: 2,
     seats: [{ seat: 1, stats: { workforce: 1, quality: 1, product: 1 }, hand: ["Liquor Shop"] }],
@@ -25,10 +21,6 @@ test("playing a card highlights End turn and a rise in income shows a notice tha
     .getByRole("region", { name: "Selected card: Liquor Shop" })
     .getByRole("button", { name: "Play card" })
     .click();
-  const notice = page.getByRole("status").filter({ hasText: "has increased!" });
-  await expect(notice.getByRole("img", { name: "Income" })).toBeVisible();
   await expect(highlightedEndTurn).toBeVisible();
-  await expectScreenFits(page, "income-notice", testInfo);
-  await expect(notice).toHaveCount(0);
-  await expect(highlightedEndTurn).toBeVisible();
+  await expect(page.getByRole("status").filter({ hasText: "has increased!" })).toHaveCount(0);
 });

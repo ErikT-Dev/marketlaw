@@ -39,6 +39,8 @@ function mainPhaseFieldsOf(entry: MainPhaseLogEntry): Readonly<Record<string, un
       return { ...common, influence: entry.trade };
     case "redrew":
       return { ...common, redrew: entry.times };
+    case "income_gained":
+      return { ...common, income_gained: entry.income };
     case "support":
       return { ...common, support: fundsWritten(entry.funds) };
   }
@@ -55,6 +57,7 @@ function scenarioFieldsOf(entry: GameLogEntry): Readonly<Record<string, unknown>
     case "completed_project":
     case "influence":
     case "redrew":
+    case "income_gained":
     case "support":
       return mainPhaseFieldsOf(entry);
   }
