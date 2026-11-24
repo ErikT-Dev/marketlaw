@@ -25,7 +25,7 @@
   when:
     - {seat: 1, action: play_card, card: Row House}
   then:
-    view: {seat: 2, of_seat: 1, city: [], stats: {funds: 7}, hand_count: 1}
+    view: {seat: 2, of_seat: 1, city: [], stats: {funds: 70}, hand_count: 1}
 
 - name: whether another player is done is shown during the main phase
   covers: [R5.4]
@@ -119,7 +119,7 @@
   given:
     seats:
       - seat: 1
-        stats: {funds: 9, income: 5, influence: 2, workforce: 1, quality: 2, satisfaction: 3, product: 1, distribution: 0}
+        stats: {funds: 90, income: 50, influence: 2, workforce: 1, quality: 2, satisfaction: 3, product: 1, distribution: 0}
         city: [Row House]
         build_passes: 1
         influence_uses: {influence_to_funds: 1}
@@ -127,7 +127,7 @@
         quests_completed: [Farmland]
         time_bank_ms: 600000
   then:
-    view: {seat: 2, of_seat: 1, stats: {funds: 9, income: 5, influence: 2, workforce: 1, quality: 2, satisfaction: 3, product: 1, distribution: 0}, city: [Row House], type_counts: {Town Housing: 1}, build_passes: 1, influence_uses: {influence_to_funds: 1}, projects: [quality], quests_completed: [Farmland], time_bank_ms: 600000, away: false}
+    view: {seat: 2, of_seat: 1, stats: {funds: 90, income: 50, influence: 2, workforce: 1, quality: 2, satisfaction: 3, product: 1, distribution: 0}, city: [Row House], type_counts: {Town Housing: 1}, build_passes: 1, influence_uses: {influence_to_funds: 1}, projects: [quality], quests_completed: [Farmland], time_bank_ms: 600000, away: false}
 
 - name: no player receives the random seed or the deck order
   covers: [M3.2, M4.1]
@@ -251,7 +251,7 @@
     quests: [{quest: Trading post}, {quest: Farmland}, {quest: Sports town}, {quest: Mining town}]
     seats:
       - seat: 1
-        stats: {income: 4, influence: 4}
+        stats: {income: 40, influence: 4}
         city: [Liquor Shop]
   when:
     - {seat: 1, action: complete_quest, quest: Trading post}
@@ -335,10 +335,10 @@
     quests: [{quest: Farmland}, {quest: Sports town}, {quest: Trading post}, {quest: Mining town}]
     seats:
       - seat: 1
-        stats: {income: 10, quality: 8}
+        stats: {income: 100, quality: 8}
         city: [Liquor Shop]
       - seat: 2
-        worth_gained: 40
+        worth_gained: 400
     random: [{sector: Service}, {tier: 1}]
   when:
     - {seat: 1, action: complete_quest, quest: Trading post}
@@ -347,7 +347,7 @@
     - {seat: 2, action: end_turn}
   then:
     turn: 4
-    view: {seat: 2, last_turn: {quests: [{quest: Trading post, seats: [1]}], projects: [{project: quality, seats: [1]}], income: {1: 1}, support: {1: 1}}}
+    view: {seat: 2, last_turn: {quests: [{quest: Trading post, seats: [1]}], projects: [{project: quality, seats: [1]}], income: {1: 10}, support: {1: 10}}}
 
 - name: another player's type counts show types gained from quests from the next turn
   covers: [R5.4, R12.1, M3.5]

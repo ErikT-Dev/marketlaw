@@ -4498,3 +4498,13 @@ file.
   50 and income 40 end the turn at 102), Support 10 per full 100 behind (the log's `support: 30`),
   F starting at 140 with 10 per card, projects with income 100 giving +10 income and +20 funds,
   the build pass at 20 funds and 10 more each time. No scenario contradicted the new spec.
+- **Harness changes of item 1d (phase 29c, 2026-11-24):** `records-and-ratings`: income and
+  funds × 10 (scores unchanged: 116, 39, 40), and a record's "funds plus cards in hand" is now two
+  values, `funds` and `cards_in_hand` (A3.2, A3.3); the ranked games' incomes 100, 90, 80; F 305
+  and 140. `tutorial`: the funds of `tutorial.md` (70, 71, 64, 49, 45) and after Trading post
+  funds 17, income 40 and influence 6 (2 funds and no influence for the first completion, T5.3).
+  `visibility`: funds 70 and 90, income 50, 40 (Trading post) and 100 (the quality project);
+  the Last turn panel's income +10 and Support 10 (seat 2's F 400, seat 1 behind by 138).
+  `hostile-client`: funds 80 after one sale; `drawing`: income 40, F 140; `client`: Repetitive
+  Housing's base cost 90. No other scenario file holds an old amount. No scenario contradicted
+  the new spec.

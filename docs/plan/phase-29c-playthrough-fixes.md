@@ -332,12 +332,23 @@ scenarios, which expect the first completers' funds instead of influence.
     `influenceAndUndo`, `quests`, `parseRulebook` and `rulebookChangedSections` until item 4.
     `npm run size` passes.
 
-- [ ] 1d. **Scenarios of records, visibility, hostile client, tutorial and the rest.** **Small.**
+- [x] 1d. **Scenarios of records, visibility, hostile client, tutorial and the rest.** **Small.**
   - `records-and-ratings`, `visibility`, `hostile-client`, `tutorial`, `drawing`, `client`:
     every amount of funds and income × 10; records hold funds and cards in hand as two values
     where a scenario names "funds plus cards in hand" (A3.2, Q188); `tutorial.yaml` follows the
     new numbers of `tutorial.md`. Then search every scenario file once more for old values of
     `funds`, `income`, `worth_gained`, costs and scores. `HARNESS:` commit, recorded in Q188.
+  - Done (2026-11-24) in one `HARNESS:` commit, recorded in Q188; no scenario contradicted the
+    spec, and no other scenario file holds an old amount. Records name `funds` and
+    `cards_in_hand` instead of `funds_plus_hand` (3 scenarios).
+  - **For later items:** `npm run harness:check` passes (548 scenarios, 0 problems).
+    `npm run test` fails the same 55 tests in 18 files as after 1c, none from 1d: the scenarios
+    (`harness.test.ts`) and the `src/rules/`, simulator and `checkRuleFiles` tests until 2a;
+    `tutorial/applyTutorialAction` until 2a and 3; the client's `handAndActions`,
+    `influenceAndUndo`, `quests`, `parseRulebook` and `rulebookChangedSections` until item 4.
+    The runner's `recordThen.ts` still writes `funds_plus_hand`; it must write `funds` and
+    `cards_in_hand` with the record's new values (2b). The tutorial scenario's turn 5 expects
+    funds 17 and influence 6 (item 3).
 
 - [ ] 2a. **Funds × 10 in the engine and the runner** (R2.1, R2.4, R2.5, R3.8, R5.1, R11.5,
   R13.1, R14, R16, R19.11, R21.4, R21.5, point 5). **Large.**

@@ -115,7 +115,7 @@
   then:
     seats:
       - seat: 1
-        stats: {income: 4}
+        stats: {income: 40}
         hand: []
 
 - name: other players see only the sector and tier asked for when a fallback is used
@@ -248,7 +248,7 @@
         hand: [Farm House, Metal Mining, Dentist, Fire Station, Log House, Pub, Dorm]
         redraws_used: 1
         actions_this_turn: 0
-        worth_gained: 14
+        worth_gained: 140
     deck: [Row House, Orchard, Liquor Shop, Library, Small Home, Cottage, Clinic]
 
 - name: a player can redraw their starting hand at most 3 times

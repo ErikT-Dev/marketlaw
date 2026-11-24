@@ -7,7 +7,7 @@
     seats:
       - seat: 1
         player: Ann
-        stats: {income: 15, workforce: 3, quality: 2, satisfaction: -1, product: 1, distribution: 2, funds: 10}
+        stats: {income: 150, workforce: 3, quality: 2, satisfaction: -1, product: 1, distribution: 2, funds: 100}
         hand: [Pub, Library, Cottage]
         city: [Orchard, Livestock Farm]
       - seat: 2
@@ -22,7 +22,7 @@
       bonus_types: [Farm, Finance]
       ranked: false
       players:
-        - {username: Ann, result: won, place: 1, score: 116, reached_end_goal: false, income: 15, funds_plus_hand: 13, workforce: 3, quality: 2, satisfaction: -1, product: 1, distribution: 2, bonus_type_points: 6}
+        - {username: Ann, result: won, place: 1, score: 116, reached_end_goal: false, income: 150, funds: 100, cards_in_hand: 3, workforce: 3, quality: 2, satisfaction: -1, product: 1, distribution: 2, bonus_type_points: 6}
         - {username: Bea, result: lost, place: 2, score: 20}
 
 - name: a player who left is recorded with their values when they left
@@ -35,7 +35,7 @@
         player: Ann
       - seat: 2
         player: Bea
-        stats: {income: 6, funds: 3}
+        stats: {income: 60, funds: 30}
         hand: [Pub]
       - seat: 3
         player: Cat
@@ -48,7 +48,7 @@
       players:
         - {username: Ann, result: won, place: 1}
         - {username: Cat, result: left, place: 2}
-        - {username: Bea, result: left, place: 3, score: 39, funds_plus_hand: 4}
+        - {username: Bea, result: left, place: 3, score: 39, funds: 30, cards_in_hand: 1}
 
 - name: a player who left in an earlier turn is scored with their values when they left
   covers: [A3.3, R21.4]
@@ -60,7 +60,7 @@
         player: Ann
       - seat: 2
         player: Bea
-        stats: {income: 6, funds: 3}
+        stats: {income: 60, funds: 30}
         hand: [Pub, Library]
       - seat: 3
         player: Cat
@@ -80,7 +80,7 @@
       players:
         - {username: Ann, result: won, place: 1}
         - {username: Cat, result: lost, place: 2}
-        - {username: Bea, result: left, place: 3, left_in_turn: 39, score: 40, funds_plus_hand: 5}
+        - {username: Bea, result: left, place: 3, left_in_turn: 39, score: 40, funds: 30, cards_in_hand: 2}
 
 - name: an abandoned game saves no game record
   covers: [A3.1]
@@ -152,10 +152,10 @@
     seats:
       - seat: 1
         player: Ann
-        stats: {income: 10}
+        stats: {income: 100}
       - seat: 2
         player: Bea
-        stats: {income: 9}
+        stats: {income: 90}
       - seat: 3
         player: Cat
     accounts: [{name: Ann, rating: 1000, ranked_games: 0}, {name: Bea, rating: 1000, ranked_games: 0}, {name: Cat, rating: 1000, ranked_games: 0}]
@@ -175,10 +175,10 @@
     seats:
       - seat: 1
         player: Ann
-        stats: {income: 9}
+        stats: {income: 90}
       - seat: 2
         player: Bea
-        stats: {income: 10}
+        stats: {income: 100}
       - seat: 3
         player: Cat
     accounts: [{name: Ann, rating: 1200, ranked_games: 10}, {name: Bea, rating: 1000, ranked_games: 10}, {name: Cat, rating: 900, ranked_games: 35}]
@@ -198,10 +198,10 @@
     seats:
       - seat: 1
         player: Ann
-        stats: {income: 10}
+        stats: {income: 100}
       - seat: 2
         player: Bea
-        stats: {income: 9}
+        stats: {income: 90}
       - seat: 3
         player: Cat
     accounts: [{name: Ann, rating: 1000, ranked_games: 10}, {name: Bea, rating: 1500, ranked_games: 10}, {name: Cat, rating: 1400, ranked_games: 10}]
@@ -221,7 +221,7 @@
     seats:
       - seat: 1
         player: Ann
-        stats: {income: 10}
+        stats: {income: 100}
       - seat: 2
         player: Bea
       - seat: 3
@@ -243,7 +243,7 @@
     seats:
       - seat: 1
         player: Ann
-        stats: {income: 10}
+        stats: {income: 100}
       - seat: 2
         player: Bea
     accounts: [{name: Ann, rating: 1000, ranked_games: 0}, {name: Bea, rating: 1000, ranked_games: 0}]
@@ -262,13 +262,13 @@
     seats:
       - seat: 1
         player: Ann
-        stats: {income: 10}
+        stats: {income: 100}
       - seat: 2
         player: Bea
-        stats: {income: 9}
+        stats: {income: 90}
       - seat: 3
         player: Cat
-        stats: {income: 8}
+        stats: {income: 80}
       - seat: 4
         player: Dan
     accounts: [{name: Ann, rating: 1000, ranked_games: 0}, {name: Bea, rating: 1000, ranked_games: 0}, {name: Cat, rating: 1000, ranked_games: 0}, {name: Dan, rating: 1000, ranked_games: 0}]
@@ -331,7 +331,7 @@
         city: [Orchard, Livestock Farm]
         gained_types: {Sea: 1}
         quests_completed: [Farmland]
-        worth_gained: 30.5
+        worth_gained: 305
       - seat: 2
         player: Bea
   when:
@@ -340,5 +340,5 @@
   then:
     record:
       players:
-        - {username: Ann, q: 1, t: 6, c: 0, f: 30.5}
-        - {username: Bea, q: 0, t: 0, c: 0, f: 14}
+        - {username: Ann, q: 1, t: 6, c: 0, f: 305}
+        - {username: Bea, q: 0, t: 0, c: 0, f: 140}
