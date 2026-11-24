@@ -797,9 +797,16 @@ approval of the list, the quest scenarios that name quest contents.
   - Each message beside the area it highlights, with an arrow; the rest dimmed a little while
     it waits for Continue (`TutorialPage`). `TUTORIAL_TEXTS.ts` in tenths, without bonus, with
     2 build passes. The required `tutorial` scenarios pass (turn 4's name is item 20's).
-- [ ] 17. **Away at the start** (S2.2, finding 32). **Small.**
+- [x] 17. **Away at the start** (S2.2, finding 32). **Small.**
   - Find why your own badge shows away when a game starts (a bug of the code, Q178), fix it,
     with a browser test.
+  - **Done (2026-11-24).** The cause: `publishReceived` read the room's live players before
+    `replyToSocket` stored the sender's identity on its socket, so the answer to a newly opened
+    socket's first message (the resync on connect) listed the sender among the away seats; the
+    badge stayed "away" until the next update. `replyToSocket` now reads the live players after
+    storing the identity. Browser test `connections.spec.ts`, "your own badge never shows you
+    away when you open the game" (only seat 1 opens: Seat 2 shows away, Seat 1 does not),
+    failed before at all three sizes and passes now, as does the rest of `connections.spec.ts`.
 - [ ] 18. **Rulebook** (rulebook, S14.2). **Small.**
   - The changed sections of `harness/spec/rulebook.md` show in the rules viewer
     (`PARSED_RULEBOOK.ts`, `statWordParts.ts`): no bonus, funds tenths, Support, projects,
