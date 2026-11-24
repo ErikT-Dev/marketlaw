@@ -144,6 +144,12 @@ scenarios:
     - unused free time of turn 1 is added to the time bank
     - the time bank never grows above 15 minutes
     - free time given again after a pause is not added to the time bank
+    - the stats gain never takes funds below 0
+    - a positive stats gain adds to total worth gained and a negative one does not lower it
+    - Support gives 1 fund for every full 10 total worth gained behind the highest other player
+    - a player less than 10 total worth gained behind gets no Support
+    - players who left do not count for Support
+    - Support adds to total worth gained
   visibility:
     - other players' hands are shown only as a number of cards
     - a player sees their own hand
@@ -170,6 +176,8 @@ scenarios:
     - a turn draw left open is shown to other players when the main phase ends
     - an opponent's out of time status is shown live
     - the log shows a redraw of the starting hand once the main phase ends
+    - the view shows last turn's quests projects income and Support
+    - another player's type counts show types gained from quests from the next turn
   influence:
     - 4 influence buys 2 funds once per game
     - 4 influence buys 1 quality
@@ -199,6 +207,7 @@ scenarios:
     - rejects a draw action when no card of that kind and tier is left
     - a draw action whose last card another player took this phase gives another tier
     - funds received and cards drawn add to total worth gained
+    - 3 influence buy 1 fund as often as the player likes
   undo:
     - undo takes back playing a card
     - undo takes back claim all
@@ -216,6 +225,7 @@ scenarios:
     - undoing a bought build pass makes the next one cost the same again
     - undo takes back completing a quest whose reward draws no card
     - completing a quest whose reward draws a card cannot be undone
+    - undo takes back the extra influence of completing a quest first
   marketplace:
     - option A takes a free market card and draws one card of the same sector from the deck
     - option B draws 2 cards of a chosen sector from the deck
@@ -308,6 +318,16 @@ scenarios:
     - rejects a quest while satisfaction is negative
     - a quest that leaves after 5 turns cannot fill a place in the refill straight after
     - the quests completed in the turn before can be seen during the next turn
+    - another player can complete a quest during its extra turn
+    - a quest completed during its extra turn does not stay longer
+    - a quest completed in its last turn on the table leaves at the end of that turn
+    - everyone who completes a quest in the first turn anyone does gets 1 more influence
+    - completing a quest during its extra turn gives no extra influence
+    - a tier 1 quest stays on the table for 6 turns
+    - a tier 3 quest stays on the table for 4 turns
+    - a quest needing income is placed only once some player has that income minus 2
+    - a quest needing completed projects is placed only once some player has 8 income
+    - a quest needing income is placed once some player has that income minus 2
   end-of-game:
     - reaching the end goal ends the game after that main phase without end-of-turn steps
     - the game goes on until the main phase ends after the end goal is reached
@@ -319,6 +339,10 @@ scenarios:
     - players who left come after every player still in the game
     - cards sold in the final turn join the discard pile when the game ends
     - an end goal reached by a player who then leaves does not end the game
+    - the end goal needs income 20 and all 3 projects
+    - a player who reached the end goal places above a player with a higher score who did not
+    - the score has no base and no part for turns
+    - the score counts whole funds only
   accounts:
     - joining without being logged in offers a free generated name and creates a guest user
     - creating a guest user needs the human check
@@ -371,6 +395,11 @@ scenarios:
     - a fifth username change is allowed once the first of the last 4 is 7 days old
     - deleting an account in the ranked queue takes it out of the queue at once
     - deleting an account while confirming a ranked match declines it
+    - a new account gets a random animal icon and colours
+    - a player can change their icon at most 10 times in 24 hours
+    - rejects an icon whose colours are too alike
+    - rejects an icon picture that is not in the icon folder
+    - a room keeps the icon a player had when they joined
   rooms:
     - a player creates a public room with a chosen size and becomes its owner
     - a private room is not listed in the lobby but can be joined with its code
@@ -500,6 +529,7 @@ scenarios:
     - four new players in a 4 player ranked game change rating by 20 7 minus 7 and minus 20
     - a player who left is placed below the players who stayed for ratings
     - an abandoned game leaves ratings unchanged
+    - the game record holds every player's Q T C and F counts
   client:
     - the game menu offers rules card set and tutorial in the lobby
     - a visitor who is not logged in becomes a guest before the tutorial starts
@@ -557,6 +587,7 @@ invariants:
   - I27
   - I28
   - I29
+  - I30
 budgets:
   - B1
   - B2
