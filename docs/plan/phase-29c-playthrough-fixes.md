@@ -552,6 +552,15 @@ scenarios, which expect the first completers' funds instead of influence.
   the rest of that spec for other old amounts. Fails at 1280 x 720, 1920 x 1080 and 2560 x 1440.
   - Fixed: 2c5c17c5 (the expected line is `→ 20Funds`); the browser suite reruns in the releaser's
     branch check.
+- Phase review (2026-11-25): no blockers; two findings for one fixer.
+- **R1.** Your icon in the user box (item 5, A2.5) costs a second request after `/api/session`:
+  `src/client/store/AccountSessionStore.ts` (`checkSession`, `loadAccountIcon`) asks `/api/account`
+  on every page load and login, one more Worker request and D1 read, and the box shows an empty
+  circle until it answers. Item 5 said to add the icon to the existing response: add `icon` to
+  `SessionResponse` (`src/shared/api/SessionResponse.ts`) and drop the extra request.
+- **R2.** Long one-word card names break mid-word ("Brownston e") on city and card set tiles
+  (`overflow-wrap: anywhere`, `src/client/components/Card.module.css` line 73), against S6.4
+  (every name fits). Fix it, or list it under "Known gaps after this phase" and in Q188.
 
 ### Helper log
 
@@ -575,3 +584,4 @@ each helper's conversation size at its end.
 | Builder 9 | Opus, medium | 12 | 110,227 | 40 | done |
 | Finisher | Sonnet, medium | 31 | 90,600 | 27 | partial (F1) |
 | Fixer F1 | Opus, medium | – | – | – | done (log not kept) |
+| Phase reviewer | Opus, medium | 4 | – | – | done (R1, R2) |
