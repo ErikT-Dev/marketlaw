@@ -938,8 +938,8 @@ approval of the list, the quest scenarios that name quest contents.
       branch run into `harness/screens/icon-picker/`; name it in `docs/enforcement.md`.
       - Fixed: the browser test takes `icon-picker` with the picker open, scrolled to the privacy
         link first (at 1280x720 the guest's dialog scrolls, and axe's skip-link rule flags the
-        `#privacy` link while it is off screen); screens from the branch run; named in
-        `docs/enforcement.md`.
+        `#privacy` link while it is off screen); screens from branch run 45426087085 (all 8 jobs passed);
+        named in `docs/enforcement.md`.
     - [x] R2. `projectsThisTurn` in `SeatState` is dead state (written in `completeProject`,
       `endMainPhase`, `newSeat`, read only by tests): remove it (the save version is already
       raised for this phase).
