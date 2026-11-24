@@ -595,3 +595,28 @@ each helper's conversation size at its end.
 | Fixer F1 | Opus, medium | – | – | – | done (log not kept) |
 | Phase reviewer | Opus, medium | 4 | 117,812 | 38 | done (R1, R2) |
 | Fixer R1, R2 | Opus, medium | 18 | 130,456 | 63 | done |
+
+## Report
+
+**Built.** Everything of the owner's notes of 2026-11-24 (Q188): funds, income and F ten times
+the old ones, so no number has a decimal place, with a score that does not change (you start
+with 70 funds and 30 income, a card costs 40, the end goal is income 200); the first completers
+of a quest get 2, 4 or 6 funds by its tier instead of an influence; your icon in the user box;
+sharper pictures on every small card tile, the card set included, on the big card's texture;
+white text on the action and lobby buttons; quest icons of one size; the left panel titled
+Players with your name and icon over your counts and icons beside the other players' names;
+lighter panel backgrounds; the harness, rulebook and tutorial texts in the new amounts.
+
+**To try.** The list under "What you can see when it's done", on the live site.
+
+**Differences from the phase file.** Those recorded in Progress and `docs/plan/open-questions.md`
+(Q188). The session answers carry the icon (R1), so the client asks `/api/account` no more.
+
+**Decisions.** One raise of `PROTOCOL_VERSION` and of `SAVE_SCHEMA_VERSION` for the phase; no new
+dependency.
+
+**Review.** The finisher's F1 (a wrong amount in `e2e/gameLog.spec.ts`) was fixed. The phase
+reviewer found R1 (the icon cost a second request; fixed) and R2 (long one-word card names break
+inside the word on tiles; answered as a known gap, listed under "Known gaps after this phase"
+and in Q188). The releaser ran the full `npm run check` and `npm run harness` locally on the
+final code: both passed (548 scenarios, 0 problems).
