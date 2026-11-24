@@ -1,6 +1,7 @@
 import * as v from "valibot";
 import { TypeName } from "../catalogue/TypeName";
 import { ProjectName } from "../ProjectName";
+import { SUMMARY_COUNTS_SCHEMA } from "../protocol/SUMMARY_COUNTS_SCHEMA";
 
 export const RecordedSeat = v.strictObject({
   seat: v.picklist([1, 2, 3, 4]),
@@ -26,6 +27,7 @@ export const RecordedSeat = v.strictObject({
     satisfaction: v.number(),
   }),
   typeCounts: v.record(TypeName, v.number()),
+  counts: v.optional(v.nullable(SUMMARY_COUNTS_SCHEMA), null),
 });
 
 export type RecordedSeat = v.InferOutput<typeof RecordedSeat>;

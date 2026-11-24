@@ -4,7 +4,11 @@
   padding: 0 var(--space-xs);
   border: none;
   border-radius: var(--radius-sm);
-  background: var(--color-card-name-combos-background);
+  background: color-mix(
+    in srgb,
+    var(--color-card-name-combos-background) var(--opacity-button-background),
+    transparent
+  );
   color: var(--color-card-name-combos-text);
   font: inherit;
   font-weight: var(--font-weight-bold);

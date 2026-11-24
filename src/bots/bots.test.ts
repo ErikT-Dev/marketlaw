@@ -83,10 +83,17 @@ describe("legal bot", () => {
         {
           quest: "Farmland",
           turnsLeft: 5,
+          isInExtraTurn: false,
           completeRejection: "quest_needs_not_met",
           progress: [],
         },
-        { quest: "Sports town", turnsLeft: 5, completeRejection: null, progress: [] },
+        {
+          quest: "Sports town",
+          turnsLeft: 5,
+          isInExtraTurn: false,
+          completeRejection: null,
+          progress: [],
+        },
       ] as const,
     };
     expect(new Set(SEEDS.map((seed) => JSON.stringify(legalBot(view, chooserFrom(seed)))))).toEqual(

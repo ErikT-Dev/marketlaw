@@ -41,8 +41,8 @@ describe("quick summary table", () => {
       "Quick summary table of Di",
     ]);
     const di = within(opponents().getByRole("article", { name: "Quick summary table of Di" }));
-    expect(di.getByRole("img", { name: "Funds 7" })).toBeDefined();
-    expect(di.getByRole("img", { name: "Income 14" })).toBeDefined();
+    expect(di.getByRole("img", { name: "Funds 7.0" })).toBeDefined();
+    expect(di.getByRole("img", { name: "Income 14.0" })).toBeDefined();
     expect(di.getByRole("img", { name: "Influence 3" })).toBeDefined();
     expect(di.getByRole("img", { name: "Quests completed 0" })).toBeDefined();
     expect(di.getByText("Hand 5")).toBeDefined();
@@ -77,6 +77,7 @@ describe("detailed summary table", () => {
         ? {
             ...seat,
             city: ["Cottage", "Lake Park"] as const,
+            typeCounts: { Leisure: 1, Retail: 3, Farm: 2 },
             combosClaimed: [
               { card: "Cottage", combo: 0, times: 1 },
               { card: "Lake Park", combo: 1, times: 3 },
@@ -97,7 +98,7 @@ describe("detailed summary table", () => {
     );
     fireEvent.click(opponents().getByRole("button", { name: "Detailed summary table of Di" }));
     const board = within(screen.getByRole("dialog", { name: "Detailed summary table of Di" }));
-    expect(board.getByRole("img", { name: "Types in their city 4" })).toBeDefined();
+    expect(board.getByRole("img", { name: "Types 6" })).toBeDefined();
     expect(board.getByRole("img", { name: "Combos claimed 4" })).toBeDefined();
     const table = board.getByRole("list", { name: "Workforce, quality and satisfaction of Di" });
     expect(table.className).toContain("projectStatsNegative");

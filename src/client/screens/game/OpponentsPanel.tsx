@@ -6,6 +6,7 @@ import type { SeatNumber } from "../../../shared/SeatNumber";
 import { Panel } from "../../components/Panel";
 import { OpponentBoardDialog } from "./OpponentBoardDialog";
 import { OpponentCard } from "./OpponentCard";
+import { OwnCountBoxes } from "./OwnCountBoxes";
 import styles from "./OpponentCard.module.css";
 import { playerNameOf } from "./playerNameOf";
 
@@ -22,6 +23,7 @@ export function OpponentsPanel({ view, playerNames, playerIds }: Props) {
   const ownSeat = view.seats.flatMap((seat) => (seat.kind === "own" ? [seat] : []))[0];
   return (
     <Panel title="Opponents">
+      {ownSeat === undefined ? null : <OwnCountBoxes seat={ownSeat} />}
       <ul className={styles["list"]}>
         {others.map((seat) => (
           <OpponentCard

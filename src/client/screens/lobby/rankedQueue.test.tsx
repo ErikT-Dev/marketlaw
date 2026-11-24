@@ -1,4 +1,5 @@
 import { act, fireEvent, render, screen, within } from "@testing-library/react";
+import { TEST_PLAYER_ICON } from "../../../shared/testing/TEST_PLAYER_ICON";
 import * as v from "valibot";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { EpochMs } from "../../../shared/EpochMs";
@@ -19,6 +20,8 @@ const CONFIRMED_ACCOUNT = testAccount({
       isLoggedIn: true as const,
       name: "Ann",
       usernameWait: null,
+      icon: TEST_PLAYER_ICON,
+      iconWait: null,
       email: {
         address: "ann@example.com",
         isConfirmed: true,

@@ -3,13 +3,13 @@ import { questOf } from "../../../shared/ruleFiles/questOf";
 import type { QuestPlaceView } from "../../../shared/QuestPlaceView";
 import type { SeatNumber } from "../../../shared/SeatNumber";
 import { Button } from "../../components/Button";
-import { counted } from "./counted";
-import { playerIconColorOf } from "./playerIconColorOf";
-import { PlayerIconColors } from "./PlayerIconColors";
+import { playerIconOf } from "./playerIconOf";
+import { PlayerIcons } from "./PlayerIcons";
 import { playerNameOf } from "./playerNameOf";
 import { QuestNeedsLine } from "./QuestNeedsLine";
 import { QuestProgressLine } from "./QuestProgressLine";
 import { QuestRewardParts } from "./QuestRewardParts";
+import { QuestTurnsLeftBox } from "./QuestTurnsLeftBox";
 import styles from "./QuestsPanel.module.css";
 import { Highlighted } from "./Highlighted";
 
@@ -22,7 +22,7 @@ type Props = {
 };
 
 export function QuestCard({ place, viewer, playerNames, isBusy, onComplete }: Props) {
-  const playerIconColors = useContext(PlayerIconColors);
+  const playerIcons = useContext(PlayerIcons);
   const nameId = useId();
   const { tier, terms } = questOf(place.quest);
   const { needs, reward } = terms;
@@ -42,12 +42,15 @@ export function QuestCard({ place, viewer, playerNames, isBusy, onComplete }: Pr
   return (
     <Highlighted part={{ kind: "quest", quest: place.quest }} isBlock>
       <section className={classes} aria-labelledby={nameId}>
-        <h3 id={nameId} className={styles["name"]}>
-          {place.quest}
-        </h3>
-        <p className={styles["subtitle"]}>
-          Tier {tier} · {counted(place.turnsLeft, "turn")} left
-        </p>
+        <div className={styles["heading"]}>
+          <div className={styles["headingText"]}>
+            <h3 id={nameId} className={styles["name"]}>
+              {place.quest}
+            </h3>
+            <p className={styles["subtitle"]}>Tier {tier}</p>
+          </div>
+          <QuestTurnsLeftBox quest={place.quest} turnsLeft={place.turnsLeft} />
+        </div>
         <QuestNeedsLine needs={needs} />
         <p className={`${styles["line"] ?? ""} ${styles["reward"] ?? ""}`}>
           Reward:
@@ -58,8 +61,7 @@ export function QuestCard({ place, viewer, playerNames, isBusy, onComplete }: Pr
             <QuestProgressLine
               key={progress.seat}
               name={progress.seat === viewer ? "You" : playerNameOf(playerNames, progress.seat)}
-              username={playerNameOf(playerNames, progress.seat)}
-              colorIndex={playerIconColorOf(playerIconColors, progress.seat)}
+              icon={playerIconOf(playerIcons, progress.seat)}
               progress={progress}
               needs={needs}
               isViewer={progress.seat === viewer}

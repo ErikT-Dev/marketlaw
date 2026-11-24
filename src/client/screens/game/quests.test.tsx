@@ -1,6 +1,7 @@
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import type { QuestPlaceView } from "../../../shared/QuestPlaceView";
+import { playerIconPictureUrl } from "../../icons/playerIconPictureUrl";
 import { gamePageProps } from "../../testing/gamePageProps";
 import { roomUpdateWith } from "../../testing/roomUpdateWith";
 import { GamePage } from "../GamePage";
@@ -8,6 +9,7 @@ import { GamePage } from "../GamePage";
 const TRADING_POST: QuestPlaceView = {
   quest: "Trading post",
   turnsLeft: 3,
+  isInExtraTurn: false,
   completeRejection: null,
   progress: [
     { seat: 1, isCompleted: false, canCompleteNow: false, have: [3, 0], negativeStats: [] },
@@ -19,6 +21,7 @@ const TRADING_POST: QuestPlaceView = {
 const WORKING_DISTRICT: QuestPlaceView = {
   quest: "Working district",
   turnsLeft: 1,
+  isInExtraTurn: false,
   completeRejection: "quest_already_completed",
   progress: [
     { seat: 2, isCompleted: true, canCompleteNow: false, have: [3, 1], negativeStats: [] },
@@ -35,7 +38,8 @@ describe("quests panel", () => {
   it("shows each quest with its tier, turns left, requirement, reward and everyone's progress", () => {
     showQuests([TRADING_POST, { quest: null }]);
     const card = screen.getByRole("region", { name: "Trading post" });
-    expect(within(card).getByText("Tier 1 · 3 turns left")).toBeDefined();
+    expect(within(card).getByText("Tier 1")).toBeDefined();
+    expect(within(card).getByRole("img", { name: "3 turns left" }).textContent).toBe("3turns left");
     expect(within(card).getByRole("img", { name: "4 income" })).toBeDefined();
     expect(within(card).getByRole("img", { name: "1 Retail" })).toBeDefined();
     expect(within(card).getByRole("img", { name: "+1 funds" })).toBeDefined();
@@ -73,7 +77,7 @@ describe("quests panel", () => {
     const line = within(card).getByRole("listitem");
     expect(within(line).getByRole("button", { name: "You" })).toBeDefined();
     expect(line.textContent).toContain("· completed");
-    expect(within(card).getByText("Tier 1 · 1 turn left")).toBeDefined();
+    expect(within(card).getByRole("img", { name: "1 turn left" }).textContent).toBe("1turn left");
     expect(within(card).getByRole("img", { name: "3 Residential cards" })).toBeDefined();
   });
 
@@ -82,6 +86,7 @@ describe("quests panel", () => {
       {
         quest: "Civic pride",
         turnsLeft: 5,
+        isInExtraTurn: false,
         completeRejection: "quest_needs_not_met",
         progress: [
           {
@@ -104,6 +109,7 @@ describe("quests panel", () => {
       {
         quest: "Penthouses",
         turnsLeft: 5,
+        isInExtraTurn: false,
         completeRejection: "quest_needs_not_met",
         progress: [
           {
@@ -117,8 +123,8 @@ describe("quests panel", () => {
       },
     ]);
     const card = screen.getByRole("region", { name: "Penthouses" });
-    const need = within(card).getByRole("img", { name: "4 tier 2 or 3 Residential cards" });
-    expect(need.textContent).toBe("4tier 2 or 3 Residential cards");
+    const need = within(card).getByRole("img", { name: "2 tier 3 Residential cards" });
+    expect(need.textContent).toBe("2tier 3 Residential cards");
     expect(within(need).getByText("Residential").style.color).toBe(
       "var(--color-sector-residential-light)",
     );
@@ -129,6 +135,7 @@ describe("quests panel", () => {
       {
         quest: "Workers' housing",
         turnsLeft: 2,
+        isInExtraTurn: false,
         completeRejection: "quest_needs_not_met",
         progress: [
           {
@@ -149,15 +156,22 @@ describe("quests panel", () => {
     expect(within(card).queryByRole("img", { name: /^Satisfaction/ })).toBeNull();
   });
 
-  it("shows a player icon with the first letter of the username on the seat's icon colour", () => {
+  it("shows a player icon with the seat's picture in its picture colour on its background colour", () => {
     showQuests([TRADING_POST]);
     const card = screen.getByRole("region", { name: "Trading post" });
     const ann = within(card).getByRole("button", { name: "Ann" });
-    expect(ann.firstElementChild?.textContent).toBe("A");
-    expect(ann.style.background).toBe("var(--color-player-icon-0)");
+    expect(ann.style.background).toBe("rgb(30, 58, 138)");
+    expect(ann.firstElementChild?.getAttribute("style")).toContain(
+      playerIconPictureUrl("delapouite/bat"),
+    );
+    expect(ann.firstElementChild?.getAttribute("style")).toContain(
+      "background-color: rgb(253, 230, 138)",
+    );
     const you = within(card).getByRole("button", { name: "You" });
-    expect(you.firstElementChild?.textContent).toBe("B");
-    expect(you.style.background).toBe("var(--color-player-icon-3)");
+    expect(you.style.background).toBe("rgb(20, 83, 45)");
+    expect(you.firstElementChild?.getAttribute("style")).toContain(
+      playerIconPictureUrl("lorc/wolf-head"),
+    );
   });
 
   it("gives the icon of another player who could complete the quest now an orange border", () => {
@@ -200,49 +214,5 @@ describe("quests panel", () => {
     expect(within(card).getByRole("img", { name: "Workforce -1 of 0" })).toBeDefined();
     expect(within(card).getByRole("img", { name: "Satisfaction -2 of 0" })).toBeDefined();
     expect(within(card).queryByRole("img", { name: /^quality/ })).toBeNull();
-  });
-
-  it("lists the quests completed in the turn before with tier, requirement, reward and who completed them", () => {
-    render(
-      <GamePage
-        {...gamePageProps(
-          roomUpdateWith({
-            quests: [TRADING_POST],
-            questsCompletedLastTurn: [
-              { quest: "Growing suburbs", seats: [1, 3] },
-              { quest: "Working district", seats: [2] },
-            ],
-          }),
-        )}
-      />,
-    );
-    const table = screen.getByRole("table", { name: "Completed last turn" });
-    expect(
-      within(table)
-        .getAllByRole("columnheader")
-        .map((header) => header.textContent),
-    ).toEqual(["Quest", "Tier", "Requirement", "Reward", "Completed by"]);
-    const [, suburbs, district] = within(table).getAllByRole("row");
-    expect(
-      within(suburbs ?? table)
-        .getAllByRole("cell")
-        .map((cell) => cell.textContent),
-    ).toEqual(["2", expect.any(String), expect.any(String), "Ann, Cy"]);
-    expect(within(suburbs ?? table).getByRole("rowheader").textContent).toBe("Growing suburbs");
-    expect(
-      within(suburbs ?? table)
-        .getAllByRole("img")
-        .map((part) => part.getAttribute("aria-label")),
-    ).toEqual(["4 Town Housing", "2 Low Wealth", "+3 quality"]);
-    expect(
-      within(district ?? table)
-        .getAllByRole("img")
-        .map((part) => part.getAttribute("aria-label")),
-    ).toEqual(["3 Residential cards", "2 Low Wealth", "+1 influence", "+1 quality"]);
-  });
-
-  it("shows no completed last turn table when no quest was completed in the turn before", () => {
-    showQuests([TRADING_POST]);
-    expect(screen.queryByRole("table", { name: "Completed last turn" })).toBeNull();
   });
 });

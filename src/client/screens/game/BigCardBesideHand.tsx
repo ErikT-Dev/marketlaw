@@ -13,6 +13,7 @@ type Props = {
   readonly isBusy: boolean;
   readonly isOverStatsAndHand: boolean;
   readonly onPlay: () => void;
+  readonly onSell: () => void;
   readonly onClose: () => void;
   readonly onLookAt: (lookedAt: LookedAtCard | null) => void;
 };
@@ -28,6 +29,7 @@ export function BigCardBesideHand(props: Props) {
         nextVoteTurn={props.nextVoteTurn}
         isBusy={props.isBusy}
         onPlay={props.onPlay}
+        onSell={props.onSell}
         onClose={props.onClose}
         className={className}
       />

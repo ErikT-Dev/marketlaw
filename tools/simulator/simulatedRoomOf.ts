@@ -30,6 +30,7 @@ export function simulatedRoomOf(
         seat: seat.seat,
         playerId: seat.identity.playerId,
         name: seat.identity.name,
+        icon: seat.identity.icon,
         stateVersion: 0,
         acceptedActionIds: [],
       })),

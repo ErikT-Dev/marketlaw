@@ -4,6 +4,7 @@ import { PROTOCOL_VERSION } from "../shared/PROTOCOL_VERSION";
 import { OWN_SEAT_VIEW } from "../shared/testing/OWN_SEAT_VIEW";
 import { RemoteGameHost } from "./RemoteGameHost";
 import type { SocketHandlers } from "./SocketHandlers";
+import { TEST_PLAYER_ICON } from "../shared/testing/TEST_PLAYER_ICON";
 
 type FakeNetwork = {
   host: RemoteGameHost;
@@ -76,7 +77,7 @@ const ROOM_UPDATE_TEXT = JSON.stringify({
       ownerName: "Ann",
       playerNames: ["Ann"],
       playerIds: ["5b0f6a52-3d5e-4f7c-8a41-6c2b9e0d7f13"],
-      playerIconColors: [4],
+      playerIcons: [TEST_PLAYER_ICON],
       namesInRoom: ["Ann"],
       idsInRoom: ["5b0f6a52-3d5e-4f7c-8a41-6c2b9e0d7f13"],
       myName: "Ann",
@@ -97,7 +98,7 @@ const TUTORIAL_UPDATE_TEXT = JSON.stringify({
   protocolVersion: PROTOCOL_VERSION,
   acceptedActionId: "id-7",
   stateVersion: 4,
-  playerIconColor: 5,
+  playerIcon: TEST_PLAYER_ICON,
   view: {
     progress: { kind: "step", step: "T1.2", number: 2 },
     game: {
@@ -116,8 +117,7 @@ const TUTORIAL_UPDATE_TEXT = JSON.stringify({
       playerOrder: [1],
       drawLog: [],
       mainPhaseLog: [],
-      questsCompletedLastTurn: [],
-      firstCompletions: [],
+      lastTurn: { quests: [], projects: [], incomeGains: [], support: [] },
       vote: null,
       nextVoteTurn: 1,
       result: null,
@@ -296,7 +296,7 @@ describe("RemoteGameHost", () => {
       {
         type: "tutorial_update",
         acceptedActionId: "id-7",
-        playerIconColor: 5,
+        playerIcon: TEST_PLAYER_ICON,
         serverNow: 6000,
         view: { progress: { kind: "step", step: "T1.2", number: 2 } },
       },

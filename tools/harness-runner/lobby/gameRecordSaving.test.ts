@@ -1,4 +1,5 @@
 import * as v from "valibot";
+import { TEST_PLAYER_ICON } from "../../../src/shared/testing/TEST_PLAYER_ICON.ts";
 import { describe, expect, it } from "vitest";
 import { endGame } from "../../../src/rules/endGame.ts";
 import { saveGameRecord } from "../../../src/server/records/saveGameRecord.ts";
@@ -23,7 +24,7 @@ function endedGame(): RoomGame {
       state: "ended",
       ended_ms: ENDED_MS,
     },
-    (name) => ({ playerId: v.parse(PlayerId, crypto.randomUUID()), name }),
+    (name) => ({ playerId: v.parse(PlayerId, crypto.randomUUID()), name, icon: TEST_PLAYER_ICON }),
     v.parse(EpochMs, 0),
   );
   if (game === null) {

@@ -19,6 +19,7 @@ export function HighlightFrame({ isBlock, children }: Props) {
       ref={frameRef}
       className={styles[isBlock ? "block" : "inline"]}
       data-testid="tutorial-highlight"
+      data-highlight-frame
     >
       {children}
     </div>

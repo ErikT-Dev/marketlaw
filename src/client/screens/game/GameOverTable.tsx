@@ -5,11 +5,13 @@ import type { GameResult } from "../../../shared/GameResult";
 import type { SeatNumber } from "../../../shared/SeatNumber";
 import type { SeatRatingView } from "../../../shared/protocol/SeatRatingView";
 import type { IconText } from "../../components/IconText";
+import { SummaryCountBoxes } from "../../components/SummaryCountBoxes";
 import { TextWithIcons } from "../../components/TextWithIcons";
 import styles from "./GameOverDialog.module.css";
 import { placeOrdinal } from "./placeOrdinal";
 import { playerNameOf } from "./playerNameOf";
 import { RatingCell } from "./RatingCell";
+import { ScorePartsTable } from "./ScorePartsTable";
 
 type Props = {
   readonly result: GameResult;
@@ -25,16 +27,14 @@ const COLUMNS: ReadonlyArray<IconText> = [
   "Result",
   "Score",
   "End goal",
-  [{ stat: "income" }],
-  [{ stat: "funds" }, " + hand"],
-  "Bonus-type pts",
+  "Q, T, C, F",
 ];
 
 export function GameOverTable({ result, viewer, playerNames, playerIds, ratings }: Props) {
   const columns = ratings === null ? COLUMNS : [...COLUMNS, "Rating"];
   return (
     <>
-      <table className={styles["table"]}>
+      <table className={styles["table"]} aria-label="Places">
         <thead>
           <tr>
             {columns.map((column, index) => (
@@ -61,9 +61,9 @@ export function GameOverTable({ result, viewer, playerNames, playerIds, ratings 
               <td>{place.leftInTurn !== null ? "left" : index === 0 ? "won" : "lost"}</td>
               <td>{place.score}</td>
               <td>{place.hasReachedEndGoal ? "yes" : "no"}</td>
-              <td>{place.income}</td>
-              <td>{place.fundsAndHand}</td>
-              <td>{place.bonusTypePoints}</td>
+              <td className={styles["counts"]}>
+                <SummaryCountBoxes counts={place.counts} />
+              </td>
               {ratings === null ? null : (
                 <RatingCell rating={ratings.find((rating) => rating.seat === place.seat)} />
               )}
@@ -71,6 +71,12 @@ export function GameOverTable({ result, viewer, playerNames, playerIds, ratings 
           ))}
         </tbody>
       </table>
+      <p className={styles["note"]}>
+        Players who reached the end goal place first, then the higher score, then the higher total
+        worth gained (F), then the earlier place in the final turn&apos;s player order.
+      </p>
+      <ScorePartsTable result={result} viewer={viewer} playerNames={playerNames} />
+      <p className={styles["note"]}>The score is the total rounded down.</p>
       {result.places.some((place) => place.leftInTurn !== null) ? (
         <p className={styles["note"]}>
           Players who left are placed by when they left: the one who left first is last.

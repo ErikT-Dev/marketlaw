@@ -1,7 +1,9 @@
 import type { Card } from "../../shared/catalogue/Card";
 import styles from "./Card.module.css";
+import { cardNameSizeOf } from "./cardNameSizeOf";
+import { cardTileBackground } from "./cardTileBackground";
 import { CardTileFace } from "./CardTileFace";
-import { sectorColor } from "./sectorColor";
+import { CardTilePicture } from "./CardTilePicture";
 
 type Props = {
   readonly card: Card;
@@ -16,10 +18,11 @@ export function PlayedCard({ card, isSelected, onSelect }: Props) {
       type="button"
       aria-label={card.name}
       aria-pressed={isSelected}
-      style={{ background: sectorColor(card.sector, card.tier) }}
+      style={{ background: cardTileBackground(card.sector, card.tier) }}
       onClick={onSelect}
     >
-      <CardTileFace card={card} />
+      <CardTilePicture photo={card.photo} />
+      <CardTileFace card={card} nameSize={cardNameSizeOf(card.name, "city")} />
     </button>
   );
 }

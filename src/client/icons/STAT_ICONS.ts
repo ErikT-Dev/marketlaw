@@ -11,7 +11,6 @@ export const STAT_ICONS: Readonly<
   satisfaction: { file: "SATISFACTION", label: "Satisfaction" },
   product: { file: "PRODUCT", label: "Product" },
   distribution: { file: "DISTRIBUTION", label: "Distribution" },
-  bonus: { file: "BONUS", label: "Bonus" },
   buildPasses: { file: "BUILD_PASS", label: "Build passes" },
   cost: { file: "COST", label: "Cost" },
   tier: { file: "TIER", label: "Tier" },

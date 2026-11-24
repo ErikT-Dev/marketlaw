@@ -31,7 +31,9 @@ test("every card in the marketplace and in the cities opens the big card", async
   await marketplace.getByRole("button", { name: "Dentist" }).click();
   const shownMarketCard = ann.getByRole("region", { name: "Selected card: Dentist" });
   await expect(shownMarketCard.getByRole("heading", { name: /^Base cost/ })).toBeVisible();
-  await expect(shownMarketCard.getByRole("button")).toHaveText(["Close"]);
+  await expect(shownMarketCard.getByRole("button").filter({ hasNotText: /^#[0-9]/ })).toHaveText([
+    "Close",
+  ]);
   await expect(marketplace.getByRole("button", { name: "Draw" })).toHaveCount(0);
 
   await ann

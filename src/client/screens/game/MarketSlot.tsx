@@ -5,6 +5,7 @@ import { STAT_ICONS } from "../../icons/STAT_ICONS";
 import { MarketCardFace } from "./MarketCardFace";
 import styles from "./Marketplace.module.css";
 import { MARKETPLACE_PLACE_LABELS } from "./MARKETPLACE_PLACE_LABELS";
+import { marketTurnsLeftText } from "./marketTurnsLeftText";
 import { SelectableMarketCard } from "./SelectableMarketCard";
 import { Highlighted } from "./Highlighted";
 
@@ -30,14 +31,17 @@ export function MarketSlot({ slot, isSelected, onSelect, onDraw }: Props) {
           <MarketCardFace card={null} />
         </div>
       ) : (
-        <Highlighted part={{ kind: "market_card", card: slot.card }} isBlock>
-          <SelectableMarketCard
-            card={slot.card}
-            isSelected={isSelected}
-            onSelect={onSelect}
-            onDraw={onDraw}
-          />
-        </Highlighted>
+        <>
+          <Highlighted part={{ kind: "market_card", card: slot.card }} isBlock>
+            <SelectableMarketCard
+              card={slot.card}
+              isSelected={isSelected}
+              onSelect={onSelect}
+              onDraw={onDraw}
+            />
+          </Highlighted>
+          <span className={styles["turnsLeft"]}>{marketTurnsLeftText(slot.phasesShown)}</span>
+        </>
       )}
     </li>
   );

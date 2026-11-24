@@ -1,7 +1,9 @@
 import type { GameState } from "./GameState";
 import { isAbandoned } from "../shared/isAbandoned";
 import type { PlaceResult } from "../shared/PlaceResult";
+import { wholeFundsOf } from "../shared/wholeFundsOf";
 import { bonusTypePointsOf } from "./bonusTypePointsOf";
+import { hasReachedEndGoal } from "./hasReachedEndGoal";
 import { playerOrderOf } from "./playerOrderOf";
 
 const FORMULA = [
@@ -19,10 +21,8 @@ function expectedScore(state: GameState, seatNumber: number): number | undefined
     return undefined;
   }
   const parts = [
-    870,
-    -25 * ((seat.departure?.turn ?? state.turn) - 1),
     ...FORMULA.map(([stat, weight]) => weight * seat.stats[stat]),
-    0.2 * (seat.stats.funds + (seat.departure?.cardsInHand ?? seat.hand.length)),
+    0.2 * (wholeFundsOf(seat.stats.funds) + (seat.departure?.cardsInHand ?? seat.hand.length)),
     bonusTypePointsOf(seat, state.bonusTypes),
   ];
   const hundredths = parts.reduce((sum, part) => sum + Math.round(part * 100), 0);
@@ -34,27 +34,37 @@ function hasLeft(place: PlaceResult): boolean {
 }
 
 function tieBreakOf(state: GameState, place: PlaceResult): readonly [number, number] {
-  const doneIndex = state.doneOrder.indexOf(place.seat);
-  return [
-    doneIndex === -1 ? state.seats.length : doneIndex,
-    playerOrderOf(state).indexOf(place.seat),
-  ];
+  const seat = state.seats.find((candidate) => candidate.seat === place.seat);
+  return [-(seat?.worthGained ?? 0), playerOrderOf(state).indexOf(place.seat)];
+}
+
+function isEndGoalOf(state: GameState, place: PlaceResult): boolean {
+  const seat = state.seats.find((candidate) => candidate.seat === place.seat);
+  return seat !== undefined && hasReachedEndGoal(seat);
 }
 
 function isPlacedBefore(state: GameState, place: PlaceResult, next: PlaceResult): boolean {
   if (hasLeft(place)) {
     return hasLeft(next) && state.leaveOrder.indexOf(place.seat) > state.leaveOrder.indexOf(next.seat);
   }
-  return hasLeft(next) || place.score >= next.score;
+  if (hasLeft(next) || isEndGoalOf(state, place) !== isEndGoalOf(state, next)) {
+    return hasLeft(next) || isEndGoalOf(state, place);
+  }
+  return place.score >= next.score;
 }
 
 function isTieBrokenInOrder(state: GameState, place: PlaceResult, next: PlaceResult): boolean {
-  if (hasLeft(place) || hasLeft(next) || place.score !== next.score) {
+  if (
+    hasLeft(place) ||
+    hasLeft(next) ||
+    place.score !== next.score ||
+    isEndGoalOf(state, place) !== isEndGoalOf(state, next)
+  ) {
     return true;
   }
-  const [placeDone, placeOrder] = tieBreakOf(state, place);
-  const [nextDone, nextOrder] = tieBreakOf(state, next);
-  return placeDone < nextDone || (placeDone === nextDone && placeOrder < nextOrder);
+  const [placeWorth, placeOrder] = tieBreakOf(state, place);
+  const [nextWorth, nextOrder] = tieBreakOf(state, next);
+  return placeWorth < nextWorth || (placeWorth === nextWorth && placeOrder < nextOrder);
 }
 
 export function gameEndViolations(before: GameState, after: GameState): ReadonlyArray<string> {
@@ -81,10 +91,10 @@ export function gameEndViolations(before: GameState, after: GameState): Readonly
     ...wrongScores,
     ...(isOrdered
       ? []
-      : ["I22: the places are not in score order with players who left last, the first to leave last"]),
+      : ["I22: the places are not by end goal and then score with players who left last, the first to leave last"]),
     ...(isTieBroken
       ? []
-      : ["I22: equal scores are not placed by the done order and then the player order"]),
+      : ["I22: equal scores are not placed by total worth gained and then the player order"]),
     ...((after.result !== null && isAbandoned(after.result.endedBy)) || places[0]?.leftInTurn === null
       ? []
       : ["I22: the winner has left or there is none"]),

@@ -1,4 +1,5 @@
 import type { Kind } from "../shared/catalogue/Kind";
+import { amountsInTenths } from "../shared/amountsInTenths";
 import type { Tier } from "../shared/catalogue/Tier";
 import type { ReasonCode } from "../shared/ReasonCode";
 import { influenceDrawOfTier } from "../shared/ruleFiles/influenceDrawOfTier";
@@ -20,7 +21,7 @@ export function drawActionRejection(
     return "no_card_of_kind";
   }
   const canAfford = STAT_KEYS.every((stat) => {
-    const cost = draw.costs[stat];
+    const cost = amountsInTenths(draw.costs)[stat];
     return cost === undefined || seat.stats[stat] >= cost;
   });
   return canAfford ? undefined : "cannot_afford_trade";

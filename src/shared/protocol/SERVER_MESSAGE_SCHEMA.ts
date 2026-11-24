@@ -13,13 +13,14 @@ import { TradeName } from "../TradeName";
 import { RemovalReason } from "./RemovalReason";
 import { CHAT_ENTRY_SCHEMA } from "./CHAT_ENTRY_SCHEMA";
 import { DRAW_LOG_ENTRY_SCHEMA } from "./DRAW_LOG_ENTRY_SCHEMA";
+import { LAST_TURN_SCHEMA } from "./LAST_TURN_SCHEMA";
 import { MAIN_PHASE_LOG_ENTRY_SCHEMA } from "./MAIN_PHASE_LOG_ENTRY_SCHEMA";
 import { MARKETPLACE_SLOT_SCHEMA } from "./MARKETPLACE_SLOT_SCHEMA";
 import { GAME_RESULT_SCHEMA } from "./GAME_RESULT_SCHEMA";
 import { QUEST_PLACE_VIEW_SCHEMA } from "./QUEST_PLACE_VIEW_SCHEMA";
 import { SEAT_NUMBER_SCHEMA } from "./SEAT_NUMBER_SCHEMA";
 import { STATS_SCHEMA } from "./STATS_SCHEMA";
-import { PLAYER_ICON_COLOR_COUNT } from "../PLAYER_ICON_COLOR_COUNT";
+import { PLAYER_ICON_CHOICE_SCHEMA } from "../playerIcons/PLAYER_ICON_CHOICE_SCHEMA";
 import { TUTORIAL_PROGRESS_SCHEMA } from "./TUTORIAL_PROGRESS_SCHEMA";
 
 const COUNT = v.number();
@@ -32,6 +33,7 @@ const SEAT_COMMON = {
   city: CARDS,
   buildPasses: COUNT,
   worthGained: COUNT,
+  supportThisTurn: COUNT,
   questsCompleted: v.array(QuestName),
   isDone: v.boolean(),
   isOutOfTime: v.boolean(),
@@ -40,12 +42,6 @@ const SEAT_COMMON = {
   clock: v.nullable(v.object({ bankMs: COUNT, freeUntil: EpochMs, deadline: EpochMs })),
   hasHadMarketGo: v.boolean(),
 };
-const PLAYER_ICON_COLOR = v.pipe(
-  v.number(),
-  v.integer(),
-  v.minValue(0),
-  v.maxValue(PLAYER_ICON_COLOR_COUNT - 1),
-);
 const TYPE_COUNTS = v.record(TypeName, COUNT);
 const PROJECTS = v.array(ProjectName);
 const SEAT_VIEW = v.variant("kind", [
@@ -121,8 +117,7 @@ const PLAYER_VIEW = v.object({
   playerOrder: v.array(SEAT),
   drawLog: v.array(DRAW_LOG_ENTRY_SCHEMA),
   mainPhaseLog: v.array(MAIN_PHASE_LOG_ENTRY_SCHEMA),
-  questsCompletedLastTurn: v.array(v.object({ quest: QuestName, seats: v.array(SEAT) })),
-  firstCompletions: PROJECTS,
+  lastTurn: LAST_TURN_SCHEMA,
   vote: v.nullable(
     v.object({
       caller: SEAT,
@@ -149,7 +144,7 @@ export const SERVER_MESSAGE_SCHEMA = v.variant("type", [
         ownerName: v.string(),
         playerNames: v.array(v.string()),
         playerIds: v.array(PlayerId),
-        playerIconColors: v.array(PLAYER_ICON_COLOR),
+        playerIcons: v.array(PLAYER_ICON_CHOICE_SCHEMA),
         namesInRoom: v.array(v.string()),
         idsInRoom: v.array(PlayerId),
         myName: v.string(),
@@ -214,7 +209,7 @@ export const SERVER_MESSAGE_SCHEMA = v.variant("type", [
     acceptedActionId: v.nullable(v.string()),
     stateVersion: COUNT,
     view: v.object({ progress: TUTORIAL_PROGRESS_SCHEMA, game: PLAYER_VIEW }),
-    playerIconColor: PLAYER_ICON_COLOR,
+    playerIcon: PLAYER_ICON_CHOICE_SCHEMA,
     serverNow: EpochMs,
   }),
   v.object({ type: v.literal("opened_elsewhere"), protocolVersion: COUNT }),

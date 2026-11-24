@@ -38,7 +38,7 @@ None yet.
 - **S1.5** **Sector colours:** each sector has one colour from the design tokens. A Public quality
   card and a Public satisfaction card kind use the Public colour.
 - **S1.6** **Stats and types are always icons:** wherever a stat (funds, income, workforce,
-  quality, satisfaction, product, distribution, bonus, influence, build passes) or a card type is
+  quality, satisfaction, product, distribution, influence, build passes) or a card type is
   shown to a player, it is shown as its icon, with its number next to it where there is one, and
   never written out as a word. This holds on every screen, pop-up, table and label, and in all
   running text: rejection messages (S10.9, S16.3), notices, help texts and the rulebook in the
@@ -54,13 +54,19 @@ None yet.
   sorted by the same keys as far as they apply: type combos first, infinite before one-time,
   fewer needed first, bigger reward first, then reward stat in the order of R2.1; then card-name
   combos by card name.
-- **S1.8** **Player icons:** a player's icon (A2.5) is a circle with the first character of
-  their username in upper case, on their icon colour. Where a screen shows an icon instead of a
-  name, the name appears as a tooltip when the pointer is over the icon or it has keyboard
+- **S1.8** **Player icons:** a player's icon (A2.5) is a circle with their picture drawn in their
+  picture colour on their background colour. Where a screen shows an icon instead of a name, the name appears as a tooltip when the pointer is over the icon or it has keyboard
   focus, and is the icon's accessible name. Unlike stat and type icons (S1.6), a player icon is a
   tab stop of its own, since a screen shows only a few and the name is not written anywhere near
-  it; clicking it does nothing. Your own icon shows the first character of your username and is
-  named "You", as the rest of the screen names you (Q174).
+  it; clicking it does nothing. Your own icon is named "You", as the rest of the screen names you
+  (Q174).
+- **S1.9** **Funds with tenths:** funds, income and total worth gained (F) are shown with one
+  decimal everywhere (5.3, 7.0), since funds are kept in tenths (R2.5). Fixed amounts (card
+  costs, rewards, sale values, influence action costs, Support) are shown as whole numbers, as
+  the rules write them.
+- **S1.10** **Buttons:** every button's background is at most 90% opaque, so the table shows
+  through a little.
+- **S1.11** **Browser tab:** every page shows the MarketLaw logo as its icon in the browser tab.
 
 ## S2. Game screen: top bar
 
@@ -71,7 +77,8 @@ None yet.
 - **S2.2** Each badge in the top bar shows the player's username, your own too, and, during the
   main phase, whether they are **done**, **out of time** (R9.10), **away** or have **left**
   (R5.4). Players who left are not
-  in the player order (R4.5); their badges come after it, by seat number.
+  in the player order (R4.5); their badges come after it, by seat number. Your own badge never
+  shows you away while this browser is connected to the game, also not when the game starts.
 - **S2.3** On the right: the **user box** with your username, which opens the user menu (S12.7),
   then your own clock, and **Leave game**. In your main phase the clock shows your main-phase time
   left, or **Out of time** once it has run out (R9.10), and your time bank; while other players
@@ -84,18 +91,20 @@ None yet.
   status (done, out of time, away, left), time bank counting down, funds, income, influence with
   its icon, number of cards in hand, cards played per sector, progress on each of the 3 projects,
   and four counts, each a bold letter in a bordered dark grey box next to its number: **Q**,
-  quests they have completed (orange); **T**, the total number of types of the cards in their
-  city, a type a card counts twice counting 2 (indigo); **C**, the combos they have claimed, each
+  quests they have completed (orange); **T**, the total of their type counts (R12.1): the types
+  of the cards in their city, a type a card counts twice counting 2, plus the types they gained
+  from quests (indigo); **C**, the combos they have claimed, each
   claim of an infinite combo counting (green); and **F**, their total worth gained (R2.4, red).
-  It also shows the 5 types played most in their city, from the cards in it, as icons with
-  their counts, from most to least, ties in alphabetical order (S1.7); a bonus type among them is
+  It also shows the 5 types played most in their city, from their type counts with the types
+  gained from quests, as icons with their counts, from most to least, ties in alphabetical order (S1.7); a bonus type among them is
   highlighted with a dark green background and a bright green border. During the main phase it
   shows them as at the start of their own main phase, except status and time bank, which are
   live (R5.4).
 - **S3.2** Clicking a quick summary table opens that player's **detailed summary table**: stats,
   influence, time bank, cards in play by sector, type counts with the bonus types first (S1.7),
   the bonus types highlighted with a dark green background and a bright green border, combos
-  claimed and what they gained, influence actions used, build passes and the price of the next
+  claimed and what they gained (each claimed combo shown only by what it needs and what it gave,
+  without the name of the card it is printed on), influence actions used, build passes and the price of the next
   bought pass, completed projects and quests, whether they are done, and the number of cards in
   their hand. It says that it shows them as at the start of their main phase. It also shows the
   **T** and **C** boxes of S3.1. Their five basic stats are shown together:
@@ -103,12 +112,21 @@ None yet.
   while any of the three is negative and neutral otherwise, and product and distribution next to
   it. Clicking a card in their city shows it in a big card (S6.5) inside the detailed summary
   table.
+- **S3.3** **Your counts:** above the quick summary tables, a small table shows your own **Q**,
+  **T**, **C** and **F** boxes, the same bold letters in the same bordered dark grey boxes as
+  S3.1, so that you can compare them with the other players' at a glance. One **?** button next
+  to them, named "What Q, T, C and F mean", works as in S5.4 and explains: "Q: quests you have
+  completed. T: your types, from the cards in your city and from quests. C: combos you have
+  claimed, every claim of an infinite combo counting. F: total worth gained, every fund you have
+  received and every card you have gained."
 
 ## S4. Marketplace and market phase
 
 - **S4.1** The **marketplace** panel shows the 8 places in the order of R18.5, each with its place
-  name. A filled place shows the card's tier and name; an emptied place shows
-  "Empty until next turn". Clicking a marketplace card, at any time, shows it in the big card
+  name. A filled place shows the card as a card tile (S6.4) with its tier, and how many turns
+  it still stays in the marketplace, counting the current turn's market phase until it ends
+  ("2 turns left", "1 turn left", R18.13), or "Leaves next turn" once its last market phase has
+  ended; an emptied place shows "Empty until next turn". Clicking a marketplace card, at any time, shows it in the big card
   (S6.5) and never takes it.
 - **S4.2** The marketplace header also shows the **bonus types** with their point values, the
   number of cards left in the **deck**, and the number of cards in the **discard pile** (R5.5),
@@ -129,6 +147,10 @@ None yet.
   it is: on your go it reads "Your go" on a **green** background; on another player's go it
   reads "Ann's go" on the strong background. The phase in the top bar (S2.1) is highlighted the
   same way. Both go back to normal when your own main phase starts.
+- **S4.7** **Market countdown:** on your market go, a big red countdown of your time left for the
+  go (R18.11) shows in the marketplace panel, besides the clock of S2.3, so you see it while you
+  look at the cards. In its last 5 seconds the number pulses and the marketplace border turns
+  red; with reduced motion it does not pulse.
 - **S4.6** **Turn draw left open:** after a time-out on your market go, the action area shows
   "Your time ran out on your market go. Choose a sector for your 2 cards." with one button per
   sector, until you take it, and says that a random sector is used if you end your turn without
@@ -144,6 +166,12 @@ None yet.
   icon of every other player who could complete the quest now, as you see them (R5.4), has a
   bold orange border; the view says who can. In requirements, sector names are
   written in their sector colour (S1.5).
+  - **Turns left** is a big number in a rounded box in the quest's top right corner, beside its
+    name and tier, with "turns left" ("turn left" at 1) under it; the line under the name shows
+    only "Tier N". The number is always the same size; only its colour changes, from the quest's
+    full time on the table (R19.7: 6, 5 or 4 turns): **blue** at the full time (it just
+    appeared), **green** above half of it, **yellow** from 2 up to half, **red** at 1. A quest in
+    its extra turn (R19.6) shows a red 1. The box is named "N turns left" ("1 turn left").
 - **S5.2** A quest you can complete now has a **Complete** button and a green border; a quest you
   completed is shaded green.
 - **S5.3** The quests panel has room for 5 quests (R19.1) with 4 players and three-part
@@ -155,17 +183,29 @@ None yet.
   > Quests are shared goals. In the main phase, complete a quest when you have what it asks for:
   > nothing is used up, and you get the reward at once. Workforce, quality and satisfaction must
   > all be 0 or more. Each player can complete each quest once, and several players can complete
-  > the same quest in the same turn. A completed quest leaves the table at the end of the turn;
-  > a quest nobody completes leaves after 5 turns.
-- **S5.5** **Completed last turn:** next to the quests panel, a small table lists the quests that
-  were completed in the turn before, each with its name, its tier, its requirement and reward
-  (with stats and types as icons, S1.6) and the usernames of the players who completed it
-  (R19.6). It is shown only when at least one quest was completed in
-  the turn before.
+  > the same quest in the same turn. In the turn a quest is first completed, everyone who
+  > completes it gets +1 influence more. It then stays one more turn for the others, and leaves.
+  > A quest nobody completes leaves after 6 turns (tier 1), 5 (tier 2) or 4 (tier 3).
+- **S5.5** **Last turn panel:** from turn 2 on, a panel titled "LAST TURN · TURN N" (N the turn
+  before) sits in the middle column between the marketplace and the quests, full width, for the
+  whole turn. It is a region named "Last turn" with four boxes in one row, each a list named by
+  its title:
+  1. **Quests completed:** a row per player and quest: the player's icon (S1.8) and name, the
+     quest's name and its reward as icons (R19.6).
+  2. **Projects completed:** a row per player and project: icon, name and the project.
+  3. **Income gained:** a row per player whose income went up in the turn before, with "+N"
+     income.
+  4. **Support:** a row per player who got Support at the start of this turn (R11.5), with "+N"
+     funds.
+
+  Your own rows say "You". A turn with nothing to show shows only the title and "Nothing new last
+  turn.". Everything in it comes from the view (M3.5), and each row is also a line of the game
+  log (S7.2).
 
 ## S6. Your city, stats, hand and actions
 
-- **S6.1** **Your city** shows your cards in play grouped by sector. **Combos** is one list of all
+- **S6.1** **Your city** shows your cards in play grouped by sector, as card tiles (S6.4) of
+  140 × 94 px. **Combos** is one list of all
   the combos of the cards in your city, and the panel title says how many are ready. In the
   combos list, types and stats are shown as their icons (S1.6), never as words.
   - **Colours:** an infinite combo is blue and a one-time combo brown; a combo that is ready to
@@ -185,36 +225,48 @@ None yet.
 
   Scrolling the list shows at a glance which types your city needs most.
 - **S6.2** **Your stats** shows funds, income, workforce, quality, satisfaction, product,
-  distribution, bonus, build passes and influence, each with its icon and name; the **Q**, **T**,
-  **C** and **F** boxes of S3.1 for yourself, the same bold letters in the same bordered dark grey
-  boxes; and your type counts (R12.1), the bonus types first and then the other types, each part
+  distribution, build passes and influence, each with its icon and name, and your type counts
+  (R12.1), the bonus types first and then the other types, each part
   sorted as S1.7 says, with the bonus types highlighted with a dark green background and a bright
   green border. Names appear as a tooltip when the pointer is over the icon,
   and are the icon's accessible name for screen readers.
 - **S6.3** Under the stats, the **projects** area has the title **PROJECTS**, with a **?** button
   named "How projects work" that works as in S5.4. Each project shows your progress or
-  "completed". While nobody has completed it, as far as you can see (R5.4), it says "First to
-  complete gets +2" with the funds icon (R16.6). Only once someone has completed it does it say
-  who has, as "Completed by" and the other players' icons (S1.8), instead of the +2 line. "Completed by" names only the other
+  "completed". Once another player has completed it, as far as you can see (R5.4), it says who
+  has, as "Completed by" and the other players' icons (S1.8). "Completed by" names only the other
   players; your own completion is the "completed" of your progress, so when only you have
   completed it, neither line shows (Q77). The help text, with stats shown as their icons (S1.6):
   > You have 3 projects. In the main phase, complete one when you have 8 of its stat, at least
   > 10 income, and workforce, quality and satisfaction are all 0 or more. It uses up the 8 and gives +1 income,
-  > +2 funds, +3 influence and 1 card; your third project gives another +1 income and 1 card. In
-  > the first turn anyone completes a project, everyone who completes it that turn gets +2 funds
-  > at the end of the turn. The end goal needs all 3 projects and income 22.
-- **S6.4** **Your hand** shows your cards in 2 columns. Each card shows its number, name and its
-  **real cost** (R3.8), not the base cost. Cards you got this turn are marked **new** (R18.10).
-  Cards you cannot play are marked unplayable.
+  > +2 funds, +3 influence and 1 card, every time. The end goal needs all 3 projects and
+  > income 20.
+- **S6.4** **Your hand** shows your cards in 2 columns, sorted by sector (Residential, Industry,
+  Service, Public), then tier, lowest first, then card number. Each card shows its number, name
+  and its **real cost** (R3.8), not the base cost. Cards you got this turn are marked **new**
+  (R18.10). Cards you cannot play now, as the view says, are dimmed.
+  - **Card tiles:** hand, city (S6.1) and marketplace (S4.1) cards are card tiles. A diagonal
+    line splits each tile: the left part has the sector colour with the number, name and cost;
+    the right part, about 30% of the tile, shows a small, low-resolution picture of the card,
+    which is decorative (no accessible name). The line runs from 61% of the width at the top to
+    77% at the bottom, the same on every tile, with a thin light line along it. The name wraps
+    before the picture starts. Every tile of one kind (hand, city or marketplace) has one fixed
+    size, whatever the name (a hand or marketplace tile is as wide as its column at the screen
+    size, the same for every tile of that kind); a name too long for it is shown in a smaller font, chosen from its
+    length, so that every one of the 240 names fits. The tile's background is its sector colour
+    at 80% of its strength. A hand card keeps its playable edge on the far right, over the
+    picture.
 - **S6.5** Selecting a hand card opens the **big card** next to the hand, with what it costs and
   why ("Base cost 4, plus 3 for the 3 Residential tier 1 cards already in your city"), and
-  **Play card** and **Close**. Selecting a marketplace card (S4.1) or a card in your city opens
+  **Play card**, **Sell** and **Close**; **Sell** asks "Sell for 1 fund?" and then sells only that
+  card, as one sell action (R5.1). Selecting a marketplace card (S4.1) or a card in your city opens
   the big card in the same place with the card's base cost and **Close** only; selecting a card in
   another player's city shows it the same way inside their detailed summary table (S3.2). Until your own main phase
   starts (S4.4), the big card is shown over your stats and hand instead, so it never covers the
   marketplace, its **Draw** button or the market go panel; closing it keeps the marketplace card
   selected for **Draw** (S4.3). The big card's title bar
-  has its sector colour as background (S1.5). A type that the card counts twice (R12.1) is shown
+  has the same background as its stats bar, both more transparent than other panels, and its
+  picture has a thin black border. Its stat numbers show a + before what the card gives and a −
+  before what it uses up (R3.4). A type that the card counts twice (R12.1) is shown
   as its icon twice, in every place that shows a card's types (also the card set, S14.3). Selecting another hand card shows that card in full, with its own photo, within 100 ms
   of the click as a rule (the median of the clicks is under 100 ms) and never later than 300 ms
   after it: the photos of the cards in your hand are loaded in the background. The selection
@@ -230,7 +282,9 @@ None yet.
   first action, a **Redraw hand** button shows how many redraws are left ("Redraw hand (3
   left)"); pressing it redraws at once, without asking (R17.12), and the button goes away after
   your first action or your third redraw. Buttons for actions you cannot take are disabled. Once
-  you have played a card this turn, **End turn** is highlighted until you end your turn. Ending
+  you have played a card this turn, **End turn** is highlighted until you end your turn.
+  **Claim all** is highlighted while its number is above 0, and **Projects** while the view says
+  you can complete a project now. **Use influence** shows your influence with its icon. Ending
   your turn claims your ready combos for you first (R8.5).
   Projects and Use influence always open their pop-ups (S8.2, S8.3), where each action is disabled
   when you cannot take it (Q32).
@@ -249,8 +303,14 @@ None yet.
   - each card-name combo printed on it is highlighted red when the card it needs is in your
     city, and orange when that card is in your hand but not in your city.
 
+  - pointing at a card-name combo's card number, or focusing it, shows the name of the card it
+    needs.
+
   The client works this out from your city, hand and combos in the view (with what each has
   claimed) and the card data; it decides nothing (`rules/frontend.md`).
+- **S6.10** **A hand card's combos:** when the big card shows a card from your hand, each combo
+  printed on it that playing it would make ready now is highlighted, an infinite one with how
+  many times it would be claimed ("×3"). This too is a lookup in the view and the card data.
 
 ## S7. Game log and chat in a game
 
@@ -262,7 +322,9 @@ None yet.
   the marketplace card taken or the sector chosen; and discard shuffles. Once each main phase
   ends, it also lists what each player did in it (M3.7): the cards they played, by name, the
   quests and projects they completed, the influence actions they used, and their redraws of the
-  starting hand ("Ann redrew their starting hand 2 times"), with stats as icons (S1.6).
+  starting hand ("Ann redrew their starting hand 2 times"), with stats as icons (S1.6). At the
+  start of every turn from turn 2 on, it lists the rows of the Last turn panel (S5.5): quests and
+  projects completed, income gained and Support.
 - **S7.3** **Chat** shows the messages since you joined, each with the sender, time and a **Mute**
   link; your own messages are highlighted; joins, leaves and similar events appear as grey lines:
   a player joined the room, left the room or left the game (also after 3 time-outs, R9.11), and
@@ -284,14 +346,16 @@ None yet.
 - **S8.1** **Claim all combos** lists each ready combo and its reward, and the total workforce,
   quality and satisfaction you will get, before you confirm. Needs, rewards and totals show their
   types and stats as icons (S1.6).
-- **S8.2** **Projects** shows each project with its need (8 of its stat and at least 10 income,
-  R16.2), what you have, and a **Complete** button
-  when you can complete it; whether the first-completion bonus is still possible; and when it
-  would be your 3rd project, the extra income and card.
+- **S8.2** **Projects** shows each project with its picture, its need (8 of its stat and at least
+  10 income, R16.2), what you have, its reward, and a **Complete** button when you can complete
+  it.
 - **S8.3** **Use influence** shows your influence and funds; every influence action of
   `influence-actions.txt` that is not a draw action as a tile, in the order of the file, with its
   costs and gains as written there, its uses left, "unlimited uses", "used", or what you are
-  missing; and the draw actions as a table of 5 kinds by the tiers the file has draw actions for,
+  missing. A tile's background shows its limit: actions with `no limit` have one background and
+  limited actions (`1 per game`, `N per game`) another; and its colours also show whether you can
+  take it now or not, besides its disabled state (colours from the design tokens); and the draw
+  actions as a table of 5 kinds by the tiers the file has draw actions for,
   with their costs, showing "None left" for kinds and tiers not in the deck or
   discard pile as you see them (R15.3). Every stat in the pop-up (in trades, costs, what you are
   missing, and your influence and funds) is shown as its icon (S1.6), never as a word. In the draw
@@ -315,8 +379,12 @@ None yet.
   after a pause, and who gets free time (R9.13).
 - **S9.5** The **end-of-game screen** has a version for each ending: end goal reached, turn limit,
   last player left (M6.8), and abandoned. It shows the winner and why the game ended, and a table
-  of every player: place, result, score, end goal reached, income, funds plus hand, bonus-type
-  points, and in a ranked game the rating before and after. An abandoned game shows no table.
+  of every player: place, result, score, end goal reached, the Q, T, C and F boxes (S3.1), and
+  in a ranked game the rating before and after. Each player's score is explained part by part,
+  as in R21.4: income, workforce, quality, satisfaction, product, distribution, whole funds plus
+  hand, and bonus-type points, each with its points, adding up to the score. A line under the
+  table says how places are decided (R21.8, R21.9). A player who left is shown with the score of
+  their values when they left (A3.3). An abandoned game shows no table.
   Buttons: Exit to lobby, Ask for a rematch (when possible) and Close.
 
 ## S10. Lobby
@@ -408,6 +476,9 @@ None yet.
   | `email_invalid` | Enter a whole email address, such as name@example.com. |
   | `password_invalid` | Use 8 to 64 characters for the password. |
   | `username_change_too_soon` | You can change your username at most 4 times in 7 days. |
+  | `unknown_icon` | That picture is not one of the player icons. |
+  | `icon_colors_too_alike` | These colours are too alike. Choose colours with more contrast. |
+  | `icon_change_too_soon` | You can change your icon at most 10 times in 24 hours. |
   | `email_not_confirmed` | No account has confirmed this email address. |
   | `email_limit_reached` | No more emails can be sent for this account or to this address today. Try again after 00:00 UTC. |
   | `password_wrong` | Wrong password. |
@@ -453,7 +524,11 @@ None yet.
   everyone else. **Forgot password** (from Log in, S12.2) asks for the email address with the
   human check, then says to check that email and its spam folder (A1.7).
 - **S12.5** **Account settings** shows the username (disabled, with the next allowed date, after
-  4 changes in 7 days, A2.4), the email address with its confirmation, a pending change, **Change email address**,
+  4 changes in 7 days, A2.4), the player icon with **Change icon** (A2.6), which opens a picker:
+  every picture of the folder as a button named by the picture, a background colour and a
+  picture colour, a preview, and **Save**, disabled with "These colours are too alike." while
+  the contrast is under 3:1, and with the time of the next allowed change after 10 changes in
+  24 hours; the email address with its confirmation, a pending change, **Change email address**,
   **Log out** and **Delete account**. Guests see **Sign up** instead of email. A removed email
   address is explained, with **Add an email address** (A1.11). An unconfirmed address offers
   **Send it again**. Signup and account settings link to the privacy notice (S12.8).
@@ -463,8 +538,9 @@ None yet.
   **Sign up to keep your account** first. It is the same in the lobby, a waiting room and a game.
   Opening it, or anything in it, during a game does not pause anything (C1.3); a guest who logs
   out gets the warning of S12.6 first.
-- **S12.8** The **privacy notice** page shows the text of A12.1 with the contact address, and a
-  way back to where the player came from. Anyone can open it, also when not logged in.
+- **S12.8** The **privacy notice** page shows the text of A12.1 with the contact address, the
+  picture credits with each artist's name and the licence, and a way back to where the player
+  came from. Anyone can open it, also when not logged in.
 
 ## S13. Records
 
@@ -476,7 +552,7 @@ None yet.
   date the game ended, in the viewer's local time.
 - **S13.2** The **game record** shows when the game started and ended, how long it took, the turns,
   the winner, the bonus types and casual or ranked, and a column per player with every value of
-  A3.2. Deleted accounts show "Deleted player". A player who left shows the turn they left in
+  A3.2, the Q, T, C and F counts as the boxes of S3.1. Deleted accounts show "Deleted player". A player who left shows the turn they left in
   ("left (turn 20)"), with their values at that moment (A3.3). Times are the viewer's local time.
 - **S13.3** The **ELO ranking** shows 50 players per page with place, username, rating and ranked
   games, page buttons, and **Jump to me**. Your row is highlighted whenever it is on the shown
@@ -521,7 +597,7 @@ None yet.
   under the text. Section titles, in the contents, the headings, "See also" and the previous and
   next buttons, are written as words, since they name sections. In the rulebook's text, tables
   and score formula, every stat name (fund or funds, income, influence, workforce, quality,
-  satisfaction, product, distribution, bonus, build pass or build passes) is shown as its icon
+  satisfaction, product, distribution, build pass or build passes) is shown as its icon
   (S1.6), and every type is shown as its icon; `rulebook.md` writes each type name meant as a
   type as inline code (`` `Farm` ``), since a type name is also a sector name (Service) or part
   of a card or quest name (Q157). The influence action table and the quest list tables are made
@@ -537,11 +613,13 @@ None yet.
 
 - **S15.1** The tutorial uses the game screen without opponents, timers or chat. The top bar shows
   "Tutorial · turn N" and **Leave tutorial**.
-- **S15.2** The left column shows the **tutorial text box**: "Step N of 19", the step's text from
+- **S15.2** The **tutorial text box** shows "Step N of 19", the step's text from
   `tutorial.md`, the action asked for, **Continue** on text-only steps (**Finish** on the last),
   and **Restart**, as S15.5 to S15.7 say. The part of the screen the step is about is
   highlighted (a card, a button, a sector or a quest; the hand and the stats on T1.1, the
-  marketplace and the market go on T2.1), and the side of the table it is not on cannot be
+  marketplace and the market go on T2.1). The step's message is shown right next to the
+  highlighted part, with an arrow pointing at it; while a message waits for **Continue**, the
+  rest of the screen is greyed out a little. The side of the table the step is not on cannot be
   used: on a hand, action or claim step only the hand and actions side, on a marketplace,
   sector or quest step only the middle, on a text step neither. Another choice on the side
   that can be used is answered with Not this step (S15.3). **Restart** starts the tutorial
@@ -633,9 +711,6 @@ None yet.
   | `invalid_token` | Your guest session has ended. Enter your name again. (The start page opens.) |
   | `malformed_message`, `unknown_action`, and any other code a game move cannot get (`room_not_found`, `room_full`, `room_not_waiting`, `invalid_room_size`) | Something went wrong. The page reloads your game. |
   | `wrong_protocol_version` | A new version is available: reload. |
-- **S16.4** **Income notice:** whenever your income goes up (R13, R16), a notice reads "Your
-  [income icon] has increased!" (S1.6), with a close button. It closes by itself after
-  3 seconds.
 
 ## S17. Known differences in the design
 

@@ -1,4 +1,5 @@
 import { gameStartInJoinOrder } from "../../simulator/gameStartInJoinOrder.ts";
+import { identityWithDefaultIcon } from "../../../src/server/accounts/identityWithDefaultIcon.ts";
 import { randomUUID } from "node:crypto";
 import * as v from "valibot";
 import type { GameState } from "../../../src/rules/GameState.ts";
@@ -127,7 +128,7 @@ export class RoomSession {
     }
     const names = [...this.seatNames, ...(given.accounts ?? []).map(({ name }) => name)];
     this.accounts = new Map(
-      names.map((name) => [name, { playerId: v.parse(PlayerId, randomUUID()), name }]),
+      names.map((name) => [name, identityWithDefaultIcon(v.parse(PlayerId, randomUUID()), name)]),
     );
     const players = this.seatNames.map((name) => this.identityNamed(name));
     this.accounts.forEach(({ playerId }) => {
@@ -165,6 +166,7 @@ export class RoomSession {
           seat: seat.seat,
           playerId: players[index]?.playerId ?? this.identityNamed("Seat 1").playerId,
           name: players[index]?.name ?? "Seat 1",
+          icon: players[index]?.icon ?? this.identityNamed("Seat 1").icon,
           stateVersion: given.seats?.find((entry) => entry.seat === seat.seat)?.state_version ?? 0,
           acceptedActionIds: [],
         })),
@@ -177,7 +179,7 @@ export class RoomSession {
     if (known !== undefined) {
       return known;
     }
-    const identity = { playerId: v.parse(PlayerId, randomUUID()), name };
+    const identity = identityWithDefaultIcon(v.parse(PlayerId, randomUUID()), name);
     this.accounts.set(name, identity);
     return identity;
   }

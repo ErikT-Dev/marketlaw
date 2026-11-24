@@ -33,12 +33,8 @@ function namesStillPlaying(view: PlayerView, playerNames: ReadonlyArray<string>)
 
 export function RightColumn(props: Props) {
   const { view, seat, playerNames, pendingActions, lookedAt, onLookAt, onAction } = props;
-  const { choice, selected, pressCard, clear, playSelected, sell } = useHandBesideLookedAt(
-    seat.hand,
-    onAction,
-    lookedAt,
-    onLookAt,
-  );
+  const { choice, selected, pressCard, clear, playSelected, sell, sellSelected } =
+    useHandBesideLookedAt(seat.hand, onAction, lookedAt, onLookAt);
   const [dialog, setDialog] = useState<OpenDialog>("none");
   const isBusy = pendingActions.length > 0;
   const selectedDetails = seat.handDetails.find((details) => details.card === selected);
@@ -67,8 +63,6 @@ export function RightColumn(props: Props) {
       <ProgressDialogs
         dialog={dialog}
         seat={seat}
-        view={view}
-        playerNames={playerNames}
         isBusy={isBusy}
         onAction={onAction}
         onClose={() => {
@@ -83,6 +77,7 @@ export function RightColumn(props: Props) {
         isBusy={isBusy}
         isOverStatsAndHand={view.phase === "market"}
         onPlay={playSelected}
+        onSell={sellSelected}
         onClose={clear}
         onLookAt={onLookAt}
       />

@@ -13,7 +13,14 @@ import { tutorialRoomThen } from "./tutorialRoomThen.ts";
 import { TutorialSession } from "./TutorialSession.ts";
 
 const TUTORIAL_GAME_FIELDS = ["seats", "turn", "marketplace", "quests", "bonus_types"];
-const TUTORIAL_SEAT_FIELDS = new Set(["seat", "stats", "hand", "city", "quests_completed"]);
+const TUTORIAL_SEAT_FIELDS = new Set([
+  "seat",
+  "stats",
+  "build_passes",
+  "hand",
+  "city",
+  "quests_completed",
+]);
 
 function playerOf(step: Readonly<Record<string, unknown>>): string {
   if (typeof step["player"] !== "string") {

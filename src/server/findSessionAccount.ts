@@ -1,4 +1,5 @@
 import * as v from "valibot";
+import { storedPlayerIconOf } from "./accounts/storedPlayerIconOf";
 import { PlayerId } from "../shared/PlayerId";
 import { loginStateOf } from "./accounts/loginStateOf";
 import type { SessionAccount } from "./SessionAccount";
@@ -6,6 +7,7 @@ import type { SessionAccount } from "./SessionAccount";
 const LOGIN_ROW = v.object({
   id: PlayerId,
   name: v.string(),
+  icon: v.unknown(),
   kind: v.picklist(["guest", "registered"]),
   last_used_ms: v.number(),
 });
@@ -17,7 +19,7 @@ export async function findSessionAccount(
 ): Promise<SessionAccount | null> {
   const row = await db
     .prepare(
-      "SELECT players.id AS id, players.name AS name, players.kind AS kind, logins.last_used_ms AS last_used_ms FROM logins JOIN players ON players.id = logins.player_id WHERE logins.token_hash = ?",
+      "SELECT players.id AS id, players.name AS name, players.icon AS icon, players.kind AS kind, logins.last_used_ms AS last_used_ms FROM logins JOIN players ON players.id = logins.player_id WHERE logins.token_hash = ?",
     )
     .bind(tokenHash)
     .first();
@@ -36,7 +38,11 @@ export async function findSessionAccount(
       .run();
   }
   return {
-    identity: { playerId: parsed.output.id, name: parsed.output.name },
+    identity: {
+      playerId: parsed.output.id,
+      name: parsed.output.name,
+      icon: storedPlayerIconOf(parsed.output.icon, parsed.output.id),
+    },
     isGuest: parsed.output.kind === "guest",
   };
 }

@@ -10,9 +10,9 @@ describe("the busy-day simulator", () => {
       alarm: 480,
       lobby: 992,
       queue: 262,
-      database: 1830,
+      database: 2030,
     });
-    expect(busyDayTotal(written)).toBe(4194);
+    expect(busyDayTotal(written)).toBe(4394);
   });
 
   it("counts the rows the rooms, the lobby, the queue, the tutorials and the token lookups read outside the games", () => {

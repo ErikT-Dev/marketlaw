@@ -17,7 +17,8 @@ None yet.
 
 ## T0. Setup
 
-- **T0.1** Starting stats as in R2.1: funds 7, income 3, influence 0, all other stats 0.
+- **T0.1** Starting stats as in R2.1: funds 7.0, income 3, influence 0, all other stats 0, and
+  2 build passes (R4.6).
 - **T0.2** Starting hand (7 cards): Row House, Stone Quarry, Liquor Shop, Library, Cottage, Pub,
   Hiking Trail.
 - **T0.3** Quests table: Trading post, Working district, Green city, Fishing village.
@@ -58,12 +59,12 @@ None yet.
   satisfaction, so those dropped below zero. While any of them is negative, you cannot earn
   income."
 - **T1.3** Action: **sell Hiking Trail**. Text before: "Every card you play uses a build pass. You
-  get 1 every turn and keep the ones you don't use. Cards you don't need can be sold for 1 fund
+  start with 2, get 1 more every turn and keep the ones you don't use. Cards you don't need can be sold for 1 fund
   each. Sell Hiking Trail." After: funds 4.
 - **T1.4** Action: **end your turn**. Text before: "End your turn when you are done." After the
-  end-of-turn steps: turn 2, funds 7, influence 1, bonus 1. Text: "At the end of every turn you
-  get your income in funds, 1 influence, and bonus from your stats. Every full 10 bonus turns
-  into 1 fund."
+  end-of-turn steps: turn 2, funds 7.1, influence 1. Text: "At the end of every turn you get
+  your income in funds, 1 influence, and a little more from your stats: each workforce, quality
+  or satisfaction adds 0.1 fund."
 
 ## T2. Turn 2: the market and combos
 
@@ -74,11 +75,11 @@ None yet.
   gives Elementary School. Text after: "Fire Station is yours, and you drew Elementary School
   from the deck. Cards marked new arrived this turn."
 - **T2.3** Action: **play Fire Station**. Text before: "Public cards bring quality or
-  satisfaction. Play Fire Station." After: funds 3, workforce 3, quality 0, satisfaction −1.
+  satisfaction. Play Fire Station." After: funds 3.1, workforce 3, quality 0, satisfaction −1.
 - **T2.4** Action: **claim all**. Text before: "Cards have combos. Row House gives +1 quality
   when you have a Safety card, and Fire Station is a Safety card. Claim all ready combos." After:
   quality 1.
-- **T2.5** Action: **end your turn**. After: turn 3, funds 6, influence 2, bonus 4.
+- **T2.5** Action: **end your turn**. After: turn 3, funds 6.4, influence 2.
 
 ## T3. Turn 3: drawing from the deck
 
@@ -87,35 +88,36 @@ None yet.
   and Tennis Court.
 - **T3.2** Action: **play Public Playground**. Text before: "Each card costs 1 more for every
   card of the same sector and tier already in your city. Public Playground costs 5 now, not 4."
-  After: funds 1, workforce 3, quality 1, satisfaction 1. Text: "No stat is negative any more."
-- **T3.3** Action: **end your turn**. After: turn 4, funds 4, influence 3, bonus 9.
+  After: funds 1.4, workforce 3, quality 1, satisfaction 1. Text: "No stat is negative any more."
+- **T3.3** Action: **end your turn**. After: turn 4, funds 4.9, influence 3.
 
 ## T4. Turn 4: product
 
 - **T4.1** Action: **take Orchard** from the marketplace (turn draw option A). The deck draw
   gives Extensive Wheat Farm.
 - **T4.2** Action: **play Orchard**. Text before: "Industry cards make product. Play Orchard."
-  After: funds 0, workforce 1, quality 1, satisfaction 0, product 1. Text: "Income needs product
+  After: funds 0.9, workforce 1, quality 1, satisfaction 0, product 1. Text: "Income needs product
   and distribution together. Service cards make distribution."
-- **T4.3** Action: **end your turn**. After: turn 5, funds 4, influence 4, bonus 5. Text: "Your
-  bonus passed 10, so 10 bonus became 1 fund."
+- **T4.3** Action: **end your turn**. After: turn 5, funds 4.5, influence 4. Text: "Product adds
+  the most at the end of a turn: 0.4 fund each, so your stats added 0.6 this time."
 
 ## T5. Turn 5: income and quests
 
 - **T5.1** Action: **turn draw option B, sector Service**. The draw gives Cafe and Night Club.
 - **T5.2** Action: **play Liquor Shop**. Text before: "Liquor Shop is a Service card. Play it."
   After: income turns on by itself: product 0, distribution 0, income 4, and 1 card is drawn
-  (Small Home). Funds 0, workforce 0, quality 0, satisfaction 0. Text: "1 product and
+  (Small Home). Funds 0.5, workforce 0, quality 0, satisfaction 0. Text: "1 product and
   1 distribution became +1 income and a new card. This happens by itself whenever you have both
   and no stat is negative."
 - **T5.3** Action: **complete Trading post**. Text before: "Quests on the table give rewards to
   every player who meets them. Trading post needs income 4 and the Retail type. Liquor Shop has
-  the Retail type. Complete it." After: funds 1, influence 6. Text: "Each quest stays a few turns, and any
-  player can complete it once."
+  the Retail type. Complete it." After: funds 1.5, influence 7. Text: "You were the first to
+  complete it, so you got 1 influence more. Each quest stays a few turns, and any player can
+  complete it once."
 - **T5.4** Text: "Two more things to know. Projects: when you collect 8 quality, 8 satisfaction or
   8 workforce and have at least 10 income, you can complete a project for income, funds and
   influence. The game ends after
-  the turn in which a player has income 22 and all 3 projects; then the highest score wins. In a
+  the turn in which a player has income 20 and all 3 projects; then the highest score wins. In a
   real game, you play against 1 to 3 other players at the same time, and every turn has a time
   limit. You can read all the rules any time from the menu." The player finishes, and the
   tutorial ends (C4.6).

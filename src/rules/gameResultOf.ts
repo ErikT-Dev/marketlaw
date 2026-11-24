@@ -1,21 +1,25 @@
 import type { GameEnding } from "../shared/GameEnding";
 import type { GameResult } from "../shared/GameResult";
 import type { PlaceResult } from "../shared/PlaceResult";
+import { wholeFundsOf } from "../shared/wholeFundsOf";
 import { cardsInHandScoredOf } from "./cardsInHandScoredOf";
 import { bonusTypePointsOf } from "./bonusTypePointsOf";
 import type { GameState } from "./GameState";
 import { hasReachedEndGoal } from "./hasReachedEndGoal";
 import { playerOrderOf } from "./playerOrderOf";
 import { scoreOf } from "./scoreOf";
+import { scorePartsOf } from "./scorePartsOf";
+import { summaryCountsOf } from "./summaryCountsOf";
 
 function rankOf(state: GameState, place: PlaceResult): ReadonlyArray<number> {
-  const doneIndex = state.doneOrder.indexOf(place.seat);
   const orderIndex = playerOrderOf(state).indexOf(place.seat);
+  const worthGained = state.seats.find((seat) => seat.seat === place.seat)?.worthGained ?? 0;
   return [
     place.leftInTurn === null ? 0 : 1,
     -state.leaveOrder.indexOf(place.seat),
+    place.hasReachedEndGoal ? 0 : 1,
     -place.score,
-    doneIndex === -1 ? state.seats.length : doneIndex,
+    -worthGained,
     orderIndex === -1 ? state.seats.length : orderIndex,
     place.seat,
   ];
@@ -29,14 +33,17 @@ function compareRanks(first: ReadonlyArray<number>, second: ReadonlyArray<number
 export function gameResultOf(state: GameState, endedBy: GameEnding): GameResult {
   const places = state.seats.map((seat) => {
     const bonusTypePoints = bonusTypePointsOf(seat, state.bonusTypes);
+    const scorePartsInHundredths = scorePartsOf(seat, bonusTypePoints);
     return {
       seat: seat.seat,
-      score: scoreOf(seat, state.turn, bonusTypePoints),
+      score: scoreOf(scorePartsInHundredths),
+      scorePartsInHundredths,
       bonusTypePoints,
       leftInTurn: seat.departure?.turn ?? null,
       hasReachedEndGoal: hasReachedEndGoal(seat),
       income: seat.stats.income,
-      fundsAndHand: seat.stats.funds + cardsInHandScoredOf(seat),
+      fundsAndHand: wholeFundsOf(seat.stats.funds) + cardsInHandScoredOf(seat),
+      counts: summaryCountsOf(seat),
     };
   });
   return {

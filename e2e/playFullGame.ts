@@ -15,7 +15,9 @@ async function expectGameOverAtTheTurnLimit(players: ReadonlyArray<Player>) {
     const dialog = page.getByRole("dialog", { name: / wins!$/ });
     await expect(dialog).toBeVisible();
     await expect(dialog).toContainText("Nobody reached the end goal by turn 40, the last turn");
-    await expect(dialog.getByRole("row")).toHaveCount(players.length + 1);
+    await expect(dialog.getByRole("table", { name: "Places" }).getByRole("row")).toHaveCount(
+      players.length + 1,
+    );
   }
 }
 

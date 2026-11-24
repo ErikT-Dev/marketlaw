@@ -1,3 +1,4 @@
+import { PictureCredits } from "./PictureCredits";
 import styles from "./PrivacyNotice.module.css";
 
 export function PrivacyNoticeParts() {
@@ -6,7 +7,7 @@ export function PrivacyNoticeParts() {
       <section aria-labelledby="privacy-stored" className={styles["part"]}>
         <h2 id="privacy-stored">What is stored and why</h2>
         <ul>
-          <li>Your username and account, to know who is playing.</li>
+          <li>Your username, your player icon and account, to know who is playing.</li>
           <li>
             For registered users: your email address (and a new one waiting for confirmation), only
             to confirm it and to send password resets, and a one-way hash of your password, to log
@@ -47,12 +48,13 @@ export function PrivacyNoticeParts() {
           service sends the emails and sees your email address.
         </p>
       </section>
+      <PictureCredits />
       <section aria-labelledby="privacy-choices" className={styles["part"]}>
         <h2 id="privacy-choices">Your choices</h2>
         <p>
-          See and change your username and email address in account settings, and delete your
-          account there: your email address and password hash are removed at once. For anything
-          else, write to the contact address.
+          See and change your username, player icon and email address in account settings, and
+          delete your account there: your email address and password hash are removed at once. For
+          anything else, write to the contact address.
         </p>
       </section>
     </>

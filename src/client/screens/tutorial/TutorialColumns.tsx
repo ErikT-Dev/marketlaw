@@ -22,7 +22,11 @@ export function TutorialColumns({ view, mine, playerNames, focus, ...props }: Pr
   const [lookedAt, setLookedAt] = useState<LookedAtCard | null>(null);
   return (
     <>
-      <div className={styles["column"]} inert={focus.usableColumn !== "middle"}>
+      <div
+        className={styles["column"]}
+        inert={focus.usableColumn !== "middle"}
+        data-tutorial-column
+      >
         <MiddleColumn
           view={view}
           seat={mine}
@@ -33,7 +37,7 @@ export function TutorialColumns({ view, mine, playerNames, focus, ...props }: Pr
           onAction={props.onAction}
         />
       </div>
-      <div className={styles["column"]} inert={focus.usableColumn !== "right"}>
+      <div className={styles["column"]} inert={focus.usableColumn !== "right"} data-tutorial-column>
         <RightColumn
           view={view}
           seat={mine}

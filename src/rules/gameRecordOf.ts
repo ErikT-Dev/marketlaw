@@ -29,6 +29,7 @@ function seatRecordOf(place: PlaceResult, index: number, seat: SeatState): SeatR
     questsCompleted: seat.questsCompleted.length,
     comboGains: comboGainsOf(seat),
     typeCounts: typeCountsOf(seat),
+    counts: place.counts,
   };
 }
 

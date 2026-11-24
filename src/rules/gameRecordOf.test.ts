@@ -40,7 +40,7 @@ describe("gameRecordOf", () => {
   it("records every seat's result and values in place order", () => {
     const state = gameOf(2, 40, {
       stats: {
-        funds: 10,
+        funds: 100,
         income: 15,
         influence: 4,
         workforce: 3,
@@ -48,7 +48,6 @@ describe("gameRecordOf", () => {
         satisfaction: -1,
         product: 1,
         distribution: 2,
-        bonus: 0,
       },
       gainedTypes: { Farm: 2 },
       projects: ["workforce"],
@@ -71,7 +70,7 @@ describe("gameRecordOf", () => {
       result: "won",
       place: 1,
       leftInTurn: null,
-      score: 4,
+      score: 109,
       hasReachedEndGoal: false,
       income: 15,
       fundsAndHand: 10,
@@ -86,6 +85,7 @@ describe("gameRecordOf", () => {
       questsCompleted: 2,
       comboGains: { workforce: 0, quality: 3, satisfaction: 1 },
       typeCounts: { Farm: 2 },
+      counts: { questsCompleted: 2, types: 2, combosClaimed: 4, worthGained: 140 },
     });
   });
 
@@ -99,7 +99,7 @@ describe("gameRecordOf", () => {
       result: "left",
       place: 3,
       leftInTurn: 12,
-      score: 616,
+      score: 21,
       fundsAndHand: 9,
     });
   });

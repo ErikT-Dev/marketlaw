@@ -1,4 +1,5 @@
 import * as v from "valibot";
+import { TEST_PLAYER_ICON } from "../../../src/shared/testing/TEST_PLAYER_ICON.ts";
 import { describe, expect, it } from "vitest";
 import { keptReplayRecordText } from "../../../src/server/replays/keptReplayRecordText.ts";
 import { removeOldReplayRecords } from "../../../src/server/replays/removeOldReplayRecords.ts";
@@ -15,7 +16,7 @@ const ONE_SECOND_MS = 1000;
 function roomEndedAt(code: string, endedMs: number): RoomRecord {
   return lobbyRoomFromGiven(
     { code, size: 2, public: true, players: [], state: "ended", ended_ms: endedMs },
-    (name) => ({ playerId: v.parse(PlayerId, crypto.randomUUID()), name }),
+    (name) => ({ playerId: v.parse(PlayerId, crypto.randomUUID()), name, icon: TEST_PLAYER_ICON }),
     v.parse(EpochMs, 0),
   );
 }

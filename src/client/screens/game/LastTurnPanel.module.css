@@ -1,0 +1,156 @@
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+  min-height: 0;
+  max-height: 160px;
+  padding: var(--space-md);
+  border: 1px solid var(--color-board-last-turn-border);
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--color-panel-base) 92%, transparent);
+  box-sizing: border-box;
+}
+
+.title {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-panel-title);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.nothing {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 13px;
+}
+
+.boxes {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  min-height: 0;
+  overflow: auto;
+}
+
+.box {
+  min-width: 0;
+  padding: var(--space-sm) 10px;
+  border: 1px solid var(--color-panel-border);
+  border-radius: var(--space-sm);
+  background: var(--color-panel-raised);
+}
+
+.boxTitle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 6px;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.boxIcon {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+}
+
+.rows {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--color-text-secondary);
+  font-size: 13px;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.player,
+.you {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-bold);
+}
+
+.you {
+  color: var(--color-board-last-turn-you);
+}
+
+.what {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  color: var(--color-text-primary);
+}
+
+.gain {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 3px;
+  color: color-mix(in srgb, var(--color-board-last-turn-gain) 55%, white);
+  font-weight: var(--font-weight-bold);
+}
+
+.icon {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+}
+
+@media (max-height: 800px) {
+  .panel {
+    gap: var(--space-xs);
+    padding: var(--space-xs) 10px 6px;
+  }
+
+  .title {
+    font-size: var(--font-size-xs);
+  }
+
+  .boxes {
+    overflow: visible;
+  }
+
+  .box {
+    max-height: 52px;
+    padding: 3px var(--space-sm);
+    box-sizing: border-box;
+    overflow: auto;
+  }
+
+  .boxTitle {
+    margin-bottom: 1px;
+    font-size: 11px;
+    letter-spacing: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .boxIcon {
+    width: 14px;
+    height: 14px;
+  }
+
+  .rows {
+    gap: 2px;
+    font-size: var(--font-size-xs);
+  }
+}

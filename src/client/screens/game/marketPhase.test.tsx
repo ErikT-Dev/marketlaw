@@ -40,21 +40,21 @@ function marketplace() {
 }
 
 describe("the marketplace", () => {
-  it("shows the 8 places in order with their cards or Empty until next turn", () => {
+  it("shows the 8 places in order with their cards and turns left or Empty until next turn", () => {
     showGame({ marketGo: 3 });
     expect(
       marketplace()
         .getAllByRole("listitem")
         .map((place) => place.textContent),
     ).toEqual([
-      "ResidentialTier 1Log House",
+      "ResidentialTier 1Log House2 turns left",
       "IndustryEmpty until next turn",
       "ServiceEmpty until next turn",
-      "PublicTier 1Trauma Center",
-      "PublicTier 1Green Park",
-      "Open place 1Tier 2Law Firm",
-      "Open place 2Tier 2Saw Mill",
-      "Open place 3Tier 3Idyllic View Condominium",
+      "PublicTier 1Trauma Center1 turn left",
+      "PublicTier 1Green Park1 turn left",
+      "Open place 1Tier 2Law Firm2 turns left",
+      "Open place 2Tier 2Saw Mill2 turns left",
+      "Open place 3Tier 3Idyllic View Condominium2 turns left",
     ]);
     expect(
       marketplace()
@@ -63,6 +63,20 @@ describe("the marketplace", () => {
     ).toEqual(["quality", "satisfaction"]);
     fireEvent.click(marketplace().getByRole("button", { name: "Law Firm" }));
     expect(marketplace().queryByRole("button", { name: "Draw" })).toBeNull();
+  });
+
+  it("says a card that has had its last market phase leaves next turn", () => {
+    showGame({
+      phase: "main",
+      marketplace: MARKETPLACE.map((slot) =>
+        slot.card === "Trauma Center" ? { ...slot, phasesShown: 2 } : slot,
+      ),
+    });
+    expect(
+      marketplace()
+        .getAllByRole("listitem")
+        .map((place) => place.textContent),
+    ).toContain("PublicTier 1Trauma CenterLeaves next turn");
   });
 
   it("shows the bonus types with their points, the deck and the discard pile", () => {

@@ -1,4 +1,7 @@
 import { startSavedGame } from "../../rules/startSavedGame";
+import { iconOfOlderAccount } from "../accounts/iconOfOlderAccount";
+import type { PlayerId } from "../../shared/PlayerId";
+import type { Identity } from "./Identity";
 import type { GameKind } from "../../shared/GameKind";
 import type { SeatNumber } from "../../shared/SeatNumber";
 import type { GameStart } from "./GameStart";
@@ -8,8 +11,14 @@ import { roomSizeOf } from "./roomSizeOf";
 
 const SEAT_NUMBERS: ReadonlyArray<SeatNumber> = [1, 2, 3, 4];
 
-function nameOf(record: RoomRecord, playerId: string): string {
-  return record.players.find((player) => player.playerId === playerId)?.name ?? "";
+function identityOf(record: RoomRecord, playerId: PlayerId): Identity {
+  return (
+    record.players.find((player) => player.playerId === playerId) ?? {
+      playerId,
+      name: "",
+      icon: iconOfOlderAccount(playerId),
+    }
+  );
 }
 
 export function startRoomGame(
@@ -35,7 +44,8 @@ export function startRoomGame(
       seats: seatOrder.map((playerId, index) => ({
         seat: SEAT_NUMBERS[index] ?? 1,
         playerId,
-        name: nameOf(record, playerId),
+        name: identityOf(record, playerId).name,
+        icon: identityOf(record, playerId).icon,
         stateVersion: 0,
         acceptedActionIds: [],
       })),

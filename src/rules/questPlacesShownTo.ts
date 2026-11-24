@@ -2,12 +2,12 @@ import { questOf } from "../shared/ruleFiles/questOf";
 import type { QuestPlaceView } from "../shared/QuestPlaceView";
 import type { SeatNumber } from "../shared/SeatNumber";
 import type { GameState } from "./GameState";
-import { QUEST_TABLE_RULES } from "./QUEST_TABLE_RULES";
 import { negativeStatsOf } from "./negativeStatsOf";
 import { questNeedHave } from "./questNeedHave";
 import { questRejection } from "./questRejection";
 import { rejectionOf } from "./rejectionOf";
 import { seatShownTo } from "./seatShownTo";
+import { turnsOnTableOf } from "../shared/turnsOnTableOf";
 import { typeCountsOf } from "./typeCountsOf";
 
 export function questPlacesShownTo(
@@ -25,7 +25,8 @@ export function questPlacesShownTo(
     const { needs } = questOf(place.quest).terms;
     return {
       quest: place.quest,
-      turnsLeft: QUEST_TABLE_RULES.turnsOnTable - place.turnsOnTable + 1,
+      turnsLeft: place.isInExtraTurn ? 1 : turnsOnTableOf(place.quest) - place.turnsOnTable + 1,
+      isInExtraTurn: place.isInExtraTurn,
       completeRejection:
         rejectionOf(state, { type: "complete_quest", seat: viewer, quest: place.quest }) ?? null,
       progress: shownSeats.map(({ shown, typeCounts }) => ({

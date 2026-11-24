@@ -51,7 +51,6 @@ definitions:
       bonus_types: {type: array, items: {type: string}, minItems: 2, maxItems: 2}
       random: {type: array, items: {type: object, minProperties: 1, maxProperties: 1}}
       clock_ms: {type: integer}
-      first_completions: {type: array, items: {enum: [quality, satisfaction, workforce]}}
       paused: {type: boolean}
       last_vote_turn: {type: integer}
       room: {type: object}
@@ -93,7 +92,7 @@ definitions:
       combos_claimed: {type: array, items: {type: object}}
       played_this_turn: {type: boolean}
       redraws_used: {type: integer, minimum: 0, maximum: 3}
-      worth_gained: {type: integer, minimum: 0}
+      worth_gained: {type: number, minimum: 0}
       actions_this_turn: {type: integer, minimum: 0}
       done: {type: boolean}
       left: {type: boolean}
@@ -110,7 +109,7 @@ definitions:
     type: object
     additionalProperties: false
     properties:
-      funds: {type: integer}
+      funds: {type: number}
       income: {type: integer}
       influence: {type: integer}
       workforce: {type: integer}
@@ -118,7 +117,6 @@ definitions:
       satisfaction: {type: integer}
       product: {type: integer}
       distribution: {type: integer}
-      bonus: {type: integer}
   marketplace_place:
     type: object
     additionalProperties: false
@@ -173,6 +171,7 @@ definitions:
           tab: {type: integer}
           type: {type: string}
           jump_to_me: {type: boolean}
+          icon: {type: object}
   then:
     type: object
     additionalProperties: false
@@ -195,7 +194,6 @@ definitions:
       market_go: {type: object}
       paused: {type: boolean}
       done_order: {type: array, items: {type: integer}}
-      first_completions: {type: array, items: {enum: [quality, satisfaction, workforce]}}
       bonus_types: {type: array, items: {type: string}}
       view: {$ref: "#/definitions/view"}
       message_to: {type: object}
@@ -247,7 +245,7 @@ definitions:
       city: {type: array, items: {type: string}}
       type_counts: {type: object}
       build_passes: {type: integer}
-      worth_gained: {type: integer}
+      worth_gained: {type: number}
       influence_uses: {type: object}
       projects: {type: array}
       quests_completed: {type: array}
@@ -268,6 +266,7 @@ definitions:
           properties:
             quest: {type: string}
             seats: {type: array, items: {type: integer}}
+      last_turn: {type: object}
       vote_answers:
         type: object
         additionalProperties: false

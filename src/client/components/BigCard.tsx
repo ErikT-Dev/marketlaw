@@ -9,6 +9,7 @@ import styles from "./BigCard.module.css";
 import type { CardNameCombosShown } from "./CardNameCombosShown";
 import { CardNameWithCombos } from "./CardNameWithCombos";
 import { ComboLabel } from "./ComboLabel";
+import { SECTOR_STAT_EFFECTS } from "./SECTOR_STAT_EFFECTS";
 import { sectorColor } from "./sectorColor";
 import { TypeChip } from "./TypeChip";
 
@@ -16,6 +17,7 @@ type Props = {
   readonly card: Card;
   readonly realCost: number;
   readonly cardNameCombos?: CardNameCombosShown | undefined;
+  readonly comboReadyTimesOnPlay?: ReadonlyArray<number> | undefined;
 };
 
 const CARD_STATS = ["workforce", "satisfaction", "quality", "product", "distribution"] as const;
@@ -23,13 +25,15 @@ const CARD_STATS = ["workforce", "satisfaction", "quality", "product", "distribu
 function stripStats(
   card: Card,
   realCost: number,
-): ReadonlyArray<{ stat: StatName; value: number }> {
+): ReadonlyArray<{ stat: StatName; value: string }> {
+  const { gives } = SECTOR_STAT_EFFECTS[card.sector];
   return [
-    { stat: "tier", value: card.tier },
-    { stat: "cost", value: realCost },
-    ...CARD_STATS.map((stat) => ({ stat, value: card.stats[stat] })).filter(
-      ({ value }) => value > 0,
-    ),
+    { stat: "tier", value: String(card.tier) },
+    { stat: "cost", value: String(realCost) },
+    ...CARD_STATS.filter((stat) => card.stats[stat] > 0).map((stat) => ({
+      stat,
+      value: `${gives.includes(stat) ? "+" : "−"}${String(card.stats[stat])}`,
+    })),
   ];
 }
 
@@ -44,7 +48,7 @@ function typeIcons(card: Card): ReadonlyArray<{ type: TypeName; key: string }> {
   );
 }
 
-export function BigCard({ card, realCost, cardNameCombos }: Props) {
+export function BigCard({ card, realCost, cardNameCombos, comboReadyTimesOnPlay }: Props) {
   return (
     <article
       className={styles["bigCard"]}
@@ -54,7 +58,7 @@ export function BigCard({ card, realCost, cardNameCombos }: Props) {
       <div
         className={styles["header"]}
         style={{
-          background: sectorColor(card.sector, "solid"),
+          background: sectorColor(card.sector, "bar"),
           color: sectorColor(card.sector, "solid-text"),
         }}
       >
@@ -71,13 +75,13 @@ export function BigCard({ card, realCost, cardNameCombos }: Props) {
         alt=""
         style={{ background: sectorColor(card.sector, "solid") }}
       />
-      <div className={styles["strip"]} style={{ background: sectorColor(card.sector, 1) }}>
+      <div className={styles["strip"]} style={{ background: sectorColor(card.sector, "bar") }}>
         {stripStats(card, realCost).map(({ stat, value }) => (
           <span
             key={stat}
             className={styles["stat"]}
             role="img"
-            aria-label={`${STAT_ICONS[stat].label} ${String(value)}`}
+            aria-label={`${STAT_ICONS[stat].label} ${value}`}
           >
             <img src={iconUrl(STAT_ICONS[stat].file)} alt="" />
             <span aria-hidden="true" style={{ color: `var(--color-stat-${stat})` }}>
@@ -97,6 +101,7 @@ export function BigCard({ card, realCost, cardNameCombos }: Props) {
             key={String(printedIndex)}
             combo={combo}
             highlight={cardNameCombos?.comboHighlights[printedIndex] ?? "none"}
+            readyTimesOnPlay={comboReadyTimesOnPlay?.[printedIndex]}
           />
         ))}
       </div>

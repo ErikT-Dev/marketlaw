@@ -1,4 +1,5 @@
 import type { EpochMs } from "../EpochMs";
+import type { PlayerIconChoice } from "../playerIcons/PlayerIconChoice";
 import type { TutorialView } from "../TutorialView";
 
 export type TutorialUpdateMessage = {
@@ -7,6 +8,6 @@ export type TutorialUpdateMessage = {
   readonly acceptedActionId: string | null;
   readonly stateVersion: number;
   readonly view: TutorialView;
-  readonly playerIconColor: number;
+  readonly playerIcon: PlayerIconChoice;
   readonly serverNow: EpochMs;
 };

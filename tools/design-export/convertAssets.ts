@@ -1,8 +1,9 @@
 import { mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
-import { chromium, type Page } from "playwright-core";
+import { chromium } from "playwright-core";
 import { isRecord } from "../harness-check/isRecord.ts";
 import { DESIGN_EXPORT_PATHS } from "./DESIGN_EXPORT_PATHS.ts";
 import { readZipEntries } from "./readZipEntries.ts";
+import { toWebp } from "./toWebp.ts";
 
 const OUTPUT = "src/client/assets";
 const LIBRARY = `${DESIGN_EXPORT_PATHS.root}/library/library.penpot`;
@@ -59,38 +60,6 @@ function extractIcons(): number {
   return newestByName.size;
 }
 
-async function toWebp(
-  page: Page,
-  source: Buffer,
-  size: { width: number; height: number },
-): Promise<Buffer> {
-  const dataUrl = `data:image/jpeg;base64,${source.toString("base64")}`;
-  const encoded = await page.evaluate(
-    async ({ url, width, height, quality }) => {
-      const image = new Image();
-      image.src = url;
-      await image.decode();
-      const scale = Math.max(width / image.width, height / image.height);
-      const canvas = document.createElement("canvas");
-      canvas.width = width;
-      canvas.height = height;
-      const drawn = { width: image.width * scale, height: image.height * scale };
-      canvas
-        .getContext("2d")
-        ?.drawImage(
-          image,
-          (width - drawn.width) / 2,
-          (height - drawn.height) / 2,
-          drawn.width,
-          drawn.height,
-        );
-      return canvas.toDataURL("image/webp", quality);
-    },
-    { url: dataUrl, ...size, quality: WEBP_QUALITY },
-  );
-  return Buffer.from(encoded.replace(/^data:image\/webp;base64,/, ""), "base64");
-}
-
 async function convertPhotos(): Promise<number> {
   const browser = await chromium.launch();
   const page = await browser.newPage();
@@ -100,13 +69,16 @@ async function convertPhotos(): Promise<number> {
   for (const photo of photos) {
     const source = readFileSync(`${DESIGN_EXPORT_PATHS.assets}/cardImages/${photo}`);
     const name = photo.replace(/\.[a-z]+$/i, "");
-    writeFileSync(`${OUTPUT}/cards/${name}.webp`, await toWebp(page, source, PHOTO_SIZE));
+    writeFileSync(
+      `${OUTPUT}/cards/${name}.webp`,
+      await toWebp(page, source, PHOTO_SIZE, WEBP_QUALITY),
+    );
   }
   for (const background of BACKGROUNDS) {
     const source = readFileSync(`${DESIGN_EXPORT_PATHS.assets}/backgrounds/${background.source}`);
     writeFileSync(
       `${OUTPUT}/backgrounds/${background.output}.webp`,
-      await toWebp(page, source, background),
+      await toWebp(page, source, background, WEBP_QUALITY),
     );
   }
   await browser.close();

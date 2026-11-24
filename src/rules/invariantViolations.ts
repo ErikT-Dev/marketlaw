@@ -1,5 +1,5 @@
-import { BONUS_PER_FUND } from "./BONUS_PER_FUND";
 import { cardOf } from "../shared/catalogue/cardOf";
+import { fundsInTenths } from "../shared/fundsInTenths";
 import { decisionOf } from "./decisionOf";
 import { FIRST_TURN_FOR_HIGHER_TIERS } from "./FIRST_TURN_FOR_HIGHER_TIERS";
 import { gameEndViolations } from "./gameEndViolations";
@@ -8,12 +8,15 @@ import { isVoteAction } from "./isVoteAction";
 import type { GameAction } from "./GameAction";
 import type { GameState } from "./GameState";
 import type { SeatNumber } from "../shared/SeatNumber";
+import { questPlacementViolations } from "./questPlacementViolations";
 import { redrawViolations } from "./redrawViolations";
 import { seatOf } from "./seatOf";
 import type { SeatState } from "./SeatState";
 import { stateInvariantViolations } from "./stateInvariantViolations";
+import { statsGainOf } from "./statsGainOf";
 import { TIME_BANK_MS } from "./TIME_BANK_MS";
 import type { Transition } from "./Transition";
+import { worthGainedSumViolations } from "./worthGainedSumViolations";
 import { worthGainedViolations } from "./worthGainedViolations";
 
 function seatsAfter(fromSeat: number, toSeat: number, count: number): number {
@@ -66,6 +69,23 @@ function incomeViolations(before: GameState, after: GameState): ReadonlyArray<st
   });
 }
 
+function statsGainViolations(before: GameState, after: GameState): ReadonlyArray<string> {
+  if (after.turn === before.turn) {
+    return [];
+  }
+  return after.seats.flatMap((afterSeat) => {
+    const seatBefore = seatOf(before, afterSeat.seat);
+    if (seatBefore === undefined || seatBefore.departure !== null || afterSeat.departure !== null) {
+      return [];
+    }
+    const { stats } = seatBefore;
+    const fundsAtLeast = Math.max(0, stats.funds + fundsInTenths(stats.income) + statsGainOf(stats));
+    return afterSeat.stats.funds < fundsAtLeast
+      ? [`I10: seat ${String(afterSeat.seat)} has ${String(afterSeat.stats.funds)} tenths of funds after the end of the turn, less than ${String(fundsAtLeast)}`]
+      : [];
+  });
+}
+
 function actorViolations({ before, action }: Transition): ReadonlyArray<string> {
   const seat = seatOf(before, action.seat);
   const isOutOfTurnAllowed = action.type === "leave_game" || isVoteAction(action);
@@ -103,12 +123,6 @@ function acceptedViolations(transition: Transition, after: GameState): ReadonlyA
           ...buildPassViolations(seat, before, after),
         ]
       : [];
-  const bonus =
-    after.turn > before.turn
-      ? after.seats
-          .filter((afterSeat) => afterSeat.stats.bonus >= BONUS_PER_FUND)
-          .map((afterSeat) => `I10: seat ${afterSeat.seat} kept a bonus of 10 or more`)
-      : [];
   const firstPlayer =
     after.turn > before.turn && after.firstPlayer !== expectedFirstSeat(after)
       ? [`I20: turn ${String(after.turn)} starts with seat ${String(after.firstPlayer)} first`]
@@ -116,14 +130,16 @@ function acceptedViolations(transition: Transition, after: GameState): ReadonlyA
   return [
     ...actor,
     ...play,
-    ...bonus,
+    ...statsGainViolations(before, after),
     ...firstPlayer,
     ...holdingPileViolations(before, after),
     ...incomeViolations(before, after),
     ...timeBankViolations(transition, after),
     ...redrawViolations(before, after),
     ...worthGainedViolations(transition, after),
+    ...worthGainedSumViolations(transition, after),
     ...gameEndViolations(before, after),
+    ...questPlacementViolations(before, after),
     ...stateInvariantViolations(after),
   ];
 }

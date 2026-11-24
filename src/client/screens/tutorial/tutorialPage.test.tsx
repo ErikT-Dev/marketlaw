@@ -6,6 +6,7 @@ import type { TutorialView } from "../../../shared/TutorialView";
 import type { RejectedMove } from "../../store/RejectedMove";
 import { tutorialViewAt } from "../../testing/tutorialViewAt";
 import { TutorialPage } from "./TutorialPage";
+import { TEST_PLAYER_ICON } from "../../../shared/testing/TEST_PLAYER_ICON";
 
 const HAND: ReadonlyArray<CardName> = ["Row House", "Hiking Trail"];
 
@@ -37,7 +38,7 @@ function showTutorial(progress: TutorialProgress, rejectedMove: RejectedMove | n
   const props = {
     tutorial: tutorialWithHand(progress),
     playerName: "Ann",
-    playerIconColor: 2,
+    playerIcon: TEST_PLAYER_ICON,
     pendingActions: [],
     rejectedMove,
     connection: "open" as const,

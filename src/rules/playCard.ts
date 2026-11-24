@@ -1,5 +1,6 @@
 import type { CardName } from "../shared/catalogue/CardName";
 import { cardOf } from "../shared/catalogue/cardOf";
+import { fundsInTenths } from "../shared/fundsInTenths";
 import type { SeatState } from "./SeatState";
 import { realCostOf } from "./realCostOf";
 import { withoutCard } from "./withoutCard";
@@ -9,7 +10,7 @@ export function playCard(seat: SeatState, name: CardName): SeatState {
   const card = cardOf(name);
   return {
     ...seat,
-    stats: statsAfterPlaying(seat.stats, card, realCostOf(card, seat)),
+    stats: statsAfterPlaying(seat.stats, card, fundsInTenths(realCostOf(card, seat))),
     hand: withoutCard(seat.hand, name),
     newCards: seat.newCards.filter((card) => card !== name),
     knownInHand: seat.knownInHand.filter((card) => card !== name),

@@ -19,15 +19,6 @@
   margin: 0;
 }
 
-.counts {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-sm);
-  margin: var(--space-md) 0 0;
-  padding: 0;
-  list-style: none;
-}
-
 .projectsArea {
   margin: var(--space-md) 0 0;
 }

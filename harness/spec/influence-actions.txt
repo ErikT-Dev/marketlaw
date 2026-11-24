@@ -1,4 +1,5 @@
 influence to funds | pay 4 influence | get 2 funds | 1 per game
+influence to fund | pay 3 influence | get 1 fund | no limit
 influence to quality | pay 4 influence | get 1 quality | 1 per game
 influence to satisfaction | pay 4 influence | get 1 satisfaction | 1 per game
 influence to workforce | pay 6 influence | get 1 workforce | 1 per game

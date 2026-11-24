@@ -1,4 +1,8 @@
 import { randomUUID } from "node:crypto";
+import { accountChangesFromGiven } from "./accountChangesFromGiven.ts";
+import { newLobbyAccount } from "./newLobbyAccount.ts";
+import { NO_ACCOUNT_CHANGES } from "./NO_ACCOUNT_CHANGES.ts";
+import { scriptedGuestChanges } from "./scriptedGuestChanges.ts";
 import * as v from "valibot";
 import { guestNameDecision } from "../../../src/server/accounts/guestNameDecision.ts";
 import { loginStateOf } from "../../../src/server/accounts/loginStateOf.ts";
@@ -103,8 +107,8 @@ export class LobbySession {
     this.now = v.parse(EpochMs, given.clock_ms ?? 0);
     for (const account of given.accounts ?? []) {
       const registration = registrationFromGiven(account, this.now);
-      const usernameChangesMs = account.username_changes_ms ?? [];
-      this.addAccount(account.name, account.last_used_ms ?? 0, registration, usernameChangesMs);
+      const changes = accountChangesFromGiven(account);
+      this.addAccount(account.name, account.last_used_ms ?? 0, registration, changes);
     }
     const lobby = { ...EMPTY_LOBBY, today: countsTodayFromGiven(given, this.now, this) };
     const queued = queueStateFromGiven(given, lobby, (name) => this.identityNamed(name), this.now);
@@ -227,7 +231,7 @@ export class LobbySession {
     if (this.rejected !== null) {
       return;
     }
-    this.addAccount(name, this.now);
+    this.addAccount(name, this.now, null, scriptedGuestChanges(this.random));
     this.afterGuest.get(visitor)?.(name);
   }
 
@@ -310,11 +314,9 @@ export class LobbySession {
     name: string,
     lastUsedMs: number,
     registration: LobbyRegistration | null = null,
-    usernameChangesMs: ReadonlyArray<number> = [],
+    changes = NO_ACCOUNT_CHANGES,
   ): LobbyAccount {
-    const playerId = v.parse(PlayerId, randomUUID());
-    const identity = { playerId, name };
-    const account: LobbyAccount = { identity, lastUsedMs, registration, usernameChangesMs };
+    const account = newLobbyAccount(name, lastUsedMs, registration, changes);
     this.accounts.set(name, account);
     return account;
   }

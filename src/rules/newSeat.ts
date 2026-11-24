@@ -18,7 +18,6 @@ export function newSeat(seat: SeatNumber): SeatState {
     gainedTypes: {},
     combosClaimed: [],
     projects: [],
-    projectsThisTurn: [],
     questsCompleted: [],
     buildPasses: 0,
     buildPassesBought: 0,

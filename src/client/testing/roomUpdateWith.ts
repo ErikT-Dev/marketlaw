@@ -1,6 +1,7 @@
 import * as v from "valibot";
 import type { OtherSeatView } from "../../shared/OtherSeatView";
 import type { OwnSeatView } from "../../shared/OwnSeatView";
+import type { PlayerIconChoice } from "../../shared/playerIcons/PlayerIconChoice";
 import type { PlayerView } from "../../shared/PlayerView";
 import type { RoomUpdate } from "../../shared/protocol/RoomUpdate";
 import { RoomCode } from "../../shared/RoomCode";
@@ -8,8 +9,15 @@ import type { SeatNumber } from "../../shared/SeatNumber";
 import { OWN_SEAT_VIEW } from "../../shared/testing/OWN_SEAT_VIEW";
 import { testPlayerIdOf } from "./testPlayerIdOf";
 
+const SEAT_ICONS: ReadonlyArray<PlayerIconChoice> = [
+  { picture: "delapouite/bat", background: "#1e3a8a", color: "#fde68a" },
+  { picture: "lorc/wolf-head", background: "#14532d", color: "#ffffff" },
+  { picture: "delapouite/chicken", background: "#000000", color: "#facc15" },
+  { picture: "skoll/pig", background: "#f5f5f4", color: "#7f1d1d" },
+];
+
 const STATS = {
-  funds: 7,
+  funds: 70,
   income: 14,
   influence: 3,
   workforce: 6,
@@ -17,13 +25,13 @@ const STATS = {
   satisfaction: 4,
   product: 2,
   distribution: 1,
-  bonus: 8,
 };
 const SEAT_COMMON = {
   stats: STATS,
   city: [],
   buildPasses: 2,
-  worthGained: 14,
+  worthGained: 140,
+  supportThisTurn: 0,
   isDone: false,
   isOutOfTime: false,
   hasLeft: false,
@@ -82,8 +90,7 @@ export function roomUpdateWith(
     playerOrder: [3, 4, 2],
     drawLog: [],
     mainPhaseLog: [],
-    questsCompletedLastTurn: [],
-    firstCompletions: [],
+    lastTurn: { quests: [], projects: [], incomeGains: [], support: [] },
     vote: null,
     nextVoteTurn: 1,
     result: null,
@@ -97,7 +104,7 @@ export function roomUpdateWith(
       ownerName: "Ann",
       playerNames: ["Ann", "Bea", "Cy", "Di"],
       playerIds: [1, 2, 3, 4].map(testPlayerIdOf),
-      playerIconColors: [0, 3, 6, 9],
+      playerIcons: SEAT_ICONS,
       namesInRoom: ["Ann", "Bea", "Cy", "Di"],
       idsInRoom: [1, 2, 3, 4].map(testPlayerIdOf),
       myName: "Bea",

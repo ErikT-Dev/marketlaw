@@ -2,7 +2,6 @@ import { viewFor } from "../../rules/viewFor";
 import type { PlayerId } from "../../shared/PlayerId";
 import type { RoomUpdate } from "../../shared/protocol/RoomUpdate";
 import { endedRoomDeletionAt } from "./endedRoomDeletionAt";
-import { playerIconColorOf } from "./playerIconColorOf";
 import type { Identity } from "./Identity";
 import type { RoomRecord } from "./RoomRecord";
 import { seatRatingsOf } from "./seatRatingsOf";
@@ -33,7 +32,7 @@ function buildUpdate(record: RoomRecord, playerId: PlayerId): RoomUpdate {
       ownerName: record.players[0]?.name ?? "",
       playerNames: seatPlayersOf(record).map(({ name }) => name),
       playerIds: seatPlayersOf(record).map(({ playerId }) => playerId),
-      playerIconColors: seatPlayersOf(record).map(({ playerId }) => playerIconColorOf(playerId)),
+      playerIcons: seatPlayersOf(record).map(({ icon }) => icon),
       namesInRoom: record.players.map(({ name }) => name),
       idsInRoom: record.players.map(({ playerId }) => playerId),
       myName: nameOf(record, playerId),

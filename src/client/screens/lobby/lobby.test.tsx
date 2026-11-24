@@ -11,6 +11,7 @@ import { NO_ROOM_CHAT } from "../../store/NO_ROOM_CHAT";
 import { testAccount } from "../../testing/testAccount";
 import { WaitingRoomPage } from "./WaitingRoomPage";
 import { testPlayerIdOf } from "../../testing/testPlayerIdOf";
+import { TEST_PLAYER_ICON } from "../../../shared/testing/TEST_PLAYER_ICON";
 
 async function succeed() {
   return Promise.resolve(null);
@@ -47,7 +48,7 @@ function room(changes: Partial<RoomView> = {}): RoomView {
     ownerName: "Quiet River Baron",
     playerNames: ["Quiet River Baron", "Ann", "Bea"],
     playerIds: [1, 2, 3].map(testPlayerIdOf),
-    playerIconColors: [0, 1, 2],
+    playerIcons: [TEST_PLAYER_ICON, TEST_PLAYER_ICON, TEST_PLAYER_ICON],
     namesInRoom: ["Quiet River Baron", "Ann", "Bea"],
     idsInRoom: [1, 2, 3].map(testPlayerIdOf),
     myName: "Ann",

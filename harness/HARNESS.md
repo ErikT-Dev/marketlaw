@@ -59,19 +59,18 @@ Every scenario file is a list of scenarios. Every scenario has exactly these par
 | `phase` | `new_game` (not started yet), `market`, `main` or `ended` | `main` |
 | `first_player` | Seat number of this turn's first player | as R4.4 |
 | `market_go` | In the market phase: whose go it is | the first player's go |
-| `seats` | Per seat: `stats`, `hand`, `city`, `gained_types`, `build_passes`, `build_passes_bought`, `influence_uses`, `projects`, `quests_completed`, `combos_claimed`, `played_this_turn`, `redraws_used` (redraws of the starting hand so far, R17.12), `worth_gained` (total worth gained, R2.4), `actions_this_turn`, `done`, `left`, `connected`, `time_bank_ms`, `timeouts_in_a_row` (counted in ranked games only, R9.11), `out_of_time` (their main-phase time has run out and they are not done yet, R9.10), `turn_draw_pending` (their turn draw is still open after a time-out on their market go, R18.16), `market` (`in` before their market go this turn, `out` after it, when their own main phase has started, R18.15), `new_cards`, `state_version`, `actions_this_game` (accepted actions in this game so far, for A9.2), `player` (the account in that seat) | starting values (R2.1), 1 build pass (R6.3), total worth gained 14 (R2.4), empty hand and city, nothing used, claimed or redrawn, connected |
+| `seats` | Per seat: `stats`, `hand`, `city`, `gained_types`, `build_passes`, `build_passes_bought`, `influence_uses`, `projects`, `quests_completed`, `combos_claimed`, `played_this_turn`, `redraws_used` (redraws of the starting hand so far, R17.12), `worth_gained` (total worth gained, R2.4), `actions_this_turn`, `done`, `left`, `connected`, `time_bank_ms`, `timeouts_in_a_row` (counted in ranked games only, R9.11), `out_of_time` (their main-phase time has run out and they are not done yet, R9.10), `turn_draw_pending` (their turn draw is still open after a time-out on their market go, R18.16), `market` (`in` before their market go this turn, `out` after it, when their own main phase has started, R18.15), `new_cards`, `state_version`, `actions_this_game` (accepted actions in this game so far, for A9.2), `player` (the account in that seat) | starting values (R2.1), 1 build pass (R6.3), total worth gained 14.0 (R2.4), empty hand and city, nothing used, claimed or redrawn, connected |
 | `deck` | The deck, top first, as card names | all cards not placed elsewhere, in `cards.json` order |
 | `discard` | The discard pile, as card names | empty |
 | `marketplace` | Each `place` and its `card`, plus `phases_shown`: how many market phases it has been on display | empty; `phases_shown` 0 |
-| `quests` | Each quest on the table, and `turns_on_table` so far | empty; `turns_on_table` 1 |
+| `quests` | Each quest on the table, `turns_on_table` so far, and `extra_turn: true` for a quest in its extra turn (R19.6); a quest not in its extra turn that a seat's `quests_completed` names was first completed in this turn | empty; `turns_on_table` 1; not in its extra turn |
 | `quest_list` | Quests still in the quest list | all quests not on the table |
 | `bonus_types` | The 2 bonus types | the first 2 types in R21.7 |
-| `random` | The random results the rules will ask for, in the order they are asked. Each entry is one of `sector`, `tier`, `shuffle` (the resulting order), `quest`, `type` (a bonus type), `seats` (accounts in seat order) or `generated_name` | none; see below |
+| `random` | The random results the rules will ask for, in the order they are asked. Each entry is one of `sector`, `tier`, `shuffle` (the resulting order), `quest`, `type` (a bonus type), `seats` (accounts in seat order), `generated_name` or `icon` (a new account's random icon, A2.5) | none; see below |
 | `clock_ms` | The server time at the start, in milliseconds | 0 |
-| `first_completions` | Projects someone has already completed in an earlier turn (R16.6) | none |
 | `paused`, `last_vote_turn` | Whether the game is paused (R9.12); the turn of the last abandon vote (M7.2) | not paused; no vote yet |
-| `room`, `other_rooms` | A room's `code`, `size`, `public`, `owner`, `players`, `state` (`waiting`, `accepting`, `playing`, `ended`), `kind` of its last game, `chat`, `messages_sent` per player, `ended_ms` | none |
-| `accounts` | Each account's `name`, `kind` (`guest` or `registered`), `email`, `email_confirmed`, `pending_email`, `password`, `rating`, `ranked_games`, `highest_rating`, `games` (how many game records), `online`, `in_game`, `ranking_place`, `last_used_ms`, `username_changes_ms` (the times of their username changes, oldest first, A2.4), and today's counts `actions_today`, `games_started_today`, `emails_today` | none |
+| `room`, `other_rooms` | A room's `code`, `size`, `public`, `owner`, `players`, `state` (`waiting`, `accepting`, `playing`, `ended`), `kind` of its last game, `chat`, `messages_sent` per player, `icons` (each player's icon as the room keeps it, A2.6), `ended_ms` | none |
+| `accounts` | Each account's `name`, `kind` (`guest` or `registered`), `email`, `email_confirmed`, `pending_email`, `password`, `rating`, `ranked_games`, `highest_rating`, `games` (how many game records), `online`, `in_game`, `ranking_place`, `last_used_ms`, `username_changes_ms` (the times of their username changes, oldest first, A2.4), `icon` (`{picture, background, color}`, A2.5) and `icon_changes_ms` (the times of their icon changes, oldest first, A2.6), and today's counts `actions_today`, `games_started_today`, `emails_today` | none |
 | `email_counts` | Emails sent to each address today (A1.9) | none |
 | `queue`, `match`, `queue_count` | Players in the ranked queue in order, each a name (game size 3 only) or `{player, sizes}`; a match being confirmed; the queue count, a total or `{total, by_size}` | empty |
 | `tutorial` | A player in the tutorial, at the start of a step; the state is the one `tutorial.md` gives for that step | none |
@@ -81,7 +80,8 @@ Every scenario file is a list of scenarios. Every scenario has exactly these par
 
 Cards are always named exactly as in `cards.json`. Stats are written as numbers, for example
 `stats: {funds: 10, workforce: -1}`; the stat names are `funds`, `income`, `influence`, `workforce`,
-`quality`, `satisfaction`, `product`, `distribution` and `bonus`.
+`quality`, `satisfaction`, `product` and `distribution`. Funds and `worth_gained` may have one
+decimal, as they are kept in tenths (R2.5): `funds: 5.3`.
 
 Random results: a random pick with only one possible result (for example the tier in turn 1) is
 not asked for and takes no entry in `random`. A shuffle is given as the resulting order of the
@@ -122,11 +122,12 @@ it out, `player_to_mute` for a mute and `player_to_unmute` for an unmute.
 | `rejected` | The last step was rejected with this reason code (see below) |
 | `unchanged` | `true`: the rejected step changed nothing at all |
 | `seats` | Per seat, any of the `given` fields, with their expected values |
-| `deck`, `deck_count`, `discard`, `holding_pile`, `marketplace`, `quests`, `quest_list`, `turn`, `phase`, `first_player`, `market_go`, `paused`, `done_order`, `first_completions` | Expected values; `market_go` can include `time_left_ms` |
+| `deck`, `deck_count`, `discard`, `holding_pile`, `marketplace`, `quests`, `quest_list`, `turn`, `phase`, `first_player`, `market_go`, `paused`, `done_order` | Expected values; `market_go` can include `time_left_ms` |
 | `type_counts`, `new_cards` (inside `seats`) | A seat's type counts (R12.1) and cards marked new (R18.10) |
 | `quest_list_excludes` | Quests that must not be in the quest list |
 | `away`, `out_of_time`, `time_bank_shown`, `known_in_hand` (inside `view`) | Whether a seat is shown as away or out of time (R9.10), a bank as shown in whole seconds, and marketplace cards known to be in a hand (M3.3) |
 | `quests_completed_last_turn` (inside `view`) | Each quest completed in the turn before, with the `seats` that completed it (R19.6) |
+| `last_turn` (inside `view`) | The Last turn panel's data (S5.5): `quests` and `projects` (each with the `seats` that completed it), `income` and `support` (seat to amount) |
 | `vote_answers` (inside `view`) | During an abandon vote: `answered` and `of`, the only things the view holds about other players' answers (M7.5) |
 | Marker values | `none` (no game record), `kept` and `removed` (a replay record), `closed` and `deleted` (a room), `ended` (the tutorial), `unchanged` (ratings), `open` and `closed` (a vote) |
 | `room` (in `then`) | Besides the `given` room fields: `code_format` (the allowed characters) and `chat_last` (the last chat message) |
@@ -134,10 +135,10 @@ it out, `player_to_mute` for a mute and `player_to_unmute` for an unmute.
 | `room`, `game`, `lobby_rooms`, `queue`, `match`, `accounts`, `players_online`, `chat`, `notified`, `emails_sent`, `logged_in`, `match_history`, `ranking`, `menu`, `card_set`, `card_detail` | The expected state of rooms, accounts, the lobby and client screens |
 | `view` | What one seat's view shows: `{seat: 2, of_seat: 1, stats: {...}, hand_count: 5, contains: [...], hides: [...]}` |
 | `message_to` | That a seat or player was sent a particular notice or text; the `timed_out` notice has `in_a_row` and `of` in a ranked game, and `keep_playing: true` in a casual game (R9.11) |
-| `log_contains`, `log_excludes` (inside `view`) | Public game-log entries that must or must not appear: draws (M3.3), and what a player did in a main phase (M3.7) as `played` (a card), `completed_quest`, `completed_project`, `influence` (a trade) or `redrew` (how many redraws of the starting hand, R17.12), each with `seat` and optionally `turn` |
+| `log_contains`, `log_excludes` (inside `view`) | Public game-log entries that must or must not appear: draws (M3.3), and what a player did in a main phase (M3.7) as `played` (a card), `completed_quest`, `completed_project`, `influence` (a trade) or `redrew` (how many redraws of the starting hand, R17.12), and at the start of a turn `income_gained` and `support`, each with its amount as its value (`{seat: 1, support: 3}`), each with `seat` and optionally `turn` |
 | `discard_count` (inside `view`) | The number of cards in the discard pile as the seat sees it (R5.5); the view never holds which cards they are (M3.2), checked with `hides: [discard_cards]` |
-| `ended` | The game has ended: `winner`, `places` (seats, 1st first), `scores`, `bonus_type_points`, or `abandoned: true` |
-| `record` | The saved game record (A3) |
+| `ended` | The game has ended: `winner`, `places` (seats, 1st first), `scores`, `bonus_type_points`, `end_goal` (the seats that reached it), `score_parts` (per seat, each part of R21.4), or `abandoned: true` |
+| `record` | The saved game record (A3); per player also `q`, `t`, `c` and `f`, the counts of S3.1 |
 | `ratings` | ELO ratings after the game (A10) |
 | `tutorial_step` | The tutorial step the player is on (T…) |
 
@@ -181,7 +182,7 @@ is compared whole, in order and with its length; `seats` lists only the seats it
 | `call_vote`, `vote` | `vote`: `yes` or `no` | M7 |
 | `create_room`, `join_room`, `leave_room`, `change_size`, `accept_game`, `decline_game`, `ask_rematch` | room details | M1, M8 |
 | `join_queue`, `change_sizes`, `leave_queue`, `confirm_match`, `decline_match` | `sizes` for joining and changing: a list of 2, 3 and 4 (joining without it means 3 only) | A8 |
-| `create_guest`, `sign_up`, `confirm_email`, `log_in`, `log_out`, `reset_password`, `set_new_password`, `change_email`, `change_username`, `delete_account` | account details. `confirm_email` opens the newest confirmation link sent for the player; `set_new_password` opens the newest reset link in that visitor's browser and sets `password`; `delete_account` without `password` gives the account's own | A1, A2 |
+| `create_guest`, `sign_up`, `confirm_email`, `log_in`, `log_out`, `reset_password`, `set_new_password`, `change_email`, `change_username`, `change_icon`, `delete_account` | account details; `change_icon` takes `icon` (`{picture, background, color}`). `confirm_email` opens the newest confirmation link sent for the player; `set_new_password` opens the newest reset link in that visitor's browser and sets `password`; `delete_account` without `password` gives the account's own | A1, A2 |
 | `send_chat`, `mute`, `unmute` | `text`, `player_to_mute`, `player_to_unmute` | A11 |
 | `start_tutorial`, `leave_tutorial`, `continue` | | C4, T |
 | `open_site`, `open_lobby`, `open_game`, `open_menu`, `open_rules`, `open_card_set`, `open_card`, `filter_cards`, `search_cards`, `open_match_history`, `open_ranking`, `ask_generated_name` | screen details: `from` (where the menu is opened), `tab`, `card`, `sector`, `tier`, `type`, `text`, `of` (whose history), `jump_to_me` | A4–A7, C1–C3, M5.1 |
@@ -308,6 +309,9 @@ A repeated action id is not rejected: it returns the original result again.
 | `username_invalid` | The username breaks A2.1 |
 | `username_reserved` | "Deleted player" (A2.3) |
 | `username_change_too_soon` | A change within 7 days of the last (A2.4) |
+| `unknown_icon` | The icon's picture is not in the folder `player-icons/` (A2.5) |
+| `icon_colors_too_alike` | The two icon colours have a contrast under 3:1 (A2.5) |
+| `icon_change_too_soon` | 10 icon changes in the last 24 hours (A2.6) |
 | `email_invalid` | Not an email address |
 | `password_invalid` | Shorter than 8 or longer than 64 characters |
 | `login_failed` | Wrong username, email or password |
@@ -344,7 +348,8 @@ word, when:
   missing number or limit, an empty line, a broken line)
 - a word names a sector, type or stat that does not exist
 - two lines have the same name
-- `quests.txt` has fewer than 4 tier 1 quests (R19.3)
+- `quests.txt` has fewer than 4 tier 1 quests that R19.11 allows at the start of a game: needing
+  at most income 5 and no completed project (R19.3, R20.9)
 - a quest the tutorial needs (T0.7) is missing or no longer has its tier, requirement and reward
 - `influence-actions.txt` has two draw actions for the same tier
 - an influence action is of a kind the game or the screen has no code for: the message reads
@@ -352,6 +357,10 @@ word, when:
   `no limit`, and a second line with `1 more each time` (R15.5)
 - a quest reward gains more than 1 type: the message reads "needs new code" (R20.8)
 - a scenario names a quest or an influence action the files do not have
+
+The same check reads the player icon folder `player-icons/` (A2.5) and fails, naming the file,
+when a file is not an SVG with a `viewBox`, is over 20 KB, holds a script or a reference to
+anything outside it, or lies in an artist folder the folder's licence file does not name.
 
 So a list the game cannot handle can never be deployed: `npm run check` runs before every
 merge and deploy.

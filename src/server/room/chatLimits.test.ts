@@ -1,4 +1,5 @@
 import * as v from "valibot";
+import { TEST_PLAYER_ICON } from "../../shared/testing/TEST_PLAYER_ICON";
 import { describe, expect, it } from "vitest";
 import { randomForNextAction } from "../../rules/randomForNextAction";
 import { EpochMs } from "../../shared/EpochMs";
@@ -15,7 +16,11 @@ import type { RoomKv } from "./RoomKv";
 
 const DAY_MS = 86_400_000;
 const START = v.parse(EpochMs, 10 * DAY_MS);
-const ANN: Identity = { playerId: v.parse(PlayerId, crypto.randomUUID()), name: "Ann" };
+const ANN: Identity = {
+  playerId: v.parse(PlayerId, crypto.randomUUID()),
+  name: "Ann",
+  icon: TEST_PLAYER_ICON,
+};
 
 function memoryKv(): RoomKv {
   const entries = new Map<string, unknown>();

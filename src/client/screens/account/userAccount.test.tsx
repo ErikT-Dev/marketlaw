@@ -1,4 +1,5 @@
 import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { TEST_PLAYER_ICON } from "../../../shared/testing/TEST_PLAYER_ICON";
 import * as v from "valibot";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { UsernameWait } from "../../../shared/api/UsernameWait";
@@ -147,6 +148,8 @@ describe("account settings", () => {
           isLoggedIn: true,
           name: "Bea",
           usernameWait,
+          icon: TEST_PLAYER_ICON,
+          iconWait: null,
           email: null,
           rating: null,
         }),

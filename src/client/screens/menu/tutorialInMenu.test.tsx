@@ -7,6 +7,8 @@ import { GamePage } from "../GamePage";
 import { LobbyTopBar } from "../lobby/LobbyTopBar";
 import type { GameMenuPlace } from "./GameMenuPlace";
 import { TutorialStart } from "./TutorialStart";
+import { scorePartsAddingUpTo } from "../../testing/scorePartsAddingUpTo";
+import { NO_SUMMARY_COUNTS } from "../../../shared/testing/NO_SUMMARY_COUNTS";
 
 const UNAVAILABLE = "Not available while you are in a game, a room or the ranked queue";
 
@@ -31,11 +33,13 @@ const RESULT: GameResult = {
   places: ([2, 3, 4, 1] as const).map((seat, index) => ({
     seat,
     score: 400 - index,
+    scorePartsInHundredths: scorePartsAddingUpTo(400 - index),
     bonusTypePoints: 6,
     leftInTurn: null,
     hasReachedEndGoal: false,
     income: 15,
     fundsAndHand: 20,
+    counts: NO_SUMMARY_COUNTS,
   })),
 };
 

@@ -1,10 +1,12 @@
 import { useId } from "react";
 import type { Card } from "../../shared/catalogue/Card";
 import styles from "./Card.module.css";
+import { cardNameSizeOf } from "./cardNameSizeOf";
+import { cardTileBackground } from "./cardTileBackground";
 import { CardTileFace } from "./CardTileFace";
+import { CardTilePicture } from "./CardTilePicture";
 import { PendingMarker } from "./PendingMarker";
 import type { HandCardState } from "./HandCardState";
-import { sectorColor } from "./sectorColor";
 
 type Props = {
   readonly card: Card;
@@ -48,10 +50,11 @@ export function HandCard({ card, realCost, isPlayable, state, isNew, isPending, 
       aria-describedby={descriptionId}
       aria-pressed={state === "selected" || state === "markedToSell"}
       disabled={isPending}
-      style={{ background: sectorColor(card.sector, card.tier) }}
+      style={{ background: cardTileBackground(card.sector, card.tier) }}
       onClick={onSelect}
     >
-      <CardTileFace card={card} />
+      <CardTilePicture photo={card.photo} />
+      <CardTileFace card={card} nameSize={cardNameSizeOf(card.name, "hand")} />
       <span className={styles["cost"]} aria-hidden="true">
         ${realCost}
       </span>

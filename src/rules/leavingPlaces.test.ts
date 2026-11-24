@@ -38,7 +38,7 @@ describe("places when players left", () => {
       result: { endedBy: "last_player" as const, places: [...places].sort((a, b) => a.seat - b.seat) },
     };
     expect(endingViolations(firstLeaverAhead)).toEqual([
-      "I22: the places are not in score order with players who left last, the first to leave last",
+      "I22: the places are not by end goal and then score with players who left last, the first to leave last",
     ]);
   });
 

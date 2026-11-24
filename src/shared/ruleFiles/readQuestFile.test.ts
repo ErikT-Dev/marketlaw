@@ -19,7 +19,7 @@ describe("readQuestFile", () => {
 
   it("reads every kind of requirement and reward", () => {
     const line =
-      "Tier 3 | Every part | 2 cards of each sector, 1 sector with a tier 3 card, 1 completed project, 2 tier 3 Public cards, 1 Service type, 3 quality, income 9 | +1 fund, +2 funds, gain 1 Service type, draw 1 card";
+      "Tier 3 | Every part | 2 cards of each sector, 1 sector with a tier 3 card, 1 completed project, 2 tier 3 Public cards, 1 tier 2 Industry card, 1 Service type, 3 quality, 2 product, 1 distribution, income 9 | +1 fund, +2 funds, gain 1 Service type, draw 1 card";
     expect(readQuestFile(line)).toEqual({
       isOk: true,
       value: [
@@ -28,15 +28,18 @@ describe("readQuestFile", () => {
           name: "Every part",
           terms: {
             needs: [
-              { kind: "cards", sector: "Residential", lowestTier: 1, count: 2 },
-              { kind: "cards", sector: "Industry", lowestTier: 1, count: 2 },
-              { kind: "cards", sector: "Service", lowestTier: 1, count: 2 },
-              { kind: "cards", sector: "Public", lowestTier: 1, count: 2 },
+              { kind: "cards", sector: "Residential", tier: "any", count: 2 },
+              { kind: "cards", sector: "Industry", tier: "any", count: 2 },
+              { kind: "cards", sector: "Service", tier: "any", count: 2 },
+              { kind: "cards", sector: "Public", tier: "any", count: 2 },
               { kind: "sectors_with_tier", tier: 3, count: 1 },
               { kind: "projects", count: 1 },
-              { kind: "cards", sector: "Public", lowestTier: 3, count: 2 },
+              { kind: "cards", sector: "Public", tier: 3, count: 2 },
+              { kind: "cards", sector: "Industry", tier: 2, count: 1 },
               { kind: "type", type: "Service", count: 1 },
               { kind: "stat", stat: "quality", count: 3 },
+              { kind: "stat", stat: "product", count: 2 },
+              { kind: "stat", stat: "distribution", count: 1 },
               { kind: "income", count: 9 },
             ],
             reward: { stats: { funds: 3 }, gainedType: "Service", draws: 1 },
@@ -44,5 +47,17 @@ describe("readQuestFile", () => {
         },
       ],
     });
+  });
+
+  it("rejects a tier that is not 1, 2 or 3", () => {
+    expect(readQuestFile("Tier 2 | Wrong tier | 3 tier 4 Residential cards | +1 fund")).toEqual({
+      isOk: false,
+      error: [{ line: 1, word: "4", message: "needs tier 1, 2 or 3" }],
+    });
+  });
+
+  it("rejects the old form naming two tiers", () => {
+    const read = readQuestFile("Tier 2 | Two tiers | 3 tier 2 or 3 Residential cards | +1 fund");
+    expect(read.isOk).toBe(false);
   });
 });

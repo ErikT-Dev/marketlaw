@@ -10,7 +10,6 @@ meanings. The rule where each term is defined is given in brackets.
 | Term | Meaning |
 |---|---|
 | Action | Anything a player does in the main phase that the server accepts: playing a card, selling, claim all, an influence action, completing a project or quest, undo (R5.1). Each counts toward the action limit of 50 per turn (R5.3); ending the turn does not. For the daily limit (A9.2), market goes and ending the turn count too. |
-| Bonus | A stat that grows at the end of every turn and turns into funds, 1 fund per full 10 (R14). |
 | Bonus types | The 2 different types picked at random for a game, which score points at the end (R21.6). |
 | Build pass | Needed to play a card: every card played uses one (R6.1). Every player gets 1 at the start of every turn, keeps unused ones, and can buy more with influence actions (R6.3, R15). |
 | Card | One of the 240 unique cards in `cards.json` (R3). |
@@ -25,12 +24,13 @@ meanings. The rule where each term is defined is given in brackets.
 | Done | A player who has ended their turn, or was made done, in the current main phase (R8.1). |
 | Draw | Taking a card into a hand from the deck, found by the steps of R17.4. |
 | Draw action | An influence action that draws a card of a chosen kind and tier (R15.2). |
-| End goal | Income of at least 22 and all 3 projects completed (R1.3). |
-| First completion | The extra +2 funds for every player who completes a project in the first turn anyone completes it (R16.6). |
+| End goal | Income of at least 20 and all 3 projects completed (R1.3). |
+| Extra turn | The one more turn a quest stays on the table after the turn it is first completed in (R19.6). |
+| First completion | The extra +1 influence for every player who completes a quest in the turn it is first completed (R19.10). |
 | First player | The player who goes first in a turn (R4.4). |
 | Free time | The first 75 seconds of a player's main phase (165 in turn 1) and the first 5 seconds of a market go, which do not use the time bank; unused main-phase free time goes into the bank (R9.4, R9.15). |
 | Game log | The list of public draws, and, after each main phase, what each player did in it (M3.3, M3.7). |
-| Funds | Money; a stat that pays for cards (R2.1). |
+| Funds | Money; a stat that pays for cards, kept in tenths of a fund (R2.1, R2.5). |
 | Gain a type | A quest reward that adds 1 to a type count without adding a card (R20.6). |
 | Hand | The cards a player holds and has not played. Hidden from other players (M3.2). |
 | Holding pile | Where cards sold during a main phase, and the hand of a player who leaves during it, wait until the main phase ends (R17.7). |
@@ -48,7 +48,7 @@ meanings. The rule where each term is defined is given in brackets.
 | Open place | One of the 3 marketplace places whose sector is picked at random each time it is filled (R18.4). |
 | Paused | A game whose clocks are stopped because a deadline came while no player was connected (R9.12). |
 | Place | A player's final position in a game (R21.8, A3.4). |
-| Player icon | A circle with the first letter of a player's username on their fixed icon colour (A2.5, S1.8). |
+| Player icon | A circle with the picture a player chose, in their picture colour on their background colour (A2.5, S1.8). |
 | Player order | The order of seats in a turn, starting from the first player (R4.5). |
 | Product | A stat made by Industry cards; with distribution, it becomes income (R13). |
 | Project | One of the 3 goals each player can complete once: 8 quality, 8 satisfaction or 8 workforce (R16). |
@@ -64,7 +64,9 @@ meanings. The rule where each term is defined is given in brackets.
 | Seat | A player's fixed number, 1 to N, given at random when the game starts (R4.3). |
 | Sector | Residential, Industry, Service or Public (R3.3). |
 | Sell | The action of selling cards from the hand for 1 fund each (R5.1). |
-| Stats | Funds, income, influence, workforce, quality, satisfaction, product, distribution and bonus (R2.1). |
+| Stats | Funds, income, influence, workforce, quality, satisfaction, product and distribution (R2.1). |
+| Stats gain | The tenths of a fund the stats add to funds at the end of every turn (R14). |
+| Support | Funds at the start of a turn for a player behind the others in total worth gained: 1 for every full 10 (R11.5). |
 | Tier | 1, 2 or 3; higher tiers are stronger and cost more (R3.3). |
 | Tier by turn | The rule that picks a random tier, with higher tiers more likely in later turns (R17.10). |
 | Time bank | A player's 15 minutes for the whole game, used after the free time (R9.3). |

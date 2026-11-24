@@ -58,6 +58,7 @@ export function startTestRoomIn(
                 seat: seat.seat,
                 playerId: player.playerId,
                 name: player.name,
+                icon: player.icon,
                 stateVersion: 0,
                 acceptedActionIds: [],
               },

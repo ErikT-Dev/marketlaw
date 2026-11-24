@@ -1,4 +1,5 @@
 import { randomUUID } from "node:crypto";
+import { identityWithDefaultIcon } from "../../../src/server/accounts/identityWithDefaultIcon.ts";
 import * as v from "valibot";
 import type { TutorialAction } from "../../../src/rules/tutorial/TutorialAction.ts";
 import { countTutorialStart } from "../../../src/server/lobby/countTutorialStart.ts";
@@ -163,7 +164,7 @@ export class TutorialSession {
     if (known !== undefined) {
       return known;
     }
-    const identity = { playerId: v.parse(PlayerId, randomUUID()), name };
+    const identity = identityWithDefaultIcon(v.parse(PlayerId, randomUUID()), name);
     this.accounts.set(name, identity);
     this.records.addPlayer(identity.playerId);
     return identity;

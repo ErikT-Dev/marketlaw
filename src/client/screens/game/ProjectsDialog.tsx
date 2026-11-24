@@ -1,5 +1,4 @@
 import type { OwnSeatView } from "../../../shared/OwnSeatView";
-import type { PlayerView } from "../../../shared/PlayerView";
 import { PROJECT_NAMES } from "../../../shared/PROJECT_NAMES";
 import { PROJECT_INCOME_NEED } from "../../../shared/PROJECT_INCOME_NEED";
 import { PROJECT_NEED } from "../../../shared/PROJECT_NEED";
@@ -11,14 +10,14 @@ import { StatChip } from "../../components/StatChip";
 import { TextWithIcons } from "../../components/TextWithIcons";
 import { DialogNote } from "./DialogNote";
 import styles from "./GameDialogs.module.css";
-import { playerNameOf } from "./playerNameOf";
 import { PROJECT_TITLES } from "./PROJECT_TITLES";
 import { REJECTION_MESSAGES } from "./REJECTION_MESSAGES";
+import { tenthsShown } from "../../components/tenthsShown";
+import { fundsInTenths } from "../../../shared/fundsInTenths";
+import { projectPictureUrl } from "../../icons/projectPictureUrl";
 
 type Props = {
   readonly seat: OwnSeatView;
-  readonly view: PlayerView;
-  readonly playerNames: ReadonlyArray<string>;
   readonly onComplete: (project: ProjectName) => void;
   readonly onClose: () => void;
 };
@@ -30,7 +29,7 @@ const PROJECTS_INTRO: IconText = [
   { stat: "funds", value: "+2" },
   ", ",
   { stat: "influence", value: "+3" },
-  " and 1 card. ",
+  " and 1 card, every time. ",
   { stat: "workforce" },
   ", ",
   { stat: "quality" },
@@ -38,26 +37,6 @@ const PROJECTS_INTRO: IconText = [
   { stat: "satisfaction" },
   " must all be 0 or more.",
 ];
-
-function firstCompletionText(
-  project: ProjectName,
-  view: PlayerView,
-  names: ReadonlyArray<string>,
-): IconText {
-  const others = view.seats
-    .filter((seat) => seat.kind === "other" && seat.projects.includes(project))
-    .map((seat) => playerNameOf(names, seat.seat));
-  if (!view.firstCompletions.includes(project)) {
-    return [
-      "Nobody has completed it yet: whoever completes it first gets ",
-      { stat: "funds", value: "+2" },
-      " at the end of that turn.",
-    ];
-  }
-  return others.length === 0
-    ? "No first-completion bonus: it was completed in an earlier turn."
-    : `No first-completion bonus: ${others.join(", ")} completed it in an earlier turn.`;
-}
 
 function buttonLabel(seat: OwnSeatView, project: ProjectName): string {
   if (seat.projects.includes(project)) {
@@ -75,8 +54,7 @@ function whyNotCompletable(seat: OwnSeatView, project: ProjectName): IconText | 
     : REJECTION_MESSAGES[rejection];
 }
 
-export function ProjectsDialog({ seat, view, playerNames, onComplete, onClose }: Props) {
-  const isThirdNext = seat.projects.length === PROJECT_NAMES.length - 1;
+export function ProjectsDialog({ seat, onComplete, onClose }: Props) {
   return (
     <Modal title="Projects" size="large" onClose={onClose}>
       <p className={styles["text"]}>
@@ -85,21 +63,21 @@ export function ProjectsDialog({ seat, view, playerNames, onComplete, onClose }:
       <ul className={styles["rows"]}>
         {PROJECT_NAMES.map((project) => (
           <li key={project} className={styles["project"]} aria-label={PROJECT_TITLES[project]}>
+            <img
+              className={styles["projectPicture"]}
+              src={projectPictureUrl(project)}
+              alt={PROJECT_TITLES[project]}
+              loading="lazy"
+              decoding="async"
+            />
             <div>
               <strong>{PROJECT_TITLES[project]}</strong>
               <span>
                 Needs <StatChip stat={project} value={PROJECT_NEED} /> and at least{" "}
                 <StatChip stat="income" value={PROJECT_INCOME_NEED} /> · you have{" "}
                 <StatChip stat={project} value={seat.stats[project]} /> and{" "}
-                <StatChip stat="income" value={seat.stats.income} />
+                <StatChip stat="income" value={tenthsShown(fundsInTenths(seat.stats.income))} />
               </span>
-              <DialogNote
-                text={
-                  seat.projects.includes(project)
-                    ? null
-                    : firstCompletionText(project, view, playerNames)
-                }
-              />
               <DialogNote text={whyNotCompletable(seat, project)} />
             </div>
             <Button
@@ -114,13 +92,6 @@ export function ProjectsDialog({ seat, view, playerNames, onComplete, onClose }:
           </li>
         ))}
       </ul>
-      {isThirdNext ? (
-        <p className={styles["warning"]}>
-          {"This would be your 3rd project: it also gives "}
-          <StatChip stat="income" value="+1" />
-          {" more and 1 more card."}
-        </p>
-      ) : null}
       <div className={styles["buttons"]}>
         <Button look="secondary" onClick={onClose}>
           Close

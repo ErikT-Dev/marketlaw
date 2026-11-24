@@ -4093,11 +4093,253 @@ file.
   - **Quest list (10, Q176).** The owner approves the new list before it is built: the phase
     writes it into `quests.txt` on its branch and shows its full text in
     `docs/plan/phase-29b-quest-list-proposal.md`; it is built only after the owner's answer.
+  - **Influence to fund (51, added by the owner on 2026-11-23).** The owner wrote "pay
+    3 influence, gain 1 F"; read as 1 fund, which also adds 1 to F under Q177's F rule, with no
+    limit. The owner confirmed this reading on 2026-11-23. The line
+    `influence to fund | pay 3 influence | get 1 fund | no limit` follows `influence to funds` in
+    `influence-actions.txt`; as a plain trade it needs no new code (R15.6).
+  - **Influence tile colours (52, added by the owner on 2026-11-23).** In the Use influence
+    pop-up, actions with `no limit` and limited ones have different backgrounds, and each tile's
+    colours also show whether the action can be taken now, besides its disabled state (S8.3).
+    Decided: the builder picks the colours from the design tokens; a sketch only if the owner
+    asks for one.
+  - **Support in older scenarios.** Support is given at every turn change, so a required scenario
+    that ends a turn with two players 10 or more apart in F now also gives Support. The
+    scenarios written for this phase include it; an older one found to leave it out contradicts
+    the spec and is changed on the record here.
   - **Required names.** 14 names on `harness/required.yaml` become untrue (13 scenarios and
     invariant I10). They are left exactly as they are until the owner approves the new names,
     listed in the phase file under "Waiting for the owner".
   - The spec and harness changes are on the branch `phase-29b-playthrough-fixes`, not on master,
     as for 29a (Q169): on their own they turn the check red until 29b builds them.
+- **Owner answers (2026-11-23):** the proposed quest list (`docs/plan/phase-29b-quest-list-proposal.md`) and the 14 required names of the phase file's "Waiting for the owner" are approved. Item 52's colours are no longer the builder's choice: they follow the approved sketch `design/sketches/52-influence-actions/APPROVED.md` (limited actions green, unlimited purple, each bright when it can be taken now and dark when not, with a "1× per game" or "∞" badge).
+- **Required names (item 20, 2026-11-23):** one `HARNESS:` commit makes the 14 approved changes.
+  The 6 renames: setup's build pass scenario now expects 2 build passes; turns-and-time's
+  end-of-turn scenario drops `bonus` and expects funds 10.2 (stats gain 12); quests' "leaves the
+  table for good" scenario now completes the quest, plays its extra turn (with the two turn draws
+  of turn 4 and their random tiers) and expects the refill at turn 5; records-and-ratings' leaver
+  expects score 40 (no base, no turns); tutorial turn 4 drops `bonus` and expects funds 4.5
+  (T4.3); invariant I10 is renamed and now states the lower bound the code checks (covers R14.1
+  and R14.2). The 8 old scenarios are deleted and their replacements take their places on
+  `harness/required.yaml`; `harness.test.ts` counts 537 scenarios.
+- **Quest list (item 6, 2026-11-23):** `quests.txt` already held the approved list word for
+  word, so it is unchanged. A `HARNESS:` commit makes `quests.yaml` follow it: every
+  "completing … gives its reward" scenario expects the new reward and the +1 influence of a first
+  completion (R19.10), with its gained type and only the random sectors its draws ask for; Safe
+  streets' city gets a Utility card (Landfill) for its new need; "a type gained from one quest
+  helps complete another" now starts with 2 Light Industry, so Industrial zone (3 Light Industry)
+  needs Factory town's gained type; "tier 1 cards do not count …" and "Penthouses needs …" drop a
+  card, so they stay one card short of the lower needs. The +1 influence makes the reward
+  scenarios fail until item 5 builds R19.10.
+- **Final quest list (2026-11-23, owner):** after the first approval the owner asked for more: every type required at least once (6 new quests), sector requirements naming exactly one tier, type requirements in proportion to the card set (`docs/plan/card-type-counts.md`), and product and distribution as rare requirements equal to the quest's tier. The approved 51-quest list is `docs/plan/phase-29b-quest-list-final.md`; built as item 6b.
+- **Final quest list (item 6b, 2026-11-23):** a `HARNESS:` commit writes the list into
+  `quests.txt` in the owner's order (the 6 new quests last), and R20.2, R20.8 and the rulebook
+  say that `N tier T <sector> cards` counts exactly tier T (it replaces `tier 2 or 3` and
+  `tier 3`) and that `N product` and `N distribution` are stat requirements. `quests.yaml`
+  follows it, names kept: the reward scenarios of the changed quests get cities (and product or
+  distribution) that meet the new needs; "a type gained from one quest helps complete another"
+  holds 2 product for Industrial zone; "tier 1 cards do not count …" now has 2 tier 2 and 1 tier 1
+  Residential card with 3 Luxury, and "Penthouses needs …" 1 tier 3 Residential card with its
+  Luxury and City Housing met, so each fails only on the tier. `undo`'s "completing a quest
+  whose reward draws a card cannot be undone" gives Supply chain its income 4 and 1 product.
+  8 new scenarios: the 6 new quests' reward scenarios, "tier 3 cards do not count for a tier 2
+  card requirement" and "a product or distribution requirement needs that much of the stat"
+  (545 scenarios). The old form `tier 2 or 3` now fails the rule file check as an unknown
+  sector ("or 3 Residential"), a tier other than 1 to 3 with "needs tier 1, 2 or 3".
+- **Undo for selling (item 4, 2026-11-23):** the required scenario "nothing before an action
+  that cannot be undone can be undone" (R7.4) used selling as its action that cannot be undone,
+  which contradicts R7.2 now that selling can be undone. A `HARNESS:` commit keeps its name and
+  puts a tier 1 draw action (R7.3) in the place of the sale, with the influence it costs.
+- **Quests on the table (item 5, 2026-11-23):** a `HARNESS:` commit makes six `quests.yaml`
+  scenarios follow R19.7 and R19.10, names kept: "a tier 2 quest picked before turn 5 …", "a
+  tier 3 quest picked before turn 13 …", "a tier with no quests left falls back …" and "empty
+  quest places are filled in table order" let their tier 1 quests leave after 6 turns
+  (`turns_on_table: 6`, was 5, R19.7); "a requirement means at least that amount …" expects the
+  +1 influence of a first completion (R19.10); the required "a completed quest leaves the table
+  for good after its extra turn …" lists the 4 random tiers of its two option B turn draws in
+  turn 4 (2 cards each, R18.8) and the refill's tier, where it listed 3. `HARNESS.md` drops the
+  given field `completed_this_turn`, which no scenario used: a quest on the table that a seat's
+  `quests_completed` names and that is not in its extra turn was first completed in this turn,
+  as the engine reads it (so undoing a first completion needs no change to the table).
 - **Implemented:** `docs/plan/phase-29b-playthrough-fixes.md`, `docs/plan/README.md`,
-  `docs/plan/phase-30-version-1-readiness.md`; on the branch, `harness/spec/` and the harness
-  files the phase file lists.
+  `docs/plan/phase-30-version-1-readiness.md`; on the branch `phase-29b-playthrough-fixes`:
+  `harness/spec/game-rules.md`, `multiplayer.md`, `accounts.md`, `screens.md`, `tutorial.md`,
+  `glossary.md`, `rulebook.md`, `quests.txt` (the proposed list), `influence-actions.txt`;
+  `harness/HARNESS.md`, `scenario-format.yaml`, `invariants.yaml` (I15, I16, I30),
+  `budgets.yaml` (B18, B19), `coverage-exceptions.yaml` (A2.5); 38 new scenarios (545 now) and
+  the required scenarios that follow the new rules with their names kept, in `setup`,
+  `turns-and-time`, `projects`, `undo`, `quests`, `end-of-game`, `records-and-ratings`,
+  `accounts`, `visibility`, `influence` and `tutorial`.
+
+## Q179. Can the quest list change freely, with random quests later?
+
+- **Phase:** asked by the owner on 2026-11-24, during phase 29b. Not part of 29b: a later phase,
+  planned after 29b is deployed.
+- **Question:** the owner will keep reworking the quest list and plans quests made from a random
+  requirement and a random reward (a list of each). Nothing should depend on a particular fixed
+  quest; the tutorial keeps its own fixed quest, used only in the tutorial.
+- **Options looked at:** do it inside 29b, or as its own phase after 29b. Today the tutorial needs
+  four quests from `quests.txt` (T0.7), about 15 scenario files name real quests (around 350
+  times), and quests are identified by their names in messages, saves and replays.
+- **Solution:** decided by the owner on 2026-11-24: 29b is finished with the current 51-quest
+  list. A later phase gives the tutorial its own quests outside `quests.txt`, lets scenarios
+  define the quests they use, and gives quests an identity that does not depend on a fixed list,
+  together with random quests once the owner has written the requirement and reward lists.
+- **Spec:** written in that phase.
+- **Implemented:** not yet.
+
+## Q180. How do the Worker and the client know which pictures the icon folder holds?
+
+- **Phase:** 29b, item 8 (player icons), decided without the owner.
+- **Question:** A2.5 makes the folder `player-icons/` the only list of pictures. The server must
+  know the list to refuse an unknown picture (`unknown_icon`) and to pick a random one, but the
+  Worker is bundled by wrangler, which cannot list a folder at build time (only Vite's
+  `import.meta.glob` can, and the Worker is not built with Vite).
+- **Options looked at:** a list kept by hand (what A2.5 rules out); a list written at every build
+  (every tool, the type check and the linter would need it first); a list written from the folder
+  by the harness check and committed.
+- **Solution:** the folder is copied as `player-icons/` at the top of the repository (each artist
+  folder of `design/assets/playericons/ffffff/transparent/1x1/` with `license.txt`). A picture is
+  named `<artist folder>/<file name>` (`delapouite/bat`), as the scenarios already name them.
+  `npm run harness:check` (part of `npm run check`) checks the folder as A2.5 says and writes
+  `src/shared/playerIcons/PLAYER_ICON_PICTURES.ts` from it; when that file differed from the
+  folder, it is rewritten and the check fails once, so a changed folder can never be deployed
+  with an old list. No one edits the list. The client loads each picture only when shown, with
+  Vite's `import.meta.glob` over the same folder. A2.5 says so (`HARNESS:` commit).
+- **Spec:** A2.5.
+- **Implemented:** `tools/harness-check/checkPlayerIconFolder.ts`, `checkPlayerIconList.ts`,
+  `src/shared/playerIcons/PLAYER_ICON_PICTURES.ts`.
+
+## Q181. Which icon does an account made before player icons had pictures get?
+
+- **Phase:** 29b, item 8 (player icons), decided without the owner.
+- **Question:** A2.5 gives every account made before player icons had pictures a random picture
+  and random colours that pass the contrast check. Writing one into every existing row would
+  need the list of pictures inside a migration, and writing it on first use costs a row write
+  where nothing else is written.
+- **Solution:** the migration adds `players.icon` (empty for older accounts) and
+  `players.icon_changes_ms`. An account whose `icon` is empty, or holds a picture no longer in the
+  folder, has the icon drawn from a random sequence seeded by its player id: random-looking, the
+  same every time, from the current folder, with no write. A new account gets a truly random icon
+  (`crypto.getRandomValues`) stored when it is made. The first change stores the chosen icon.
+  Rooms and tutorials keep each player's icon in their saved state, so `ROOM_SCHEMA_VERSION`
+  goes from 5 to 6 and `TUTORIAL_SCHEMA_VERSION` from 1 to 2 (rooms of an older deploy close, D1).
+- **Spec:** A2.5 (unchanged).
+- **Implemented:** `migrations/0015_player_icons.sql`, `src/server/accounts/storedPlayerIconOf.ts`,
+  `iconOfOlderAccount.ts`, `randomPlayerIcon.ts`.
+
+## Q182. What is a picture button in the icon picker named?
+
+- **Phase:** 29b, item 8 (player icons), decided without the owner.
+- **Question:** S12.5 names each picture button "by the picture", but two artists have a picture
+  of the same file name (`bat`, `horse-head`), so the file name alone would name two buttons the
+  same.
+- **Solution:** a button is named by the picture's file name in words and its artist as the
+  licence file writes it: "Bat by Delapouite", "Wolf head by Lorc". The privacy notice lists the
+  same artist names, only those with a picture in the folder.
+- **Spec:** S12.5 (unchanged).
+- **Implemented:** `src/client/icons/playerIconPictureLabel.ts`, `PLAYER_ICON_ARTISTS.ts`.
+
+## Q183. How are the card tiles of phase 29b item 9 sized, counted and made?
+
+- **Phase:** 29b, item 9 (card tiles), decided without the owner.
+- **Questions:** (1) S6.4 gives every tile of one kind one fixed size, but only the city tile has
+  numbers (140 × 94); the hand and marketplace columns grow with the screen. (2) S4.1 counts the
+  turns left "until it ends", but a card stays in the marketplace through the main phase after
+  its second market phase, when 0 market phases are left. (3) B19 is "measured: production
+  build", but `npm run check` runs the tests before the build, and `.size-limit.js` is protected.
+  (4) How the small pictures are made.
+- **Solution:** (1) a hand tile is 102 px high and a marketplace tile 84 px high; both are as
+  wide as their column at the screen size, the same for every tile of the kind; the font of a
+  name (14, 12 or 11 px) is chosen from its length per kind (`cardNameSizeOf`), and the browser
+  test `e2e/cardTiles.spec.ts` shows all 240 names in all three kinds at every screen size and
+  checks that each fits and that each kind has one size. (2) Such a card shows "Leaves next
+  turn". The turns left are a line under the tile. (3) B19 is checked by the unit test
+  `tools/design-export/cardTilePictures.test.ts` on the committed pictures in
+  `src/client/assets/card-tiles/`, which the production build copies byte for byte
+  (`assetsInlineLimit: 0`): one per card, each at most the B19 limit (largest 4.2 KB). (4)
+  `npm run design:card-tiles` (`makeCardTilePictures.ts`) makes them from the card photos with
+  the Chromium of `playwright-core`, as `design:assets` makes the photos (100 × 86 WebP, quality
+  0.72, 629 KB for all 240); no new dependency. Each is loaded only when its tile shows
+  (`loading="lazy"`). Unplayable hand cards are dimmed with a filter, which keeps the text
+  contrast. `MARKET_PHASES_SHOWN` moved to `src/shared/` so the client can count the turns left.
+- **Spec:** S4.1 and S6.4 amended.
+- **Implemented:** `CardTilePicture`, `cardTileBackground`, `cardNameSizeOf`,
+  `marketTurnsLeftText`, `handInListOrder`.
+
+## Q184. Where do the end-of-game table and the game record get the Q, T, C and F counts, and what does an older record show?
+
+- **Phase:** 29b, item 11 (your counts and the tables), decided without the owner.
+- **Questions:** (1) S9.5 and S13.2 show every player's Q, T, C and F, but the end-of-game screen
+  shows other players as at the start of their main phase (R5.4), and a player who left is
+  shown with their values when they left (A3.3). (2) Game records saved before this phase have
+  no Q, T, C or F (A3.2 is new), and C and F cannot be worked out from what they hold.
+- **Solution:** (1) the engine adds the four counts (`SummaryCounts`) to each player's place in
+  the game result when the game ends, from the same seat as the score, and the game record
+  copies them from there, so the table, the record and the score always agree. T is the total of
+  the type counts with the types gained from quests, as S3.1 says, everywhere. (2) An older
+  record shows "not recorded" in the Q, T, C, F row of the game record; its counts are `null`.
+  The boxes are named "Quests completed", "Types", "Combos claimed" and "Total worth gained" in
+  every place they show.
+- **Spec:** S3.3, S9.5, S13.2, A3.2 (unchanged).
+- **Implemented:** `summaryCountsOf` (rules), `PlaceResult.counts`, `SeatRecord.counts`,
+  `SummaryCountBoxes`, `RecordedCounts`, `OwnCountBoxes` in the Opponents panel.
+
+## Q185. How does the Last turn panel know each income gain, and how does it show its amounts at small screens?
+
+- **Phase:** 29b, item 12 (the Last turn panel), decided without the owner.
+- **Questions:** (1) M3.5 and S5.5 show "how much each player's income went up in the turn
+  before", but the state kept no income of the turn's start. (2) S1.9 shows income with one
+  decimal and Support as a whole number; the Support log line of item 2 showed "+1.0". (3) The
+  approved sketch puts "the project's stat icon" in the Projects completed title, but a turn can
+  hold several projects. (4) At 1280 × 720 the panel's 160 px left the quests and the city about
+  half their height.
+- **Solution:** (1) When the main phase ends, each player's income is compared with their
+  income at the start of their main phase (the seat other players saw during the turn, R5.4);
+  a rise becomes a public log line `income_gained` of the new turn, in player order, next to
+  the Support lines, and the view's `lastTurn` is read from the log: quests and projects of the
+  turn before, income gains and Support of this turn. The engine's separate
+  `questsCompletedLastTurn` is gone. (2) Income gains show one decimal ("+1.0"), Support a whole
+  number ("+1"), in the panel and the log. (3) The Projects completed title has no icon; each
+  row shows the project's name with its stat icon. (4) Below 800 px of window height the panel
+  is compact (smaller titles on one line, each box about 50 px high and scrolling inside), about
+  85 px in all; player icons keep their 24 px click size.
+- **Spec:** S5.5, S7.2, M3.5, M3.7 (unchanged).
+- **Implemented:** `incomeGainEntriesOf`, `lastTurnOf` (rules), `PlayerView.lastTurn`,
+  `LAST_TURN_SCHEMA`, `LastTurnPanel`, `wholeFundsShown`.
+
+## Q186. Which backgrounds does "every button's background is at most 90% opaque" cover, and how is a claimed card-name combo worded?
+
+- **Phase:** 29b, item 14 (buttons and highlights), decided without the owner.
+- **Questions:** (1) S1.10 says every button's background is at most 90% opaque, but some
+  buttons are pictures: a player icon's background is the colour its player chose (S1.8,
+  A2.6), and card tiles are drawn as S6.4 says. (2) S3.2 shows a claimed combo "only by what it
+  needs and what it gave, without the name of the card it is printed on"; a card-name combo
+  needs another card, which the list wrote as "in your city" although the city is another
+  player's.
+- **Solution:** (1) Every button with a background of its own takes its colour at 90%
+  (`--opacity-button-background` in `tokens.css`): the buttons of every look, help buttons,
+  tabs, filter choices, influence tiles and draw actions, room size choices, menu entries and
+  card names with combos. Player icons keep their chosen colours, which are the icon itself,
+  and card tiles keep S6.4's 80% sector colours, already below 90%. (2) A claimed card-name
+  combo reads "Farmers Market in their city".
+- **Spec:** S1.10, S3.2 (unchanged).
+- **Implemented:** `Button.module.css` and the other buttons' style files, `ComboNeed`
+  (`ComboOwner`).
+
+## Q187. Where does the spec say the browser tab shows the logo, and how large are the project pictures?
+
+- **Phase:** 29b, item 15 (pictures and the browser tab), decided without the owner.
+- **Questions:** (1) The owner asked for the logo of `design/assets/logo/` as the icon in the
+  browser tab (finding 2), but no spec rule mentions the tab. (2) S8.2 shows each project with
+  its picture; the phase file asks for about 600 px wide and at most about 80 KB each, and the
+  photos in `design/assets/` (not committed) are 2.5 to 6.4 MB.
+- **Solution:** (1) A new rule S1.11: every page shows the MarketLaw logo as its tab icon; the
+  page uses `logo192.png` (12 KB), which browsers scale down. (2) The pictures are committed as
+  600 × 400 WebP files in `src/client/assets/projects/`, made by `npm run design:project-pictures`
+  the same way as the card tile pictures (Q183), and a unit test keeps each at 80 KB or less.
+  They load only when the Projects pop-up opens, so they are not part of the initial download
+  (B14). The pop-up shows each picture at 150 × 100 px beside the project's text.
+- **Spec:** S1.11 (new), S8.2 (unchanged).
+- **Implemented:** `src/client/index.html`, `ProjectPicture`, `projectPictureUrl`,
+  `makeProjectPictures.ts`, `projectPictures.test.ts`.

@@ -15,11 +15,7 @@ export const PROJECTS_HELP: ReadonlyArray<IconTextPart> = [
   { stat: "funds" },
   ", +3 ",
   { stat: "influence" },
-  " and 1 card; your third project gives another +1 ",
+  " and 1 card, every time. The end goal needs all 3 projects and ",
   { stat: "income" },
-  " and 1 card. In the first turn anyone completes a project, everyone who completes it that turn gets +2 ",
-  { stat: "funds" },
-  " at the end of the turn. The end goal needs all 3 projects and ",
-  { stat: "income" },
-  " 22.",
+  " 20.",
 ];

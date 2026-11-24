@@ -18,6 +18,7 @@
   --color-background-modal-backdrop: rgba(75, 85, 99, 0.75);
   --color-background-modal: #392a4a;
   --color-background-stats-board: rgba(19, 11, 19, 0.8);
+  --color-big-card-photo-border: #000000;
   --color-board-account-link: #c4b5fd;
   --color-board-chat-input-hint: #6b7280;
   --color-board-chat-input-text: #111827;
@@ -42,6 +43,9 @@
   --color-board-guest-log-out: #fca5a5;
   --color-board-guest-note: #2e2442;
   --color-board-in-game-text: #d8b4fe;
+  --color-board-last-turn-border: #4b4f7a;
+  --color-board-last-turn-gain: #22c55e;
+  --color-board-last-turn-you: #c4b5fd;
   --color-board-market-phase-text: #1c1206;
   --color-board-market-phase: #f59e0b;
   --color-board-negative-stats: #7f1d1d;
@@ -61,13 +65,17 @@
   --color-board-toast-success: #14532d;
   --color-board-toast-warning: #451a03;
   --color-board-top-bar: #0f1320;
+  --color-board-trade-limited-off: #1e2638;
+  --color-board-trade-limited: #1e3a8a;
   --color-board-trade-missing: #fca5a5;
   --color-board-trade-off: #2b2840;
+  --color-board-trade-ready: #86efac;
   --color-board-trade-status: #ddd6fe;
   --color-board-trade: #4c1d95;
   --color-board-tutorial-action: #fde68a;
   --color-board-tutorial-box-border: #c4b5fd;
   --color-board-tutorial-box: #3a2f52;
+  --color-board-tutorial-dim: rgba(5, 6, 12, 0.45);
   --color-board-tutorial-highlight: #fde68a;
   --color-board-tutorial-step: #c4b5fd;
   --color-board-type-count: #a5b4fc;
@@ -96,6 +104,7 @@
   --color-card-tile-cost-text: #4ade80;
   --color-card-tile-id-text: #d1d5db;
   --color-card-tile-new-border: #4ade80;
+  --color-card-tile-picture-line: rgba(255, 255, 255, 0.45);
   --color-card-tile-playable-edge: #22c55e;
   --color-card-name-combos-background: #14101c;
   --color-card-name-combos-text: #ff513d;
@@ -115,6 +124,7 @@
   --color-combo-needed-card-in-hand-border: #ffa12e;
   --color-combo-needed-card-in-hand-fill: rgba(130, 72, 8, 0.85);
   --color-focus-ring: #fde68a;
+  --color-market-countdown: #ef4444;
   --color-palette-blue: #00a2ff;
   --color-palette-build-pass: #858175;
   --color-palette-green: #6af533;
@@ -129,18 +139,11 @@
   --color-panel-highlight: #33385a;
   --color-panel-raised: #262a40;
   --color-pending-overlay: #000000;
-  --color-player-icon-0: #b3372b;
-  --color-player-icon-1: #a85400;
-  --color-player-icon-2: #806600;
-  --color-player-icon-3: #4f7300;
-  --color-player-icon-4: #2a7a2a;
-  --color-player-icon-5: #00766a;
-  --color-player-icon-6: #006e8c;
-  --color-player-icon-7: #2a5fc2;
-  --color-player-icon-8: #5048c8;
-  --color-player-icon-9: #7d3dbf;
-  --color-player-icon-10: #a3307a;
-  --color-player-icon-11: #6e5c4c;
+  --color-quest-turns-left-above-half: #22c55e;
+  --color-quest-turns-left-full-time: #3b82f6;
+  --color-quest-turns-left-half-or-less: #facc15;
+  --color-quest-turns-left-last-turn: #ef4444;
+  --color-sector-industry-bar: rgba(158, 72, 57, 0.55);
   --color-sector-industry-base: rgba(158, 72, 57, 0.8);
   --color-sector-industry-card: rgba(214, 55, 30, 0.4);
   --color-sector-industry-light: #c59188;
@@ -150,6 +153,7 @@
   --color-sector-industry-tier1: var(--color-sector-industry-base);
   --color-sector-industry-tier2: rgba(107, 36, 25, 0.8);
   --color-sector-industry-tier3: rgba(48, 8, 0, 0.6);
+  --color-sector-public-bar: rgba(78, 90, 173, 0.55);
   --color-sector-public-base: rgba(78, 90, 173, 0.8);
   --color-sector-public-card: rgba(31, 78, 207, 0.4);
   --color-sector-public-light: #959cce;
@@ -159,6 +163,7 @@
   --color-sector-public-tier1: var(--color-sector-public-base);
   --color-sector-public-tier2: rgba(35, 48, 145, 0.8);
   --color-sector-public-tier3: rgba(3, 15, 94, 0.6);
+  --color-sector-residential-bar: rgba(61, 110, 52, 0.55);
   --color-sector-residential-base: rgba(61, 110, 52, 0.8);
   --color-sector-residential-card: rgba(39, 148, 19, 0.4);
   --color-sector-residential-light: #8ba885;
@@ -168,6 +173,7 @@
   --color-sector-residential-tier1: var(--color-sector-residential-base);
   --color-sector-residential-tier2: rgba(23, 69, 15, 0.8);
   --color-sector-residential-tier3: rgba(11, 43, 3, 0.6);
+  --color-sector-service-bar: rgba(184, 136, 6, 0.55);
   --color-sector-service-base: rgba(184, 136, 6, 0.8);
   --color-sector-service-card: rgba(227, 194, 57, 0.4);
   --color-sector-service-light: #d4b86a;
@@ -224,6 +230,7 @@
   --font-size-xxl: 32px;
   --font-weight-bold: 700;
   --font-weight-regular: 400;
+  --opacity-button-background: 90%;
   --radius-lg: 12px;
   --radius-md: 6px;
   --radius-sm: 4px;

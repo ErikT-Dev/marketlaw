@@ -76,19 +76,6 @@
       - seat: 1
         stats: {quality: 0, satisfaction: 3}
 
-- name: selling cannot be undone
-  covers: [R7.3]
-  given:
-    seats:
-      - seat: 1
-        hand: [Pub]
-  when:
-    - {seat: 1, action: sell, cards: [Pub]}
-    - {seat: 1, action: undo}
-  then:
-    rejected: cannot_undo
-    unchanged: true
-
 - name: completing a project cannot be undone
   covers: [R7.3]
   given:
@@ -137,7 +124,7 @@
     quests: [{quest: Supply chain}]
     seats:
       - seat: 1
-        stats: {income: 5}
+        stats: {income: 4, product: 1}
         city: [Metal Mining, Stone Quarry]
     random: [{sector: Service}]
   when:
@@ -152,11 +139,10 @@
   given:
     seats:
       - seat: 1
-        stats: {quality: 2, satisfaction: 2}
-        hand: [Pub]
+        stats: {quality: 2, satisfaction: 2, influence: 3}
   when:
     - {seat: 1, action: influence, trade: two_quality_to_satisfaction}
-    - {seat: 1, action: sell, cards: [Pub]}
+    - {seat: 1, action: influence, trade: draw_tier_1, kind: Residential}
     - {seat: 1, action: influence, trade: two_satisfaction_to_quality}
     - {seat: 1, action: undo}
     - {seat: 1, action: undo}
@@ -164,7 +150,7 @@
     rejected: cannot_undo
     seats:
       - seat: 1
-        stats: {quality: 0, satisfaction: 3, funds: 8}
+        stats: {quality: 0, satisfaction: 3, influence: 0}
 
 - name: rejects undo when there is nothing to undo
   covers: [R7.1]
@@ -243,3 +229,38 @@
         stats: {influence: 5}
         build_passes: 1
         influence_uses: {}
+
+- name: undo takes back selling and puts the cards back in the hand
+  covers: [R7.2, R7.1]
+  given:
+    seats:
+      - seat: 1
+        hand: [Cottage, Pub]
+  when:
+    - {seat: 1, action: sell, cards: [Cottage]}
+    - {seat: 1, action: undo}
+  then:
+    seats:
+      - seat: 1
+        stats: {funds: 7}
+        hand: [Cottage, Pub]
+        worth_gained: 14
+    holding_pile: []
+
+- name: undo takes back the extra influence of completing a quest first
+  covers: [R19.10, R7.1]
+  given:
+    turn: 3
+    quests: [{quest: Farmland}, {quest: Sports town}, {quest: Trading post}, {quest: Mining town}]
+    seats:
+      - seat: 1
+        stats: {income: 4}
+        city: [Liquor Shop]
+  when:
+    - {seat: 1, action: complete_quest, quest: Trading post}
+    - {seat: 1, action: undo}
+  then:
+    seats:
+      - seat: 1
+        stats: {funds: 7, influence: 0}
+        quests_completed: []

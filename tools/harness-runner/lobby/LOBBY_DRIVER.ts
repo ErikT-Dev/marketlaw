@@ -1,4 +1,5 @@
 import * as v from "valibot";
+import { changeIconInLobby } from "./changeIconInLobby.ts";
 import type { DriverSession } from "../DriverSession.ts";
 import type { ScenarioDriver } from "../ScenarioDriver.ts";
 import type { ScenarioStep } from "../ScenarioStep.ts";
@@ -168,6 +169,8 @@ async function runStep(
     changeEmailInLobby(session, textOf(step["player"]), step);
   } else if (step["action"] === "delete_account") {
     deleteAccountInLobby(session, textOf(step["player"]), step);
+  } else if (step["action"] === "change_icon") {
+    changeIconInLobby(session, textOf(step["player"]), step["icon"]);
   } else if (step["action"] === "change_username") {
     await changeUsernameInLobby(session, textOf(step["player"]), textOf(step["username"]));
   } else {

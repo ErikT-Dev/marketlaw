@@ -16,7 +16,7 @@ export function ClaimedCombosList({ combosClaimed, name }: Props) {
     <ul className={styles["claimedCombos"]} aria-label={`Combos claimed by ${name}`}>
       {combosInListOrder(combosClaimed, () => false).map((claimed) => (
         <li key={`${claimed.card}-${String(claimed.combo)}`} className={styles["claimedCombo"]}>
-          <ComboNeedAndGain card={claimed.card} combo={claimed.combo} />
+          <ComboNeedAndGain card={claimed.card} combo={claimed.combo} owner="another_player" />
           <span>{claimed.times > 1 ? `×${String(claimed.times)}` : ""}</span>
         </li>
       ))}

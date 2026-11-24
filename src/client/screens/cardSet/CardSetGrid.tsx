@@ -22,7 +22,7 @@ export function CardSetGrid({ cards }: Props) {
               openCardDetail(card.name);
             }}
           >
-            <CardTileFace card={card} />
+            <CardTileFace card={card} nameSize="regular" />
           </button>
         </li>
       ))}

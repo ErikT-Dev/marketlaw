@@ -1,4 +1,5 @@
 import * as v from "valibot";
+import { randomPlayerIcon } from "./accounts/randomPlayerIcon";
 import { PlayerId } from "../shared/PlayerId";
 import { nameKeyOf } from "./accounts/nameKeyOf";
 import { newSessionToken } from "./newSessionToken";
@@ -13,13 +14,21 @@ export async function insertGuest(
   const token = newSessionToken();
   const playerId = v.parse(PlayerId, crypto.randomUUID());
   const now = Date.now();
+  const icon = randomPlayerIcon();
   const [account] = await env.DB.batch([
     env.DB.prepare(
-      "INSERT INTO players (id, name, name_key, created_ms, is_test_room_seat) VALUES (?, ?, ?, ?, ?) ON CONFLICT DO NOTHING",
-    ).bind(playerId, name, isTestRoomSeat ? null : nameKeyOf(name), now, isTestRoomSeat ? 1 : 0),
+      "INSERT INTO players (id, name, name_key, created_ms, is_test_room_seat, icon) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT DO NOTHING",
+    ).bind(
+      playerId,
+      name,
+      isTestRoomSeat ? null : nameKeyOf(name),
+      now,
+      isTestRoomSeat ? 1 : 0,
+      JSON.stringify(icon),
+    ),
     env.DB.prepare(
       "INSERT INTO logins (token_hash, player_id, created_ms, last_used_ms) SELECT ?, id, ?, ? FROM players WHERE id = ?",
     ).bind(await sha256Hex(token), now, now, playerId),
   ]);
-  return account?.meta.changes === 1 ? { token, identity: { playerId, name } } : null;
+  return account?.meta.changes === 1 ? { token, identity: { playerId, name, icon } } : null;
 }

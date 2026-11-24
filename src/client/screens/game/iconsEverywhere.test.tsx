@@ -10,6 +10,8 @@ import { roomUpdateWith } from "../../testing/roomUpdateWith";
 import { statAndTypeWordsShownIn } from "../../testing/statAndTypeWordsShownIn";
 import { GamePage } from "../GamePage";
 import { PhotoLoading } from "./PhotoLoading";
+import { scorePartsAddingUpTo } from "../../testing/scorePartsAddingUpTo";
+import { NO_SUMMARY_COUNTS } from "../../../shared/testing/NO_SUMMARY_COUNTS";
 
 const OWN: Partial<OwnSeatView> = {
   hand: ["Farm House", "Loft"],
@@ -38,6 +40,7 @@ const VIEW: Partial<PlayerView> = {
     {
       quest: "Trading post",
       turnsLeft: 3,
+      isInExtraTurn: false,
       completeRejection: "quest_needs_not_met",
       progress: [
         {
@@ -60,7 +63,6 @@ const VIEW: Partial<PlayerView> = {
       asked: { by: "sector", sector: "Service", tier: 1 },
     },
   ],
-  firstCompletions: ["satisfaction"],
 };
 
 const ENDED: GameResult = {
@@ -69,20 +71,24 @@ const ENDED: GameResult = {
     {
       seat: 3,
       score: 512,
+      scorePartsInHundredths: scorePartsAddingUpTo(512),
       bonusTypePoints: 6,
       leftInTurn: null,
       hasReachedEndGoal: true,
       income: 23,
       fundsAndHand: 20,
+      counts: NO_SUMMARY_COUNTS,
     },
     {
       seat: 2,
       score: 487,
+      scorePartsInHundredths: scorePartsAddingUpTo(487),
       bonusTypePoints: 6,
       leftInTurn: null,
       hasReachedEndGoal: false,
       income: 15,
       fundsAndHand: 20,
+      counts: NO_SUMMARY_COUNTS,
     },
   ],
 };
@@ -111,7 +117,7 @@ describe("stats and types as icons", () => {
 
   it.each([
     ["Projects", "Projects"],
-    ["Use Influence", "Use Influence"],
+    ["Use Influence 3", "Use Influence"],
     ["Claim all (1)", "Claim all combos"],
     ["Detailed summary table of Di", "Detailed summary table of Di"],
   ])("shows no stat or type as a word in the pop-up opened by %s", async (button, dialog) => {

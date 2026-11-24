@@ -1,0 +1,1 @@
+export const ICON_COLOR_CONTRAST_MINIMUM = 3;

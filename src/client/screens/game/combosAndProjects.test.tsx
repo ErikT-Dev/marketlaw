@@ -22,7 +22,7 @@ const READY: Partial<OwnSeatView> = {
   },
   projects: ["workforce"],
   stats: {
-    funds: 7,
+    funds: 70,
     income: 10,
     influence: 0,
     workforce: 2,
@@ -30,7 +30,6 @@ const READY: Partial<OwnSeatView> = {
     satisfaction: 4,
     product: 0,
     distribution: 0,
-    bonus: 0,
   },
 };
 
@@ -68,11 +67,11 @@ describe("your stats", () => {
       .getAllByRole("listitem")
       .map((row) => row.textContent);
     expect(projects[0]).toContain("Clean up the streets");
-    expect(projects[0]).toContain("First to complete gets +2");
+    expect(projects[0]).toBe("Clean up the streets 8/8Quality");
     expect(projects[2]).toBe("Help the homeless · you completed ✓");
   });
 
-  it("shows a project completed this turn as completed, without the first-completion note", () => {
+  it("shows a project completed this turn as completed", () => {
     showGame({ ...READY, projects: ["quality"] });
     const projects = within(screen.getByRole("list", { name: "Your projects" }))
       .getAllByRole("listitem")
@@ -113,7 +112,7 @@ describe("projects", () => {
     const dialog = within(screen.getByRole("dialog", { name: "Projects" }));
     const streetsItem = dialog.getByRole("listitem", { name: "Clean up the streets" });
     expect(textWithIconNames(streetsItem)).toContain(
-      "Needs [Quality 8] and at least [Income 10] · you have [Quality 9] and [Income 10]",
+      "Needs [Quality 8] and at least [Income 10] · you have [Quality 9] and [Income 10.0]",
     );
     const streets = within(streetsItem);
     const campaign = within(dialog.getByRole("listitem", { name: "Culture campaign" }));
@@ -128,7 +127,7 @@ describe("projects", () => {
     showGame({
       ...READY,
       stats: {
-        funds: 7,
+        funds: 70,
         income: 3,
         influence: 0,
         workforce: -1,
@@ -136,7 +135,6 @@ describe("projects", () => {
         satisfaction: 4,
         product: 0,
         distribution: 0,
-        bonus: 0,
       },
       projectRejections: {
         quality: "project_needs_not_met",
@@ -155,11 +153,91 @@ describe("projects", () => {
     );
   });
 
-  it("says when the next project would be the third", () => {
+  it("gives the third project the same reward as the others", () => {
     showGame({ ...READY, projects: ["workforce", "satisfaction"] });
     fireEvent.click(screen.getByRole("button", { name: "Projects" }));
-    expect(textWithIconNames(screen.getByRole("dialog", { name: "Projects" }))).toContain(
-      "This would be your 3rd project: it also gives [Income +1] more and 1 more card.",
+    const dialog = textWithIconNames(screen.getByRole("dialog", { name: "Projects" }));
+    expect(dialog).toContain(
+      "gives [Income +1], [Funds +2], [Influence +3] and 1 card, every time.",
     );
+    expect(dialog).not.toContain("3rd project");
+    expect(dialog).not.toContain("first-completion");
+  });
+
+  it("shows each project with its own picture, loaded only when shown", () => {
+    showGame();
+    fireEvent.click(screen.getByRole("button", { name: "Projects" }));
+    const dialog = within(screen.getByRole("dialog", { name: "Projects" }));
+    const pictures = ["Clean up the streets", "Culture campaign", "Help the homeless"].map(
+      (title) =>
+        within(dialog.getByRole("listitem", { name: title })).getByRole("img", {
+          name: title,
+        }),
+    );
+    expect(pictures.map((picture) => picture.getAttribute("src"))).toEqual([
+      expect.stringMatching(/clean-the-streets\.webp$/),
+      expect.stringMatching(/culture-campaign\.webp$/),
+      expect.stringMatching(/help-the-homeless\.webp$/),
+    ]);
+    expect(pictures.map((picture) => picture.getAttribute("loading"))).toEqual([
+      "lazy",
+      "lazy",
+      "lazy",
+    ]);
+  });
+});
+
+describe("highlighted actions", () => {
+  it("highlights Claim all while it would claim something and Projects while a project can be completed", () => {
+    showGame();
+    expect(
+      screen.getByRole("button", {
+        name: "Claim all (1)",
+        description: "You have combos ready to claim",
+      }),
+    ).toBeDefined();
+    expect(
+      screen.getByRole("button", {
+        name: "Projects",
+        description: "You can complete a project now",
+      }),
+    ).toBeDefined();
+  });
+
+  it("does not highlight Claim all or Projects when there is nothing to claim or complete", () => {
+    showGame({
+      ...READY,
+      claimAllRejection: "nothing_to_claim",
+      combos: [],
+      projectRejections: {
+        quality: "project_needs_not_met",
+        satisfaction: "project_needs_not_met",
+        workforce: "project_already_completed",
+      },
+    });
+    expect(screen.getByRole("button", { name: "Claim all (0)" })).toBeDefined();
+    expect(
+      screen.queryByRole("button", { description: "You have combos ready to claim" }),
+    ).toBeNull();
+    expect(
+      screen.queryByRole("button", { description: "You can complete a project now" }),
+    ).toBeNull();
+  });
+
+  it("shows the player's influence on the Use influence button", () => {
+    showGame({
+      ...READY,
+      stats: {
+        funds: 70,
+        income: 10,
+        influence: 6,
+        workforce: 2,
+        quality: 9,
+        satisfaction: 4,
+        product: 0,
+        distribution: 0,
+      },
+    });
+    expect(screen.getByRole("button", { name: "Use Influence 6" })).toBeDefined();
   });
 });

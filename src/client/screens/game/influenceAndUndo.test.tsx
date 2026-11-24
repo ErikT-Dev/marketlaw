@@ -17,7 +17,7 @@ const TRADE_REJECTIONS: Partial<Record<TradeName, ReasonCode>> = {
 
 const SEAT: Partial<OwnSeatView> = {
   stats: {
-    funds: 7,
+    funds: 70,
     income: 3,
     influence: 4,
     workforce: 0,
@@ -25,7 +25,6 @@ const SEAT: Partial<OwnSeatView> = {
     satisfaction: 0,
     product: 0,
     distribution: 0,
-    bonus: 0,
   },
   influenceUses: { influence_to_quality: 1 },
   buildPassPrice: 3,
@@ -47,7 +46,7 @@ function showGame(changes: Partial<OwnSeatView> = SEAT) {
 }
 
 function openInfluence() {
-  fireEvent.click(screen.getByRole("button", { name: "Use Influence" }));
+  fireEvent.click(screen.getByRole("button", { name: "Use Influence 4" }));
   return screen.getByRole("dialog", { name: "Use Influence" });
 }
 
@@ -56,10 +55,10 @@ describe("use influence", () => {
     showGame();
     const dialog = within(openInfluence());
     expect(textWithIconNames(dialog.getByText(/^You have/))).toBe(
-      "You have [Influence 4] and [Funds 7]. [Influence] actions can be used any time in the main phase.",
+      "You have [Influence 4] and [Funds 7.0]. [Influence] actions can be used any time in the main phase.",
     );
     const tiles = within(dialog.getByRole("list", { name: "Trades" }));
-    expect(tiles.getAllByRole("button")).toHaveLength(19);
+    expect(tiles.getAllByRole("button")).toHaveLength(20);
     const funds = tiles.getByRole("button", { name: "4 influence → 2 funds" });
     expect(funds).toHaveProperty("disabled", false);
     expect(textWithIconNames(funds)).toBe("[Influence 4] → [Funds 2]1 use left");
@@ -69,6 +68,9 @@ describe("use influence", () => {
     const workforce = tiles.getByRole("button", { name: "6 influence → 1 workforce" });
     expect(workforce).toHaveProperty("disabled", true);
     expect(textWithIconNames(workforce)).toBe("[Influence 6] → [Workforce 1]need [Influence 2]");
+    expect(textWithIconNames(tiles.getByRole("button", { name: "3 influence → 1 fund" }))).toBe(
+      "[Influence 3] → [Funds 1]unlimited uses",
+    );
     expect(textWithIconNames(tiles.getByRole("button", { name: "1 fund → 1 influence" }))).toBe(
       "[Funds 1] → [Influence 1]unlimited uses",
     );
@@ -82,6 +84,20 @@ describe("use influence", () => {
         }),
       ),
     ).toBe("[Influence 2] + [Distribution 1] + [Satisfaction 1] → [Product 1]1 use left");
+  });
+
+  it("colours a tile by its limit and by whether it can be taken now", () => {
+    showGame();
+    const tiles = within(within(openInfluence()).getByRole("list", { name: "Trades" }));
+    const limitedReady = tiles.getByRole("button", { name: "4 influence → 2 funds" }).className;
+    const limitedUsed = tiles.getByRole("button", { name: "4 influence → 1 quality" }).className;
+    const unlimitedReady = tiles.getByRole("button", { name: "3 influence → 1 fund" }).className;
+    expect(limitedReady).toContain("limited");
+    expect(limitedReady).toContain("ready");
+    expect(limitedUsed).toContain("limited");
+    expect(limitedUsed).not.toContain("ready");
+    expect(unlimitedReady).not.toContain("limited");
+    expect(unlimitedReady).toContain("ready");
   });
 
   it("shows no stat as a word in the trades and the draw costs", () => {

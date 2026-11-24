@@ -1,7 +1,7 @@
 import { cardOf } from "../shared/catalogue/cardOf";
 import { kindOf } from "../shared/catalogue/kindOf";
 import type { GameState } from "./GameState";
-import { MARKET_PHASES_SHOWN } from "./MARKET_PHASES_SHOWN";
+import { MARKET_PHASES_SHOWN } from "../shared/MARKET_PHASES_SHOWN";
 import { MARKETPLACE_PLACES } from "./MARKETPLACE_PLACES";
 
 const MARKETPLACE_SIZE = 8;

@@ -1,10 +1,12 @@
 import * as v from "valibot";
 import { STARTING_STATS } from "../../../src/rules/STARTING_STATS.ts";
+import { TENTHS_PER_FUND } from "../../../src/shared/TENTHS_PER_FUND.ts";
 import { CardName } from "../../../src/shared/catalogue/CardName.ts";
 import { QuestName } from "../../../src/shared/catalogue/QuestName.ts";
 import { TypeName } from "../../../src/shared/catalogue/TypeName.ts";
 import { ProjectName } from "../../../src/shared/ProjectName.ts";
 import { TradeName } from "../../../src/shared/TradeName.ts";
+import { FUNDS_IN_TENTHS } from "./FUNDS_IN_TENTHS.ts";
 
 const COUNT = v.pipe(v.number(), v.integer());
 const CARDS = v.array(CardName);
@@ -12,7 +14,7 @@ const SEAT_NUMBER = v.picklist([1, 2, 3, 4]);
 const QUEST_NAME = QuestName;
 
 const STATS = v.strictObject({
-  funds: v.optional(COUNT, STARTING_STATS.funds),
+  funds: v.optional(FUNDS_IN_TENTHS, STARTING_STATS.funds / TENTHS_PER_FUND),
   income: v.optional(COUNT, STARTING_STATS.income),
   influence: v.optional(COUNT, STARTING_STATS.influence),
   workforce: v.optional(COUNT, STARTING_STATS.workforce),
@@ -20,7 +22,6 @@ const STATS = v.strictObject({
   satisfaction: v.optional(COUNT, STARTING_STATS.satisfaction),
   product: v.optional(COUNT, STARTING_STATS.product),
   distribution: v.optional(COUNT, STARTING_STATS.distribution),
-  bonus: v.optional(COUNT, STARTING_STATS.bonus),
 });
 
 const SEAT = v.strictObject({
@@ -43,7 +44,7 @@ const SEAT = v.strictObject({
   out_of_time: v.optional(v.boolean()),
   turn_draw_pending: v.optional(v.boolean()),
   redraws_used: v.optional(COUNT),
-  worth_gained: v.optional(COUNT),
+  worth_gained: v.optional(FUNDS_IN_TENTHS),
   left: v.optional(v.boolean()),
   time_bank_ms: v.optional(COUNT),
   timeouts_in_a_row: v.optional(COUNT),
@@ -78,11 +79,16 @@ export const GIVEN_SCHEMA = v.strictObject({
   discard: v.optional(CARDS),
   marketplace: v.optional(v.array(MARKETPLACE_SLOT)),
   quests: v.optional(
-    v.array(v.strictObject({ quest: v.nullable(QUEST_NAME), turns_on_table: v.optional(COUNT) })),
+    v.array(
+      v.strictObject({
+        quest: v.nullable(QUEST_NAME),
+        turns_on_table: v.optional(COUNT),
+        extra_turn: v.optional(v.boolean()),
+      }),
+    ),
   ),
   quest_list: v.optional(v.array(QUEST_NAME)),
   bonus_types: v.optional(v.array(TypeName)),
-  first_completions: v.optional(v.array(ProjectName)),
   clock_ms: v.optional(COUNT),
   paused: v.optional(v.boolean()),
   last_vote_turn: v.optional(COUNT),

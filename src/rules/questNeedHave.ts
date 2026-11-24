@@ -13,7 +13,10 @@ export function questNeedHave(seat: SeatState, typeCounts: TypeCounts, need: Que
     case "cards":
       return seat.city
         .map(cardOf)
-        .filter((card) => card.sector === need.sector && card.tier >= need.lowestTier).length;
+        .filter(
+          (card) =>
+            card.sector === need.sector && (need.tier === "any" || card.tier === need.tier),
+        ).length;
     case "sectors_with_tier":
       return sectorsWithTier(seat, need.tier);
     case "type":

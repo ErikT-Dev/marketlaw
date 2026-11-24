@@ -13,6 +13,7 @@ import { TutorialStartingScreen } from "../TutorialStartingScreen";
 import { ClientStore } from "./ClientStore";
 import { readSession } from "./readSession";
 import { writeSession } from "./writeSession";
+import { TEST_PLAYER_ICON } from "../../shared/testing/TEST_PLAYER_ICON";
 
 const PLAYER_ID = "7d0c7f1e-4b7a-4c5e-9a39-2f4d9c1b8e10";
 
@@ -110,7 +111,7 @@ function showStep(fake: FakeTutorial, step: "T1.1" | "T1.2", number: number): vo
   fake.emit({
     type: "tutorial_update",
     view: tutorialViewAt({ kind: "step", step, number }),
-    playerIconColor: 5,
+    playerIcon: TEST_PLAYER_ICON,
     acceptedActionId: null,
     serverNow: v.parse(EpochMs, Date.now()),
   });

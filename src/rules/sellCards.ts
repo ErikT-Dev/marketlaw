@@ -1,5 +1,6 @@
 import type { CardName } from "../shared/catalogue/CardName";
 import { FUNDS_PER_SOLD_CARD } from "../shared/FUNDS_PER_SOLD_CARD";
+import { fundsInTenths } from "../shared/fundsInTenths";
 import type { SeatNumber } from "../shared/SeatNumber";
 import type { GameState } from "./GameState";
 import { withoutCard } from "./withoutCard";
@@ -12,7 +13,7 @@ export function sellCards(
 ): GameState {
   const sold = updateSeat(state, seat, (current) => ({
     ...current,
-    stats: { ...current.stats, funds: current.stats.funds + cards.length * FUNDS_PER_SOLD_CARD },
+    stats: { ...current.stats, funds: current.stats.funds + fundsInTenths(cards.length * FUNDS_PER_SOLD_CARD) },
     hand: cards.reduce(withoutCard, current.hand),
     newCards: current.newCards.filter((card) => !cards.includes(card)),
     knownInHand: current.knownInHand.filter((card) => !cards.includes(card)),

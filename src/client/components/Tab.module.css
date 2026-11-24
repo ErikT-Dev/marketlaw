@@ -15,7 +15,11 @@
 
 .tab[aria-selected="true"] {
   border-color: var(--color-button-primary-base);
-  background: var(--color-panel-highlight);
+  background: color-mix(
+    in srgb,
+    var(--color-panel-highlight) var(--opacity-button-background),
+    transparent
+  );
   color: var(--color-text-primary);
 }
 

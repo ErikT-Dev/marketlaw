@@ -1,4 +1,5 @@
 import * as v from "valibot";
+import { TEST_PLAYER_ICON } from "../../../src/shared/testing/TEST_PLAYER_ICON.ts";
 import { describe, expect, it } from "vitest";
 import type { GameRecordDatabase } from "../../../src/server/records/GameRecordDatabase.ts";
 import { saveGameRecordIfEnded } from "../../../src/server/records/saveGameRecordIfEnded.ts";
@@ -20,7 +21,7 @@ function endedRoom(kind: "casual" | "ranked"): RoomRecord {
       ended_ms: 5000,
       kind,
     },
-    (name) => ({ playerId: v.parse(PlayerId, crypto.randomUUID()), name }),
+    (name) => ({ playerId: v.parse(PlayerId, crypto.randomUUID()), name, icon: TEST_PLAYER_ICON }),
     v.parse(EpochMs, 0),
   );
 }

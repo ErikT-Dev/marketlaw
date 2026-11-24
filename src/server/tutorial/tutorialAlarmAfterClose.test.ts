@@ -1,4 +1,5 @@
 import * as v from "valibot";
+import { TEST_PLAYER_ICON } from "../../shared/testing/TEST_PLAYER_ICON";
 import { describe, expect, it } from "vitest";
 import { EpochMs } from "../../shared/EpochMs";
 import { PlayerId } from "../../shared/PlayerId";
@@ -14,10 +15,12 @@ const NOW = v.parse(EpochMs, 5_000);
 const ANN: Identity = {
   playerId: v.parse(PlayerId, "5b0f6a52-3d5e-4f7c-8a41-6c2b9e0d7f13"),
   name: "Ann",
+  icon: TEST_PLAYER_ICON,
 };
 const BEA: Identity = {
   playerId: v.parse(PlayerId, "7d0c7f1e-4b7a-4c5e-9a39-2f4d9c1b8e10"),
   name: "Bea",
+  icon: TEST_PLAYER_ICON,
 };
 const UNIDENTIFIED: ConnectionState = { identity: null, rejectionTimes: [] };
 const ANN_CONNECTED: ConnectionState = { identity: ANN, rejectionTimes: [] };

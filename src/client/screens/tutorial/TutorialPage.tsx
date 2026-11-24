@@ -1,6 +1,6 @@
 import styles from "../game/GamePage.module.css";
 import { HighlightedParts } from "../game/HighlightedParts";
-import { PlayerIconColors } from "../game/PlayerIconColors";
+import { PlayerIcons } from "../game/PlayerIcons";
 import { ServerClockOffset } from "../game/ServerClockOffset";
 import { RULES_HASH } from "../rules/RULES_HASH";
 import { TUTORIAL_FOCUS } from "./TUTORIAL_FOCUS";
@@ -10,7 +10,7 @@ import type { TutorialFocus } from "./TutorialFocus";
 import type { TutorialPageProps } from "./TutorialPageProps";
 import tutorialStyles from "./TutorialPage.module.css";
 import { TutorialNotices } from "./TutorialNotices";
-import { TutorialTextBox } from "./TutorialTextBox";
+import { TutorialMessage } from "./TutorialMessage";
 import { tutorialTextBoxOf } from "./tutorialTextBoxOf";
 import { TutorialTopBar } from "./TutorialTopBar";
 
@@ -35,7 +35,7 @@ export function TutorialPage(props: Props) {
           <main className={styles["table"]} inert={!isConnected || props.isOutdated}>
             <div className={tutorialStyles["left"]}>
               {progress.kind === "step" ? (
-                <TutorialTextBox
+                <TutorialMessage
                   content={tutorialTextBoxOf(progress.step, progress.number)}
                   isConnected={isConnected}
                   onContinue={props.onContinue}
@@ -43,7 +43,7 @@ export function TutorialPage(props: Props) {
                 />
               ) : null}
             </div>
-            <PlayerIconColors.Provider value={[props.playerIconColor]}>
+            <PlayerIcons.Provider value={props.playerIcon === null ? [] : [props.playerIcon]}>
               <TutorialColumns
                 view={view}
                 mine={mine}
@@ -52,7 +52,7 @@ export function TutorialPage(props: Props) {
                 pendingActions={props.pendingActions}
                 onAction={props.onAction}
               />
-            </PlayerIconColors.Provider>
+            </PlayerIcons.Provider>
           </main>
         </HighlightedParts.Provider>
         <TutorialNotices {...props} view={view} mine={mine} playerNames={playerNames} />

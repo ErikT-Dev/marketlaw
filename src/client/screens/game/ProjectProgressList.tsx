@@ -1,14 +1,15 @@
 import { useContext } from "react";
 import type { OwnSeatView } from "../../../shared/OwnSeatView";
 import type { PlayerView } from "../../../shared/PlayerView";
+import type { PlayerIconChoice } from "../../../shared/playerIcons/PlayerIconChoice";
 import { PROJECT_NAMES } from "../../../shared/PROJECT_NAMES";
 import { PROJECT_NEED } from "../../../shared/PROJECT_NEED";
 import type { ProjectName } from "../../../shared/ProjectName";
 import { HelpButton } from "../../components/HelpButton";
 import { PlayerIcon } from "../../components/PlayerIcon";
 import { StatChip } from "../../components/StatChip";
-import { playerIconColorOf } from "./playerIconColorOf";
-import { PlayerIconColors } from "./PlayerIconColors";
+import { playerIconOf } from "./playerIconOf";
+import { PlayerIcons } from "./PlayerIcons";
 import { playerNameOf } from "./playerNameOf";
 import { PROJECT_TITLES } from "./PROJECT_TITLES";
 import { PROJECTS_HELP } from "./PROJECTS_HELP";
@@ -22,44 +23,27 @@ type Props = {
 
 function othersNote(
   project: ProjectName,
-  { seat: ownSeat, view, playerNames }: Props,
-  playerIconColors: ReadonlyArray<number>,
+  { view, playerNames }: Props,
+  playerIcons: ReadonlyArray<PlayerIconChoice>,
 ) {
   const completers = view.seats.filter(
     (seat) => seat.kind === "other" && seat.projects.includes(project),
   );
-  if (completers.length > 0) {
-    return (
-      <>
-        {" "}
-        · Completed by{" "}
-        {completers.map(({ seat }) => {
-          const name = playerNameOf(playerNames, seat);
-          return (
-            <PlayerIcon
-              key={seat}
-              name={name}
-              username={name}
-              colorIndex={playerIconColorOf(playerIconColors, seat)}
-            />
-          );
-        })}
-      </>
-    );
-  }
-  const isFirstStillPossible =
-    !ownSeat.projects.includes(project) && !view.firstCompletions.includes(project);
-  return isFirstStillPossible ? (
+  return completers.length === 0 ? null : (
     <>
       {" "}
-      · First to complete gets +2 <StatChip stat="funds" />
+      · Completed by{" "}
+      {completers.map(({ seat }) => {
+        const name = playerNameOf(playerNames, seat);
+        return <PlayerIcon key={seat} name={name} icon={playerIconOf(playerIcons, seat)} />;
+      })}
     </>
-  ) : null;
+  );
 }
 
 export function ProjectProgressList(props: Props) {
   const { seat } = props;
-  const playerIconColors = useContext(PlayerIconColors);
+  const playerIcons = useContext(PlayerIcons);
   return (
     <div className={styles["projectsArea"]}>
       <div className={styles["projectsTitle"]}>
@@ -78,7 +62,7 @@ export function ProjectProgressList(props: Props) {
                 value={`${String(Math.min(seat.stats[project], PROJECT_NEED))}/${String(PROJECT_NEED)}`}
               />
             )}
-            {othersNote(project, props, playerIconColors)}
+            {othersNote(project, props, playerIcons)}
           </li>
         ))}
       </ul>

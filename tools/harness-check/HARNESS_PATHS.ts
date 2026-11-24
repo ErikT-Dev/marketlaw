@@ -14,6 +14,9 @@ export const HARNESS_PATHS = {
   rulebook: "harness/spec/rulebook.md",
   quests: "harness/spec/quests.txt",
   influenceActions: "harness/spec/influence-actions.txt",
+  playerIcons: "player-icons",
+  playerIconLicence: "player-icons/license.txt",
+  playerIconList: "src/shared/playerIcons/PLAYER_ICON_PICTURES.ts",
   ruleSpecs: [
     { path: "harness/spec/game-rules.md", title: "Game rules (R)" },
     { path: "harness/spec/multiplayer.md", title: "Multiplayer (M)" },

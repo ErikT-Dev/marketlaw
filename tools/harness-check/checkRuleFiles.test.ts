@@ -54,6 +54,14 @@ const BROKEN_QUEST_LINES = [
   ],
   ["Tier 1 | Working district | 3 Residental cards | +1 quality", 'unknown sector: "Residental"'],
   [
+    "Tier 1 | Working district | 3 tier 4 Residential cards | +1 quality",
+    'needs tier 1, 2 or 3: "4"',
+  ],
+  [
+    "Tier 1 | Working district | 3 tier 2 or 3 Residential cards | +1 quality",
+    'unknown sector: "or 3 Residential"',
+  ],
+  [
     "Tier 1 | Working district | 3 Residential cards, 1 Low Welth | +1 quality",
     'unknown type, stat or sector: "Low Welth"',
   ],
@@ -153,7 +161,25 @@ describe("the rule file check", () => {
       .filter((line) => !line.startsWith("Tier 1") || kept.some((name) => line.includes(name)))
       .join("\n");
     expect(messagesOf(fewer, INFLUENCE_ACTIONS_TEXT)).toEqual([
-      `${HARNESS_PATHS.quests} | whole file | 3 tier 1 quests; the starting table needs 4 (R19.3)`,
+      `${HARNESS_PATHS.quests} | whole file | 3 tier 1 quests can be placed at the start (at most income 5 and no completed project); the starting table needs 4 (R19.3, R19.11)`,
+      `${HARNESS_PATHS.quests} | Green city | the tutorial (T0.7) needs this tier 1 quest`,
+    ]);
+  });
+
+  it("counts only the tier 1 quests that can be placed at the start", () => {
+    const kept = ["Working district", "Fishing village", "Trading post"];
+    const heldBack = [
+      "Tier 1 | Rich town | income 6 | +1 fund",
+      "Tier 1 | Planned town | 1 completed project | +1 fund",
+    ];
+    const fewer = [
+      ...heldBack,
+      ...QUESTS_TEXT.split("\n").filter(
+        (line) => !line.startsWith("Tier 1") || kept.some((name) => line.includes(name)),
+      ),
+    ].join("\n");
+    expect(messagesOf(fewer, INFLUENCE_ACTIONS_TEXT)).toEqual([
+      `${HARNESS_PATHS.quests} | whole file | 3 tier 1 quests can be placed at the start (at most income 5 and no completed project); the starting table needs 4 (R19.3, R19.11)`,
       `${HARNESS_PATHS.quests} | Green city | the tutorial (T0.7) needs this tier 1 quest`,
     ]);
   });

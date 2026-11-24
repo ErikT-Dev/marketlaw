@@ -74,7 +74,8 @@ describe("looking at a card in the big card", () => {
     expect(
       selectedCard()
         .getAllByRole("button")
-        .map((button) => button.textContent),
+        .map((button) => button.textContent)
+        .filter((text) => !/^#[0-9]/.test(text)),
     ).toEqual(["Close"]);
     expect(marketplace.getByRole("button", { name: "Law Firm" }).getAttribute("aria-pressed")).toBe(
       "true",

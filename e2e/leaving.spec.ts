@@ -53,7 +53,7 @@ test("players leave one by one, the last player wins and the room is deleted", a
   await leaveGame(two);
   const won = three.getByRole("dialog", { name: "You win: everyone else left" });
   await expect(won).toContainText("so the game ended at once and you are 1st");
-  await expect(won.getByRole("row")).toHaveCount(4);
+  await expect(won.getByRole("table", { name: "Places" }).getByRole("row")).toHaveCount(4);
   await expectScreenFits(three, "game-over-last-player", testInfo);
   await expect(one.getByRole("dialog", { name: "Seat 3 wins: everyone else left" })).toBeVisible();
 

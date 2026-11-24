@@ -390,3 +390,18 @@
         stats: {funds: 9, influence: 0}
         hand: [Farm House]
         worth_gained: 17
+
+- name: 3 influence buy 1 fund as often as the player likes
+  covers: [R15.1, R2.4]
+  given:
+    seats:
+      - seat: 1
+        stats: {influence: 6}
+  when:
+    - {seat: 1, action: influence, trade: influence_to_fund}
+    - {seat: 1, action: influence, trade: influence_to_fund}
+  then:
+    seats:
+      - seat: 1
+        stats: {funds: 9, influence: 0}
+        worth_gained: 16

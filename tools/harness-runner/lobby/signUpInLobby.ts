@@ -50,13 +50,14 @@ function saveSignup(
   step: Readonly<Record<string, unknown>>,
 ): void {
   const { name, guest } = signup;
-  const playerId = guest?.identity.playerId ?? session.identityNamed(name).playerId;
+  const { playerId, icon } = guest?.identity ?? session.identityNamed(name);
   session.accounts.delete(guest?.identity.name ?? name);
   session.accounts.set(name, {
-    identity: { playerId, name },
+    identity: { playerId, name, icon },
     lastUsedMs: guest?.lastUsedMs ?? session.now,
     registration: registrationOf(session, step),
     usernameChangesMs: guest?.usernameChangesMs ?? [],
+    iconChangesMs: guest?.iconChangesMs ?? [],
   });
 }
 

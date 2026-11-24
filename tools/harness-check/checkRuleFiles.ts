@@ -1,6 +1,8 @@
 import type { Result } from "../../src/shared/Result.ts";
 import { readInfluenceActionFile } from "../../src/shared/ruleFiles/readInfluenceActionFile.ts";
+import { incomeToPlaceQuestOf } from "../../src/shared/ruleFiles/incomeToPlaceQuestOf.ts";
 import { readQuestFile } from "../../src/shared/ruleFiles/readQuestFile.ts";
+import { STARTING_STATS } from "../../src/rules/STARTING_STATS.ts";
 import type { RuleFileProblem } from "../../src/shared/ruleFiles/RuleFileProblem.ts";
 import { checkTutorialQuests } from "./checkTutorialQuests.ts";
 import type { HarnessFiles } from "./HarnessFiles.ts";
@@ -28,14 +30,16 @@ function questListProblems(
   if (!result.isOk) {
     return fileProblems(HARNESS_PATHS.quests, result);
   }
-  const tier1Count = result.value.filter(({ tier }) => tier === 1).length;
+  const tier1Count = result.value.filter(
+    ({ tier, terms }) => tier === 1 && incomeToPlaceQuestOf(terms) <= STARTING_STATS.income,
+  ).length;
   const tooFew =
     tier1Count < TIER_1_QUESTS_NEEDED
       ? [
           {
             file: HARNESS_PATHS.quests,
             where: "whole file",
-            message: `${String(tier1Count)} tier 1 quests; the starting table needs ${String(TIER_1_QUESTS_NEEDED)} (R19.3)`,
+            message: `${String(tier1Count)} tier 1 quests can be placed at the start (at most income 5 and no completed project); the starting table needs ${String(TIER_1_QUESTS_NEEDED)} (R19.3, R19.11)`,
           },
         ]
       : [];

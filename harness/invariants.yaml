@@ -67,11 +67,12 @@
     workforce, quality and satisfaction are all 0 or more.
 
 - id: I10
-  name: bonus is turned into funds at the end of every turn
-  covers: [R14.3]
+  name: the stats gain goes into funds at the end of every turn
+  covers: [R14.1, R14.2]
   when: after the end-of-turn steps
   holds: >
-    After the end-of-turn steps, every player's bonus is less than 10.
+    After the end-of-turn steps, every player still in the game has at least the larger of 0 and
+    their funds plus income plus stats gain of the turn before.
 
 - id: I11
   name: limited influence actions stay within their limits
@@ -109,17 +110,20 @@
   covers: [R19.1, R19.6, R19.7, R19.9]
   when: after every action
   holds: >
-    Each of the 45 quests is in exactly one of: the quest list, the quests table, or gone for good
+    Each quest of `quests.txt` is in exactly one of: the quest list, the quests table, or gone for good
     because it was completed.
 
 - id: I16
   name: the quests table respects its size, ages and tiers
-  covers: [R19.1, R19.7, R19.8]
+  covers: [R19.1, R19.6, R19.7, R19.8, R19.11]
   when: after every action
   holds: >
     The quests table holds at most 4 quests, or 5 from the start of turn 20. No quest has been on
-    the table for more than 5 turns. No tier 2 quest was placed before turn 5, and no tier 3
-    quest before turn 13.
+    the table for more than 6 turns if tier 1, 5 if tier 2 or 4 if tier 3, and no quest stays
+    after the end of the turn after the one it was first completed in. No tier 2 quest was
+    placed before turn 5, and no tier 3 quest before turn 13. No quest needing income N was
+    placed while every player still in the game had less than N - 2 income, and no quest
+    needing completed projects while every player still in the game had less than 8 income.
 
 - id: I17
   name: the action limit is never exceeded
@@ -234,3 +238,15 @@
   holds: >
     A player's redraws of the starting hand are at most 3, all in turn 1, and none after their
     first main-phase action.
+
+- id: I30
+  name: total worth gained equals funds received plus cards gained
+  covers: [R2.4, R11.5, R14.3]
+  when: after every action
+  holds: >
+    Every player's total worth gained, in tenths of a fund, equals exactly 10 per card they have
+    gained in the game (the starting hand once, every card drawn and every marketplace card
+    taken) plus every tenth of a fund they have received from any source (starting funds,
+    income, positive stats gains, Support, projects, quests, influence actions), not counting
+    funds from selling. The simulator counts these from the actions themselves, not from the
+    state's own count.

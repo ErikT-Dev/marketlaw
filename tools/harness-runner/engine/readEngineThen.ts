@@ -33,6 +33,9 @@ function endedThen(state: GameState): unknown {
         abandoned: state.result !== null && isAbandoned(state.result.endedBy),
         winner: places[0]?.seat,
         places: places.map(({ seat }) => seat),
+        end_goal: places
+          .filter(({ hasReachedEndGoal }) => hasReachedEndGoal)
+          .map(({ seat }) => seat),
         scores: Object.fromEntries(places.map(({ seat, score }) => [seat, score])),
         bonus_type_points: Object.fromEntries(
           places.map(({ seat, bonusTypePoints }) => [seat, bonusTypePoints]),
@@ -74,7 +77,11 @@ export function readEngineThen(
       state.quests.map((place) =>
         place === null
           ? { quest: null }
-          : { quest: place.quest, turns_on_table: place.turnsOnTable },
+          : {
+              quest: place.quest,
+              turns_on_table: place.turnsOnTable,
+              extra_turn: place.isInExtraTurn,
+            },
       ),
     quest_list: () => state.questList,
     quest_list_excludes: () => {
@@ -83,7 +90,6 @@ export function readEngineThen(
     },
     bonus_types: () => state.bonusTypes,
     done_order: () => state.doneOrder,
-    first_completions: () => state.firstCompletions,
     ended: () => endedThen(state),
     vote: () => (state.vote === null ? "closed" : "open"),
   };

@@ -1,4 +1,5 @@
 import * as v from "valibot";
+import { TEST_PLAYER_ICON } from "../../shared/testing/TEST_PLAYER_ICON";
 import { describe, expect, it } from "vitest";
 import { randomForNextAction } from "../../rules/randomForNextAction";
 import { EpochMs } from "../../shared/EpochMs";
@@ -46,7 +47,7 @@ function countingStorage(): CountingStorage {
 }
 
 function player(name: string): Identity {
-  return { playerId: v.parse(PlayerId, crypto.randomUUID()), name };
+  return { playerId: v.parse(PlayerId, crypto.randomUUID()), name, icon: TEST_PLAYER_ICON };
 }
 
 const CODE = v.parse(RoomCode, "K7QR2P");

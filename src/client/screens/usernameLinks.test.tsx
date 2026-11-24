@@ -14,17 +14,21 @@ import { GameOverTable } from "./game/GameOverTable";
 import { GamePage } from "./GamePage";
 import { PublicRoomsList } from "./lobby/PublicRoomsList";
 import { WaitingPlayers } from "./lobby/WaitingPlayers";
+import { scorePartsAddingUpTo } from "../testing/scorePartsAddingUpTo";
+import { NO_SUMMARY_COUNTS } from "../../shared/testing/NO_SUMMARY_COUNTS";
 
 const RESULT: GameResult = {
   endedBy: "end_goal",
   places: ([3, 2, 1] as const).map((seat) => ({
     seat,
     score: 600 - seat * 50,
+    scorePartsInHundredths: scorePartsAddingUpTo(600 - seat * 50),
     bonusTypePoints: 4,
     leftInTurn: null,
     hasReachedEndGoal: false,
     income: 22,
     fundsAndHand: 10,
+    counts: NO_SUMMARY_COUNTS,
   })),
 };
 

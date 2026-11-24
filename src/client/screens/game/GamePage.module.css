@@ -30,6 +30,8 @@
 .left,
 .middle,
 .middleInMarketPhase,
+.middleWithLastTurn,
+.middleInMarketPhaseWithLastTurn,
 .right,
 .cityRow {
   display: grid;
@@ -48,6 +50,14 @@
 
 .middleInMarketPhase {
   grid-template-rows: auto auto minmax(0, 1fr) auto;
+}
+
+.middleWithLastTurn {
+  grid-template-rows: auto auto minmax(0, 348fr) minmax(0, 310fr);
+}
+
+.middleInMarketPhaseWithLastTurn {
+  grid-template-rows: auto auto auto minmax(0, 1fr) auto;
 }
 
 .cityRow {

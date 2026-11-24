@@ -17,6 +17,7 @@ export function lobbyAccountsThen(session: LobbySession, field: string, expected
       return Promise.all(
         [...session.accounts.values()].map(async ({ identity, registration }) => ({
           name: identity.name,
+          icon: identity.icon,
           kind: registration === null ? "guest" : "registered",
           email: registration?.email ?? null,
           email_confirmed: registration?.isEmailConfirmed ?? false,

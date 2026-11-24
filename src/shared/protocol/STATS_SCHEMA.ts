@@ -9,5 +9,4 @@ export const STATS_SCHEMA = v.object({
   satisfaction: v.number(),
   product: v.number(),
   distribution: v.number(),
-  bonus: v.number(),
 });

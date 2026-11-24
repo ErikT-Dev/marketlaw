@@ -26,12 +26,13 @@ describe("rulebook tables from the rule files", () => {
       ["4 ", { stat: "influence" }, " → 2 ", { stat: "funds" }],
       ["1"],
     ]);
-    expect(table?.rows[4]).toEqual([["1 ", { stat: "funds" }, " → 1 ", { stat: "influence" }], ["any"]]);
+    expect(table?.rows[1]).toEqual([["3 ", { stat: "influence" }, " → 1 ", { stat: "funds" }], ["any"]]);
+    expect(table?.rows[5]).toEqual([["1 ", { stat: "funds" }, " → 1 ", { stat: "influence" }], ["any"]]);
   });
 
   it("shows the rising build pass price and the draw actions in words", () => {
     const rows = tablesOf("Influence")[0]?.rows ?? [];
-    expect(rows[5]?.[0]).toEqual([
+    expect(rows[6]?.[0]).toEqual([
       "2 ",
       { stat: "funds" },
       " → 1 ",
@@ -50,7 +51,9 @@ describe("rulebook tables from the rule files", () => {
     const tables = tablesOf("The quest list");
     expect(tables).toHaveLength(3);
     expect(tables.flatMap(({ rows }) => rows.map((row) => row[0]))).toEqual(
-      QUEST_LINES.map(({ name }) => [name]),
+      [1, 2, 3].flatMap((tier) =>
+        QUEST_LINES.filter((quest) => quest.tier === tier).map(({ name }) => [name]),
+      ),
     );
     expect(tables[0]?.rows[0]).toEqual([
       ["Working district"],
@@ -59,8 +62,8 @@ describe("rulebook tables from the rule files", () => {
     ]);
     expect(tables[1]?.rows[6]).toEqual([
       ["Market town"],
-      ["2 ", { type: "Town Housing" }, ", 2 ", { type: "Retail" }, " and 2 ", { type: "Food" }],
-      ["gain 1 ", { type: "Retail" }, ", draw 2 cards"],
+      ["2 ", { type: "Town Housing" }, ", 2 ", { type: "Retail" }, " and 1 ", { type: "Sea" }],
+      ["gain 1 ", { type: "Alcohol" }, ", draw 1 card"],
     ]);
   });
 

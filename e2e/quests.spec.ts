@@ -1,5 +1,7 @@
 import { expect, test, type Browser, type Page } from "@playwright/test";
+import { endTurnForEveryone } from "./endTurnForEveryone";
 import { expectScreenFits } from "./expectScreenFits";
+import { playMarketPhase } from "./playMarketPhase";
 import { startTestRoom } from "./startTestRoom";
 
 const SEAT_ONE_READY_FOR_TRADING_POST = { seat: 1, city: ["Apparel Store"], stats: { income: 4 } };
@@ -9,6 +11,12 @@ async function seatPage(browser: Browser, link: string, turn: number): Promise<P
   await page.goto(link);
   await expect(page.getByRole("heading", { name: `Turn ${String(turn)} of 40` })).toBeVisible();
   return page;
+}
+
+function lastTurnQuests(page: Page) {
+  return page
+    .getByRole("region", { name: "Last turn" })
+    .getByRole("list", { name: "Quests completed" });
 }
 
 function questCard(page: Page, quest: string) {
@@ -27,7 +35,7 @@ test("five quests with three-part requirements and four players can all be reach
       { quest: "Trading post" },
       { quest: "Market town" },
       { quest: "Shopping centre" },
-      { quest: "Public institutions" },
+      { quest: "Penthouses" },
       { quest: "Media city" },
     ],
     seats: [
@@ -109,25 +117,32 @@ test("a completed quest shows as completed, stays hidden from others until the m
   }
   for (const page of [one, two]) {
     await expect(page.getByRole("heading", { name: "Turn 4 of 40" })).toBeVisible();
+    await expect(questCard(page, "Trading post")).toHaveCount(1);
+    await expect(lastTurnQuests(page).getByRole("listitem")).toHaveCount(1);
+  }
+  const lastTurn = one.getByRole("region", { name: "Last turn" });
+  await expect(lastTurn).toBeInViewport();
+  await expect(lastTurn.getByRole("heading", { name: "Last turn · Turn 3" })).toBeVisible();
+  const yourRow = lastTurnQuests(one).getByRole("listitem");
+  await expect(yourRow).toContainText("Trading post");
+  await expect(yourRow.getByRole("button", { name: "You" })).toBeVisible();
+  for (const part of ["+1 funds", "+2 influence"]) {
+    await expect(yourRow.getByRole("img", { name: part })).toBeVisible();
+  }
+  await expect(lastTurnQuests(two).getByRole("button", { name: "Seat 1" })).toBeVisible();
+  await expectScreenFits(one, "last-turn", testInfo);
+  const players = [one, two].map((page, index) => ({
+    page,
+    frames: [],
+    name: `Seat ${String(index + 1)}`,
+  }));
+  await playMarketPhase(players, 4);
+  await endTurnForEveryone(players);
+  for (const page of [one, two]) {
+    await expect(page.getByRole("heading", { name: "Turn 5 of 40" })).toBeVisible();
     await expect(questCard(page, "Trading post")).toHaveCount(0);
     await expect(page.getByRole("list", { name: "Quests table" }).getByRole("region")).toHaveCount(
       4,
     );
-    await expect(
-      page.getByRole("table", { name: "Completed last turn" }).getByRole("row", {
-        name: /Trading post/,
-      }),
-    ).toBeVisible();
   }
-  const completedLastTurn = one.getByRole("table", { name: "Completed last turn" });
-  await completedLastTurn.scrollIntoViewIfNeeded();
-  await expect(completedLastTurn).toBeInViewport();
-  for (const column of ["Requirement", "Reward"]) {
-    await expect(completedLastTurn.getByRole("columnheader", { name: column })).toBeVisible();
-  }
-  const tradingPost = completedLastTurn.getByRole("row", { name: /Trading post/ });
-  for (const part of ["4 income", "1 Retail", "+1 funds", "+2 influence"]) {
-    await expect(tradingPost.getByRole("img", { name: part })).toBeVisible();
-  }
-  await expectScreenFits(one, "quests-completed-last-turn", testInfo);
 });

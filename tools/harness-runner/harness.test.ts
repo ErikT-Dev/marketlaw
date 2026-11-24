@@ -12,8 +12,8 @@ const SIMULATED_GAME_COUNT =
 const OUTCOME = await runHarness(DRIVERS, SIMULATED_GAME_COUNT);
 
 describe("the harness", () => {
-  it("reads all 507 scenarios", () => {
-    expect(OUTCOME.run.runs).toHaveLength(507);
+  it("reads all 545 scenarios", () => {
+    expect(OUTCOME.run.runs).toHaveLength(545);
   });
 
   it("simulates every game it was asked for", () => {

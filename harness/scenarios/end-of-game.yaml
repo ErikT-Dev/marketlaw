@@ -1,24 +1,23 @@
 - name: reaching the end goal ends the game after that main phase without end-of-turn steps
-  covers: [R1.3, R21.1, R21.2, R16.4, R16.6, R1.1]
+  covers: [R1.3, R21.1, R21.2, R16.5, R1.1]
   given:
     turn: 12
     seats:
       - seat: 1
-        stats: {income: 20, workforce: 8}
+        stats: {income: 19, workforce: 8}
         projects: [quality, satisfaction]
-    first_completions: [quality, satisfaction]
-    random: [{sector: Service}, {tier: 2}, {sector: Public}, {tier: 2}]
+    random: [{sector: Service}, {tier: 2}]
   when:
     - {seat: 1, action: complete_project, project: workforce}
     - {seat: 1, action: end_turn}
     - {seat: 2, action: end_turn}
   then:
     turn: 12
-    ended: {winner: 1, places: [1, 2], scores: {1: 740, 2: 615}}
+    ended: {winner: 1, places: [1, 2], scores: {1: 132, 2: 20}}
     seats:
       - seat: 1
-        stats: {income: 22, funds: 11, influence: 3}
-        hand: [Law Firm, Recycling Center]
+        stats: {income: 20, funds: 9, influence: 3}
+        hand: [Law Firm]
       - seat: 2
         stats: {funds: 7, influence: 0}
 
@@ -28,7 +27,7 @@
     turn: 12
     seats:
       - seat: 1
-        stats: {income: 22}
+        stats: {income: 20}
         projects: [quality, satisfaction, workforce]
       - seat: 2
         hand: [Row House]
@@ -50,7 +49,7 @@
     quests: [{quest: Farmland}, {quest: Sports town}, {quest: Trading post}, {quest: Mining town}]
     seats:
       - seat: 1
-        stats: {income: 22}
+        stats: {income: 20}
         projects: [quality, satisfaction, workforce]
   when:
     - {seat: 1, action: leave_game}
@@ -75,7 +74,7 @@
     - {seat: 2, action: end_turn}
   then:
     turn: 40
-    ended: {winner: 1, scores: {1: 11, 2: -85}}
+    ended: {winner: 1, scores: {1: 116, 2: 20}}
 
 - name: the score is computed exactly before rounding down
   covers: [R21.4]
@@ -91,7 +90,7 @@
     - {seat: 1, action: end_turn}
     - {seat: 2, action: end_turn}
   then:
-    ended: {scores: {1: 1014, 2: 895}}
+    ended: {scores: {1: 144, 2: 25}}
 
 - name: bonus types score their point value for every count in the type counts including gained types
   covers: [R21.7, R20.6]
@@ -107,31 +106,6 @@
     - {seat: 2, action: end_turn}
   then:
     ended: {bonus_type_points: {1: 8, 2: 0}}
-
-- name: equal scores are broken by who became done earlier in the final turn
-  covers: [R21.8, R21.9, R8.3]
-  given:
-    turn: 40
-  when:
-    - {seat: 1, action: end_turn}
-    - {seat: 2, action: end_turn}
-  then:
-    ended: {winner: 1, places: [1, 2], scores: {1: -85, 2: -85}}
-
-- name: players made done at the same moment in the final turn are placed in player order
-  covers: [R21.9, R8.4]
-  given:
-    turn: 40
-    first_player: 2
-    seats:
-      - seat: 1
-        time_bank_ms: 0
-      - seat: 2
-        time_bank_ms: 0
-  when:
-    - wait_ms: 75000
-  then:
-    ended: {winner: 2, places: [2, 1]}
 
 - name: players who left come after every player still in the game
   covers: [R21.8, A3.4]
@@ -167,3 +141,84 @@
     phase: ended
     discard: [Cottage]
     holding_pile: []
+
+- name: the end goal needs income 20 and all 3 projects
+  covers: [R1.3, R21.1]
+  given:
+    turn: 12
+    seats:
+      - seat: 1
+        stats: {income: 20}
+        projects: [quality, satisfaction, workforce]
+  when:
+    - {seat: 1, action: end_turn}
+    - {seat: 2, action: end_turn}
+  then:
+    turn: 12
+    ended: {winner: 1, end_goal: [1]}
+
+- name: a player who reached the end goal places above a player with a higher score who did not
+  covers: [R21.8]
+  given:
+    turn: 12
+    seats:
+      - seat: 1
+        stats: {income: 20}
+        projects: [quality, satisfaction, workforce]
+      - seat: 2
+        stats: {income: 30}
+  when:
+    - {seat: 1, action: end_turn}
+    - {seat: 2, action: end_turn}
+  then:
+    ended: {winner: 1, places: [1, 2], end_goal: [1], scores: {1: 131, 2: 196}}
+
+- name: equal scores are broken by total worth gained
+  covers: [R21.9, R2.4]
+  given:
+    turn: 40
+    seats:
+      - seat: 2
+        worth_gained: 20
+  when:
+    - {seat: 1, action: end_turn}
+    - {seat: 2, action: end_turn}
+  then:
+    ended: {winner: 2, places: [2, 1], scores: {1: 20, 2: 20}}
+
+- name: equal scores and total worth gained are broken by player order
+  covers: [R21.9, R4.5]
+  given:
+    turn: 40
+    first_player: 2
+  when:
+    - {seat: 1, action: end_turn}
+    - {seat: 2, action: end_turn}
+  then:
+    ended: {winner: 2, places: [2, 1], scores: {1: 20, 2: 20}}
+
+- name: the score has no base and no part for turns
+  covers: [R21.4, R21.5]
+  given:
+    turn: 40
+    seats:
+      - seat: 1
+        stats: {income: 10}
+  when:
+    - {seat: 1, action: end_turn}
+    - {seat: 2, action: end_turn}
+  then:
+    ended: {winner: 1, scores: {1: 66, 2: 20}}
+
+- name: the score counts whole funds only
+  covers: [R21.4, R21.5, R2.5]
+  given:
+    turn: 40
+    seats:
+      - seat: 1
+        stats: {funds: 2.5}
+  when:
+    - {seat: 1, action: end_turn}
+    - {seat: 2, action: end_turn}
+  then:
+    ended: {scores: {1: 19, 2: 20}}

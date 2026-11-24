@@ -120,14 +120,41 @@ describe("PlayedCard", () => {
   });
 });
 
+describe("card tile pictures", () => {
+  it("shows a small decorative picture of the card on hand and city tiles", () => {
+    render(
+      <>
+        <HandCard
+          card={LOFT}
+          realCost={8}
+          isPlayable
+          state="default"
+          isNew={false}
+          isPending={false}
+          onSelect={vi.fn()}
+        />
+        <PlayedCard card={LOFT} isSelected={false} onSelect={vi.fn()} />
+      </>,
+    );
+    const pictures = screen.getAllByRole("presentation", { hidden: true });
+    expect(pictures.map((picture) => picture.getAttribute("src"))).toEqual([
+      expect.stringMatching(/card-tiles\/[^/]+\.webp$/),
+      expect.stringMatching(/card-tiles\/[^/]+\.webp$/),
+    ]);
+    expect(pictures.map((picture) => picture.getAttribute("alt"))).toEqual(["", ""]);
+    expect(screen.queryAllByRole("img")).toEqual([]);
+    expect(screen.queryAllByRole("presentation")).toEqual([]);
+  });
+});
+
 describe("BigCard", () => {
-  it("shows the tier, the real cost and only the stats the card has", () => {
+  it("shows the tier, the real cost and only the stats the card has, signed by what it gives and uses up", () => {
     render(<BigCard card={LOFT} realCost={11} />);
     const card = screen.getByRole("article", { name: "Loft" });
     expect(within(card).getByRole("img", { name: "Tier 2" })).toBeDefined();
     expect(within(card).getByRole("img", { name: "Cost 11" })).toBeDefined();
-    expect(within(card).getByRole("img", { name: "Workforce 5" })).toBeDefined();
-    expect(within(card).getByRole("img", { name: "Satisfaction 3" })).toBeDefined();
+    expect(within(card).getByRole("img", { name: "Workforce +5" })).toBeDefined();
+    expect(within(card).getByRole("img", { name: "Satisfaction −3" })).toBeDefined();
     expect(within(card).queryByRole("img", { name: /^Product/ })).toBeNull();
   });
 
@@ -148,7 +175,13 @@ describe("BigCard", () => {
     ]);
   });
 
-  it("shows the title bar on the solid colour of the card's sector", () => {
+  it("signs a public card's quality as given and its workforce as used up", () => {
+    render(<BigCard card={cardOf("Landfill")} realCost={6} />);
+    expect(screen.getByRole("img", { name: "Quality +3" })).toBeDefined();
+    expect(screen.getByRole("img", { name: "Workforce −1" })).toBeDefined();
+  });
+
+  it("shows the title bar on the see-through bar colour of the card's sector", () => {
     const titleBars = (
       ["Farm House", "Timber Harvesting Industry", "Fast Food Restaurant", "Landfill"] as const
     ).map((name) => {
@@ -159,10 +192,10 @@ describe("BigCard", () => {
       return colours;
     });
     expect(titleBars).toEqual([
-      ["var(--color-sector-residential-solid)", "var(--color-sector-residential-solid-text)"],
-      ["var(--color-sector-industry-solid)", "var(--color-sector-industry-solid-text)"],
-      ["var(--color-sector-service-solid)", "var(--color-sector-service-solid-text)"],
-      ["var(--color-sector-public-solid)", "var(--color-sector-public-solid-text)"],
+      ["var(--color-sector-residential-bar)", "var(--color-sector-residential-solid-text)"],
+      ["var(--color-sector-industry-bar)", "var(--color-sector-industry-solid-text)"],
+      ["var(--color-sector-service-bar)", "var(--color-sector-service-solid-text)"],
+      ["var(--color-sector-public-bar)", "var(--color-sector-public-solid-text)"],
     ]);
   });
 });

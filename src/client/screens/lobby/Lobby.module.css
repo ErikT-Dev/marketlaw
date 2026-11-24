@@ -198,7 +198,11 @@
   min-height: 36px;
   border: 2px solid transparent;
   border-radius: var(--radius-sm);
-  background: var(--color-panel-raised);
+  background: color-mix(
+    in srgb,
+    var(--color-panel-raised) var(--opacity-button-background),
+    transparent
+  );
   color: var(--color-text-primary);
   font: inherit;
   font-weight: var(--font-weight-bold);
@@ -207,7 +211,11 @@
 
 .sizeButton[aria-pressed="true"] {
   border-color: var(--color-palette-purple);
-  background: var(--color-button-primary-base);
+  background: color-mix(
+    in srgb,
+    var(--color-button-primary-base) var(--opacity-button-background),
+    transparent
+  );
 }
 
 .sizeButton:disabled {

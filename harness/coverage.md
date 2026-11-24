@@ -15,12 +15,13 @@ it by hand.
 |---|---|---|
 | R1.1 | end-of-game (1) | Covered |
 | R1.2 | playing-cards (1) | Covered |
-| R1.3 | end-of-game (1) | Covered |
+| R1.3 | end-of-game (2) | Covered |
 | R1.4 | setup (1) | Covered |
 | R2.1 | setup (1) | Covered |
 | R2.2 | setup (1), turns-and-time (1) | Covered |
 | R2.3 | combos-and-income (2), projects (1) | Covered |
-| R2.4 | influence (1), playing-cards (1), setup (1) | Covered |
+| R2.4 | end-of-game (1), influence (2), playing-cards (1), setup (1), turns-and-time (2) | Covered |
+| R2.5 | end-of-game (1), turns-and-time (2) | Covered |
 | R3.1 | setup (1) | Covered |
 | R3.2 | – | Checked another way: Card data check: `cards.json` is loaded and every card has a sector, tier, cost, stats, types and combos. *(approved by the owner, 2026-10-25)* |
 | R3.3 | playing-cards (1) | Covered |
@@ -33,26 +34,26 @@ it by hand.
 | R4.2 | setup (2) | Covered |
 | R4.3 | rooms (1) | Covered |
 | R4.4 | turns-and-time (3) | Covered |
-| R4.5 | turns-and-time (2) | Covered |
+| R4.5 | end-of-game (1), turns-and-time (2) | Covered |
 | R4.6 | setup (4) | Covered |
 | R5.1 | hostile-client (3), playing-cards (4) | Covered |
 | R5.2 | playing-cards (1), turns-and-time (1) | Covered |
 | R5.3 | combos-and-income (1), marketplace (1), playing-cards (3) | Covered |
-| R5.4 | visibility (5) | Covered |
+| R5.4 | visibility (6) | Covered |
 | R5.5 | drawing (2), visibility (3) | Covered |
 | R5.6 | turns-and-time (1) | Covered |
 | R5.7 | visibility (2) | Covered |
 | R6.1 | playing-cards (8), undo (1) | Covered |
 | R6.2 | playing-cards (5) | Covered |
 | R6.3 | influence (1), playing-cards (1), setup (1), turns-and-time (2) | Covered |
-| R7.1 | playing-cards (1), undo (5) | Covered |
-| R7.2 | undo (8) | Covered |
-| R7.3 | undo (3) | Covered |
+| R7.1 | playing-cards (1), undo (7) | Covered |
+| R7.2 | undo (9) | Covered |
+| R7.3 | undo (2) | Covered |
 | R7.4 | undo (1) | Covered |
 | R8.1 | playing-cards (1), turns-and-time (1) | Covered |
 | R8.2 | turns-and-time (2) | Covered |
-| R8.3 | end-of-game (1), turns-and-time (1) | Covered |
-| R8.4 | end-of-game (1), turns-and-time (1) | Covered |
+| R8.3 | turns-and-time (1) | Covered |
+| R8.4 | turns-and-time (1) | Covered |
 | R8.5 | combos-and-income (3), marketplace (1) | Covered |
 | R9.1 | marketplace (1), turns-and-time (3) | Covered |
 | R9.2 | turns-and-time (2) | Covered |
@@ -69,14 +70,15 @@ it by hand.
 | R9.13 | turns-and-time (6) | Covered |
 | R9.14 | turns-and-time (1) | Covered |
 | R9.15 | turns-and-time (4) | Covered |
-| R10.1 | projects (1), turns-and-time (3) | Covered |
-| R10.2 | quests (2) | Covered |
+| R10.1 | projects (1), turns-and-time (4) | Covered |
+| R10.2 | quests (5) | Covered |
 | R10.3 | playing-cards (1), turns-and-time (1) | Covered |
 | R11.1 | turns-and-time (1) | Covered |
 | R11.2 | quests (1), turns-and-time (1) | Covered |
 | R11.3 | turns-and-time (1) | Covered |
 | R11.4 | turns-and-time (1) | Covered |
-| R12.1 | combos-and-income (2), playing-cards (1) | Covered |
+| R11.5 | projects (1), turns-and-time (4), visibility (1) | Covered |
+| R12.1 | combos-and-income (2), playing-cards (1), visibility (1) | Covered |
 | R12.2 | combos-and-income (1) | Covered |
 | R12.3 | combos-and-income (5) | Covered |
 | R12.4 | combos-and-income (3) | Covered |
@@ -84,10 +86,10 @@ it by hand.
 | R12.6 | combos-and-income (5), undo (1) | Covered |
 | R13.1 | combos-and-income (4), undo (1) | Covered |
 | R13.2 | combos-and-income (1) | Covered |
-| R14.1 | turns-and-time (1) | Covered |
-| R14.2 | turns-and-time (1) | Covered |
-| R14.3 | turns-and-time (3) | Covered |
-| R15.1 | influence (24), undo (3) | Covered |
+| R14.1 | turns-and-time (2) | Covered |
+| R14.2 | turns-and-time (2) | Covered |
+| R14.3 | turns-and-time (1) | Covered |
+| R15.1 | influence (25), undo (3) | Covered |
 | R15.2 | influence (4), undo (1) | Covered |
 | R15.3 | influence (3) | Covered |
 | R15.4 | influence (1) | Covered |
@@ -95,10 +97,8 @@ it by hand.
 | R15.6 | – | Checked another way: Rule file check: a test that an action of an unknown kind fails with needs new code, and a client test that a plain trade added to the file is shown and used with no screen change. *(approved by the owner, 2026-11-18)* |
 | R16.1 | projects (2) | Covered |
 | R16.2 | projects (4) | Covered |
-| R16.3 | projects (1) | Covered |
-| R16.4 | end-of-game (1), projects (1) | Covered |
-| R16.5 | projects (2) | Covered |
-| R16.6 | end-of-game (1), projects (2) | Covered |
+| R16.3 | projects (2) | Covered |
+| R16.5 | end-of-game (1), projects (5) | Covered |
 | R17.1 | setup (1), visibility (1) | Covered |
 | R17.2 | drawing (1) | Covered |
 | R17.3 | drawing (2), marketplace (1) | Covered |
@@ -131,25 +131,27 @@ it by hand.
 | R19.2 | – | Checked another way: The quest list scenarios in `quests.yaml` have one scenario for each quest of `quests.txt`, updated with every edit of the file (Q169). *(approved by the owner, 2026-11-18)* |
 | R19.3 | setup (1) | Covered |
 | R19.4 | quests (5) | Covered |
-| R19.5 | quests (50), undo (1) | Covered |
-| R19.6 | quests (2) | Covered |
-| R19.7 | quests (2) | Covered |
-| R19.8 | quests (5) | Covered |
+| R19.5 | quests (57), undo (1) | Covered |
+| R19.6 | quests (7), visibility (1) | Covered |
+| R19.7 | quests (5) | Covered |
+| R19.8 | quests (6) | Covered |
 | R19.9 | quests (1) | Covered |
-| R20.1 | quests (1) | Covered |
-| R20.2 | quests (4) | Covered |
+| R19.10 | quests (2), undo (1) | Covered |
+| R19.11 | quests (3) | Covered |
+| R20.1 | quests (2) | Covered |
+| R20.2 | quests (6) | Covered |
 | R20.3 | quests (3) | Covered |
 | R20.4 | quests (2) | Covered |
 | R20.5 | quests (2) | Covered |
 | R20.6 | combos-and-income (1), end-of-game (1), quests (3) | Covered |
-| R20.7 | quests (48) | Covered |
+| R20.7 | quests (56) | Covered |
 | R20.8 | – | Checked another way: Rule file check: tests of the check with broken, misspelt and unknown lines of `quests.txt`. *(approved by the owner, 2026-11-18)* |
 | R20.9 | – | Checked another way: Rule file check: tests that fewer than 4 tier 1 quests, a duplicate name and a changed tutorial quest fail it; client tests that the rules viewer and the quests panel show the quests of the file. *(approved by the owner, 2026-11-18)* |
-| R21.1 | end-of-game (3), hostile-client (1) | Covered |
+| R21.1 | end-of-game (4), hostile-client (1) | Covered |
 | R21.2 | end-of-game (2) | Covered |
 | R21.3 | end-of-game (1) | Covered |
-| R21.4 | end-of-game (2), records-and-ratings (1) | Covered |
-| R21.5 | end-of-game (1) | Covered |
+| R21.4 | end-of-game (4), records-and-ratings (1) | Covered |
+| R21.5 | end-of-game (3) | Covered |
 | R21.6 | setup (1) | Covered |
 | R21.7 | end-of-game (2) | Covered |
 | R21.8 | end-of-game (2) | Covered |
@@ -178,9 +180,9 @@ it by hand.
 | M3.2 | visibility (7) | Covered |
 | M3.3 | drawing (3), visibility (4) | Covered |
 | M3.4 | visibility (1) | Covered |
-| M3.5 | connections-and-leaving (1), quests (1), visibility (3) | Covered |
+| M3.5 | connections-and-leaving (1), quests (1), visibility (5) | Covered |
 | M3.6 | – | Checked another way: A pointer to A6; tested there. *(approved by the owner, 2026-10-25)* |
-| M3.7 | visibility (6) | Covered |
+| M3.7 | visibility (7) | Covered |
 | M4.1 | visibility (1) | Covered |
 | M4.2 | – | Checked another way: Replay export check: a running and an ended room are exported and replay exactly. *(approved by the owner, 2026-10-25)* |
 | M4.3 | visibility (2) | Covered |
@@ -242,9 +244,10 @@ it by hand.
 | A2.2 | accounts (1) | Covered |
 | A2.3 | accounts (1) | Covered |
 | A2.4 | accounts (7) | Covered |
-| A2.5 | – | Checked another way: Server tests that a seat's icon colour comes from the account id and stays the same in two games and after a username change; client tests of the icon in the quests and projects displays. *(approved by the owner, 2026-11-18)* |
+| A2.5 | accounts (3) | Covered. Also: Player icon folder check: tests that a non-SVG file, an SVG without viewBox, over 20 KB, with a script or an outside reference, or in an artist folder the licence file does not name fails it; client tests of the icon wherever a player icon shows. *(approved by the owner, 2026-11-23)* |
+| A2.6 | accounts (4) | Covered |
 | A3.1 | connections-and-leaving (1), records-and-ratings (2) | Covered |
-| A3.2 | records-and-ratings (2) | Covered |
+| A3.2 | records-and-ratings (3) | Covered |
 | A3.3 | records-and-ratings (2) | Covered |
 | A3.4 | connections-and-leaving (1), end-of-game (1), records-and-ratings (1) | Covered |
 | A3.5 | accounts (2), records-and-ratings (1) | Covered |
@@ -365,7 +368,7 @@ it by hand.
 
 ## Summary
 
-- Rules: 329
-- Scenarios: 507
+- Rules: 332
+- Scenarios: 545
 - Gaps: 0
 - Checked another way or also checked another way: R3.2, R3.5, R17.10, R19.2, M3.1, M3.6, M4.2, A6.4, A10.6, C5.1, C5.2, C5.3, A12.1, R15.5, R15.6, R20.8, R20.9, T0.7, A2.5

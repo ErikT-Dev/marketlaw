@@ -63,7 +63,9 @@ None yet.
 ## M3. What each player can see
 
 - **M3.1** Players affect each other through the shared deck and discard pile, the marketplace,
-  the quests table and the first-completion project rewards.
+  the quests table (whose quests stay an extra turn after their first completion and give
+  +1 influence to the first ones, R19.6, R19.10), and Support, which depends on every player's
+  total worth gained (R11.5).
 - **M3.2** **Hidden information in a game:** three things are hidden:
   - which cards are in another player's hand. You see your own hand; of other players you only
     see how many cards they hold.
@@ -89,7 +91,9 @@ None yet.
   stats, total worth gained (R2.4), cards in play, type counts, combos, influence action uses,
   build passes, completed projects and quests, their player icon (A2.5), time bank, whether they are away (M5.2), whether they have had their
   market go, whether they are out of time (R9.10) and whether they are done with the turn; which
-  quests were completed in the turn before and by whom (R19.6); the marketplace, the quests table, the bonus types, and the number of cards in the discard
+  quests and projects were completed in the turn before and by whom, how much each player's
+  income went up in the turn before, and the Support each player got at the start of the turn
+  (R19.6, R11.5, S5.5); the marketplace, the quests table, the bonus types, and the number of cards in the discard
   pile and left in the deck (during the main phase, as described in R5.5). How this is shown on
   screen is described in `screens.md`.
 - **M3.6** Hidden information outside a game is listed in A6.
@@ -98,8 +102,10 @@ None yet.
   project they completed, each influence action they used (trades and build passes), and their
   redraws of the starting hand (R17.12), all with the turn number. Actions they undid are not in it (R5.7), and draw actions
   appear as draws (M3.3). Until the main phase ends nobody sees these entries, the player's own
-  included. A game that ends during a main phase (M6.8, M6.9, M7.4, R9.14) ends that main
-  phase too: its entries are written as the game ends. They are kept with the room's state and
+  included. At the start of every turn from turn 2 on, the log also gets, for each player, how
+  much their income went up in the turn before and the Support they got (R11.5), as the Last
+  turn panel shows them (S5.5). A game that ends during a main phase (M6.8, M6.9, M7.4, R9.14)
+  ends that main phase too: its entries are written as the game ends. They are kept with the room's state and
   need no row written of their own.
 
 ## M4. Replays

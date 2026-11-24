@@ -45,7 +45,7 @@ describe("total worth gained", () => {
     const fundsReceived = (after?.stats.funds ?? 0) - (before?.stats.funds ?? 0);
     expect(ended.state.turn).toBe(2);
     expect(fundsReceived).toBeGreaterThan(0);
-    expect(after?.worthGained).toBe(14 + fundsReceived);
+    expect(after?.worthGained).toBe(140 + fundsReceived);
   });
 
   it("shows another player's total worth gained as at the start of their main phase", () => {
@@ -54,7 +54,37 @@ describe("total worth gained", () => {
     ]);
     const ownView = viewFor(traded.state, 1).seats.find(({ seat }) => seat === 1);
     const otherView = viewFor(traded.state, 2).seats.find(({ seat }) => seat === 1);
-    expect(ownView?.worthGained).toBe(16);
-    expect(otherView?.worthGained).toBe(14);
+    expect(ownView?.worthGained).toBe(160);
+    expect(otherView?.worthGained).toBe(140);
+  });
+
+  it("gives Support at the start of the turn and shows it to every player", () => {
+    const saved = startSavedGame({ players: 2, kind: "casual", startedAt: GAME_STARTED_AT }, 5);
+    const behind = {
+      ...saved,
+      state: {
+        ...saved.state,
+        seats: saved.state.seats.map((seat) =>
+          seat.seat === 2 ? { ...seat, worthGained: seat.worthGained + 255 } : seat,
+        ),
+      },
+    };
+    const ended = afterActions(behind, [
+      { type: "end_turn", seat: 1 },
+      { type: "end_turn", seat: 2 },
+    ]);
+    const supportShown = ([1, 2] as const).map((viewer) =>
+      viewFor(ended.state, viewer).seats.map(({ seat, supportThisTurn }) => ({ seat, supportThisTurn })),
+    );
+    expect(supportShown).toEqual([
+      [
+        { seat: 1, supportThisTurn: 20 },
+        { seat: 2, supportThisTurn: 0 },
+      ],
+      [
+        { seat: 1, supportThisTurn: 20 },
+        { seat: 2, supportThisTurn: 0 },
+      ],
+    ]);
   });
 });

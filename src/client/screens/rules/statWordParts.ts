@@ -13,16 +13,12 @@ const STAT_OF_WORD: Readonly<Record<string, StatName>> = {
   satisfaction: "satisfaction",
   product: "product",
   distribution: "distribution",
-  bonus: "bonus",
 };
 
 const WORD_CHARACTER = "[A-Za-z0-9_-]";
-const NOT_BONUS_TYPES = `(?![ -]types?(?!${WORD_CHARACTER}))`;
 
 const STAT_WORD = new RegExp(
-  `(?<!${WORD_CHARACTER})(${Object.keys(STAT_OF_WORD)
-    .map((word) => (word === "bonus" ? `${word}${NOT_BONUS_TYPES}` : word))
-    .join("|")})(?!${WORD_CHARACTER})`,
+  `(?<!${WORD_CHARACTER})(${Object.keys(STAT_OF_WORD).join("|")})(?!${WORD_CHARACTER})`,
   "gi",
 );
 

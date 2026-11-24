@@ -27,7 +27,7 @@ function threePlayerGame(turn: number): GameState {
     seats: state.seats.map((seat) => ({
       ...seat,
       hand: ["Liquor Shop"],
-      stats: { ...STARTING_STATS, funds: 9, workforce: 1, quality: 1, product: 1 },
+      stats: { ...STARTING_STATS, funds: 90, workforce: 1, quality: 1, product: 1 },
     })),
   });
 }
@@ -62,6 +62,7 @@ describe("the game log of what players did in the main phase", () => {
       { kind: "influence", turn: 2, seat: 3, trade: "fund_to_influence" },
       { kind: "played", turn: 2, seat: 1, card: "Liquor Shop" },
       { kind: "influence", turn: 2, seat: 1, trade: "fund_to_influence" },
+      { kind: "income_gained", turn: 3, seat: 1, income: 1 },
     ]);
   });
 
@@ -86,6 +87,23 @@ describe("the game log of what players did in the main phase", () => {
     ]);
     expect(viewFor(after, 2).mainPhaseLog).toEqual([
       { kind: "played", turn: 2, seat: 1, card: "Liquor Shop" },
+      { kind: "income_gained", turn: 3, seat: 1, income: 1 },
+    ]);
+  });
+
+  it("lists at the start of the next turn how much each player's income went up", () => {
+    const after = played(threePlayerGame(2), [
+      { type: "play_card", seat: 3, card: "Liquor Shop" },
+      { type: "play_card", seat: 1, card: "Liquor Shop" },
+      ...EVERYONE_ENDS,
+    ]);
+    expect(viewFor(after, 2).mainPhaseLog.filter(({ kind }) => kind === "income_gained")).toEqual([
+      { kind: "income_gained", turn: 3, seat: 3, income: 1 },
+      { kind: "income_gained", turn: 3, seat: 1, income: 1 },
+    ]);
+    expect(viewFor(after, 2).lastTurn.incomeGains).toEqual([
+      { seat: 3, income: 1 },
+      { seat: 1, income: 1 },
     ]);
   });
 
@@ -111,6 +129,7 @@ describe("the game log of what players did in the main phase", () => {
     ]);
     expect(viewFor(after, 1).mainPhaseLog).toEqual([
       { kind: "completed_project", turn: 2, seat: 2, project: "quality" },
+      { kind: "income_gained", turn: 3, seat: 2, income: 1 },
     ]);
   });
 

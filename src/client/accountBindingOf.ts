@@ -14,6 +14,7 @@ export function accountBindingOf(
     isInGame,
     onSignUp: store.signUp,
     onChangeUsername: store.changeUsername,
+    onChangeIcon: store.changeIcon,
     onLoadAccount: store.loadAccount,
     onChangeEmail: store.changeEmail,
     onSendConfirmationAgain: store.sendConfirmationAgain,

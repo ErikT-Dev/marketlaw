@@ -44,7 +44,7 @@ describe("readInfluenceActionFile", () => {
   it("reads several build passes and a limit of several uses", () => {
     expect(
       readInfluenceActionFile(
-        "big pass | pay 3 influence, 1 fund | get 2 build passes, 1 bonus | 4 per game",
+        "big pass | pay 3 influence, 1 fund | get 2 build passes, 1 quality | 4 per game",
       ),
     ).toEqual({
       isOk: true,
@@ -53,7 +53,7 @@ describe("readInfluenceActionFile", () => {
           kind: "trade",
           name: "big_pass",
           costs: { influence: 3, funds: 1 },
-          gains: { bonus: 1 },
+          gains: { quality: 1 },
           buildPasses: 2,
           isPriceRising: false,
           limitPerGame: 4,

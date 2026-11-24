@@ -1,4 +1,5 @@
 import * as v from "valibot";
+import { TEST_PLAYER_ICON } from "../../shared/testing/TEST_PLAYER_ICON";
 import { describe, expect, it } from "vitest";
 import { endGame } from "../../rules/endGame";
 import { randomForNextAction } from "../../rules/randomForNextAction";
@@ -26,8 +27,16 @@ import { updateFor } from "./updateFor";
 const STARTED_AT = 5_000_000;
 const ENDED_AT = 6_000_000;
 const ASKED_AT = v.parse(EpochMs, 7_000_000);
-const ANN: Identity = { playerId: v.parse(PlayerId, crypto.randomUUID()), name: "Ann" };
-const BEA: Identity = { playerId: v.parse(PlayerId, crypto.randomUUID()), name: "Bea" };
+const ANN: Identity = {
+  playerId: v.parse(PlayerId, crypto.randomUUID()),
+  name: "Ann",
+  icon: TEST_PLAYER_ICON,
+};
+const BEA: Identity = {
+  playerId: v.parse(PlayerId, crypto.randomUUID()),
+  name: "Bea",
+  icon: TEST_PLAYER_ICON,
+};
 
 type Kept = { record?: RoomRecord };
 

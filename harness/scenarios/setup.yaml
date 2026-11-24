@@ -11,13 +11,13 @@
     phase: main
     seats:
       - seat: 1
-        stats: {funds: 7, income: 3, influence: 0, workforce: 0, quality: 0, satisfaction: 0, product: 0, distribution: 0, bonus: 0}
+        stats: {funds: 7, income: 3, influence: 0, workforce: 0, quality: 0, satisfaction: 0, product: 0, distribution: 0}
         time_bank_ms: 900000
       - seat: 2
-        stats: {funds: 7, income: 3, influence: 0, workforce: 0, quality: 0, satisfaction: 0, product: 0, distribution: 0, bonus: 0}
+        stats: {funds: 7, income: 3, influence: 0, workforce: 0, quality: 0, satisfaction: 0, product: 0, distribution: 0}
         time_bank_ms: 900000
       - seat: 3
-        stats: {funds: 7, income: 3, influence: 0, workforce: 0, quality: 0, satisfaction: 0, product: 0, distribution: 0, bonus: 0}
+        stats: {funds: 7, income: 3, influence: 0, workforce: 0, quality: 0, satisfaction: 0, product: 0, distribution: 0}
         time_bank_ms: 900000
 
 - name: starting hands are dealt from the top of the deck one player at a time in seat order
@@ -98,7 +98,7 @@
       - seat: 2
         city: [Small Home]
 
-- name: every player starts turn 1 with 1 build pass
+- name: every player starts turn 1 with 2 build passes
   covers: [R6.3, R4.6]
   given:
     phase: new_game
@@ -108,9 +108,9 @@
   then:
     seats:
       - seat: 1
-        build_passes: 1
+        build_passes: 2
       - seat: 2
-        build_passes: 1
+        build_passes: 2
 
 - name: a new game starts every player with 14 total worth gained
   covers: [R2.4]

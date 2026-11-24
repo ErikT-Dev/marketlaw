@@ -1,0 +1,2 @@
+ALTER TABLE players ADD COLUMN icon TEXT;
+ALTER TABLE players ADD COLUMN icon_changes_ms TEXT NOT NULL DEFAULT '[]';

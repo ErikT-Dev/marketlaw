@@ -7,6 +7,7 @@ export type QuestPlaceView =
   | {
       readonly quest: QuestName;
       readonly turnsLeft: number;
+      readonly isInExtraTurn: boolean;
       readonly completeRejection: ReasonCode | null;
       readonly progress: ReadonlyArray<QuestProgress>;
     };

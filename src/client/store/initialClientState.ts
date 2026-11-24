@@ -8,7 +8,7 @@ export function initialClientState(session: StoredSession | null): ClientState {
     connection: "closed",
     update: null,
     tutorial: null,
-    tutorialPlayerIconColor: 0,
+    tutorialPlayerIcon: null,
     chat: NO_ROOM_CHAT,
     pendingActions: [],
     rejectedMove: null,

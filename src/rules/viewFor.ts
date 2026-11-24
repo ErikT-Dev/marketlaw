@@ -20,9 +20,11 @@ import { marketGoOf } from "./marketGoOf";
 import { playerOrderOf } from "./playerOrderOf";
 import { questPlacesShownTo } from "./questPlacesShownTo";
 import { seatShownTo } from "./seatShownTo";
+import { supportThisTurnOf } from "./supportThisTurnOf";
 import type { SeatState } from "./SeatState";
 import { nextVoteTurnOf } from "./nextVoteTurnOf";
 import { voteShownTo } from "./voteShownTo";
+import { lastTurnOf } from "./lastTurnOf";
 
 function ownSeatView(state: GameState, seat: SeatState): OwnSeatView {
   return {
@@ -43,6 +45,7 @@ function ownSeatView(state: GameState, seat: SeatState): OwnSeatView {
     city: seat.city,
     buildPasses: seat.buildPasses,
     worthGained: seat.worthGained,
+    supportThisTurn: supportThisTurnOf(state, seat.seat),
     hasPlayedThisTurn: seat.hasPlayedThisTurn,
     influenceUses: seat.influenceUses,
     trades: tradeStatusesOf(state, seat.seat),
@@ -83,6 +86,7 @@ function otherSeatView(state: GameState, seat: SeatState, viewer: SeatNumber): O
     city: shown.city,
     buildPasses: shown.buildPasses,
     worthGained: shown.worthGained,
+    supportThisTurn: supportThisTurnOf(state, seat.seat),
     isDone: seat.isDone,
     isOutOfTime: seat.isOutOfTime,
     hasLeft: seat.departure !== null,
@@ -111,8 +115,7 @@ export function viewFor(state: GameState, viewer: SeatNumber): PlayerView {
     playerOrder: playerOrderOf(state),
     drawLog: piles.drawLog,
     mainPhaseLog: state.mainPhaseLog,
-    questsCompletedLastTurn: state.questsCompletedLastTurn,
-    firstCompletions: state.firstCompletions,
+    lastTurn: lastTurnOf(state),
     vote: voteShownTo(state, viewer),
     nextVoteTurn: nextVoteTurnOf(state),
     result: state.result,

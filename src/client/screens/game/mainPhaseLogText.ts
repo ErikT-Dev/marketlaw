@@ -4,6 +4,9 @@ import type { StatAmounts } from "../../../shared/StatAmounts";
 import { STAT_KEYS } from "../../../shared/STAT_KEYS";
 import type { TradeName } from "../../../shared/TradeName";
 import type { IconText } from "../../components/IconText";
+import { tenthsShown } from "../../components/tenthsShown";
+import { wholeFundsShown } from "../../components/wholeFundsShown";
+import { fundsInTenths } from "../../../shared/fundsInTenths";
 import type { IconTextPart } from "../../components/IconTextPart";
 import { playerNameOf } from "./playerNameOf";
 import { PROJECT_TITLES } from "./PROJECT_TITLES";
@@ -50,5 +53,15 @@ export function mainPhaseLogText(
       return [`${name} used influence: `, ...tradeParts(entry.trade)];
     case "redrew":
       return `${name} redrew their starting hand ${String(entry.times)} ${entry.times === 1 ? "time" : "times"}`;
+    case "income_gained":
+      return [
+        `${name} gained income: `,
+        { stat: "income", value: `+${tenthsShown(fundsInTenths(entry.income))}` },
+      ];
+    case "support":
+      return [
+        `${name} got Support: `,
+        { stat: "funds", value: `+${wholeFundsShown(entry.funds)}` },
+      ];
   }
 }

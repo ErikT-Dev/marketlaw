@@ -28,7 +28,7 @@ import { sellCards } from "./sellCards";
 import { takeIncome } from "./takeIncome";
 import { takeTurnDraw } from "./takeTurnDraw";
 import { timeOut } from "./timeOut";
-import { undoLatest } from "./undoLatest";
+import { undoLatestAction } from "./undoLatestAction";
 import { updateSeat } from "./updateSeat";
 import { useDrawAction } from "./useDrawAction";
 import { useTrade } from "./useTrade";
@@ -124,7 +124,7 @@ function accepted(state: GameState, action: GameAction, random: Random, at: numb
     case "end_turn":
       return endTurn(state, action.seat, random, at);
     case "undo":
-      return updateSeat(state, action.seat, undoLatest);
+      return undoLatestAction(state, action.seat);
     case "redraw_hand":
       return redrawStartingHand(state, action.seat, random);
     case "turn_draw":

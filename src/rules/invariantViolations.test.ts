@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
+import { fundsInTenths } from "../shared/fundsInTenths";
 import { GAME_STARTED_AT } from "../shared/testing/GAME_STARTED_AT";
 import { apply } from "./apply";
-import { endGame } from "./endGame";
 import type { GameAction } from "./GameAction";
 import type { GameState } from "./GameState";
 import { invariantViolations } from "./invariantViolations";
@@ -27,10 +27,15 @@ function withSeat1(state: GameState, change: Partial<GameState["seats"][number]>
   };
 }
 
-function endingViolations(after: GameState): ReadonlyArray<string> {
-  return invariantViolations(transition(START, { type: "end_turn", seat: 1 }, after)).filter(
-    (violation) => violation.startsWith("I22"),
-  );
+function withEndOfTurnFundsPaid(state: GameState): GameState {
+  return {
+    ...state,
+    seats: state.seats.map((seat) => ({
+      ...seat,
+      stats: { ...seat.stats, funds: seat.stats.funds + fundsInTenths(10) },
+      worthGained: seat.worthGained + fundsInTenths(10),
+    })),
+  };
 }
 
 describe("invariantViolations", () => {
@@ -61,8 +66,16 @@ describe("invariantViolations", () => {
       stats: { ...STARTING_STATS, funds: -1 },
     });
     expect(invariantViolations(transition(START, { type: "end_turn", seat: 1 }, after))).toEqual([
+      "I30: seat 1 total worth gained is 140 after end_turn, but the cards gained and funds received make 69",
       `I1: ${START.deck[0] ?? ""} is in no place`,
       "I7: seat 1 has negative funds",
+    ]);
+  });
+
+  it("reports total worth gained that is not the cards gained plus the funds received", () => {
+    const after = withSeat1(START, { worthGained: (START.seats[0]?.worthGained ?? 0) + fundsInTenths(1) });
+    expect(invariantViolations(transition(START, { type: "end_turn", seat: 1 }, after))).toEqual([
+      "I30: seat 1 total worth gained is 150 after end_turn, but the cards gained and funds received make 140",
     ]);
   });
 
@@ -81,6 +94,7 @@ describe("invariantViolations", () => {
       "I18: seat 1 took an action while done or after leaving",
       "I5: Brownstone was played in turn 3",
       "I6: seat 1 played more cards than its build passes allow",
+      "I30: seat 1 total worth gained is 140 after play_card, but the cards gained and funds received make 210",
     ]);
   });
 
@@ -89,19 +103,11 @@ describe("invariantViolations", () => {
     const action: GameAction = { type: "play_card", seat: 1, card: START.seats[0]?.hand[0] ?? "Pub" };
     expect(invariantViolations(transition(before, action, before))).toEqual([
       "I6: seat 1 used 0 build passes to play a card",
+      "I30: seat 1 total worth gained is 140 after play_card, but the cards gained and funds received make 190",
     ]);
     expect(invariantViolations(transition(before, action, withSeat1(START, { buildPasses: 1 })))).toEqual([
       "I6: seat 1 used 2 build passes to play a card",
-    ]);
-  });
-
-  it("reports a bonus of 10 or more kept after the end of the turn", () => {
-    const after = withSeat1(
-      { ...START, turn: 2, firstPlayer: 2 },
-      { stats: { ...STARTING_STATS, bonus: 12 } },
-    );
-    expect(invariantViolations(transition(START, { type: "end_turn", seat: 1 }, after))).toEqual([
-      "I10: seat 1 kept a bonus of 10 or more",
+      "I30: seat 1 total worth gained is 140 after play_card, but the cards gained and funds received make 190",
     ]);
   });
 
@@ -119,18 +125,19 @@ describe("invariantViolations", () => {
   it("reports a holding pile kept after the main phase and income that went down", () => {
     const before = withSeat1(START, { stats: { ...STARTING_STATS, income: 5 } });
     const after = withSeat1(
-      {
+      withEndOfTurnFundsPaid({
         ...START,
         turn: 2,
         firstPlayer: 2,
         holdingPile: [START.deck[0] ?? "Pub"],
         deck: START.deck.slice(1),
-      },
-      { stats: { ...STARTING_STATS, income: 4 } },
+      }),
+      { stats: { ...STARTING_STATS, income: 4, funds: fundsInTenths(20) } },
     );
     expect(invariantViolations(transition(before, { type: "end_turn", seat: 1 }, after))).toEqual([
       "I2: the holding pile holds 1 cards outside the main phase",
       "I8: seat 1 income went from 5 to 4",
+      "I30: seat 1 total worth gained is 240 after end_turn, but the cards gained and funds received make 270",
     ]);
   });
 
@@ -194,40 +201,8 @@ describe("invariantViolations", () => {
     ]);
   });
 
-  it("checks the score and places of a game that ends", () => {
-    const ended = endGame({ ...START, turn: 40 }, 0);
-    expect(endingViolations(ended)).toEqual([]);
-    const places = ended.result?.places ?? [];
-    const wrongScore = {
-      ...ended,
-      result: { endedBy: "turn_limit" as const, places: places.map((place) => ({ ...place, score: place.score + 1 })) },
-    };
-    expect(endingViolations(wrongScore)).toEqual([
-      "I22: seat 1's score does not follow the formula",
-      "I22: seat 2's score does not follow the formula",
-    ]);
-  });
-
-  it("checks that equal scores are placed by the done order of the final turn", () => {
-    const ended = endGame({ ...START, turn: 40, doneOrder: [2, 1] }, 0);
-    const places = (ended.result?.places ?? []).map((place) => ({ ...place, score: 100 }));
-    function placedAs(order: ReadonlyArray<number>) {
-      return       endingViolations({
-        ...ended,
-        result: {
-          endedBy: "turn_limit" as const,
-          places: order.flatMap((seat) => places.filter((place) => place.seat === seat)),
-        },
-      }).filter((violation) => violation.includes("equal scores"));
-    }
-    expect(placedAs([1, 2])).toEqual([
-      "I22: equal scores are not placed by the done order and then the player order",
-    ]);
-    expect(placedAs([2, 1])).toEqual([]);
-  });
-
   it("reports a turn that starts with the wrong first player", () => {
-    const after = { ...START, turn: 2, firstPlayer: 1 as const };
+    const after = withEndOfTurnFundsPaid({ ...START, turn: 2, firstPlayer: 1 as const });
     expect(invariantViolations(transition(START, { type: "end_turn", seat: 1 }, after))).toEqual([
       "I20: turn 2 starts with seat 1 first",
     ]);
@@ -271,7 +246,7 @@ describe("invariantViolations", () => {
     const after = {
       ...withSeat1(START, { questsCompleted: ["Supply chain", "Supply chain"] }),
       questList: START.questList.filter((quest) => quest !== first && quest !== "Supply chain"),
-      quests: [...START.quests, ...(second === undefined ? [] : [{ quest: second, turnsOnTable: 1 }])],
+      quests: [...START.quests, ...(second === undefined ? [] : [{ quest: second, turnsOnTable: 1, isInExtraTurn: false }])],
     };
     const found = invariantViolations(transition(START, { type: "end_turn", seat: 1 }, after)).filter(
       (violation) => /^I1[25]/.test(violation),
@@ -289,8 +264,8 @@ describe("invariantViolations", () => {
       turn: 4,
       quests: [
         ...START.quests.slice(0, 3),
-        { quest: "Safe streets" as const, turnsOnTable: 1 },
-        { quest: "Metropolis" as const, turnsOnTable: 6 },
+        { quest: "Safe streets" as const, turnsOnTable: 1, isInExtraTurn: false },
+        { quest: "Metropolis" as const, turnsOnTable: 6, isInExtraTurn: false },
       ],
       questList: START.questList.filter((quest) => quest !== "Safe streets" && quest !== "Metropolis"),
     };

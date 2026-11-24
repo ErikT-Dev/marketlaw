@@ -2,7 +2,7 @@ import type { Card } from "../../../shared/catalogue/Card";
 import type { CardStats } from "../../../shared/catalogue/CardStats";
 import type { CardDetail } from "./CardDetail";
 import type { CardStatAmount } from "./CardStatAmount";
-import { SECTOR_STAT_EFFECTS } from "./SECTOR_STAT_EFFECTS";
+import { SECTOR_STAT_EFFECTS } from "../../components/SECTOR_STAT_EFFECTS";
 
 function amountsOf(
   card: Card,

@@ -25,7 +25,7 @@ const SEAT_FIELDS = [
 ];
 
 const SLOT_FIELDS = new Set(["place", "card", "phases_shown"]);
-const QUEST_FIELDS = new Set(["quest", "turns_on_table"]);
+const QUEST_FIELDS = new Set(["quest", "turns_on_table", "extra_turn"]);
 
 export const ENGINE_FIELDS = {
   givenFields: new Set([
@@ -42,7 +42,6 @@ export const ENGINE_FIELDS = {
     "quests",
     "quest_list",
     "bonus_types",
-    "first_completions",
     "clock_ms",
     "paused",
     "last_vote_turn",
@@ -83,7 +82,6 @@ export const ENGINE_FIELDS = {
     "quest_list_excludes",
     "bonus_types",
     "done_order",
-    "first_completions",
     "ended",
     "vote",
   ]),
@@ -121,6 +119,7 @@ export const ENGINE_FIELDS = {
         "log_excludes",
         "vote_answers",
         "quests_completed_last_turn",
+        "last_turn",
       ]),
     ],
   ]),

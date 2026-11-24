@@ -37,7 +37,11 @@
 }
 
 .entry:hover {
-  background: var(--color-panel-base);
+  background: color-mix(
+    in srgb,
+    var(--color-panel-base) var(--opacity-button-background),
+    transparent
+  );
 }
 
 .entry:focus-visible {

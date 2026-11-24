@@ -1,0 +1,26 @@
+.line,
+.picture {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.line {
+  clip-path: polygon(61% 0, 100% 0, 100% 100%, 77% 100%);
+  background: var(--color-card-tile-picture-line);
+}
+
+.picture {
+  clip-path: polygon(62% 0, 100% 0, 100% 100%, 78% 100%);
+}
+
+.picture > img {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 61%;
+  width: 39%;
+  height: 100%;
+  object-fit: cover;
+}

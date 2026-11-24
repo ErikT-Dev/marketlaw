@@ -1,4 +1,5 @@
 import * as v from "valibot";
+import { TEST_PLAYER_ICON } from "../shared/testing/TEST_PLAYER_ICON";
 import { describe, expect, it } from "vitest";
 import { randomForNextAction } from "../rules/randomForNextAction";
 import { EpochMs } from "../shared/EpochMs";
@@ -19,8 +20,16 @@ import { NO_CHAT_QUOTA } from "./room/NO_CHAT_QUOTA";
 import { receiveMessage } from "./room/receiveMessage";
 
 const START = v.parse(EpochMs, 1_000_000);
-const ANN: Identity = { playerId: v.parse(PlayerId, crypto.randomUUID()), name: "Ann" };
-const BEA: Identity = { playerId: v.parse(PlayerId, crypto.randomUUID()), name: "Bea" };
+const ANN: Identity = {
+  playerId: v.parse(PlayerId, crypto.randomUUID()),
+  name: "Ann",
+  icon: TEST_PLAYER_ICON,
+};
+const BEA: Identity = {
+  playerId: v.parse(PlayerId, crypto.randomUUID()),
+  name: "Bea",
+  icon: TEST_PLAYER_ICON,
+};
 const EVERYONE = [ANN.playerId, BEA.playerId];
 
 async function recordingRoom() {

@@ -54,8 +54,11 @@ function seatsFrom(given: Given, players: number, turn: number): GameState["seat
 }
 
 function questsFrom(given: Given): GameState["quests"] {
-  return (given.quests ?? []).map(({ quest, turns_on_table: turnsOnTable }) =>
-    quest === null ? null : { quest, turnsOnTable: turnsOnTable ?? 1 },
+  return (given.quests ?? []).map(
+    ({ quest, turns_on_table: turnsOnTable, extra_turn: isInExtraTurn }) =>
+      quest === null
+        ? null
+        : { quest, turnsOnTable: turnsOnTable ?? 1, isInExtraTurn: isInExtraTurn ?? false },
   );
 }
 
@@ -104,14 +107,12 @@ export function stateFromGiven(given: Given): GameState {
     holdingPile: [],
     drawLog: [],
     mainPhaseLog: [],
-    questsCompletedLastTurn: [],
     marketplace,
     quests,
     questList: given.quest_list ?? questListLeftBy(quests, seats),
     bonusTypes: given.bonus_types ?? TYPE_NAMES.slice(0, 2),
     doneOrder: seats.filter((seat) => seat.isDone).map((seat) => seat.seat),
     leaveOrder: seats.filter((seat) => seat.departure !== null).map((seat) => seat.seat),
-    firstCompletions: given.first_completions ?? [],
     clockStartedAt: v.parse(EpochMs, given.clock_ms ?? 0),
     pause: null,
     vote: null,

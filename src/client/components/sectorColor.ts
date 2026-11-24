@@ -3,7 +3,7 @@ import type { Tier } from "../../shared/catalogue/Tier";
 
 export function sectorColor(
   sector: Sector,
-  tier: Tier | "card" | "light" | "solid" | "solid-text",
+  tier: Tier | "bar" | "card" | "light" | "solid" | "solid-text",
 ): string {
   const shade = typeof tier === "number" ? `tier${String(tier)}` : tier;
   return `var(--color-sector-${sector.toLowerCase()}-${shade})`;

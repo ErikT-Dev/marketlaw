@@ -32,6 +32,20 @@
   font-size: var(--font-size-xs);
 }
 
+.heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-sm);
+}
+
+.headingText {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  min-width: 0;
+}
+
 .name {
   margin: 0;
   color: var(--color-text-primary);
@@ -117,38 +131,4 @@
 .part:hover .tooltip,
 :is(button, a[href]):focus-visible .part .tooltip {
   visibility: visible;
-}
-
-.withCompletedLastTurn {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) fit-content(50%);
-  gap: var(--space-sm);
-  align-items: start;
-}
-
-.completedLastTurn {
-  border-collapse: collapse;
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-xs);
-}
-
-.completedLastTurn th,
-.completedLastTurn td {
-  padding: 2px 6px;
-  border-bottom: 1px solid var(--color-panel-border);
-  text-align: left;
-}
-
-.completedLastTurnParts {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 6px;
-}
-
-.completedLastTurnTitle {
-  margin-bottom: var(--space-xs);
-  color: var(--color-text-primary);
-  font-weight: var(--font-weight-bold);
-  text-align: left;
 }

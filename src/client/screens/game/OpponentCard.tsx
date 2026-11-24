@@ -3,7 +3,7 @@ import { useContext } from "react";
 import type { TypeName } from "../../../shared/catalogue/TypeName";
 import type { OtherSeatView } from "../../../shared/OtherSeatView";
 import { PlayerBadge } from "../../components/PlayerBadge";
-import { CountBox } from "../../components/CountBox";
+import { SummaryCountBoxes } from "../../components/SummaryCountBoxes";
 import { StatChip } from "../../components/StatChip";
 import { cardsBySector } from "./cardsBySector";
 import styles from "./OpponentCard.module.css";
@@ -11,10 +11,10 @@ import { sectorColor } from "../../components/sectorColor";
 import { AwaySeats } from "./AwaySeats";
 import { LiveBankChip } from "./LiveBankChip";
 import { typesInListOrder } from "../../sorting/typesInListOrder";
-import { cityTypeCountsOf } from "./cityTypeCountsOf";
-import { cityTypeTotalOf } from "./cityTypeTotalOf";
-import { combosClaimedCountOf } from "./combosClaimedCountOf";
+import { summaryCountsOfSeat } from "./summaryCountsOfSeat";
 import { TypeCountsList } from "./TypeCountsList";
+import { tenthsShown } from "../../components/tenthsShown";
+import { fundsInTenths } from "../../../shared/fundsInTenths";
 
 const MOST_PLAYED_TYPES_SHOWN = 5;
 
@@ -41,7 +41,6 @@ function statusOf(seat: OtherSeatView, isAway: boolean) {
 
 export function OpponentCard({ seat, name, playerId, bonusTypes, onOpen }: Props) {
   const isAway = useContext(AwaySeats).includes(seat.seat);
-  const cityTypeCounts = cityTypeCountsOf(seat.city);
   return (
     <li className={styles["item"]}>
       <article className={styles["card"]} aria-label={`Quick summary table of ${name}`}>
@@ -50,17 +49,10 @@ export function OpponentCard({ seat, name, playerId, bonusTypes, onOpen }: Props
           <LiveBankChip timeBankMs={seat.timeBankMs} clock={seat.clock} label="Bank" />
         </div>
         <div className={styles["stats"]}>
-          <StatChip stat="funds" value={seat.stats.funds} />
-          <StatChip stat="income" value={seat.stats.income} />
+          <StatChip stat="funds" value={tenthsShown(seat.stats.funds)} />
+          <StatChip stat="income" value={tenthsShown(fundsInTenths(seat.stats.income))} />
           <StatChip stat="influence" value={seat.stats.influence} />
-          <CountBox letter="Q" count={seat.questsCompleted.length} label="Quests completed" />
-          <CountBox letter="T" count={cityTypeTotalOf(seat.city)} label="Types in their city" />
-          <CountBox
-            letter="C"
-            count={combosClaimedCountOf(seat.combosClaimed)}
-            label="Combos claimed"
-          />
-          <CountBox letter="F" count={seat.worthGained} label="Total worth gained" />
+          <SummaryCountBoxes counts={summaryCountsOfSeat(seat)} />
           <span className={styles["hand"]}>Hand {seat.handCount}</span>
         </div>
         <ul className={styles["sectors"]} aria-label={`Cards in play of ${name}`}>
@@ -75,8 +67,8 @@ export function OpponentCard({ seat, name, playerId, bonusTypes, onOpen }: Props
           ))}
         </ul>
         <TypeCountsList
-          types={typesInListOrder(cityTypeCounts, []).slice(0, MOST_PLAYED_TYPES_SHOWN)}
-          typeCounts={cityTypeCounts}
+          types={typesInListOrder(seat.typeCounts, []).slice(0, MOST_PLAYED_TYPES_SHOWN)}
+          typeCounts={seat.typeCounts}
           bonusTypes={bonusTypes}
           label={`Types played most by ${name}`}
         />
