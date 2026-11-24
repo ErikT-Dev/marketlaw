@@ -929,7 +929,8 @@ approval of the list, the quest scenarios that name quest contents.
       below the view in a long hand (seen at y 4400 at 1920 x 1080) never loads, and the wait,
       which has no time-out of its own, ran until the 15 minute limit. The check now waits for
       every image that is not lazy or that is in the view, which are all the screenshot shows.
-      Locally the 2 player game passes at all three sizes (3.1 min, one worker).
+      Locally the 2 player game passes at all three sizes (3.1 min, one worker). Branch run
+      45422377599 (commit b12b07a0): all 8 jobs passed, the 2 player games included.
   - **Phase review (2026-11-24).** Ready after fixes; `npm run check` and `npm run harness` pass,
     no spec deviation in the engine. Findings (besides F1):
     - [ ] R1. No icon picker screenshot (an exit criterion): `e2e/playerIcon.spec.ts` should call
