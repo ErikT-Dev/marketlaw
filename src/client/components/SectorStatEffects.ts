@@ -1,4 +1,4 @@
-import type { CardStats } from "../../../shared/catalogue/CardStats";
+import type { CardStats } from "../../shared/catalogue/CardStats";
 
 export type SectorStatEffects = {
   readonly gives: ReadonlyArray<keyof CardStats>;

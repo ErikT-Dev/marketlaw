@@ -658,12 +658,31 @@ approval of the list, the quest scenarios that name quest contents.
     fewer rows while the stats panel still holds the Q, T, C, F boxes (item 11 moves them).
     Playwright's Chromium does not hyphenate (no dictionary), so long words break without a
     hyphen in screenshots; a browser with the dictionary hyphenates them.
-- [ ] 10. **The big card** (S6.5, S6.9, S6.10, findings 5, 9, 13, 20, 45, 47). **Medium.**
+- [x] 10. **The big card** (S6.5, S6.9, S6.10, findings 5, 9, 13, 20, 45, 47). **Medium.**
   - `BigCardBesideHand` and its parts: title bar in the stats bar's colour, more transparent;
     thin black image border; + and − signs per R3.4; Sell for the shown card with "Sell for
     1 fund?" as one sell action; a card-name combo's number names the card on pointing; the
     combos playing the hand card would make ready are highlighted, infinite ones with "×N"
     (from the view, never computed in the client; add to the view if missing).
+  - **Done (2026-11-24).** The title bar and stats bar share the new `--color-sector-<sector>-bar`
+    tokens (the sector colour at 55%; other panels are 80%); the photo has a 1 px
+    `--color-big-card-photo-border`. Stat numbers are signed from `SECTOR_STAT_EFFECTS` (moved
+    from `screens/cardSet/` to `components/` so `BigCard` can use it): "+5", "−3" (U+2212), also
+    in the accessible names ("Workforce +5"). `SelectedCardButtons` adds **Sell** (disabled by the
+    view's `sellRejection`); it asks "Sell for [funds 1]?" with **Keep card** and **Sell**, then
+    sends `sell` with only that card. A card-name combo's number is a button, `NeededCardNumber`
+    ("Card #183"), whose tooltip names the card, on every big card and in the card set.
+  - **Differs from the note above:** S6.10 is worked out in the client (`combosReadyOnPlayOf`:
+    the view's type counts plus the card's own types, minus the times already claimed), as S6.10
+    itself says ("a lookup in the view and the card data"), like S6.9; no view or protocol
+    change. Type-count combos that would be ready get S6.1's claimable colours (green; bright blue
+    with "×N" when infinite); card-name ones keep S6.9's red. Unit tests
+    `bigCardActions.test.tsx` and `cards.test.tsx`; browser test `e2e/cardNameCombos.spec.ts`
+    (number tooltip, selling after asking) passes locally at all three sizes, as do
+    `lookingAtCards` and `handAndActionsScreens`.
+  - **For later items.** The big card now holds more buttons (the combo numbers): a test that
+    counts the selected card's buttons must leave them out. `npm run check` still fails only on
+    items 16, 18 and 19, as before.
 - [ ] 11. **Your counts and the tables** (S3.1, S3.2, S6.2, S9.5, S13.2, A3.2, findings 3, 17,
   21, 23). **Medium.** After 2.
   - A small "Your counts" table (Q, T, C, F and one "?" explaining them) above the opponents'

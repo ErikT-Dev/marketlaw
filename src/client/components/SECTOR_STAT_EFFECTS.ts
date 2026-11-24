@@ -1,4 +1,4 @@
-import type { Sector } from "../../../shared/catalogue/Sector";
+import type { Sector } from "../../shared/catalogue/Sector";
 import type { SectorStatEffects } from "./SectorStatEffects";
 
 export const SECTOR_STAT_EFFECTS: Readonly<Record<Sector, SectorStatEffects>> = {

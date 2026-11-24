@@ -72,6 +72,20 @@ function selectHandCard(name: string) {
   return screen.getByRole("region", { name: `Selected card: ${name}` });
 }
 
+function readyingTooltips() {
+  return screen
+    .queryAllByRole("tooltip")
+    .filter((tooltip: HTMLElement) => textWithIconNames(tooltip).startsWith("Playing it makes"));
+}
+
+function readyingTooltip() {
+  const [tooltip, ...others] = readyingTooltips();
+  if (tooltip === undefined || others.length > 0) {
+    throw new Error("expected one tooltip of combos made ready");
+  }
+  return tooltip;
+}
+
 function comboNames(region: HTMLElement) {
   return within(region)
     .getAllByRole("group")
@@ -84,7 +98,7 @@ describe("card-name combos on the big card", () => {
     const shown = within(selectHandCard("Hiking Trail"));
     const name = shown.getByRole("button", { name: "Hiking Trail!" });
     expect(name.textContent).toContain("Hiking Trail !");
-    const tooltip = shown.getByRole("tooltip");
+    const tooltip = readyingTooltip();
     expect(name.getAttribute("aria-describedby")).toBe(tooltip.id);
     expect(textWithIconNames(tooltip)).toBe(
       "Playing it makes these combos ready:#2 Cottage [Satisfaction +1]#212 Lake Park [Satisfaction +1]Total: [Satisfaction 2]",
@@ -99,14 +113,13 @@ describe("card-name combos on the big card", () => {
       }),
     );
     const region = screen.getByRole("region", { name: "Selected card: Loft" });
-    const shown = within(region);
     expect(comboNames(region)).toEqual([
       "Combo: 1 Mercantile gives 1 satisfaction, again each time",
       "Combo: 1 Mass Transit gives 1 workforce",
       "Combo: Fire Station gives 1 quality, that card is in your city",
       "Combo: Warehouse gives 1 satisfaction, that card is in your hand",
     ]);
-    expect(textWithIconNames(shown.getByRole("tooltip"))).toContain("Total: [Quality 1]");
+    expect(textWithIconNames(readyingTooltip())).toContain("Total: [Quality 1]");
   });
 
   it("does not count one-time combos already claimed", async () => {
@@ -117,7 +130,7 @@ describe("card-name combos on the big card", () => {
     await showGame({ ...own, city: [...own.city, "Hiking Trail"] });
     const shown = within(selectHandCard("Hiking Trail"));
     expect(shown.queryByRole("button", { name: "Hiking Trail!" })).toBeNull();
-    expect(shown.queryByRole("tooltip")).toBeNull();
+    expect(readyingTooltips()).toEqual([]);
   });
 
   it("marks a card in another player's city against your own city and hand", async () => {
@@ -142,8 +155,7 @@ describe("card-name combos on the big card", () => {
       }),
     );
     const region = screen.getByRole("region", { name: "Selected card: Cottage" });
-    const shown = within(region);
-    expect(shown.queryByRole("tooltip")).toBeNull();
+    expect(readyingTooltips()).toEqual([]);
     expect(comboNames(region).every((name) => name?.endsWith("gives 1 satisfaction"))).toBe(true);
   });
 });

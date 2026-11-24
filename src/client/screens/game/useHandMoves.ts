@@ -14,6 +14,12 @@ export function useHandMoves(
     }
     clear();
   }
+  function sellSelected() {
+    if (selected !== null) {
+      onAction({ type: "sell", cards: [selected] });
+    }
+    clear();
+  }
   function sell() {
     if (choice.mode === "choosing") {
       startSelling();
@@ -25,5 +31,5 @@ export function useHandMoves(
     }
     clear();
   }
-  return { choice, selected, pressCard, clear, playSelected, sell };
+  return { choice, selected, pressCard, clear, playSelected, sell, sellSelected };
 }

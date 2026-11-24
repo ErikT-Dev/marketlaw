@@ -2,12 +2,13 @@ import { cardOf } from "../../../shared/catalogue/cardOf";
 import type { HandCardDetails } from "../../../shared/HandCardDetails";
 import type { OwnSeatView } from "../../../shared/OwnSeatView";
 import { BigCard } from "../../components/BigCard";
-import { Button } from "../../components/Button";
 import { StatChip } from "../../components/StatChip";
 import { TextWithIcons } from "../../components/TextWithIcons";
 import { cardNameCombosShownOf } from "./cardNameCombosShownOf";
+import { combosReadyOnPlayOf } from "./combosReadyOnPlayOf";
 import { costExplanation } from "./costExplanation";
 import { rejectionMessage } from "./rejectionMessage";
+import { SelectedCardButtons } from "./SelectedCardButtons";
 import styles from "./SelectedCardPanel.module.css";
 
 type Props = {
@@ -16,12 +17,13 @@ type Props = {
   readonly nextVoteTurn: number;
   readonly isBusy: boolean;
   readonly onPlay: () => void;
+  readonly onSell: () => void;
   readonly onClose: () => void;
   readonly className: string | undefined;
 };
 
 export function SelectedCardPanel(props: Props) {
-  const { details, seat, nextVoteTurn, isBusy, onPlay, onClose, className } = props;
+  const { details, seat, nextVoteTurn, isBusy, onPlay, onSell, onClose, className } = props;
   const card = cardOf(details.card);
   const rejection = details.playRejection;
   return (
@@ -30,6 +32,7 @@ export function SelectedCardPanel(props: Props) {
         card={card}
         realCost={details.realCost}
         cardNameCombos={cardNameCombosShownOf(card.name, seat)}
+        comboReadyTimesOnPlay={combosReadyOnPlayOf(card.name, seat)}
       />
       <h3 className={styles["cost"]}>
         Costs <StatChip stat="funds" value={details.realCost} />
@@ -46,14 +49,14 @@ export function SelectedCardPanel(props: Props) {
           />
         </p>
       )}
-      <div className={styles["buttons"]}>
-        <Button look="secondary" onClick={onClose}>
-          Close
-        </Button>
-        <Button look="menu" isDisabled={rejection !== null || isBusy} onClick={onPlay}>
-          Play card
-        </Button>
-      </div>
+      <SelectedCardButtons
+        key={card.name}
+        canPlay={rejection === null && !isBusy}
+        canSell={seat.sellRejection === null && !isBusy}
+        onPlay={onPlay}
+        onSell={onSell}
+        onClose={onClose}
+      />
     </section>
   );
 }
