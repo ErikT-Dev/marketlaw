@@ -825,10 +825,19 @@ approval of the list, the quest scenarios that name quest contents.
     storing the identity. Browser test `connections.spec.ts`, "your own badge never shows you
     away when you open the game" (only seat 1 opens: Seat 2 shows away, Seat 1 does not),
     failed before at all three sizes and passes now, as does the rest of `connections.spec.ts`.
-- [ ] 18. **Rulebook** (rulebook, S14.2). **Small.**
+- [x] 18. **Rulebook** (rulebook, S14.2). **Small.**
   - The changed sections of `harness/spec/rulebook.md` show in the rules viewer
     (`PARSED_RULEBOOK.ts`, `statWordParts.ts`): no bonus, funds tenths, Support, projects,
     quests, ending, score. Mostly tests that the viewer shows them.
+  - **Done (2026-11-24).** No code change was needed: the viewer already read the new
+    `rulebook.md` (the bonus stat had left `statWordParts` in item 1b). `parseRulebook.test.tsx`
+    expected the old stats table (a bonus row) and the old score formula; it now expects 8 stats
+    ending with distribution and the new formula (income 6.5, quality 0.55, whole funds 0.2).
+    New `rulebookChangedSections.test.tsx` opens the changed sections in the viewer and checks
+    their text and icons: the goal (income 20, 3 projects), Your stats (no bonus, tenths, F),
+    Stats gain and Support, Projects (8 of a stat, 10 income, the same reward every time),
+    Quests (5 from turn 20, extra turn, Be first, turns by tier) and The end of the game (turn
+    40, the score formula with its stat icons, whole funds, places by end goal and F).
 - [ ] 19. **Influence actions** (R15.1, S8.3, items 51, 52). **Small.**
   - `influence to fund` already is in `influence-actions.txt`: check it works with no new code
     (`influence`'s new scenario); the pop-up's tile counts in tests follow

@@ -59,7 +59,8 @@ describe("parseRulebook", () => {
   it("shows stat words as stat icons and keeps section titles as words", () => {
     const table = blockOfKind(sectionTitled("Your stats"), "table");
     expect(table.rows[0]?.[0]).toEqual([{ stat: "funds" }]);
-    expect(table.rows[8]?.[0]).toEqual([{ stat: "bonus" }]);
+    expect(table.rows).toHaveLength(8);
+    expect(table.rows[7]?.[0]).toEqual([{ stat: "distribution" }]);
     expect(sectionTitled("Income").title).toBe("Income");
   });
 
@@ -78,7 +79,9 @@ describe("parseRulebook", () => {
 
   it("shows the stats of the score formula as icons", () => {
     const formula = blockOfKind(sectionTitled("The end of the game"), "preformatted");
-    expect(formula.lines[2]).toEqual(["+ 6.5  × ", { stat: "income" }]);
+    expect(formula.lines[0]).toEqual(["6.5  × ", { stat: "income" }]);
+    expect(formula.lines[2]).toEqual(["+ 0.55 × ", { stat: "quality" }]);
+    expect(formula.lines[6]).toEqual(["+ 0.2  × (whole ", { stat: "funds" }, " + cards in hand)"]);
   });
 
   it("relates a section to the sections it links to in order of first appearance", () => {
