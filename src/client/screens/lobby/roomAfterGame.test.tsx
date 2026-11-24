@@ -10,6 +10,7 @@ import { testAccount } from "../../testing/testAccount";
 import { RoomAfterGamePage } from "./RoomAfterGamePage";
 import { testPlayerIdOf } from "../../testing/testPlayerIdOf";
 import { scorePartsAddingUpTo } from "../../testing/scorePartsAddingUpTo";
+import { TEST_PLAYER_ICON } from "../../../shared/testing/TEST_PLAYER_ICON";
 
 const RESULT: GameResult = {
   endedBy: "end_goal",
@@ -33,7 +34,7 @@ function endedRoom(changes: Partial<RoomView> = {}): RoomView {
     ownerName: "Ann",
     playerNames: ["Ann", "Bea", "Cy"],
     playerIds: [1, 2, 3].map(testPlayerIdOf),
-    playerIconColors: [0, 1, 2],
+    playerIcons: [TEST_PLAYER_ICON, TEST_PLAYER_ICON, TEST_PLAYER_ICON],
     namesInRoom: ["Ann", "Bea"],
     idsInRoom: [1, 2].map(testPlayerIdOf),
     myName: "Ann",

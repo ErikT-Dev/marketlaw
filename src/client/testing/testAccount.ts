@@ -12,6 +12,7 @@ export function testAccount(changes: Partial<AccountBinding> = {}): AccountBindi
     isInGame: false,
     onSignUp: vi.fn(async () => Promise.resolve(null)),
     onChangeUsername: vi.fn(async () => Promise.resolve(null)),
+    onChangeIcon: vi.fn(async () => Promise.resolve(null)),
     onLoadAccount: vi.fn(async () =>
       Promise.resolve({
         isLoggedIn: true as const,

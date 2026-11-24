@@ -9,6 +9,7 @@ import type { ReasonCode } from "../../shared/ReasonCode";
 import type { LobbyQueueNotice } from "./LobbyQueueNotice";
 import type { JoinError } from "./JoinError";
 import type { PendingAction } from "./PendingAction";
+import type { PlayerIconChoice } from "../../shared/playerIcons/PlayerIconChoice";
 import type { RejectedMove } from "./RejectedMove";
 import type { RemovalNotice } from "./RemovalNotice";
 import type { RoomChat } from "./RoomChat";
@@ -20,7 +21,7 @@ export type ClientState = {
   readonly connection: ConnectionStatus;
   readonly update: RoomUpdate | null;
   readonly tutorial: TutorialView | null;
-  readonly tutorialPlayerIconColor: number;
+  readonly tutorialPlayerIcon: PlayerIconChoice | null;
   readonly chat: RoomChat;
   readonly pendingActions: ReadonlyArray<PendingAction>;
   readonly rejectedMove: RejectedMove | null;

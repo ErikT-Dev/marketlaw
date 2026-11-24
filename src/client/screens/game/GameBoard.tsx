@@ -9,7 +9,7 @@ import type { GamePageProps } from "./GamePageProps";
 import { GameTable } from "./GameTable";
 import { GameTopBar } from "./GameTopBar";
 import { ServerClockOffset } from "./ServerClockOffset";
-import { PlayerIconColors } from "./PlayerIconColors";
+import { PlayerIcons } from "./PlayerIcons";
 
 type Props = GamePageProps & {
   readonly view: PlayerView;
@@ -32,9 +32,9 @@ export function GameBoard(props: Props) {
             account={props.account}
             isConnected={props.connection === "open"}
           />
-          <PlayerIconColors.Provider value={update.room.playerIconColors}>
+          <PlayerIcons.Provider value={update.room.playerIcons}>
             <GameTable {...props} />
-          </PlayerIconColors.Provider>
+          </PlayerIcons.Provider>
           {view.result === null ? null : (
             <GameOverDialog
               result={view.result}

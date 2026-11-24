@@ -3,9 +3,11 @@ import type { GuestResponse } from "../../shared/api/GuestResponse";
 import type { LoginRequest } from "../../shared/api/LoginRequest";
 import type { SessionResponse } from "../../shared/api/SessionResponse";
 import type { SignupRequest } from "../../shared/api/SignupRequest";
+import type { PlayerIconChoice } from "../../shared/playerIcons/PlayerIconChoice";
 import type { ReasonCode } from "../../shared/ReasonCode";
 import { requestAccountDetails } from "../api/requestAccountDetails";
 import { requestGuest } from "../api/requestGuest";
+import { requestIconChange } from "../api/requestIconChange";
 import { requestLogin } from "../api/requestLogin";
 import { requestLogout } from "../api/requestLogout";
 import { requestSession } from "../api/requestSession";
@@ -73,6 +75,11 @@ export abstract class AccountSessionStore extends ObservableState<ClientState> {
       await requestUsernameChange({ token: session.token, username }),
       session.isGuest,
     );
+  };
+
+  readonly changeIcon = async (icon: PlayerIconChoice): Promise<ReasonCode | null> => {
+    const session = this.state.session;
+    return session === null ? "invalid_token" : requestIconChange({ token: session.token, icon });
   };
 
   readonly loadAccount = async (): Promise<AccountResponse | null> => {

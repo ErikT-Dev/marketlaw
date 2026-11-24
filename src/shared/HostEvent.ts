@@ -1,6 +1,7 @@
 import type { ConnectionStatus } from "./ConnectionStatus";
 import type { EpochMs } from "./EpochMs";
 import type { Notice } from "./Notice";
+import type { PlayerIconChoice } from "./playerIcons/PlayerIconChoice";
 import type { ChatEntry } from "./protocol/ChatEntry";
 import type { RemovalReason } from "./protocol/RemovalReason";
 import type { RoomUpdate } from "./protocol/RoomUpdate";
@@ -23,7 +24,7 @@ export type HostEvent =
   | {
       readonly type: "tutorial_update";
       readonly view: TutorialView;
-      readonly playerIconColor: number;
+      readonly playerIcon: PlayerIconChoice;
       readonly acceptedActionId: string | null;
       readonly serverNow: EpochMs;
     }

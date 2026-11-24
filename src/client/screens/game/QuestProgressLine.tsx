@@ -1,4 +1,5 @@
 import type { QuestNeed } from "../../../shared/catalogue/QuestNeed";
+import type { PlayerIconChoice } from "../../../shared/playerIcons/PlayerIconChoice";
 import type { QuestProgress } from "../../../shared/QuestProgress";
 import { PlayerIcon } from "../../components/PlayerIcon";
 import { STAT_ICONS } from "../../icons/STAT_ICONS";
@@ -12,26 +13,18 @@ import styles from "./QuestsPanel.module.css";
 
 type Props = {
   readonly name: string;
-  readonly username: string;
-  readonly colorIndex: number;
+  readonly icon: PlayerIconChoice | null;
   readonly progress: QuestProgress;
   readonly needs: ReadonlyArray<QuestNeed>;
   readonly isViewer: boolean;
 };
 
-export function QuestProgressLine({
-  name,
-  username,
-  colorIndex,
-  progress,
-  needs,
-  isViewer,
-}: Props) {
+export function QuestProgressLine({ name, icon, progress, needs, isViewer }: Props) {
   if (progress.isCompleted) {
     return (
       <li className={styles["progress"]}>
         <span className={styles["player"]}>
-          <PlayerIcon name={name} username={username} colorIndex={colorIndex} /> · completed
+          <PlayerIcon name={name} icon={icon} /> · completed
         </span>
       </li>
     );
@@ -40,8 +33,7 @@ export function QuestProgressLine({
     <li className={styles["progress"]}>
       <QuestPlayerName
         name={name}
-        username={username}
-        colorIndex={colorIndex}
+        icon={icon}
         canCompleteNow={!isViewer && progress.canCompleteNow}
       />
       <p className={styles["line"]}>

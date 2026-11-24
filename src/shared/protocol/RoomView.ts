@@ -1,5 +1,6 @@
 import type { EpochMs } from "../EpochMs";
 import type { PlayerId } from "../PlayerId";
+import type { PlayerIconChoice } from "../playerIcons/PlayerIconChoice";
 import type { RoomCode } from "../RoomCode";
 import type { SeatNumber } from "../SeatNumber";
 import type { AskingView } from "./AskingView";
@@ -12,7 +13,7 @@ export type RoomView = {
   readonly ownerName: string;
   readonly playerNames: ReadonlyArray<string>;
   readonly playerIds: ReadonlyArray<PlayerId>;
-  readonly playerIconColors: ReadonlyArray<number>;
+  readonly playerIcons: ReadonlyArray<PlayerIconChoice>;
   readonly namesInRoom: ReadonlyArray<string>;
   readonly idsInRoom: ReadonlyArray<PlayerId>;
   readonly myName: string;

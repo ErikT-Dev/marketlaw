@@ -1,6 +1,7 @@
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import type { QuestPlaceView } from "../../../shared/QuestPlaceView";
+import { playerIconPictureUrl } from "../../icons/playerIconPictureUrl";
 import { gamePageProps } from "../../testing/gamePageProps";
 import { roomUpdateWith } from "../../testing/roomUpdateWith";
 import { GamePage } from "../GamePage";
@@ -154,15 +155,22 @@ describe("quests panel", () => {
     expect(within(card).queryByRole("img", { name: /^Satisfaction/ })).toBeNull();
   });
 
-  it("shows a player icon with the first letter of the username on the seat's icon colour", () => {
+  it("shows a player icon with the seat's picture in its picture colour on its background colour", () => {
     showQuests([TRADING_POST]);
     const card = screen.getByRole("region", { name: "Trading post" });
     const ann = within(card).getByRole("button", { name: "Ann" });
-    expect(ann.firstElementChild?.textContent).toBe("A");
-    expect(ann.style.background).toBe("var(--color-player-icon-0)");
+    expect(ann.style.background).toBe("rgb(30, 58, 138)");
+    expect(ann.firstElementChild?.getAttribute("style")).toContain(
+      playerIconPictureUrl("delapouite/bat"),
+    );
+    expect(ann.firstElementChild?.getAttribute("style")).toContain(
+      "background-color: rgb(253, 230, 138)",
+    );
     const you = within(card).getByRole("button", { name: "You" });
-    expect(you.firstElementChild?.textContent).toBe("B");
-    expect(you.style.background).toBe("var(--color-player-icon-3)");
+    expect(you.style.background).toBe("rgb(20, 83, 45)");
+    expect(you.firstElementChild?.getAttribute("style")).toContain(
+      playerIconPictureUrl("lorc/wolf-head"),
+    );
   });
 
   it("gives the icon of another player who could complete the quest now an orange border", () => {

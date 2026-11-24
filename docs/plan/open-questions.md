@@ -4227,3 +4227,15 @@ file.
 - **Spec:** A2.5 (unchanged).
 - **Implemented:** `migrations/0015_player_icons.sql`, `src/server/accounts/storedPlayerIconOf.ts`,
   `iconOfOlderAccount.ts`, `randomPlayerIcon.ts`.
+
+## Q182. What is a picture button in the icon picker named?
+
+- **Phase:** 29b, item 8 (player icons), decided without the owner.
+- **Question:** S12.5 names each picture button "by the picture", but two artists have a picture
+  of the same file name (`bat`, `horse-head`), so the file name alone would name two buttons the
+  same.
+- **Solution:** a button is named by the picture's file name in words and its artist as the
+  licence file writes it: "Bat by Delapouite", "Wolf head by Lorc". The privacy notice lists the
+  same artist names, only those with a picture in the folder.
+- **Spec:** S12.5 (unchanged).
+- **Implemented:** `src/client/icons/playerIconPictureLabel.ts`, `PLAYER_ICON_ARTISTS.ts`.

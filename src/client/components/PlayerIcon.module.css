@@ -9,14 +9,20 @@
   box-sizing: border-box;
   border: 2px solid transparent;
   border-radius: 50%;
-  color: #ffffff;
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-bold);
-  line-height: 1;
+  background: var(--color-panel-highlight);
   padding: 0;
   cursor: default;
   font-family: inherit;
   vertical-align: middle;
+}
+
+.picture {
+  display: block;
+  width: 70%;
+  height: 70%;
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
 }
 
 .marked {

@@ -4,8 +4,8 @@ import type { QuestPlaceView } from "../../../shared/QuestPlaceView";
 import type { SeatNumber } from "../../../shared/SeatNumber";
 import { Button } from "../../components/Button";
 import { counted } from "./counted";
-import { playerIconColorOf } from "./playerIconColorOf";
-import { PlayerIconColors } from "./PlayerIconColors";
+import { playerIconOf } from "./playerIconOf";
+import { PlayerIcons } from "./PlayerIcons";
 import { playerNameOf } from "./playerNameOf";
 import { QuestNeedsLine } from "./QuestNeedsLine";
 import { QuestProgressLine } from "./QuestProgressLine";
@@ -22,7 +22,7 @@ type Props = {
 };
 
 export function QuestCard({ place, viewer, playerNames, isBusy, onComplete }: Props) {
-  const playerIconColors = useContext(PlayerIconColors);
+  const playerIcons = useContext(PlayerIcons);
   const nameId = useId();
   const { tier, terms } = questOf(place.quest);
   const { needs, reward } = terms;
@@ -58,8 +58,7 @@ export function QuestCard({ place, viewer, playerNames, isBusy, onComplete }: Pr
             <QuestProgressLine
               key={progress.seat}
               name={progress.seat === viewer ? "You" : playerNameOf(playerNames, progress.seat)}
-              username={playerNameOf(playerNames, progress.seat)}
-              colorIndex={playerIconColorOf(playerIconColors, progress.seat)}
+              icon={playerIconOf(playerIcons, progress.seat)}
               progress={progress}
               needs={needs}
               isViewer={progress.seat === viewer}

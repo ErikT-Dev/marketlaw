@@ -1,23 +1,23 @@
-import { playerIconLetterOf } from "./playerIconLetterOf";
+import type { PlayerIconChoice } from "../../shared/playerIcons/PlayerIconChoice";
 import styles from "./PlayerIcon.module.css";
+import { PlayerIconFace } from "./PlayerIconFace";
 
 type Props = {
   readonly name: string;
-  readonly username: string;
-  readonly colorIndex: number;
+  readonly icon: PlayerIconChoice | null;
   readonly isMarked?: boolean;
 };
 
-export function PlayerIcon({ name, username, colorIndex, isMarked = false }: Props) {
+export function PlayerIcon({ name, icon, isMarked = false }: Props) {
   const classes = `${styles["icon"] ?? ""} ${isMarked ? (styles["marked"] ?? "") : ""}`;
   return (
     <button
       type="button"
       className={classes}
       aria-label={name}
-      style={{ background: `var(--color-player-icon-${String(colorIndex)})` }}
+      style={icon === null ? undefined : { background: icon.background }}
     >
-      <span aria-hidden="true">{playerIconLetterOf(username)}</span>
+      {icon === null ? null : <PlayerIconFace icon={icon} />}
       <span className={styles["tooltip"]} aria-hidden="true">
         {name}
       </span>

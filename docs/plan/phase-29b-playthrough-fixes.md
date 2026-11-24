@@ -571,7 +571,7 @@ approval of the list, the quest scenarios that name quest contents.
     `src/client/testing/scorePartsAddingUpTo.ts`. Still failing in `npm run check`, none of
     them item 7's: tutorial start's `build_passes` (16); unit tests of items 9 (`reportBudgets`
     B19), 18 (`parseRulebook`, two) and 19 (`influenceAndUndo`, `ruleFileTables`, two).
-- [ ] 8. **Player icons** (A2.5, A2.6, A12.1, S1.8, S12.5, S12.8, B18, finding 22, Q175).
+- [x] 8. **Player icons** (A2.5, A2.6, A12.1, S1.8, S12.5, S12.8, B18, finding 22, Q175).
   **Large.**
   - Copy `design/assets/playericons/` (one artist folder `ffffff` and `license.txt`) into the
     repository as `player-icons/`, in a place the client bundle and the Worker can both read
@@ -614,6 +614,24 @@ approval of the list, the quest scenarios that name quest contents.
     `player-icons/license.txt?raw`. Browser tests for the picker and the privacy page.
   - Stopped (2026-11-24): done so far nothing more (the stop request was set when the client
     builder started); next the client part as in Next above; uncommitted changes: no.
+  - **Done (2026-11-24), client.** `RoomView.playerIcons` and the tutorial update's `playerIcon`
+    carry each seat's `PlayerIconChoice` (`PROTOCOL_VERSION` 29); the letter, the 12 colour
+    tokens, `playerIconColorOf` and `PLAYER_ICON_COLOR_COUNT` are gone. `PlayerIcon` draws the
+    picture as a CSS mask (`PlayerIconFace`, URL from `playerIconPictureUrl` with Vite's
+    `new URL` pattern, so a picture loads only when shown). Account settings has a "Player icon"
+    part with **Change icon** opening the picker (`IconSetting`, `IconPicker`); picture buttons
+    are named "Bat by Delapouite" (Q182, two artists share file names). The privacy notice has
+    "Picture credits" before "Your choices" (`PictureCredits`, `PLAYER_ICON_ARTISTS` from the
+    licence, only artists with a picture). Unit tests `iconSettings.test.tsx`,
+    `pictureCredits.test.tsx`; browser test `e2e/playerIcon.spec.ts` (also fetches the picture
+    URL from the built bundle) and `privacyNotice.spec.ts` now expects "Picture credits"; both
+    pass locally at all three sizes. The user box in the top bar still shows a letter: S2.3 does
+    not call it a player icon.
+  - **For later items.** Run `npm run db:migrate:local` before local browser tests (0015 is new;
+    without it guest creation answers "The server did not answer"). Still failing in
+    `npm run check`, none of them item 8's: tutorial start's `build_passes` (16); unit tests
+    of items 9 (`reportBudgets` B19), 18 (`parseRulebook`, two) and 19 (`influenceAndUndo`,
+    `ruleFileTables`, two).
 - [ ] 9. **Card tiles** (S4.1, S6.1, S6.4, B19, findings 14, 19, 29, 33). **Large.**
   - Small WebP pictures (about 100 px wide, at most 6 KB each, B19) made from the 240 photos in
     `src/client/assets/cards/` (11 MB; never ship them on tiles) by a build step or committed

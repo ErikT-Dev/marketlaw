@@ -8,6 +8,7 @@ const PARTS = [
   "What is stored and why",
   "How long",
   "Who else handles it",
+  "Picture credits",
   "Your choices",
 ];
 
@@ -15,6 +16,7 @@ async function expectEveryPart(page: Page) {
   const notice = page.getByRole("dialog", { name: "Privacy notice" });
   await expect(notice.getByRole("heading", { level: 2 })).toHaveText(PARTS);
   await expect(notice).toContainText("mlaw.support@gmail.com");
+  await expect(notice.getByRole("list", { name: "Artists" })).toContainText("Delapouite");
   return notice;
 }
 

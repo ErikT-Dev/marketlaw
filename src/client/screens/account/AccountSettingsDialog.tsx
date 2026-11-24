@@ -5,6 +5,7 @@ import styles from "./Account.module.css";
 import type { AccountBinding } from "./AccountBinding";
 import { EmailSetting } from "./EmailSetting";
 import { GuestSignUpNote } from "./GuestSignUpNote";
+import { IconSetting } from "./IconSetting";
 import type { UserAccountDialog } from "./UserAccountDialog";
 import { UsernameSetting } from "./UsernameSetting";
 import { useAccountDetails } from "./useAccountDetails";
@@ -27,6 +28,12 @@ export function AccountSettingsDialog(props: Props) {
         name={account.name}
         wait={details?.usernameWait ?? null}
         onChangeUsername={account.onChangeUsername}
+        onChanged={reload}
+      />
+      <IconSetting
+        icon={details?.icon ?? null}
+        wait={details?.iconWait ?? null}
+        onChangeIcon={account.onChangeIcon}
         onChanged={reload}
       />
       {email === null || account.isGuest ? null : (
