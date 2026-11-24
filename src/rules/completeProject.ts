@@ -25,7 +25,6 @@ export function completeProject(
       influence: current.stats.influence + 3,
     },
     projects: [...current.projects, project],
-    projectsThisTurn: [...current.projectsThisTurn, project],
     worthGained: current.worthGained + PROJECT_FUNDS_REWARD,
     actionsThisTurn: current.actionsThisTurn + 1,
   }));

@@ -22,7 +22,6 @@ export type SeatState = {
   readonly gainedTypes: TypeCounts;
   readonly combosClaimed: ReadonlyArray<ClaimedCombo>;
   readonly projects: ReadonlyArray<ProjectName>;
-  readonly projectsThisTurn: ReadonlyArray<ProjectName>;
   readonly questsCompleted: ReadonlyArray<QuestName>;
   readonly buildPasses: number;
   readonly buildPassesBought: number;
