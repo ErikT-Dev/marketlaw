@@ -19,43 +19,92 @@
 }
 
 .button:disabled {
-  background: var(--color-button-disabled-base);
+  background: color-mix(
+    in srgb,
+    var(--color-button-disabled-base) var(--opacity-button-background),
+    transparent
+  );
   cursor: default;
 }
 
 .primary {
-  background: var(--color-button-primary-base);
+  background: color-mix(
+    in srgb,
+    var(--color-button-primary-base) var(--opacity-button-background),
+    transparent
+  );
 }
 .primary:hover:enabled {
-  background: var(--color-button-primary-hover);
+  background: color-mix(
+    in srgb,
+    var(--color-button-primary-hover) var(--opacity-button-background),
+    transparent
+  );
 }
 .secondary {
-  background: var(--color-button-secondary-base);
+  background: color-mix(
+    in srgb,
+    var(--color-button-secondary-base) var(--opacity-button-background),
+    transparent
+  );
 }
 .secondary:hover:enabled {
-  background: var(--color-button-secondary-hover);
+  background: color-mix(
+    in srgb,
+    var(--color-button-secondary-hover) var(--opacity-button-background),
+    transparent
+  );
 }
 .danger {
-  background: var(--color-button-danger-hover);
+  background: color-mix(
+    in srgb,
+    var(--color-button-danger-hover) var(--opacity-button-background),
+    transparent
+  );
 }
 .danger:hover:enabled {
-  background: color-mix(in srgb, var(--color-button-danger-hover) 85%, black);
+  background: color-mix(
+    in srgb,
+    color-mix(in srgb, var(--color-button-danger-hover) 85%, black) var(--opacity-button-background),
+    transparent
+  );
 }
 .warning {
-  background: var(--color-button-warning-base);
+  background: color-mix(
+    in srgb,
+    var(--color-button-warning-base) var(--opacity-button-background),
+    transparent
+  );
   color: var(--color-background-game-window);
 }
 .warning:hover:enabled {
-  background: var(--color-button-warning-hover);
+  background: color-mix(
+    in srgb,
+    var(--color-button-warning-hover) var(--opacity-button-background),
+    transparent
+  );
 }
 .success {
-  background: var(--color-button-success-hover);
+  background: color-mix(
+    in srgb,
+    var(--color-button-success-hover) var(--opacity-button-background),
+    transparent
+  );
 }
 .success:hover:enabled {
-  background: color-mix(in srgb, var(--color-button-success-hover) 85%, black);
+  background: color-mix(
+    in srgb,
+    color-mix(in srgb, var(--color-button-success-hover) 85%, black)
+      var(--opacity-button-background),
+    transparent
+  );
 }
 .menu {
-  background: linear-gradient(180deg, var(--color-button-menu-from), var(--color-button-menu-to));
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--color-button-menu-from) var(--opacity-button-background), transparent),
+    color-mix(in srgb, var(--color-button-menu-to) var(--opacity-button-background), transparent)
+  );
   color: var(--color-background-game-window);
 }
 

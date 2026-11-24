@@ -108,7 +108,7 @@ function withClaimedCombosOfDi(update: RoomUpdate): RoomUpdate {
 }
 
 describe("detailed summary table", () => {
-  it("lists the combos a player has claimed in the order of the combos list", () => {
+  it("lists the combos a player has claimed in the order of the combos list without the cards they are printed on", () => {
     render(<GamePage {...gamePageProps(withClaimedCombosOfDi(roomUpdateWith({})))} />);
     fireEvent.click(
       within(screen.getByRole("region", { name: "Opponents" })).getByRole("button", {
@@ -117,10 +117,10 @@ describe("detailed summary table", () => {
     );
     const board = within(screen.getByRole("dialog", { name: "Detailed summary table of Di" }));
     expect(comboRows(board.getByRole("list", { name: "Combos claimed by Di" }))).toEqual([
-      "Large Country Manor · 1 [Farm], again at every multiple[Quality +1]×4",
-      "Farm House · 1 [Farm][Workforce +1]",
-      "Large Country Manor · 5 [Farm][Quality +1]",
-      "Farm House · Farmers Market in your city[Satisfaction +1]",
+      "1 [Farm], again at every multiple[Quality +1]×4",
+      "1 [Farm][Workforce +1]",
+      "5 [Farm][Quality +1]",
+      "Farmers Market in their city[Satisfaction +1]",
     ]);
   });
 });

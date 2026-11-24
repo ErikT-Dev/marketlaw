@@ -12,7 +12,7 @@ export function ReadyComboRow({ status }: Props) {
   const gains = cardOf(status.card).combos[status.combo]?.gains;
   return (
     <li className={styles["row"]}>
-      <ComboNeed card={status.card} combo={status.combo} />
+      <ComboNeed card={status.card} combo={status.combo} owner="you" />
       <strong className={styles["gain"]}>
         {gains === undefined ? null : (
           <StatChip stat={gains.stat} value={`+${String(gains.amount)}`} />

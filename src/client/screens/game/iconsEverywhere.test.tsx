@@ -117,7 +117,7 @@ describe("stats and types as icons", () => {
 
   it.each([
     ["Projects", "Projects"],
-    ["Use Influence", "Use Influence"],
+    ["Use Influence 3", "Use Influence"],
     ["Claim all (1)", "Claim all combos"],
     ["Detailed summary table of Di", "Detailed summary table of Di"],
   ])("shows no stat or type as a word in the pop-up opened by %s", async (button, dialog) => {

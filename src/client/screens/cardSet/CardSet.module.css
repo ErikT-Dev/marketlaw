@@ -101,7 +101,11 @@
   padding: 2px var(--space-md);
   border: none;
   border-radius: 14px;
-  background: var(--color-board-trade-off);
+  background: color-mix(
+    in srgb,
+    var(--color-board-trade-off) var(--opacity-button-background),
+    transparent
+  );
   color: var(--color-text-secondary);
   font: inherit;
   font-size: var(--font-size-panel-title);
@@ -110,7 +114,11 @@
 }
 
 .choice[aria-pressed="true"] {
-  background: var(--color-board-draw);
+  background: color-mix(
+    in srgb,
+    var(--color-board-draw) var(--opacity-button-background),
+    transparent
+  );
   color: var(--color-text-primary);
 }
 

@@ -35,7 +35,7 @@ export function CombosPanel({ combos }: Props) {
               key={`${status.card}-${String(status.combo)}`}
               className={`${styles["combo"] ?? ""} ${styles[lookOf(status)] ?? ""}`}
             >
-              <ComboNeedAndGain card={status.card} combo={status.combo} />
+              <ComboNeedAndGain card={status.card} combo={status.combo} owner="you" />
               <span className={styles["status"]}>{statusText(status)}</span>
             </li>
           ))}

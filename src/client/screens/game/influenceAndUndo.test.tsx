@@ -46,7 +46,7 @@ function showGame(changes: Partial<OwnSeatView> = SEAT) {
 }
 
 function openInfluence() {
-  fireEvent.click(screen.getByRole("button", { name: "Use Influence" }));
+  fireEvent.click(screen.getByRole("button", { name: "Use Influence 4" }));
   return screen.getByRole("dialog", { name: "Use Influence" });
 }
 

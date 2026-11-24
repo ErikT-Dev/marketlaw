@@ -164,3 +164,58 @@ describe("projects", () => {
     expect(dialog).not.toContain("first-completion");
   });
 });
+
+describe("highlighted actions", () => {
+  it("highlights Claim all while it would claim something and Projects while a project can be completed", () => {
+    showGame();
+    expect(
+      screen.getByRole("button", {
+        name: "Claim all (1)",
+        description: "You have combos ready to claim",
+      }),
+    ).toBeDefined();
+    expect(
+      screen.getByRole("button", {
+        name: "Projects",
+        description: "You can complete a project now",
+      }),
+    ).toBeDefined();
+  });
+
+  it("does not highlight Claim all or Projects when there is nothing to claim or complete", () => {
+    showGame({
+      ...READY,
+      claimAllRejection: "nothing_to_claim",
+      combos: [],
+      projectRejections: {
+        quality: "project_needs_not_met",
+        satisfaction: "project_needs_not_met",
+        workforce: "project_already_completed",
+      },
+    });
+    expect(screen.getByRole("button", { name: "Claim all (0)" })).toBeDefined();
+    expect(
+      screen.queryByRole("button", { description: "You have combos ready to claim" }),
+    ).toBeNull();
+    expect(
+      screen.queryByRole("button", { description: "You can complete a project now" }),
+    ).toBeNull();
+  });
+
+  it("shows the player's influence on the Use influence button", () => {
+    showGame({
+      ...READY,
+      stats: {
+        funds: 70,
+        income: 10,
+        influence: 6,
+        workforce: 2,
+        quality: 9,
+        satisfaction: 4,
+        product: 0,
+        distribution: 0,
+      },
+    });
+    expect(screen.getByRole("button", { name: "Use Influence 6" })).toBeDefined();
+  });
+});

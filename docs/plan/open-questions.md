@@ -4307,3 +4307,22 @@ file.
 - **Spec:** S5.5, S7.2, M3.5, M3.7 (unchanged).
 - **Implemented:** `incomeGainEntriesOf`, `lastTurnOf` (rules), `PlayerView.lastTurn`,
   `LAST_TURN_SCHEMA`, `LastTurnPanel`, `wholeFundsShown`.
+
+## Q186. Which backgrounds does "every button's background is at most 90% opaque" cover, and how is a claimed card-name combo worded?
+
+- **Phase:** 29b, item 14 (buttons and highlights), decided without the owner.
+- **Questions:** (1) S1.10 says every button's background is at most 90% opaque, but some
+  buttons are pictures: a player icon's background is the colour its player chose (S1.8,
+  A2.6), and card tiles are drawn as S6.4 says. (2) S3.2 shows a claimed combo "only by what it
+  needs and what it gave, without the name of the card it is printed on"; a card-name combo
+  needs another card, which the list wrote as "in your city" although the city is another
+  player's.
+- **Solution:** (1) Every button with a background of its own takes its colour at 90%
+  (`--opacity-button-background` in `tokens.css`): the buttons of every look, help buttons,
+  tabs, filter choices, influence tiles and draw actions, room size choices, menu entries and
+  card names with combos. Player icons keep their chosen colours, which are the icon itself,
+  and card tiles keep S6.4's 80% sector colours, already below 90%. (2) A claimed card-name
+  combo reads "Farmers Market in their city".
+- **Spec:** S1.10, S3.2 (unchanged).
+- **Implemented:** `Button.module.css` and the other buttons' style files, `ComboNeed`
+  (`ComboOwner`).

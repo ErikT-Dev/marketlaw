@@ -758,11 +758,26 @@ approval of the list, the quest scenarios that name quest contents.
   - **For later items.** At 1280 × 720 the marketplace header takes two rows while the
     countdown shows (30 seconds of your go); the second row of places needed scrolling there
     already.
-- [ ] 14. **Buttons and highlights** (S1.10, S6.1, S6.6, S3.2, findings 7, 18, 30, 31, 34).
+- [x] 14. **Buttons and highlights** (S1.10, S6.1, S6.6, S3.2, findings 7, 18, 30, 31, 34).
   **Small.**
   - Claimed combos without card names; the Projects button highlighted while the view says a
     project can be completed, Claim all while its number is above 0; "Use influence" with the
     influence icon and amount; every button background at most 90% opaque (tokens).
+  - **Done (2026-11-24).** The detailed summary table's claimed combos show only need and gain
+    (`ComboNeed` takes an `owner`, `ComboOwner`); a claimed card-name combo reads "Farmers
+    Market in their city" (Q186). **Claim all** is highlighted ("You have combos ready to
+    claim") while its number is above 0, **Projects** ("You can complete a project now") while
+    any of the view's `projectRejections` is null, both through `Button`'s `highlightReason`
+    like End turn. **Use influence** shows the influence icon with your influence (named "Use
+    Influence 3"). Every button with a background of its own mixes its colour at
+    `--opacity-button-background` (90%, `tokens.css`); player icons and card tiles are left as
+    they are (Q186). Unit tests in `combosAndProjects`, `combosList`, `iconsEverywhere`,
+    `influenceAndUndo`; browser tests `combosAndProjects`, `influenceAndUndo`,
+    `tooltipsOnFocus`, `handAndActionsScreens` and `cardNameCombos` pass locally at all three
+    sizes.
+  - **For later items.** Item 19: `InfluenceDialog.module.css`'s tile and draw backgrounds now
+    use the 90% mix; keep it for the new tile colours. A unit test opening the influence pop-up
+    names the button with the amount ("Use Influence 4").
 - [ ] 15. **Pictures and the browser tab** (S6.3, S8.2, S1.2, findings 1, 2). **Small.**
   - Project pictures from `design/assets/projects/` at about 600 px wide, at most about 80 KB
     each, in `ProjectsDialog` (lazy, not in the first screen's bundle); the logo of
