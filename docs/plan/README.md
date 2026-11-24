@@ -319,7 +319,7 @@ The 427 scenarios cover all of version 1, but each phase implements only part of
 | 29 | [Tutorial](phase-29-tutorial.md) | 6 Learning | 27, 28 | done |
 | 29a | [Playthrough fixes](phase-29a-playthrough-fixes.md) | 6 Learning | 29 | done |
 | 29b | [Playthrough fixes](phase-29b-playthrough-fixes.md) | 6 Learning | 29a | done |
-| 29c | [Playthrough fixes](phase-29c-playthrough-fixes.md) | 6 Learning | 29b | in progress |
+| 29c | [Playthrough fixes](phase-29c-playthrough-fixes.md) | 6 Learning | 29b | done |
 | 30 | [Version 1 readiness](phase-30-version-1-readiness.md) | 7 Launch | all, 29c included | approved |
 
 Phases run one at a time, in this order. Where the dependencies allow, the owner may reorder

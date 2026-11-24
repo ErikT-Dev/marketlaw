@@ -1,6 +1,6 @@
 # Phase 29c: Playthrough fixes
 
-Status: in progress
+Status: done
 Milestone: 6 Learning
 
 ## Goal
@@ -620,3 +620,4 @@ reviewer found R1 (the icon cost a second request; fixed) and R2 (long one-word 
 inside the word on tiles; answered as a known gap, listed under "Known gaps after this phase"
 and in Q188). The releaser ran the full `npm run check` and `npm run harness` locally on the
 final code: both passed (548 scenarios, 0 problems).
+Branch check run 45501725247 on the final code: all jobs passed; deployed by run 45503101935.
