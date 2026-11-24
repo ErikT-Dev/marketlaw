@@ -386,3 +386,13 @@ scenarios, which expect the first completers' funds instead of influence.
 ### Finish
 
 Filled in by the finisher.
+
+### Helper log
+
+Filled in by the coordinator afterwards, from the helpers' completion notices (Q73). Tokens are
+each helper's conversation size at its end.
+
+| Job | Model, effort | Minutes | Tokens | Tool calls | Result |
+|---|---|---|---|---|---|
+| Planner | Opus, medium | 6 | 157,287 | 49 | done |
+| Starter | Opus, medium | 10 | 182,002 | 83 | done |
