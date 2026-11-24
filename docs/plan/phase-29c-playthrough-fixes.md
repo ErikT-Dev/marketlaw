@@ -509,11 +509,15 @@ scenarios, which expect the first completers' funds instead of influence.
     and the Actions panel's 75%; it, `handAndActionsScreens.spec.ts` and `lobby.spec.ts` pass
     locally at 1920 × 1080, and the screenshots read well by eye.
 
-- [ ] 8. **Player icons of one size** (S1.8, S5.1, point 8). **Small.**
+- [x] 8. **Player icons of one size** (S1.8, S5.1, point 8). **Small.**
   - The orange mark (`src/client/screens/game/QuestPlayerName.tsx`, `PlayerIcon.tsx`) is drawn
     outside the circle (an outline or ring, not a border inside the box), so a marked icon's
     circle and picture are as big as an unmarked one's; a browser test compares a marked and an
     unmarked icon's sizes in one quest.
+  - Done (2026-11-24). `PlayerIcon.module.css`'s mark is a 3 px orange ring (`box-shadow`)
+    outside the 24 px circle; the picture is 14 px in every icon (it was 12.6 px when marked).
+    New `e2e/questIconSizes.spec.ts` (failed on the old mark for the picture size) and
+    `quests.spec.ts` pass locally at 1920 × 1080.
 
 - [ ] 9. **The Players panel** (S3, S3.1, S3.3, point 9). **Small.**
   - `src/client/screens/game/OpponentsPanel.tsx`: title and region **Players**; the tests that
