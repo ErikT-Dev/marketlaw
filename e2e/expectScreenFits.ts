@@ -13,6 +13,18 @@ async function targetsSmallerThanMinimum(page: Page): Promise<ReadonlyArray<stri
   }, MINIMUM_TARGET_PX);
 }
 
+async function waitForImagesInView(page: Page) {
+  await page.waitForFunction(() =>
+    [...document.images]
+      .filter((image) => {
+        const box = image.getBoundingClientRect();
+        const isInView = box.bottom > 0 && box.top < window.innerHeight;
+        return image.loading !== "lazy" || isInView;
+      })
+      .every((image) => image.complete),
+  );
+}
+
 async function waitForTransitionsToEnd(page: Page) {
   await page.waitForFunction(() =>
     document
@@ -32,7 +44,7 @@ export async function expectScreenFits(
   if (!hasHumanCheck) {
     await page.waitForLoadState("networkidle");
   }
-  await page.waitForFunction(() => [...document.images].every((image) => image.complete));
+  await waitForImagesInView(page);
   await page.screenshot({
     path: `harness/screens/${screen}/${screen}-${testInfo.project.name}.png`,
   });

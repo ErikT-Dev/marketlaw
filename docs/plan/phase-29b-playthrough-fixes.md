@@ -917,12 +917,19 @@ approval of the list, the quest scenarios that name quest contents.
     `npm run check` and `npm run harness` passed. GitHub run 45405672973: `check` and 6 of 7
     browser jobs passed (tutorial and `influenceAndUndo` specs included); screenshots copied into
     `harness/screens/`, `docs/enforcement.md` updated.
-  - **F1.** `browser-tests (full games, 2 players)` fails twice (run, then `gh run rerun
+  - [x] **F1.** `browser-tests (full games, 2 players)` fails twice (run, then `gh run rerun
     --failed`): the 1280x720 game passes in 60 s, then the job hangs until the 15 minute action
     limit (no failure line is printed; the 1920x1080 or 2560x1440 game does not finish). 3 and 4
     player games pass at all sizes. Locally the same test shows the first test failing at 0 ms and
     then hanging. A fixer must find where the 2 player game stalls (run it with one size and a
     trace).
+    - **Fixed (2026-11-24), a test bug.** No game stall: the game reached turn 40, and the
+      screen check `expectScreenFits` waited for every image on the page to be complete. Card
+      tiles (`CardTilePicture`, new in item 4) and project pictures load lazily, so a tile far
+      below the view in a long hand (seen at y 4400 at 1920 x 1080) never loads, and the wait,
+      which has no time-out of its own, ran until the 15 minute limit. The check now waits for
+      every image that is not lazy or that is in the view, which are all the screenshot shows.
+      Locally the 2 player game passes at all three sizes (3.1 min, one worker).
   - **Phase review (2026-11-24).** Ready after fixes; `npm run check` and `npm run harness` pass,
     no spec deviation in the engine. Findings (besides F1):
     - [ ] R1. No icon picker screenshot (an exit criterion): `e2e/playerIcon.spec.ts` should call
