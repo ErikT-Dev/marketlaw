@@ -63,6 +63,7 @@ function loggedInAnswer(path: string): unknown {
         playerId: "7d0c7f1e-4b7a-4c5e-9a39-2f4d9c1b8e10",
         name: "Ann",
         isGuest: true,
+        icon: TEST_PLAYER_ICON,
       }
     : { isLoggedIn: false };
 }
@@ -83,6 +84,7 @@ describe("checking the session", () => {
       playerId: "7d0c7f1e-4b7a-4c5e-9a39-2f4d9c1b8e10",
       name: "Ann Rider",
       isGuest: false,
+      icon: TEST_PLAYER_ICON,
     }));
     const store = new ClientStore(() => hostWithEvents().host);
     const registered = { ...IN_ROOM, name: "Ann Rider", isGuest: false };
@@ -139,6 +141,7 @@ describe("logging out and changing the username", () => {
             token: "guest-token",
             playerId: "7d0c7f1e-4b7a-4c5e-9a39-2f4d9c1b8e10",
             name: "Ann City",
+            icon: TEST_PLAYER_ICON,
           }
         : loggedInAnswer(path),
     );
@@ -187,24 +190,13 @@ describe("logging out and changing the username", () => {
 describe("your icon", () => {
   const WOLF = { picture: "lorc/wolf-head" as const, background: "#14532d", color: "#bbf7d0" };
 
-  it("loads your icon from the account once the session is checked and keeps a changed one", async () => {
+  it("takes your icon from the session answer without asking for the account and keeps a changed one", async () => {
     writeSession(IN_ROOM);
-    serverAnswers((path) => {
-      if (path === "/api/account") {
-        return {
-          isLoggedIn: true,
-          name: "Ann",
-          usernameWait: null,
-          icon: TEST_PLAYER_ICON,
-          iconWait: null,
-          email: null,
-          rating: null,
-        };
-      }
-      return path === "/api/icon-changes"
+    const sent = serverAnswers((path) =>
+      path === "/api/icon-changes"
         ? { isOk: true, icon: WOLF, iconWait: null }
-        : loggedInAnswer(path);
-    });
+        : loggedInAnswer(path),
+    );
     const store = new ClientStore(() => hostWithEvents().host);
     await vi.waitFor(() => {
       expect(store.getSnapshot().accountIcon).toEqual({
@@ -214,5 +206,6 @@ describe("your icon", () => {
     });
     expect(await store.changeIcon(WOLF)).toBeNull();
     expect(store.getSnapshot().accountIcon).toEqual({ token: "guest-token", icon: WOLF });
+    expect(sent.map(({ path }) => path)).not.toContain("/api/account");
   });
 });

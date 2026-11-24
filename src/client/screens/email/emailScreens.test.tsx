@@ -19,6 +19,7 @@ const BEA = {
   token: "bea-token",
   playerId: "7d0c7f1e-4b7a-4c5e-9a39-2f4d9c1b8e10",
   name: "Bea",
+  icon: TEST_PLAYER_ICON,
 };
 
 function idleHost(): GameHost {

@@ -1,3 +1,4 @@
+import { TEST_PLAYER_ICON } from "../../shared/testing/TEST_PLAYER_ICON";
 import * as v from "valibot";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { GameHost } from "../../shared/GameHost";
@@ -34,6 +35,7 @@ const ACCOUNT = {
   token: "new-token",
   playerId: "7d0c7f1e-4b7a-4c5e-9a39-2f4d9c1b8e10",
   name: "Bea",
+  icon: TEST_PLAYER_ICON,
 };
 const SIGNUP = {
   username: "Bea",
@@ -57,7 +59,6 @@ describe("logging in and signing up", () => {
     expect(await store.logIn({ login: "Bea", password: "long enough" })).toBeNull();
     expect(sent).toEqual([
       { path: "/api/logins", body: { login: "Bea", password: "long enough" } },
-      { path: "/api/account", body: { token: "new-token" } },
     ]);
     const session = {
       token: "new-token",
@@ -83,10 +84,7 @@ describe("logging in and signing up", () => {
     const store = new ClientStore(() => fakeHost());
     const sent = serverAnswers(ACCOUNT);
     expect(await store.signUp(SIGNUP)).toBeNull();
-    expect(sent).toEqual([
-      { path: "/api/signups", body: SIGNUP },
-      { path: "/api/account", body: { token: "new-token" } },
-    ]);
+    expect(sent).toEqual([{ path: "/api/signups", body: SIGNUP }]);
     expect(store.getSnapshot().session?.isGuest).toBe(false);
   });
 
@@ -103,10 +101,10 @@ describe("logging in and signing up", () => {
     const sent = serverAnswers({ ...ACCOUNT, token: "guest-token" });
     const store = new ClientStore(() => fakeHost());
     expect(await store.signUp(SIGNUP)).toBeNull();
-    expect(sent.slice(-2)).toEqual([
-      { path: "/api/signups", body: { ...SIGNUP, token: "guest-token" } },
-      { path: "/api/account", body: { token: "guest-token" } },
-    ]);
+    expect(sent.at(-1)).toEqual({
+      path: "/api/signups",
+      body: { ...SIGNUP, token: "guest-token" },
+    });
     expect(store.getSnapshot().session).toEqual({
       token: "guest-token",
       playerId: ACCOUNT.playerId,

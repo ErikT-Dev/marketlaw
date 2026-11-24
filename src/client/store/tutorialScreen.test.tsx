@@ -99,7 +99,13 @@ function serverAnswersTutorial(answer: unknown): void {
     Promise.resolve(
       Response.json(
         path === "/api/session"
-          ? { isLoggedIn: true, playerId: PLAYER_ID, name: "Ann", isGuest: true }
+          ? {
+              isLoggedIn: true,
+              playerId: PLAYER_ID,
+              name: "Ann",
+              isGuest: true,
+              icon: TEST_PLAYER_ICON,
+            }
           : answer,
       ),
     ),

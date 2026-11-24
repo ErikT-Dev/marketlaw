@@ -30,7 +30,7 @@ afterAll(async () => {
 
 describe("the icon change route", () => {
   it(
-    "gives a new guest an icon from the folder and saves a changed icon",
+    "gives a new guest an icon from the folder, saves a changed icon and sends it with the session",
     async () => {
       const token = await newGuestToken("Iconguest");
       const before = await post("/api/account", { token });
@@ -44,6 +44,8 @@ describe("the icon change route", () => {
       expect(changed).toEqual({ status: 200, body: { isOk: true, icon: saved, iconWait: null } });
       const after = await post("/api/account", { token });
       expect(after.body).toMatchObject({ icon: saved });
+      const session = await post("/api/session", { token });
+      expect(session.body).toMatchObject({ isLoggedIn: true, icon: saved });
     },
     STARTING_MS,
   );

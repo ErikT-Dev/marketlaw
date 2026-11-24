@@ -1,3 +1,4 @@
+import { TEST_PLAYER_ICON } from "../../shared/testing/TEST_PLAYER_ICON";
 import { fireEvent, render, screen } from "@testing-library/react";
 import * as v from "valibot";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -27,7 +28,13 @@ function serverAnswersTutorial(answer: unknown): ReadonlyArray<SentRequest> {
     return Promise.resolve(
       Response.json(
         path === "/api/session"
-          ? { isLoggedIn: true, playerId: PLAYER_ID, name: "Ann", isGuest: true }
+          ? {
+              isLoggedIn: true,
+              playerId: PLAYER_ID,
+              name: "Ann",
+              isGuest: true,
+              icon: TEST_PLAYER_ICON,
+            }
           : answer,
       ),
     );

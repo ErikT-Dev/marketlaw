@@ -28,7 +28,13 @@ export async function createGuestRoute(request: Request, env: Env): Promise<Resp
   return guest === null
     ? json({ isOk: false, reason: "username_taken" }, 409)
     : json(
-        { isOk: true, token: guest.token, playerId: guest.identity.playerId, name: body.name },
+        {
+          isOk: true,
+          token: guest.token,
+          playerId: guest.identity.playerId,
+          name: body.name,
+          icon: guest.identity.icon,
+        },
         200,
       );
 }

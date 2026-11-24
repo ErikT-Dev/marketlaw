@@ -16,6 +16,7 @@ export async function sessionRoute(request: Request, env: Env): Promise<Response
           playerId: account.identity.playerId,
           name: account.identity.name,
           isGuest: account.isGuest,
+          icon: account.identity.icon,
         };
   return Response.json(reply);
 }

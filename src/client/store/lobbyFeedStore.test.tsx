@@ -1,3 +1,4 @@
+import { TEST_PLAYER_ICON } from "../../shared/testing/TEST_PLAYER_ICON";
 import * as v from "valibot";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { GameHost } from "../../shared/GameHost";
@@ -59,7 +60,13 @@ function answerEveryRequestWith(answer: unknown): void {
 
 beforeEach(() => {
   localStorage.clear();
-  answerEveryRequestWith({ isLoggedIn: true, playerId: ANN_ID, name: "Ann", isGuest: false });
+  answerEveryRequestWith({
+    isLoggedIn: true,
+    playerId: ANN_ID,
+    name: "Ann",
+    isGuest: false,
+    icon: TEST_PLAYER_ICON,
+  });
 });
 
 afterEach(() => {
@@ -87,7 +94,13 @@ describe("the lobby socket in the client store", () => {
     const { store, identified, open } = storeWithLobbyFeed();
     open();
     expect(identified).toEqual([]);
-    answerEveryRequestWith({ isOk: true, token: "new-token", playerId: ANN_ID, name: "Ann" });
+    answerEveryRequestWith({
+      isOk: true,
+      token: "new-token",
+      playerId: ANN_ID,
+      name: "Ann",
+      icon: TEST_PLAYER_ICON,
+    });
     expect(await store.logIn({ login: "Ann", password: "long enough" })).toBeNull();
     expect(identified).toEqual(["new-token"]);
   });
