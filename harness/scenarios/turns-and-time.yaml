@@ -486,7 +486,7 @@
     quests: [{quest: Farmland}, {quest: Sports town}, {quest: Trading post}, {quest: Mining town}]
     seats:
       - seat: 1
-        stats: {funds: 5, income: 4, influence: 2, workforce: 2, quality: 1, satisfaction: -1, product: 1, distribution: 2}
+        stats: {funds: 50, income: 40, influence: 2, workforce: 2, quality: 1, satisfaction: -1, product: 1, distribution: 2}
         build_passes: 1
         played_this_turn: true
   when:
@@ -496,11 +496,11 @@
     turn: 4
     seats:
       - seat: 1
-        stats: {funds: 10.2, influence: 3}
+        stats: {funds: 102, influence: 3}
         build_passes: 2
         played_this_turn: false
       - seat: 2
-        stats: {funds: 10, influence: 1}
+        stats: {funds: 100, influence: 1}
 
 - name: players who left get no end-of-turn steps
   covers: [R10.1, M6.4]
@@ -519,7 +519,7 @@
   then:
     seats:
       - seat: 3
-        stats: {funds: 7, influence: 0}
+        stats: {funds: 70, influence: 0}
 
 - name: at the start of a turn old marketplace cards are removed and places refilled in order
   covers: [R11.1, R18.14, R18.13, R18.5]
@@ -794,7 +794,7 @@
   then:
     seats:
       - seat: 1
-        stats: {funds: 9.6}
+        stats: {funds: 96}
 
 - name: the stats gain never takes funds below 0
   covers: [R14.2, R2.5]
@@ -830,9 +830,9 @@
   then:
     seats:
       - seat: 1
-        worth_gained: 18.6
+        worth_gained: 186
       - seat: 2
-        worth_gained: 17
+        worth_gained: 170
 
 - name: Support gives 10 funds for every full 100 total worth gained behind the highest other player
   covers: [R11.5]
@@ -881,9 +881,9 @@
     quests: [{quest: Farmland}, {quest: Sports town}, {quest: Trading post}, {quest: Mining town}]
     seats:
       - seat: 2
-        worth_gained: 20
+        worth_gained: 200
       - seat: 3
-        worth_gained: 60
+        worth_gained: 600
         left: true
         done: true
   when:
@@ -893,7 +893,7 @@
     turn: 4
     seats:
       - seat: 1
-        stats: {funds: 10}
+        stats: {funds: 100}
 
 - name: Support adds to total worth gained
   covers: [R11.5, R2.4]
@@ -903,7 +903,7 @@
     quests: [{quest: Farmland}, {quest: Sports town}, {quest: Trading post}, {quest: Mining town}]
     seats:
       - seat: 2
-        worth_gained: 50
+        worth_gained: 500
   when:
     - {seat: 1, action: end_turn}
     - {seat: 2, action: end_turn}
@@ -911,6 +911,6 @@
     turn: 4
     seats:
       - seat: 1
-        stats: {funds: 13}
-        worth_gained: 20
-    view: {seat: 2, log_contains: [{seat: 1, turn: 4, support: 3}]}
+        stats: {funds: 130}
+        worth_gained: 200
+    view: {seat: 2, log_contains: [{seat: 1, turn: 4, support: 30}]}

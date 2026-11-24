@@ -9,7 +9,7 @@
   then:
     seats:
       - seat: 1
-        stats: {funds: 3, workforce: 4, quality: -2, satisfaction: -1}
+        stats: {funds: 30, workforce: 4, quality: -2, satisfaction: -1}
         hand: []
         city: [Row House]
         type_counts: {Town Housing: 1}
@@ -26,7 +26,7 @@
   then:
     seats:
       - seat: 1
-        stats: {funds: 3, workforce: -2, quality: 0, satisfaction: -1, product: 1}
+        stats: {funds: 30, workforce: -2, quality: 0, satisfaction: -1, product: 1}
         type_counts: {Raw Material: 1, Farm: 1, Food: 1}
 
 - name: playing a Service card gives distribution
@@ -40,7 +40,7 @@
   then:
     seats:
       - seat: 1
-        stats: {funds: 3, workforce: -1, quality: -1, satisfaction: 0, distribution: 1}
+        stats: {funds: 30, workforce: -1, quality: -1, satisfaction: 0, distribution: 1}
 
 - name: playing a Public card gives quality and satisfaction and uses workforce
   covers: [R6.2, R3.4]
@@ -53,7 +53,7 @@
   then:
     seats:
       - seat: 1
-        stats: {funds: 2, workforce: -1, quality: 1, satisfaction: 2}
+        stats: {funds: 20, workforce: -1, quality: 1, satisfaction: 2}
         type_counts: {Education: 1, Culture: 1}
 
 - name: a card that counts a type twice adds 2 to that type count
@@ -62,7 +62,7 @@
     turn: 5
     seats:
       - seat: 1
-        stats: {funds: 9}
+        stats: {funds: 90}
         hand: [Repetitive Housing]
   when:
     - {seat: 1, action: play_card, card: Repetitive Housing}
@@ -98,14 +98,14 @@
   then:
     seats:
       - seat: 1
-        stats: {funds: 3}
+        stats: {funds: 30}
 
 - name: rejects a card the player cannot afford at its real cost
   covers: [R6.1, R3.8]
   given:
     seats:
       - seat: 1
-        stats: {funds: 5}
+        stats: {funds: 50}
         city: [Row House, Small Home]
         hand: [Cottage]
   when:
@@ -120,7 +120,7 @@
     turn: 4
     seats:
       - seat: 1
-        stats: {funds: 20}
+        stats: {funds: 200}
         hand: [Brownstone]
   when:
     - {seat: 1, action: play_card, card: Brownstone}
@@ -148,7 +148,7 @@
   given:
     seats:
       - seat: 1
-        stats: {funds: 20}
+        stats: {funds: 200}
         build_passes: 0
         city: [Row House]
         hand: [Small Home]
@@ -163,7 +163,7 @@
   given:
     seats:
       - seat: 1
-        stats: {funds: 20}
+        stats: {funds: 200}
         build_passes: 1
         city: [Row House]
         hand: [Orchard]
@@ -200,7 +200,7 @@
   then:
     seats:
       - seat: 1
-        stats: {funds: 9}
+        stats: {funds: 90}
         hand: [Row House]
         actions_this_turn: 1
     holding_pile: [Pub, Library]
@@ -273,7 +273,7 @@
   given:
     seats:
       - seat: 1
-        stats: {funds: 20}
+        stats: {funds: 200}
         build_passes: 3
         hand: [Row House, Orchard, Liquor Shop]
   when:
@@ -283,7 +283,7 @@
   then:
     seats:
       - seat: 1
-        stats: {funds: 8}
+        stats: {funds: 80}
         build_passes: 0
         city: [Row House, Orchard, Liquor Shop]
 
@@ -299,5 +299,5 @@
   then:
     seats:
       - seat: 1
-        stats: {funds: 4}
-        worth_gained: 14
+        stats: {funds: 40}
+        worth_gained: 140

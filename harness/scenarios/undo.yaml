@@ -10,7 +10,7 @@
   then:
     seats:
       - seat: 1
-        stats: {funds: 7, workforce: 0, quality: 0, satisfaction: 0}
+        stats: {funds: 70, workforce: 0, quality: 0, satisfaction: 0}
         hand: [Row House]
         city: []
         played_this_turn: false
@@ -50,7 +50,7 @@
     quests: [{quest: Trading post}]
     seats:
       - seat: 1
-        stats: {income: 4}
+        stats: {income: 40}
         city: [Liquor Shop]
   when:
     - {seat: 1, action: complete_quest, quest: Trading post}
@@ -58,7 +58,7 @@
   then:
     seats:
       - seat: 1
-        stats: {funds: 7, influence: 0}
+        stats: {funds: 70, influence: 0}
         quests_completed: []
 
 - name: undo takes back the latest action first
@@ -81,7 +81,7 @@
   given:
     seats:
       - seat: 1
-        stats: {quality: 8, income: 10}
+        stats: {quality: 8, income: 100}
     random: [{sector: Service}]
   when:
     - {seat: 1, action: complete_project, project: quality}
@@ -124,7 +124,7 @@
     quests: [{quest: Supply chain}]
     seats:
       - seat: 1
-        stats: {income: 4, product: 1}
+        stats: {income: 40, product: 1}
         city: [Metal Mining, Stone Quarry]
     random: [{sector: Service}]
   when:
@@ -180,7 +180,7 @@
   given:
     seats:
       - seat: 1
-        stats: {funds: 20}
+        stats: {funds: 200}
         played_this_turn: true
         build_passes: 1
         city: [Row House]
@@ -194,14 +194,14 @@
         build_passes: 1
         hand: [Orchard]
         city: [Row House]
-        stats: {funds: 20}
+        stats: {funds: 200}
 
 - name: undoing a bought build pass makes the next one cost the same again
   covers: [R7.1, R15.1]
   given:
     seats:
       - seat: 1
-        stats: {funds: 10}
+        stats: {funds: 100}
         build_passes_bought: 1
   when:
     - {seat: 1, action: influence, trade: buy_build_pass}
@@ -210,7 +210,7 @@
   then:
     seats:
       - seat: 1
-        stats: {funds: 7}
+        stats: {funds: 70}
         build_passes: 2
         build_passes_bought: 2
 
@@ -242,9 +242,9 @@
   then:
     seats:
       - seat: 1
-        stats: {funds: 7}
+        stats: {funds: 70}
         hand: [Cottage, Pub]
-        worth_gained: 14
+        worth_gained: 140
     holding_pile: []
 
 - name: undo takes back the extra funds of completing a quest first

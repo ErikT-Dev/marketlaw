@@ -361,7 +361,7 @@
   given:
     seats:
       - seat: 1
-        stats: {funds: 10}
+        stats: {funds: 100}
         build_passes: 0
         played_this_turn: true
         hand: [Orchard]
@@ -371,7 +371,7 @@
   then:
     seats:
       - seat: 1
-        stats: {funds: 4}
+        stats: {funds: 40}
         build_passes: 0
         city: [Orchard]
 
@@ -387,9 +387,9 @@
   then:
     seats:
       - seat: 1
-        stats: {funds: 9, influence: 0}
+        stats: {funds: 90, influence: 0}
         hand: [Farm House]
-        worth_gained: 17
+        worth_gained: 170
 
 - name: 3 influence buy 10 funds as often as the player likes
   covers: [R15.1, R2.4]

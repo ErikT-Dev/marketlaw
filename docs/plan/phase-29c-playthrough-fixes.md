@@ -314,7 +314,7 @@ scenarios, which expect the first completers' funds instead of influence.
     first completion still gives influence); the 3 new scenarios belong to item 3
     (`quests`) and 2a (`end-of-game`). `harness.test.ts` expects 548.
 
-- [ ] 1c. **Scenarios of turns, cards, projects, influence, undo, setup and combos** (R2.1, R2.4,
+- [x] 1c. **Scenarios of turns, cards, projects, influence, undo, setup and combos** (R2.1, R2.4,
   R3.8, R5.1, R11.5, R13.1, R14, R15, R16.2, R16.3). **Large.**
   - Every other funds, income, `worth_gained`, cost, price, sale and Support value in
     `turns-and-time`, `playing-cards`, `projects`, `influence`, `undo`, `setup` and
@@ -322,6 +322,15 @@ scenarios, which expect the first completers' funds instead of influence.
     +23), Support 10 per full 100 behind, F starts at 140 and counts 10 per card; projects need
     income 100 and give +10 income and +20 funds.
   - `HARNESS:` commits (one or two), recorded in Q188.
+  - Done (2026-11-24) in one `HARNESS:` commit, recorded in Q188; no scenario contradicted the
+    spec. The game log's `support:` value is in funds (`support: 30`).
+  - **For later items:** `npm run harness:check` reports 6 values that are not whole numbers,
+    all item 1d's (`records-and-ratings` 1, `tutorial` 5); `npm run check` stops there until 1d.
+    `npm run test` then fails 55 tests in 18 files, none from 1c: the scenarios
+    (`harness.test.ts`) and the `src/rules/`, simulator and `checkRuleFiles` tests listed under
+    1a until 2a; `tutorial/applyTutorialAction` until 1d and 2a; the client's `handAndActions`,
+    `influenceAndUndo`, `quests`, `parseRulebook` and `rulebookChangedSections` until item 4.
+    `npm run size` passes.
 
 - [ ] 1d. **Scenarios of records, visibility, hostile client, tutorial and the rest.** **Small.**
   - `records-and-ratings`, `visibility`, `hostile-client`, `tutorial`, `drawing`, `client`:

@@ -4490,3 +4490,11 @@ file.
   first completion gives 6 extra funds" (Penthouses, funds 76), "the extra funds of a first
   completion add to total worth gained" (Tidy streets, F 142) and "the score counts 0.65 points
   for every income" (income 37: 24.05 + 1.4, so 25). The runner's scenario count is 548.
+- **Harness changes of item 1c (phase 29c, 2026-11-24):** every other funds, income and F value
+  in `turns-and-time`, `playing-cards`, `projects`, `influence`, `undo`, `setup` and
+  `combos-and-income` × 10, names kept, each checked by hand against the new rules: starting
+  funds 70 and income 30, card costs from the new `cards.json` with +10 per card of the same
+  sector and tier, 10 funds a sale, the stats gain 1 fund a point (a gain of 12 is +12, so funds
+  50 and income 40 end the turn at 102), Support 10 per full 100 behind (the log's `support: 30`),
+  F starting at 140 with 10 per card, projects with income 100 giving +10 income and +20 funds,
+  the build pass at 20 funds and 10 more each time. No scenario contradicted the new spec.
