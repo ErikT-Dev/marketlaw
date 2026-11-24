@@ -491,7 +491,7 @@ scenarios, which expect the first completers' funds instead of influence.
     tiles ("Brownston e"), as on the city tiles before; the fit test passes, as no text leaves
     the tile.
 
-- [ ] 7. **Buttons and panels** (S1.10, S1.12, S6.6, S10, points 7 and 10). **Small.**
+- [x] 7. **Buttons and panels** (S1.10, S1.12, S6.6, S10, points 7 and 10). **Small.**
   - White text on every action button and every lobby button (the waiting room's top bar too),
     backgrounds dark enough for 4.5:1 normal and highlighted, at most 90% opaque; disabled ones
     keep their dimmed look. Panel backgrounds 75% instead of 92%
@@ -499,6 +499,15 @@ scenarios, which expect the first completers' funds instead of influence.
     `LastTurnPanel.module.css`, `GameLogAndChatPanel.module.css`, `RoomChatSection.module.css`,
     `Lobby.module.css`); the big card's bars stay more transparent. Check the screenshots'
     readability by eye (axe cannot measure text over the photo, `proposed-rules.md`).
+  - Done (2026-11-24). Only the `menu` and `warning` looks of `Button` had dark text; both now
+    have white text on darker colours (`tokens.css`: menu #9c4a36 to #9a4f0c, warning #8a5a00,
+    hover #704700, each at least 5.9:1 solid). The `warning` look is also the abandon vote's Call
+    button, which follows. Every other look already had white text at 4.8:1 or more; highlighting
+    is an outline and keeps the background. Panels use the new `--opacity-panel-background` (75%),
+    the ranked queue panel (`RankedQueue.module.css`) too; the big card's bars stay at 55%. New
+    `e2e/buttonsAndPanels.spec.ts` checks the action and lobby buttons' text, opacity and contrast
+    and the Actions panel's 75%; it, `handAndActionsScreens.spec.ts` and `lobby.spec.ts` pass
+    locally at 1920 × 1080, and the screenshots read well by eye.
 
 - [ ] 8. **Player icons of one size** (S1.8, S5.1, point 8). **Small.**
   - The orange mark (`src/client/screens/game/QuestPlayerName.tsx`, `PlayerIcon.tsx`) is drawn

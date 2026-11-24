@@ -86,9 +86,9 @@
   --color-button-danger-base: #ef4444;
   --color-button-danger-hover: #dc2626;
   --color-button-disabled-base: #9ca3af;
-  --color-button-menu-from: rgba(232, 184, 165, 0.95);
+  --color-button-menu-from: #9c4a36;
   --color-button-menu-text: #9899b4;
-  --color-button-menu-to: rgba(255, 192, 120, 0.65);
+  --color-button-menu-to: #9a4f0c;
   --color-button-primary-base: #9333ea;
   --color-button-primary-hover: #7e22ce;
   --color-button-secondary-base: #6b7280;
@@ -96,8 +96,8 @@
   --color-button-success-base: #16a34a;
   --color-button-success-hover: #15803d;
   --color-button-text: #ffffff;
-  --color-button-warning-base: #f59e0b;
-  --color-button-warning-hover: #d97706;
+  --color-button-warning-base: #8a5a00;
+  --color-button-warning-hover: #704700;
   --color-card-name-text-with-rewards: #cf2204;
   --color-card-name-text: #29231e;
   --color-card-stat-text: var(--color-stat-basic);
@@ -231,6 +231,7 @@
   --font-weight-bold: 700;
   --font-weight-regular: 400;
   --opacity-button-background: 90%;
+  --opacity-panel-background: 75%;
   --radius-lg: 12px;
   --radius-md: 6px;
   --radius-sm: 4px;
