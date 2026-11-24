@@ -152,10 +152,17 @@
   flex: 1;
   flex-direction: column;
   gap: 2px;
-  min-height: 62px;
-  padding: 12px 14px;
+  position: relative;
+  height: 94px;
+  padding: 10px 14px;
+  overflow: hidden;
   border-radius: var(--radius-md);
   box-sizing: border-box;
+}
+
+.tileFace > :not(:first-child) {
+  position: relative;
+  max-width: 62%;
 }
 
 .tileFace {

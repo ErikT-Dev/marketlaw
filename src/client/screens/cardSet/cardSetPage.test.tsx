@@ -38,6 +38,18 @@ describe("card set", () => {
     expect(within(cardSet).getByRole("status").textContent).toBe("240 cards match");
   });
 
+  it("shows every card tile with its small decorative picture over the card texture", () => {
+    const grid = within(showCardSet()).getByRole("list", { name: "Cards" });
+    const tiles = within(grid).getAllByRole("button");
+    const pictures = tiles.map((tile) =>
+      within(tile).getByRole("presentation", { hidden: true }).getAttribute("src"),
+    );
+    expect(pictures.filter((src) => /card-tiles\/[^/]+\.webp$/.test(src ?? ""))).toHaveLength(240);
+    expect(
+      tiles.filter((tile) => /80%, transparent\).*card-texture\.webp/.test(tile.style.background)),
+    ).toHaveLength(240);
+  });
+
   it("filters by sector, tier and type together and back to all", () => {
     const cardSet = showCardSet();
     choose(cardSet, "Sector", "Public");

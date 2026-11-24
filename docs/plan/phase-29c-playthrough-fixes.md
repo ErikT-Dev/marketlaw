@@ -468,7 +468,7 @@ scenarios, which expect the first completers' funds instead of influence.
   - **For later items:** item 9's own icon over your counts can come from the view's seat icons
     as now. `npm run check` fails the same 15 tests in 9 files as after item 3, all item 4's.
 
-- [ ] 6. **Card tiles** (S6.4, S14.3, S3.2, B19, points 2, 3 and 6). **Large.**
+- [x] 6. **Card tiles** (S6.4, S14.3, S3.2, B19, points 2, 3 and 6). **Large.**
   - Pictures at 200 × 172: `tools/design-export/makeCardTilePictures.ts` (`TILE_PICTURE_SIZE` is
     100 × 86), each at most 16 KB (lower the quality, never the budget); its test
     `cardTilePictures.test.ts`. Every tile shows its picture: `HandCard.tsx`, `PlayedCard.tsx`,
@@ -477,6 +477,19 @@ scenarios, which expect the first completers' funds instead of influence.
     `CardTilePicture.tsx`. Every tile's background: `card-texture.webp`
     (`src/client/icons/CARD_TEXTURE_URL.ts`, as `BigCard.module.css` uses it) under the sector
     colour at 80%.
+  - Done (2026-11-24). The 240 pictures are remade at 200 × 172, quality 0.72 as before; the
+    largest is 12.5 KB. The hand, city, marketplace and another player's city
+    (`OpponentBoardDialog.tsx`, through `PlayedCard`) already showed their pictures; only the
+    card set lacked it. `cardTileBackground.ts` now lays the 80% sector colour over the texture,
+    so every tile that used it (hand, city, another player's city, marketplace) and now the card
+    set get it in one place. A card set tile is 94 px high like a city tile, its text kept to
+    62% of the width, its name sized as a city tile's (`cardNameSizeOf(name, "city")`). New
+    tests: `cards.test.tsx` (texture on hand and city tiles), `cardSetPage.test.tsx` (every card
+    set tile has its picture and the texture), `e2e/cardTiles.spec.ts` (every name fits its card
+    set tile). `cardTiles.spec.ts` and `rulesAndCardSet.spec.ts` pass locally at 1920 × 1080.
+  - **For later items:** long one-word names still break inside the word on city and card set
+    tiles ("Brownston e"), as on the city tiles before; the fit test passes, as no text leaves
+    the tile.
 
 - [ ] 7. **Buttons and panels** (S1.10, S1.12, S6.6, S10, points 7 and 10). **Small.**
   - White text on every action button and every lobby button (the waiting room's top bar too),

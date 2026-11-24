@@ -3,7 +3,7 @@ import { chromium } from "playwright-core";
 import { CARD_TILE_PICTURE_PATHS } from "./CARD_TILE_PICTURE_PATHS.ts";
 import { toWebp } from "./toWebp.ts";
 
-const TILE_PICTURE_SIZE = { width: 100, height: 86 };
+const TILE_PICTURE_SIZE = { width: 200, height: 172 };
 const TILE_PICTURE_QUALITY = 0.72;
 
 const browser = await chromium.launch();
