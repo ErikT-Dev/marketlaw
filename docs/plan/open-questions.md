@@ -4343,3 +4343,90 @@ file.
 - **Spec:** S1.11 (new), S8.2 (unchanged).
 - **Implemented:** `src/client/index.html`, `ProjectPicture`, `projectPictureUrl`,
   `makeProjectPictures.ts`, `projectPictures.test.ts`.
+
+## Q188. What happens with the owner's notes of 2026-11-24?
+
+- **Phase:** 29b is done; the owner's notes are `docs/feedback-notes/2026.11.24 - ready.txt`
+  (points 1 to 10). As Q78 says, the next "continue" plans a fix phase for them before any other
+  phase: **29c, Playthrough fixes**. Phase 30 now also depends on 29c.
+- **Question:** which points change the rules, the protocol, the screens or the harness; how do
+  the points that conflict with existing rules reach the spec; which required scenario names
+  become untrue; and what do the points the notes leave open come to?
+- **Solution:** every point follows the notes; where it conflicts with a rule, the rule is
+  changed in the spec first (D19, `rules/workflow.md`). The points below are decided without the
+  owner, each the reading closest to the owner's words:
+  - **Funds × 10 (point 5).** The owner's purpose is to get rid of decimal places, so the fund
+    becomes the old tenth of a fund (R2.5 rewritten: funds are whole numbers, and every amount of
+    funds is whole). Every amount of funds is multiplied by 10 everywhere: the starting funds
+    (70), card costs in `cards.json` (the file itself, R3.2 notes the change) and the real cost's
+    +10 per card (R3.8), selling (10 funds a card, "Sell for 10 funds?"), the stats gain (1 fund
+    for every point, so a gain of 23 is +23 funds), quest and project rewards, influence actions
+    (`get 20 funds`, `pay 10 funds`, the rising build pass `pay 20 funds, 10 more each time`).
+    Income too, as the owner asked ("you now gain 10 times more", "start with 10 times more",
+    "remove decimal place from income"): it starts at 30, product and distribution give +10
+    (R13.1), a project +10 (R16.3); so every income that the rules compare with is × 10 as well,
+    to keep the game the same: the end goal income 200 (R1.3), projects need 100 income (R16.2),
+    quest requirements `income 40` and so on, the quest gate N − 20 and 80 income (R19.11), the
+    rule file check's income 50 (R20.9). F counts in the same funds: 10 for every card gained,
+    starting at 140 (R2.4). Support (the owner: "10 times more") gives 10 funds for every full
+    100 F behind (behind by 235: +20), the same as before in the new unit (R11.5). Influence,
+    workforce, quality, satisfaction, product, distribution, build passes and types are not
+    funds and do not change. Numbers in `quests.txt` may now go up to 999 (R20.8: `income 130`);
+    `influence-actions.txt` keeps 1 to 99, which every new amount fits.
+  - **Score (point 5).** The owner asked for the funds part of the score to be divided by 10 "to
+    make sure that this doesn't affect end game scoring". Read by that purpose: a game scores
+    exactly as before. Funds count 0.02 points each (0.2 per old fund); cards in hand keep 0.2
+    points each, since cards are not multiplied (dividing them too would change the score, which
+    the owner wants to avoid); income, also × 10, counts 0.65 points each (6.5 per old income),
+    though the note does not name it, for the same reason. R21.5's "whole funds" goes, as funds
+    are whole now; the score still counts in hundredths and rounds down (R21.4).
+  - **First completion (point 4).** "0.1 funds timer the quests tier times 2" reads "0.1 funds
+    times the quest's tier times 2", as the owner's example shows (tier 2: 0.4). In the new unit
+    of point 5 that is 2 funds per tier: 2, 4 or 6 funds instead of +1 influence (R19.10), counted
+    in F like other quest funds, and taken back by undo with the quest. The extra turn still
+    gives only the reward. The tutorial's Trading post text (T5.3) follows.
+  - **Your icon (point 1).** The only letter icon left is the user box's first letter of your
+    username (S2.3, S10.1), shown on the lobby and every screen with the user box; it becomes your
+    player icon (S1.8), from your account. The players online list (S10.2) keeps showing names
+    only: the note asks for your chosen icon, and an icon per online player would add every
+    player's icon to the lobby feed; a known gap of the phase.
+  - **Card tile pictures (points 2, 3, 6).** Point 2: the pictures are made at 200 × 172, twice
+    the pixels of each side of Q183, and B19's limit goes from 6 KB to 16 KB for the owner's
+    sharper pictures (a harness change asked for by the owner, not to get a check green; if a
+    picture is over 16 KB, its quality goes down, the limit does not go up). Point 3: every small
+    card tile shows its picture: hand, city and marketplace already do, and so does another
+    player's city in their detailed summary table (`OpponentBoardDialog` uses the city tile);
+    the card set (S14.3) gets it. Point 6: the image the owner names is already in the repository as
+    `src/client/assets/backgrounds/card-texture.webp`, made from
+    `dana-devolk-E0BdstzaO8E-unsplash.jpg` by `tools/design-export/convertAssets.ts`; the big
+    card uses it. Every small tile shows it under its 80% sector colour (S6.4), so the texture
+    shows through as on the big card's bars; no new picture is added.
+  - **White button text (point 7).** Every action button (S6.6) and every button on the lobby
+    (S10, the "home screen", with the waiting room that shares its top bar) has white text; their
+    backgrounds are made darker where needed so white text keeps 4.5:1 contrast in every state
+    (normal, highlighted), still at most 90% opaque (S1.10). Disabled buttons keep their dimmed
+    look.
+  - **Icons in the quests (point 8).** Not an illusion: a marked icon (the bold orange border of
+    a player who can complete the quest) has a 3 px border inside the same 24 px box, so its
+    coloured circle and picture are smaller than an unmarked one's. Decided: every icon of one
+    screen part has the same circle and picture size; the mark is drawn outside the circle
+    (S1.8), with a browser test that compares the sizes.
+  - **The Players panel (point 9).** The left panel and its region are titled **Players**
+    (S3); your counts table (S3.3) shows your username and your icon; each quick summary table
+    (S3.1) shows the player's icon left of their username.
+  - **Panels (point 10).** "The dark blue boxes marking each area" are the panels, whose
+    background is 92% opaque. New rule S1.12: panel backgrounds are 75% opaque. Axe cannot measure
+    text over the background photo (`proposed-rules.md`), so the builder checks the screenshots'
+    readability.
+  - **Units and saves.** The state's change of units raises `SAVE_SCHEMA_VERSION` (D1: rooms of
+    the old format close) and the view's raises `PROTOCOL_VERSION`. Game records saved before
+    the phase are not converted; they show the amounts they were saved with (known gap, D1).
+  - **Required names.** 18 names on `harness/required.yaml` become untrue (point 4: 3, point 5:
+    15). They are left exactly as they are until the owner approves the new names, listed in
+    the phase file under "Waiting for the owner". Every other required scenario keeps its name
+    and follows the new amounts in a `HARNESS:` commit recorded here.
+  - The spec and harness changes are made on the branch `phase-29c-playthrough-fixes` by the
+    starter (spec) and item 1 (rule files, scenarios, invariants, budget), not on master, as for
+    29b (Q178): on their own they turn the check red until 29c builds them.
+- **Implemented:** `docs/plan/phase-29c-playthrough-fixes.md`, `docs/plan/README.md`,
+  `docs/plan/phase-30-version-1-readiness.md`; the spec and harness follow on the phase branch.

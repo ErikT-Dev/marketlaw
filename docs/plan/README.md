@@ -319,7 +319,8 @@ The 427 scenarios cover all of version 1, but each phase implements only part of
 | 29 | [Tutorial](phase-29-tutorial.md) | 6 Learning | 27, 28 | done |
 | 29a | [Playthrough fixes](phase-29a-playthrough-fixes.md) | 6 Learning | 29 | done |
 | 29b | [Playthrough fixes](phase-29b-playthrough-fixes.md) | 6 Learning | 29a | done |
-| 30 | [Version 1 readiness](phase-30-version-1-readiness.md) | 7 Launch | all, 29b included | approved |
+| 29c | [Playthrough fixes](phase-29c-playthrough-fixes.md) | 6 Learning | 29b | approved |
+| 30 | [Version 1 readiness](phase-30-version-1-readiness.md) | 7 Launch | all, 29c included | approved |
 
 Phases run one at a time, in this order. Where the dependencies allow, the owner may reorder
 phases inside milestones 4 to 6 before approving them.
@@ -353,10 +354,11 @@ Registered accounts with a privacy notice, game records and match history, the r
 ELO ratings, the ranking table and players online. Phase 25a builds the findings of the owner's
 playthrough of 2026-11-10 (Q126).
 
-### Milestone 6: Learning (28–29b)
+### Milestone 6: Learning (28–29c)
 
 The game menu, the rules viewer, the card set and the tutorial. Phase 29a builds the findings of
-the owner's notes of 2026-11-17 (Q169), phase 29b those of the notes of 2026-11-20 (Q178).
+the owner's notes of 2026-11-17 (Q169), phase 29b those of the notes of 2026-11-20 (Q178),
+phase 29c those of the notes of 2026-11-24 (Q188).
 
 ### Milestone 7: Launch (30)
 

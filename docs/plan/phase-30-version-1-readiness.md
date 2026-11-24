@@ -10,7 +10,7 @@ screen size, and the owner's decision to make version 1 public.
 
 ## Depends on
 
-All earlier phases, 29b included.
+All earlier phases, 29c included.
 
 ## Covers
 
