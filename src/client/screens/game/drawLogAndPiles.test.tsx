@@ -84,7 +84,7 @@ describe("game log", () => {
       .map((row) => row.textContent);
     expect(rows).toEqual([
       "T3Turn 3: Discard shuffle for the marketplace: the whole discard pile, 4 cards, went into the deck",
-      "T2Turn 2: Bea used influence: 4Influence → 2Funds",
+      "T2Turn 2: Bea used influence: 4Influence → 20Funds",
       "T2Turn 2: Bea completed the project Clean up the streets (Quality)",
       "T2Turn 2: Ann completed the quest Farmland",
       "T2Turn 2: Ann played Row House",

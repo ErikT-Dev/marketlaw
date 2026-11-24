@@ -6,9 +6,9 @@ const CARDS_PER_SECTOR_AND_TIER = 20;
 const SECTORS = ["Residential", "Industry", "Service", "Public"] as const;
 const TIERS = [1, 2, 3] as const;
 const BASE_COST_BY_TIER = {
-  1: { lowest: 3, highest: 6 },
-  2: { lowest: 7, highest: 9 },
-  3: { lowest: 11, highest: 13 },
+  1: { lowest: 30, highest: 60 },
+  2: { lowest: 70, highest: 90 },
+  3: { lowest: 110, highest: 130 },
 } as const;
 
 function countProblems(cards: ReadonlyArray<Card>): ReadonlyArray<string> {

@@ -4,9 +4,9 @@ import { QuestStat } from "../catalogue/QuestStat";
 import { Sector } from "../catalogue/Sector";
 import { Tier } from "../catalogue/Tier";
 import type { Result } from "../Result";
+import { questNumberOf } from "./questNumberOf";
 import type { RuleFileProblem } from "./RuleFileProblem";
 import { typeNameOfWords } from "./typeNameOfWords";
-import { wholeNumberOf } from "./wholeNumberOf";
 
 type NeedsResult = Result<ReadonlyArray<QuestNeed>, RuleFileProblem>;
 
@@ -70,11 +70,11 @@ export function questNeedsOf(part: string, line: number): NeedsResult {
   const income = INCOME.exec(part);
   const counted = income === null ? COUNTED.exec(part) : null;
   const countWord = income?.[1] ?? counted?.[1] ?? part;
-  const count = wholeNumberOf(countWord);
+  const count = questNumberOf(countWord);
   if (count === null) {
     return {
       isOk: false,
-      error: { line, word: countWord, message: "needs a whole number from 1 to 99" },
+      error: { line, word: countWord, message: "needs a whole number from 1 to 999" },
     };
   }
   return income === null

@@ -16,7 +16,7 @@ describe("readInfluenceActionFile", () => {
   it("reads a rising build pass and a draw action", () => {
     expect(
       readInfluenceActionFile(
-        "buy build pass | pay 2 funds, 1 more each time | get 1 build pass | no limit\ndraw tier 2 | pay 4 influence, 1 quality | draw a tier 2 card of a chosen kind | no limit",
+        "buy build pass | pay 20 funds, 10 more each time | get 1 build pass | no limit\ndraw tier 2 | pay 4 influence, 1 quality | draw a tier 2 card of a chosen kind | no limit",
       ),
     ).toEqual({
       isOk: true,
@@ -24,7 +24,7 @@ describe("readInfluenceActionFile", () => {
         {
           kind: "trade",
           name: "buy_build_pass",
-          costs: { funds: 2 },
+          costs: { funds: 20 },
           gains: {},
           buildPasses: 1,
           isPriceRising: true,

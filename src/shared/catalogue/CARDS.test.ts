@@ -18,7 +18,7 @@ describe("CARDS", () => {
     const card = cardNamed("Farm House");
     expect(card.sector).toBe("Residential");
     expect(card.tier).toBe(1);
-    expect(card.baseCost).toBe(4);
+    expect(card.baseCost).toBe(40);
     expect(card.stats).toEqual({
       workforce: 2,
       quality: 1,

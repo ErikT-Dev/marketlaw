@@ -45,7 +45,7 @@ describe("card detail", () => {
         .map((term) => term.textContent),
     ).toEqual(FIELDS);
     expect(factOf(detail, "Sector and tier").textContent).toBe("Residential · tier 2");
-    expect(within(factOf(detail, "Base cost")).getByRole("img", { name: "Cost 9" })).toBeTruthy();
+    expect(within(factOf(detail, "Base cost")).getByRole("img", { name: "Cost 90" })).toBeTruthy();
     expect(
       within(factOf(detail, "Gives"))
         .getAllByRole("img")

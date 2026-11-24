@@ -248,7 +248,7 @@ scenarios, which expect the first completers' funds instead of influence.
     before). 5 to 9 do not touch the amounts and can go in any order, before or after; 5 and 9
     both touch your icon and name, 7 and 8 both styles, so they pair well.
 
-- [ ] 1a. **Rule files, their checks, the format, invariants and budget** (R3.2, R15.5, R20.8,
+- [x] 1a. **Rule files, their checks, the format, invariants and budget** (R3.2, R15.5, R20.8,
   R20.9, T0.7, I8, I16, I28, I30, B19, points 4 and 5). **Large.**
   - `harness/spec/cards.json`: every `cost` × 10 (only `cost`; stat numbers stay). `quests.txt`:
     every `income N` requirement and every `+N fund(s)` and `+N income` reward × 10 (influence,
@@ -271,6 +271,24 @@ scenarios, which expect the first completers' funds instead of influence.
   - `HARNESS:` commits recorded in Q188 (code in `src/shared/` goes in its own `RULES:` commit).
     Until item 2a the code still multiplies the files' amounts by 10 (`fundsInTenths`), so
     amounts are 10 times too big at run time in between; that is expected.
+  - Done (2026-11-24). Also changed, beyond the list above: the rising price's step is
+    `src/shared/ruleFiles/RISING_PRICE_STEP.ts` (10), used by the reader's fixed words, the
+    engine's price (`src/rules/tradeCostsOf.ts`, so the price rises 10 a buy) and the
+    rulebook's influence table text; quests read numbers up to 999 with `questNumberOf.ts`;
+    the card check's tier cost ranges are 30–60, 70–90, 110–130
+    (`tools/harness-runner/checkCardData.ts`); client tests that only show the files' numbers
+    (card set, big card, game log, rulebook tables) expect the new ones. Recorded in Q188.
+  - **For later items:** `npm run harness:check` reports 13 scenario values that are not whole
+    numbers (items 1b to 1d: `end-of-game`, `records-and-ratings`, `turns-and-time`,
+    `tutorial`). Tests that fail until item 2a (the engine still counts tenths and the old
+    income): `src/rules/` abandonVote, drawLog, handDetails, hiddenDuringMainPhase,
+    invariantViolations, mainPhaseLog, questTable, tutorial/applyTutorialAction, undo,
+    worthGained; `tools/simulator/shownPiles`; `tools/harness-runner/harness.test.ts`; and
+    two in `tools/harness-check/checkRuleFiles.test.ts` that count the tier 1 quests placeable
+    at the start, which follow once `STARTING_STATS.income` is 30 and
+    `incomeToPlaceQuestOf.ts` uses N − 20 and 80 (2a). Client tests for item 4 (or 2a's units):
+    `influenceAndUndo` (3), `quests` (income progress), `handAndActions` (the real cost
+    text), besides the rulebook tests that failed from the spec commit on.
 
 - [ ] 1b. **The 18 renames, the first-completion scenarios, `quests` and `end-of-game`** (R19.10,
   R19.11, R21.4, R21.5, point 4). **Large.**

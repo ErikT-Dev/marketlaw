@@ -1,10 +1,10 @@
 import type { QuestReward } from "../catalogue/QuestReward";
 import type { Result } from "../Result";
 import { addedAmounts } from "./addedAmounts";
+import { questNumberOf } from "./questNumberOf";
 import type { RuleFileProblem } from "./RuleFileProblem";
 import { statKeyOfWord } from "./statKeyOfWord";
 import { typeNameOfWords } from "./typeNameOfWords";
-import { wholeNumberOf } from "./wholeNumberOf";
 
 type RewardResult = Result<QuestReward, RuleFileProblem>;
 
@@ -14,9 +14,9 @@ const DRAW = /^draw (\S+) cards?$/;
 const NO_REWARD: QuestReward = { stats: {}, gainedType: null, draws: 0 };
 
 function countOf(word: string, line: number): Result<number, RuleFileProblem> {
-  const count = wholeNumberOf(word);
+  const count = questNumberOf(word);
   return count === null
-    ? { isOk: false, error: { line, word, message: "needs a whole number from 1 to 99" } }
+    ? { isOk: false, error: { line, word, message: "needs a whole number from 1 to 999" } }
     : { isOk: true, value: count };
 }
 
