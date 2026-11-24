@@ -7,7 +7,7 @@ import { questNeedHave } from "./questNeedHave";
 import { questRejection } from "./questRejection";
 import { rejectionOf } from "./rejectionOf";
 import { seatShownTo } from "./seatShownTo";
-import { turnsOnTableOf } from "./turnsOnTableOf";
+import { turnsOnTableOf } from "../shared/turnsOnTableOf";
 import { typeCountsOf } from "./typeCountsOf";
 
 export function questPlacesShownTo(

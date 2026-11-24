@@ -127,3 +127,30 @@
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
+
+.countdown {
+  display: inline-block;
+  color: var(--color-market-countdown);
+  font-size: var(--font-size-xxl);
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--font-weight-bold);
+  line-height: 1;
+}
+
+.plain:has(.finalSeconds),
+.highlight:has(.finalSeconds) {
+  outline: 3px solid var(--color-market-countdown);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .finalSeconds {
+    animation: countdown-pulse 1s ease-in-out infinite;
+  }
+}
+
+@keyframes countdown-pulse {
+  50% {
+    opacity: 0.45;
+    transform: scale(1.15);
+  }
+}

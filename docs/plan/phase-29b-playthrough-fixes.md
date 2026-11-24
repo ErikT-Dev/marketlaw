@@ -739,11 +739,25 @@ approval of the list, the quest scenarios that name quest contents.
     `income-notice` and `quests-completed-last-turn` are removed from `harness/screens/`.
   - **For later items.** The finisher adds the screen `last-turn` to `docs/enforcement.md` if
     screens are listed there. `npm run check` still fails only on items 16, 18 and 19.
-- [ ] 13. **Quest turns left and the market countdown** (S5.1, S4.7, findings 15, 16).
+- [x] 13. **Quest turns left and the market countdown** (S5.1, S4.7, findings 15, 16).
   **Small.** After 5.
   - The big coloured number of `design/sketches/15-quest-turns-left/APPROVED.md` on
     `QuestCard` (red 1 in the extra turn); the big red countdown in `MarketplacePanel` during
     your market go, pulsing in the last 5 seconds (not with reduced motion), red border.
+  - **Done (2026-11-24).** `QuestTurnsLeftBox` (an image named "3 turns left", "1 turn left")
+    sits beside the quest's name and "Tier N"; its colour comes from `questTurnsLeftLookOf`
+    (turns left and the quest's full time) and four `--color-quest-turns-left-*` tokens. The
+    full time per tier moved to `src/shared/QUEST_TURNS_ON_TABLE_OF_TIER.ts` and
+    `turnsOnTableOf` to `src/shared/`, so the client reads it (the engine reads the same).
+    `MarketCountdown` (a timer named "Your market go 0:27 left", `clockText`, 32 px red) is in
+    the marketplace header on your own market go only; in its last 5 seconds it pulses (only
+    without reduced motion) and the marketplace outline turns red (`:has()`). Unit tests
+    `questTurnsLeft.test.tsx` (all three tiers), `quests.test.tsx`, `clocks.test.tsx`; browser
+    test `marketPhase.spec.ts` checks the countdown on your go and none on the other player's;
+    it and `quests.spec.ts` pass locally at all three sizes.
+  - **For later items.** At 1280 × 720 the marketplace header takes two rows while the
+    countdown shows (30 seconds of your go); the second row of places needed scrolling there
+    already.
 - [ ] 14. **Buttons and highlights** (S1.10, S6.1, S6.6, S3.2, findings 7, 18, 30, 31, 34).
   **Small.**
   - Claimed combos without card names; the Projects button highlighted while the view says a

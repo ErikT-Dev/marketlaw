@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, within } from "@testing-library/react";
+import { act, fireEvent, render, screen, within } from "@testing-library/react";
 import * as v from "valibot";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { EpochMs } from "../../../shared/EpochMs";
@@ -77,6 +77,29 @@ describe("clocks", () => {
     const bar = screen.getByRole("banner");
     expect(within(bar).getByRole("timer", { name: "Time left 0:15" })).toBeDefined();
     expect(within(bar).getByRole("timer", { name: "Go: Cy 2:00" })).toBeDefined();
+  });
+
+  it("shows a big countdown in the marketplace on my market go and none on another go", () => {
+    const marketGoClock = {
+      bankMs: 0,
+      freeUntil: v.parse(EpochMs, NOW + 20_000),
+      deadline: v.parse(EpochMs, NOW + 20_000),
+    };
+    showWith({ phase: "market", marketGo: 2 }, { clock: marketGoClock });
+    const marketplace = screen.getByRole("region", { name: "Marketplace" });
+    const countdown = within(marketplace).getByRole("timer", { name: "Your market go 0:20 left" });
+    expect(countdown.className).not.toMatch(/finalSeconds/);
+    act(() => {
+      vi.advanceTimersByTime(16_000);
+    });
+    expect(countdown.getAttribute("aria-label")).toBe("Your market go 0:04 left");
+    expect(countdown.className).toMatch(/finalSeconds/);
+  });
+
+  it("shows no market countdown while another player has their market go", () => {
+    showWith({ phase: "market", marketGo: 3 }, { timeBankMs: 300_000 });
+    const marketplace = screen.getByRole("region", { name: "Marketplace" });
+    expect(within(marketplace).queryByRole("timer")).toBeNull();
   });
 });
 

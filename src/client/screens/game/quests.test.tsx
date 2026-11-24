@@ -38,7 +38,8 @@ describe("quests panel", () => {
   it("shows each quest with its tier, turns left, requirement, reward and everyone's progress", () => {
     showQuests([TRADING_POST, { quest: null }]);
     const card = screen.getByRole("region", { name: "Trading post" });
-    expect(within(card).getByText("Tier 1 · 3 turns left")).toBeDefined();
+    expect(within(card).getByText("Tier 1")).toBeDefined();
+    expect(within(card).getByRole("img", { name: "3 turns left" }).textContent).toBe("3turns left");
     expect(within(card).getByRole("img", { name: "4 income" })).toBeDefined();
     expect(within(card).getByRole("img", { name: "1 Retail" })).toBeDefined();
     expect(within(card).getByRole("img", { name: "+1 funds" })).toBeDefined();
@@ -76,7 +77,7 @@ describe("quests panel", () => {
     const line = within(card).getByRole("listitem");
     expect(within(line).getByRole("button", { name: "You" })).toBeDefined();
     expect(line.textContent).toContain("· completed");
-    expect(within(card).getByText("Tier 1 · 1 turn left")).toBeDefined();
+    expect(within(card).getByRole("img", { name: "1 turn left" }).textContent).toBe("1turn left");
     expect(within(card).getByRole("img", { name: "3 Residential cards" })).toBeDefined();
   });
 

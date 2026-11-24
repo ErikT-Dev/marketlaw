@@ -1,0 +1,45 @@
+.box {
+  --turns-left-color: var(--color-quest-turns-left-full-time);
+
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  padding: 4px 6px 5px;
+  border: 1px solid color-mix(in srgb, var(--turns-left-color) 55%, transparent);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--turns-left-color) 15%, transparent);
+  box-sizing: border-box;
+}
+
+.fullTime {
+  --turns-left-color: var(--color-quest-turns-left-full-time);
+}
+
+.aboveHalf {
+  --turns-left-color: var(--color-quest-turns-left-above-half);
+}
+
+.halfOrLess {
+  --turns-left-color: var(--color-quest-turns-left-half-or-less);
+}
+
+.lastTurn {
+  --turns-left-color: var(--color-quest-turns-left-last-turn);
+}
+
+.number {
+  color: var(--turns-left-color);
+  font-size: 40px;
+  font-weight: var(--font-weight-bold);
+  line-height: 1;
+}
+
+.label {
+  margin-top: 2px;
+  color: var(--color-text-muted);
+  font-size: 10px;
+  white-space: nowrap;
+}

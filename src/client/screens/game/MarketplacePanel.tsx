@@ -4,6 +4,7 @@ import { Panel } from "../../components/Panel";
 import { BonusTypesList } from "./BonusTypesList";
 import { DeckAndDiscard } from "./DeckAndDiscard";
 import styles from "./Marketplace.module.css";
+import { MarketCountdown } from "./MarketCountdown";
 import { MarketSlot } from "./MarketSlot";
 import { Highlighted } from "./Highlighted";
 
@@ -15,7 +16,15 @@ type Props = {
   readonly onDraw: ((card: CardName) => void) | null;
 };
 
+function ownMarketGoDeadlineOf(view: PlayerView): number | null {
+  const goSeat = view.seats.find(({ seat }) => seat === view.marketGo);
+  return view.phase === "market" && goSeat?.seat === view.seat && goSeat.clock !== null
+    ? goSeat.clock.deadline
+    : null;
+}
+
 export function MarketplacePanel({ view, isYourGo, selected, onSelect, onDraw }: Props) {
+  const marketGoDeadline = ownMarketGoDeadlineOf(view);
   return (
     <Highlighted part={{ kind: "panel", panel: "marketplace" }} isBlock>
       <div className={isYourGo ? styles["highlight"] : styles["plain"]}>
@@ -23,6 +32,7 @@ export function MarketplacePanel({ view, isYourGo, selected, onSelect, onDraw }:
           title="Marketplace"
           aside={
             <span className={styles["header"]}>
+              {marketGoDeadline === null ? null : <MarketCountdown deadline={marketGoDeadline} />}
               <BonusTypesList bonusTypes={view.bonusTypes} />
               <DeckAndDiscard deckCount={view.deckCount} discardCount={view.discardCount} />
             </span>

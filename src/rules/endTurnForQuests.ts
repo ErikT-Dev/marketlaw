@@ -6,7 +6,7 @@ import { isFirstCompletedThisTurn } from "./isFirstCompletedThisTurn";
 import type { QuestTable } from "./QuestTable";
 import type { Random } from "./Random";
 import { refillQuests } from "./refillQuests";
-import { turnsOnTableOf } from "./turnsOnTableOf";
+import { turnsOnTableOf } from "../shared/turnsOnTableOf";
 
 type PlaceAtTurnEnd = {
   readonly place: QuestOnTable | null;

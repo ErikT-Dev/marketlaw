@@ -1,7 +1,7 @@
 import { QUEST_LINES } from "../shared/ruleFiles/QUEST_LINES";
 import type { GameState } from "./GameState";
 import { QUEST_TABLE_RULES } from "./QUEST_TABLE_RULES";
-import { turnsOnTableOf } from "./turnsOnTableOf";
+import { turnsOnTableOf } from "../shared/turnsOnTableOf";
 
 function questPlaceViolations(state: GameState): ReadonlyArray<string> {
   const onTable = state.quests.flatMap((place) => (place === null ? [] : [place.quest]));
