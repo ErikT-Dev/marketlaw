@@ -536,7 +536,20 @@ scenarios, which expect the first completers' funds instead of influence.
 
 ### Finish
 
-Filled in by the finisher.
+- Finisher (2026-11-24). Added the 3 new scenarios of "Required scenarios" to
+  `harness/required.yaml` (`HARNESS:` commit 42449345; the 18 renames were already there).
+  `npm run check` passed and `npm run harness` passed locally (548 scenarios, 0 problems; 1000
+  simulated games, every invariant and budget). GitHub run 45472988583 on the branch: `check`
+  and the three full-game jobs passed. The three "other tests" jobs failed at every size on
+  one test, and the same one again after one rerun of the failed jobs. The other failures of the
+  first attempt (`roomsAndGuests.spec.ts` "server did not answer", `playerIcon.spec.ts` at
+  1280 x 720) were time-outs and passed on the rerun. Screenshots are not copied yet (the run
+  has not passed); the releaser or the fixer's finisher copies them from the passing run.
+- **F1.** `e2e/gameLog.spec.ts:86` ("the game log sent by the room is listed newest first and
+  fits the screen") expects `"T1Turn 1: Ann used influence: 4Influence → 2Funds"` (line 102), the
+  old unit; the room now sends `4Influence → 20Funds` (R16: 4 influence buy 20 funds). A wrong
+  expectation in the test, not in the code: change the expected line to `→ 20Funds` and check
+  the rest of that spec for other old amounts. Fails at 1280 x 720, 1920 x 1080 and 2560 x 1440.
 
 ### Helper log
 
