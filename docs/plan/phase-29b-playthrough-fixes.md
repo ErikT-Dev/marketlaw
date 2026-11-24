@@ -976,3 +976,4 @@ each helper's conversation size at its end.
 | Builder 18 and 19 | Opus, medium | 14 (after a usage-limit pause) | 131,150 (after the pause) | 41 | done |
 | Finisher | Sonnet, medium | 66 | 81,447 | 43 | partial (F1) |
 | Phase reviewer | Opus, medium | 14 | 167,515 | 67 | done (4 findings) |
+| Fixer 1 (F1) | Opus, medium | 33 | 89,200 | 36 | done |
