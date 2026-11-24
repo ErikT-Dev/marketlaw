@@ -84,3 +84,13 @@ test("the lobby says when there are no public rooms", async ({ page }, testInfo)
   await expect(page.getByText("Create one, or join a private room with its code.")).toBeVisible();
   await expectScreenFits(page, "lobby-empty", testInfo);
 });
+
+test("the browser tab shows the MarketLaw logo", async ({ page, request }) => {
+  await page.goto("/");
+  const iconHref = await page.locator('head link[rel="icon"]').getAttribute("href");
+  expect(iconHref).toMatch(/\.png$/);
+  const icon = await request.get(new URL(iconHref ?? "", page.url()).href);
+  expect(icon.status()).toBe(200);
+  expect(icon.headers()["content-type"]).toBe("image/png");
+  expect((await icon.body()).length).toBeGreaterThan(1000);
+});
