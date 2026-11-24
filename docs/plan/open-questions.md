@@ -4430,3 +4430,37 @@ file.
     29b (Q178): on their own they turn the check red until 29c builds them.
 - **Implemented:** `docs/plan/phase-29c-playthrough-fixes.md`, `docs/plan/README.md`,
   `docs/plan/phase-30-version-1-readiness.md`; the spec and harness follow on the phase branch.
+- **Owner's answers, 2026-11-24:**
+  - The owner **approved all 18 required-name renames** proposed in the phase file. They are
+    made by phase 29c's item 1b in one `HARNESS:` commit, the scenario files and
+    `harness/required.yaml` together.
+  - The owner asked that the ×10 change also reaches the card data (`cards.json`), the quest list
+    (`quests.txt`), the influence actions (`influence-actions.txt`) and the projects' reward
+    wherever it is written: +10 income and +20 funds (R16.3) and the 100 income they need
+    (R16.2), in the engine, the Projects pop-up, the projects help text, the rejection message,
+    the rulebook and the tutorial. The first three were already part of item 1; the phase's
+    Progress names every place the project reward and need are written.
+- **Starter's decisions (phase 29c, 2026-11-24),** made while writing the spec:
+  - **Score parts.** Funds and cards in hand now have different factors (0.02 and 0.2), so the
+    end-of-game screen (S9.5) explains them as two parts, and a game record (A3.2, A3.3) holds
+    funds and cards in hand as two values instead of "funds plus cards in hand". A record saved
+    before the phase keeps its one old value and shows it as before (the phase's known gap).
+  - **The score stays the same** in the new units except for one detail: R21.5's "whole funds"
+    dropped the tenths of a fund, and now every fund counts (old 5.9 funds counted 1.0 point,
+    the new 59 funds count 1.18). The owner's purpose, a score the ×10 does not change, holds
+    for every amount the rules give; only the old rounding goes, as funds have no tenths left.
+  - **The tutorial in the new amounts** (T0.1 to T5.4): every funds value is ten times the old
+    one (70, 30, 40, 71, 31, 64, 14, 49, 9, 45, 5); income 30 to 40; Trading post is
+    `income 40, 1 Retail | +10 funds, +2 influence` (T0.7). After Trading post (T5.3) the player
+    has funds 17 (5 + 10 + 2 for a tier 1 first completion) and influence 6 (4 + 2, no first
+    completion influence any more), and the text says they got 2 funds more.
+  - **The Players panel** gets a short introduction under S3's new title, and S3.1, S3.3 and
+    S2.3, S10.1 and A2.5 name the icons. **S1.12** (panels at 75%) keeps the big card's bars
+    (S6.5) more transparent than the other panels. **S1.8** now says every player icon of one
+    screen part has the same outer and picture size, the mark drawn outside; S5.1 points to it.
+  - **Card tiles (S6.4)** now name every place that shows them (hand, city, marketplace,
+    another player's city in the detailed summary table, the card set) and the picture's size
+    (200 × 172, at most 16 KB) and the texture under the 80% sector colour; S14.3 says the card
+    set uses them.
+  - The game-rules open question 1's simulator funds are written in today's funds (120, 230,
+    670 to 910) and its end goal as income 200.
