@@ -519,13 +519,20 @@ scenarios, which expect the first completers' funds instead of influence.
     New `e2e/questIconSizes.spec.ts` (failed on the old mark for the picture size) and
     `quests.spec.ts` pass locally at 1920 × 1080.
 
-- [ ] 9. **The Players panel** (S3, S3.1, S3.3, point 9). **Small.**
+- [x] 9. **The Players panel** (S3, S3.1, S3.3, point 9). **Small.**
   - `src/client/screens/game/OpponentsPanel.tsx`: title and region **Players**; the tests that
     find the region "Opponents" follow (`opponents.test.tsx`, `combosList.test.tsx`,
     `statsAndSummaryTables.test.tsx`, `e2e/connections.spec.ts`, `countsAndPlayerIcons.spec.ts`,
     `gameScreenSizes.spec.ts`, `matchHistory.spec.ts`, `opponents.spec.ts`). Your counts table
     shows your icon and username over your Q, T, C and F; each quick summary table shows the
     player's icon left of their username (reuse `PlayerIcon.tsx`).
+  - Done (2026-11-24). `OwnCountBoxes.tsx` shows your icon (`PlayerIcon` named "You", S1.8, from
+    the room's seat icons) and your username above the count boxes and their **?**; each
+    `OpponentCard.tsx` shows the player's `PlayerIcon` left of its badge. `tooltipsOnFocus.spec.ts`
+    also found the panel by its old name and follows. New tests in `opponents.test.tsx`. Also
+    fixed: `e2e/gameScreenSizes.spec.ts` still expected funds and income with one decimal (left
+    from item 4) and failed at every size; it now expects whole numbers (S1.9). The specs above
+    pass locally at 1920 × 1080 (at 2560 × 1440 the local runs timed out joining the room, Q133).
 
 ### Finish
 

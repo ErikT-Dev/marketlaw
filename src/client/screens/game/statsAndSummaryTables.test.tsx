@@ -56,7 +56,7 @@ function chipsOf(list: HTMLElement) {
 }
 
 function quickSummaryTableOfDi() {
-  return within(screen.getByRole("region", { name: "Opponents" })).getByRole("article", {
+  return within(screen.getByRole("region", { name: "Players" })).getByRole("article", {
     name: "Quick summary table of Di",
   });
 }
@@ -64,7 +64,7 @@ function quickSummaryTableOfDi() {
 describe("your counts", () => {
   it("shows your Q, T, C and F boxes above the quick summary tables, T counting quest types", () => {
     showGame();
-    const opponents = screen.getByRole("region", { name: "Opponents" });
+    const opponents = screen.getByRole("region", { name: "Players" });
     const list = within(opponents).getByRole("list", { name: "Your counts" });
     expect(
       list.compareDocumentPosition(quickSummaryTableOfDi()) & Node.DOCUMENT_POSITION_FOLLOWING,

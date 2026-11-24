@@ -49,7 +49,7 @@ test("your counts, another player's counts and most played types, and a project 
   const ann = await openTestSeat(browser, viewport, seatOne);
 
   const yourCounts = ann
-    .getByRole("region", { name: "Opponents" })
+    .getByRole("region", { name: "Players" })
     .getByRole("list", { name: "Your counts" });
   await expect(yourCounts.getByRole("img", { name: "Quests completed 1" })).toBeVisible();
   await expect(yourCounts.getByRole("img", { name: "Types 6" })).toBeVisible();

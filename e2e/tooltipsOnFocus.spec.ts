@@ -11,7 +11,7 @@ test("a focused control shows its icon tooltip and a focused panel around icons 
   await page.goto(seatOne);
   await expect(page.getByRole("heading", { name: /^Turn \d+ of 40$/ })).toBeVisible();
 
-  const opponents = page.getByRole("group", { name: "Opponents" });
+  const opponents = page.getByRole("group", { name: "Players" });
   await opponents.focus();
   await expect(opponents).toBeFocused();
   await expect(opponents).toHaveCSS("outline-style", "solid");

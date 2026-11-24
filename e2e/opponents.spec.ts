@@ -6,7 +6,7 @@ import { startFourPlayerGame } from "./startFourPlayerGame";
 
 function hostCardSeenBy(page: Page, host: string) {
   return page
-    .getByRole("region", { name: "Opponents" })
+    .getByRole("region", { name: "Players" })
     .getByRole("article", { name: `Quick summary table of ${host}` });
 }
 

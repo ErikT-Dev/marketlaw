@@ -65,7 +65,7 @@ test("a player clicks an opponent's name in a game and comes back to the game", 
   const [firstLink = "", secondLink = ""] = await startTestRoom(request, { players: 2 });
   const opponentName = nameOf(secondLink);
   const player = await openTestSeat(browser, viewport, firstLink);
-  const opponents = player.getByRole("region", { name: "Opponents" });
+  const opponents = player.getByRole("region", { name: "Players" });
   await opponents.getByRole("link", { name: opponentName }).click();
 
   const history = player.getByRole("dialog", { name: `Match history · ${opponentName}` });

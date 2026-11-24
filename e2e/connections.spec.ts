@@ -28,7 +28,7 @@ async function openPlayer(context: BrowserContext, link: string): Promise<Player
 
 function opponent(page: Page, name: string) {
   return page
-    .getByRole("region", { name: "Opponents" })
+    .getByRole("region", { name: "Players" })
     .getByRole("article", { name: `Quick summary table of ${name}` });
 }
 
