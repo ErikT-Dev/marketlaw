@@ -952,3 +952,4 @@ each helper's conversation size at its end.
 | Builder 15 and 17 | Opus, medium | 17 | 137,505 | 72 | done |
 | Builder 16 | Opus, medium | 32 | 166,083 | 99 | done |
 | Builder 18 and 19 | Opus, medium | 14 (after a usage-limit pause) | 131,150 (after the pause) | 41 | done |
+| Finisher | Sonnet, medium | 66 | 81,447 | 43 | partial (F1) |
