@@ -923,6 +923,20 @@ approval of the list, the quest scenarios that name quest contents.
     player games pass at all sizes. Locally the same test shows the first test failing at 0 ms and
     then hanging. A fixer must find where the 2 player game stalls (run it with one size and a
     trace).
+  - **Phase review (2026-11-24).** Ready after fixes; `npm run check` and `npm run harness` pass,
+    no spec deviation in the engine. Findings (besides F1):
+    - [ ] R1. No icon picker screenshot (an exit criterion): `e2e/playerIcon.spec.ts` should call
+      `expectScreenFits(..., "icon-picker", testInfo)` with the picker open; screens from the
+      branch run into `harness/screens/icon-picker/`; name it in `docs/enforcement.md`.
+    - [ ] R2. `projectsThisTurn` in `SeatState` is dead state (written in `completeProject`,
+      `endMainPhase`, `newSeat`, read only by tests): remove it (the save version is already
+      raised for this phase).
+    - [ ] R3. `PROTOCOL_VERSION` raised twice (27 → 28 by 1a, → 29 by item 8) though the phase
+      ships as one deploy: set it back to 28, or correct the 1a note.
+    - [ ] R4. `src/rules/undo.test.ts:52-64` puts "Pub" in two hands (R3.1: cards are unique):
+      replace with two players selling different cards, the undo restoring only the undoer's card,
+      asserting the exact holding pile and funds in tenths.
+  - **Fixers.** Fixer 1: F1. Fixer 2: R1 to R4.
 
 ### Helper log
 
@@ -953,3 +967,4 @@ each helper's conversation size at its end.
 | Builder 16 | Opus, medium | 32 | 166,083 | 99 | done |
 | Builder 18 and 19 | Opus, medium | 14 (after a usage-limit pause) | 131,150 (after the pause) | 41 | done |
 | Finisher | Sonnet, medium | 66 | 81,447 | 43 | partial (F1) |
+| Phase reviewer | Opus, medium | 14 | 167,515 | 67 | done (4 findings) |
