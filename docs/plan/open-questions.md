@@ -4483,3 +4483,10 @@ file.
   `quests` and `end-of-game`, and `harness/required.yaml` in the same commit. "The score counts
   0.02 points for every fund" uses 25 funds (0.5 points, so seat 1 scores 20 like a seat with the
   starting 70 funds and income 30, where rounding funds down to tens would give 19).
+  Then the rest of `quests.yaml`: every income ×10 (the gates N − 20 and 80 follow), and every
+  quest reward scenario expects the first completer's 2 funds per tier and no influence (funds
+  70 + reward + 2, 4 or 6; influence only from the reward, asserted 0 where the reward has
+  none); `end-of-game.yaml`: income, funds and F ×10, scores unchanged. New: "a tier 3 quest's
+  first completion gives 6 extra funds" (Penthouses, funds 76), "the extra funds of a first
+  completion add to total worth gained" (Tidy streets, F 142) and "the score counts 0.65 points
+  for every income" (income 37: 24.05 + 1.4, so 25). The runner's scenario count is 548.

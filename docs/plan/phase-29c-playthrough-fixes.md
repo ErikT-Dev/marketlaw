@@ -290,7 +290,7 @@ scenarios, which expect the first completers' funds instead of influence.
     `influenceAndUndo` (3), `quests` (income progress), `handAndActions` (the real cost
     text), besides the rulebook tests that failed from the spec commit on.
 
-- [ ] 1b. **The 18 renames, the first-completion scenarios, `quests` and `end-of-game`** (R19.10,
+- [x] 1b. **The 18 renames, the first-completion scenarios, `quests` and `end-of-game`** (R19.10,
   R19.11, R21.4, R21.5, point 4). **Large.**
   - One `HARNESS:` commit: the 18 renames of "Answered by the owner", each scenario changed to
     the new rule under its new name, in `playing-cards`, `projects`, `setup`, `turns-and-time`,
@@ -302,6 +302,17 @@ scenarios, which expect the first completers' funds instead of influence.
     a scenario names the parts), and the 3 new scenarios of "Required scenarios" (not on the
     required list yet; the finisher adds them). Set the count in
     `tools/harness-runner/harness.test.ts` to 548.
+  - Done (2026-11-24) as listed; recorded in Q188. "The score counts 0.02 points for every
+    fund" uses 25 funds (scores 20, where funds rounded down to tens would give 19); the new
+    score scenario uses income 37 (score 25). No score parts are asserted anywhere (no scenario
+    uses `score_parts`).
+  - **For later items:** `npm run harness:check` now reports 9 values that are not whole
+    numbers, all of items 1c (`turns-and-time`) and 1d (`records-and-ratings`, `tutorial`).
+    `tutorial.yaml`'s Trading post step (1d) still expects the old first-completion influence
+    (influence 7); T5.3 now gives 2 funds and no influence. Until items 2a and 3, the renamed
+    and reward scenarios of `quests`, `undo`, `end-of-game` and the rest fail (engine in tenths,
+    first completion still gives influence); the 3 new scenarios belong to item 3
+    (`quests`) and 2a (`end-of-game`). `harness.test.ts` expects 548.
 
 - [ ] 1c. **Scenarios of turns, cards, projects, influence, undo, setup and combos** (R2.1, R2.4,
   R3.8, R5.1, R11.5, R13.1, R14, R15, R16.2, R16.3). **Large.**
