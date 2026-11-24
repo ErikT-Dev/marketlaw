@@ -66,6 +66,7 @@ None yet.
   the rules write them.
 - **S1.10** **Buttons:** every button's background is at most 90% opaque, so the table shows
   through a little.
+- **S1.11** **Browser tab:** every page shows the MarketLaw logo as its icon in the browser tab.
 
 ## S2. Game screen: top bar
 

@@ -4326,3 +4326,20 @@ file.
 - **Spec:** S1.10, S3.2 (unchanged).
 - **Implemented:** `Button.module.css` and the other buttons' style files, `ComboNeed`
   (`ComboOwner`).
+
+## Q187. Where does the spec say the browser tab shows the logo, and how large are the project pictures?
+
+- **Phase:** 29b, item 15 (pictures and the browser tab), decided without the owner.
+- **Questions:** (1) The owner asked for the logo of `design/assets/logo/` as the icon in the
+  browser tab (finding 2), but no spec rule mentions the tab. (2) S8.2 shows each project with
+  its picture; the phase file asks for about 600 px wide and at most about 80 KB each, and the
+  photos in `design/assets/` (not committed) are 2.5 to 6.4 MB.
+- **Solution:** (1) A new rule S1.11: every page shows the MarketLaw logo as its tab icon; the
+  page uses `logo192.png` (12 KB), which browsers scale down. (2) The pictures are committed as
+  600 × 400 WebP files in `src/client/assets/projects/`, made by `npm run design:project-pictures`
+  the same way as the card tile pictures (Q183), and a unit test keeps each at 80 KB or less.
+  They load only when the Projects pop-up opens, so they are not part of the initial download
+  (B14). The pop-up shows each picture at 150 × 100 px beside the project's text.
+- **Spec:** S1.11 (new), S8.2 (unchanged).
+- **Implemented:** `src/client/index.html`, `ProjectPicture`, `projectPictureUrl`,
+  `makeProjectPictures.ts`, `projectPictures.test.ts`.
