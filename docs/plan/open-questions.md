@@ -4508,3 +4508,9 @@ file.
   `hostile-client`: funds 80 after one sale; `drawing`: income 40, F 140; `client`: Repetitive
   Housing's base cost 90. No other scenario file holds an old amount. No scenario contradicted
   the new spec.
+- **Records in item 2b (phase 29c, 2026-11-24):** a new game record holds `funds` and
+  `cardsInHand` and no `fundsAndHand`; a record saved before holds only `fundsAndHand`. All three
+  are read as optional (null when absent), as `counts` was kept. The game record page shows a
+  **Funds** row and a **Cards in hand** row, or, for a record whose seats hold the old value, the
+  old **Funds + cards in hand** row as before. Bots needed no change (they hold no amounts of
+  funds or income); the simulator's funds samples were already in whole funds after item 2a.

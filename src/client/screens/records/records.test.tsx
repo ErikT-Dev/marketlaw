@@ -3,6 +3,7 @@ import * as v from "valibot";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { GameId } from "../../../shared/GameId";
 import { PlayerId } from "../../../shared/PlayerId";
+import { recordedSeatOf } from "../../testing/recordedSeatOf";
 import { RecordsPage } from "./RecordsPage";
 
 const ANN = v.parse(PlayerId, "0f4c2a5e-1b7d-4e3a-9c8f-2d6b1a0e5f71");
@@ -28,33 +29,6 @@ function entry(gameId: GameId, endedAt: number, changes: Readonly<Record<string,
   };
 }
 
-function seat(seatNumber: number, player: unknown, changes: Readonly<Record<string, unknown>>) {
-  return {
-    seat: seatNumber,
-    result: "lost",
-    place: seatNumber,
-    leftInTurn: null,
-    score: 400,
-    hasReachedEndGoal: false,
-    income: 19,
-    fundsAndHand: 44,
-    workforce: 2,
-    quality: 7,
-    satisfaction: 5,
-    product: 0,
-    distribution: 1,
-    influence: 8,
-    bonusTypePoints: 24,
-    projects: [],
-    questsCompleted: 7,
-    comboGains: { workforce: 9, quality: 11, satisfaction: 7 },
-    typeCounts: { Farm: 3 },
-    player,
-    rating: null,
-    ...changes,
-  };
-}
-
 const RECORD = {
   kind: "found",
   record: {
@@ -66,7 +40,7 @@ const RECORD = {
     winner: 1,
     bonusTypes: ["Retail", "Safety"],
     seats: [
-      seat(
+      recordedSeatOf(
         1,
         { kind: "player", playerId: BEA, username: "Bea" },
         {
@@ -78,8 +52,8 @@ const RECORD = {
           counts: { questsCompleted: 7, types: 11, combosClaimed: 4, worthGained: 1234 },
         },
       ),
-      seat(2, { kind: "player", playerId: ANN, username: "Ann" }, { score: 487 }),
-      seat(3, { kind: "deleted" }, { result: "left", leftInTurn: 20, score: 301 }),
+      recordedSeatOf(2, { kind: "player", playerId: ANN, username: "Ann" }, { score: 487 }),
+      recordedSeatOf(3, { kind: "deleted" }, { result: "left", leftInTurn: 20, score: 301 }),
     ],
   },
 };

@@ -41,7 +41,7 @@ describe("gameRecordOf", () => {
     const state = gameOf(2, 40, {
       stats: {
         funds: 100,
-        income: 15,
+        income: 150,
         influence: 4,
         workforce: 3,
         quality: 2,
@@ -72,8 +72,10 @@ describe("gameRecordOf", () => {
       leftInTurn: null,
       score: 109,
       hasReachedEndGoal: false,
-      income: 15,
-      fundsAndHand: 10,
+      income: 150,
+      funds: 100,
+      cardsInHand: 0,
+      fundsAndHand: null,
       workforce: 3,
       quality: 2,
       satisfaction: -1,
@@ -100,7 +102,9 @@ describe("gameRecordOf", () => {
       place: 3,
       leftInTurn: 12,
       score: 21,
-      fundsAndHand: 9,
+      funds: 70,
+      cardsInHand: 2,
+      fundsAndHand: null,
     });
   });
 

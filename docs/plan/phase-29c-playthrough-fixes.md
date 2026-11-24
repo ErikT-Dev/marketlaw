@@ -387,7 +387,7 @@ scenarios, which expect the first completers' funds instead of influence.
     `lastTurnPanel`, `opponents`, `quests`, `combosAndProjects`, `parseRulebook` and
     `rulebookChangedSections` (5).
 
-- [ ] 2b. **Bots, simulator and records** (A3.2, A3.3, R21.4). **Large.**
+- [x] 2b. **Bots, simulator and records** (A3.2, A3.3, R21.4). **Large.**
   - Bots (`src/bots/`) and the simulator follow the units (fund and income thresholds × 10).
   - Records: `src/shared/api/RecordedSeat.ts` and `src/rules/gameRecordOf.ts` hold `funds` and
     `cardsInHand` instead of `fundsAndHand`; a record saved before still reads (keep
@@ -395,6 +395,22 @@ scenarios, which expect the first completers' funds instead of influence.
     screen (`src/client/screens/records/GAME_RECORD_ROWS.tsx`) and the end-of-game table
     (`src/client/screens/game/ScorePartsTable.tsx`) show funds and cards in hand as two rows.
   - Run `npm run harness` (simulated games, I8, I16, I28, I30, budgets).
+  - Done (2026-11-24); recorded in Q188. Bots needed no change (they hold no amounts of funds
+    or income), and the simulator's funds samples were already whole funds after 2a. A new record
+    holds `funds` and `cardsInHand`; `fundsAndHand`, `funds` and `cardsInHand` are all read as
+    optional (null when absent). The record page shows **Funds** and **Cards in hand** rows, or the
+    old **Funds + cards in hand** row for a record saved before (`fundsRowsOf.ts`, tested in
+    `recordedFunds.test.tsx`); the runner's `recordThen.ts` writes `funds` and `cards_in_hand`.
+    `ScorePartsTable.tsx` was already split by 2a. `npm run harness`: 1000 simulated games, every
+    invariant (I8, I16, I28, I30 among them) and every budget pass; only item 3's required
+    scenarios fail.
+  - **For later items:** `npm run check` reaches the tests (everything before them passes) and
+    fails 17 tests in 11 files, none from 2b. Item 3: `harness.test.ts` (the 48 `quests` reward
+    and first-completion scenarios and the `tutorial` scenario's turn 5) and
+    `tutorial/applyTutorialAction.test.ts`. Item 4: `combosAndProjects`, `GamePage`,
+    `handAndActions`, `influenceAndUndo` (3), `lastTurnPanel`, `opponents`, `quests`,
+    `parseRulebook` and `rulebookChangedSections` (5). The record page's income still goes
+    through `tenthsShown` (item 4).
 
 - [ ] 3. **First completion gives funds** (R19.5, R19.10, S5.4, S5.5, point 4). **Small.**
   - 2 funds per tier of the quest (2, 4, 6) instead of +1 influence, counted in F and taken back
