@@ -27,6 +27,7 @@
 
 .project > div {
   display: flex;
+  flex: 1;
   flex-direction: column;
   gap: 2px;
 }
@@ -69,4 +70,12 @@
   display: flex;
   justify-content: flex-end;
   gap: var(--space-sm);
+}
+
+.projectPicture {
+  flex: none;
+  width: 150px;
+  height: 100px;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
 }

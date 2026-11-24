@@ -14,6 +14,7 @@ import { PROJECT_TITLES } from "./PROJECT_TITLES";
 import { REJECTION_MESSAGES } from "./REJECTION_MESSAGES";
 import { tenthsShown } from "../../components/tenthsShown";
 import { fundsInTenths } from "../../../shared/fundsInTenths";
+import { projectPictureUrl } from "../../icons/projectPictureUrl";
 
 type Props = {
   readonly seat: OwnSeatView;
@@ -62,6 +63,13 @@ export function ProjectsDialog({ seat, onComplete, onClose }: Props) {
       <ul className={styles["rows"]}>
         {PROJECT_NAMES.map((project) => (
           <li key={project} className={styles["project"]} aria-label={PROJECT_TITLES[project]}>
+            <img
+              className={styles["projectPicture"]}
+              src={projectPictureUrl(project)}
+              alt={PROJECT_TITLES[project]}
+              loading="lazy"
+              decoding="async"
+            />
             <div>
               <strong>{PROJECT_TITLES[project]}</strong>
               <span>

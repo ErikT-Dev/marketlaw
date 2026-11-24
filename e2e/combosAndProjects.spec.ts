@@ -54,6 +54,12 @@ test("claim combos with the totals, complete a project, and get its funds withou
   const projects = ann.getByRole("dialog", { name: "Projects" });
   const streets = projects.getByRole("listitem", { name: "Clean up the streets" });
   await expect(streets).not.toContainText("Nobody has completed it yet");
+  for (const title of ["Clean up the streets", "Culture campaign", "Help the homeless"]) {
+    const picture = projects.getByRole("img", { name: title });
+    await expect
+      .poll(async () => picture.evaluate((image: HTMLImageElement) => image.naturalWidth))
+      .toBe(600);
+  }
   await expectScreenFits(ann, "projects", testInfo);
   await streets.getByRole("button", { name: "Complete" }).click();
   await expect(ann.getByRole("img", { name: "Funds 9.0", exact: true })).toBeVisible();

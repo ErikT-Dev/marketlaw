@@ -163,6 +163,28 @@ describe("projects", () => {
     expect(dialog).not.toContain("3rd project");
     expect(dialog).not.toContain("first-completion");
   });
+
+  it("shows each project with its own picture, loaded only when shown", () => {
+    showGame();
+    fireEvent.click(screen.getByRole("button", { name: "Projects" }));
+    const dialog = within(screen.getByRole("dialog", { name: "Projects" }));
+    const pictures = ["Clean up the streets", "Culture campaign", "Help the homeless"].map(
+      (title) =>
+        within(dialog.getByRole("listitem", { name: title })).getByRole("img", {
+          name: title,
+        }),
+    );
+    expect(pictures.map((picture) => picture.getAttribute("src"))).toEqual([
+      expect.stringMatching(/clean-the-streets\.webp$/),
+      expect.stringMatching(/culture-campaign\.webp$/),
+      expect.stringMatching(/help-the-homeless\.webp$/),
+    ]);
+    expect(pictures.map((picture) => picture.getAttribute("loading"))).toEqual([
+      "lazy",
+      "lazy",
+      "lazy",
+    ]);
+  });
 });
 
 describe("highlighted actions", () => {
