@@ -145,7 +145,8 @@ None.
   two colours are any colours (`#rrggbb`) whose contrast with each other is at least 3:1 (WCAG's
   contrast for graphics). A new account gets a random picture and random colours that pass the
   contrast check, and so does every account made before player icons had pictures. The view of
-  a game carries each seat's icon; the client never picks it. `npm run check` fails when the
+  a game carries each seat's icon, and the user box (S2.3, S10.1) shows your own icon from your
+  account (Q188); the client never picks it. `npm run check` fails when the
   folder holds a file that is not an SVG with a `viewBox`, an SVG over 20 KB or with a script or
   a reference to anything outside it, or a picture in an artist folder the licence file does not
   name.
@@ -177,7 +178,7 @@ None.
     - their score, and whether they reached the end goal
     - their Q, T, C and F counts (S3.1): quests completed, types in their city with types gained
       from quests, combos claimed, and total worth gained (R2.4)
-    - their final income, funds plus cards in hand, workforce, quality, satisfaction, product,
+    - their final income, funds, cards in hand, workforce, quality, satisfaction, product,
       distribution and influence
     - their bonus-type points
     - their completed projects and how many quests they completed
@@ -185,8 +186,8 @@ None.
     - their type counts
 - **A3.3** For a player who left, the record holds their values at the moment they left, and their
   score is the score formula (R21.4) applied to those values; the end-of-game screen shows them
-  with that score too. Leaving empties their hand (M6), so their funds plus cards in hand count the cards
-  they held when they left; their values do not change after they left. The record also holds
+  with that score too. Leaving empties their hand (M6), so their cards in hand are the cards they held when
+  they left; their values do not change after they left. The record also holds
   the turn in which they left.
 - **A3.4** **Places:** players who stayed are placed as R21.8 and R21.9 say (the end goal first,
   then score, total worth gained and player order), and players who left come after them, the
