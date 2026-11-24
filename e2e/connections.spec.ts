@@ -45,6 +45,20 @@ test("a refresh mid-game comes back to the same game and hand", async ({ browser
   expect(await handOf(page)).toEqual(hand);
 });
 
+function orderBadge(page: Page, name: string) {
+  return page
+    .getByRole("list", { name: "Player order" })
+    .getByRole("listitem")
+    .filter({ hasText: name });
+}
+
+test("your own badge never shows you away when you open the game", async ({ browser, request }) => {
+  const [seatOne = ""] = await startTestRoom(request, { players: 2 });
+  const one = await openSeat(await browser.newContext(), seatOne);
+  await expect(orderBadge(one, "Seat 2")).toContainText("away");
+  await expect(orderBadge(one, "Seat 1")).not.toContainText("away");
+});
+
 test("a player who disconnects is shown as away and back when they rejoin", async ({
   browser,
   request,

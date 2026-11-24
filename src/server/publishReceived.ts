@@ -31,7 +31,7 @@ export async function publishReceived<Socket extends ReplySocket>(
   replyToSocket(
     socket,
     { attachment, outcome, sender },
-    { record: recordAfter, livePlayers: room.sockets.livePlayers() },
+    { record: recordAfter, livePlayers: () => room.sockets.livePlayers() },
   );
   const hello =
     received.isResync && sender !== null ? { socket, playerId: sender.identity.playerId } : null;
