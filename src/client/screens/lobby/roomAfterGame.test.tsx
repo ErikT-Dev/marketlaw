@@ -23,7 +23,8 @@ const RESULT: GameResult = {
     leftInTurn: null,
     hasReachedEndGoal: seat === 2,
     income: 22,
-    fundsAndHand: 10,
+    funds: 10,
+    cardsInHand: 0,
     counts: NO_SUMMARY_COUNTS,
   })),
 };

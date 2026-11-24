@@ -6,7 +6,6 @@ import type { TradeName } from "../../../shared/TradeName";
 import type { IconText } from "../../components/IconText";
 import { tenthsShown } from "../../components/tenthsShown";
 import { wholeFundsShown } from "../../components/wholeFundsShown";
-import { fundsInTenths } from "../../../shared/fundsInTenths";
 import type { IconTextPart } from "../../components/IconTextPart";
 import { playerNameOf } from "./playerNameOf";
 import { PROJECT_TITLES } from "./PROJECT_TITLES";
@@ -56,7 +55,7 @@ export function mainPhaseLogText(
     case "income_gained":
       return [
         `${name} gained income: `,
-        { stat: "income", value: `+${tenthsShown(fundsInTenths(entry.income))}` },
+        { stat: "income", value: `+${tenthsShown(entry.income)}` },
       ];
     case "support":
       return [

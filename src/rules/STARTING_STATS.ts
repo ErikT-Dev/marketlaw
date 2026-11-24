@@ -1,9 +1,8 @@
-import { fundsInTenths } from "../shared/fundsInTenths";
 import type { Stats } from "../shared/Stats";
 
 export const STARTING_STATS: Stats = {
-  funds: fundsInTenths(7),
-  income: 3,
+  funds: 70,
+  income: 30,
   influence: 0,
   workforce: 0,
   quality: 0,

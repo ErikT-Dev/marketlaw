@@ -78,7 +78,7 @@ describe("what other players see during the main phase", () => {
       quests: [{ quest: "Trading post", turnsOnTable: 1, isInExtraTurn: false }],
       seats: base.seats.map((seat) =>
         seat.seat === 1
-          ? { ...seat, city: ["Apparel Store"], stats: { ...seat.stats, income: 4 } }
+          ? { ...seat, city: ["Apparel Store"], stats: { ...seat.stats, income: 40 } }
           : seat,
       ),
     });
@@ -87,14 +87,14 @@ describe("what other players see during the main phase", () => {
       seat: 1,
       isCompleted: true,
       canCompleteNow: false,
-      have: [4, 1],
+      have: [40, 1],
       negativeStats: [],
     });
     expect(progressOfSeat1(after, 2)).toEqual({
       seat: 1,
       isCompleted: false,
       canCompleteNow: true,
-      have: [4, 1],
+      have: [40, 1],
       negativeStats: [],
     });
     expect(viewFor(after, 1).quests[0]).toHaveProperty("completeRejection", "quest_already_completed");
@@ -112,7 +112,7 @@ describe("what other players see during the main phase", () => {
           ? {
               ...seat,
               city: ["Apparel Store"],
-              stats: { ...seat.stats, income: 4, workforce: -1, satisfaction: -2 },
+              stats: { ...seat.stats, income: 40, workforce: -1, satisfaction: -2 },
             }
           : seat,
       ),
@@ -121,7 +121,7 @@ describe("what other players see during the main phase", () => {
       seat: 1,
       isCompleted: false,
       canCompleteNow: false,
-      have: [4, 1],
+      have: [40, 1],
       negativeStats: [
         { stat: "satisfaction", value: -2 },
         { stat: "workforce", value: -1 },
@@ -140,7 +140,7 @@ describe("what other players see during the main phase", () => {
           ? {
               ...seat,
               city: ["Apparel Store"],
-              stats: { ...seat.stats, income: 4 },
+              stats: { ...seat.stats, income: 40 },
               departure: { turn: 1, cardsInHand: 2 },
             }
           : seat,

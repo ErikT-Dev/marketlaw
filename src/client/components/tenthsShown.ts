@@ -1,4 +1,4 @@
-import { TENTHS_PER_FUND } from "../../shared/TENTHS_PER_FUND";
+const TENTHS_PER_FUND = 10;
 
 export function tenthsShown(tenths: number): string {
   return (tenths / TENTHS_PER_FUND).toFixed(1);

@@ -1,5 +1,4 @@
 import type { Kind } from "../shared/catalogue/Kind";
-import { amountsInTenths } from "../shared/amountsInTenths";
 import type { Tier } from "../shared/catalogue/Tier";
 import { influenceDrawOfTier } from "../shared/ruleFiles/influenceDrawOfTier";
 import type { SeatNumber } from "../shared/SeatNumber";
@@ -17,7 +16,7 @@ type DrawAction = {
 
 export function useDrawAction(state: GameState, action: DrawAction, random: Random): GameState {
   const { seat, kind, tier } = action;
-  const costs = amountsInTenths(influenceDrawOfTier(tier)?.costs ?? {});
+  const costs = influenceDrawOfTier(tier)?.costs ?? {};
   const paid = updateSeat(state, seat, (current) => ({
     ...current,
     stats: STAT_KEYS.reduce(

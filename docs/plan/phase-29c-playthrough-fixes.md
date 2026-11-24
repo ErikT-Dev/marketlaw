@@ -350,7 +350,7 @@ scenarios, which expect the first completers' funds instead of influence.
     `cards_in_hand` with the record's new values (2b). The tutorial scenario's turn 5 expects
     funds 17 and influence 6 (item 3).
 
-- [ ] 2a. **Funds × 10 in the engine and the runner** (R2.1, R2.4, R2.5, R3.8, R5.1, R11.5,
+- [x] 2a. **Funds × 10 in the engine and the runner** (R2.1, R2.4, R2.5, R3.8, R5.1, R11.5,
   R13.1, R14, R16, R19.11, R21.4, R21.5, point 5). **Large.**
   - Remove `TENTHS_PER_FUND`, `fundsInTenths`, `amountsInTenths` and `wholeFundsOf`
     (`src/shared/`) and the runner's one-decimal reading and writing
@@ -365,6 +365,27 @@ scenarios, which expect the first completers' funds instead of influence.
   - Raise both versions (Start). Every commit type-checks on its own: where removing a shared
     helper breaks the client, make the smallest client change and leave the texts to item 4.
   - Split if it runs over three commits: the engine and runner here, the rest in 2b.
+  - Done (2026-11-24) as listed, in one commit; `PROTOCOL_VERSION` 29, `SAVE_SCHEMA_VERSION`
+    20. Also: `FUNDS_PER_SOLD_CARD` 10; the real cost adds 10 a card of the same sector and tier
+    (`realCostOf.ts`); F per card is `src/rules/WORTH_GAINED_PER_CARD.ts` (10); I8 checks income
+    against `STARTING_STATS.income`; the runner reads and writes funds and F as written. The
+    end-of-game table (`ScorePartsTable.tsx`) already shows funds and cards in hand as two
+    columns, as the score parts changed. Smallest client changes only: `tenthsShown.ts` and
+    `wholeFundsShown.ts` keep their own divisor of 10 until item 4 removes them, so screens
+    still show income and funds divided by 10 (income 30 as 3.0); the client tests' fixtures
+    and the sale texts ("Sell for [Funds 10]?") follow the new units.
+  - **For later items:** `gameRecordOf.ts` writes `fundsAndHand: place.funds + place.cardsInHand`
+    for now; 2b replaces it with `funds` and `cardsInHand` (and `recordThen.ts`'s
+    `funds_plus_hand`). Bots and the simulator are untouched (2b); the check's simulated games
+    pass. Failures left (`npm run check` reaches the tests; everything before them passes, and
+    `npm run size` passes): `npm run test` fails 19 tests in 12 files. Item 2b: `harness.test.ts`'s 3
+    `records-and-ratings` scenarios and `src/rules/gameRecordOf.test.ts` (2; fixtures in old
+    units and `fundsAndHand`). Item 3: the 48 `quests` reward and first-completion scenarios,
+    the `tutorial` scenario's turn 5, and `tutorial/applyTutorialAction.test.ts` (expects the
+    spec's funds 17, influence 6). Item 4 (screens still divide by 10, and the old texts):
+    `GamePage`, `handAndActions` (the real cost text), `influenceAndUndo` (3),
+    `lastTurnPanel`, `opponents`, `quests`, `combosAndProjects`, `parseRulebook` and
+    `rulebookChangedSections` (5).
 
 - [ ] 2b. **Bots, simulator and records** (A3.2, A3.3, R21.4). **Large.**
   - Bots (`src/bots/`) and the simulator follow the units (fund and income thresholds × 10).

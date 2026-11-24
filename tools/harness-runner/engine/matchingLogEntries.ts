@@ -1,7 +1,6 @@
 import type { DrawLogEntry } from "../../../src/shared/DrawLogEntry.ts";
 import type { MainPhaseLogEntry } from "../../../src/shared/MainPhaseLogEntry.ts";
 import { isRecord } from "../../harness-check/isRecord.ts";
-import { fundsWritten } from "./fundsWritten.ts";
 import type { GameLogEntry } from "./GameLogEntry.ts";
 
 function turnDrawFieldsOf(entry: DrawLogEntry): Readonly<Record<string, unknown>> {
@@ -42,7 +41,7 @@ function mainPhaseFieldsOf(entry: MainPhaseLogEntry): Readonly<Record<string, un
     case "income_gained":
       return { ...common, income_gained: entry.income };
     case "support":
-      return { ...common, support: fundsWritten(entry.funds) };
+      return { ...common, support: entry.funds };
   }
 }
 

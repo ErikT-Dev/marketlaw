@@ -5,6 +5,7 @@ export type ScorePartsInHundredths = {
   readonly satisfaction: number;
   readonly product: number;
   readonly distribution: number;
-  readonly fundsAndHand: number;
+  readonly funds: number;
+  readonly cardsInHand: number;
   readonly bonusTypes: number;
 };

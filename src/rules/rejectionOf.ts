@@ -1,6 +1,5 @@
 import type { CardName } from "../shared/catalogue/CardName";
 import { cardOf } from "../shared/catalogue/cardOf";
-import { fundsInTenths } from "../shared/fundsInTenths";
 import type { ReasonCode } from "../shared/ReasonCode";
 import { drawActionRejection } from "./drawActionRejection";
 import { FIRST_TURN_FOR_HIGHER_TIERS } from "./FIRST_TURN_FOR_HIGHER_TIERS";
@@ -82,7 +81,7 @@ function playRejection(state: GameState, seat: SeatState, action: PlayCard): Rea
   if (seat.buildPasses === 0) {
     return "no_build_pass";
   }
-  return seat.stats.funds < fundsInTenths(realCostOf(card, seat)) ? "not_enough_funds" : undefined;
+  return seat.stats.funds < realCostOf(card, seat) ? "not_enough_funds" : undefined;
 }
 
 function sellRejection(

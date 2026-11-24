@@ -21,7 +21,8 @@ function place(
     leftInTurn: null,
     hasReachedEndGoal: false,
     income: 15,
-    fundsAndHand: 20,
+    funds: 20,
+    cardsInHand: 0,
     counts: NO_SUMMARY_COUNTS,
     ...changes,
   };
@@ -89,7 +90,8 @@ describe("end-of-game screen", () => {
       satisfaction: -150,
       product: 550,
       distribution: 0,
-      fundsAndHand: 420,
+      funds: 300,
+      cardsInHand: 120,
       bonusTypes: 600,
     };
     showResult({
@@ -107,7 +109,8 @@ describe("end-of-game screen", () => {
       "[Satisfaction]",
       "[Product]",
       "[Distribution]",
-      "[Funds] + hand",
+      "[Funds]",
+      "Cards in hand",
       "Bonus types",
       "Total",
     ]);
@@ -121,8 +124,8 @@ describe("end-of-game screen", () => {
           .map((cell) => cell.textContent),
       ]);
     expect(rows).toEqual([
-      ["You", "130", "2.8", "3.85", "−1.5", "5.5", "0", "4.2", "6", "150.85"],
-      ["Ann", "0", "0", "0", "0", "0", "0", "0", "12", "12"],
+      ["You", "130", "2.8", "3.85", "−1.5", "5.5", "0", "3", "1.2", "6", "150.85"],
+      ["Ann", "0", "0", "0", "0", "0", "0", "0", "0", "12", "12"],
     ]);
   });
 

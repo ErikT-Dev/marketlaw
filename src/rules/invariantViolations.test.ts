@@ -1,5 +1,4 @@
 import { describe, expect, it } from "vitest";
-import { fundsInTenths } from "../shared/fundsInTenths";
 import { GAME_STARTED_AT } from "../shared/testing/GAME_STARTED_AT";
 import { apply } from "./apply";
 import type { GameAction } from "./GameAction";
@@ -32,8 +31,8 @@ function withEndOfTurnFundsPaid(state: GameState): GameState {
     ...state,
     seats: state.seats.map((seat) => ({
       ...seat,
-      stats: { ...seat.stats, funds: seat.stats.funds + fundsInTenths(10) },
-      worthGained: seat.worthGained + fundsInTenths(10),
+      stats: { ...seat.stats, funds: seat.stats.funds + 100 },
+      worthGained: seat.worthGained + 100,
     })),
   };
 }
@@ -73,7 +72,7 @@ describe("invariantViolations", () => {
   });
 
   it("reports total worth gained that is not the cards gained plus the funds received", () => {
-    const after = withSeat1(START, { worthGained: (START.seats[0]?.worthGained ?? 0) + fundsInTenths(1) });
+    const after = withSeat1(START, { worthGained: (START.seats[0]?.worthGained ?? 0) + 10 });
     expect(invariantViolations(transition(START, { type: "end_turn", seat: 1 }, after))).toEqual([
       "I30: seat 1 total worth gained is 150 after end_turn, but the cards gained and funds received make 140",
     ]);
@@ -123,7 +122,7 @@ describe("invariantViolations", () => {
   });
 
   it("reports a holding pile kept after the main phase and income that went down", () => {
-    const before = withSeat1(START, { stats: { ...STARTING_STATS, income: 5 } });
+    const before = withSeat1(START, { stats: { ...STARTING_STATS, income: 50 } });
     const after = withSeat1(
       withEndOfTurnFundsPaid({
         ...START,
@@ -132,21 +131,21 @@ describe("invariantViolations", () => {
         holdingPile: [START.deck[0] ?? "Pub"],
         deck: START.deck.slice(1),
       }),
-      { stats: { ...STARTING_STATS, income: 4, funds: fundsInTenths(20) } },
+      { stats: { ...STARTING_STATS, income: 40, funds: 200 } },
     );
     expect(invariantViolations(transition(before, { type: "end_turn", seat: 1 }, after))).toEqual([
       "I2: the holding pile holds 1 cards outside the main phase",
-      "I8: seat 1 income went from 5 to 4",
+      "I8: seat 1 income went from 50 to 40",
       "I30: seat 1 total worth gained is 240 after end_turn, but the cards gained and funds received make 270",
     ]);
   });
 
-  it("reports income that could have been taken and income below 3", () => {
+  it("reports income that could have been taken and income below 30", () => {
     const after = withSeat1(START, {
-      stats: { ...STARTING_STATS, income: 2, product: 1, distribution: 1 },
+      stats: { ...STARTING_STATS, income: 20, product: 1, distribution: 1 },
     });
     expect(invariantViolations(transition(START, { type: "end_turn", seat: 1 }, after))).toEqual([
-      "I8: seat 1 income went from 3 to 2",
+      "I8: seat 1 income went from 30 to 20",
       "I9: seat 1 could still take income",
     ]);
   });

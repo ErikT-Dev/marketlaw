@@ -126,7 +126,7 @@ describe("actions", () => {
     fireEvent.click(screen.getByRole("button", { name: "Sell cards" }));
     fireEvent.click(handCard("Farm House"));
     fireEvent.click(handCard("Loft"));
-    expect(textWithIconNames(document.body)).toContain("then Sell 2 cards for [Funds 2]");
+    expect(textWithIconNames(document.body)).toContain("then Sell 2 cards for [Funds 20]");
     fireEvent.click(screen.getByRole("button", { name: "Sell 2 cards" }));
     expect(onAction).toHaveBeenCalledWith({ type: "sell", cards: ["Farm House", "Loft"] });
   });

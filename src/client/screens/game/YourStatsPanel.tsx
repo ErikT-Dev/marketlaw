@@ -10,7 +10,6 @@ import { TypeCountsList } from "./TypeCountsList";
 import styles from "./YourStatsPanel.module.css";
 import { Highlighted } from "./Highlighted";
 import { tenthsShown } from "../../components/tenthsShown";
-import { fundsInTenths } from "../../../shared/fundsInTenths";
 
 type Props = {
   readonly seat: OwnSeatView;
@@ -37,7 +36,7 @@ function valueOf(seat: OwnSeatView, stat: (typeof SHOWN_STATS)[number]): number 
   if (stat === "funds") {
     return tenthsShown(seat.stats.funds);
   }
-  return stat === "income" ? tenthsShown(fundsInTenths(seat.stats.income)) : seat.stats[stat];
+  return stat === "income" ? tenthsShown(seat.stats.income) : seat.stats[stat];
 }
 
 function YourStatsPanelContent({ seat, view, playerNames }: Props) {

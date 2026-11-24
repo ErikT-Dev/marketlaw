@@ -13,7 +13,6 @@ import { LiveBankChip } from "./LiveBankChip";
 import { OpponentBasicStats } from "./OpponentBasicStats";
 import styles from "./OpponentBoardDialog.module.css";
 import { tenthsShown } from "../../components/tenthsShown";
-import { fundsInTenths } from "../../../shared/fundsInTenths";
 
 type Props = {
   readonly seat: OtherSeatView;
@@ -38,7 +37,7 @@ export function OpponentStatsBox({ seat, name, playerId, bonusTypes }: Props) {
           <StatChip stat="funds" value={tenthsShown(seat.stats.funds)} />
         </li>
         <li>
-          <StatChip stat="income" value={tenthsShown(fundsInTenths(seat.stats.income))} />
+          <StatChip stat="income" value={tenthsShown(seat.stats.income)} />
         </li>
         <li>
           <StatChip stat="influence" value={seat.stats.influence} />

@@ -1,5 +1,4 @@
 import type { QuestName } from "../shared/catalogue/QuestName";
-import { amountsInTenths } from "../shared/amountsInTenths";
 import { questOf } from "../shared/ruleFiles/questOf";
 import { STAT_KEYS } from "../shared/STAT_KEYS";
 import type { SeatNumber } from "../shared/SeatNumber";
@@ -14,7 +13,7 @@ const FIRST_COMPLETION_INFLUENCE = 1;
 function rewardedSeat(seat: SeatState, quest: QuestName, extraInfluence: number): SeatState {
   const { reward } = questOf(quest).terms;
   const { gainedType } = reward;
-  const stats = amountsInTenths(reward.stats);
+  const { stats } = reward;
   const gainedTypes =
     gainedType === null
       ? seat.gainedTypes

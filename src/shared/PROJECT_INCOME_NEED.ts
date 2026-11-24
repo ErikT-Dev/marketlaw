@@ -1,1 +1,1 @@
-export const PROJECT_INCOME_NEED = 10;
+export const PROJECT_INCOME_NEED = 100;

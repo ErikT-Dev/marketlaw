@@ -1,8 +1,8 @@
 import type { QuestNeed } from "../catalogue/QuestNeed";
 import type { QuestTerms } from "../catalogue/QuestTerms";
 
-const INCOME_BELOW_NEEDED_INCOME = 2;
-const INCOME_FOR_PROJECT_QUESTS = 8;
+const INCOME_BELOW_NEEDED_INCOME = 20;
+const INCOME_FOR_PROJECT_QUESTS = 80;
 const INCOME_FOR_ANY_QUEST = Number.NEGATIVE_INFINITY;
 
 function incomeToPlaceFor(need: QuestNeed): number {

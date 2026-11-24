@@ -17,7 +17,7 @@ function seatRecordOf(place: PlaceResult, index: number, seat: SeatState): SeatR
     score: place.score,
     hasReachedEndGoal: place.hasReachedEndGoal,
     income: place.income,
-    fundsAndHand: place.fundsAndHand,
+    fundsAndHand: place.funds + place.cardsInHand,
     workforce: stats.workforce,
     quality: stats.quality,
     satisfaction: stats.satisfaction,

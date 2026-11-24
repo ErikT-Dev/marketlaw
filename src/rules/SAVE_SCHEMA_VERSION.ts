@@ -1,1 +1,1 @@
-export const SAVE_SCHEMA_VERSION = 19;
+export const SAVE_SCHEMA_VERSION = 20;

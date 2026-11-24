@@ -1,4 +1,3 @@
-import { fundsInTenths } from "../shared/fundsInTenths";
 import type { SeatState } from "./SeatState";
 import { statsGainOf } from "./statsGainOf";
 
@@ -7,7 +6,7 @@ export function endOfTurnSteps(seat: SeatState): SeatState {
     return seat;
   }
   const { stats } = seat;
-  const income = fundsInTenths(stats.income);
+  const { income } = stats;
   const statsGain = statsGainOf(stats);
   return {
     ...seat,

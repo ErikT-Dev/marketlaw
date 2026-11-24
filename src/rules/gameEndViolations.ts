@@ -1,13 +1,12 @@
 import type { GameState } from "./GameState";
 import { isAbandoned } from "../shared/isAbandoned";
 import type { PlaceResult } from "../shared/PlaceResult";
-import { wholeFundsOf } from "../shared/wholeFundsOf";
 import { bonusTypePointsOf } from "./bonusTypePointsOf";
 import { hasReachedEndGoal } from "./hasReachedEndGoal";
 import { playerOrderOf } from "./playerOrderOf";
 
 const FORMULA = [
-  ["income", 6.5],
+  ["income", 0.65],
   ["workforce", 0.7],
   ["quality", 0.55],
   ["satisfaction", 0.5],
@@ -22,7 +21,8 @@ function expectedScore(state: GameState, seatNumber: number): number | undefined
   }
   const parts = [
     ...FORMULA.map(([stat, weight]) => weight * seat.stats[stat]),
-    0.2 * (wholeFundsOf(seat.stats.funds) + (seat.departure?.cardsInHand ?? seat.hand.length)),
+    0.02 * seat.stats.funds,
+    0.2 * (seat.departure?.cardsInHand ?? seat.hand.length),
     bonusTypePointsOf(seat, state.bonusTypes),
   ];
   const hundredths = parts.reduce((sum, part) => sum + Math.round(part * 100), 0);

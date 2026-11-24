@@ -1,9 +1,9 @@
+import { WORTH_GAINED_PER_CARD } from "./WORTH_GAINED_PER_CARD";
 import type { CardName } from "../shared/catalogue/CardName";
 import { cardOf } from "../shared/catalogue/cardOf";
 import type { Sector } from "../shared/catalogue/Sector";
 import type { Tier } from "../shared/catalogue/Tier";
 import type { DrawLogEntry } from "../shared/DrawLogEntry";
-import { fundsInTenths } from "../shared/fundsInTenths";
 import type { SeatNumber } from "../shared/SeatNumber";
 import type { TurnDrawChoice } from "../shared/TurnDrawChoice";
 import { cardsIntoHand } from "./cardsIntoHand";
@@ -34,7 +34,7 @@ function withMarketCard(state: GameState, seat: SeatNumber, card: CardName): Gam
     hand: [...current.hand, card],
     newCards: [...current.newCards, card],
     knownInHand: [...current.knownInHand, card],
-    worthGained: current.worthGained + fundsInTenths(1),
+    worthGained: current.worthGained + WORTH_GAINED_PER_CARD,
   }));
 }
 

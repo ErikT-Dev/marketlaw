@@ -8,7 +8,8 @@ export function scorePartsAddingUpTo(score: number): ScorePartsInHundredths {
     satisfaction: 0,
     product: 0,
     distribution: 0,
-    fundsAndHand: 0,
+    funds: 0,
+    cardsInHand: 0,
     bonusTypes: score * 100,
   };
 }

@@ -1,5 +1,3 @@
-import { amountsInTenths } from "../shared/amountsInTenths";
-import { fundsInTenths } from "../shared/fundsInTenths";
 import { tradeOf } from "../shared/ruleFiles/tradeOf";
 import type { Stats } from "../shared/Stats";
 import { STAT_KEYS } from "../shared/STAT_KEYS";
@@ -8,8 +6,8 @@ import type { SeatState } from "./SeatState";
 import { tradeCostsOf } from "./tradeCostsOf";
 
 function statsAfterTrade(seat: SeatState, trade: TradeName): Stats {
-  const costs = amountsInTenths(tradeCostsOf(seat, trade));
-  const gains = amountsInTenths(tradeOf(trade).gains);
+  const costs = tradeCostsOf(seat, trade);
+  const gains = tradeOf(trade).gains;
   return STAT_KEYS.reduce(
     (stats, stat) => ({ ...stats, [stat]: stats[stat] - (costs[stat] ?? 0) + (gains[stat] ?? 0) }),
     seat.stats,
@@ -28,6 +26,6 @@ export function useTrade(seat: SeatState, trade: TradeName): SeatState {
         ? seat.influenceUses
         : { ...seat.influenceUses, [trade]: (seat.influenceUses[trade] ?? 0) + 1 },
     actionsThisTurn: seat.actionsThisTurn + 1,
-    worthGained: seat.worthGained + fundsInTenths(gains.funds ?? 0),
+    worthGained: seat.worthGained + (gains.funds ?? 0),
   };
 }

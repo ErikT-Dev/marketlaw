@@ -1,4 +1,3 @@
-import { amountsInTenths } from "../shared/amountsInTenths";
 import type { ReasonCode } from "../shared/ReasonCode";
 import { STAT_KEYS } from "../shared/STAT_KEYS";
 import type { TradeName } from "../shared/TradeName";
@@ -11,7 +10,7 @@ export function tradeRejection(seat: SeatState, trade: TradeName): ReasonCode | 
   if (limit !== null && (seat.influenceUses[trade] ?? 0) >= limit) {
     return "trade_limit_reached";
   }
-  const costs = amountsInTenths(tradeCostsOf(seat, trade));
+  const costs = tradeCostsOf(seat, trade);
   const canAfford = STAT_KEYS.every((stat) => {
     const cost = costs[stat];
     return cost === undefined || seat.stats[stat] >= cost;

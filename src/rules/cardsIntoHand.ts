@@ -1,6 +1,6 @@
+import { WORTH_GAINED_PER_CARD } from "./WORTH_GAINED_PER_CARD";
 import type { CardName } from "../shared/catalogue/CardName";
 import type { DrawLogEntry } from "../shared/DrawLogEntry";
-import { fundsInTenths } from "../shared/fundsInTenths";
 import { drawCard } from "./drawCard";
 import type { DrawForSeat } from "./DrawForSeat";
 import type { GameState } from "./GameState";
@@ -24,7 +24,7 @@ export function cardsIntoHand(
     hand: [...current.hand, ...drawn.cards],
     drawnThisPhase: [...current.drawnThisPhase, ...drawn.cards],
     newCards: [...current.newCards, ...drawn.cards],
-    worthGained: current.worthGained + fundsInTenths(drawn.cards.length),
+    worthGained: current.worthGained + drawn.cards.length * WORTH_GAINED_PER_CARD,
   }));
   const shuffles = drawn.shuffles.map(
     (shuffle): DrawLogEntry => ({ kind: "shuffle", turn: state.turn, seat, ...shuffle }),

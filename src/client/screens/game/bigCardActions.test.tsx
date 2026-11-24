@@ -45,7 +45,7 @@ describe("selling from the big card", () => {
     const shown = within(selectHandCard("Loft"));
     fireEvent.click(shown.getByRole("button", { name: "Sell" }));
     expect(onAction).not.toHaveBeenCalled();
-    expect(textWithIconNames(shown.getByText(/^Sell for/))).toBe("Sell for [Funds 1]?");
+    expect(textWithIconNames(shown.getByText(/^Sell for/))).toBe("Sell for [Funds 10]?");
     fireEvent.click(shown.getByRole("button", { name: "Sell" }));
     expect(onAction).toHaveBeenCalledWith({ type: "sell", cards: ["Loft"] });
     expect(screen.queryByRole("region", { name: /^Selected card/ })).toBeNull();

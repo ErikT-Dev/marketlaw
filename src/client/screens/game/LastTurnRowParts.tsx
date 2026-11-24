@@ -1,4 +1,3 @@
-import { fundsInTenths } from "../../../shared/fundsInTenths";
 import { questOf } from "../../../shared/ruleFiles/questOf";
 import { tenthsShown } from "../../components/tenthsShown";
 import { wholeFundsShown } from "../../components/wholeFundsShown";
@@ -37,7 +36,7 @@ export function LastTurnRowParts({ row }: Props) {
         </span>
       );
     case "income":
-      return <LastTurnGain amount={tenthsShown(fundsInTenths(row.income))} stat="income" />;
+      return <LastTurnGain amount={tenthsShown(row.income)} stat="income" />;
     case "support":
       return <LastTurnGain amount={wholeFundsShown(row.funds)} stat="funds" />;
   }

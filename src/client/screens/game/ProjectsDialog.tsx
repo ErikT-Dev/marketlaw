@@ -13,7 +13,6 @@ import styles from "./GameDialogs.module.css";
 import { PROJECT_TITLES } from "./PROJECT_TITLES";
 import { REJECTION_MESSAGES } from "./REJECTION_MESSAGES";
 import { tenthsShown } from "../../components/tenthsShown";
-import { fundsInTenths } from "../../../shared/fundsInTenths";
 import { projectPictureUrl } from "../../icons/projectPictureUrl";
 
 type Props = {
@@ -76,7 +75,7 @@ export function ProjectsDialog({ seat, onComplete, onClose }: Props) {
                 Needs <StatChip stat={project} value={PROJECT_NEED} /> and at least{" "}
                 <StatChip stat="income" value={PROJECT_INCOME_NEED} /> · you have{" "}
                 <StatChip stat={project} value={seat.stats[project]} /> and{" "}
-                <StatChip stat="income" value={tenthsShown(fundsInTenths(seat.stats.income))} />
+                <StatChip stat="income" value={tenthsShown(seat.stats.income)} />
               </span>
               <DialogNote text={whyNotCompletable(seat, project)} />
             </div>
