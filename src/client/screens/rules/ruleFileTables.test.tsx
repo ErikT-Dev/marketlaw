@@ -26,12 +26,13 @@ describe("rulebook tables from the rule files", () => {
       ["4 ", { stat: "influence" }, " → 2 ", { stat: "funds" }],
       ["1"],
     ]);
-    expect(table?.rows[4]).toEqual([["1 ", { stat: "funds" }, " → 1 ", { stat: "influence" }], ["any"]]);
+    expect(table?.rows[1]).toEqual([["3 ", { stat: "influence" }, " → 1 ", { stat: "funds" }], ["any"]]);
+    expect(table?.rows[5]).toEqual([["1 ", { stat: "funds" }, " → 1 ", { stat: "influence" }], ["any"]]);
   });
 
   it("shows the rising build pass price and the draw actions in words", () => {
     const rows = tablesOf("Influence")[0]?.rows ?? [];
-    expect(rows[5]?.[0]).toEqual([
+    expect(rows[6]?.[0]).toEqual([
       "2 ",
       { stat: "funds" },
       " → 1 ",

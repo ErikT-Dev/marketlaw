@@ -838,12 +838,23 @@ approval of the list, the quest scenarios that name quest contents.
     Stats gain and Support, Projects (8 of a stat, 10 income, the same reward every time),
     Quests (5 from turn 20, extra turn, Be first, turns by tier) and The end of the game (turn
     40, the score formula with its stat icons, whole funds, places by end goal and F).
-- [ ] 19. **Influence actions** (R15.1, S8.3, items 51, 52). **Small.**
+- [x] 19. **Influence actions** (R15.1, S8.3, items 51, 52). **Small.**
   - `influence to fund` already is in `influence-actions.txt`: check it works with no new code
     (`influence`'s new scenario); the pop-up's tile counts in tests follow
     (`influenceAndUndo.test.tsx` expects 19 tiles). Tiles get one background for `no limit` and
     another for limited actions, and colours that show whether the action can be taken now,
     from the design tokens (`InfluenceDialog`, `TradeTile`).
+  - **Done (2026-11-24).** `influence to fund` works from the file with no new code: the
+    `influence` scenario "3 influence buy 1 fund as often as the player likes" passes (not yet
+    required). The tests that counted the old list follow it: the pop-up has 20 tiles with
+    "3 influence → 1 fund, unlimited uses" (`influenceAndUndo.test.tsx`), and the rulebook's
+    influence table has it as row 2 (`ruleFileTables.test.tsx`). Tiles of limited actions have
+    a blue background (`--color-board-trade-limited`, `-limited-off` when disabled), `no limit`
+    ones keep the violet one (`--color-board-trade`, `-off`), both mixed at 90%; a tile you can
+    take now has a green bar on its left (`--color-board-trade-ready`), besides its disabled
+    state (`TradeTile` classes `limited` and `ready`; unit test "colours a tile by its limit
+    and by whether it can be taken now"). `e2e/influenceAndUndo.spec.ts` passes locally at all
+    three sizes with one worker (with two workers, two sizes timed out at different steps).
 - [x] 20. **The 14 required names** (Waiting for the owner, Q178). **Small.** Only after the
   owner's answer.
   - One `HARNESS:` commit, recorded in Q178: the 6 renames (the scenario changed to the new rule

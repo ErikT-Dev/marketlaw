@@ -37,6 +37,18 @@
   cursor: pointer;
 }
 
+.limited {
+  background: color-mix(
+    in srgb,
+    var(--color-board-trade-limited) var(--opacity-button-background),
+    transparent
+  );
+}
+
+.ready {
+  box-shadow: inset 4px 0 0 var(--color-board-trade-ready);
+}
+
 .tile:disabled {
   background: color-mix(
     in srgb,
@@ -45,6 +57,14 @@
   );
   color: var(--color-text-muted);
   cursor: default;
+}
+
+.limited:disabled {
+  background: color-mix(
+    in srgb,
+    var(--color-board-trade-limited-off) var(--opacity-button-background),
+    transparent
+  );
 }
 
 .status {

@@ -4,6 +4,7 @@ import type { TradeName } from "../../../shared/TradeName";
 import type { TradeStatus } from "../../../shared/TradeStatus";
 import { StatAmountsIcons } from "../../components/StatAmountsIcons";
 import { TextWithIcons } from "../../components/TextWithIcons";
+import { tradeOf } from "../../../shared/ruleFiles/tradeOf";
 import styles from "./InfluenceDialog.module.css";
 import { TradeIcons } from "./TradeIcons";
 import { tradeLabel } from "./tradeLabel";
@@ -21,11 +22,13 @@ export function TradeTile({ seat, status, isBusy, onUse }: Props) {
   const statusId = useId();
   const statusClass =
     status.rejection === "trade_limit_reached" ? styles["status"] : styles["missing"];
+  const limitClass = tradeOf(status.trade).limitPerGame === null ? "" : (styles["limited"] ?? "");
+  const readyClass = status.rejection === null ? (styles["ready"] ?? "") : "";
   return (
     <li>
       <button
         type="button"
-        className={styles["tile"]}
+        className={`${styles["tile"] ?? ""} ${limitClass} ${readyClass}`}
         aria-label={tradeLabel(status.trade, seat.buildPassPrice)}
         aria-describedby={statusId}
         disabled={isBusy || status.rejection !== null}

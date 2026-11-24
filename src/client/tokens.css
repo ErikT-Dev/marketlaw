@@ -65,8 +65,11 @@
   --color-board-toast-success: #14532d;
   --color-board-toast-warning: #451a03;
   --color-board-top-bar: #0f1320;
+  --color-board-trade-limited-off: #1e2638;
+  --color-board-trade-limited: #1e3a8a;
   --color-board-trade-missing: #fca5a5;
   --color-board-trade-off: #2b2840;
+  --color-board-trade-ready: #86efac;
   --color-board-trade-status: #ddd6fe;
   --color-board-trade: #4c1d95;
   --color-board-tutorial-action: #fde68a;
