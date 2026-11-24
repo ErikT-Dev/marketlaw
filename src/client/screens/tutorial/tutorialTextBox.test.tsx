@@ -68,7 +68,7 @@ describe("the tutorial text box", () => {
     const { onContinue } = showStep("T5.4", 19);
     expect(
       screen.getByText(
-        "You were the first to complete it, so you got 1 influence more. Each quest stays a few turns, and any player can complete it once.",
+        "You were the first to complete it, so you got 2 funds more, 2 for every tier of the quest. Each quest stays a few turns, and any player can complete it once.",
       ),
     ).toBeTruthy();
     expect(screen.queryByRole("button", { name: "Continue" })).toBeNull();

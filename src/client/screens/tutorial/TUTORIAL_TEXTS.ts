@@ -79,7 +79,7 @@ export const TUTORIAL_TEXTS: Readonly<Record<TutorialStepId, TutorialStepText>> 
   "T5.3": {
     text: "Quests on the table give rewards to every player who meets them. Trading post needs income 4 and the Retail type. Liquor Shop has the Retail type. Complete it.",
     textAfter:
-      "You were the first to complete it, so you got 1 influence more. Each quest stays a few turns, and any player can complete it once.",
+      "You were the first to complete it, so you got 2 funds more, 2 for every tier of the quest. Each quest stays a few turns, and any player can complete it once.",
     waitingFor: "complete Trading post",
   },
   "T5.4": {

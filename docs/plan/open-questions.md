@@ -4514,3 +4514,11 @@ file.
   **Funds** row and a **Cards in hand** row, or, for a record whose seats hold the old value, the
   old **Funds + cards in hand** row as before. Bots needed no change (they hold no amounts of
   funds or income); the simulator's funds samples were already in whole funds after item 2a.
+- **First completion in item 3 (phase 29c, 2026-11-24):** the Last turn panel learns from the
+  view which completions were first ones: each quest of `lastTurn.quests` carries
+  `firstCompletionFunds` (2 per tier, or 0 when the quest was completed in an earlier turn, so
+  during its extra turn). This changes the view's shape; `PROTOCOL_VERSION` is not raised again,
+  as item 2a raised it for the phase. The game log's quest line names the quest only, as S7.2
+  and M3.7 ask (no reward in it before or now), so it needs no change. The quests help text
+  (S5.4) is now the spec's whole text, which it had fallen behind on (the extra turn and the
+  turns by tier).

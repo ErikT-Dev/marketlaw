@@ -74,12 +74,17 @@ describe("the help buttons", () => {
     expect(button.getAttribute("aria-expanded")).toBe("true");
     const help = screen.getByRole("region", { name: "How quests work" });
     expect(help.textContent).toContain("Quests are shared goals.");
-    expect(help.textContent).toContain("a quest nobody completes leaves after 5 turns.");
+    expect(help.textContent).toContain(
+      "everyone who completes it gets 2 Funds more for every tier of the quest. It then stays one more turn for the others, and leaves.",
+    );
+    expect(help.textContent).toContain(
+      "A quest nobody completes leaves after 6 turns (tier 1), 5 (tier 2) or 4 (tier 3).",
+    );
     expect(
       within(help)
         .getAllByRole("img")
         .map((icon) => icon.getAttribute("aria-label")),
-    ).toEqual(["Workforce", "Quality", "Satisfaction"]);
+    ).toEqual(["Workforce", "Quality", "Satisfaction", "Funds"]);
     fireEvent.click(button);
     expect(screen.queryByRole("region", { name: "How quests work" })).toBeNull();
   });

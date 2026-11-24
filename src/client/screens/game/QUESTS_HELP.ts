@@ -7,5 +7,7 @@ export const QUESTS_HELP: ReadonlyArray<IconTextPart> = [
   { stat: "quality" },
   " and ",
   { stat: "satisfaction" },
-  " must all be 0 or more. Each player can complete each quest once, and several players can complete the same quest in the same turn. A completed quest leaves the table at the end of the turn; a quest nobody completes leaves after 5 turns.",
+  " must all be 0 or more. Each player can complete each quest once, and several players can complete the same quest in the same turn. In the turn a quest is first completed, everyone who completes it gets 2 ",
+  { stat: "funds" },
+  " more for every tier of the quest. It then stays one more turn for the others, and leaves. A quest nobody completes leaves after 6 turns (tier 1), 5 (tier 2) or 4 (tier 3).",
 ];

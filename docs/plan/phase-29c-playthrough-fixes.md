@@ -412,10 +412,22 @@ scenarios, which expect the first completers' funds instead of influence.
     `parseRulebook` and `rulebookChangedSections` (5). The record page's income still goes
     through `tenthsShown` (item 4).
 
-- [ ] 3. **First completion gives funds** (R19.5, R19.10, S5.4, S5.5, point 4). **Small.**
+- [x] 3. **First completion gives funds** (R19.5, R19.10, S5.4, S5.5, point 4). **Small.**
   - 2 funds per tier of the quest (2, 4, 6) instead of +1 influence, counted in F and taken back
     by undo; the Last turn panel adds them to the reward's funds; the log; the quests help text
     (S5.4). Covers 1b's `quests` scenarios (the renamed ones and the 2 new ones).
+  - Done (2026-11-24); recorded in Q188. The engine's amount is
+    `src/rules/firstCompletionFundsOf.ts`. The view's `lastTurn.quests` carries
+    `firstCompletionFunds` per quest (0 when it was completed in an earlier turn), which the
+    Last turn panel adds to the reward's funds: a view shape change, with no second
+    `PROTOCOL_VERSION` raise (2a's covers the phase). The game log's quest line names only the
+    quest (S7.2, M3.7), so it is unchanged. The quests help text is now S5.4's whole text; the
+    tutorial's T5.3 text after completing Trading post says 2 funds (its text before, "income
+    4", is item 4's).
+  - **For later items:** `npm run check` reaches the tests (everything before them passes) and
+    fails 15 tests in 9 files, all item 4's: `combosAndProjects`, `GamePage`, `handAndActions`,
+    `influenceAndUndo` (3), `lastTurnPanel` (income shown as tenths), `opponents`, `quests`,
+    `parseRulebook` and `rulebookChangedSections` (5). Every scenario passes.
 
 - [ ] 4. **Whole numbers on screen and the new texts** (S1.9, S6.3, S6.5, S8.2, S8.3, S9.5,
   S13.2, S15.2, S16.3, rulebook, point 5). **Large.**
