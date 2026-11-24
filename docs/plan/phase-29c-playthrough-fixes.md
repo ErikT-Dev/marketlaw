@@ -550,6 +550,8 @@ scenarios, which expect the first completers' funds instead of influence.
   old unit; the room now sends `4Influence → 20Funds` (R16: 4 influence buy 20 funds). A wrong
   expectation in the test, not in the code: change the expected line to `→ 20Funds` and check
   the rest of that spec for other old amounts. Fails at 1280 x 720, 1920 x 1080 and 2560 x 1440.
+  - Fixed: 2c5c17c5 (the expected line is `→ 20Funds`); the browser suite reruns in the releaser's
+    branch check.
 
 ### Helper log
 
@@ -572,3 +574,4 @@ each helper's conversation size at its end.
 | Builder 7 and 8 | Opus, medium | 18 | 143,354 | 68 | done |
 | Builder 9 | Opus, medium | 12 | 110,227 | 40 | done |
 | Finisher | Sonnet, medium | 31 | 90,600 | 27 | partial (F1) |
+| Fixer F1 | Opus, medium | – | – | – | done (log not kept) |
