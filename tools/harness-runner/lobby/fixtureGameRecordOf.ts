@@ -2,6 +2,7 @@ import type { StoredGameRecord } from "../../../src/server/records/StoredGameRec
 import type { SeatRecord } from "../../../src/shared/records/SeatRecord.ts";
 import type { FixturePlayer } from "./FixturePlayer.ts";
 import type { SeatNumber } from "../../../src/shared/SeatNumber.ts";
+import { NO_SUMMARY_COUNTS } from "../../../src/shared/testing/NO_SUMMARY_COUNTS.ts";
 
 const SEAT_NUMBERS: ReadonlyArray<SeatNumber> = [1, 2, 3, 4];
 
@@ -23,6 +24,7 @@ function seatRecordOf(player: FixturePlayer, seat: SeatNumber): SeatRecord {
     hasReachedEndGoal: false,
     income: 0,
     fundsAndHand: 0,
+    counts: NO_SUMMARY_COUNTS,
     workforce: 0,
     quality: 0,
     satisfaction: 0,

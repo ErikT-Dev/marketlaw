@@ -8,6 +8,7 @@ import { roomUpdateWith } from "../../testing/roomUpdateWith";
 import { GamePage } from "../GamePage";
 import { LobbyTopBar } from "../lobby/LobbyTopBar";
 import { scorePartsAddingUpTo } from "../../testing/scorePartsAddingUpTo";
+import { NO_SUMMARY_COUNTS } from "../../../shared/testing/NO_SUMMARY_COUNTS";
 
 const NOW = 1_000_000;
 
@@ -138,6 +139,7 @@ describe("the game menu", () => {
         hasReachedEndGoal: false,
         income: 15,
         fundsAndHand: 20,
+        counts: NO_SUMMARY_COUNTS,
       })),
     };
     render(<GamePage {...gamePageProps(roomUpdateWith({ phase: "ended", turn: 40, result }))} />);

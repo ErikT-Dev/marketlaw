@@ -3,6 +3,7 @@ import { comboGainsText } from "./comboGainsText";
 import type { GameRecordRow } from "./GameRecordRow";
 import { projectsText } from "./projectsText";
 import { seatResultText } from "./seatResultText";
+import { RecordedCounts } from "./RecordedCounts";
 import { typeCountsText } from "./typeCountsText";
 import { tenthsShown } from "../../components/tenthsShown";
 import { fundsInTenths } from "../../../shared/fundsInTenths";
@@ -23,5 +24,6 @@ export const GAME_RECORD_ROWS: ReadonlyArray<GameRecordRow> = [
   { label: "Projects completed", valueOf: projectsText },
   { label: "Quests completed", valueOf: (seat) => seat.questsCompleted },
   { label: "From combos", valueOf: (seat) => <TextWithIcons text={comboGainsText(seat)} /> },
+  { label: "Q, T, C, F", valueOf: (seat) => <RecordedCounts seat={seat} /> },
   { label: "Type counts", valueOf: (seat) => <TextWithIcons text={typeCountsText(seat)} /> },
 ];

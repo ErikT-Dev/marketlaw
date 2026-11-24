@@ -5,7 +5,6 @@ import { Panel } from "../../components/Panel";
 import { StatChip } from "../../components/StatChip";
 import type { StatName } from "../../icons/StatName";
 import { typesInListOrder } from "../../sorting/typesInListOrder";
-import { OwnCountBoxes } from "./OwnCountBoxes";
 import { ProjectProgressList } from "./ProjectProgressList";
 import { TypeCountsList } from "./TypeCountsList";
 import styles from "./YourStatsPanel.module.css";
@@ -53,7 +52,6 @@ function YourStatsPanelContent({ seat, view, playerNames }: Props) {
           ))}
         </ul>
         <div className={styles["countsAndTypes"]}>
-          <OwnCountBoxes seat={seat} />
           <TypeCountsList
             types={typesInListOrder(seat.typeCounts, view.bonusTypes)}
             typeCounts={seat.typeCounts}

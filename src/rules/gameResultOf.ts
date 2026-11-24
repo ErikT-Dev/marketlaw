@@ -9,6 +9,7 @@ import { hasReachedEndGoal } from "./hasReachedEndGoal";
 import { playerOrderOf } from "./playerOrderOf";
 import { scoreOf } from "./scoreOf";
 import { scorePartsOf } from "./scorePartsOf";
+import { summaryCountsOf } from "./summaryCountsOf";
 
 function rankOf(state: GameState, place: PlaceResult): ReadonlyArray<number> {
   const orderIndex = playerOrderOf(state).indexOf(place.seat);
@@ -42,6 +43,7 @@ export function gameResultOf(state: GameState, endedBy: GameEnding): GameResult 
       hasReachedEndGoal: hasReachedEndGoal(seat),
       income: seat.stats.income,
       fundsAndHand: wholeFundsOf(seat.stats.funds) + cardsInHandScoredOf(seat),
+      counts: summaryCountsOf(seat),
     };
   });
   return {

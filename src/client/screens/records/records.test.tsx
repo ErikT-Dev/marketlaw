@@ -75,6 +75,7 @@ const RECORD = {
           hasReachedEndGoal: true,
           projects: ["quality", "workforce"],
           typeCounts: { Farm: 3, Retail: 5, Culture: 3 },
+          counts: { questsCompleted: 7, types: 11, combosClaimed: 4, worthGained: 1234 },
         },
       ),
       seat(2, { kind: "player", playerId: ANN, username: "Ann" }, { score: 487 }),
@@ -231,6 +232,23 @@ describe("the game record page", () => {
         .getAllByRole("img")
         .map((icon) => icon.getAttribute("aria-label")),
     ).toEqual(["Retail 5", "Culture 3", "Farm 3"]);
+  });
+
+  it("shows each player's Q, T, C and F boxes, and says when an older record has none", async () => {
+    serverAnswers({ [`/api/records/${NEWER_GAME}`]: RECORD });
+    render(
+      <RecordsPage page={{ kind: "record", gameId: NEWER_GAME }} viewerId={ANN} token={null} />,
+    );
+    const table = await screen.findByRole("table", { name: "Players" });
+    const [beasCounts, annsCounts] = within(
+      within(table).getByRole("row", { name: /^Q, T, C, F/ }),
+    ).getAllByRole("cell");
+    expect(
+      within(beasCounts ?? table)
+        .getAllByRole("img")
+        .map((box) => box.getAttribute("aria-label")),
+    ).toEqual(["Quests completed 7", "Types 11", "Combos claimed 4", "Total worth gained 123.4"]);
+    expect(annsCounts?.textContent).toBe("not recorded");
   });
 
   it("shows each player's rating before and its change in a ranked game", async () => {

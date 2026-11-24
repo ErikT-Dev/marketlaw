@@ -1,6 +1,7 @@
 import type { ProjectName } from "../ProjectName";
 import type { SeatNumber } from "../SeatNumber";
 import type { SeatTypeCounts } from "../SeatTypeCounts";
+import type { SummaryCounts } from "../SummaryCounts";
 import type { ComboGains } from "./ComboGains";
 import type { RecordResult } from "./RecordResult";
 
@@ -24,4 +25,5 @@ export type SeatRecord = {
   readonly questsCompleted: number;
   readonly comboGains: ComboGains;
   readonly typeCounts: SeatTypeCounts;
+  readonly counts: SummaryCounts | null;
 };

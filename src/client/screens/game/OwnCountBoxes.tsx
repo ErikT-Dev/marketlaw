@@ -1,29 +1,26 @@
 import type { OwnSeatView } from "../../../shared/OwnSeatView";
 import { CountBox } from "../../components/CountBox";
-import { cityTypeTotalOf } from "./cityTypeTotalOf";
-import styles from "./YourStatsPanel.module.css";
-import { tenthsShown } from "../../components/tenthsShown";
+import { HelpButton } from "../../components/HelpButton";
+import { summaryCountEntriesOf } from "../../components/summaryCountEntriesOf";
+import { COUNTS_HELP } from "./COUNTS_HELP";
+import styles from "./OpponentCard.module.css";
+import { summaryCountsOfSeat } from "./summaryCountsOfSeat";
 
 type Props = {
   readonly seat: OwnSeatView;
 };
 
 export function OwnCountBoxes({ seat }: Props) {
-  const combosClaimed = seat.combos.reduce((total, { claimedTimes }) => total + claimedTimes, 0);
   return (
-    <ul className={styles["counts"]} aria-label="Your counts">
-      <li>
-        <CountBox letter="Q" count={seat.questsCompleted.length} label="Quests completed" />
-      </li>
-      <li>
-        <CountBox letter="T" count={cityTypeTotalOf(seat.city)} label="Types in your city" />
-      </li>
-      <li>
-        <CountBox letter="C" count={combosClaimed} label="Combos claimed" />
-      </li>
-      <li>
-        <CountBox letter="F" count={tenthsShown(seat.worthGained)} label="Total worth gained" />
-      </li>
-    </ul>
+    <div className={styles["ownCounts"]}>
+      <ul className={styles["ownCountList"]} aria-label="Your counts">
+        {summaryCountEntriesOf(summaryCountsOfSeat(seat)).map((entry) => (
+          <li key={entry.letter}>
+            <CountBox {...entry} />
+          </li>
+        ))}
+      </ul>
+      <HelpButton name="What Q, T, C and F mean" text={COUNTS_HELP} />
+    </div>
   );
 }

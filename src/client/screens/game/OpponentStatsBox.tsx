@@ -4,11 +4,11 @@ import type { PlayerId } from "../../../shared/PlayerId";
 import { PlayerNameLink } from "../../components/PlayerNameLink";
 import { CountBox } from "../../components/CountBox";
 import { StatChip } from "../../components/StatChip";
-import { cityTypeTotalOf } from "./cityTypeTotalOf";
+import { typeTotalOf } from "../../../shared/typeTotalOf";
 import { typesInListOrder } from "../../sorting/typesInListOrder";
 import { TypeCountsList } from "./TypeCountsList";
 import { ClaimedCombosList } from "./ClaimedCombosList";
-import { combosClaimedCountOf } from "./combosClaimedCountOf";
+import { combosClaimedCountOf } from "../../../shared/combosClaimedCountOf";
 import { LiveBankChip } from "./LiveBankChip";
 import { OpponentBasicStats } from "./OpponentBasicStats";
 import styles from "./OpponentBoardDialog.module.css";
@@ -49,7 +49,7 @@ export function OpponentStatsBox({ seat, name, playerId, bonusTypes }: Props) {
       </ul>
       <OpponentBasicStats stats={seat.stats} name={name} />
       <div className={styles["counts"]}>
-        <CountBox letter="T" count={cityTypeTotalOf(seat.city)} label="Types in their city" />
+        <CountBox letter="T" count={typeTotalOf(seat.typeCounts)} label="Types" />
         <CountBox
           letter="C"
           count={combosClaimedCountOf(seat.combosClaimed)}

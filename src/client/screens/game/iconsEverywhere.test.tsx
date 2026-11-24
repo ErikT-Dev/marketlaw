@@ -11,6 +11,7 @@ import { statAndTypeWordsShownIn } from "../../testing/statAndTypeWordsShownIn";
 import { GamePage } from "../GamePage";
 import { PhotoLoading } from "./PhotoLoading";
 import { scorePartsAddingUpTo } from "../../testing/scorePartsAddingUpTo";
+import { NO_SUMMARY_COUNTS } from "../../../shared/testing/NO_SUMMARY_COUNTS";
 
 const OWN: Partial<OwnSeatView> = {
   hand: ["Farm House", "Loft"],
@@ -76,6 +77,7 @@ const ENDED: GameResult = {
       hasReachedEndGoal: true,
       income: 23,
       fundsAndHand: 20,
+      counts: NO_SUMMARY_COUNTS,
     },
     {
       seat: 2,
@@ -86,6 +88,7 @@ const ENDED: GameResult = {
       hasReachedEndGoal: false,
       income: 15,
       fundsAndHand: 20,
+      counts: NO_SUMMARY_COUNTS,
     },
   ],
 };

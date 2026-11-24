@@ -5,6 +5,7 @@ import type { GameResult } from "../../../shared/GameResult";
 import type { SeatNumber } from "../../../shared/SeatNumber";
 import type { SeatRatingView } from "../../../shared/protocol/SeatRatingView";
 import type { IconText } from "../../components/IconText";
+import { SummaryCountBoxes } from "../../components/SummaryCountBoxes";
 import { TextWithIcons } from "../../components/TextWithIcons";
 import styles from "./GameOverDialog.module.css";
 import { placeOrdinal } from "./placeOrdinal";
@@ -20,7 +21,14 @@ type Props = {
   readonly ratings: ReadonlyArray<SeatRatingView> | null;
 };
 
-const COLUMNS: ReadonlyArray<IconText> = ["Place", "Player", "Result", "Score", "End goal"];
+const COLUMNS: ReadonlyArray<IconText> = [
+  "Place",
+  "Player",
+  "Result",
+  "Score",
+  "End goal",
+  "Q, T, C, F",
+];
 
 export function GameOverTable({ result, viewer, playerNames, playerIds, ratings }: Props) {
   const columns = ratings === null ? COLUMNS : [...COLUMNS, "Rating"];
@@ -53,6 +61,9 @@ export function GameOverTable({ result, viewer, playerNames, playerIds, ratings 
               <td>{place.leftInTurn !== null ? "left" : index === 0 ? "won" : "lost"}</td>
               <td>{place.score}</td>
               <td>{place.hasReachedEndGoal ? "yes" : "no"}</td>
+              <td className={styles["counts"]}>
+                <SummaryCountBoxes counts={place.counts} />
+              </td>
               {ratings === null ? null : (
                 <RatingCell rating={ratings.find((rating) => rating.seat === place.seat)} />
               )}

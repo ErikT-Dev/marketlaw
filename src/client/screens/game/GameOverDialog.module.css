@@ -55,3 +55,11 @@
   font-weight: var(--font-weight-bold);
   text-align: left;
 }
+
+.table td.counts {
+  white-space: nowrap;
+}
+
+.table td.counts > span + span {
+  margin-left: var(--space-xs);
+}

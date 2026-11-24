@@ -1,5 +1,6 @@
 import * as v from "valibot";
 import { SEAT_NUMBER_SCHEMA } from "./SEAT_NUMBER_SCHEMA";
+import { SUMMARY_COUNTS_SCHEMA } from "./SUMMARY_COUNTS_SCHEMA";
 
 export const GAME_RESULT_SCHEMA = v.object({
   endedBy: v.picklist([
@@ -29,6 +30,7 @@ export const GAME_RESULT_SCHEMA = v.object({
       hasReachedEndGoal: v.boolean(),
       income: v.number(),
       fundsAndHand: v.number(),
+      counts: SUMMARY_COUNTS_SCHEMA,
     }),
   ),
 });

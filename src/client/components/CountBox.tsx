@@ -1,10 +1,7 @@
 import styles from "./CountBox.module.css";
+import type { SummaryCountEntry } from "./SummaryCountEntry";
 
-type Props = {
-  readonly letter: "Q" | "T" | "C" | "F";
-  readonly count: number | string;
-  readonly label: string;
-};
+type Props = SummaryCountEntry;
 
 const LETTER_CLASSES = {
   Q: "quests",

@@ -61,18 +61,38 @@ function quickSummaryTableOfDi() {
   });
 }
 
-describe("your stats", () => {
-  it("shows the Q, T, C and F boxes for yourself", () => {
+describe("your counts", () => {
+  it("shows your Q, T, C and F boxes above the quick summary tables, T counting quest types", () => {
     showGame();
-    const counts = within(screen.getByRole("list", { name: "Your counts" }));
+    const opponents = screen.getByRole("region", { name: "Opponents" });
+    const list = within(opponents).getByRole("list", { name: "Your counts" });
+    expect(
+      list.compareDocumentPosition(quickSummaryTableOfDi()) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+    expect(
+      within(screen.getByRole("region", { name: "Your stats" })).queryByRole("list", {
+        name: "Your counts",
+      }),
+    ).toBeNull();
+    const counts = within(list);
     expect(counts.getAllByRole("img").map((box) => box.getAttribute("aria-label"))).toEqual([
       "Quests completed 1",
-      "Types in your city 4",
+      "Types 11",
       "Combos claimed 4",
       "Total worth gained 31.0",
     ]);
   });
 
+  it("explains Q, T, C and F behind one help button", () => {
+    showGame();
+    fireEvent.click(screen.getByRole("button", { name: "What Q, T, C and F mean" }));
+    expect(document.body.textContent).toContain(
+      "Q: quests you have completed. T: your types, from the cards in your city and from quests. C: combos you have claimed, every claim of an infinite combo counting. F: total worth gained, every fund you have received and every card you have gained.",
+    );
+  });
+});
+
+describe("your stats", () => {
   it("sorts the type counts by count then name inside the bonus part and the rest, bonus types highlighted", () => {
     showGame();
     expect(
@@ -92,12 +112,12 @@ describe("quick summary table", () => {
     showGame();
     const di = within(quickSummaryTableOfDi());
     expect(di.getByRole("img", { name: "Quests completed 1" })).toBeDefined();
-    expect(di.getByRole("img", { name: "Types in their city 13" })).toBeDefined();
+    expect(di.getByRole("img", { name: "Types 9" })).toBeDefined();
     expect(di.getByRole("img", { name: "Combos claimed 4" })).toBeDefined();
     expect(di.getByRole("img", { name: "Total worth gained 52.3" })).toBeDefined();
   });
 
-  it("shows the five types played most in the city, ties by name, a bonus type highlighted", () => {
+  it("shows the five types with the highest type counts, quest types included, ties by name, a bonus type highlighted", () => {
     showGame();
     expect(
       chipsOf(
@@ -105,10 +125,10 @@ describe("quick summary table", () => {
       ),
     ).toEqual([
       { chip: "Town Housing 3", isBonus: false },
-      { chip: "Beautification 2", isBonus: false },
       { chip: "Low Wealth 2", isBonus: true },
-      { chip: "Suburban Housing 2", isBonus: false },
-      { chip: "City Housing 1", isBonus: false },
+      { chip: "Retail 2", isBonus: false },
+      { chip: "Luxury 1", isBonus: true },
+      { chip: "Safety 1", isBonus: false },
     ]);
   });
 });

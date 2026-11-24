@@ -33,6 +33,7 @@ test("your counts, another player's counts and most played types, and a project 
         seat: 1,
         city: ["Cottage", "Lake Park", "Fire Station"],
         quests_completed: ["Countryside"],
+        gained_types: { Sea: 1 },
         worth_gained: 17,
       },
       {
@@ -47,15 +48,22 @@ test("your counts, another player's counts and most played types, and a project 
   });
   const ann = await openTestSeat(browser, viewport, seatOne);
 
-  const yourCounts = ann.getByRole("list", { name: "Your counts" });
+  const yourCounts = ann
+    .getByRole("region", { name: "Opponents" })
+    .getByRole("list", { name: "Your counts" });
   await expect(yourCounts.getByRole("img", { name: "Quests completed 1" })).toBeVisible();
-  await expect(yourCounts.getByRole("img", { name: "Types in your city 5" })).toBeVisible();
+  await expect(yourCounts.getByRole("img", { name: "Types 6" })).toBeVisible();
   await expect(yourCounts.getByRole("img", { name: "Combos claimed 0" })).toBeVisible();
   await expect(yourCounts.getByRole("img", { name: "Total worth gained 17.0" })).toBeVisible();
 
+  await ann.getByRole("button", { name: "What Q, T, C and F mean" }).click();
+  await expect(ann.getByText(/^Q: quests you have completed./)).toBeVisible();
+  await expectScreenFits(ann, "your-counts", testInfo);
+  await ann.keyboard.press("Escape");
+
   const bea = ann.getByRole("article", { name: "Quick summary table of Seat 2" });
   await expect(bea.getByRole("img", { name: "Quests completed 2" })).toBeVisible();
-  await expect(bea.getByRole("img", { name: "Types in their city 13" })).toBeVisible();
+  await expect(bea.getByRole("img", { name: "Types 13" })).toBeVisible();
   await expect(bea.getByRole("img", { name: "Combos claimed 1" })).toBeVisible();
   await expect(bea.getByRole("img", { name: "Total worth gained 20.0" })).toBeVisible();
   const mostPlayed = bea

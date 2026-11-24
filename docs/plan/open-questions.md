@@ -4266,3 +4266,21 @@ file.
 - **Spec:** S4.1 and S6.4 amended.
 - **Implemented:** `CardTilePicture`, `cardTileBackground`, `cardNameSizeOf`,
   `marketTurnsLeftText`, `handInListOrder`.
+
+## Q184. Where do the end-of-game table and the game record get the Q, T, C and F counts, and what does an older record show?
+
+- **Phase:** 29b, item 11 (your counts and the tables), decided without the owner.
+- **Questions:** (1) S9.5 and S13.2 show every player's Q, T, C and F, but the end-of-game screen
+  shows other players as at the start of their main phase (R5.4), and a player who left is
+  shown with their values when they left (A3.3). (2) Game records saved before this phase have
+  no Q, T, C or F (A3.2 is new), and C and F cannot be worked out from what they hold.
+- **Solution:** (1) the engine adds the four counts (`SummaryCounts`) to each player's place in
+  the game result when the game ends, from the same seat as the score, and the game record
+  copies them from there, so the table, the record and the score always agree. T is the total of
+  the type counts with the types gained from quests, as S3.1 says, everywhere. (2) An older
+  record shows "not recorded" in the Q, T, C, F row of the game record; its counts are `null`.
+  The boxes are named "Quests completed", "Types", "Combos claimed" and "Total worth gained" in
+  every place they show.
+- **Spec:** S3.3, S9.5, S13.2, A3.2 (unchanged).
+- **Implemented:** `summaryCountsOf` (rules), `PlaceResult.counts`, `SeatRecord.counts`,
+  `SummaryCountBoxes`, `RecordedCounts`, `OwnCountBoxes` in the Opponents panel.

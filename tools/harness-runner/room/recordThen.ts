@@ -1,4 +1,5 @@
 import { gameRecordOf } from "../../../src/rules/gameRecordOf.ts";
+import { fundsWritten } from "../engine/fundsWritten.ts";
 import type { SeatRecord } from "../../../src/shared/records/SeatRecord.ts";
 import type { RoomGame } from "../../../src/server/room/RoomGame.ts";
 
@@ -27,6 +28,10 @@ function playerThen(seat: SeatRecord, seatNames: ReadonlyArray<string>): unknown
     quests_completed: seat.questsCompleted,
     combo_gains: seat.comboGains,
     type_counts: seat.typeCounts,
+    q: seat.counts?.questsCompleted,
+    t: seat.counts?.types,
+    c: seat.counts?.combosClaimed,
+    f: seat.counts === null ? undefined : fundsWritten(seat.counts.worthGained),
   };
 }
 

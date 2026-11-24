@@ -11,6 +11,7 @@ import { RoomAfterGamePage } from "./RoomAfterGamePage";
 import { testPlayerIdOf } from "../../testing/testPlayerIdOf";
 import { scorePartsAddingUpTo } from "../../testing/scorePartsAddingUpTo";
 import { TEST_PLAYER_ICON } from "../../../shared/testing/TEST_PLAYER_ICON";
+import { NO_SUMMARY_COUNTS } from "../../../shared/testing/NO_SUMMARY_COUNTS";
 
 const RESULT: GameResult = {
   endedBy: "end_goal",
@@ -23,6 +24,7 @@ const RESULT: GameResult = {
     hasReachedEndGoal: seat === 2,
     income: 22,
     fundsAndHand: 10,
+    counts: NO_SUMMARY_COUNTS,
   })),
 };
 

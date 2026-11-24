@@ -683,13 +683,34 @@ approval of the list, the quest scenarios that name quest contents.
   - **For later items.** The big card now holds more buttons (the combo numbers): a test that
     counts the selected card's buttons must leave them out. `npm run check` still fails only on
     items 16, 18 and 19, as before.
-- [ ] 11. **Your counts and the tables** (S3.1, S3.2, S6.2, S9.5, S13.2, A3.2, findings 3, 17,
+- [x] 11. **Your counts and the tables** (S3.1, S3.2, S6.2, S9.5, S13.2, A3.2, findings 3, 17,
   21, 23). **Medium.** After 2.
   - A small "Your counts" table (Q, T, C, F and one "?" explaining them) above the opponents'
     quick summary tables; those boxes leave `YourStatsPanel`. T and the 5 most played types
     count types gained from quests for every viewer, others from the next turn (R5.4;
     `visibility`'s new scenario). Q, T, C, F in the end-of-game table and the game record
     (`records-and-ratings`' new scenario; `GameRecordSummary`).
+  - **Done (2026-11-24).** "Your counts" (`OwnCountBoxes`) is the first thing in the Opponents
+    panel, with the help button "What Q, T, C and F mean" (S3.3's text, `COUNTS_HELP`); the
+    boxes left Your stats. T everywhere is the total of the view's type counts
+    (`typeTotalOf`), so it and the 5 most played types include the types gained from quests;
+    the view already held them back to the next turn for other players, so `visibility`'s new
+    scenario passed before the change. The boxes are named "Quests completed", "Types", "Combos
+    claimed" and "Total worth gained" everywhere (`SummaryCountBoxes`, `summaryCountEntriesOf`).
+    The engine puts the counts (`SummaryCounts`, `summaryCountsOf`) into each `PlaceResult`
+    at the game's end and `gameRecordOf` copies them into `SeatRecord.counts` (Q184); the
+    end-of-game table has a "Q, T, C, F" column and the game record a "Q, T, C, F" row, "not
+    recorded" for records saved before (counts `null`). No protocol or save version raise
+    beyond the phase's one (the phase ships together). `records-and-ratings`' new scenario passes
+    (run as required locally) and failed before ("got nothing"). Unit tests in
+    `statsAndSummaryTables`, `opponents`, `gameOver`, `records` and `gameRecordOf`; browser
+    test `countsAndPlayerIcons.spec.ts` (Your counts inside Opponents, its help, the screen
+    `your-counts`) passes locally at all three sizes, as do `gameOver`, `matchHistory` and
+    `gameScreenSizes`.
+  - **For later items.** `combosClaimedCountOf` moved to `src/shared/`; test fixtures of a
+    `PlaceResult` need `counts` (`NO_SUMMARY_COUNTS` in `src/shared/testing/`). The finisher
+    adds the new screen `your-counts` to `docs/enforcement.md`. `npm run check` still fails only
+    on items 16, 18 and 19.
 - [ ] 12. **The Last turn panel** (S5.5, S7.2, M3.5, M3.7, S16.4, finding 46, Q177's addition).
   **Medium.** After 2 and 5.
   - As `design/sketches/46-turn-notifications/APPROVED.md`: quests (with reward), projects,

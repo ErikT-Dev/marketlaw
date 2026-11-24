@@ -6,6 +6,7 @@ import { roomUpdateWith } from "../../testing/roomUpdateWith";
 import { textWithIconNames } from "../../testing/textWithIconNames";
 import { GamePage } from "../GamePage";
 import { scorePartsAddingUpTo } from "../../testing/scorePartsAddingUpTo";
+import { NO_SUMMARY_COUNTS } from "../../../shared/testing/NO_SUMMARY_COUNTS";
 
 function place(
   seat: 1 | 2 | 3 | 4,
@@ -21,6 +22,7 @@ function place(
     hasReachedEndGoal: false,
     income: 15,
     fundsAndHand: 20,
+    counts: NO_SUMMARY_COUNTS,
     ...changes,
   };
 }
@@ -28,7 +30,11 @@ function place(
 const END_GOAL: GameResult = {
   endedBy: "end_goal",
   places: [
-    place(3, 512, { hasReachedEndGoal: true, income: 23 }),
+    place(3, 512, {
+      hasReachedEndGoal: true,
+      income: 23,
+      counts: { questsCompleted: 2, types: 14, combosClaimed: 3, worthGained: 615 },
+    }),
     place(2, 487),
     place(4, 455),
     place(1, 301, { leftInTurn: 12 }),
@@ -57,10 +63,10 @@ describe("end-of-game screen", () => {
           .map((cell) => cell.textContent),
       );
     expect(rows).toEqual([
-      ["1st", "won", "512", "yes"],
-      ["2nd", "lost", "487", "no"],
-      ["3rd", "lost", "455", "no"],
-      ["4th", "left", "301", "no"],
+      ["1st", "won", "512", "yes", "Q2T14C3F61.5"],
+      ["2nd", "lost", "487", "no", "Q0T0C0F0.0"],
+      ["3rd", "lost", "455", "no", "Q0T0C0F0.0"],
+      ["4th", "left", "301", "no", "Q0T0C0F0.0"],
     ]);
     expect(
       within(dialog)

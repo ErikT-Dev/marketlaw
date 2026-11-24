@@ -136,3 +136,9 @@
     display: none;
   }
 }
+
+.counts {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}

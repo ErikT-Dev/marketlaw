@@ -5,6 +5,7 @@ import { gamePageProps } from "../../testing/gamePageProps";
 import { roomUpdateWith } from "../../testing/roomUpdateWith";
 import { GamePage } from "../GamePage";
 import { scorePartsAddingUpTo } from "../../testing/scorePartsAddingUpTo";
+import { NO_SUMMARY_COUNTS } from "../../../shared/testing/NO_SUMMARY_COUNTS";
 
 const LAST_PLAYER: GameResult = {
   endedBy: "last_player",
@@ -17,6 +18,7 @@ const LAST_PLAYER: GameResult = {
     hasReachedEndGoal: false,
     income: 12,
     fundsAndHand: 20,
+    counts: NO_SUMMARY_COUNTS,
   })),
 };
 
@@ -29,6 +31,7 @@ const LAST_PLACE = LAST_PLAYER.places[0] ?? {
   hasReachedEndGoal: false,
   income: 3,
   fundsAndHand: 0,
+  counts: NO_SUMMARY_COUNTS,
 };
 
 describe("leaving the game", () => {

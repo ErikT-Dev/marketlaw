@@ -85,6 +85,7 @@ describe("gameRecordOf", () => {
       questsCompleted: 2,
       comboGains: { workforce: 0, quality: 3, satisfaction: 1 },
       typeCounts: { Farm: 2 },
+      counts: { questsCompleted: 2, types: 2, combosClaimed: 4, worthGained: 140 },
     });
   });
 
