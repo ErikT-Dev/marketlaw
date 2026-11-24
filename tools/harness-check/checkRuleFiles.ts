@@ -39,7 +39,7 @@ function questListProblems(
           {
             file: HARNESS_PATHS.quests,
             where: "whole file",
-            message: `${String(tier1Count)} tier 1 quests can be placed at the start (at most income 5 and no completed project); the starting table needs ${String(TIER_1_QUESTS_NEEDED)} (R19.3, R19.11)`,
+            message: `${String(tier1Count)} tier 1 quests can be placed at the start (at most income 50 and no completed project); the starting table needs ${String(TIER_1_QUESTS_NEEDED)} (R19.3, R19.11)`,
           },
         ]
       : [];

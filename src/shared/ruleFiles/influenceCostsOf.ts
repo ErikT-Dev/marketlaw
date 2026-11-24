@@ -2,13 +2,15 @@ import type { Result } from "../Result";
 import type { StatAmounts } from "../StatAmounts";
 import { addedAmounts } from "./addedAmounts";
 import { amountOf } from "./amountOf";
+import { RISING_PRICE_STEP } from "./RISING_PRICE_STEP";
 import type { RuleFileProblem } from "./RuleFileProblem";
 import { statKeyOfWord } from "./statKeyOfWord";
 
 type Costs = { readonly costs: StatAmounts; readonly isPriceRising: boolean };
 
 const PAY = "pay ";
-const RISING_PRICE_WORDS = "1 more each time";
+const RISING_PRICE_WORDS = `${String(RISING_PRICE_STEP)} more each time`;
+const ANY_RISING_PRICE = / more each time$/;
 
 function withCost(
   costs: Costs,
@@ -20,6 +22,12 @@ function withCost(
     return isLast
       ? { isOk: true, value: { ...costs, isPriceRising: true } }
       : { isOk: false, error: { line, word: part, message: `"${RISING_PRICE_WORDS}" comes last` } };
+  }
+  if (ANY_RISING_PRICE.test(part)) {
+    return {
+      isOk: false,
+      error: { line, word: part, message: `the rising price is "${RISING_PRICE_WORDS}"` },
+    };
   }
   const amount = amountOf(part, line);
   if (!amount.isOk) {

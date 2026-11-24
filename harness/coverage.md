@@ -20,7 +20,7 @@ it by hand.
 | R2.1 | setup (1) | Covered |
 | R2.2 | setup (1), turns-and-time (1) | Covered |
 | R2.3 | combos-and-income (2), projects (1) | Covered |
-| R2.4 | end-of-game (1), influence (2), playing-cards (1), setup (1), turns-and-time (2) | Covered |
+| R2.4 | end-of-game (1), influence (2), playing-cards (1), quests (1), setup (1), turns-and-time (2) | Covered |
 | R2.5 | end-of-game (1), turns-and-time (2) | Covered |
 | R3.1 | setup (1) | Covered |
 | R3.2 | – | Checked another way: Card data check: `cards.json` is loaded and every card has a sector, tier, cost, stats, types and combos. *(approved by the owner, 2026-10-25)* |
@@ -136,7 +136,7 @@ it by hand.
 | R19.7 | quests (5) | Covered |
 | R19.8 | quests (6) | Covered |
 | R19.9 | quests (1) | Covered |
-| R19.10 | quests (2), undo (1) | Covered |
+| R19.10 | quests (4), undo (1) | Covered |
 | R19.11 | quests (3) | Covered |
 | R20.1 | quests (2) | Covered |
 | R20.2 | quests (6) | Covered |
@@ -150,8 +150,8 @@ it by hand.
 | R21.1 | end-of-game (4), hostile-client (1) | Covered |
 | R21.2 | end-of-game (2) | Covered |
 | R21.3 | end-of-game (1) | Covered |
-| R21.4 | end-of-game (4), records-and-ratings (1) | Covered |
-| R21.5 | end-of-game (3) | Covered |
+| R21.4 | end-of-game (5), records-and-ratings (1) | Covered |
+| R21.5 | end-of-game (4) | Covered |
 | R21.6 | setup (1) | Covered |
 | R21.7 | end-of-game (2) | Covered |
 | R21.8 | end-of-game (2) | Covered |
@@ -369,6 +369,6 @@ it by hand.
 ## Summary
 
 - Rules: 332
-- Scenarios: 545
+- Scenarios: 548
 - Gaps: 0
 - Checked another way or also checked another way: R3.2, R3.5, R17.10, R19.2, M3.1, M3.6, M4.2, A6.4, A10.6, C5.1, C5.2, C5.3, A12.1, R15.5, R15.6, R20.8, R20.9, T0.7, A2.5

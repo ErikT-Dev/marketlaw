@@ -36,7 +36,7 @@ describe("the quests table at the start of a turn", () => {
       questList: ["Safe streets", "Metropolis"],
       seats: start.seats.map((seat) =>
         seat.seat === 1
-          ? { ...seat, city: ["Apparel Store"], stats: { ...seat.stats, income: 4 } }
+          ? { ...seat, city: ["Apparel Store"], stats: { ...seat.stats, income: 40 } }
           : seat,
       ),
     });

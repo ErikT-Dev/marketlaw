@@ -1,7 +1,6 @@
-import { fundsInTenths } from "../../../shared/fundsInTenths";
+import type { QuestName } from "../../../shared/catalogue/QuestName";
+import type { QuestReward } from "../../../shared/catalogue/QuestReward";
 import { questOf } from "../../../shared/ruleFiles/questOf";
-import { tenthsShown } from "../../components/tenthsShown";
-import { wholeFundsShown } from "../../components/wholeFundsShown";
 import { iconUrl } from "../../icons/iconUrl";
 import { STAT_ICONS } from "../../icons/STAT_ICONS";
 import { LastTurnGain } from "./LastTurnGain";
@@ -9,6 +8,18 @@ import styles from "./LastTurnPanel.module.css";
 import type { LastTurnRow } from "./LastTurnRow";
 import { PROJECT_TITLES } from "./PROJECT_TITLES";
 import { QuestRewardParts } from "./QuestRewardParts";
+
+function rewardWithFirstCompletionFunds(
+  quest: QuestName,
+  firstCompletionFunds: number,
+): QuestReward {
+  const { reward } = questOf(quest).terms;
+  if (firstCompletionFunds === 0) {
+    return reward;
+  }
+  const funds = (reward.stats.funds ?? 0) + firstCompletionFunds;
+  return { ...reward, stats: { ...reward.stats, funds } };
+}
 
 type Props = {
   readonly row: LastTurnRow;
@@ -21,7 +32,9 @@ export function LastTurnRowParts({ row }: Props) {
         <>
           <span className={styles["what"]}>{row.quest}</span>
           <span className={styles["gain"]}>
-            <QuestRewardParts reward={questOf(row.quest).terms.reward} />
+            <QuestRewardParts
+              reward={rewardWithFirstCompletionFunds(row.quest, row.firstCompletionFunds)}
+            />
           </span>
         </>
       );
@@ -37,8 +50,8 @@ export function LastTurnRowParts({ row }: Props) {
         </span>
       );
     case "income":
-      return <LastTurnGain amount={tenthsShown(fundsInTenths(row.income))} stat="income" />;
+      return <LastTurnGain amount={String(row.income)} stat="income" />;
     case "support":
-      return <LastTurnGain amount={wholeFundsShown(row.funds)} stat="funds" />;
+      return <LastTurnGain amount={String(row.funds)} stat="funds" />;
   }
 }

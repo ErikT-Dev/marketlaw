@@ -22,8 +22,10 @@ export function OpponentsPanel({ view, playerNames, playerIds }: Props) {
   const opened = others.find((seat) => seat.seat === openSeat);
   const ownSeat = view.seats.flatMap((seat) => (seat.kind === "own" ? [seat] : []))[0];
   return (
-    <Panel title="Opponents">
-      {ownSeat === undefined ? null : <OwnCountBoxes seat={ownSeat} />}
+    <Panel title="Players">
+      {ownSeat === undefined ? null : (
+        <OwnCountBoxes seat={ownSeat} name={playerNameOf(playerNames, ownSeat.seat)} />
+      )}
       <ul className={styles["list"]}>
         {others.map((seat) => (
           <OpponentCard

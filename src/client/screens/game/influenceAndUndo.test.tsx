@@ -18,7 +18,7 @@ const TRADE_REJECTIONS: Partial<Record<TradeName, ReasonCode>> = {
 const SEAT: Partial<OwnSeatView> = {
   stats: {
     funds: 70,
-    income: 3,
+    income: 30,
     influence: 4,
     workforce: 0,
     quality: 0,
@@ -27,7 +27,7 @@ const SEAT: Partial<OwnSeatView> = {
     distribution: 0,
   },
   influenceUses: { influence_to_quality: 1 },
-  buildPassPrice: 3,
+  buildPassPrice: 20,
   trades: TradeName.options.map((trade) => ({ trade, rejection: TRADE_REJECTIONS[trade] ?? null })),
   drawActions: Kind.options.flatMap((kind) =>
     Tier.options.map((tier) => ({
@@ -55,27 +55,27 @@ describe("use influence", () => {
     showGame();
     const dialog = within(openInfluence());
     expect(textWithIconNames(dialog.getByText(/^You have/))).toBe(
-      "You have [Influence 4] and [Funds 7.0]. [Influence] actions can be used any time in the main phase.",
+      "You have [Influence 4] and [Funds 70]. [Influence] actions can be used any time in the main phase.",
     );
     const tiles = within(dialog.getByRole("list", { name: "Trades" }));
     expect(tiles.getAllByRole("button")).toHaveLength(20);
-    const funds = tiles.getByRole("button", { name: "4 influence → 2 funds" });
+    const funds = tiles.getByRole("button", { name: "4 influence → 20 funds" });
     expect(funds).toHaveProperty("disabled", false);
-    expect(textWithIconNames(funds)).toBe("[Influence 4] → [Funds 2]1 use left");
+    expect(textWithIconNames(funds)).toBe("[Influence 4] → [Funds 20]1 use left");
     expect(textWithIconNames(tiles.getByRole("button", { name: "4 influence → 1 quality" }))).toBe(
       "[Influence 4] → [Quality 1]used",
     );
     const workforce = tiles.getByRole("button", { name: "6 influence → 1 workforce" });
     expect(workforce).toHaveProperty("disabled", true);
     expect(textWithIconNames(workforce)).toBe("[Influence 6] → [Workforce 1]need [Influence 2]");
-    expect(textWithIconNames(tiles.getByRole("button", { name: "3 influence → 1 fund" }))).toBe(
-      "[Influence 3] → [Funds 1]unlimited uses",
+    expect(textWithIconNames(tiles.getByRole("button", { name: "3 influence → 10 funds" }))).toBe(
+      "[Influence 3] → [Funds 10]unlimited uses",
     );
-    expect(textWithIconNames(tiles.getByRole("button", { name: "1 fund → 1 influence" }))).toBe(
-      "[Funds 1] → [Influence 1]unlimited uses",
+    expect(textWithIconNames(tiles.getByRole("button", { name: "10 funds → 1 influence" }))).toBe(
+      "[Funds 10] → [Influence 1]unlimited uses",
     );
-    expect(textWithIconNames(tiles.getByRole("button", { name: "3 funds → 1 build pass" }))).toBe(
-      "[Funds 3] → [Build passes 1]unlimited uses",
+    expect(textWithIconNames(tiles.getByRole("button", { name: "20 funds → 1 build pass" }))).toBe(
+      "[Funds 20] → [Build passes 1]unlimited uses",
     );
     expect(
       textWithIconNames(
@@ -89,9 +89,9 @@ describe("use influence", () => {
   it("colours a tile by its limit and by whether it can be taken now", () => {
     showGame();
     const tiles = within(within(openInfluence()).getByRole("list", { name: "Trades" }));
-    const limitedReady = tiles.getByRole("button", { name: "4 influence → 2 funds" }).className;
+    const limitedReady = tiles.getByRole("button", { name: "4 influence → 20 funds" }).className;
     const limitedUsed = tiles.getByRole("button", { name: "4 influence → 1 quality" }).className;
-    const unlimitedReady = tiles.getByRole("button", { name: "3 influence → 1 fund" }).className;
+    const unlimitedReady = tiles.getByRole("button", { name: "3 influence → 10 funds" }).className;
     expect(limitedReady).toContain("limited");
     expect(limitedReady).toContain("ready");
     expect(limitedUsed).toContain("limited");
@@ -117,7 +117,7 @@ describe("use influence", () => {
   it("sends a trade and keeps the pop-up open for the next one", () => {
     const { onAction } = showGame();
     const dialog = within(openInfluence());
-    fireEvent.click(dialog.getByRole("button", { name: "4 influence → 2 funds" }));
+    fireEvent.click(dialog.getByRole("button", { name: "4 influence → 20 funds" }));
     expect(onAction).toHaveBeenCalledWith({ type: "influence", trade: "influence_to_funds" });
     expect(screen.getByRole("dialog", { name: "Use Influence" })).toBeDefined();
   });

@@ -5,6 +5,7 @@ import type { StoredSession } from "./StoredSession";
 export function initialClientState(session: StoredSession | null): ClientState {
   return {
     session,
+    accountIcon: null,
     connection: "closed",
     update: null,
     tutorial: null,

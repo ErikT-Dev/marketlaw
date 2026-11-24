@@ -1,3 +1,4 @@
+import { TEST_PLAYER_ICON } from "../../shared/testing/TEST_PLAYER_ICON";
 import * as v from "valibot";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { GameHost } from "../../shared/GameHost";
@@ -34,6 +35,7 @@ const ACCOUNT = {
   token: "new-token",
   playerId: "7d0c7f1e-4b7a-4c5e-9a39-2f4d9c1b8e10",
   name: "Bea",
+  icon: TEST_PLAYER_ICON,
 };
 const SIGNUP = {
   username: "Bea",

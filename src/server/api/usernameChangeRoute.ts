@@ -34,8 +34,11 @@ async function changeUsername(
   if (account === null) {
     return json({ isOk: false, reason: "invalid_token" }, 401);
   }
-  const { playerId, name: currentName } = account.identity;
-  const renamed = json({ isOk: true, token: attempt.token, playerId, name: attempt.username }, 200);
+  const { playerId, name: currentName, icon } = account.identity;
+  const renamed = json(
+    { isOk: true, token: attempt.token, playerId, name: attempt.username, icon },
+    200,
+  );
   const decision = await decideUsernameChange(
     {
       currentName,

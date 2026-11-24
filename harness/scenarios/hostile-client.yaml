@@ -75,7 +75,7 @@
   then:
     seats:
       - seat: 1
-        stats: {funds: 8}
+        stats: {funds: 80}
         hand: [Row House]
         actions_this_turn: 1
 

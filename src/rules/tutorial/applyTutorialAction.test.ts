@@ -74,7 +74,7 @@ describe("applyTutorialAction", () => {
 
   it("ends with the first income and the first completed quest", () => {
     const seat = seatOf(tutorialAt("T5.4").game, 1);
-    expect(seat?.stats).toMatchObject({ funds: 15, income: 4, influence: 7 });
+    expect(seat?.stats).toMatchObject({ funds: 17, income: 40, influence: 6 });
     expect(seat?.questsCompleted).toEqual(["Trading post"]);
   });
 

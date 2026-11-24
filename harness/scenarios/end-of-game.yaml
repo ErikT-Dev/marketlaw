@@ -4,7 +4,7 @@
     turn: 12
     seats:
       - seat: 1
-        stats: {income: 19, workforce: 8}
+        stats: {income: 190, workforce: 8}
         projects: [quality, satisfaction]
     random: [{sector: Service}, {tier: 2}]
   when:
@@ -16,10 +16,10 @@
     ended: {winner: 1, places: [1, 2], scores: {1: 132, 2: 20}}
     seats:
       - seat: 1
-        stats: {income: 20, funds: 9, influence: 3}
+        stats: {income: 200, funds: 90, influence: 3}
         hand: [Law Firm]
       - seat: 2
-        stats: {funds: 7, influence: 0}
+        stats: {funds: 70, influence: 0}
 
 - name: the game goes on until the main phase ends after the end goal is reached
   covers: [R21.1]
@@ -27,7 +27,7 @@
     turn: 12
     seats:
       - seat: 1
-        stats: {income: 20}
+        stats: {income: 200}
         projects: [quality, satisfaction, workforce]
       - seat: 2
         hand: [Row House]
@@ -49,7 +49,7 @@
     quests: [{quest: Farmland}, {quest: Sports town}, {quest: Trading post}, {quest: Mining town}]
     seats:
       - seat: 1
-        stats: {income: 20}
+        stats: {income: 200}
         projects: [quality, satisfaction, workforce]
   when:
     - {seat: 1, action: leave_game}
@@ -66,7 +66,7 @@
     bonus_types: [Farm, Finance]
     seats:
       - seat: 1
-        stats: {income: 15, workforce: 3, quality: 2, satisfaction: -1, product: 1, distribution: 2, funds: 10}
+        stats: {income: 150, workforce: 3, quality: 2, satisfaction: -1, product: 1, distribution: 2, funds: 100}
         hand: [Pub, Library, Cottage]
         city: [Orchard, Livestock Farm]
   when:
@@ -82,10 +82,10 @@
     turn: 1
     seats:
       - seat: 1
-        stats: {income: 22}
+        stats: {income: 220}
         projects: [quality, satisfaction, workforce]
       - seat: 2
-        stats: {workforce: 2, quality: 6, funds: 4}
+        stats: {workforce: 2, quality: 6, funds: 40}
   when:
     - {seat: 1, action: end_turn}
     - {seat: 2, action: end_turn}
@@ -114,11 +114,11 @@
     turn: 40
     seats:
       - seat: 1
-        stats: {income: 30}
+        stats: {income: 300}
         left: true
         done: true
       - seat: 3
-        stats: {income: 4}
+        stats: {income: 40}
   when:
     - {seat: 2, action: end_turn}
     - {seat: 3, action: end_turn}
@@ -142,13 +142,13 @@
     discard: [Cottage]
     holding_pile: []
 
-- name: the end goal needs income 20 and all 3 projects
+- name: the end goal needs income 200 and all 3 projects
   covers: [R1.3, R21.1]
   given:
     turn: 12
     seats:
       - seat: 1
-        stats: {income: 20}
+        stats: {income: 200}
         projects: [quality, satisfaction, workforce]
   when:
     - {seat: 1, action: end_turn}
@@ -163,10 +163,10 @@
     turn: 12
     seats:
       - seat: 1
-        stats: {income: 20}
+        stats: {income: 200}
         projects: [quality, satisfaction, workforce]
       - seat: 2
-        stats: {income: 30}
+        stats: {income: 300}
   when:
     - {seat: 1, action: end_turn}
     - {seat: 2, action: end_turn}
@@ -179,7 +179,7 @@
     turn: 40
     seats:
       - seat: 2
-        worth_gained: 20
+        worth_gained: 200
   when:
     - {seat: 1, action: end_turn}
     - {seat: 2, action: end_turn}
@@ -203,22 +203,35 @@
     turn: 40
     seats:
       - seat: 1
-        stats: {income: 10}
+        stats: {income: 100}
   when:
     - {seat: 1, action: end_turn}
     - {seat: 2, action: end_turn}
   then:
     ended: {winner: 1, scores: {1: 66, 2: 20}}
 
-- name: the score counts whole funds only
+- name: the score counts 0.65 points for every income
+  covers: [R21.4, R21.5]
+  given:
+    turn: 40
+    seats:
+      - seat: 1
+        stats: {income: 37}
+  when:
+    - {seat: 1, action: end_turn}
+    - {seat: 2, action: end_turn}
+  then:
+    ended: {winner: 1, scores: {1: 25, 2: 20}}
+
+- name: the score counts 0.02 points for every fund
   covers: [R21.4, R21.5, R2.5]
   given:
     turn: 40
     seats:
       - seat: 1
-        stats: {funds: 2.5}
+        stats: {funds: 25}
   when:
     - {seat: 1, action: end_turn}
     - {seat: 2, action: end_turn}
   then:
-    ended: {scores: {1: 19, 2: 20}}
+    ended: {scores: {1: 20, 2: 20}}

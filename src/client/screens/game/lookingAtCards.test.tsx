@@ -68,9 +68,9 @@ describe("looking at a card in the big card", () => {
     fireEvent.click(marketplace.getByRole("button", { name: "Law Firm" }));
     expect(screen.getByRole("region", { name: "Selected card: Law Firm" })).toBeDefined();
     expect(textWithIconNames(screen.getByRole("heading", { name: /^Base cost/ }))).toBe(
-      "Base cost [Funds 9]",
+      "Base cost [Funds 90]",
     );
-    expect(selectedCard().getByRole("img", { name: "Cost 9" })).toBeDefined();
+    expect(selectedCard().getByRole("img", { name: "Cost 90" })).toBeDefined();
     expect(
       selectedCard()
         .getAllByRole("button")
@@ -115,7 +115,7 @@ describe("looking at a card in the big card", () => {
     const board = within(screen.getByRole("dialog", { name: "Detailed summary table of Cy" }));
     fireEvent.click(board.getByRole("button", { name: "Lake Park" }));
     const shown = within(board.getByRole("region", { name: "Selected card: Lake Park" }));
-    expect(shown.getByRole("img", { name: "Cost 9" })).toBeDefined();
+    expect(shown.getByRole("img", { name: "Cost 90" })).toBeDefined();
     expect(shown.getAllByRole("img", { name: "Beautification" })).toHaveLength(2);
     expect(board.queryByRole("region", { name: "Stats of Cy" })).toBeNull();
     fireEvent.click(shown.getByRole("button", { name: "Close" }));

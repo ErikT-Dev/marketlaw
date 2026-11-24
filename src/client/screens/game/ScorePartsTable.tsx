@@ -20,7 +20,8 @@ const PART_COLUMNS: ReadonlyArray<readonly [keyof ScorePartsInHundredths, IconTe
   ["satisfaction", [{ stat: "satisfaction" }]],
   ["product", [{ stat: "product" }]],
   ["distribution", [{ stat: "distribution" }]],
-  ["fundsAndHand", [{ stat: "funds" }, " + hand"]],
+  ["funds", [{ stat: "funds" }]],
+  ["cardsInHand", "Cards in hand"],
   ["bonusTypes", "Bonus types"],
 ];
 

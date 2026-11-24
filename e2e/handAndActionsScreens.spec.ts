@@ -27,7 +27,7 @@ test("the hand, the big card, sell mode and the done state fit and are found by 
   await hand.getByRole("button", { name: card, exact: true }).click();
   await expect(host.getByRole("button", { name: "Sell 1 card" })).toBeVisible();
   const sellingNotice = host.getByText(/then Sell 1 card for/);
-  await expect(sellingNotice.getByRole("img", { name: "Funds 1" })).toBeVisible();
+  await expect(sellingNotice.getByRole("img", { name: "Funds 10" })).toBeVisible();
   await expectScreenFits(host, "sell-mode", testInfo);
   await hand.getByRole("button", { name: card, exact: true }).click();
   await host.getByRole("button", { name: "Cancel selling" }).click();

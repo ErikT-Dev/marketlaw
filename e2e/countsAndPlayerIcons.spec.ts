@@ -34,7 +34,7 @@ test("your counts, another player's counts and most played types, and a project 
         city: ["Cottage", "Lake Park", "Fire Station"],
         quests_completed: ["Countryside"],
         gained_types: { Sea: 1 },
-        worth_gained: 17,
+        worth_gained: 170,
       },
       {
         seat: 2,
@@ -42,19 +42,19 @@ test("your counts, another player's counts and most played types, and a project 
         projects: ["quality"],
         quests_completed: ["Countryside", "Working district"],
         combos_claimed: [{ card: "Farm House", combo: "1 Farm", times: 1 }],
-        worth_gained: 20,
+        worth_gained: 200,
       },
     ],
   });
   const ann = await openTestSeat(browser, viewport, seatOne);
 
   const yourCounts = ann
-    .getByRole("region", { name: "Opponents" })
+    .getByRole("region", { name: "Players" })
     .getByRole("list", { name: "Your counts" });
   await expect(yourCounts.getByRole("img", { name: "Quests completed 1" })).toBeVisible();
   await expect(yourCounts.getByRole("img", { name: "Types 6" })).toBeVisible();
   await expect(yourCounts.getByRole("img", { name: "Combos claimed 0" })).toBeVisible();
-  await expect(yourCounts.getByRole("img", { name: "Total worth gained 17.0" })).toBeVisible();
+  await expect(yourCounts.getByRole("img", { name: "Total worth gained 170" })).toBeVisible();
 
   await ann.getByRole("button", { name: "What Q, T, C and F mean" }).click();
   await expect(ann.getByText(/^Q: quests you have completed./)).toBeVisible();
@@ -65,7 +65,7 @@ test("your counts, another player's counts and most played types, and a project 
   await expect(bea.getByRole("img", { name: "Quests completed 2" })).toBeVisible();
   await expect(bea.getByRole("img", { name: "Types 13" })).toBeVisible();
   await expect(bea.getByRole("img", { name: "Combos claimed 1" })).toBeVisible();
-  await expect(bea.getByRole("img", { name: "Total worth gained 20.0" })).toBeVisible();
+  await expect(bea.getByRole("img", { name: "Total worth gained 200" })).toBeVisible();
   const mostPlayed = bea
     .getByRole("list", { name: "Types played most by Seat 2" })
     .getByRole("img");

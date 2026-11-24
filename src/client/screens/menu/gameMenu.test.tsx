@@ -138,7 +138,8 @@ describe("the game menu", () => {
         leftInTurn: null,
         hasReachedEndGoal: false,
         income: 15,
-        fundsAndHand: 20,
+        funds: 20,
+        cardsInHand: 0,
         counts: NO_SUMMARY_COUNTS,
       })),
     };

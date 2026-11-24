@@ -25,7 +25,7 @@ function withDiCity(update: RoomUpdate): RoomUpdate {
 }
 
 function opponents() {
-  return within(screen.getByRole("region", { name: "Opponents" }));
+  return within(screen.getByRole("region", { name: "Players" }));
 }
 
 describe("quick summary table", () => {
@@ -41,8 +41,8 @@ describe("quick summary table", () => {
       "Quick summary table of Di",
     ]);
     const di = within(opponents().getByRole("article", { name: "Quick summary table of Di" }));
-    expect(di.getByRole("img", { name: "Funds 7.0" })).toBeDefined();
-    expect(di.getByRole("img", { name: "Income 14.0" })).toBeDefined();
+    expect(di.getByRole("img", { name: "Funds 70" })).toBeDefined();
+    expect(di.getByRole("img", { name: "Income 140" })).toBeDefined();
     expect(di.getByRole("img", { name: "Influence 3" })).toBeDefined();
     expect(di.getByRole("img", { name: "Quests completed 0" })).toBeDefined();
     expect(di.getByText("Hand 5")).toBeDefined();
@@ -61,6 +61,28 @@ describe("quick summary table", () => {
         "left",
       ),
     ).toBeDefined();
+  });
+});
+
+describe("players panel", () => {
+  it("is titled Players and shows your icon and username over your counts", () => {
+    render(<GamePage {...gamePageProps(roomUpdateWith({}))} />);
+    expect(screen.getByRole("heading", { name: "Players" })).toBeDefined();
+    const ownName = opponents().getByText("Bea");
+    expect(within(ownName).getByRole("button", { name: "You" })).toBeDefined();
+    expect(opponents().getByRole("list", { name: "Your counts" })).toBeDefined();
+    expect(
+      ownName.compareDocumentPosition(opponents().getByRole("list", { name: "Your counts" })) &
+        Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+  });
+
+  it("shows each other player icon left of their username", () => {
+    render(<GamePage {...gamePageProps(roomUpdateWith({}))} />);
+    const di = within(opponents().getByRole("article", { name: "Quick summary table of Di" }));
+    const icon = di.getByRole("button", { name: "Di" });
+    const nameLink = di.getByRole("link", { name: "Di" });
+    expect(icon.compareDocumentPosition(nameLink) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 });
 

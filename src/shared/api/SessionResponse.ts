@@ -1,5 +1,6 @@
 import * as v from "valibot";
 import { PlayerId } from "../PlayerId";
+import { PLAYER_ICON_CHOICE_SCHEMA } from "../playerIcons/PLAYER_ICON_CHOICE_SCHEMA";
 
 export const SessionResponse = v.variant("isLoggedIn", [
   v.strictObject({
@@ -7,6 +8,7 @@ export const SessionResponse = v.variant("isLoggedIn", [
     playerId: PlayerId,
     name: v.string(),
     isGuest: v.boolean(),
+    icon: PLAYER_ICON_CHOICE_SCHEMA,
   }),
   v.strictObject({ isLoggedIn: v.literal(false) }),
 ]);

@@ -4430,3 +4430,118 @@ file.
     29b (Q178): on their own they turn the check red until 29c builds them.
 - **Implemented:** `docs/plan/phase-29c-playthrough-fixes.md`, `docs/plan/README.md`,
   `docs/plan/phase-30-version-1-readiness.md`; the spec and harness follow on the phase branch.
+- **Owner's answers, 2026-11-24:**
+  - The owner **approved all 18 required-name renames** proposed in the phase file. They are
+    made by phase 29c's item 1b in one `HARNESS:` commit, the scenario files and
+    `harness/required.yaml` together.
+  - The owner asked that the ×10 change also reaches the card data (`cards.json`), the quest list
+    (`quests.txt`), the influence actions (`influence-actions.txt`) and the projects' reward
+    wherever it is written: +10 income and +20 funds (R16.3) and the 100 income they need
+    (R16.2), in the engine, the Projects pop-up, the projects help text, the rejection message,
+    the rulebook and the tutorial. The first three were already part of item 1; the phase's
+    Progress names every place the project reward and need are written.
+- **Starter's decisions (phase 29c, 2026-11-24),** made while writing the spec:
+  - **Score parts.** Funds and cards in hand now have different factors (0.02 and 0.2), so the
+    end-of-game screen (S9.5) explains them as two parts, and a game record (A3.2, A3.3) holds
+    funds and cards in hand as two values instead of "funds plus cards in hand". A record saved
+    before the phase keeps its one old value and shows it as before (the phase's known gap).
+  - **The score stays the same** in the new units except for one detail: R21.5's "whole funds"
+    dropped the tenths of a fund, and now every fund counts (old 5.9 funds counted 1.0 point,
+    the new 59 funds count 1.18). The owner's purpose, a score the ×10 does not change, holds
+    for every amount the rules give; only the old rounding goes, as funds have no tenths left.
+  - **The tutorial in the new amounts** (T0.1 to T5.4): every funds value is ten times the old
+    one (70, 30, 40, 71, 31, 64, 14, 49, 9, 45, 5); income 30 to 40; Trading post is
+    `income 40, 1 Retail | +10 funds, +2 influence` (T0.7). After Trading post (T5.3) the player
+    has funds 17 (5 + 10 + 2 for a tier 1 first completion) and influence 6 (4 + 2, no first
+    completion influence any more), and the text says they got 2 funds more.
+  - **The Players panel** gets a short introduction under S3's new title, and S3.1, S3.3 and
+    S2.3, S10.1 and A2.5 name the icons. **S1.12** (panels at 75%) keeps the big card's bars
+    (S6.5) more transparent than the other panels. **S1.8** now says every player icon of one
+    screen part has the same outer and picture size, the mark drawn outside; S5.1 points to it.
+  - **Card tiles (S6.4)** now name every place that shows them (hand, city, marketplace,
+    another player's city in the detailed summary table, the card set) and the picture's size
+    (200 × 172, at most 16 KB) and the texture under the 80% sector colour; S14.3 says the card
+    set uses them.
+  - The game-rules open question 1's simulator funds are written in today's funds (120, 230,
+    670 to 910) and its end goal as income 200.
+- **Harness changes of item 1a (phase 29c, 2026-11-24):** `cards.json` every `cost` × 10 (240
+  cards); `quests.txt` every `income N` requirement and `+N fund(s)` reward × 10 (no quest has an
+  income reward; a `+1 fund` became `+10 funds`); `influence-actions.txt` `get 20 funds`,
+  `get 10 funds`, `pay 10 funds` and `pay 20 funds, 10 more each time`; `HARNESS.md` (funds,
+  income and `worth_gained` whole numbers, F starts at 140, projects need 100 income, the starting
+  table's income 50, the rising price's words, which the check now names when other words such
+  as the old `1 more each time` are used); `scenario-format.yaml` (`funds` and `worth_gained`
+  integers); invariants I8 (income at least 30), I16 (N − 20, 80), I28 (F at least 140), I30 (in
+  funds, first completions named among the sources); budget B19 (16 KB, 200 × 172 pictures).
+  Decided while building: the rising price's step (10) is one constant shared by the file's
+  fixed words, the engine's price and the rulebook table's text, and quest numbers up to 999 are
+  read by their own reader, as `influence-actions.txt` keeps 1 to 99 (R15.5, R20.8). The card
+  check's tier cost ranges follow R3.5 (30–60, 70–90, 110–130).
+- **Harness changes of item 1b (phase 29c, 2026-11-24):** the 18 renames the owner approved
+  ("Answered by the owner" in the phase file), each scenario changed to the new rule under its
+  new name in `playing-cards`, `projects`, `setup`, `turns-and-time`, `influence`, `undo`,
+  `quests` and `end-of-game`, and `harness/required.yaml` in the same commit. "The score counts
+  0.02 points for every fund" uses 25 funds (0.5 points, so seat 1 scores 20 like a seat with the
+  starting 70 funds and income 30, where rounding funds down to tens would give 19).
+  Then the rest of `quests.yaml`: every income ×10 (the gates N − 20 and 80 follow), and every
+  quest reward scenario expects the first completer's 2 funds per tier and no influence (funds
+  70 + reward + 2, 4 or 6; influence only from the reward, asserted 0 where the reward has
+  none); `end-of-game.yaml`: income, funds and F ×10, scores unchanged. New: "a tier 3 quest's
+  first completion gives 6 extra funds" (Penthouses, funds 76), "the extra funds of a first
+  completion add to total worth gained" (Tidy streets, F 142) and "the score counts 0.65 points
+  for every income" (income 37: 24.05 + 1.4, so 25). The runner's scenario count is 548.
+- **Harness changes of item 1c (phase 29c, 2026-11-24):** every other funds, income and F value
+  in `turns-and-time`, `playing-cards`, `projects`, `influence`, `undo`, `setup` and
+  `combos-and-income` × 10, names kept, each checked by hand against the new rules: starting
+  funds 70 and income 30, card costs from the new `cards.json` with +10 per card of the same
+  sector and tier, 10 funds a sale, the stats gain 1 fund a point (a gain of 12 is +12, so funds
+  50 and income 40 end the turn at 102), Support 10 per full 100 behind (the log's `support: 30`),
+  F starting at 140 with 10 per card, projects with income 100 giving +10 income and +20 funds,
+  the build pass at 20 funds and 10 more each time. No scenario contradicted the new spec.
+- **Harness changes of item 1d (phase 29c, 2026-11-24):** `records-and-ratings`: income and
+  funds × 10 (scores unchanged: 116, 39, 40), and a record's "funds plus cards in hand" is now two
+  values, `funds` and `cards_in_hand` (A3.2, A3.3); the ranked games' incomes 100, 90, 80; F 305
+  and 140. `tutorial`: the funds of `tutorial.md` (70, 71, 64, 49, 45) and after Trading post
+  funds 17, income 40 and influence 6 (2 funds and no influence for the first completion, T5.3).
+  `visibility`: funds 70 and 90, income 50, 40 (Trading post) and 100 (the quality project);
+  the Last turn panel's income +10 and Support 10 (seat 2's F 400, seat 1 behind by 138).
+  `hostile-client`: funds 80 after one sale; `drawing`: income 40, F 140; `client`: Repetitive
+  Housing's base cost 90. No other scenario file holds an old amount. No scenario contradicted
+  the new spec.
+- **Records in item 2b (phase 29c, 2026-11-24):** a new game record holds `funds` and
+  `cardsInHand` and no `fundsAndHand`; a record saved before holds only `fundsAndHand`. All three
+  are read as optional (null when absent), as `counts` was kept. The game record page shows a
+  **Funds** row and a **Cards in hand** row, or, for a record whose seats hold the old value, the
+  old **Funds + cards in hand** row as before. Bots needed no change (they hold no amounts of
+  funds or income); the simulator's funds samples were already in whole funds after item 2a.
+- **First completion in item 3 (phase 29c, 2026-11-24):** the Last turn panel learns from the
+  view which completions were first ones: each quest of `lastTurn.quests` carries
+  `firstCompletionFunds` (2 per tier, or 0 when the quest was completed in an earlier turn, so
+  during its extra turn). This changes the view's shape; `PROTOCOL_VERSION` is not raised again,
+  as item 2a raised it for the phase. The game log's quest line names the quest only, as S7.2
+  and M3.7 ask (no reward in it before or now), so it needs no change. The quests help text
+  (S5.4) is now the spec's whole text, which it had fallen behind on (the extra turn and the
+  turns by tier).
+- **Your icon in item 5 (phase 29c, 2026-11-24):** the account response (`/api/account`)
+  already holds the icon, for guests and registered users alike, so no message changes shape
+  and `PROTOCOL_VERSION` stays. The client store loads it once per session token, after the
+  session check and after a guest start, login or signup (one request each, none for a username
+  change), keeps it in its state and replaces it when an icon change is accepted. Every user box
+  (lobby, waiting room, game, after the game) shows it; until it is loaded the box shows an
+  empty icon circle, not a letter.
+- **Your icon after the phase review, finding R1 (phase 29c, 2026-11-25):** the extra
+  `/api/account` request of item 5 is gone. The icon now comes with the answers that check or
+  start a session: `/api/session` (`SessionResponse`) and the answers of a guest start, login,
+  signup, username change and new password (`GuestResponse`) each gain `icon`, the account's
+  player icon (S1.8). The store takes it from them, so the user box shows it with the first
+  answer, without a second Worker request or D1 read; an accepted icon change still replaces
+  it. These are HTTP answers, not room or lobby messages, so `PROTOCOL_VERSION` is not raised
+  for them; a browser tab of the previous deploy reloads anyway, since this phase raises
+  `PROTOCOL_VERSION` for the change of units.
+- **Long one-word card names, finding R2 (phase 29c, 2026-11-25):** not fixed; a known gap of
+  the phase. On a city tile and a card set tile (140 × 94) the name may use about 67 px; the
+  longest words of the 240 names are wider even at 10 px bold (Telecommunication 87 px,
+  Hydroelectricity 72, Slaughterhouse 70, Pharmaceutical 69), so no font size that stays
+  readable makes every word fit (S6.4), and such a word still breaks inside the word.
+  A clean fix needs either break points chosen per long word (shown with a hyphen) or a wider
+  name area, both a change of S6.4's tile; left for a later phase.

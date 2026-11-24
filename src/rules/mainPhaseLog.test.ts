@@ -62,7 +62,7 @@ describe("the game log of what players did in the main phase", () => {
       { kind: "influence", turn: 2, seat: 3, trade: "fund_to_influence" },
       { kind: "played", turn: 2, seat: 1, card: "Liquor Shop" },
       { kind: "influence", turn: 2, seat: 1, trade: "fund_to_influence" },
-      { kind: "income_gained", turn: 3, seat: 1, income: 1 },
+      { kind: "income_gained", turn: 3, seat: 1, income: 10 },
     ]);
   });
 
@@ -87,7 +87,7 @@ describe("the game log of what players did in the main phase", () => {
     ]);
     expect(viewFor(after, 2).mainPhaseLog).toEqual([
       { kind: "played", turn: 2, seat: 1, card: "Liquor Shop" },
-      { kind: "income_gained", turn: 3, seat: 1, income: 1 },
+      { kind: "income_gained", turn: 3, seat: 1, income: 10 },
     ]);
   });
 
@@ -98,12 +98,12 @@ describe("the game log of what players did in the main phase", () => {
       ...EVERYONE_ENDS,
     ]);
     expect(viewFor(after, 2).mainPhaseLog.filter(({ kind }) => kind === "income_gained")).toEqual([
-      { kind: "income_gained", turn: 3, seat: 3, income: 1 },
-      { kind: "income_gained", turn: 3, seat: 1, income: 1 },
+      { kind: "income_gained", turn: 3, seat: 3, income: 10 },
+      { kind: "income_gained", turn: 3, seat: 1, income: 10 },
     ]);
     expect(viewFor(after, 2).lastTurn.incomeGains).toEqual([
-      { seat: 3, income: 1 },
-      { seat: 1, income: 1 },
+      { seat: 3, income: 10 },
+      { seat: 1, income: 10 },
     ]);
   });
 
@@ -116,7 +116,7 @@ describe("the game log of what players did in the main phase", () => {
         stats: {
           ...seat.stats,
           funds: 20,
-          income: 10,
+          income: 100,
           workforce: 10,
           quality: 10,
           satisfaction: 10,
@@ -129,7 +129,7 @@ describe("the game log of what players did in the main phase", () => {
     ]);
     expect(viewFor(after, 1).mainPhaseLog).toEqual([
       { kind: "completed_project", turn: 2, seat: 2, project: "quality" },
-      { kind: "income_gained", turn: 3, seat: 2, income: 1 },
+      { kind: "income_gained", turn: 3, seat: 2, income: 10 },
     ]);
   });
 

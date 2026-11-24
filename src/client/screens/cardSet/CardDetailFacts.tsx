@@ -19,7 +19,7 @@ export function CardDetailFacts({ detail }: Props) {
       </dd>
       <dt>Base cost</dt>
       <dd>
-        <StatChip stat="cost" value={card.baseCost} /> (you pay 1 more for every card you already
+        <StatChip stat="cost" value={card.baseCost} /> (you pay 10 more for every card you already
         have in play with the same sector and tier)
       </dd>
       <dt>Gives</dt>

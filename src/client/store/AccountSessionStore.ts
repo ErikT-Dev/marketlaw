@@ -28,6 +28,13 @@ export abstract class AccountSessionStore extends ObservableState<ClientState> {
     }
     if (answer?.isLoggedIn === true) {
       this.takeCheckedAccount(session, answer);
+      this.takeAccountIcon(session.token, answer.icon);
+    }
+  }
+
+  private takeAccountIcon(token: string, icon: PlayerIconChoice): void {
+    if (this.state.session?.token === token && this.state.accountIcon?.token !== token) {
+      this.change({ accountIcon: { token, icon } });
     }
   }
 
@@ -79,7 +86,14 @@ export abstract class AccountSessionStore extends ObservableState<ClientState> {
 
   readonly changeIcon = async (icon: PlayerIconChoice): Promise<ReasonCode | null> => {
     const session = this.state.session;
-    return session === null ? "invalid_token" : requestIconChange({ token: session.token, icon });
+    if (session === null) {
+      return "invalid_token";
+    }
+    const problem = await requestIconChange({ token: session.token, icon });
+    if (problem === null && this.state.session?.token === session.token) {
+      this.change({ accountIcon: { token: session.token, icon } });
+    }
+    return problem;
   };
 
   readonly loadAccount = async (): Promise<AccountResponse | null> => {
@@ -117,7 +131,11 @@ export abstract class AccountSessionStore extends ObservableState<ClientState> {
       isInTutorial: isSameToken && current.isInTutorial,
     };
     writeSession(session);
-    this.change({ session, notice: null });
+    this.change({
+      session,
+      notice: null,
+      accountIcon: { token: session.token, icon: answer.icon },
+    });
     return null;
   }
 }

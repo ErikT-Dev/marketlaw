@@ -50,7 +50,8 @@ export async function loginRoute(request: Request, env: Env): Promise<Response> 
         now,
         isClearingFailedLogins: decision.hadFailedLogins,
       });
-      return json({ isOk: true, token, playerId: identity.playerId, name: identity.name }, 200);
+      const { playerId, name, icon } = identity;
+      return json({ isOk: true, token, playerId, name, icon }, 200);
     }
   }
 }

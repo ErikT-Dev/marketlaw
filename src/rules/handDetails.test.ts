@@ -34,9 +34,9 @@ describe("hand card details in the own view", () => {
   it("gives each hand card its real cost and the cards of its sector and tier already in the city", () => {
     const state = gameWithSeatOne(5, { hand: HAND, city: ["Cottage", "Log House"], stats: { ...STARTING_STATS, funds: 20 } });
     expect(detailsOf(state).map(({ card, realCost, sameSectorAndTierInCity }) => [card, realCost, sameSectorAndTierInCity])).toEqual([
-      ["Farm House", 6, 2],
-      ["Dorm", 9, 0],
-      ["Fishing Industry", 8, 0],
+      ["Farm House", 60, 2],
+      ["Dorm", 90, 0],
+      ["Fishing Industry", 80, 0],
     ]);
   });
 
@@ -58,10 +58,10 @@ describe("hand card details in the own view", () => {
     const state = gameWithSeatOne(1, {
       hand: ["Log House"],
       city: ["Cottage", "Farm House"],
-      stats: { ...STARTING_STATS, funds: 6 },
+      stats: { ...STARTING_STATS, funds: 60 },
     });
     expect(detailsOf(state).map(({ realCost, playRejection }) => [realCost, playRejection])).toEqual([
-      [7, "not_enough_funds"],
+      [70, "not_enough_funds"],
     ]);
   });
 

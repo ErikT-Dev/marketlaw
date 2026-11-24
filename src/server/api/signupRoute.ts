@@ -49,9 +49,9 @@ async function signedUp(env: Env, signup: Signup) {
   if (guest === null || body.token === undefined) {
     return insertRegisteredUser(env.DB, account);
   }
-  const { playerId } = guest.identity;
+  const { playerId, icon } = guest.identity;
   const isRegistered = await registerGuest(env.DB, playerId, account);
-  return isRegistered ? { token: body.token, identity: { playerId, name } } : null;
+  return isRegistered ? { token: body.token, identity: { playerId, name, icon } } : null;
 }
 
 export async function signupRoute(request: Request, env: Env): Promise<Response> {
@@ -95,7 +95,7 @@ async function signUpAndSendEmail(request: Request, env: Env, signup: Signup): P
     await returnAccountEmail(env, reservation.countedKeys, now);
     return json({ isOk: false, reason: "username_taken" }, 409);
   }
-  const { playerId } = account.identity;
+  const { playerId, icon } = account.identity;
   await sendAccountEmail(env, {
     playerId,
     kind: isUnclaimed ? "confirm" : "already_in_use",
@@ -104,5 +104,5 @@ async function signUpAndSendEmail(request: Request, env: Env, signup: Signup): P
     now,
     countedKeys: reservation.countedKeys,
   });
-  return json({ isOk: true, token: account.token, playerId, name }, 200);
+  return json({ isOk: true, token: account.token, playerId, name, icon }, 200);
 }

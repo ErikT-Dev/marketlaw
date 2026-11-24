@@ -35,8 +35,8 @@ describe("your stats panel", () => {
       .getAllByRole("img")
       .map((chip) => chip.getAttribute("aria-label"));
     expect(stats).toEqual([
-      "Funds 7.0",
-      "Income 14.0",
+      "Funds 70",
+      "Income 140",
       "Workforce 6",
       "Quality 5",
       "Satisfaction 4",

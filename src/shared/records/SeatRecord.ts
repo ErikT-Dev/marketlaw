@@ -13,7 +13,9 @@ export type SeatRecord = {
   readonly score: number;
   readonly hasReachedEndGoal: boolean;
   readonly income: number;
-  readonly fundsAndHand: number;
+  readonly funds: number | null;
+  readonly cardsInHand: number | null;
+  readonly fundsAndHand: number | null;
   readonly workforce: number;
   readonly quality: number;
   readonly satisfaction: number;

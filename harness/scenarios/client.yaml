@@ -74,7 +74,7 @@
   when:
     - {visitor: v1, action: open_card, card: Repetitive Housing}
   then:
-    card_detail: {name: Repetitive Housing, sector: Residential, tier: 2, base_cost: 9, workforce: 4, quality: 3, satisfaction: 2, types: [Town Housing], double_types: [Low Wealth], combos: [{needs: 1 Retail, gives: 1 workforce, infinite: true}, {needs: Real Estate Agency, gives: 1 quality, infinite: false}, {needs: Recycling Center, gives: 1 quality, infinite: false}, {needs: Fish Market and Trade, gives: 1 quality, infinite: false}]}
+    card_detail: {name: Repetitive Housing, sector: Residential, tier: 2, base_cost: 90, workforce: 4, quality: 3, satisfaction: 2, types: [Town Housing], double_types: [Low Wealth], combos: [{needs: 1 Retail, gives: 1 workforce, infinite: true}, {needs: Real Estate Agency, gives: 1 quality, infinite: false}, {needs: Recycling Center, gives: 1 quality, infinite: false}, {needs: Fish Market and Trade, gives: 1 quality, infinite: false}]}
 
 - name: a visitor who is not logged in becomes a guest before the tutorial starts
   covers: [C4.7, C4.2]

@@ -4,7 +4,7 @@
     quests: [{quest: Trading post}]
     seats:
       - seat: 1
-        stats: {income: 3}
+        stats: {income: 30}
         city: [Liquor Shop]
   when:
     - {seat: 1, action: complete_quest, quest: Trading post}
@@ -25,7 +25,7 @@
   then:
     seats:
       - seat: 1
-        stats: {workforce: 9, funds: 8, influence: 3}
+        stats: {workforce: 9, funds: 82, influence: 2}
         city: [Farm House, Cottage]
 
 - name: rejects completing the same quest twice
@@ -34,7 +34,7 @@
     quests: [{quest: Trading post}]
     seats:
       - seat: 1
-        stats: {income: 4}
+        stats: {income: 40}
         city: [Liquor Shop]
         quests_completed: [Trading post]
   when:
@@ -49,7 +49,7 @@
     quests: [{quest: Farmland}]
     seats:
       - seat: 1
-        stats: {income: 4}
+        stats: {income: 40}
         city: [Liquor Shop]
   when:
     - {seat: 1, action: complete_quest, quest: Trading post}
@@ -65,7 +65,7 @@
     quests: [{quest: Trading post}]
     seats:
       - seat: 1
-        stats: {income: 4}
+        stats: {income: 40}
         city: [Liquor Shop]
   when:
     - {seat: 1, action: complete_quest, quest: Trading post}
@@ -79,10 +79,10 @@
     quests: [{quest: Trading post}]
     seats:
       - seat: 1
-        stats: {income: 4}
+        stats: {income: 40}
         city: [Liquor Shop]
       - seat: 2
-        stats: {income: 5}
+        stats: {income: 50}
         city: [Apparel Store]
   when:
     - {seat: 1, action: complete_quest, quest: Trading post}
@@ -102,7 +102,7 @@
     quests: [{quest: Trading post}, {quest: Farmland}, {quest: Sports town}, {quest: Mining town}]
     seats:
       - seat: 1
-        stats: {income: 4}
+        stats: {income: 40}
         city: [Liquor Shop]
     random: [{tier: 1}, {tier: 1}, {tier: 1}, {tier: 1}, {tier: 1}, {quest: Countryside}]
   when:
@@ -156,7 +156,7 @@
     quests: [{quest: Trading post}, {quest: Farmland}, {quest: Sports town}, {quest: Mining town}]
     seats:
       - seat: 1
-        stats: {income: 4}
+        stats: {income: 40}
         city: [Liquor Shop]
   when:
     - {seat: 1, action: complete_quest, quest: Trading post}
@@ -215,7 +215,7 @@
     quest_list: []
     seats:
       - seat: 1
-        stats: {income: 4}
+        stats: {income: 40}
         city: [Liquor Shop]
   when:
     - {seat: 1, action: complete_quest, quest: Trading post}
@@ -269,7 +269,7 @@
       - seat: 1
         gained_types: {Light Industry: 1, Petroleum: 1}
         type_counts: {Light Industry: 3, Raw Material: 2, Town Housing: 3}
-        stats: {funds: 9, quality: 1, influence: 2, product: 2}
+        stats: {funds: 98, quality: 1, influence: 0, product: 2}
         quests_completed: [Factory town, Industrial zone]
 
 - name: completing Working district gives its reward
@@ -285,7 +285,7 @@
   then:
     seats:
       - seat: 1
-        stats: {quality: 1, influence: 2}
+        stats: {funds: 72, quality: 1, influence: 1}
         quests_completed: [Working district]
 
 - name: completing Farming industry gives its reward
@@ -301,7 +301,7 @@
   then:
     seats:
       - seat: 1
-        stats: {influence: 1}
+        stats: {funds: 72, influence: 0}
         gained_types: {Grain: 1}
         quests_completed: [Farming industry]
 
@@ -319,7 +319,7 @@
   then:
     seats:
       - seat: 1
-        stats: {satisfaction: 1, influence: 1, distribution: 1}
+        stats: {funds: 72, satisfaction: 1, influence: 0, distribution: 1}
         quests_completed: [Local services]
 
 - name: completing Green city gives its reward
@@ -335,7 +335,7 @@
   then:
     seats:
       - seat: 1
-        stats: {funds: 9, influence: 1}
+        stats: {funds: 92, influence: 0}
         quests_completed: [Green city]
 
 - name: completing Countryside gives its reward
@@ -351,7 +351,7 @@
   then:
     seats:
       - seat: 1
-        stats: {influence: 1}
+        stats: {funds: 72, influence: 0}
         gained_types: {Forestry: 1}
         quests_completed: [Countryside]
 
@@ -368,7 +368,7 @@
   then:
     seats:
       - seat: 1
-        stats: {influence: 1}
+        stats: {funds: 72, influence: 0}
         gained_types: {Farm: 1}
         quests_completed: [Farmland]
 
@@ -385,7 +385,7 @@
   then:
     seats:
       - seat: 1
-        stats: {funds: 8, influence: 1}
+        stats: {funds: 82, influence: 0}
         gained_types: {Sea: 1}
         quests_completed: [Fishing village]
 
@@ -402,7 +402,7 @@
   then:
     seats:
       - seat: 1
-        stats: {influence: 1}
+        stats: {funds: 72, influence: 0}
         gained_types: {Health: 1}
         quests_completed: [Sports town]
 
@@ -419,7 +419,7 @@
   then:
     seats:
       - seat: 1
-        stats: {funds: 8, influence: 1}
+        stats: {funds: 82, influence: 0}
         gained_types: {Mercantile: 1}
         quests_completed: [High street]
 
@@ -436,7 +436,7 @@
   then:
     seats:
       - seat: 1
-        stats: {influence: 1}
+        stats: {funds: 72, influence: 0}
         gained_types: {Mine: 1}
         quests_completed: [Mining town]
 
@@ -454,7 +454,7 @@
   then:
     seats:
       - seat: 1
-        stats: {funds: 8, influence: 3}
+        stats: {funds: 82, influence: 2}
         quests_completed: [Workers' housing]
 
 - name: completing Tidy streets gives its reward
@@ -471,7 +471,7 @@
   then:
     seats:
       - seat: 1
-        stats: {workforce: 1, influence: 1}
+        stats: {funds: 72, workforce: 1, influence: 0}
         quests_completed: [Tidy streets]
 
 - name: completing Healthy town gives its reward
@@ -488,7 +488,7 @@
   then:
     seats:
       - seat: 1
-        stats: {workforce: 1, influence: 1}
+        stats: {funds: 72, workforce: 1, influence: 0}
         quests_completed: [Healthy town]
 
 - name: completing Trading post gives its reward
@@ -499,13 +499,13 @@
     seats:
       - seat: 1
         city: [Liquor Shop]
-        stats: {income: 4}
+        stats: {income: 40}
   when:
     - {seat: 1, action: complete_quest, quest: Trading post}
   then:
     seats:
       - seat: 1
-        stats: {funds: 8, influence: 3}
+        stats: {funds: 82, influence: 2}
         quests_completed: [Trading post]
 
 - name: completing Supply chain gives its reward
@@ -516,14 +516,14 @@
     seats:
       - seat: 1
         city: [Metal Mining, Stone Quarry]
-        stats: {income: 4, product: 1}
+        stats: {income: 40, product: 1}
     random: [{sector: Residential}]
   when:
     - {seat: 1, action: complete_quest, quest: Supply chain}
   then:
     seats:
       - seat: 1
-        stats: {influence: 1, product: 1}
+        stats: {funds: 72, influence: 0, product: 1}
         hand: [Idyllic View Condominium]
         quests_completed: [Supply chain]
 
@@ -540,7 +540,7 @@
   then:
     seats:
       - seat: 1
-        stats: {quality: 1, influence: 1}
+        stats: {funds: 74, quality: 1, influence: 0}
         gained_types: {Town Housing: 1}
         quests_completed: [Growing suburbs]
 
@@ -557,7 +557,7 @@
   then:
     seats:
       - seat: 1
-        stats: {satisfaction: 1, influence: 1}
+        stats: {funds: 74, satisfaction: 1, influence: 0}
         gained_types: {Luxury: 1}
         quests_completed: [Upmarket homes]
 
@@ -574,7 +574,7 @@
   then:
     seats:
       - seat: 1
-        stats: {workforce: 1, influence: 1}
+        stats: {funds: 74, workforce: 1, influence: 0}
         gained_types: {Power Plant: 1}
         quests_completed: [Modern industry]
 
@@ -591,7 +591,7 @@
   then:
     seats:
       - seat: 1
-        stats: {satisfaction: 1, influence: 1}
+        stats: {funds: 74, satisfaction: 1, influence: 0}
         gained_types: {Service: 1}
         quests_completed: [Service economy]
 
@@ -608,7 +608,7 @@
   then:
     seats:
       - seat: 1
-        stats: {influence: 3}
+        stats: {funds: 74, influence: 2}
         gained_types: {Education: 1}
         quests_completed: [Culture hub]
 
@@ -625,7 +625,7 @@
   then:
     seats:
       - seat: 1
-        stats: {quality: 1, influence: 1}
+        stats: {funds: 74, quality: 1, influence: 0}
         gained_types: {Light Industry: 1}
         quests_completed: [Factory town]
 
@@ -643,7 +643,7 @@
   then:
     seats:
       - seat: 1
-        stats: {influence: 1}
+        stats: {funds: 74, influence: 0}
         gained_types: {Alcohol: 1}
         hand: [Idyllic View Condominium]
         quests_completed: [Market town]
@@ -662,7 +662,7 @@
   then:
     seats:
       - seat: 1
-        stats: {funds: 9, influence: 1, product: 2}
+        stats: {funds: 94, influence: 0, product: 2}
         gained_types: {Petroleum: 1}
         quests_completed: [Industrial zone]
 
@@ -680,7 +680,7 @@
   then:
     seats:
       - seat: 1
-        stats: {satisfaction: 1, influence: 1}
+        stats: {funds: 74, satisfaction: 1, influence: 0}
         gained_types: {Retail: 1}
         quests_completed: [Shopping centre]
 
@@ -697,7 +697,7 @@
   then:
     seats:
       - seat: 1
-        stats: {funds: 9, influence: 1}
+        stats: {funds: 94, influence: 0}
         gained_types: {Beautification: 1}
         quests_completed: [Leisure park]
 
@@ -714,7 +714,7 @@
   then:
     seats:
       - seat: 1
-        stats: {satisfaction: 1, influence: 1}
+        stats: {funds: 74, satisfaction: 1, influence: 0}
         gained_types: {Culture: 1}
         quests_completed: [Culture district]
 
@@ -732,7 +732,7 @@
   then:
     seats:
       - seat: 1
-        stats: {workforce: 1, influence: 1}
+        stats: {funds: 74, workforce: 1, influence: 0}
         gained_types: {Safety: 1}
         quests_completed: [Safe streets]
 
@@ -750,7 +750,7 @@
   then:
     seats:
       - seat: 1
-        stats: {workforce: 1, influence: 1}
+        stats: {funds: 74, workforce: 1, influence: 0}
         gained_types: {Leisure: 1}
         quests_completed: [Happy residents]
 
@@ -768,7 +768,7 @@
   then:
     seats:
       - seat: 1
-        stats: {influence: 4}
+        stats: {funds: 74, influence: 3}
         gained_types: {Utility: 1}
         quests_completed: [Civic pride]
 
@@ -780,14 +780,14 @@
     seats:
       - seat: 1
         city: [Pub, Cafe, Gym, Post Office, Radio Station]
-        stats: {income: 10}
+        stats: {income: 100}
     random: [{sector: Residential}, {sector: Industry}]
   when:
     - {seat: 1, action: complete_quest, quest: Service boom}
   then:
     seats:
       - seat: 1
-        stats: {influence: 1}
+        stats: {funds: 74, influence: 0}
         gained_types: {Rental Space: 1}
         hand: [Idyllic View Condominium, Hydroelectricity Dam]
         quests_completed: [Service boom]
@@ -805,7 +805,7 @@
   then:
     seats:
       - seat: 1
-        stats: {quality: 3, influence: 1}
+        stats: {funds: 76, quality: 3, influence: 0}
         gained_types: {City Housing: 1}
         quests_completed: [Penthouses]
 
@@ -822,7 +822,7 @@
   then:
     seats:
       - seat: 1
-        stats: {workforce: 2, influence: 1}
+        stats: {funds: 76, workforce: 2, influence: 0}
         gained_types: {Raw Material: 1}
         quests_completed: [Heavy industry]
 
@@ -839,7 +839,7 @@
   then:
     seats:
       - seat: 1
-        stats: {satisfaction: 3, influence: 1}
+        stats: {funds: 76, satisfaction: 3, influence: 0}
         gained_types: {Office: 1}
         quests_completed: [Office district]
 
@@ -856,7 +856,7 @@
   then:
     seats:
       - seat: 1
-        stats: {quality: 2, influence: 4}
+        stats: {funds: 76, quality: 2, influence: 3}
         gained_types: {Safety: 1}
         quests_completed: [Public institutions]
 
@@ -873,7 +873,7 @@
   then:
     seats:
       - seat: 1
-        stats: {quality: 3, influence: 1}
+        stats: {funds: 76, quality: 3, influence: 0}
         gained_types: {Rental Space: 1}
         quests_completed: [City living]
 
@@ -892,7 +892,7 @@
   then:
     seats:
       - seat: 1
-        stats: {influence: 1}
+        stats: {funds: 76, influence: 0}
         gained_types: {High Tech: 2}
         hand: [Idyllic View Condominium, Hydroelectricity Dam]
         quests_completed: [Tech campus]
@@ -910,7 +910,7 @@
   then:
     seats:
       - seat: 1
-        stats: {quality: 2, influence: 1}
+        stats: {funds: 76, quality: 2, influence: 0}
         gained_types: {Mass Transit: 1}
         quests_completed: [Commuter city]
 
@@ -928,7 +928,7 @@
   then:
     seats:
       - seat: 1
-        stats: {funds: 11, influence: 3}
+        stats: {funds: 116, influence: 2}
         gained_types: {Finance: 2}
         quests_completed: [Business district]
 
@@ -945,7 +945,7 @@
   then:
     seats:
       - seat: 1
-        stats: {satisfaction: 3, influence: 1}
+        stats: {funds: 76, satisfaction: 3, influence: 0}
         gained_types: {Mass Media: 1}
         quests_completed: [Media city]
 
@@ -963,7 +963,7 @@
   then:
     seats:
       - seat: 1
-        stats: {influence: 1}
+        stats: {funds: 76, influence: 0}
         gained_types: {Heavy Industry: 1}
         hand: [Idyllic View Condominium, Hydroelectricity Dam]
         quests_completed: [Tech industry]
@@ -982,7 +982,7 @@
   then:
     seats:
       - seat: 1
-        stats: {influence: 1}
+        stats: {funds: 76, influence: 0}
         gained_types: {Utility: 1}
         hand: [Idyllic View Condominium, Hydroelectricity Dam]
         quests_completed: [Metropolis]
@@ -1000,7 +1000,7 @@
   then:
     seats:
       - seat: 1
-        stats: {funds: 10, influence: 1}
+        stats: {funds: 106, influence: 0}
         gained_types: {Sea: 1}
         quests_completed: [Balanced city]
 
@@ -1018,7 +1018,7 @@
   then:
     seats:
       - seat: 1
-        stats: {workforce: 3, influence: 1}
+        stats: {funds: 76, workforce: 3, influence: 0}
         gained_types: {Mass Media: 1}
         quests_completed: [Cultural capital]
 
@@ -1036,7 +1036,7 @@
   then:
     seats:
       - seat: 1
-        stats: {quality: 2, satisfaction: 2, influence: 1}
+        stats: {funds: 76, quality: 2, satisfaction: 2, influence: 0}
         gained_types: {Health: 1}
         quests_completed: [Civic leader]
 
@@ -1048,14 +1048,14 @@
     seats:
       - seat: 1
         city: [Smart City Development, Solar Energy, Software Industry, AI and Data Analytics Industry, Steelworks]
-        stats: {income: 15}
+        stats: {income: 150}
     random: [{sector: Residential}, {sector: Industry}, {sector: Service}]
   when:
     - {seat: 1, action: complete_quest, quest: High-tech economy}
   then:
     seats:
       - seat: 1
-        stats: {influence: 1}
+        stats: {funds: 76, influence: 0}
         gained_types: {Mercantile: 1}
         hand: [Idyllic View Condominium, Hydroelectricity Dam, Television Studio]
         quests_completed: [High-tech economy]
@@ -1073,7 +1073,7 @@
   then:
     seats:
       - seat: 1
-        stats: {influence: 1}
+        stats: {funds: 72, influence: 0}
         gained_types: {Food: 1}
         quests_completed: [Grain fields]
 
@@ -1090,7 +1090,7 @@
   then:
     seats:
       - seat: 1
-        stats: {quality: 1, influence: 1}
+        stats: {funds: 72, quality: 1, influence: 0}
         quests_completed: [Timber town]
 
 - name: completing Brewery town gives its reward
@@ -1106,7 +1106,7 @@
   then:
     seats:
       - seat: 1
-        stats: {satisfaction: 1, funds: 8, influence: 1}
+        stats: {satisfaction: 1, funds: 82, influence: 0}
         quests_completed: [Brewery town]
 
 - name: completing Oil town gives its reward
@@ -1122,7 +1122,7 @@
   then:
     seats:
       - seat: 1
-        stats: {funds: 9, influence: 1}
+        stats: {funds: 94, influence: 0}
         gained_types: {Raw Material: 1}
         quests_completed: [Oil town]
 
@@ -1139,7 +1139,7 @@
   then:
     seats:
       - seat: 1
-        stats: {funds: 9, influence: 1}
+        stats: {funds: 94, influence: 0}
         gained_types: {Mercantile: 1}
         quests_completed: [Trading house]
 
@@ -1156,7 +1156,7 @@
   then:
     seats:
       - seat: 1
-        stats: {funds: 9, influence: 1}
+        stats: {funds: 94, influence: 0}
         gained_types: {Finance: 1}
         quests_completed: [Property market]
 
@@ -1250,7 +1250,7 @@
     quests: [{quest: Trading post}]
     seats:
       - seat: 1
-        stats: {income: 4, workforce: -1}
+        stats: {income: 40, workforce: -1}
         city: [Liquor Shop]
   when:
     - {seat: 1, action: complete_quest, quest: Trading post}
@@ -1264,7 +1264,7 @@
     quests: [{quest: Trading post}]
     seats:
       - seat: 1
-        stats: {income: 4, quality: -1}
+        stats: {income: 40, quality: -1}
         city: [Liquor Shop]
   when:
     - {seat: 1, action: complete_quest, quest: Trading post}
@@ -1278,7 +1278,7 @@
     quests: [{quest: Trading post}]
     seats:
       - seat: 1
-        stats: {income: 4, satisfaction: -1}
+        stats: {income: 40, satisfaction: -1}
         city: [Liquor Shop]
   when:
     - {seat: 1, action: complete_quest, quest: Trading post}
@@ -1295,7 +1295,7 @@
       - seat: 1
         quests_completed: [Trading post]
       - seat: 2
-        stats: {income: 4}
+        stats: {income: 40}
         city: [Liquor Shop]
   when:
     - {seat: 2, action: complete_quest, quest: Trading post}
@@ -1304,7 +1304,7 @@
       - seat: 2
         quests_completed: [Trading post]
 
-- name: completing a quest during its extra turn gives no extra influence
+- name: completing a quest during its extra turn gives no extra funds
   covers: [R19.10, R19.6]
   given:
     turn: 4
@@ -1313,14 +1313,14 @@
       - seat: 1
         quests_completed: [Trading post]
       - seat: 2
-        stats: {income: 4}
+        stats: {income: 40}
         city: [Liquor Shop]
   when:
     - {seat: 2, action: complete_quest, quest: Trading post}
   then:
     seats:
       - seat: 2
-        stats: {funds: 8, influence: 2}
+        stats: {funds: 80, influence: 2}
 
 - name: a quest completed during its extra turn does not stay longer
   covers: [R19.6, R10.2]
@@ -1332,7 +1332,7 @@
       - seat: 1
         quests_completed: [Trading post]
       - seat: 2
-        stats: {income: 4}
+        stats: {income: 40}
         city: [Liquor Shop]
     quest_list: [Countryside]
     random: [{tier: 1}, {quest: Countryside}]
@@ -1353,7 +1353,7 @@
     quests: [{quest: Trading post, turns_on_table: 6}, {quest: Farmland}, {quest: Sports town}, {quest: Mining town}]
     seats:
       - seat: 1
-        stats: {income: 4}
+        stats: {income: 40}
         city: [Liquor Shop]
     quest_list: [Countryside]
     random: [{tier: 1}, {quest: Countryside}]
@@ -1366,17 +1366,17 @@
     quests: [{quest: Countryside, turns_on_table: 1}, {quest: Farmland}, {quest: Sports town}, {quest: Mining town}]
     quest_list_excludes: [Trading post]
 
-- name: everyone who completes a quest in the first turn anyone does gets 1 more influence
+- name: everyone who completes a quest in the first turn anyone does gets 2 funds for every tier of the quest
   covers: [R19.10, R19.5]
   given:
     turn: 3
     quests: [{quest: Farmland}, {quest: Sports town}, {quest: Trading post}, {quest: Mining town}]
     seats:
       - seat: 1
-        stats: {income: 4}
+        stats: {income: 40}
         city: [Liquor Shop]
       - seat: 2
-        stats: {income: 4}
+        stats: {income: 40}
         city: [Liquor Shop]
   when:
     - {seat: 1, action: complete_quest, quest: Trading post}
@@ -1384,9 +1384,41 @@
   then:
     seats:
       - seat: 1
-        stats: {funds: 8, influence: 3}
+        stats: {funds: 82, influence: 2}
       - seat: 2
-        stats: {funds: 8, influence: 3}
+        stats: {funds: 82, influence: 2}
+
+- name: a tier 3 quest's first completion gives 6 extra funds
+  covers: [R19.10]
+  given:
+    turn: 30
+    quests: [{quest: Penthouses}]
+    seats:
+      - seat: 1
+        city: [Loft, Luxury Skyscraper, Deluxe Seaside High-Rise]
+  when:
+    - {seat: 1, action: complete_quest, quest: Penthouses}
+  then:
+    seats:
+      - seat: 1
+        stats: {funds: 76, quality: 3, influence: 0}
+
+- name: the extra funds of a first completion add to total worth gained
+  covers: [R19.10, R2.4]
+  given:
+    turn: 30
+    quests: [{quest: Tidy streets}]
+    seats:
+      - seat: 1
+        city: [Green Park]
+        stats: {quality: 5}
+  when:
+    - {seat: 1, action: complete_quest, quest: Tidy streets}
+  then:
+    seats:
+      - seat: 1
+        stats: {funds: 72}
+        worth_gained: 142
 
 - name: a tier 1 quest stays on the table for 6 turns
   covers: [R19.7]
@@ -1417,7 +1449,7 @@
     quests: [{quest: Growing suburbs, turns_on_table: 1}, {quest: Sports town}, {quest: Trading post}, {quest: Mining town}]
     quest_list: [Metropolis]
 
-- name: a quest needing income is placed only once some player has that income minus 2
+- name: a quest needing income is placed only once some player has that income minus 20
   covers: [R19.11, R19.8]
   given:
     turn: 8
@@ -1426,9 +1458,9 @@
     quest_list: [Service boom, Growing suburbs]
     seats:
       - seat: 1
-        stats: {income: 6}
+        stats: {income: 60}
       - seat: 2
-        stats: {income: 6}
+        stats: {income: 60}
     random: [{tier: 2}, {quest: Growing suburbs}]
   when:
     - {seat: 1, action: end_turn}
@@ -1438,7 +1470,7 @@
     quests: [{quest: Growing suburbs, turns_on_table: 1}, {quest: Sports town}, {quest: Trading post}, {quest: Mining town}]
     quest_list_excludes: [Growing suburbs]
 
-- name: a quest needing income is placed once some player has that income minus 2
+- name: a quest needing income is placed once some player has that income minus 20
   covers: [R19.11]
   given:
     turn: 8
@@ -1447,7 +1479,7 @@
     quest_list: [Service boom]
     seats:
       - seat: 2
-        stats: {income: 7}
+        stats: {income: 70}
     random: [{tier: 2}, {quest: Service boom}]
   when:
     - {seat: 1, action: end_turn}
@@ -1456,7 +1488,7 @@
     turn: 9
     quests: [{quest: Service boom, turns_on_table: 1}, {quest: Sports town}, {quest: Trading post}, {quest: Mining town}]
 
-- name: a quest needing completed projects is placed only once some player has 8 income
+- name: a quest needing completed projects is placed only once some player has 80 income
   covers: [R19.11]
   given:
     turn: 8
@@ -1465,9 +1497,9 @@
     quest_list: [Civic pride, Growing suburbs]
     seats:
       - seat: 1
-        stats: {income: 7}
+        stats: {income: 70}
       - seat: 2
-        stats: {income: 7}
+        stats: {income: 70}
     random: [{tier: 2}, {quest: Growing suburbs}]
   when:
     - {seat: 1, action: end_turn}

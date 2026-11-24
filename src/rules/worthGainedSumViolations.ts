@@ -1,7 +1,6 @@
-import { amountsInTenths } from "../shared/amountsInTenths";
+import { WORTH_GAINED_PER_CARD } from "./WORTH_GAINED_PER_CARD";
 import { cardOf } from "../shared/catalogue/cardOf";
 import { FUNDS_PER_SOLD_CARD } from "../shared/FUNDS_PER_SOLD_CARD";
-import { fundsInTenths } from "../shared/fundsInTenths";
 import { influenceDrawOfTier } from "../shared/ruleFiles/influenceDrawOfTier";
 import type { GameAction } from "./GameAction";
 import type { GameState } from "./GameState";
@@ -24,20 +23,20 @@ function cardsGainedIn(before: GameState, after: GameState, seat: SeatState["sea
 
 function fundsPaidFor(action: GameAction, seatBefore: SeatState): number {
   if (action.type === "play_card") {
-    return fundsInTenths(realCostOf(cardOf(action.card), seatBefore));
+    return realCostOf(cardOf(action.card), seatBefore);
   }
   if (action.type === "influence") {
-    return fundsInTenths(tradeCostsOf(seatBefore, action.trade).funds ?? 0);
+    return tradeCostsOf(seatBefore, action.trade).funds ?? 0;
   }
   if (action.type === "draw_action") {
-    return amountsInTenths(influenceDrawOfTier(action.tier)?.costs ?? {}).funds ?? 0;
+    return influenceDrawOfTier(action.tier)?.costs.funds ?? 0;
   }
-  return action.type === "sell" ? -fundsInTenths(action.cards.length * FUNDS_PER_SOLD_CARD) : 0;
+  return action.type === "sell" ? -action.cards.length * FUNDS_PER_SOLD_CARD : 0;
 }
 
 function fundsLostToZeroAtTurnEnd(seatBefore: SeatState): number {
   const { funds } = seatBefore.stats;
-  const income = fundsInTenths(seatBefore.stats.income);
+  const { income } = seatBefore.stats;
   const statsGain = statsGainOf(seatBefore.stats);
   return income + Math.max(0, statsGain) - (Math.max(0, funds + income + statsGain) - funds);
 }
@@ -58,7 +57,7 @@ function expectedWorthAfter(transition: Transition, after: GameState, seatBefore
   }
   return (
     seatBefore.worthGained +
-    fundsInTenths(cardsGainedIn(before, after, seatBefore.seat)) +
+    cardsGainedIn(before, after, seatBefore.seat) * WORTH_GAINED_PER_CARD +
     fundsReceivedIn(transition, after, seatBefore)
   );
 }

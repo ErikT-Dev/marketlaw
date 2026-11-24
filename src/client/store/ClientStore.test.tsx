@@ -7,6 +7,7 @@ import type { RoomIntent } from "../../shared/protocol/RoomIntent";
 import type { ReasonCode } from "../../shared/ReasonCode";
 import { RoomCode } from "../../shared/RoomCode";
 import { waitingRoomNoticesOf } from "../screens/lobby/waitingRoomNoticesOf";
+import { loggedInSessionAnswer } from "../testing/loggedInSessionAnswer";
 import { roomUpdateWith } from "../testing/roomUpdateWith";
 import { ClientStore } from "./ClientStore";
 import { NO_ROOM_CHAT } from "./NO_ROOM_CHAT";
@@ -101,7 +102,7 @@ function serverSaysTestSeat(isTestRoomSeat: boolean): void {
     Promise.resolve(
       Response.json(
         path === "/api/session"
-          ? { isLoggedIn: true, playerId: SEAT_PLAYER, name: "Seat 1", isGuest: true }
+          ? loggedInSessionAnswer(SEAT_PLAYER, "Seat 1", true)
           : { isTestRoomSeat },
       ),
     ),

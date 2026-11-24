@@ -9,13 +9,13 @@ const NOTHING: LastTurn = { quests: [], projects: [], incomeGains: [], support: 
 
 const BUSY_TURN: LastTurn = {
   quests: [
-    { quest: "Growing suburbs", seats: [1, 2] },
-    { quest: "Working district", seats: [3] },
+    { quest: "Growing suburbs", seats: [1, 2], firstCompletionFunds: 0 },
+    { quest: "Working district", seats: [3], firstCompletionFunds: 2 },
   ],
   projects: [{ project: "quality", seats: [4] }],
   incomeGains: [
-    { seat: 2, income: 2 },
-    { seat: 3, income: 1 },
+    { seat: 2, income: 20 },
+    { seat: 3, income: 10 },
   ],
   support: [{ seat: 4, funds: 20 }],
 };
@@ -43,10 +43,10 @@ describe("last turn panel", () => {
     ]);
     expect(rowTexts("Projects completed")).toEqual([expect.stringContaining("Di")]);
     expect(rowTexts("Income gained")).toEqual([
-      expect.stringMatching(/You\+2\.0$/),
-      expect.stringMatching(/Cy\+1\.0$/),
+      expect.stringMatching(/You\+20$/),
+      expect.stringMatching(/Cy\+10$/),
     ]);
-    expect(rowTexts("Support")).toEqual([expect.stringMatching(/Di\+2$/)]);
+    expect(rowTexts("Support")).toEqual([expect.stringMatching(/Di\+20$/)]);
   });
 
   it("shows each quest reward and each gain as icons named by their stats", () => {
@@ -65,6 +65,19 @@ describe("last turn panel", () => {
     const projects = within(panel).getByRole("list", { name: "Projects completed" });
     expect(within(projects).getByRole("img", { name: "Quality" })).toBeDefined();
     expect(within(panel).getByRole("button", { name: "Ann" })).toBeDefined();
+  });
+
+  it("adds the extra funds of a first completion to the quest reward's funds", () => {
+    showLastTurn(BUSY_TURN);
+    const panel = screen.getByRole("region", { name: "Last turn" });
+    const cy = within(within(panel).getByRole("list", { name: "Quests completed" })).getAllByRole(
+      "listitem",
+    )[2];
+    expect(
+      within(cy ?? panel)
+        .getAllByRole("img")
+        .map((part) => part.getAttribute("aria-label") ?? part.getAttribute("alt")),
+    ).toEqual(["+2 funds", "+1 influence", "+1 quality"]);
   });
 
   it("says nothing new when nothing happened in the turn before", () => {

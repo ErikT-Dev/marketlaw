@@ -10,6 +10,7 @@ export type PlaceResult = {
   readonly leftInTurn: number | null;
   readonly hasReachedEndGoal: boolean;
   readonly income: number;
-  readonly fundsAndHand: number;
+  readonly funds: number;
+  readonly cardsInHand: number;
   readonly counts: SummaryCounts;
 };

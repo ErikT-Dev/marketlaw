@@ -64,7 +64,7 @@ None yet.
 
 - **M3.1** Players affect each other through the shared deck and discard pile, the marketplace,
   the quests table (whose quests stay an extra turn after their first completion and give
-  +1 influence to the first ones, R19.6, R19.10), and Support, which depends on every player's
+  extra funds to the first ones, R19.6, R19.10), and Support, which depends on every player's
   total worth gained (R11.5).
 - **M3.2** **Hidden information in a game:** three things are hidden:
   - which cards are in another player's hand. You see your own hand; of other players you only

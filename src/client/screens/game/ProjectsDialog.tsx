@@ -12,8 +12,6 @@ import { DialogNote } from "./DialogNote";
 import styles from "./GameDialogs.module.css";
 import { PROJECT_TITLES } from "./PROJECT_TITLES";
 import { REJECTION_MESSAGES } from "./REJECTION_MESSAGES";
-import { tenthsShown } from "../../components/tenthsShown";
-import { fundsInTenths } from "../../../shared/fundsInTenths";
 import { projectPictureUrl } from "../../icons/projectPictureUrl";
 
 type Props = {
@@ -24,9 +22,9 @@ type Props = {
 
 const PROJECTS_INTRO: IconText = [
   "Completing a project uses up 8 of its stat and gives ",
-  { stat: "income", value: "+1" },
+  { stat: "income", value: "+10" },
   ", ",
-  { stat: "funds", value: "+2" },
+  { stat: "funds", value: "+20" },
   ", ",
   { stat: "influence", value: "+3" },
   " and 1 card, every time. ",
@@ -76,7 +74,7 @@ export function ProjectsDialog({ seat, onComplete, onClose }: Props) {
                 Needs <StatChip stat={project} value={PROJECT_NEED} /> and at least{" "}
                 <StatChip stat="income" value={PROJECT_INCOME_NEED} /> · you have{" "}
                 <StatChip stat={project} value={seat.stats[project]} /> and{" "}
-                <StatChip stat="income" value={tenthsShown(fundsInTenths(seat.stats.income))} />
+                <StatChip stat="income" value={seat.stats.income} />
               </span>
               <DialogNote text={whyNotCompletable(seat, project)} />
             </div>

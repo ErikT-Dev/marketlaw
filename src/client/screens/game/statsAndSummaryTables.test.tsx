@@ -56,7 +56,7 @@ function chipsOf(list: HTMLElement) {
 }
 
 function quickSummaryTableOfDi() {
-  return within(screen.getByRole("region", { name: "Opponents" })).getByRole("article", {
+  return within(screen.getByRole("region", { name: "Players" })).getByRole("article", {
     name: "Quick summary table of Di",
   });
 }
@@ -64,7 +64,7 @@ function quickSummaryTableOfDi() {
 describe("your counts", () => {
   it("shows your Q, T, C and F boxes above the quick summary tables, T counting quest types", () => {
     showGame();
-    const opponents = screen.getByRole("region", { name: "Opponents" });
+    const opponents = screen.getByRole("region", { name: "Players" });
     const list = within(opponents).getByRole("list", { name: "Your counts" });
     expect(
       list.compareDocumentPosition(quickSummaryTableOfDi()) & Node.DOCUMENT_POSITION_FOLLOWING,
@@ -79,7 +79,7 @@ describe("your counts", () => {
       "Quests completed 1",
       "Types 11",
       "Combos claimed 4",
-      "Total worth gained 31.0",
+      "Total worth gained 310",
     ]);
   });
 
@@ -114,7 +114,7 @@ describe("quick summary table", () => {
     expect(di.getByRole("img", { name: "Quests completed 1" })).toBeDefined();
     expect(di.getByRole("img", { name: "Types 9" })).toBeDefined();
     expect(di.getByRole("img", { name: "Combos claimed 4" })).toBeDefined();
-    expect(di.getByRole("img", { name: "Total worth gained 52.3" })).toBeDefined();
+    expect(di.getByRole("img", { name: "Total worth gained 523" })).toBeDefined();
   });
 
   it("shows the five types with the highest type counts, quest types included, ties by name, a bonus type highlighted", () => {

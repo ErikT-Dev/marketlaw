@@ -9,6 +9,7 @@ export function testAccount(changes: Partial<AccountBinding> = {}): AccountBindi
     playerId: v.parse(PlayerId, "5b0f6a52-3d5e-4f7c-8a41-6c2b9e0d7f13"),
     name: "Bea",
     isGuest: true,
+    icon: TEST_PLAYER_ICON,
     isInGame: false,
     onSignUp: vi.fn(async () => Promise.resolve(null)),
     onChangeUsername: vi.fn(async () => Promise.resolve(null)),

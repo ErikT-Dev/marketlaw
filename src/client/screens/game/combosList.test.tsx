@@ -111,7 +111,7 @@ describe("detailed summary table", () => {
   it("lists the combos a player has claimed in the order of the combos list without the cards they are printed on", () => {
     render(<GamePage {...gamePageProps(withClaimedCombosOfDi(roomUpdateWith({})))} />);
     fireEvent.click(
-      within(screen.getByRole("region", { name: "Opponents" })).getByRole("button", {
+      within(screen.getByRole("region", { name: "Players" })).getByRole("button", {
         name: "Detailed summary table of Di",
       }),
     );

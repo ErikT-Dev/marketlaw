@@ -23,7 +23,7 @@ test("trade influence, buy a build pass for a second card, undo it, and draw a c
 }, testInfo) => {
   const [seatOne = ""] = await startTestRoom(request, {
     players: 2,
-    seats: [{ seat: 1, hand: ["Row House", "Cottage"], stats: { funds: 20, influence: 10 } }],
+    seats: [{ seat: 1, hand: ["Row House", "Cottage"], stats: { funds: 200, influence: 10 } }],
   });
   await page.goto(seatOne);
   await expect(page.getByRole("heading", { name: "Turn 1 of 40" })).toBeVisible();
@@ -31,10 +31,10 @@ test("trade influence, buy a build pass for a second card, undo it, and draw a c
   await page.getByRole("button", { name: "Use Influence" }).click();
   const influence = page.getByRole("dialog", { name: "Use Influence" });
   await expectScreenFits(page, "use-influence", testInfo);
-  await influence.getByRole("button", { name: "1 fund → 1 influence" }).click();
+  await influence.getByRole("button", { name: "10 funds → 1 influence" }).click();
   await expect(influence.getByRole("img", { name: "Influence 11" })).toBeVisible();
-  await influence.getByRole("button", { name: "2 funds → 1 build pass" }).click();
-  await expect(influence.getByRole("button", { name: "3 funds → 1 build pass" })).toBeEnabled();
+  await influence.getByRole("button", { name: "20 funds → 1 build pass" }).click();
+  await expect(influence.getByRole("button", { name: "30 funds → 1 build pass" })).toBeEnabled();
   await influence.getByRole("button", { name: "Close" }).click();
   await expect(page.getByRole("img", { name: "Build passes 2" })).toBeVisible();
 

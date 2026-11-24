@@ -145,6 +145,30 @@ describe("card tile pictures", () => {
     expect(screen.queryAllByRole("img")).toEqual([]);
     expect(screen.queryAllByRole("presentation")).toEqual([]);
   });
+
+  it("lays the sector colour at 80% over the card texture on hand and city tiles", () => {
+    render(
+      <>
+        <HandCard
+          card={LOFT}
+          realCost={8}
+          isPlayable
+          state="default"
+          isNew={false}
+          isPending={false}
+          onSelect={vi.fn()}
+        />
+        <PlayedCard card={LOFT} isSelected={false} onSelect={vi.fn()} />
+      </>,
+    );
+    const backgrounds = screen
+      .getAllByRole("button", { name: "Loft" })
+      .map((tile) => tile.style.background);
+    expect(backgrounds).toEqual([
+      expect.stringMatching(/80%, transparent\).*card-texture\.webp/),
+      expect.stringMatching(/80%, transparent\).*card-texture\.webp/),
+    ]);
+  });
 });
 
 describe("BigCard", () => {

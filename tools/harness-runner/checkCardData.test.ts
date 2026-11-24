@@ -33,8 +33,8 @@ describe("checkCardData", () => {
   });
 
   it("reports a base cost outside its tier's range", () => {
-    expect(checkCardData(replaceCard("Farm House", { cost: 7 }))).toEqual([
-      "Farm House: base cost 7 is outside 3-6 for tier 1",
+    expect(checkCardData(replaceCard("Farm House", { cost: 70 }))).toEqual([
+      "Farm House: base cost 70 is outside 30-60 for tier 1",
     ]);
   });
 

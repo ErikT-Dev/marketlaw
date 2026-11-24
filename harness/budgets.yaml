@@ -171,11 +171,11 @@
 
 - id: B19
   name: card pictures on card tiles
-  limit: 6
+  limit: 16
   unit: kilobytes per picture, the largest of the 240 small pictures of card tiles (S6.4)
   measured: production build
   why: >
-    Card tiles show a small, low-resolution picture of every card in the hand, the city and the
-    marketplace; dozens show at once, so each must stay tiny and they must never be the full
-    photos of the big card. They load only when shown, never as part of the initial download
+    Card tiles show a small picture of every card, 200 × 172 pixels, in the hand, the city, the
+    marketplace and the card set; dozens show at once, so each must stay small and they must
+    never be the full photos of the big card. They load only when shown, never as part of the initial download
     (B14).

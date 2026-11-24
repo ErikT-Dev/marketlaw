@@ -1,12 +1,10 @@
 import * as v from "valibot";
 import { STARTING_STATS } from "../../../src/rules/STARTING_STATS.ts";
-import { TENTHS_PER_FUND } from "../../../src/shared/TENTHS_PER_FUND.ts";
 import { CardName } from "../../../src/shared/catalogue/CardName.ts";
 import { QuestName } from "../../../src/shared/catalogue/QuestName.ts";
 import { TypeName } from "../../../src/shared/catalogue/TypeName.ts";
 import { ProjectName } from "../../../src/shared/ProjectName.ts";
 import { TradeName } from "../../../src/shared/TradeName.ts";
-import { FUNDS_IN_TENTHS } from "./FUNDS_IN_TENTHS.ts";
 
 const COUNT = v.pipe(v.number(), v.integer());
 const CARDS = v.array(CardName);
@@ -14,7 +12,7 @@ const SEAT_NUMBER = v.picklist([1, 2, 3, 4]);
 const QUEST_NAME = QuestName;
 
 const STATS = v.strictObject({
-  funds: v.optional(FUNDS_IN_TENTHS, STARTING_STATS.funds / TENTHS_PER_FUND),
+  funds: v.optional(COUNT, STARTING_STATS.funds),
   income: v.optional(COUNT, STARTING_STATS.income),
   influence: v.optional(COUNT, STARTING_STATS.influence),
   workforce: v.optional(COUNT, STARTING_STATS.workforce),
@@ -44,7 +42,7 @@ const SEAT = v.strictObject({
   out_of_time: v.optional(v.boolean()),
   turn_draw_pending: v.optional(v.boolean()),
   redraws_used: v.optional(COUNT),
-  worth_gained: v.optional(FUNDS_IN_TENTHS),
+  worth_gained: v.optional(COUNT),
   left: v.optional(v.boolean()),
   time_bank_ms: v.optional(COUNT),
   timeouts_in_a_row: v.optional(COUNT),

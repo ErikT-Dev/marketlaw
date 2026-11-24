@@ -63,6 +63,7 @@ function loggedInAnswer(path: string): unknown {
         playerId: "7d0c7f1e-4b7a-4c5e-9a39-2f4d9c1b8e10",
         name: "Ann",
         isGuest: true,
+        icon: TEST_PLAYER_ICON,
       }
     : { isLoggedIn: false };
 }
@@ -83,6 +84,7 @@ describe("checking the session", () => {
       playerId: "7d0c7f1e-4b7a-4c5e-9a39-2f4d9c1b8e10",
       name: "Ann Rider",
       isGuest: false,
+      icon: TEST_PLAYER_ICON,
     }));
     const store = new ClientStore(() => hostWithEvents().host);
     const registered = { ...IN_ROOM, name: "Ann Rider", isGuest: false };
@@ -100,7 +102,10 @@ describe("logging out and changing the username", () => {
     const network = hostWithEvents();
     const store = new ClientStore(() => network.host);
     await store.logOut();
-    expect(sent.at(-1)).toEqual({ path: "/api/logout", body: { token: "guest-token" } });
+    expect(sent.filter(({ path }) => path !== "/api/account").at(-1)).toEqual({
+      path: "/api/logout",
+      body: { token: "guest-token" },
+    });
     expect(store.getSnapshot().session).toBeNull();
     expect(store.getSnapshot().notice).toBeNull();
     expect(readSession()).toBeNull();
@@ -136,12 +141,13 @@ describe("logging out and changing the username", () => {
             token: "guest-token",
             playerId: "7d0c7f1e-4b7a-4c5e-9a39-2f4d9c1b8e10",
             name: "Ann City",
+            icon: TEST_PLAYER_ICON,
           }
         : loggedInAnswer(path),
     );
     const store = new ClientStore(() => hostWithEvents().host);
     expect(await store.changeUsername("Ann City")).toBeNull();
-    expect(sent.at(-1)).toEqual({
+    expect(sent.filter(({ path }) => path !== "/api/account").at(-1)).toEqual({
       path: "/api/username-changes",
       body: { token: "guest-token", username: "Ann City" },
     });
@@ -178,5 +184,28 @@ describe("logging out and changing the username", () => {
     const store = new ClientStore(() => hostWithEvents().host);
     expect(await store.loadAccount()).toEqual(details);
     expect(sent.at(-1)).toEqual({ path: "/api/account", body: { token: "guest-token" } });
+  });
+});
+
+describe("your icon", () => {
+  const WOLF = { picture: "lorc/wolf-head" as const, background: "#14532d", color: "#bbf7d0" };
+
+  it("takes your icon from the session answer without asking for the account and keeps a changed one", async () => {
+    writeSession(IN_ROOM);
+    const sent = serverAnswers((path) =>
+      path === "/api/icon-changes"
+        ? { isOk: true, icon: WOLF, iconWait: null }
+        : loggedInAnswer(path),
+    );
+    const store = new ClientStore(() => hostWithEvents().host);
+    await vi.waitFor(() => {
+      expect(store.getSnapshot().accountIcon).toEqual({
+        token: "guest-token",
+        icon: TEST_PLAYER_ICON,
+      });
+    });
+    expect(await store.changeIcon(WOLF)).toBeNull();
+    expect(store.getSnapshot().accountIcon).toEqual({ token: "guest-token", icon: WOLF });
+    expect(sent.map(({ path }) => path)).not.toContain("/api/account");
   });
 });

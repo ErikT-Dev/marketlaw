@@ -1,6 +1,7 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 import { CARD_NAMES } from "../src/shared/catalogue/CARD_NAMES";
 import { expectScreenFits } from "./expectScreenFits";
+import { openLobby } from "./openLobby";
 import { openTestSeat } from "./openTestSeat";
 import { startTestRoom } from "./startTestRoom";
 
@@ -126,4 +127,18 @@ test("every card name fits its marketplace tile", async ({ browser, viewport, re
   expect(tooLong).toEqual([]);
   expect(sizes.size).toBe(1);
   await page.context().close();
+});
+
+test("every card name fits its card set tile beside its picture", async ({ browser, viewport }) => {
+  const visitor = await openLobby(browser, "Tiles Ann", viewport ?? undefined);
+  await visitor.page.evaluate(() => {
+    window.location.hash = "#card-set";
+  });
+  const tiles = visitor.page
+    .getByRole("dialog", { name: "Card set" })
+    .getByRole("list", { name: "Cards" })
+    .getByRole("button");
+  await expect(tiles).toHaveCount(CARD_NAMES.length);
+  expect(await namesThatDoNotFit(tiles)).toEqual([]);
+  await visitor.page.context().close();
 });

@@ -12,9 +12,9 @@ const TRADING_POST: QuestPlaceView = {
   isInExtraTurn: false,
   completeRejection: null,
   progress: [
-    { seat: 1, isCompleted: false, canCompleteNow: false, have: [3, 0], negativeStats: [] },
-    { seat: 2, isCompleted: false, canCompleteNow: true, have: [4, 1], negativeStats: [] },
-    { seat: 3, isCompleted: true, canCompleteNow: false, have: [5, 2], negativeStats: [] },
+    { seat: 1, isCompleted: false, canCompleteNow: false, have: [30, 0], negativeStats: [] },
+    { seat: 2, isCompleted: false, canCompleteNow: true, have: [40, 1], negativeStats: [] },
+    { seat: 3, isCompleted: true, canCompleteNow: false, have: [50, 2], negativeStats: [] },
   ],
 };
 
@@ -40,9 +40,9 @@ describe("quests panel", () => {
     const card = screen.getByRole("region", { name: "Trading post" });
     expect(within(card).getByText("Tier 1")).toBeDefined();
     expect(within(card).getByRole("img", { name: "3 turns left" }).textContent).toBe("3turns left");
-    expect(within(card).getByRole("img", { name: "4 income" })).toBeDefined();
+    expect(within(card).getByRole("img", { name: "40 income" })).toBeDefined();
     expect(within(card).getByRole("img", { name: "1 Retail" })).toBeDefined();
-    expect(within(card).getByRole("img", { name: "+1 funds" })).toBeDefined();
+    expect(within(card).getByRole("img", { name: "+10 funds" })).toBeDefined();
     expect(within(card).getByRole("img", { name: "+2 influence" })).toBeDefined();
     const progress = within(card).getByRole("list", { name: "Progress on Trading post" });
     const lines = within(progress)
@@ -53,7 +53,11 @@ describe("quests panel", () => {
           .map((part) => part.getAttribute("aria-label"))
           .join(" | "),
       );
-    expect(lines).toEqual(["income 4 of 4 | Retail 1 of 1", "income 3 of 4 | Retail 0 of 1", ""]);
+    expect(lines).toEqual([
+      "income 40 of 40 | Retail 1 of 1",
+      "income 30 of 40 | Retail 0 of 1",
+      "",
+    ]);
     expect(
       within(progress)
         .getAllByRole("button")

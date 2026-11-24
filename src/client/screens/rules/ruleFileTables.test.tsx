@@ -23,21 +23,21 @@ describe("rulebook tables from the rule files", () => {
     expect(table?.header).toEqual([["Action"], ["Times per game"]]);
     expect(table?.rows).toHaveLength(INFLUENCE_ACTIONS.length);
     expect(table?.rows[0]).toEqual([
-      ["4 ", { stat: "influence" }, " → 2 ", { stat: "funds" }],
+      ["4 ", { stat: "influence" }, " → 20 ", { stat: "funds" }],
       ["1"],
     ]);
-    expect(table?.rows[1]).toEqual([["3 ", { stat: "influence" }, " → 1 ", { stat: "funds" }], ["any"]]);
-    expect(table?.rows[5]).toEqual([["1 ", { stat: "funds" }, " → 1 ", { stat: "influence" }], ["any"]]);
+    expect(table?.rows[1]).toEqual([["3 ", { stat: "influence" }, " → 10 ", { stat: "funds" }], ["any"]]);
+    expect(table?.rows[5]).toEqual([["10 ", { stat: "funds" }, " → 1 ", { stat: "influence" }], ["any"]]);
   });
 
   it("shows the rising build pass price and the draw actions in words", () => {
     const rows = tablesOf("Influence")[0]?.rows ?? [];
     expect(rows[6]?.[0]).toEqual([
-      "2 ",
+      "20 ",
       { stat: "funds" },
       " → 1 ",
       { stat: "buildPasses" },
-      " (costs 1 more ",
+      " (costs 10 more ",
       { stat: "funds" },
       " each time you buy one)",
     ]);

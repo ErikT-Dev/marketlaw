@@ -5,7 +5,7 @@ import { hiddenCardsSentToOthers } from "./hiddenCardsSentToOthers";
 import { startFourPlayerGame } from "./startFourPlayerGame";
 
 const TABLE_PANELS = [
-  "Opponents",
+  "Players",
   "Game log and chat",
   "Marketplace",
   "Quests",
@@ -26,10 +26,9 @@ const STAT_NAMES = [
   "Build passes",
   "Influence",
 ];
-const STATS_IN_TENTHS = ["Funds", "Income"];
 
 function statValuePattern(stat: string): RegExp {
-  return new RegExp(`^${stat} ${STATS_IN_TENTHS.includes(stat) ? "\\d+\\.\\d" : "-?\\d+"}$`);
+  return new RegExp(`^${stat} -?\\d+$`);
 }
 
 async function expectTableElements(page: Page, names: ReadonlyArray<string>): Promise<void> {

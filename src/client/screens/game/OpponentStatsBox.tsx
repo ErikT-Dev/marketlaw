@@ -12,8 +12,6 @@ import { combosClaimedCountOf } from "../../../shared/combosClaimedCountOf";
 import { LiveBankChip } from "./LiveBankChip";
 import { OpponentBasicStats } from "./OpponentBasicStats";
 import styles from "./OpponentBoardDialog.module.css";
-import { tenthsShown } from "../../components/tenthsShown";
-import { fundsInTenths } from "../../../shared/fundsInTenths";
 
 type Props = {
   readonly seat: OtherSeatView;
@@ -35,10 +33,10 @@ export function OpponentStatsBox({ seat, name, playerId, bonusTypes }: Props) {
       <PlayerNameLink name={name} playerId={playerId} />
       <ul className={styles["stats"]}>
         <li>
-          <StatChip stat="funds" value={tenthsShown(seat.stats.funds)} />
+          <StatChip stat="funds" value={seat.stats.funds} />
         </li>
         <li>
-          <StatChip stat="income" value={tenthsShown(fundsInTenths(seat.stats.income))} />
+          <StatChip stat="income" value={seat.stats.income} />
         </li>
         <li>
           <StatChip stat="influence" value={seat.stats.influence} />

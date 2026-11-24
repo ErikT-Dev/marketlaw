@@ -1,0 +1,31 @@
+export function recordedSeatOf(
+  seatNumber: number,
+  player: unknown,
+  changes: Readonly<Record<string, unknown>>,
+) {
+  return {
+    seat: seatNumber,
+    result: "lost",
+    place: seatNumber,
+    leftInTurn: null,
+    score: 400,
+    hasReachedEndGoal: false,
+    income: 190,
+    funds: 440,
+    cardsInHand: 4,
+    workforce: 2,
+    quality: 7,
+    satisfaction: 5,
+    product: 0,
+    distribution: 1,
+    influence: 8,
+    bonusTypePoints: 24,
+    projects: [],
+    questsCompleted: 7,
+    comboGains: { workforce: 9, quality: 11, satisfaction: 7 },
+    typeCounts: { Farm: 3 },
+    player,
+    rating: null,
+    ...changes,
+  };
+}

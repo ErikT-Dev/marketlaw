@@ -68,10 +68,10 @@ describe("gameEndViolations", () => {
           seat.seat === 1
             ? {
                 ...seat,
-                stats: { ...seat.stats, income: 20 },
+                stats: { ...seat.stats, income: 200 },
                 projects: ["quality", "satisfaction", "workforce"] as const,
               }
-            : { ...seat, stats: { ...seat.stats, income: 30 } },
+            : { ...seat, stats: { ...seat.stats, income: 300 } },
         ),
       },
       0,

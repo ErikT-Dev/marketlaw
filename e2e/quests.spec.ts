@@ -4,7 +4,7 @@ import { expectScreenFits } from "./expectScreenFits";
 import { playMarketPhase } from "./playMarketPhase";
 import { startTestRoom } from "./startTestRoom";
 
-const SEAT_ONE_READY_FOR_TRADING_POST = { seat: 1, city: ["Apparel Store"], stats: { income: 4 } };
+const SEAT_ONE_READY_FOR_TRADING_POST = { seat: 1, city: ["Apparel Store"], stats: { income: 40 } };
 
 async function seatPage(browser: Browser, link: string, turn: number): Promise<Page> {
   const page = await (await browser.newContext()).newPage();
@@ -40,7 +40,7 @@ test("five quests with three-part requirements and four players can all be reach
     ],
     seats: [
       SEAT_ONE_READY_FOR_TRADING_POST,
-      { seat: 2, city: ["Apparel Store"], stats: { income: 4 } },
+      { seat: 2, city: ["Apparel Store"], stats: { income: 40 } },
     ],
   });
   const page = await seatPage(browser, seatOne, 20);
@@ -126,7 +126,7 @@ test("a completed quest shows as completed, stays hidden from others until the m
   const yourRow = lastTurnQuests(one).getByRole("listitem");
   await expect(yourRow).toContainText("Trading post");
   await expect(yourRow.getByRole("button", { name: "You" })).toBeVisible();
-  for (const part of ["+1 funds", "+2 influence"]) {
+  for (const part of ["+12 funds", "+2 influence"]) {
     await expect(yourRow.getByRole("img", { name: part })).toBeVisible();
   }
   await expect(lastTurnQuests(two).getByRole("button", { name: "Seat 1" })).toBeVisible();

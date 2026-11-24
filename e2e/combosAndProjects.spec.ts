@@ -18,7 +18,7 @@ test("claim combos with the totals, complete a project, and get its funds withou
 }, testInfo) => {
   const [seatOne = "", seatTwo = ""] = await startTestRoom(request, {
     players: 2,
-    seats: [{ seat: 1, city: ["Row House", "Fire Station"], stats: { quality: 8, income: 10 } }],
+    seats: [{ seat: 1, city: ["Row House", "Fire Station"], stats: { quality: 8, income: 100 } }],
   });
   const ann = await openSeat(browser, viewport, seatOne);
   const bea = await openSeat(browser, viewport, seatTwo);
@@ -62,12 +62,12 @@ test("claim combos with the totals, complete a project, and get its funds withou
   }
   await expectScreenFits(ann, "projects", testInfo);
   await streets.getByRole("button", { name: "Complete" }).click();
-  await expect(ann.getByRole("img", { name: "Funds 9.0", exact: true })).toBeVisible();
+  await expect(ann.getByRole("img", { name: "Funds 90", exact: true })).toBeVisible();
   await expect(ann.getByRole("img", { name: "Quality 1" })).toBeVisible();
 
   await ann.getByRole("button", { name: "End turn" }).click();
   await bea.getByRole("button", { name: "End turn" }).click();
   await expect(ann.getByRole("heading", { name: "Turn 2 of 40" })).toBeVisible();
-  await expect(ann.getByRole("img", { name: "Funds 20.1", exact: true })).toBeVisible();
+  await expect(ann.getByRole("img", { name: "Funds 201", exact: true })).toBeVisible();
   await Promise.all([ann, bea].map(async (page) => page.context().close()));
 });

@@ -4,8 +4,6 @@ import type { SeatState } from "../../../src/rules/SeatState.ts";
 import { bankLeftAt } from "../../../src/shared/bankLeftAt.ts";
 import { typeCountsOf } from "../../../src/rules/typeCountsOf.ts";
 import { comboLabel } from "./comboLabel.ts";
-import { fundsWritten } from "./fundsWritten.ts";
-import { statsWritten } from "./statsWritten.ts";
 
 export function seatThen(
   state: GameState,
@@ -15,7 +13,7 @@ export function seatThen(
   const clock = decisionClockOf(state, seat.seat);
   return {
     seat: seat.seat,
-    stats: statsWritten(seat.stats),
+    stats: seat.stats,
     hand: seat.hand,
     city: seat.city,
     gained_types: seat.gainedTypes,
@@ -36,7 +34,7 @@ export function seatThen(
     out_of_time: seat.isOutOfTime,
     turn_draw_pending: seat.isTurnDrawOpen,
     redraws_used: seat.redrawsUsed,
-    worth_gained: fundsWritten(seat.worthGained),
+    worth_gained: seat.worthGained,
     left: seat.departure !== null,
     time_bank_ms: clock === null ? seat.timeBankMs : bankLeftAt(clock, now),
     timeouts_in_a_row: seat.timeoutsInARow,

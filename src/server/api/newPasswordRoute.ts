@@ -27,7 +27,7 @@ export async function newPasswordRoute(request: Request, env: Env): Promise<Resp
   if (identity === null) {
     return json({ isOk: false, reason: "link_expired" }, 400);
   }
-  const { playerId, name } = identity;
+  const { playerId, name, icon } = identity;
   const passwordHash = await hashPassword(body.password);
   const token = await setPasswordWithLink(env.DB, { ...link, playerId, passwordHash });
   if (token === null) {
@@ -39,5 +39,5 @@ export async function newPasswordRoute(request: Request, env: Env): Promise<Resp
     isLeaving: false,
     isEndingEveryLogin: true,
   });
-  return json({ isOk: true, token, playerId, name }, 200);
+  return json({ isOk: true, token, playerId, name, icon }, 200);
 }

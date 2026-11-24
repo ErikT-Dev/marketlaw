@@ -1,6 +1,8 @@
 import type { Card } from "../../../shared/catalogue/Card";
+import { cardNameSizeOf } from "../../components/cardNameSizeOf";
+import { cardTileBackground } from "../../components/cardTileBackground";
 import { CardTileFace } from "../../components/CardTileFace";
-import { sectorColor } from "../../components/sectorColor";
+import { CardTilePicture } from "../../components/CardTilePicture";
 import styles from "./CardSet.module.css";
 import { openCardDetail } from "./openCardDetail";
 
@@ -17,12 +19,13 @@ export function CardSetGrid({ cards }: Props) {
             type="button"
             className={styles["tileFace"]}
             aria-label={card.name}
-            style={{ background: sectorColor(card.sector, card.tier) }}
+            style={{ background: cardTileBackground(card.sector, card.tier) }}
             onClick={() => {
               openCardDetail(card.name);
             }}
           >
-            <CardTileFace card={card} nameSize="regular" />
+            <CardTilePicture photo={card.photo} />
+            <CardTileFace card={card} nameSize={cardNameSizeOf(card.name, "city")} />
           </button>
         </li>
       ))}

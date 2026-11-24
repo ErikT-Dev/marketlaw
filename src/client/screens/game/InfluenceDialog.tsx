@@ -9,7 +9,6 @@ import { DrawActionTable } from "./DrawActionTable";
 import styles from "./GameDialogs.module.css";
 import influenceStyles from "./InfluenceDialog.module.css";
 import { TradeTile } from "./TradeTile";
-import { tenthsShown } from "../../components/tenthsShown";
 
 type Props = {
   readonly seat: OwnSeatView;
@@ -26,7 +25,7 @@ export function InfluenceDialog({ seat, isBusy, onTrade, onDraw, onClose }: Prop
         {"You have "}
         <StatChip stat="influence" value={seat.stats.influence} />
         {" and "}
-        <StatChip stat="funds" value={tenthsShown(seat.stats.funds)} />
+        <StatChip stat="funds" value={seat.stats.funds} />
         {". "}
         <StatChip stat="influence" />
         {" actions can be used any time in the main phase."}

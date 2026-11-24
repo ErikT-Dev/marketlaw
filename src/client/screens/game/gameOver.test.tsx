@@ -21,7 +21,8 @@ function place(
     leftInTurn: null,
     hasReachedEndGoal: false,
     income: 15,
-    fundsAndHand: 20,
+    funds: 20,
+    cardsInHand: 0,
     counts: NO_SUMMARY_COUNTS,
     ...changes,
   };
@@ -52,7 +53,7 @@ describe("end-of-game screen", () => {
     showResult(END_GOAL);
     const dialog = screen.getByRole("dialog", { name: "Cy wins!" });
     expect(textWithIconNames(dialog)).toContain(
-      "Cy reached [Income 20] and all 3 projects in turn 24, so the game ended after that main phase.",
+      "Cy reached [Income 200] and all 3 projects in turn 24, so the game ended after that main phase.",
     );
     const rows = within(within(dialog).getByRole("table", { name: "Places" }))
       .getAllByRole("row")
@@ -63,10 +64,10 @@ describe("end-of-game screen", () => {
           .map((cell) => cell.textContent),
       );
     expect(rows).toEqual([
-      ["1st", "won", "512", "yes", "Q2T14C3F61.5"],
-      ["2nd", "lost", "487", "no", "Q0T0C0F0.0"],
-      ["3rd", "lost", "455", "no", "Q0T0C0F0.0"],
-      ["4th", "left", "301", "no", "Q0T0C0F0.0"],
+      ["1st", "won", "512", "yes", "Q2T14C3F615"],
+      ["2nd", "lost", "487", "no", "Q0T0C0F0"],
+      ["3rd", "lost", "455", "no", "Q0T0C0F0"],
+      ["4th", "left", "301", "no", "Q0T0C0F0"],
     ]);
     expect(
       within(dialog)
@@ -89,7 +90,8 @@ describe("end-of-game screen", () => {
       satisfaction: -150,
       product: 550,
       distribution: 0,
-      fundsAndHand: 420,
+      funds: 300,
+      cardsInHand: 120,
       bonusTypes: 600,
     };
     showResult({
@@ -107,7 +109,8 @@ describe("end-of-game screen", () => {
       "[Satisfaction]",
       "[Product]",
       "[Distribution]",
-      "[Funds] + hand",
+      "[Funds]",
+      "Cards in hand",
       "Bonus types",
       "Total",
     ]);
@@ -121,8 +124,8 @@ describe("end-of-game screen", () => {
           .map((cell) => cell.textContent),
       ]);
     expect(rows).toEqual([
-      ["You", "130", "2.8", "3.85", "−1.5", "5.5", "0", "4.2", "6", "150.85"],
-      ["Ann", "0", "0", "0", "0", "0", "0", "0", "12", "12"],
+      ["You", "130", "2.8", "3.85", "−1.5", "5.5", "0", "3", "1.2", "6", "150.85"],
+      ["Ann", "0", "0", "0", "0", "0", "0", "0", "0", "12", "12"],
     ]);
   });
 

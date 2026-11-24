@@ -17,7 +17,8 @@ const LAST_PLAYER: GameResult = {
     leftInTurn: seat === 2 ? null : 10,
     hasReachedEndGoal: false,
     income: 12,
-    fundsAndHand: 20,
+    funds: 20,
+    cardsInHand: 0,
     counts: NO_SUMMARY_COUNTS,
   })),
 };
@@ -30,7 +31,8 @@ const LAST_PLACE = LAST_PLAYER.places[0] ?? {
   leftInTurn: null,
   hasReachedEndGoal: false,
   income: 3,
-  fundsAndHand: 0,
+  funds: 0,
+  cardsInHand: 0,
   counts: NO_SUMMARY_COUNTS,
 };
 

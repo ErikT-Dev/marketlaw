@@ -1,6 +1,6 @@
 # Phase 29c: Playthrough fixes
 
-Status: approved
+Status: in progress
 Milestone: 6 Learning
 
 ## Goal
@@ -47,8 +47,8 @@ The starter creates the branch `phase-29c-playthrough-fixes` from master and, be
 Progress checklist, writes the spec changes of Q188 into `harness/spec/` (game rules, screens,
 accounts, tutorial, glossary, rulebook) in `HARNESS:` commits, the spec first (D19). The rule
 files, scenarios, invariants and the budget follow in item 1. From the first spec commit on,
-`npm run check` fails until the items below are built; the 18 required names of "Waiting for
-the owner" keep failing until the owner answers.
+`npm run check` fails until the items below are built. The owner approved the 18 required
+names of "Answered by the owner" on 2026-11-24 (Q188).
 
 ## Builds
 
@@ -57,7 +57,7 @@ the owner" keep failing until the owner answers.
    `10 more each time`, R20.8's numbers up to 999, R20.9's income 50); the scenario format reads
    funds as whole numbers (`HARNESS.md`, `scenario-format.yaml`); every scenario's funds,
    income, F, costs, prices, sale values, Support and score follow the new amounts, names kept
-   except the 18 of "Waiting for the owner"; the first-completion scenarios expect 2 funds per
+   except the 18 of "Answered by the owner"; the first-completion scenarios expect 2 funds per
    tier and no influence; I8, I16, I28, I30 and B19 follow; the new scenarios of "Required
    scenarios". `HARNESS:` commits only, recorded in Q188. Large; split it by scenario file if it
    runs over three commits.
@@ -109,6 +109,9 @@ in a `HARNESS:` commit and recorded in Q188; one that only disagrees with the co
 - Game records saved before this phase keep the amounts they were saved with (income and funds
   in the old units); they are not converted (D1: stored data may be wiped before version 1).
 - The players online list (S10.2) shows names without icons, as before (Q188, point 1).
+- A one-word card name too wide for its tile (on city and card set tiles: Telecommunication,
+  Hydroelectricity, Slaughterhouse, Pharmaceutical and a few more) still breaks inside the word,
+  against S6.4: no readable font size fits it (Q188, finding R2).
 
 ## What you can see when it's done
 
@@ -124,7 +127,7 @@ players' names; and the panels let more of the background show.
 ## Exit criteria
 
 - Every scenario of this phase passes, and the required scenarios that now assert the new
-  amounts pass again; the 18 of "Waiting for the owner" under the names the owner approves.
+  amounts pass again; the 18 of "Answered by the owner" under their approved names.
 - `npm run check` fails with a clear message when `influence-actions.txt` uses the old fixed
   words `1 more each time`, or `quests.txt` a number over 999 (tested), and passes on the files
   as the owner leaves them.
@@ -141,10 +144,13 @@ players' names; and the panels let more of the background show.
 
 ## Waiting for the owner
 
-- **Approve 18 required names (Q188).** Points 4 and 5 make these names on
-  `harness/required.yaml` untrue. Names leave the list only with your approval, so they are
-  left unchanged until you answer; until then the check cannot go green. Proposed, each a
-  rename (the scenario is changed to the new rule under the new name):
+- Nothing.
+
+## Answered by the owner
+
+- **18 required names approved (2026-11-24, Q188).** Points 4 and 5 make these names on
+  `harness/required.yaml` untrue; the owner approved every rename below (the scenario is
+  changed to the new rule under the new name). Item 1b makes them:
   - `playing-cards`: "real cost adds 1 for each card of the same sector and tier already in the
     city" → "real cost adds 10 for each card of the same sector and tier already in the city"
   - `projects`: "rejects a project with less than 10 income" → "rejects a project with less
@@ -184,8 +190,8 @@ players' names; and the panels let more of the background show.
   - `end-of-game`: "the score counts whole funds only" → "the score counts 0.02 points for every
     fund"
 
-  Everything else in the phase goes on without the answer. Once you approve, one `HARNESS:`
-  commit makes these changes in the scenario files and in `harness/required.yaml` together.
+  One `HARNESS:` commit makes these changes in the scenario files and in
+  `harness/required.yaml` together (item 1b).
 
 ## Required scenarios
 
@@ -206,4 +212,411 @@ scenarios, which expect the first completers' funds instead of influence.
 
 ## Progress
 
-Filled in by the starter.
+- [x] 0. Start (2026-11-24). The spec of Q188 is written in `63ca4744 HARNESS: Spec for the
+  2026-11-24 notes (Q188)`: `game-rules.md`, `screens.md`, `accounts.md`, `tutorial.md`,
+  `glossary.md`, `multiplayer.md`, `rulebook.md`. The rule files (`cards.json`, `quests.txt`,
+  `influence-actions.txt`) are not touched yet: they are item 1a's. The starter's decisions are
+  in Q188 ("Starter's decisions"): the score's funds and cards in hand are two parts (S9.5) and
+  two record values (A3.2); the tutorial's new numbers; S1.8, S1.12, S3, S6.4 and S14.3 as
+  written. `decisions.md` has nothing open for this phase.
+  - **The owner approved the 18 renames** (2026-11-24, "Answered by the owner"); item 1b makes
+    them in one `HARNESS:` commit together with `harness/required.yaml`.
+  - **The owner asked** (2026-11-24, Q188) that the ×10 reaches `cards.json`, `quests.txt`,
+    `influence-actions.txt` (item 1a) and the projects' reward and need wherever they are
+    written. The project reward (+10 income, +20 funds, +3 influence) and need (100 income) are
+    written in: `src/rules/completeProject.ts` (income +1 and `PROJECT_FUNDS_REWARD`; item 2a);
+    `src/shared/PROJECT_INCOME_NEED.ts` (10; item 2a); `src/client/screens/game/ProjectsDialog.tsx`
+    (reward chips +1 and +2, and the income "you have"; item 4);
+    `src/client/screens/game/PROJECTS_HELP.ts` (S6.3; item 4);
+    `src/client/screens/game/REJECTION_MESSAGES.ts` (`project_needs_not_met`, S16.3; item 4);
+    `src/client/screens/tutorial/TUTORIAL_TEXTS.ts` (T5.2 "+1 income", T5.4 "10 income" and
+    "income 20"; item 4); the rulebook (`harness/spec/rulebook.md`, done by the starter; its
+    client tests `rulebookChangedSections.test.tsx` and `combosAndProjects.test.tsx` expect the
+    old words; item 4); `harness/scenarios/projects.yaml` (items 1b and 1c); invariant I8
+    (item 1a).
+  - **Counts now.** `npm run harness:check`: 545 scenarios, 0 problems.
+    `tools/harness-runner/harness.test.ts` expects 545; item 1b adds 3 scenarios (the 2 of
+    `quests` and the 1 of `end-of-game` in "Required scenarios") and sets it to 548.
+  - From the spec commit on, `npm run check` fails (the rulebook's client tests among others)
+    until the items are built. Items 1a to 1d change the harness before the engine, so their
+    scenarios fail until item 2a. A builder of item 1 checks each number by hand against the
+    spec; the builder of 2a makes them pass, and a scenario that turns out to contradict the
+    spec is fixed in a `HARNESS:` commit recorded in Q188. Every builder reports which failures
+    remain and whose item they belong to.
+  - **One raise each for the phase**, by item 2a and not again: `PROTOCOL_VERSION` 28 to 29
+    (`src/shared/PROTOCOL_VERSION.ts`, Q75) and `SAVE_SCHEMA_VERSION` 19 to 20
+    (`src/rules/SAVE_SCHEMA_VERSION.ts`, D1). If an item that changes a message shape (5) is
+    built before 2a, it raises `PROTOCOL_VERSION` and notes it here, and 2a does not.
+  - **Order.** 1a, 1b, 1c, 1d, 2a, 2b, 3, 4, in this order (each builds on the units of the one
+    before). 5 to 9 do not touch the amounts and can go in any order, before or after; 5 and 9
+    both touch your icon and name, 7 and 8 both styles, so they pair well.
+
+- [x] 1a. **Rule files, their checks, the format, invariants and budget** (R3.2, R15.5, R20.8,
+  R20.9, T0.7, I8, I16, I28, I30, B19, points 4 and 5). **Large.**
+  - `harness/spec/cards.json`: every `cost` × 10 (only `cost`; stat numbers stay). `quests.txt`:
+    every `income N` requirement and every `+N fund(s)` and `+N income` reward × 10 (influence,
+    other stats, types and draws stay). `influence-actions.txt`: every amount of funds × 10
+    (`pay 20 funds, 10 more each time`; influence and other stats stay); every number stays
+    within R15.5's 1 to 99.
+  - Readers and checks: R15.5's fixed words become `10 more each time`, a price 10 funds higher
+    each time (`src/shared/ruleFiles/influenceCostsOf.ts` and
+    `readInfluenceActionFile.test.ts`); `1 more each time` fails with a clear message, and a
+    `quests.txt` number over 999 fails (both tested in
+    `tools/harness-check/checkRuleFiles.test.ts`, exit criteria); numbers up to 999 pass
+    (R20.8); R20.9's starting-table check uses income 50; T0.7's line in
+    `tools/harness-check/TUTORIAL_TRADING_POST_LINE.ts` becomes
+    `Tier 1 | Trading post | income 40, 1 Retail | +10 funds, +2 influence`.
+  - `harness/HARNESS.md` (the line on one decimal, `funds: 5.3`) and `scenario-format.yaml`:
+    funds, income and `worth_gained` are whole numbers.
+  - `invariants.yaml`: I8 (income at least 30), I16 (the income gate, if it names numbers), I28
+    (F at least 140), I30 (F in funds, 10 per card, no tenths). `budgets.yaml` B19: limit 16,
+    its `why` naming 200 × 172 pictures.
+  - `HARNESS:` commits recorded in Q188 (code in `src/shared/` goes in its own `RULES:` commit).
+    Until item 2a the code still multiplies the files' amounts by 10 (`fundsInTenths`), so
+    amounts are 10 times too big at run time in between; that is expected.
+  - Done (2026-11-24). Also changed, beyond the list above: the rising price's step is
+    `src/shared/ruleFiles/RISING_PRICE_STEP.ts` (10), used by the reader's fixed words, the
+    engine's price (`src/rules/tradeCostsOf.ts`, so the price rises 10 a buy) and the
+    rulebook's influence table text; quests read numbers up to 999 with `questNumberOf.ts`;
+    the card check's tier cost ranges are 30–60, 70–90, 110–130
+    (`tools/harness-runner/checkCardData.ts`); client tests that only show the files' numbers
+    (card set, big card, game log, rulebook tables) expect the new ones. Recorded in Q188.
+  - **For later items:** `npm run harness:check` reports 13 scenario values that are not whole
+    numbers (items 1b to 1d: `end-of-game`, `records-and-ratings`, `turns-and-time`,
+    `tutorial`). Tests that fail until item 2a (the engine still counts tenths and the old
+    income): `src/rules/` abandonVote, drawLog, handDetails, hiddenDuringMainPhase,
+    invariantViolations, mainPhaseLog, questTable, tutorial/applyTutorialAction, undo,
+    worthGained; `tools/simulator/shownPiles`; `tools/harness-runner/harness.test.ts`; and
+    two in `tools/harness-check/checkRuleFiles.test.ts` that count the tier 1 quests placeable
+    at the start, which follow once `STARTING_STATS.income` is 30 and
+    `incomeToPlaceQuestOf.ts` uses N − 20 and 80 (2a). Client tests for item 4 (or 2a's units):
+    `influenceAndUndo` (3), `quests` (income progress), `handAndActions` (the real cost
+    text), besides the rulebook tests that failed from the spec commit on.
+
+- [x] 1b. **The 18 renames, the first-completion scenarios, `quests` and `end-of-game`** (R19.10,
+  R19.11, R21.4, R21.5, point 4). **Large.**
+  - One `HARNESS:` commit: the 18 renames of "Answered by the owner", each scenario changed to
+    the new rule under its new name, in `playing-cards`, `projects`, `setup`, `turns-and-time`,
+    `influence`, `undo`, `quests` and `end-of-game`, with `harness/required.yaml` in the same
+    commit.
+  - Then the rest of `quests.yaml` (first completers get 2 funds per tier and no influence; the
+    gates N − 20 and 80; rewards from the new `quests.txt`) and `end-of-game.yaml` (0.65 ×
+    income, 0.02 × funds, 0.2 × cards in hand; funds and cards in hand as two score parts where
+    a scenario names the parts), and the 3 new scenarios of "Required scenarios" (not on the
+    required list yet; the finisher adds them). Set the count in
+    `tools/harness-runner/harness.test.ts` to 548.
+  - Done (2026-11-24) as listed; recorded in Q188. "The score counts 0.02 points for every
+    fund" uses 25 funds (scores 20, where funds rounded down to tens would give 19); the new
+    score scenario uses income 37 (score 25). No score parts are asserted anywhere (no scenario
+    uses `score_parts`).
+  - **For later items:** `npm run harness:check` now reports 9 values that are not whole
+    numbers, all of items 1c (`turns-and-time`) and 1d (`records-and-ratings`, `tutorial`).
+    `tutorial.yaml`'s Trading post step (1d) still expects the old first-completion influence
+    (influence 7); T5.3 now gives 2 funds and no influence. Until items 2a and 3, the renamed
+    and reward scenarios of `quests`, `undo`, `end-of-game` and the rest fail (engine in tenths,
+    first completion still gives influence); the 3 new scenarios belong to item 3
+    (`quests`) and 2a (`end-of-game`). `harness.test.ts` expects 548.
+
+- [x] 1c. **Scenarios of turns, cards, projects, influence, undo, setup and combos** (R2.1, R2.4,
+  R3.8, R5.1, R11.5, R13.1, R14, R15, R16.2, R16.3). **Large.**
+  - Every other funds, income, `worth_gained`, cost, price, sale and Support value in
+    `turns-and-time`, `playing-cards`, `projects`, `influence`, `undo`, `setup` and
+    `combos-and-income` × 10, names kept. The stats gain is 1 fund a point (a gain of 23 is
+    +23), Support 10 per full 100 behind, F starts at 140 and counts 10 per card; projects need
+    income 100 and give +10 income and +20 funds.
+  - `HARNESS:` commits (one or two), recorded in Q188.
+  - Done (2026-11-24) in one `HARNESS:` commit, recorded in Q188; no scenario contradicted the
+    spec. The game log's `support:` value is in funds (`support: 30`).
+  - **For later items:** `npm run harness:check` reports 6 values that are not whole numbers,
+    all item 1d's (`records-and-ratings` 1, `tutorial` 5); `npm run check` stops there until 1d.
+    `npm run test` then fails 55 tests in 18 files, none from 1c: the scenarios
+    (`harness.test.ts`) and the `src/rules/`, simulator and `checkRuleFiles` tests listed under
+    1a until 2a; `tutorial/applyTutorialAction` until 1d and 2a; the client's `handAndActions`,
+    `influenceAndUndo`, `quests`, `parseRulebook` and `rulebookChangedSections` until item 4.
+    `npm run size` passes.
+
+- [x] 1d. **Scenarios of records, visibility, hostile client, tutorial and the rest.** **Small.**
+  - `records-and-ratings`, `visibility`, `hostile-client`, `tutorial`, `drawing`, `client`:
+    every amount of funds and income × 10; records hold funds and cards in hand as two values
+    where a scenario names "funds plus cards in hand" (A3.2, Q188); `tutorial.yaml` follows the
+    new numbers of `tutorial.md`. Then search every scenario file once more for old values of
+    `funds`, `income`, `worth_gained`, costs and scores. `HARNESS:` commit, recorded in Q188.
+  - Done (2026-11-24) in one `HARNESS:` commit, recorded in Q188; no scenario contradicted the
+    spec, and no other scenario file holds an old amount. Records name `funds` and
+    `cards_in_hand` instead of `funds_plus_hand` (3 scenarios).
+  - **For later items:** `npm run harness:check` passes (548 scenarios, 0 problems).
+    `npm run test` fails the same 55 tests in 18 files as after 1c, none from 1d: the scenarios
+    (`harness.test.ts`) and the `src/rules/`, simulator and `checkRuleFiles` tests until 2a;
+    `tutorial/applyTutorialAction` until 2a and 3; the client's `handAndActions`,
+    `influenceAndUndo`, `quests`, `parseRulebook` and `rulebookChangedSections` until item 4.
+    The runner's `recordThen.ts` still writes `funds_plus_hand`; it must write `funds` and
+    `cards_in_hand` with the record's new values (2b). The tutorial scenario's turn 5 expects
+    funds 17 and influence 6 (item 3).
+
+- [x] 2a. **Funds × 10 in the engine and the runner** (R2.1, R2.4, R2.5, R3.8, R5.1, R11.5,
+  R13.1, R14, R16, R19.11, R21.4, R21.5, point 5). **Large.**
+  - Remove `TENTHS_PER_FUND`, `fundsInTenths`, `amountsInTenths` and `wholeFundsOf`
+    (`src/shared/`) and the runner's one-decimal reading and writing
+    (`tools/harness-runner/engine/FUNDS_IN_TENTHS.ts`, `fundsWritten.ts`, `statsWritten.ts`):
+    the rule files' amounts are used as written. Income: starts at 30 (`STARTING_STATS.ts`),
+    +10 per product and distribution, +10 per project (`completeProject.ts`), end goal 200
+    (`END_GOAL.ts`), projects need 100 (`src/shared/PROJECT_INCOME_NEED.ts`), quest gate N − 20
+    and 80. F: 10 per card, starting at 140. Support 10 per full 100. Stats gain 1 fund a point.
+  - Score (`src/rules/SCORE_HUNDREDTHS.ts`, `scorePartsOf.ts`, `gameResultOf.ts`): income 65
+    hundredths, funds 2, cards in hand 20, as two parts `funds` and `cardsInHand` instead of
+    `fundsAndHand` (`src/shared/PlaceResult.ts`, `protocol/GAME_RESULT_SCHEMA.ts`).
+  - Raise both versions (Start). Every commit type-checks on its own: where removing a shared
+    helper breaks the client, make the smallest client change and leave the texts to item 4.
+  - Split if it runs over three commits: the engine and runner here, the rest in 2b.
+  - Done (2026-11-24) as listed, in one commit; `PROTOCOL_VERSION` 29, `SAVE_SCHEMA_VERSION`
+    20. Also: `FUNDS_PER_SOLD_CARD` 10; the real cost adds 10 a card of the same sector and tier
+    (`realCostOf.ts`); F per card is `src/rules/WORTH_GAINED_PER_CARD.ts` (10); I8 checks income
+    against `STARTING_STATS.income`; the runner reads and writes funds and F as written. The
+    end-of-game table (`ScorePartsTable.tsx`) already shows funds and cards in hand as two
+    columns, as the score parts changed. Smallest client changes only: `tenthsShown.ts` and
+    `wholeFundsShown.ts` keep their own divisor of 10 until item 4 removes them, so screens
+    still show income and funds divided by 10 (income 30 as 3.0); the client tests' fixtures
+    and the sale texts ("Sell for [Funds 10]?") follow the new units.
+  - **For later items:** `gameRecordOf.ts` writes `fundsAndHand: place.funds + place.cardsInHand`
+    for now; 2b replaces it with `funds` and `cardsInHand` (and `recordThen.ts`'s
+    `funds_plus_hand`). Bots and the simulator are untouched (2b); the check's simulated games
+    pass. Failures left (`npm run check` reaches the tests; everything before them passes, and
+    `npm run size` passes): `npm run test` fails 19 tests in 12 files. Item 2b: `harness.test.ts`'s 3
+    `records-and-ratings` scenarios and `src/rules/gameRecordOf.test.ts` (2; fixtures in old
+    units and `fundsAndHand`). Item 3: the 48 `quests` reward and first-completion scenarios,
+    the `tutorial` scenario's turn 5, and `tutorial/applyTutorialAction.test.ts` (expects the
+    spec's funds 17, influence 6). Item 4 (screens still divide by 10, and the old texts):
+    `GamePage`, `handAndActions` (the real cost text), `influenceAndUndo` (3),
+    `lastTurnPanel`, `opponents`, `quests`, `combosAndProjects`, `parseRulebook` and
+    `rulebookChangedSections` (5).
+
+- [x] 2b. **Bots, simulator and records** (A3.2, A3.3, R21.4). **Large.**
+  - Bots (`src/bots/`) and the simulator follow the units (fund and income thresholds × 10).
+  - Records: `src/shared/api/RecordedSeat.ts` and `src/rules/gameRecordOf.ts` hold `funds` and
+    `cardsInHand` instead of `fundsAndHand`; a record saved before still reads (keep
+    `fundsAndHand` optional, as `counts` was kept, and show it as before; Q188). The record
+    screen (`src/client/screens/records/GAME_RECORD_ROWS.tsx`) and the end-of-game table
+    (`src/client/screens/game/ScorePartsTable.tsx`) show funds and cards in hand as two rows.
+  - Run `npm run harness` (simulated games, I8, I16, I28, I30, budgets).
+  - Done (2026-11-24); recorded in Q188. Bots needed no change (they hold no amounts of funds
+    or income), and the simulator's funds samples were already whole funds after 2a. A new record
+    holds `funds` and `cardsInHand`; `fundsAndHand`, `funds` and `cardsInHand` are all read as
+    optional (null when absent). The record page shows **Funds** and **Cards in hand** rows, or the
+    old **Funds + cards in hand** row for a record saved before (`fundsRowsOf.ts`, tested in
+    `recordedFunds.test.tsx`); the runner's `recordThen.ts` writes `funds` and `cards_in_hand`.
+    `ScorePartsTable.tsx` was already split by 2a. `npm run harness`: 1000 simulated games, every
+    invariant (I8, I16, I28, I30 among them) and every budget pass; only item 3's required
+    scenarios fail.
+  - **For later items:** `npm run check` reaches the tests (everything before them passes) and
+    fails 17 tests in 11 files, none from 2b. Item 3: `harness.test.ts` (the 48 `quests` reward
+    and first-completion scenarios and the `tutorial` scenario's turn 5) and
+    `tutorial/applyTutorialAction.test.ts`. Item 4: `combosAndProjects`, `GamePage`,
+    `handAndActions`, `influenceAndUndo` (3), `lastTurnPanel`, `opponents`, `quests`,
+    `parseRulebook` and `rulebookChangedSections` (5). The record page's income still goes
+    through `tenthsShown` (item 4).
+
+- [x] 3. **First completion gives funds** (R19.5, R19.10, S5.4, S5.5, point 4). **Small.**
+  - 2 funds per tier of the quest (2, 4, 6) instead of +1 influence, counted in F and taken back
+    by undo; the Last turn panel adds them to the reward's funds; the log; the quests help text
+    (S5.4). Covers 1b's `quests` scenarios (the renamed ones and the 2 new ones).
+  - Done (2026-11-24); recorded in Q188. The engine's amount is
+    `src/rules/firstCompletionFundsOf.ts`. The view's `lastTurn.quests` carries
+    `firstCompletionFunds` per quest (0 when it was completed in an earlier turn), which the
+    Last turn panel adds to the reward's funds: a view shape change, with no second
+    `PROTOCOL_VERSION` raise (2a's covers the phase). The game log's quest line names only the
+    quest (S7.2, M3.7), so it is unchanged. The quests help text is now S5.4's whole text; the
+    tutorial's T5.3 text after completing Trading post says 2 funds (its text before, "income
+    4", is item 4's).
+  - **For later items:** `npm run check` reaches the tests (everything before them passes) and
+    fails 15 tests in 9 files, all item 4's: `combosAndProjects`, `GamePage`, `handAndActions`,
+    `influenceAndUndo` (3), `lastTurnPanel` (income shown as tenths), `opponents`, `quests`,
+    `parseRulebook` and `rulebookChangedSections` (5). Every scenario passes.
+
+- [x] 4. **Whole numbers on screen and the new texts** (S1.9, S6.3, S6.5, S8.2, S8.3, S9.5,
+  S13.2, S15.2, S16.3, rulebook, point 5). **Large.**
+  - Remove `src/client/components/tenthsShown.ts` and its uses (`summaryCountEntriesOf.ts`,
+    `InfluenceDialog.tsx`, `LastTurnRowParts.tsx`, `mainPhaseLogText.ts`, `OpponentCard.tsx`,
+    `OpponentStatsBox.tsx`, `ProjectsDialog.tsx`, `rejectionMessage.ts`, `YourStatsPanel.tsx`,
+    `GAME_RECORD_ROWS.tsx`).
+  - The project texts listed under Start; "Sell for 10 funds?" and the big card's cost reason
+    ("Base cost 40, plus 30 …", S6.5); `TUTORIAL_TEXTS.ts` with every text of `tutorial.md`
+    (10 funds a sale, 1 fund a point, 10 more a card, Public Playground 50 not 40, 4 funds a
+    product, +10 income, Trading post income 40 and "2 funds more", 100 income, income 200).
+  - Client tests that expect the old words (`rulebookChangedSections.test.tsx`,
+    `combosAndProjects.test.tsx`, `parseRulebook.test.tsx`, the tutorial's) follow the spec.
+  - Done (2026-11-24). `tenthsShown.ts` and `wholeFundsShown.ts` are gone; every screen shows
+    the view's numbers as they are (the record page's income too). The big card's cost reason
+    says the real cost's extra (`realCost − baseCost`), not the card count. Also changed, beyond
+    the list: the end-of-game "reached [Income 200]" (`gameOverTexts.ts`, was 20) and the card
+    set's "you pay 10 more" (`CardDetailFacts.tsx`, was 1); client test fixtures in the tests
+    that failed follow the new units; the browser tests that set up test rooms in old units
+    (`combosAndProjects`, `countsAndPlayerIcons`, `gameOver`, `influenceAndUndo`, `quests`,
+    `rematch`, `testRooms`, `cardNameCombos`, `handAndActionsScreens`) use the new amounts, and
+    `quests.spec.ts`'s Last turn row expects +12 funds (reward 10 plus the first completion's 2).
+    Those specs and `tutorial.spec.ts` pass locally at 1920 × 1080.
+  - **For later items:** nothing of item 4 left; the browser suite's other sizes run on GitHub.
+
+- [x] 5. **Your icon in the user box** (S2.3, S10.1, A2.5, point 1). **Small.**
+  - Reuse `src/client/components/PlayerIcon.tsx`; the user box is in
+    `src/client/screens/account/UserMenu.tsx` (lobby and game top bar); the lobby gets your icon
+    from your account (`AccountBinding.ts`). If the account data the client holds lacks the
+    icon, add it to the existing account response (see Start on the protocol raise).
+  - Done (2026-11-24); recorded in Q188. The account response already held the icon, so no
+    message changed shape and `PROTOCOL_VERSION` was not touched. The store keeps it
+    (`ClientState.accountIcon`, by session token), loaded from `/api/account` once per token
+    and replaced on an accepted icon change; `AccountBinding.icon` carries it to every user box.
+    The box shows `PlayerIconFace` in its 32 px circle, not `PlayerIcon`, which is a button and
+    cannot sit inside the user box's button; the name beside it keeps it decorative.
+    `e2e/userMenu.spec.ts` passes locally at 1920 × 1080.
+  - **For later items:** item 9's own icon over your counts can come from the view's seat icons
+    as now. `npm run check` fails the same 15 tests in 9 files as after item 3, all item 4's.
+
+- [x] 6. **Card tiles** (S6.4, S14.3, S3.2, B19, points 2, 3 and 6). **Large.**
+  - Pictures at 200 × 172: `tools/design-export/makeCardTilePictures.ts` (`TILE_PICTURE_SIZE` is
+    100 × 86), each at most 16 KB (lower the quality, never the budget); its test
+    `cardTilePictures.test.ts`. Every tile shows its picture: `HandCard.tsx`, `PlayedCard.tsx`,
+    `MarketCardFace.tsx`, another player's city in the detailed summary table, and the card set
+    (`src/client/screens/cardSet/CardSetGrid.tsx`); reuse `CardTileFace.tsx` and
+    `CardTilePicture.tsx`. Every tile's background: `card-texture.webp`
+    (`src/client/icons/CARD_TEXTURE_URL.ts`, as `BigCard.module.css` uses it) under the sector
+    colour at 80%.
+  - Done (2026-11-24). The 240 pictures are remade at 200 × 172, quality 0.72 as before; the
+    largest is 12.5 KB. The hand, city, marketplace and another player's city
+    (`OpponentBoardDialog.tsx`, through `PlayedCard`) already showed their pictures; only the
+    card set lacked it. `cardTileBackground.ts` now lays the 80% sector colour over the texture,
+    so every tile that used it (hand, city, another player's city, marketplace) and now the card
+    set get it in one place. A card set tile is 94 px high like a city tile, its text kept to
+    62% of the width, its name sized as a city tile's (`cardNameSizeOf(name, "city")`). New
+    tests: `cards.test.tsx` (texture on hand and city tiles), `cardSetPage.test.tsx` (every card
+    set tile has its picture and the texture), `e2e/cardTiles.spec.ts` (every name fits its card
+    set tile). `cardTiles.spec.ts` and `rulesAndCardSet.spec.ts` pass locally at 1920 × 1080.
+  - **For later items:** long one-word names still break inside the word on city and card set
+    tiles ("Brownston e"), as on the city tiles before; the fit test passes, as no text leaves
+    the tile.
+
+- [x] 7. **Buttons and panels** (S1.10, S1.12, S6.6, S10, points 7 and 10). **Small.**
+  - White text on every action button and every lobby button (the waiting room's top bar too),
+    backgrounds dark enough for 4.5:1 normal and highlighted, at most 90% opaque; disabled ones
+    keep their dimmed look. Panel backgrounds 75% instead of 92%
+    (`src/client/components/Panel.module.css`, and the panels with their own background:
+    `LastTurnPanel.module.css`, `GameLogAndChatPanel.module.css`, `RoomChatSection.module.css`,
+    `Lobby.module.css`); the big card's bars stay more transparent. Check the screenshots'
+    readability by eye (axe cannot measure text over the photo, `proposed-rules.md`).
+  - Done (2026-11-24). Only the `menu` and `warning` looks of `Button` had dark text; both now
+    have white text on darker colours (`tokens.css`: menu #9c4a36 to #9a4f0c, warning #8a5a00,
+    hover #704700, each at least 5.9:1 solid). The `warning` look is also the abandon vote's Call
+    button, which follows. Every other look already had white text at 4.8:1 or more; highlighting
+    is an outline and keeps the background. Panels use the new `--opacity-panel-background` (75%),
+    the ranked queue panel (`RankedQueue.module.css`) too; the big card's bars stay at 55%. New
+    `e2e/buttonsAndPanels.spec.ts` checks the action and lobby buttons' text, opacity and contrast
+    and the Actions panel's 75%; it, `handAndActionsScreens.spec.ts` and `lobby.spec.ts` pass
+    locally at 1920 × 1080, and the screenshots read well by eye.
+
+- [x] 8. **Player icons of one size** (S1.8, S5.1, point 8). **Small.**
+  - The orange mark (`src/client/screens/game/QuestPlayerName.tsx`, `PlayerIcon.tsx`) is drawn
+    outside the circle (an outline or ring, not a border inside the box), so a marked icon's
+    circle and picture are as big as an unmarked one's; a browser test compares a marked and an
+    unmarked icon's sizes in one quest.
+  - Done (2026-11-24). `PlayerIcon.module.css`'s mark is a 3 px orange ring (`box-shadow`)
+    outside the 24 px circle; the picture is 14 px in every icon (it was 12.6 px when marked).
+    New `e2e/questIconSizes.spec.ts` (failed on the old mark for the picture size) and
+    `quests.spec.ts` pass locally at 1920 × 1080.
+
+- [x] 9. **The Players panel** (S3, S3.1, S3.3, point 9). **Small.**
+  - `src/client/screens/game/OpponentsPanel.tsx`: title and region **Players**; the tests that
+    find the region "Opponents" follow (`opponents.test.tsx`, `combosList.test.tsx`,
+    `statsAndSummaryTables.test.tsx`, `e2e/connections.spec.ts`, `countsAndPlayerIcons.spec.ts`,
+    `gameScreenSizes.spec.ts`, `matchHistory.spec.ts`, `opponents.spec.ts`). Your counts table
+    shows your icon and username over your Q, T, C and F; each quick summary table shows the
+    player's icon left of their username (reuse `PlayerIcon.tsx`).
+  - Done (2026-11-24). `OwnCountBoxes.tsx` shows your icon (`PlayerIcon` named "You", S1.8, from
+    the room's seat icons) and your username above the count boxes and their **?**; each
+    `OpponentCard.tsx` shows the player's `PlayerIcon` left of its badge. `tooltipsOnFocus.spec.ts`
+    also found the panel by its old name and follows. New tests in `opponents.test.tsx`. Also
+    fixed: `e2e/gameScreenSizes.spec.ts` still expected funds and income with one decimal (left
+    from item 4) and failed at every size; it now expects whole numbers (S1.9). The specs above
+    pass locally at 1920 × 1080 (at 2560 × 1440 the local runs timed out joining the room, Q133).
+
+### Finish
+
+- Finisher (2026-11-24). Added the 3 new scenarios of "Required scenarios" to
+  `harness/required.yaml` (`HARNESS:` commit 42449345; the 18 renames were already there).
+  `npm run check` passed and `npm run harness` passed locally (548 scenarios, 0 problems; 1000
+  simulated games, every invariant and budget). GitHub run 45472988583 on the branch: `check`
+  and the three full-game jobs passed. The three "other tests" jobs failed at every size on
+  one test, and the same one again after one rerun of the failed jobs. The other failures of the
+  first attempt (`roomsAndGuests.spec.ts` "server did not answer", `playerIcon.spec.ts` at
+  1280 x 720) were time-outs and passed on the rerun. Screenshots are not copied yet (the run
+  has not passed); the releaser or the fixer's finisher copies them from the passing run.
+- **F1.** `e2e/gameLog.spec.ts:86` ("the game log sent by the room is listed newest first and
+  fits the screen") expects `"T1Turn 1: Ann used influence: 4Influence → 2Funds"` (line 102), the
+  old unit; the room now sends `4Influence → 20Funds` (R16: 4 influence buy 20 funds). A wrong
+  expectation in the test, not in the code: change the expected line to `→ 20Funds` and check
+  the rest of that spec for other old amounts. Fails at 1280 x 720, 1920 x 1080 and 2560 x 1440.
+  - Fixed: 2c5c17c5 (the expected line is `→ 20Funds`); the browser suite reruns in the releaser's
+    branch check.
+- Phase review (2026-11-25): no blockers; two findings for one fixer.
+- **R1.** Your icon in the user box (item 5, A2.5) costs a second request after `/api/session`:
+  `src/client/store/AccountSessionStore.ts` (`checkSession`, `loadAccountIcon`) asks `/api/account`
+  on every page load and login, one more Worker request and D1 read, and the box shows an empty
+  circle until it answers. Item 5 said to add the icon to the existing response: add `icon` to
+  `SessionResponse` (`src/shared/api/SessionResponse.ts`) and drop the extra request.
+  - Fixed: `/api/session` and every answer that starts a session (guest, login, signup, username
+    change, new password) carry `icon`; the store takes it from them and no longer asks
+    `/api/account` (Q188). The icon route test checks the session answer holds a changed icon.
+- **R2.** Long one-word card names break mid-word ("Brownston e") on city and card set tiles
+  (`overflow-wrap: anywhere`, `src/client/components/Card.module.css` line 73), against S6.4
+  (every name fits). Fix it, or list it under "Known gaps after this phase" and in Q188.
+  - Answered: not fixed, listed under "Known gaps after this phase" and in Q188. Shrinking cannot
+    fit it: the name area of a 140 px tile is about 67 px, and Telecommunication is 87 px wide
+    even at 10 px bold; a fix needs hyphen break points per long word or a wider name area.
+
+### Helper log
+
+Filled in by the coordinator afterwards, from the helpers' completion notices (Q73). Tokens are
+each helper's conversation size at its end.
+
+| Job | Model, effort | Minutes | Tokens | Tool calls | Result |
+|---|---|---|---|---|---|
+| Planner | Opus, medium | 6 | 157,287 | 49 | done |
+| Starter | Opus, medium | 10 | 182,002 | 83 | done |
+| Builder 1a | Opus, medium | 15 | 155,437 | 63 | done |
+| Builder 1b | Opus, medium | 9 | 146,837 | 62 | done |
+| Builder 1c | Opus, medium | 7 | 120,981 | 41 | done |
+| Builder 1d | Opus, medium | 5 | 113,140 | 32 | done |
+| Builder 2a | Opus, medium | 16 | 173,791 | 78 | done |
+| Builder 2b | Opus, medium | 17 | 127,218 | 57 | done |
+| Builder 3 and 5 | Opus, medium | 26 | 196,051 | 129 | done |
+| Builder 4 | Opus, medium | 27 | 153,691 | 103 | done |
+| Builder 6 | Opus, medium | 10 | 130,688 | 47 | done |
+| Builder 7 and 8 | Opus, medium | 18 | 143,354 | 68 | done |
+| Builder 9 | Opus, medium | 12 | 110,227 | 40 | done |
+| Finisher | Sonnet, medium | 31 | 90,600 | 27 | partial (F1) |
+| Fixer F1 | Opus, medium | – | – | – | done (log not kept) |
+| Phase reviewer | Opus, medium | 4 | 117,812 | 38 | done (R1, R2) |
+| Fixer R1, R2 | Opus, medium | 18 | 130,456 | 63 | done |
+
+## Report
+
+**Built.** Everything of the owner's notes of 2026-11-24 (Q188): funds, income and F ten times
+the old ones, so no number has a decimal place, with a score that does not change (you start
+with 70 funds and 30 income, a card costs 40, the end goal is income 200); the first completers
+of a quest get 2, 4 or 6 funds by its tier instead of an influence; your icon in the user box;
+sharper pictures on every small card tile, the card set included, on the big card's texture;
+white text on the action and lobby buttons; quest icons of one size; the left panel titled
+Players with your name and icon over your counts and icons beside the other players' names;
+lighter panel backgrounds; the harness, rulebook and tutorial texts in the new amounts.
+
+**To try.** The list under "What you can see when it's done", on the live site.
+
+**Differences from the phase file.** Those recorded in Progress and `docs/plan/open-questions.md`
+(Q188). The session answers carry the icon (R1), so the client asks `/api/account` no more.
+
+**Decisions.** One raise of `PROTOCOL_VERSION` and of `SAVE_SCHEMA_VERSION` for the phase; no new
+dependency.
+
+**Review.** The finisher's F1 (a wrong amount in `e2e/gameLog.spec.ts`) was fixed. The phase
+reviewer found R1 (the icon cost a second request; fixed) and R2 (long one-word card names break
+inside the word on tiles; answered as a known gap, listed under "Known gaps after this phase"
+and in Q188). The releaser ran the full `npm run check` and `npm run harness` locally on the
+final code: both passed (548 scenarios, 0 problems).

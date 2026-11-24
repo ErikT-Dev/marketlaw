@@ -6,7 +6,7 @@ import { startTestRoom } from "./startTestRoom";
 const LAST_TURN_WITH_THE_END_GOAL = {
   players: 2,
   turn: 12,
-  seats: [{ seat: 1, stats: { income: 22 }, projects: ["quality", "satisfaction", "workforce"] }],
+  seats: [{ seat: 1, stats: { income: 220 }, projects: ["quality", "satisfaction", "workforce"] }],
 };
 
 async function finishTheGame(

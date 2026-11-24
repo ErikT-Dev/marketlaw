@@ -8,7 +8,7 @@
     tutorial_step: T1.1
     seats:
       - seat: 1
-        stats: {funds: 7, income: 3, influence: 0, workforce: 0, quality: 0, satisfaction: 0}
+        stats: {funds: 70, income: 30, influence: 0, workforce: 0, quality: 0, satisfaction: 0}
         build_passes: 2
         hand: [Row House, Stone Quarry, Liquor Shop, Library, Cottage, Pub, Hiking Trail]
     quests: [{quest: Trading post}, {quest: Working district}, {quest: Green city}, {quest: Fishing village}]
@@ -30,7 +30,7 @@
     marketplace: [{place: residential, card: Farm House}, {place: industry, card: Metal Mining}, {place: service, card: Dentist}, {place: public_quality, card: Fire Station}, {place: public_satisfaction, card: Basketball Court}, {place: open_1, card: Apparel Store}, {place: open_2, card: Clinic}, {place: open_3, card: Forest Plantation}]
     seats:
       - seat: 1
-        stats: {funds: 7.1, influence: 1, workforce: 4, quality: -2, satisfaction: -1}
+        stats: {funds: 71, influence: 1, workforce: 4, quality: -2, satisfaction: -1}
         city: [Row House]
 
 - name: tutorial turn 2 teaches the market and combos
@@ -49,7 +49,7 @@
     turn: 3
     seats:
       - seat: 1
-        stats: {funds: 6.4, influence: 2, workforce: 3, quality: 1, satisfaction: -1}
+        stats: {funds: 64, influence: 2, workforce: 3, quality: 1, satisfaction: -1}
         city: [Row House, Fire Station]
         hand: [Stone Quarry, Liquor Shop, Library, Cottage, Pub, Elementary School]
 
@@ -68,7 +68,7 @@
     marketplace: [{place: residential, card: Log House}, {place: industry, card: Orchard}, {place: service, card: Fast Food Restaurant}, {place: public_quality, card: Trauma Center}, {place: public_satisfaction, card: Green Park}, {place: open_1, card: Gym}, {place: open_2, card: Bus Depot}, {place: open_3, card: Poultry Farm}]
     seats:
       - seat: 1
-        stats: {funds: 4.9, influence: 3, workforce: 3, quality: 1, satisfaction: 1}
+        stats: {funds: 49, influence: 3, workforce: 3, quality: 1, satisfaction: 1}
         city: [Row House, Fire Station, Public Playground]
         hand: [Stone Quarry, Liquor Shop, Library, Cottage, Pub, Elementary School, Tennis Court]
 
@@ -86,7 +86,7 @@
     turn: 5
     seats:
       - seat: 1
-        stats: {funds: 4.5, influence: 4, workforce: 1, quality: 1, satisfaction: 0, product: 1}
+        stats: {funds: 45, influence: 4, workforce: 1, quality: 1, satisfaction: 0, product: 1}
         city: [Row House, Fire Station, Public Playground, Orchard]
         hand: [Stone Quarry, Liquor Shop, Library, Cottage, Pub, Elementary School, Tennis Court, Extensive Wheat Farm]
 
@@ -103,7 +103,7 @@
     tutorial_step: T5.4
     seats:
       - seat: 1
-        stats: {funds: 1.5, income: 4, influence: 7, workforce: 0, quality: 0, satisfaction: 0, product: 0, distribution: 0}
+        stats: {funds: 17, income: 40, influence: 6, workforce: 0, quality: 0, satisfaction: 0, product: 0, distribution: 0}
         city: [Row House, Fire Station, Public Playground, Orchard, Liquor Shop]
         hand: [Stone Quarry, Library, Cottage, Pub, Elementary School, Tennis Court, Extensive Wheat Farm, Cafe, Night Club, Small Home]
         quests_completed: [Trading post]

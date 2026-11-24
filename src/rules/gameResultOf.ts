@@ -1,7 +1,6 @@
 import type { GameEnding } from "../shared/GameEnding";
 import type { GameResult } from "../shared/GameResult";
 import type { PlaceResult } from "../shared/PlaceResult";
-import { wholeFundsOf } from "../shared/wholeFundsOf";
 import { cardsInHandScoredOf } from "./cardsInHandScoredOf";
 import { bonusTypePointsOf } from "./bonusTypePointsOf";
 import type { GameState } from "./GameState";
@@ -42,7 +41,8 @@ export function gameResultOf(state: GameState, endedBy: GameEnding): GameResult 
       leftInTurn: seat.departure?.turn ?? null,
       hasReachedEndGoal: hasReachedEndGoal(seat),
       income: seat.stats.income,
-      fundsAndHand: wholeFundsOf(seat.stats.funds) + cardsInHandScoredOf(seat),
+      funds: seat.stats.funds,
+      cardsInHand: cardsInHandScoredOf(seat),
       counts: summaryCountsOf(seat),
     };
   });

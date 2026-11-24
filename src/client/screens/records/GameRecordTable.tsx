@@ -25,7 +25,7 @@ export function GameRecordTable({ record, viewerId }: Props) {
         </tr>
       </thead>
       <tbody>
-        {gameRecordRowsOf(record.kind).map((row, index) => (
+        {gameRecordRowsOf(record).map((row, index) => (
           <tr key={index}>
             <th scope="row">
               <TextWithIcons text={row.label} />

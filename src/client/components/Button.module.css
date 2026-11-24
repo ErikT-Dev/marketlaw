@@ -75,7 +75,6 @@
     var(--color-button-warning-base) var(--opacity-button-background),
     transparent
   );
-  color: var(--color-background-game-window);
 }
 .warning:hover:enabled {
   background: color-mix(
@@ -105,7 +104,6 @@
     color-mix(in srgb, var(--color-button-menu-from) var(--opacity-button-background), transparent),
     color-mix(in srgb, var(--color-button-menu-to) var(--opacity-button-background), transparent)
   );
-  color: var(--color-background-game-window);
 }
 
 .highlighted:enabled {

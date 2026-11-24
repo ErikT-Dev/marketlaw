@@ -6,5 +6,5 @@ export function costExplanation(card: Card, details: HandCardDetails): string {
   if (count === 0) {
     return `Base cost ${String(card.baseCost)}.`;
   }
-  return `Base cost ${String(card.baseCost)}, plus ${String(count)} for the ${String(count)} ${card.sector} tier ${String(card.tier)} ${count === 1 ? "card" : "cards"} already in your city.`;
+  return `Base cost ${String(card.baseCost)}, plus ${String(details.realCost - card.baseCost)} for the ${String(count)} ${card.sector} tier ${String(card.tier)} ${count === 1 ? "card" : "cards"} already in your city.`;
 }

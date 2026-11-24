@@ -1,5 +1,5 @@
+import { STARTING_STATS } from "./STARTING_STATS";
 import { cardOf } from "../shared/catalogue/cardOf";
-import { fundsInTenths } from "../shared/fundsInTenths";
 import { decisionOf } from "./decisionOf";
 import { FIRST_TURN_FOR_HIGHER_TIERS } from "./FIRST_TURN_FOR_HIGHER_TIERS";
 import { gameEndViolations } from "./gameEndViolations";
@@ -65,7 +65,9 @@ function incomeViolations(before: GameState, after: GameState): ReadonlyArray<st
     if (income < incomeBefore) {
       return [`I8: seat ${String(afterSeat.seat)} income went from ${String(incomeBefore)} to ${String(income)}`];
     }
-    return income < 3 ? [`I8: seat ${String(afterSeat.seat)} income is below 3`] : [];
+    return income < STARTING_STATS.income
+      ? [`I8: seat ${String(afterSeat.seat)} income is below ${String(STARTING_STATS.income)}`]
+      : [];
   });
 }
 
@@ -79,9 +81,9 @@ function statsGainViolations(before: GameState, after: GameState): ReadonlyArray
       return [];
     }
     const { stats } = seatBefore;
-    const fundsAtLeast = Math.max(0, stats.funds + fundsInTenths(stats.income) + statsGainOf(stats));
+    const fundsAtLeast = Math.max(0, stats.funds + stats.income + statsGainOf(stats));
     return afterSeat.stats.funds < fundsAtLeast
-      ? [`I10: seat ${String(afterSeat.seat)} has ${String(afterSeat.stats.funds)} tenths of funds after the end of the turn, less than ${String(fundsAtLeast)}`]
+      ? [`I10: seat ${String(afterSeat.seat)} has ${String(afterSeat.stats.funds)} funds after the end of the turn, less than ${String(fundsAtLeast)}`]
       : [];
   });
 }

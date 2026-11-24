@@ -41,7 +41,7 @@ test("income happens by itself in a test room and shows in the game log", async 
   await expect(
     page.getByRole("list", { name: "Game log entries" }).getByRole("listitem"),
   ).toHaveText([/Turn 1: Seat 1 drew 1 card: \w+, tier 1 \(Income\)$/]);
-  await expect(page.getByRole("img", { name: "Income 4.0" })).toBeVisible();
+  await expect(page.getByRole("img", { name: "Income 40" })).toBeVisible();
   await expectScreenFits(page, "income-draw", testInfo);
   await page.context().close();
 });

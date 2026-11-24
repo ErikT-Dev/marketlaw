@@ -7,10 +7,12 @@ export function accountBindingOf(
   session: StoredSession,
   isInGame: boolean,
 ): AccountBinding {
+  const { accountIcon } = store.getSnapshot();
   return {
     playerId: session.playerId,
     name: session.name,
     isGuest: session.isGuest,
+    icon: accountIcon?.token === session.token ? accountIcon.icon : null,
     isInGame,
     onSignUp: store.signUp,
     onChangeUsername: store.changeUsername,

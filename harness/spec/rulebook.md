@@ -33,7 +33,7 @@ Each player builds their own **city**: all the cards you have played. When the g
 player with the highest score wins (see [The end of the game](#the-end-of-the-game)).
 
 The game ends after the turn in which a player reaches the **end goal**: **income of at least
-20** and all **3 projects** completed.
+200** and all **3 projects** completed.
 
 Everyone plays the same turn at the same time. A turn's main phase ends when every player is
 done, so if you are quick you may wait a little for the others.
@@ -42,8 +42,8 @@ done, so if you are quick you may wait a little for the others.
 
 | Stat | You start with | What it is for |
 |---|---|---|
-| Funds | 7 | Your money. You pay for cards with it. |
-| Income | 3 | The funds you get at the end of every turn. You need 20 for the end goal. |
+| Funds | 70 | Your money. You pay for cards with it. |
+| Income | 30 | The funds you get at the end of every turn. You need 200 for the end goal. |
 | Influence | 0 | You get 1 every turn. Spend it on [influence actions](#influence). |
 | Workforce | 0 | Made by Residential cards, used by all other cards. |
 | Quality | 0 | Made by Public cards, used by the other sectors. |
@@ -56,13 +56,12 @@ cannot gain income or complete projects or quests**, so keep them balanced.
 
 Turns are numbered from 1, the same for everyone.
 
-**Funds in tenths:** funds are counted in tenths, so you may have 5.3 funds. Prices, rewards and
-income are whole funds; the tenths come from your stats at the end of every turn (see
-[Stats gain and Support](#stats-gain-and-support)).
+**Whole funds:** funds, income, prices and rewards are always whole numbers; your stats add funds
+at the end of every turn (see [Stats gain and Support](#stats-gain-and-support)).
 
 **Total worth gained (F):** a count of everything of worth you have received in the game: every
-fund you received, however you got it, except from selling cards, plus 1 for every card you
-gained (drawn or taken from the marketplace). It starts at 14 and only goes up. It is shown next
+fund you received, however you got it, except from selling cards, plus 10 for every card you
+gained (drawn or taken from the marketplace). It starts at 140 and only goes up. It is shown next
 to your stats and other players' stats. Players far behind in F get Support, and on equal scores
 the higher F places higher.
 
@@ -88,7 +87,7 @@ What a card does when you play it depends on its sector:
 
 | | Tier 1 | Tier 2 | Tier 3 |
 |---|---|---|---|
-| Cost | 3–6 | 7–9 | 11–13 |
+| Cost | 30–60 | 70–90 | 110–130 |
 | Product or distribution | 1 | 2 | 3 |
 
 A Public card is a **quality card** if it gives more quality than satisfaction, and a
@@ -97,9 +96,9 @@ Residential, Industry, Service, Public quality card or Public satisfaction card.
 
 You can look at every card in the game in the **Card set**, from the menu.
 
-**Real cost:** a card costs 1 more for every card you already have in your city of the same
-sector and tier. *Example: you already have two tier 1 Industry cards. A third one costs 2 more
-than printed.*
+**Real cost:** a card costs 10 more for every card you already have in your city of the same
+sector and tier. *Example: you already have two tier 1 Industry cards. A third one costs 20
+more than printed.*
 
 ## How a turn works
 
@@ -125,7 +124,7 @@ are skipped.
 During the main phase you can, in any order and as often as allowed:
 
 - **play a card** from your hand (see [Playing a card](#playing-a-card))
-- **sell** cards from your hand for 1 fund each. You can sell several cards at once.
+- **sell** cards from your hand for 10 funds each. You can sell several cards at once.
 - **claim all** combos that are ready (see [Types and combos](#types-and-combos))
 - use **influence actions** (see [Influence](#influence))
 - complete **projects** (see [Projects](#projects))
@@ -258,24 +257,24 @@ Whenever you have **at least 1 product and 1 distribution**, and workforce, qual
 satisfaction are all **0 or more**, this happens by itself:
 
 - 1 product and 1 distribution are used up
-- your income goes up by 1
+- your income goes up by 10
 - you draw 1 card of a random sector
 
 This repeats as long as it can, and is checked after every action.
 
 ## Stats gain and Support
 
-At the end of every turn, after your income, your stats add tenths of a fund to your funds, the
-**stats gain**:
+At the end of every turn, after your income, your stats add 1 fund for every point to your funds,
+the **stats gain**:
 
 workforce + quality + satisfaction + 4 × product + 3 × distribution
 
-*Example: a stats gain of 23 is +2.3 funds.* Negative stats lower it; if it is below zero, your
-funds go down by that many tenths, but never below 0.
+*Example: a stats gain of 23 is +23 funds.* Negative stats lower it; if it is below zero, your
+funds go down by that many funds, but never below 0.
 
 **Support:** at the start of every turn from turn 2 on, every player compares their total worth
-gained (F) with the highest F among the other players still in the game, and gets 1 fund for
-every full 10 they are behind. *Example: 23.5 behind gives +2 funds.* Support counts toward F.
+gained (F) with the highest F among the other players still in the game, and gets 10 funds for
+every full 100 they are behind. *Example: 235 behind gives +20 funds.* Support counts toward F.
 
 ## Influence
 
@@ -298,9 +297,9 @@ Each player has 3 projects, and can complete each one once:
 | Culture campaign | 8 satisfaction |
 | Help the homeless | 8 workforce |
 
-You need the amount, at least **10 income**, and workforce, quality and satisfaction must all be
+You need the amount, at least **100 income**, and workforce, quality and satisfaction must all be
 0 or more. Completing a
-project uses up those 8, gives **+1 income, +2 funds and +3 influence**, and draws 1 card, every
+project uses up those 8, gives **+10 income, +20 funds and +3 influence**, and draws 1 card, every
 time, whoever was first.
 
 ## The deck and drawing cards
@@ -366,8 +365,8 @@ market phases.
 
 The **quests table** has 4 quests (5 from turn 20) that everyone can complete. The game starts
 with 4 tier 1 quests; tier 2 quests can appear from turn 5, tier 3 from turn 13. A quest that
-needs an income appears only once some player has at least that income minus 2, and a quest
-that needs completed projects only once some player has at least 8 income.
+needs an income appears only once some player has at least that income minus 20, and a
+quest that needs completed projects only once some player has at least 80 income.
 
 - A quest asks you to **have** something right now, such as a stat amount, a type count or
   certain cards in your city. Nothing is used up. Workforce, quality and satisfaction must all be
@@ -376,7 +375,7 @@ that needs completed projects only once some player has at least 8 income.
 - Each player can complete each quest once, and any number of players can complete it in the
   same turn.
 - **Be first:** everyone who completes a quest in the turn it is first completed gets
-  **+1 influence** on top of the reward.
+  **2 funds for every tier of the quest** (2, 4 or 6) on top of the reward.
 - A completed quest stays for one more turn, its **extra turn**, so others can still complete
   it, and then leaves the table for good. A quest first completed in its last turn leaves at the
   end of that turn.
@@ -401,23 +400,24 @@ that needs completed projects only once some player has at least 8 income.
 ## The end of the game
 
 The game ends after the main phase of the turn in which a player still in the game reaches the
-end goal (income 20 and all 3 projects). That turn's end-of-turn payouts are skipped. If nobody
+end goal (income 200 and all 3 projects). That turn's end-of-turn payouts are skipped. If nobody
 reaches the end goal, the game ends after turn 40's main phase.
 
 **Score:**
 
 ```
-6.5  × income
+0.65 × income
 + 0.7  × workforce
 + 0.55 × quality
 + 0.5  × satisfaction
 + 2.75 × product
 + 2.25 × distribution
-+ 0.2  × (whole funds + cards in hand)
++ 0.02 × funds
++ 0.2  × cards in hand
 + bonus-type points
 ```
 
-Only whole funds count: 5.9 funds count as 5. The result is rounded down to a whole number. The
+The result is rounded down to a whole number. The
 end-of-game screen shows each part of your score.
 
 **Bonus types:** at the start of every game, 2 different types are picked at random. At the end,

@@ -7,7 +7,7 @@ const QUESTS_TEXT = readFileSync(HARNESS_PATHS.quests, "utf8");
 const INFLUENCE_ACTIONS_TEXT = readFileSync(HARNESS_PATHS.influenceActions, "utf8");
 const FIRST_QUEST =
   "Tier 1 | Working district | 3 Residential cards, 2 Low Wealth | +1 quality, +1 influence";
-const FIRST_ACTION = "influence to funds | pay 4 influence | get 2 funds | 1 per game";
+const FIRST_ACTION = "influence to funds | pay 4 influence | get 20 funds | 1 per game";
 
 function messagesOf(questsText: string, influenceActionsText: string): ReadonlyArray<string> {
   return checkRuleFiles({ questsText, influenceActionsText }).map(
@@ -46,11 +46,11 @@ const BROKEN_QUEST_LINES = [
   ],
   [
     "Tier 1 | Working district | Residential cards | +1 quality",
-    'needs a whole number from 1 to 99: "Residential"',
+    'needs a whole number from 1 to 999: "Residential"',
   ],
   [
-    "Tier 1 | Working district | 100 Residential cards | +1 quality",
-    'needs a whole number from 1 to 99: "100"',
+    "Tier 1 | Working district | 1000 Residential cards | +1 quality",
+    'needs a whole number from 1 to 999: "1000"',
   ],
   ["Tier 1 | Working district | 3 Residental cards | +1 quality", 'unknown sector: "Residental"'],
   [
@@ -86,33 +86,37 @@ const BROKEN_QUEST_LINES = [
 
 const BROKEN_ACTION_LINES = [
   [
-    "Influence to funds | pay 4 influence | get 2 funds | 1 per game",
+    "Influence to funds | pay 4 influence | get 20 funds | 1 per game",
     'a name has lower-case letters, digits and spaces: "Influence to funds"',
   ],
   [
-    "influence to funds | 4 influence | get 2 funds | 1 per game",
+    "influence to funds | 4 influence | get 20 funds | 1 per game",
     'the costs start with "pay ": "4 influence"',
   ],
   [
-    "influence to funds | pay four influence | get 2 funds | 1 per game",
+    "influence to funds | pay four influence | get 20 funds | 1 per game",
     'needs a whole number from 1 to 99: "four"',
   ],
-  ["influence to funds | pay 4 influense | get 2 funds | 1 per game", 'unknown stat: "influense"'],
-  ["influence to funds | pay 4 influence | get 2 fundz | 1 per game", 'unknown stat: "fundz"'],
+  ["influence to funds | pay 4 influense | get 20 funds | 1 per game", 'unknown stat: "influense"'],
+  ["influence to funds | pay 4 influence | get 20 fundz | 1 per game", 'unknown stat: "fundz"'],
   [
-    "influence to funds | pay 4 influence | get 2 funds | once",
+    "influence to funds | pay 4 influence | get 20 funds | once",
     'the limit is "N per game" or "no limit": "once"',
   ],
   [
-    "influence to funds | pay 4 influence | get 2 funds | 100 per game",
+    "influence to funds | pay 4 influence | get 20 funds | 100 per game",
     'the limit is "N per game" or "no limit": "100 per game"',
   ],
   [
-    "influence to funds | pay 1 more each time, 4 funds | get 1 build pass | no limit",
-    '"1 more each time" comes last: "1 more each time"',
+    "influence to funds | pay 10 more each time, 40 funds | get 1 build pass | no limit",
+    '"10 more each time" comes last: "10 more each time"',
   ],
   [
-    "influence to funds | pay 4 influence | swap 2 funds | 1 per game",
+    "influence to funds | pay 20 funds, 1 more each time | get 1 build pass | no limit",
+    'the rising price is "10 more each time": "1 more each time"',
+  ],
+  [
+    "influence to funds | pay 4 influence | swap 20 funds | 1 per game",
     'needs new code: "influence to funds"',
   ],
   [
@@ -120,7 +124,7 @@ const BROKEN_ACTION_LINES = [
     'needs new code: "influence to funds"',
   ],
   [
-    "influence to funds | pay 4 influence, 1 more each time | get 1 build pass | no limit",
+    "influence to funds | pay 4 influence, 10 more each time | get 1 build pass | no limit",
     'needs new code: "influence to funds"',
   ],
   [
@@ -132,6 +136,14 @@ const BROKEN_ACTION_LINES = [
 describe("the rule file check", () => {
   it("finds no problem in the rule files as they are", () => {
     expect(messagesOf(QUESTS_TEXT, INFLUENCE_ACTIONS_TEXT)).toEqual([]);
+  });
+
+  it("accepts quest numbers up to 999", () => {
+    expect(
+      problemsWithQuestLine(
+        "Tier 1 | Working district | 999 Residential cards, income 999 | +999 funds, draw 999 cards",
+      ),
+    ).toEqual([]);
   });
 
   it.each(BROKEN_QUEST_LINES)("reports the broken quest line %s", (line, message) => {
@@ -161,7 +173,7 @@ describe("the rule file check", () => {
       .filter((line) => !line.startsWith("Tier 1") || kept.some((name) => line.includes(name)))
       .join("\n");
     expect(messagesOf(fewer, INFLUENCE_ACTIONS_TEXT)).toEqual([
-      `${HARNESS_PATHS.quests} | whole file | 3 tier 1 quests can be placed at the start (at most income 5 and no completed project); the starting table needs 4 (R19.3, R19.11)`,
+      `${HARNESS_PATHS.quests} | whole file | 3 tier 1 quests can be placed at the start (at most income 50 and no completed project); the starting table needs 4 (R19.3, R19.11)`,
       `${HARNESS_PATHS.quests} | Green city | the tutorial (T0.7) needs this tier 1 quest`,
     ]);
   });
@@ -169,8 +181,8 @@ describe("the rule file check", () => {
   it("counts only the tier 1 quests that can be placed at the start", () => {
     const kept = ["Working district", "Fishing village", "Trading post"];
     const heldBack = [
-      "Tier 1 | Rich town | income 6 | +1 fund",
-      "Tier 1 | Planned town | 1 completed project | +1 fund",
+      "Tier 1 | Rich town | income 60 | +10 funds",
+      "Tier 1 | Planned town | 1 completed project | +10 funds",
     ];
     const fewer = [
       ...heldBack,
@@ -179,7 +191,7 @@ describe("the rule file check", () => {
       ),
     ].join("\n");
     expect(messagesOf(fewer, INFLUENCE_ACTIONS_TEXT)).toEqual([
-      `${HARNESS_PATHS.quests} | whole file | 3 tier 1 quests can be placed at the start (at most income 5 and no completed project); the starting table needs 4 (R19.3, R19.11)`,
+      `${HARNESS_PATHS.quests} | whole file | 3 tier 1 quests can be placed at the start (at most income 50 and no completed project); the starting table needs 4 (R19.3, R19.11)`,
       `${HARNESS_PATHS.quests} | Green city | the tutorial (T0.7) needs this tier 1 quest`,
     ]);
   });
@@ -191,9 +203,9 @@ describe("the rule file check", () => {
   });
 
   it("reports a changed Trading post", () => {
-    const changed = QUESTS_TEXT.replace("income 4, 1 Retail", "income 5, 1 Retail");
+    const changed = QUESTS_TEXT.replace("income 40, 1 Retail", "income 50, 1 Retail");
     expect(messagesOf(changed, INFLUENCE_ACTIONS_TEXT)).toEqual([
-      `${HARNESS_PATHS.quests} | Trading post | the tutorial (T0.7) needs exactly "Tier 1 | Trading post | income 4, 1 Retail | +1 fund, +2 influence"`,
+      `${HARNESS_PATHS.quests} | Trading post | the tutorial (T0.7) needs exactly "Tier 1 | Trading post | income 40, 1 Retail | +10 funds, +2 influence"`,
     ]);
   });
 
@@ -205,7 +217,7 @@ describe("the rule file check", () => {
 
   it("reports a second line with a rising price as needing new code", () => {
     const secondRising =
-      "influence to funds | pay 3 funds, 1 more each time | get 1 build pass | no limit";
+      "influence to funds | pay 30 funds, 10 more each time | get 1 build pass | no limit";
     const risingLine = INFLUENCE_ACTIONS_TEXT.split("\n").findIndex((line) =>
       line.startsWith("buy build pass"),
     );
@@ -216,7 +228,7 @@ describe("the rule file check", () => {
 
   it("reports two draw actions for one tier", () => {
     const secondDraw =
-      "draw tier 1 again | pay 1 fund | draw a tier 1 card of a chosen kind | no limit";
+      "draw tier 1 again | pay 10 funds | draw a tier 1 card of a chosen kind | no limit";
     const lineCount = INFLUENCE_ACTIONS_TEXT.trimEnd().split("\n").length;
     expect(messagesOf(QUESTS_TEXT, `${INFLUENCE_ACTIONS_TEXT}${secondDraw}\n`)).toEqual([
       `${HARNESS_PATHS.influenceActions} | line ${String(lineCount + 1)} | a draw action for tier 1 is already on line ${String(lineCount - 2)}: "draw_tier_1_again"`,

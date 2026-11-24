@@ -51,8 +51,8 @@ describe("the end-of-turn funds invariant", () => {
       seats: before.seats.map((seat) => ({ ...seat, stats: { ...seat.stats, funds: 100 } })),
     };
     expect(violationsAfter(before, after)).toEqual([
-      "I10: seat 1 has 100 tenths of funds after the end of the turn, less than 101",
-      "I10: seat 2 has 100 tenths of funds after the end of the turn, less than 101",
+      "I10: seat 1 has 100 funds after the end of the turn, less than 101",
+      "I10: seat 2 has 100 funds after the end of the turn, less than 101",
     ]);
   });
 });
