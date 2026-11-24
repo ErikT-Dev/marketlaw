@@ -429,7 +429,7 @@ scenarios, which expect the first completers' funds instead of influence.
     `influenceAndUndo` (3), `lastTurnPanel` (income shown as tenths), `opponents`, `quests`,
     `parseRulebook` and `rulebookChangedSections` (5). Every scenario passes.
 
-- [ ] 4. **Whole numbers on screen and the new texts** (S1.9, S6.3, S6.5, S8.2, S8.3, S9.5,
+- [x] 4. **Whole numbers on screen and the new texts** (S1.9, S6.3, S6.5, S8.2, S8.3, S9.5,
   S13.2, S15.2, S16.3, rulebook, point 5). **Large.**
   - Remove `src/client/components/tenthsShown.ts` and its uses (`summaryCountEntriesOf.ts`,
     `InfluenceDialog.tsx`, `LastTurnRowParts.tsx`, `mainPhaseLogText.ts`, `OpponentCard.tsx`,
@@ -441,6 +441,17 @@ scenarios, which expect the first completers' funds instead of influence.
     product, +10 income, Trading post income 40 and "2 funds more", 100 income, income 200).
   - Client tests that expect the old words (`rulebookChangedSections.test.tsx`,
     `combosAndProjects.test.tsx`, `parseRulebook.test.tsx`, the tutorial's) follow the spec.
+  - Done (2026-11-24). `tenthsShown.ts` and `wholeFundsShown.ts` are gone; every screen shows
+    the view's numbers as they are (the record page's income too). The big card's cost reason
+    says the real cost's extra (`realCost − baseCost`), not the card count. Also changed, beyond
+    the list: the end-of-game "reached [Income 200]" (`gameOverTexts.ts`, was 20) and the card
+    set's "you pay 10 more" (`CardDetailFacts.tsx`, was 1); client test fixtures in the tests
+    that failed follow the new units; the browser tests that set up test rooms in old units
+    (`combosAndProjects`, `countsAndPlayerIcons`, `gameOver`, `influenceAndUndo`, `quests`,
+    `rematch`, `testRooms`, `cardNameCombos`, `handAndActionsScreens`) use the new amounts, and
+    `quests.spec.ts`'s Last turn row expects +12 funds (reward 10 plus the first completion's 2).
+    Those specs and `tutorial.spec.ts` pass locally at 1920 × 1080.
+  - **For later items:** nothing of item 4 left; the browser suite's other sizes run on GitHub.
 
 - [x] 5. **Your icon in the user box** (S2.3, S10.1, A2.5, point 1). **Small.**
   - Reuse `src/client/components/PlayerIcon.tsx`; the user box is in

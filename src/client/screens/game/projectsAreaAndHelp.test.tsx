@@ -96,7 +96,7 @@ describe("the help buttons", () => {
     const help = screen.getByRole("region", { name: "How projects work" });
     expect(help.textContent).toContain("You have 3 projects.");
     expect(help.textContent).toContain(
-      "and 1 card, every time. The end goal needs all 3 projects and Income 20.",
+      "and 1 card, every time. The end goal needs all 3 projects and Income 200.",
     );
     expect(
       within(help)

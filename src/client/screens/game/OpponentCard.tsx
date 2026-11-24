@@ -13,7 +13,6 @@ import { LiveBankChip } from "./LiveBankChip";
 import { typesInListOrder } from "../../sorting/typesInListOrder";
 import { summaryCountsOfSeat } from "./summaryCountsOfSeat";
 import { TypeCountsList } from "./TypeCountsList";
-import { tenthsShown } from "../../components/tenthsShown";
 
 const MOST_PLAYED_TYPES_SHOWN = 5;
 
@@ -48,8 +47,8 @@ export function OpponentCard({ seat, name, playerId, bonusTypes, onOpen }: Props
           <LiveBankChip timeBankMs={seat.timeBankMs} clock={seat.clock} label="Bank" />
         </div>
         <div className={styles["stats"]}>
-          <StatChip stat="funds" value={tenthsShown(seat.stats.funds)} />
-          <StatChip stat="income" value={tenthsShown(seat.stats.income)} />
+          <StatChip stat="funds" value={seat.stats.funds} />
+          <StatChip stat="income" value={seat.stats.income} />
           <StatChip stat="influence" value={seat.stats.influence} />
           <SummaryCountBoxes counts={summaryCountsOfSeat(seat)} />
           <span className={styles["hand"]}>Hand {seat.handCount}</span>

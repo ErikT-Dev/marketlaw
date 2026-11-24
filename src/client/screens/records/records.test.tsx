@@ -221,7 +221,7 @@ describe("the game record page", () => {
       within(beasCounts ?? table)
         .getAllByRole("img")
         .map((box) => box.getAttribute("aria-label")),
-    ).toEqual(["Quests completed 7", "Types 11", "Combos claimed 4", "Total worth gained 123.4"]);
+    ).toEqual(["Quests completed 7", "Types 11", "Combos claimed 4", "Total worth gained 1234"]);
     expect(annsCounts?.textContent).toBe("not recorded");
   });
 

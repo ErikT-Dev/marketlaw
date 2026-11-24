@@ -2,7 +2,6 @@ import type { OwnSeatView } from "../../../shared/OwnSeatView";
 import type { IconText } from "../../components/IconText";
 import type { RejectedMove } from "../../store/RejectedMove";
 import { REJECTION_MESSAGES } from "./REJECTION_MESSAGES";
-import { tenthsShown } from "../../components/tenthsShown";
 
 function realCostOfRejectedPlay(move: RejectedMove, seat: OwnSeatView): number | undefined {
   const action = move.action;
@@ -14,7 +13,7 @@ function realCostOfRejectedPlay(move: RejectedMove, seat: OwnSeatView): number |
 
 function notEnoughFundsMessage(move: RejectedMove, seat: OwnSeatView): IconText {
   const realCost = realCostOfRejectedPlay(move, seat);
-  const funds = tenthsShown(seat.stats.funds);
+  const funds = seat.stats.funds;
   if (realCost === undefined) {
     return [
       "You do not have enough ",

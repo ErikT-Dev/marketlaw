@@ -41,13 +41,13 @@ afterEach(() => {
 });
 
 describe("rulebook sections changed by the 2026-11-20 notes", () => {
-  it("names the end goal of income 20 and all 3 projects in the goal", () => {
+  it("names the end goal of income 200 and all 3 projects in the goal", () => {
     const article = shownSection("the-goal");
-    expect(flatText(article)).toContain("of at least 20 and all 3 projects completed");
+    expect(flatText(article)).toContain("of at least 200 and all 3 projects completed");
     expect(iconNamesIn(article)).toContain("Income");
   });
 
-  it("lists the stats without a bonus stat and explains funds in tenths and F", () => {
+  it("lists the stats without a bonus stat and explains whole funds and F", () => {
     const article = shownSection("your-stats");
     const rows = bodyRowsOf(article);
     expect(rows).toHaveLength(8);
@@ -62,9 +62,9 @@ describe("rulebook sections changed by the 2026-11-20 notes", () => {
       "Distribution",
     ]);
     expect(flatText(article)).not.toMatch(/bonus/i);
-    expect(flatText(article)).toContain("in tenths, so you may have 5.3");
+    expect(flatText(article)).toContain("Whole Funds: Funds, Income, prices and rewards are always whole numbers");
     expect(flatText(article)).toContain("Total worth gained (F):");
-    expect(flatText(article)).toContain("It starts at 14 and only goes up.");
+    expect(flatText(article)).toContain("It starts at 140 and only goes up.");
   });
 
   it("shows the stats gain formula and Support", () => {
@@ -76,9 +76,9 @@ describe("rulebook sections changed by the 2026-11-20 notes", () => {
       "Workforce + Quality + Satisfaction + 4 × Product + 3 × Distribution",
     );
     expect(iconNamesIn(article)).toEqual(expect.arrayContaining(["Product", "Distribution"]));
-    expect(flatText(article)).toContain("a stats gain of 23 is +2.3");
-    expect(flatText(article)).toContain("for every full 10 they are behind");
-    expect(flatText(article)).toContain("23.5 behind gives +2");
+    expect(flatText(article)).toContain("a stats gain of 23 is +23 Funds");
+    expect(flatText(article)).toContain("for every full 100 they are behind");
+    expect(flatText(article)).toContain("235 behind gives +20 Funds");
   });
 
   it("shows the projects with their needs, the income gate and the same reward for everyone", () => {
@@ -88,8 +88,8 @@ describe("rulebook sections changed by the 2026-11-20 notes", () => {
       "Culture campaign8 Satisfaction",
       "Help the homeless8 Workforce",
     ]);
-    expect(flatText(article)).toContain("at least 10 Income");
-    expect(flatText(article)).toContain("gives +1 Income, +2 Funds and +3 Influence, and draws 1 card, every time");
+    expect(flatText(article)).toContain("at least 100 Income");
+    expect(flatText(article)).toContain("gives +10 Income, +20 Funds and +3 Influence, and draws 1 card, every time");
   });
 
   it("shows the quests table rules with the extra turn, being first and the times by tier", () => {
@@ -106,11 +106,10 @@ describe("rulebook sections changed by the 2026-11-20 notes", () => {
     const text = flatText(article);
     expect(text).toContain("That turn's end-of-turn payouts are skipped.");
     expect(text).toContain("after turn 40's main phase");
-    expect(text).toContain("Only whole Funds count: 5.9 Funds count as 5.");
     expect(text).toContain("every player who reached the end goal places above every player who did not");
     expect(text).toContain("the higher total worth gained (F) places higher");
     const formula = scoreFormulaOf(article);
-    expect(flatText(formula)).toContain("6.5 × Income+ 0.7 × Workforce+ 0.55 × Quality+ 0.5 × Satisfaction+ 2.75 × Product+ 2.25 × Distribution+ 0.2 × (whole Funds + cards in hand)+ bonus-type points");
+    expect(flatText(formula)).toContain("0.65 × Income+ 0.7 × Workforce+ 0.55 × Quality+ 0.5 × Satisfaction+ 2.75 × Product+ 2.25 × Distribution+ 0.02 × Funds+ 0.2 × cards in hand+ bonus-type points");
     expect(iconNamesIn(formula)).toEqual([
       "Income",
       "Workforce",

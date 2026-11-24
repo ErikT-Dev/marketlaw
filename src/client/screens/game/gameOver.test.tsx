@@ -53,7 +53,7 @@ describe("end-of-game screen", () => {
     showResult(END_GOAL);
     const dialog = screen.getByRole("dialog", { name: "Cy wins!" });
     expect(textWithIconNames(dialog)).toContain(
-      "Cy reached [Income 20] and all 3 projects in turn 24, so the game ended after that main phase.",
+      "Cy reached [Income 200] and all 3 projects in turn 24, so the game ended after that main phase.",
     );
     const rows = within(within(dialog).getByRole("table", { name: "Places" }))
       .getAllByRole("row")
@@ -64,10 +64,10 @@ describe("end-of-game screen", () => {
           .map((cell) => cell.textContent),
       );
     expect(rows).toEqual([
-      ["1st", "won", "512", "yes", "Q2T14C3F61.5"],
-      ["2nd", "lost", "487", "no", "Q0T0C0F0.0"],
-      ["3rd", "lost", "455", "no", "Q0T0C0F0.0"],
-      ["4th", "left", "301", "no", "Q0T0C0F0.0"],
+      ["1st", "won", "512", "yes", "Q2T14C3F615"],
+      ["2nd", "lost", "487", "no", "Q0T0C0F0"],
+      ["3rd", "lost", "455", "no", "Q0T0C0F0"],
+      ["4th", "left", "301", "no", "Q0T0C0F0"],
     ]);
     expect(
       within(dialog)

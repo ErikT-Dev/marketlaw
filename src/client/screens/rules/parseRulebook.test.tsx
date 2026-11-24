@@ -79,9 +79,9 @@ describe("parseRulebook", () => {
 
   it("shows the stats of the score formula as icons", () => {
     const formula = blockOfKind(sectionTitled("The end of the game"), "preformatted");
-    expect(formula.lines[0]).toEqual(["6.5  × ", { stat: "income" }]);
+    expect(formula.lines[0]).toEqual(["0.65 × ", { stat: "income" }]);
     expect(formula.lines[2]).toEqual(["+ 0.55 × ", { stat: "quality" }]);
-    expect(formula.lines[6]).toEqual(["+ 0.2  × (whole ", { stat: "funds" }, " + cards in hand)"]);
+    expect(formula.lines[6]).toEqual(["+ 0.02 × ", { stat: "funds" }]);
   });
 
   it("relates a section to the sections it links to in order of first appearance", () => {

@@ -67,7 +67,7 @@ export function gameOverTexts(
         title,
         why: [
           `${listedNames(reached)} reached `,
-          { stat: "income", value: 20 },
+          { stat: "income", value: 200 },
           ` and all 3 projects in turn ${String(turn)}, so the game ended after that main phase. ${ratingsLine}`,
         ],
       };

@@ -5,13 +5,12 @@ import { projectsText } from "./projectsText";
 import { seatResultText } from "./seatResultText";
 import { RecordedCounts } from "./RecordedCounts";
 import { typeCountsText } from "./typeCountsText";
-import { tenthsShown } from "../../components/tenthsShown";
 
 export const GAME_RECORD_ROWS: ReadonlyArray<GameRecordRow | "funds"> = [
   { label: "Place and result", valueOf: seatResultText },
   { label: "Score", valueOf: (seat) => seat.score },
   { label: "Reached the end goal", valueOf: (seat) => (seat.hasReachedEndGoal ? "yes" : "no") },
-  { label: [{ stat: "income" }], valueOf: (seat) => tenthsShown(seat.income) },
+  { label: [{ stat: "income" }], valueOf: (seat) => seat.income },
   "funds",
   { label: [{ stat: "workforce" }], valueOf: (seat) => seat.workforce },
   { label: [{ stat: "quality" }], valueOf: (seat) => seat.quality },

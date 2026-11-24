@@ -35,7 +35,7 @@ export const REJECTION_MESSAGES: Readonly<Record<ReasonCode, IconText>> = {
   ],
   project_already_completed: "You already completed this project.",
   project_needs_not_met: [
-    "You need 8 of the stat, at least 10 ",
+    "You need 8 of the stat, at least 100 ",
     { stat: "income" },
     ", and no negative ",
     { stat: "workforce" },

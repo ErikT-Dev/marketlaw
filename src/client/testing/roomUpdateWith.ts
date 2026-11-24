@@ -18,7 +18,7 @@ const SEAT_ICONS: ReadonlyArray<PlayerIconChoice> = [
 
 const STATS = {
   funds: 70,
-  income: 14,
+  income: 140,
   influence: 3,
   workforce: 6,
   quality: 5,

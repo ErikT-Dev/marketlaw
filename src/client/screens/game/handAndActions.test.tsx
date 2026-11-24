@@ -14,9 +14,9 @@ import { textWithIconNames } from "../../testing/textWithIconNames";
 const HAND: Partial<OwnSeatView> = {
   hand: ["Farm House", "Log House", "Loft"],
   handDetails: [
-    { card: "Farm House", realCost: 6, sameSectorAndTierInCity: 2, playRejection: null },
-    { card: "Log House", realCost: 5, sameSectorAndTierInCity: 0, playRejection: null },
-    { card: "Loft", realCost: 8, sameSectorAndTierInCity: 0, playRejection: "tier_not_allowed" },
+    { card: "Farm House", realCost: 60, sameSectorAndTierInCity: 2, playRejection: null },
+    { card: "Log House", realCost: 50, sameSectorAndTierInCity: 0, playRejection: null },
+    { card: "Loft", realCost: 80, sameSectorAndTierInCity: 0, playRejection: "tier_not_allowed" },
   ],
 };
 
@@ -43,7 +43,7 @@ async function photosDecoded() {
 }
 
 function playableDetailsOf(card: CardName) {
-  return { card, realCost: 5, sameSectorAndTierInCity: 0, playRejection: null };
+  return { card, realCost: 50, sameSectorAndTierInCity: 0, playRejection: null };
 }
 
 function handCard(name: string) {
@@ -92,10 +92,10 @@ describe("big card", () => {
     await photosDecoded();
     fireEvent.click(handCard("Farm House"));
     const selected = screen.getByRole("region", { name: "Selected card: Farm House" });
-    expect(textWithIconNames(selected)).toContain("Costs [Funds 6]");
+    expect(textWithIconNames(selected)).toContain("Costs [Funds 60]");
     expect(
       within(selected).getByText(
-        "Base cost 4, plus 2 for the 2 Residential tier 1 cards already in your city.",
+        "Base cost 40, plus 20 for the 2 Residential tier 1 cards already in your city.",
       ),
     ).toBeDefined();
     fireEvent.click(within(selected).getByRole("button", { name: "Play card" }));
@@ -160,7 +160,7 @@ describe("actions", () => {
       handDetails: [
         {
           card: "Farm House",
-          realCost: 4,
+          realCost: 40,
           sameSectorAndTierInCity: 0,
           playRejection: "action_limit_reached",
         },
@@ -212,7 +212,7 @@ describe("pending and rejected moves", () => {
       code: "not_enough_funds",
     });
     expect(textWithIconNames(screen.getByRole("alert"))).toContain(
-      "You need [Funds 6]; you have [Funds 7.0].",
+      "You need [Funds 60]; you have [Funds 70].",
     );
     fireEvent.click(screen.getByRole("button", { name: "Close: Move rejected" }));
     expect(onDismissRejection).toHaveBeenCalledTimes(1);

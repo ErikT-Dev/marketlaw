@@ -82,7 +82,7 @@ test("the big card names a combo's card on its number and sells the card shown a
   await expect(lakePark).toBeVisible();
 
   await shown.getByRole("button", { name: "Sell" }).click();
-  await expect(shown.getByText(/^Sell for/).getByRole("img", { name: "Funds 1" })).toBeVisible();
+  await expect(shown.getByText(/^Sell for/).getByRole("img", { name: "Funds 10" })).toBeVisible();
   await shown.getByRole("button", { name: "Sell" }).click();
   await expect(hand.getByRole("button", { name: "Hiking Trail", exact: true })).toHaveCount(0);
   await expect(hand.getByRole("button", { name: "Warehouse", exact: true })).toBeVisible();

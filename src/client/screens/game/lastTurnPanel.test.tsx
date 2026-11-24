@@ -14,8 +14,8 @@ const BUSY_TURN: LastTurn = {
   ],
   projects: [{ project: "quality", seats: [4] }],
   incomeGains: [
-    { seat: 2, income: 2 },
-    { seat: 3, income: 1 },
+    { seat: 2, income: 20 },
+    { seat: 3, income: 10 },
   ],
   support: [{ seat: 4, funds: 20 }],
 };
@@ -43,10 +43,10 @@ describe("last turn panel", () => {
     ]);
     expect(rowTexts("Projects completed")).toEqual([expect.stringContaining("Di")]);
     expect(rowTexts("Income gained")).toEqual([
-      expect.stringMatching(/You\+2\.0$/),
-      expect.stringMatching(/Cy\+1\.0$/),
+      expect.stringMatching(/You\+20$/),
+      expect.stringMatching(/Cy\+10$/),
     ]);
-    expect(rowTexts("Support")).toEqual([expect.stringMatching(/Di\+2$/)]);
+    expect(rowTexts("Support")).toEqual([expect.stringMatching(/Di\+20$/)]);
   });
 
   it("shows each quest reward and each gain as icons named by their stats", () => {

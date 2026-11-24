@@ -1,8 +1,6 @@
 import type { QuestName } from "../../../shared/catalogue/QuestName";
 import type { QuestReward } from "../../../shared/catalogue/QuestReward";
 import { questOf } from "../../../shared/ruleFiles/questOf";
-import { tenthsShown } from "../../components/tenthsShown";
-import { wholeFundsShown } from "../../components/wholeFundsShown";
 import { iconUrl } from "../../icons/iconUrl";
 import { STAT_ICONS } from "../../icons/STAT_ICONS";
 import { LastTurnGain } from "./LastTurnGain";
@@ -52,8 +50,8 @@ export function LastTurnRowParts({ row }: Props) {
         </span>
       );
     case "income":
-      return <LastTurnGain amount={tenthsShown(row.income)} stat="income" />;
+      return <LastTurnGain amount={String(row.income)} stat="income" />;
     case "support":
-      return <LastTurnGain amount={wholeFundsShown(row.funds)} stat="funds" />;
+      return <LastTurnGain amount={String(row.funds)} stat="funds" />;
   }
 }
