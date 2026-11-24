@@ -49,19 +49,20 @@ describe("undo", () => {
     expect(result.isOk ? null : result.error.code).toBe("nothing_to_undo");
   });
 
-  it("takes back only the seller's cards from a holding pile that holds another player's sale of the same card", () => {
+  it("takes back only the undoer's sale from a holding pile that holds another player's sale", () => {
     const start = startSavedGame({ players: 2, kind: "casual", startedAt: GAME_STARTED_AT }, 7).state;
-    const sameHands = updateSeat(updateSeat(start, 1, (seat) => ({ ...seat, hand: ["Pub", "Cottage"] })), 2, (seat) => ({ ...seat, hand: ["Pub"] }));
+    const ownHands = updateSeat(updateSeat(start, 1, (seat) => ({ ...seat, hand: ["Pub", "Cottage"] })), 2, (seat) => ({ ...seat, hand: ["Farm House"] }));
     const sellActions: ReadonlyArray<GameAction> = [
       { type: "sell", seat: 1, cards: ["Pub"] },
-      { type: "sell", seat: 2, cards: ["Pub"] },
+      { type: "sell", seat: 2, cards: ["Farm House"] },
       { type: "undo", seat: 1 },
     ];
-    const undone = sellActions.reduce(accepted, sameHands);
+    const undone = sellActions.reduce(accepted, ownHands);
     expect(seatOf(undone, 1)?.hand).toEqual(["Pub", "Cottage"]);
-    expect(seatOf(undone, 1)?.stats.funds).toBe(seatOf(sameHands, 1)?.stats.funds);
+    expect(seatOf(undone, 1)?.stats.funds).toBe(70);
     expect(seatOf(undone, 2)?.hand).toEqual([]);
-    expect(undone.holdingPile).toEqual(["Pub"]);
+    expect(seatOf(undone, 2)?.stats.funds).toBe(80);
+    expect(undone.holdingPile).toEqual(["Farm House"]);
   });
 
   it("undoing a played card leaves the holding pile as it is", () => {
