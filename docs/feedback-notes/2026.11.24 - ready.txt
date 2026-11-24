@@ -1,0 +1,10 @@
+1. The player chosen icon should also show in lobby. Essentially the old letter based icon should never be shown anymore.
+2. Can we make the small card images a little higher res.
+3. Add the small card images to every place where a card is shown as a small rectangle - including cards set and opponent's cities (if not added there).
+4. New rule - first to complete a quest gains 0.1 funds timer the quests tier times 2 instead of gaining 1 influence. So if i am among the first to complete a tier 2 quest i get 0.4 funds for that.
+5. Rules, data and core game mechanincs change - everywhere relating to funds - multiply the funds by 10. The purpose is to get rid of numbers with decimal places. If at any point player would gain or consume X funds then they instead (after our changes) gain or consume X times 10. Also reflect this change in end game scoring - so that points gained for having extra funds or cards in your hand is divided by 10 (to make sure that this doesn't affect end game scoring). Also when gaining income you now gain 10 times more. Also start with 10 times more. Remove decimal place from income. Also support is 10 times more.
+6. Use the same background image that is used on handcard on all small rectangular cards as well. I believe that it's this image dana-devolk-E0BdstzaO8E-unsplash.
+7. in the actions buttons only use white text. Change the background colurs where needed to work with the white text. Same with buttons on the home screen.
+8. In quest display, it seems like some player icons are larger than others. May be a visual illusion because of the colours.
+9. In the left panel where opponents summaries are shown - your own QTCF are also in that display so it is misleading that the area is titled 'opponents'. Maybe it shoudl be titled players. And your own name should be added to the box where your qtcf is shown. Also show player icons in there, positioned left to their names.
+10. Decrease the opacity of the dark blue boxes marking each area of the screen.
