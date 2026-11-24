@@ -142,13 +142,13 @@
     discard: [Cottage]
     holding_pile: []
 
-- name: the end goal needs income 20 and all 3 projects
+- name: the end goal needs income 200 and all 3 projects
   covers: [R1.3, R21.1]
   given:
     turn: 12
     seats:
       - seat: 1
-        stats: {income: 20}
+        stats: {income: 200}
         projects: [quality, satisfaction, workforce]
   when:
     - {seat: 1, action: end_turn}
@@ -210,15 +210,15 @@
   then:
     ended: {winner: 1, scores: {1: 66, 2: 20}}
 
-- name: the score counts whole funds only
+- name: the score counts 0.02 points for every fund
   covers: [R21.4, R21.5, R2.5]
   given:
     turn: 40
     seats:
       - seat: 1
-        stats: {funds: 2.5}
+        stats: {funds: 25}
   when:
     - {seat: 1, action: end_turn}
     - {seat: 2, action: end_turn}
   then:
-    ended: {scores: {1: 19, 2: 20}}
+    ended: {scores: {1: 20, 2: 20}}

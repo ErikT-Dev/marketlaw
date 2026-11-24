@@ -247,14 +247,14 @@
         worth_gained: 14
     holding_pile: []
 
-- name: undo takes back the extra influence of completing a quest first
+- name: undo takes back the extra funds of completing a quest first
   covers: [R19.10, R7.1]
   given:
     turn: 3
     quests: [{quest: Farmland}, {quest: Sports town}, {quest: Trading post}, {quest: Mining town}]
     seats:
       - seat: 1
-        stats: {income: 4}
+        stats: {income: 40}
         city: [Liquor Shop]
   when:
     - {seat: 1, action: complete_quest, quest: Trading post}
@@ -262,5 +262,5 @@
   then:
     seats:
       - seat: 1
-        stats: {funds: 7, influence: 0}
+        stats: {funds: 70, influence: 0}
         quests_completed: []

@@ -1304,7 +1304,7 @@
       - seat: 2
         quests_completed: [Trading post]
 
-- name: completing a quest during its extra turn gives no extra influence
+- name: completing a quest during its extra turn gives no extra funds
   covers: [R19.10, R19.6]
   given:
     turn: 4
@@ -1313,14 +1313,14 @@
       - seat: 1
         quests_completed: [Trading post]
       - seat: 2
-        stats: {income: 4}
+        stats: {income: 40}
         city: [Liquor Shop]
   when:
     - {seat: 2, action: complete_quest, quest: Trading post}
   then:
     seats:
       - seat: 2
-        stats: {funds: 8, influence: 2}
+        stats: {funds: 80, influence: 2}
 
 - name: a quest completed during its extra turn does not stay longer
   covers: [R19.6, R10.2]
@@ -1366,17 +1366,17 @@
     quests: [{quest: Countryside, turns_on_table: 1}, {quest: Farmland}, {quest: Sports town}, {quest: Mining town}]
     quest_list_excludes: [Trading post]
 
-- name: everyone who completes a quest in the first turn anyone does gets 1 more influence
+- name: everyone who completes a quest in the first turn anyone does gets 2 funds for every tier of the quest
   covers: [R19.10, R19.5]
   given:
     turn: 3
     quests: [{quest: Farmland}, {quest: Sports town}, {quest: Trading post}, {quest: Mining town}]
     seats:
       - seat: 1
-        stats: {income: 4}
+        stats: {income: 40}
         city: [Liquor Shop]
       - seat: 2
-        stats: {income: 4}
+        stats: {income: 40}
         city: [Liquor Shop]
   when:
     - {seat: 1, action: complete_quest, quest: Trading post}
@@ -1384,9 +1384,9 @@
   then:
     seats:
       - seat: 1
-        stats: {funds: 8, influence: 3}
+        stats: {funds: 82, influence: 2}
       - seat: 2
-        stats: {funds: 8, influence: 3}
+        stats: {funds: 82, influence: 2}
 
 - name: a tier 1 quest stays on the table for 6 turns
   covers: [R19.7]
@@ -1417,7 +1417,7 @@
     quests: [{quest: Growing suburbs, turns_on_table: 1}, {quest: Sports town}, {quest: Trading post}, {quest: Mining town}]
     quest_list: [Metropolis]
 
-- name: a quest needing income is placed only once some player has that income minus 2
+- name: a quest needing income is placed only once some player has that income minus 20
   covers: [R19.11, R19.8]
   given:
     turn: 8
@@ -1426,9 +1426,9 @@
     quest_list: [Service boom, Growing suburbs]
     seats:
       - seat: 1
-        stats: {income: 6}
+        stats: {income: 60}
       - seat: 2
-        stats: {income: 6}
+        stats: {income: 60}
     random: [{tier: 2}, {quest: Growing suburbs}]
   when:
     - {seat: 1, action: end_turn}
@@ -1438,7 +1438,7 @@
     quests: [{quest: Growing suburbs, turns_on_table: 1}, {quest: Sports town}, {quest: Trading post}, {quest: Mining town}]
     quest_list_excludes: [Growing suburbs]
 
-- name: a quest needing income is placed once some player has that income minus 2
+- name: a quest needing income is placed once some player has that income minus 20
   covers: [R19.11]
   given:
     turn: 8
@@ -1447,7 +1447,7 @@
     quest_list: [Service boom]
     seats:
       - seat: 2
-        stats: {income: 7}
+        stats: {income: 70}
     random: [{tier: 2}, {quest: Service boom}]
   when:
     - {seat: 1, action: end_turn}
@@ -1456,7 +1456,7 @@
     turn: 9
     quests: [{quest: Service boom, turns_on_table: 1}, {quest: Sports town}, {quest: Trading post}, {quest: Mining town}]
 
-- name: a quest needing completed projects is placed only once some player has 8 income
+- name: a quest needing completed projects is placed only once some player has 80 income
   covers: [R19.11]
   given:
     turn: 8
@@ -1465,9 +1465,9 @@
     quest_list: [Civic pride, Growing suburbs]
     seats:
       - seat: 1
-        stats: {income: 7}
+        stats: {income: 70}
       - seat: 2
-        stats: {income: 7}
+        stats: {income: 70}
     random: [{tier: 2}, {quest: Growing suburbs}]
   when:
     - {seat: 1, action: end_turn}

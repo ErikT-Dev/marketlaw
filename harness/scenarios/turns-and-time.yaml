@@ -760,7 +760,7 @@
         done: true
         time_bank_ms: 0
 
-- name: the stats gain is added to funds in tenths of a fund
+- name: the stats gain adds 1 fund for every point
   covers: [R14.1, R2.5, R10.1]
   given:
     turn: 3
@@ -775,9 +775,9 @@
   then:
     seats:
       - seat: 1
-        stats: {funds: 11.6}
+        stats: {funds: 116}
       - seat: 2
-        stats: {funds: 10}
+        stats: {funds: 100}
 
 - name: negative stats lower the funds gained at the end of the turn
   covers: [R14.2]
@@ -834,7 +834,7 @@
       - seat: 2
         worth_gained: 17
 
-- name: Support gives 1 fund for every full 10 total worth gained behind the highest other player
+- name: Support gives 10 funds for every full 100 total worth gained behind the highest other player
   covers: [R11.5]
   given:
     turn: 3
@@ -842,7 +842,7 @@
     quests: [{quest: Farmland}, {quest: Sports town}, {quest: Trading post}, {quest: Mining town}]
     seats:
       - seat: 2
-        worth_gained: 37.5
+        worth_gained: 375
   when:
     - {seat: 1, action: end_turn}
     - {seat: 2, action: end_turn}
@@ -850,11 +850,11 @@
     turn: 4
     seats:
       - seat: 1
-        stats: {funds: 12}
+        stats: {funds: 120}
       - seat: 2
-        stats: {funds: 10}
+        stats: {funds: 100}
 
-- name: a player less than 10 total worth gained behind gets no Support
+- name: a player less than 100 total worth gained behind gets no Support
   covers: [R11.5]
   given:
     turn: 3
@@ -862,7 +862,7 @@
     quests: [{quest: Farmland}, {quest: Sports town}, {quest: Trading post}, {quest: Mining town}]
     seats:
       - seat: 2
-        worth_gained: 23.9
+        worth_gained: 239
   when:
     - {seat: 1, action: end_turn}
     - {seat: 2, action: end_turn}
@@ -870,7 +870,7 @@
     turn: 4
     seats:
       - seat: 1
-        stats: {funds: 10}
+        stats: {funds: 100}
 
 - name: players who left do not count for Support
   covers: [R11.5]

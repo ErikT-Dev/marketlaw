@@ -65,12 +65,12 @@
     rejected: wrong_phase
     unchanged: true
 
-- name: rejects a project with less than 10 income
+- name: rejects a project with less than 100 income
   covers: [R16.2]
   given:
     seats:
       - seat: 1
-        stats: {quality: 8, income: 9}
+        stats: {quality: 8, income: 99}
   when:
     - {seat: 1, action: complete_project, project: quality}
   then:

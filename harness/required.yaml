@@ -59,7 +59,7 @@ scenarios:
     - playing a Service card gives distribution
     - playing a Public card gives quality and satisfaction and uses workforce
     - a card that counts a type twice adds 2 to that type count
-    - real cost adds 1 for each card of the same sector and tier already in the city
+    - real cost adds 10 for each card of the same sector and tier already in the city
     - cards of another tier do not raise the real cost
     - rejects a card the player cannot afford at its real cost
     - rejects a tier 2 card before turn 5
@@ -83,7 +83,7 @@ scenarios:
     - completing a project first gives no extra funds
     - a project completed in a later turn gives the same reward
     - rejects a project outside the main phase
-    - rejects a project with less than 10 income
+    - rejects a project with less than 100 income
   setup:
     - a new game gives every player the starting stats and time bank
     - starting hands are dealt from the top of the deck one player at a time in seat order
@@ -92,14 +92,14 @@ scenarios:
     - after setup the deck holds every card not dealt or on display
     - turn 1 starts with the main phase and every player can act
     - every player starts turn 1 with 2 build passes
-    - a new game starts every player with 14 total worth gained
+    - a new game starts every player with 140 total worth gained
   turns-and-time:
     - ending the turn marks the player done and further actions are rejected
     - the main phase ends only when every player is done
     - the order in which players become done is recorded
     - end-of-turn steps pay influence income and the stats gain and keep build passes
     - negative stats lower the funds gained at the end of the turn
-    - the stats gain is added to funds in tenths of a fund
+    - the stats gain adds 1 fund for every point
     - players who left get no end-of-turn steps
     - every player gets 1 build pass at the start of every turn
     - unused build passes carry over to later turns with no limit
@@ -146,8 +146,8 @@ scenarios:
     - free time given again after a pause is not added to the time bank
     - the stats gain never takes funds below 0
     - a positive stats gain adds to total worth gained and a negative one does not lower it
-    - Support gives 1 fund for every full 10 total worth gained behind the highest other player
-    - a player less than 10 total worth gained behind gets no Support
+    - Support gives 10 funds for every full 100 total worth gained behind the highest other player
+    - a player less than 100 total worth gained behind gets no Support
     - players who left do not count for Support
     - Support adds to total worth gained
   visibility:
@@ -179,12 +179,12 @@ scenarios:
     - the view shows last turn's quests projects income and Support
     - another player's type counts show types gained from quests from the next turn
   influence:
-    - 4 influence buys 2 funds once per game
+    - 4 influence buys 20 funds once per game
     - 4 influence buys 1 quality
     - 4 influence buys 1 satisfaction
     - 6 influence buys 1 workforce
-    - 1 fund buys 1 influence any number of times
-    - a bought build pass costs 1 more fund each time
+    - 10 funds buy 1 influence any number of times
+    - a bought build pass costs 10 more funds each time
     - 5 influence buys 1 build pass once per game
     - a bought build pass can be used straight away
     - 1 influence and 1 quality buy 1 satisfaction
@@ -207,7 +207,7 @@ scenarios:
     - rejects a draw action when no card of that kind and tier is left
     - a draw action whose last card another player took this phase gives another tier
     - funds received and cards drawn add to total worth gained
-    - 3 influence buy 1 fund as often as the player likes
+    - 3 influence buy 10 funds as often as the player likes
   undo:
     - undo takes back playing a card
     - undo takes back claim all
@@ -225,7 +225,7 @@ scenarios:
     - undoing a bought build pass makes the next one cost the same again
     - undo takes back completing a quest whose reward draws no card
     - completing a quest whose reward draws a card cannot be undone
-    - undo takes back the extra influence of completing a quest first
+    - undo takes back the extra funds of completing a quest first
   marketplace:
     - option A takes a free market card and draws one card of the same sector from the deck
     - option B draws 2 cards of a chosen sector from the deck
@@ -321,13 +321,13 @@ scenarios:
     - another player can complete a quest during its extra turn
     - a quest completed during its extra turn does not stay longer
     - a quest completed in its last turn on the table leaves at the end of that turn
-    - everyone who completes a quest in the first turn anyone does gets 1 more influence
-    - completing a quest during its extra turn gives no extra influence
+    - everyone who completes a quest in the first turn anyone does gets 2 funds for every tier of the quest
+    - completing a quest during its extra turn gives no extra funds
     - a tier 1 quest stays on the table for 6 turns
     - a tier 3 quest stays on the table for 4 turns
-    - a quest needing income is placed only once some player has that income minus 2
-    - a quest needing completed projects is placed only once some player has 8 income
-    - a quest needing income is placed once some player has that income minus 2
+    - a quest needing income is placed only once some player has that income minus 20
+    - a quest needing completed projects is placed only once some player has 80 income
+    - a quest needing income is placed once some player has that income minus 20
   end-of-game:
     - reaching the end goal ends the game after that main phase without end-of-turn steps
     - the game goes on until the main phase ends after the end goal is reached
@@ -339,10 +339,10 @@ scenarios:
     - players who left come after every player still in the game
     - cards sold in the final turn join the discard pile when the game ends
     - an end goal reached by a player who then leaves does not end the game
-    - the end goal needs income 20 and all 3 projects
+    - the end goal needs income 200 and all 3 projects
     - a player who reached the end goal places above a player with a higher score who did not
     - the score has no base and no part for turns
-    - the score counts whole funds only
+    - the score counts 0.02 points for every fund
   accounts:
     - joining without being logged in offers a free generated name and creates a guest user
     - creating a guest user needs the human check

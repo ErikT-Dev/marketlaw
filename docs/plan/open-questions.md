@@ -4477,3 +4477,9 @@ file.
   fixed words, the engine's price and the rulebook table's text, and quest numbers up to 999 are
   read by their own reader, as `influence-actions.txt` keeps 1 to 99 (R15.5, R20.8). The card
   check's tier cost ranges follow R3.5 (30–60, 70–90, 110–130).
+- **Harness changes of item 1b (phase 29c, 2026-11-24):** the 18 renames the owner approved
+  ("Answered by the owner" in the phase file), each scenario changed to the new rule under its
+  new name in `playing-cards`, `projects`, `setup`, `turns-and-time`, `influence`, `undo`,
+  `quests` and `end-of-game`, and `harness/required.yaml` in the same commit. "The score counts
+  0.02 points for every fund" uses 25 funds (0.5 points, so seat 1 scores 20 like a seat with the
+  starting 70 funds and income 30, where rounding funds down to tens would give 19).

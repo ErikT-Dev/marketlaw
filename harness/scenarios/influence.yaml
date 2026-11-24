@@ -1,4 +1,4 @@
-- name: 4 influence buys 2 funds once per game
+- name: 4 influence buys 20 funds once per game
   covers: [R15.1]
   given:
     seats:
@@ -11,7 +11,7 @@
     rejected: trade_limit_reached
     seats:
       - seat: 1
-        stats: {funds: 9, influence: 4}
+        stats: {funds: 90, influence: 4}
         influence_uses: {influence_to_funds: 1}
 
 - name: 4 influence buys 1 quality
@@ -53,7 +53,7 @@
       - seat: 1
         stats: {influence: 0, workforce: 1}
 
-- name: 1 fund buys 1 influence any number of times
+- name: 10 funds buy 1 influence any number of times
   covers: [R15.1]
   when:
     - {seat: 1, action: influence, trade: fund_to_influence}
@@ -61,14 +61,14 @@
   then:
     seats:
       - seat: 1
-        stats: {funds: 5, influence: 2}
+        stats: {funds: 50, influence: 2}
 
-- name: a bought build pass costs 1 more fund each time
+- name: a bought build pass costs 10 more funds each time
   covers: [R15.1]
   given:
     seats:
       - seat: 1
-        stats: {funds: 10}
+        stats: {funds: 100}
   when:
     - {seat: 1, action: influence, trade: buy_build_pass}
     - {seat: 1, action: influence, trade: buy_build_pass}
@@ -76,7 +76,7 @@
   then:
     seats:
       - seat: 1
-        stats: {funds: 1}
+        stats: {funds: 10}
         build_passes: 4
         build_passes_bought: 3
 
@@ -391,7 +391,7 @@
         hand: [Farm House]
         worth_gained: 17
 
-- name: 3 influence buy 1 fund as often as the player likes
+- name: 3 influence buy 10 funds as often as the player likes
   covers: [R15.1, R2.4]
   given:
     seats:
@@ -403,5 +403,5 @@
   then:
     seats:
       - seat: 1
-        stats: {funds: 9, influence: 0}
-        worth_gained: 16
+        stats: {funds: 90, influence: 0}
+        worth_gained: 160

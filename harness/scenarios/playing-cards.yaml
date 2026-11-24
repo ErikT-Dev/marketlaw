@@ -71,7 +71,7 @@
       - seat: 1
         type_counts: {Town Housing: 1, Low Wealth: 2}
 
-- name: real cost adds 1 for each card of the same sector and tier already in the city
+- name: real cost adds 10 for each card of the same sector and tier already in the city
   covers: [R3.8, R6.1]
   given:
     seats:
@@ -83,7 +83,7 @@
   then:
     seats:
       - seat: 1
-        stats: {funds: 1}
+        stats: {funds: 10}
 
 - name: cards of another tier do not raise the real cost
   covers: [R3.8]

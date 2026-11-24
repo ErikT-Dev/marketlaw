@@ -112,7 +112,7 @@
       - seat: 2
         build_passes: 2
 
-- name: a new game starts every player with 14 total worth gained
+- name: a new game starts every player with 140 total worth gained
   covers: [R2.4]
   given:
     phase: new_game
@@ -122,6 +122,6 @@
   then:
     seats:
       - seat: 1
-        worth_gained: 14
+        worth_gained: 140
       - seat: 2
-        worth_gained: 14
+        worth_gained: 140
