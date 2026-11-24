@@ -557,3 +557,4 @@ each helper's conversation size at its end.
 | Builder 4 | Opus, medium | 27 | 153,691 | 103 | done |
 | Builder 6 | Opus, medium | 10 | 130,688 | 47 | done |
 | Builder 7 and 8 | Opus, medium | 18 | 143,354 | 68 | done |
+| Builder 9 | Opus, medium | 12 | 110,227 | 40 | done |
