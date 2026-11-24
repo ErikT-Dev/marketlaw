@@ -778,10 +778,20 @@ approval of the list, the quest scenarios that name quest contents.
   - **For later items.** Item 19: `InfluenceDialog.module.css`'s tile and draw backgrounds now
     use the 90% mix; keep it for the new tile colours. A unit test opening the influence pop-up
     names the button with the amount ("Use Influence 4").
-- [ ] 15. **Pictures and the browser tab** (S6.3, S8.2, S1.2, findings 1, 2). **Small.**
+- [x] 15. **Pictures and the browser tab** (S6.3, S8.2, S1.2, findings 1, 2). **Small.**
   - Project pictures from `design/assets/projects/` at about 600 px wide, at most about 80 KB
     each, in `ProjectsDialog` (lazy, not in the first screen's bundle); the logo of
     `design/assets/logo/` as the tab icon. Check the bundle budget.
+  - **Done (2026-11-24).** No spec rule named the tab icon, so S1.11 is new (Q187). The
+    pictures are committed 600 × 400 WebP files in `src/client/assets/projects/` (24 to 73 KB),
+    made by `npm run design:project-pictures` (`makeProjectPictures.ts`, the card tiles' way);
+    `projectPictures.test.ts` keeps each at 80 KB or less. `ProjectsDialog` shows each at
+    150 × 100 px left of the project's text, an image named by the project's title, loaded
+    lazily (`projectPictureUrl`). The tab icon is `src/client/assets/logo/logo192.png` linked
+    from `index.html`. Initial download 199.37 kB of 300 (B14). Browser tests:
+    `combosAndProjects.spec.ts` checks the three pictures load, `lobby.spec.ts` the tab icon;
+    both pass locally at all three sizes. `npm run check` still fails only on items 16, 18
+    and 19.
 - [ ] 16. **Tutorial messages and texts** (S15.2, T1.3 to T5.4, finding 8). **Medium.** After
   1b and 3.
   - Each message beside the area it highlights, with an arrow; the rest dimmed a little while
