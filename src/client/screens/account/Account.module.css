@@ -33,9 +33,7 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: var(--color-status-online);
-  color: var(--color-background-game-window);
-  font-weight: var(--font-weight-bold);
+  background: var(--color-panel-highlight);
 }
 
 .userText {

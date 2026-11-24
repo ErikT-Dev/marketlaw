@@ -1,4 +1,6 @@
 import { useCallback, useId, useRef, useState } from "react";
+import type { PlayerIconChoice } from "../../../shared/playerIcons/PlayerIconChoice";
+import { PlayerIconFace } from "../../components/PlayerIconFace";
 import { useHelpBoxDismissal } from "../../components/useHelpBoxDismissal";
 import styles from "./Account.module.css";
 import { UserMenuItems } from "./UserMenuItems";
@@ -6,6 +8,7 @@ import { UserMenuItems } from "./UserMenuItems";
 type Props = {
   readonly name: string;
   readonly isGuest: boolean;
+  readonly icon: PlayerIconChoice | null;
   readonly rating: number | null;
   readonly onOpenMatchHistory: (() => void) | null;
   readonly onSignUp: () => void;
@@ -14,7 +17,8 @@ type Props = {
 };
 
 export function UserMenu(props: Props) {
-  const { name, isGuest, rating, onSignUp, onOpenSettings, onOpenMatchHistory, onLogOut } = props;
+  const { name, isGuest, icon, rating, onSignUp, onOpenSettings, onOpenMatchHistory, onLogOut } =
+    props;
   const menuId = useId();
   const containerRef = useRef<HTMLDivElement>(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -40,8 +44,12 @@ export function UserMenu(props: Props) {
           setIsOpen(!isOpen);
         }}
       >
-        <span className={styles["avatar"]} aria-hidden="true">
-          {name.charAt(0).toUpperCase()}
+        <span
+          className={styles["avatar"]}
+          aria-hidden="true"
+          style={icon === null ? undefined : { background: icon.background }}
+        >
+          {icon === null ? null : <PlayerIconFace icon={icon} />}
         </span>
         <span className={styles["userText"]}>
           <strong className={styles["userName"]}>{name}</strong>

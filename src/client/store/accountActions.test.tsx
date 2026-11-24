@@ -100,7 +100,10 @@ describe("logging out and changing the username", () => {
     const network = hostWithEvents();
     const store = new ClientStore(() => network.host);
     await store.logOut();
-    expect(sent.at(-1)).toEqual({ path: "/api/logout", body: { token: "guest-token" } });
+    expect(sent.filter(({ path }) => path !== "/api/account").at(-1)).toEqual({
+      path: "/api/logout",
+      body: { token: "guest-token" },
+    });
     expect(store.getSnapshot().session).toBeNull();
     expect(store.getSnapshot().notice).toBeNull();
     expect(readSession()).toBeNull();
@@ -141,7 +144,7 @@ describe("logging out and changing the username", () => {
     );
     const store = new ClientStore(() => hostWithEvents().host);
     expect(await store.changeUsername("Ann City")).toBeNull();
-    expect(sent.at(-1)).toEqual({
+    expect(sent.filter(({ path }) => path !== "/api/account").at(-1)).toEqual({
       path: "/api/username-changes",
       body: { token: "guest-token", username: "Ann City" },
     });
@@ -178,5 +181,38 @@ describe("logging out and changing the username", () => {
     const store = new ClientStore(() => hostWithEvents().host);
     expect(await store.loadAccount()).toEqual(details);
     expect(sent.at(-1)).toEqual({ path: "/api/account", body: { token: "guest-token" } });
+  });
+});
+
+describe("your icon", () => {
+  const WOLF = { picture: "lorc/wolf-head" as const, background: "#14532d", color: "#bbf7d0" };
+
+  it("loads your icon from the account once the session is checked and keeps a changed one", async () => {
+    writeSession(IN_ROOM);
+    serverAnswers((path) => {
+      if (path === "/api/account") {
+        return {
+          isLoggedIn: true,
+          name: "Ann",
+          usernameWait: null,
+          icon: TEST_PLAYER_ICON,
+          iconWait: null,
+          email: null,
+          rating: null,
+        };
+      }
+      return path === "/api/icon-changes"
+        ? { isOk: true, icon: WOLF, iconWait: null }
+        : loggedInAnswer(path);
+    });
+    const store = new ClientStore(() => hostWithEvents().host);
+    await vi.waitFor(() => {
+      expect(store.getSnapshot().accountIcon).toEqual({
+        token: "guest-token",
+        icon: TEST_PLAYER_ICON,
+      });
+    });
+    expect(await store.changeIcon(WOLF)).toBeNull();
+    expect(store.getSnapshot().accountIcon).toEqual({ token: "guest-token", icon: WOLF });
   });
 });

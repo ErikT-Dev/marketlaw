@@ -9,6 +9,7 @@ export type AccountBinding = {
   readonly playerId: PlayerId | null;
   readonly name: string;
   readonly isGuest: boolean;
+  readonly icon: PlayerIconChoice | null;
   readonly isInGame: boolean;
   readonly onSignUp: (signup: Omit<SignupRequest, "token">) => Promise<ReasonCode | null>;
   readonly onChangeUsername: (username: string) => Promise<ReasonCode | null>;

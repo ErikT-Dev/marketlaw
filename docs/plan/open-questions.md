@@ -4522,3 +4522,10 @@ file.
   and M3.7 ask (no reward in it before or now), so it needs no change. The quests help text
   (S5.4) is now the spec's whole text, which it had fallen behind on (the extra turn and the
   turns by tier).
+- **Your icon in item 5 (phase 29c, 2026-11-24):** the account response (`/api/account`)
+  already holds the icon, for guests and registered users alike, so no message changes shape
+  and `PROTOCOL_VERSION` stays. The client store loads it once per session token, after the
+  session check and after a guest start, login or signup (one request each, none for a username
+  change), keeps it in its state and replaces it when an icon change is accepted. Every user box
+  (lobby, waiting room, game, after the game) shows it; until it is loaded the box shows an
+  empty icon circle, not a letter.

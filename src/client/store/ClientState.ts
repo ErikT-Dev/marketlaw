@@ -1,3 +1,4 @@
+import type { AccountIcon } from "./AccountIcon";
 import type { ConnectionStatus } from "../../shared/ConnectionStatus";
 import type { EmailDialog } from "./EmailDialog";
 import type { Notice } from "../../shared/Notice";
@@ -18,6 +19,7 @@ import type { TutorialView } from "../../shared/TutorialView";
 
 export type ClientState = {
   readonly session: StoredSession | null;
+  readonly accountIcon: AccountIcon | null;
   readonly connection: ConnectionStatus;
   readonly update: RoomUpdate | null;
   readonly tutorial: TutorialView | null;

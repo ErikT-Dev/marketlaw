@@ -442,11 +442,20 @@ scenarios, which expect the first completers' funds instead of influence.
   - Client tests that expect the old words (`rulebookChangedSections.test.tsx`,
     `combosAndProjects.test.tsx`, `parseRulebook.test.tsx`, the tutorial's) follow the spec.
 
-- [ ] 5. **Your icon in the user box** (S2.3, S10.1, A2.5, point 1). **Small.**
+- [x] 5. **Your icon in the user box** (S2.3, S10.1, A2.5, point 1). **Small.**
   - Reuse `src/client/components/PlayerIcon.tsx`; the user box is in
     `src/client/screens/account/UserMenu.tsx` (lobby and game top bar); the lobby gets your icon
     from your account (`AccountBinding.ts`). If the account data the client holds lacks the
     icon, add it to the existing account response (see Start on the protocol raise).
+  - Done (2026-11-24); recorded in Q188. The account response already held the icon, so no
+    message changed shape and `PROTOCOL_VERSION` was not touched. The store keeps it
+    (`ClientState.accountIcon`, by session token), loaded from `/api/account` once per token
+    and replaced on an accepted icon change; `AccountBinding.icon` carries it to every user box.
+    The box shows `PlayerIconFace` in its 32 px circle, not `PlayerIcon`, which is a button and
+    cannot sit inside the user box's button; the name beside it keeps it decorative.
+    `e2e/userMenu.spec.ts` passes locally at 1920 × 1080.
+  - **For later items:** item 9's own icon over your counts can come from the view's seat icons
+    as now. `npm run check` fails the same 15 tests in 9 files as after item 3, all item 4's.
 
 - [ ] 6. **Card tiles** (S6.4, S14.3, S3.2, B19, points 2, 3 and 6). **Large.**
   - Pictures at 200 × 172: `tools/design-export/makeCardTilePictures.ts` (`TILE_PICTURE_SIZE` is

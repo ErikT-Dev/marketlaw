@@ -36,6 +36,7 @@ export function UserAccount({ account, rating }: Props) {
       <UserMenu
         name={account.name}
         isGuest={account.isGuest}
+        icon={account.icon}
         rating={rating}
         onSignUp={openSignUp}
         onOpenSettings={openSettings}

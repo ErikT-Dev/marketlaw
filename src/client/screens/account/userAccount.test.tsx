@@ -3,6 +3,7 @@ import { TEST_PLAYER_ICON } from "../../../shared/testing/TEST_PLAYER_ICON";
 import * as v from "valibot";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { UsernameWait } from "../../../shared/api/UsernameWait";
+import { playerIconPictureUrl } from "../../icons/playerIconPictureUrl";
 import { testAccount } from "../../testing/testAccount";
 import type { AccountBinding } from "./AccountBinding";
 import { UserAccount } from "./UserAccount";
@@ -43,7 +44,7 @@ afterEach(() => {
 describe("the user menu", () => {
   it("offers a guest signing up first, then settings, match history and log out", () => {
     userAccount();
-    expect(screen.getByRole("button", { name: "Your account" }).textContent).toBe("BBeaGuest");
+    expect(screen.getByRole("button", { name: "Your account" }).textContent).toBe("BeaGuest");
     const items = within(openMenu()).getAllByRole("button");
     expect(items.map((item) => item.textContent)).toEqual([
       "Sign up to keep your account",
@@ -52,6 +53,15 @@ describe("the user menu", () => {
       "Log out",
     ]);
     expect(items[2]).toHaveProperty("disabled", false);
+  });
+
+  it("shows your player icon in the user box instead of a letter", () => {
+    userAccount();
+    const box = screen.getByRole("button", { name: "Your account" });
+    expect(box.firstElementChild?.getAttribute("style")).toContain("background: rgb(30, 58, 138)");
+    expect(box.firstElementChild?.firstElementChild?.getAttribute("style")).toContain(
+      playerIconPictureUrl("delapouite/bat"),
+    );
   });
 
   it("opens the own match history from the menu, and only once the player id is known", () => {
@@ -66,7 +76,7 @@ describe("the user menu", () => {
 
   it("shows a registered user without the guest mark and without signing up", () => {
     userAccount({ isGuest: false });
-    expect(screen.getByRole("button", { name: "Your account" }).textContent).toBe("BBea");
+    expect(screen.getByRole("button", { name: "Your account" }).textContent).toBe("Bea");
     expect(within(openMenu()).queryByRole("button", { name: /Sign up/ })).toBeNull();
   });
 

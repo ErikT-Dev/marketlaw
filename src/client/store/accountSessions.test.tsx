@@ -57,6 +57,7 @@ describe("logging in and signing up", () => {
     expect(await store.logIn({ login: "Bea", password: "long enough" })).toBeNull();
     expect(sent).toEqual([
       { path: "/api/logins", body: { login: "Bea", password: "long enough" } },
+      { path: "/api/account", body: { token: "new-token" } },
     ]);
     const session = {
       token: "new-token",
@@ -82,7 +83,10 @@ describe("logging in and signing up", () => {
     const store = new ClientStore(() => fakeHost());
     const sent = serverAnswers(ACCOUNT);
     expect(await store.signUp(SIGNUP)).toBeNull();
-    expect(sent).toEqual([{ path: "/api/signups", body: SIGNUP }]);
+    expect(sent).toEqual([
+      { path: "/api/signups", body: SIGNUP },
+      { path: "/api/account", body: { token: "new-token" } },
+    ]);
     expect(store.getSnapshot().session?.isGuest).toBe(false);
   });
 
@@ -99,10 +103,10 @@ describe("logging in and signing up", () => {
     const sent = serverAnswers({ ...ACCOUNT, token: "guest-token" });
     const store = new ClientStore(() => fakeHost());
     expect(await store.signUp(SIGNUP)).toBeNull();
-    expect(sent.at(-1)).toEqual({
-      path: "/api/signups",
-      body: { ...SIGNUP, token: "guest-token" },
-    });
+    expect(sent.slice(-2)).toEqual([
+      { path: "/api/signups", body: { ...SIGNUP, token: "guest-token" } },
+      { path: "/api/account", body: { token: "guest-token" } },
+    ]);
     expect(store.getSnapshot().session).toEqual({
       token: "guest-token",
       playerId: ACCOUNT.playerId,
