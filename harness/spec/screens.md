@@ -124,7 +124,8 @@ None yet.
 - **S4.1** The **marketplace** panel shows the 8 places in the order of R18.5, each with its place
   name. A filled place shows the card as a card tile (S6.4) with its tier, and how many turns
   it still stays in the marketplace, counting the current turn's market phase until it ends
-  ("2 turns left", "1 turn left", R18.13); an emptied place shows "Empty until next turn". Clicking a marketplace card, at any time, shows it in the big card
+  ("2 turns left", "1 turn left", R18.13), or "Leaves next turn" once its last market phase has
+  ended; an emptied place shows "Empty until next turn". Clicking a marketplace card, at any time, shows it in the big card
   (S6.5) and never takes it.
 - **S4.2** The marketplace header also shows the **bonus types** with their point values, the
   number of cards left in the **deck**, and the number of cards in the **discard pile** (R5.5),
@@ -248,7 +249,8 @@ None yet.
     which is decorative (no accessible name). The line runs from 61% of the width at the top to
     77% at the bottom, the same on every tile, with a thin light line along it. The name wraps
     before the picture starts. Every tile of one kind (hand, city or marketplace) has one fixed
-    size, whatever the name; a name too long for it is shown in a smaller font, chosen from its
+    size, whatever the name (a hand or marketplace tile is as wide as its column at the screen
+    size, the same for every tile of that kind); a name too long for it is shown in a smaller font, chosen from its
     length, so that every one of the 240 names fits. The tile's background is its sector colour
     at 80% of its strength. A hand card keeps its playable edge on the far right, over the
     picture.

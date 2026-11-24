@@ -4239,3 +4239,30 @@ file.
   same artist names, only those with a picture in the folder.
 - **Spec:** S12.5 (unchanged).
 - **Implemented:** `src/client/icons/playerIconPictureLabel.ts`, `PLAYER_ICON_ARTISTS.ts`.
+
+## Q183. How are the card tiles of phase 29b item 9 sized, counted and made?
+
+- **Phase:** 29b, item 9 (card tiles), decided without the owner.
+- **Questions:** (1) S6.4 gives every tile of one kind one fixed size, but only the city tile has
+  numbers (140 × 94); the hand and marketplace columns grow with the screen. (2) S4.1 counts the
+  turns left "until it ends", but a card stays in the marketplace through the main phase after
+  its second market phase, when 0 market phases are left. (3) B19 is "measured: production
+  build", but `npm run check` runs the tests before the build, and `.size-limit.js` is protected.
+  (4) How the small pictures are made.
+- **Solution:** (1) a hand tile is 102 px high and a marketplace tile 84 px high; both are as
+  wide as their column at the screen size, the same for every tile of the kind; the font of a
+  name (14, 12 or 11 px) is chosen from its length per kind (`cardNameSizeOf`), and the browser
+  test `e2e/cardTiles.spec.ts` shows all 240 names in all three kinds at every screen size and
+  checks that each fits and that each kind has one size. (2) Such a card shows "Leaves next
+  turn". The turns left are a line under the tile. (3) B19 is checked by the unit test
+  `tools/design-export/cardTilePictures.test.ts` on the committed pictures in
+  `src/client/assets/card-tiles/`, which the production build copies byte for byte
+  (`assetsInlineLimit: 0`): one per card, each at most the B19 limit (largest 4.2 KB). (4)
+  `npm run design:card-tiles` (`makeCardTilePictures.ts`) makes them from the card photos with
+  the Chromium of `playwright-core`, as `design:assets` makes the photos (100 × 86 WebP, quality
+  0.72, 629 KB for all 240); no new dependency. Each is loaded only when its tile shows
+  (`loading="lazy"`). Unplayable hand cards are dimmed with a filter, which keeps the text
+  contrast. `MARKET_PHASES_SHOWN` moved to `src/shared/` so the client can count the turns left.
+- **Spec:** S4.1 and S6.4 amended.
+- **Implemented:** `CardTilePicture`, `cardTileBackground`, `cardNameSizeOf`,
+  `marketTurnsLeftText`, `handInListOrder`.
