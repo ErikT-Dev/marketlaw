@@ -310,3 +310,4 @@ each helper's conversation size at its end.
 | Builder 4b | Opus, medium | 8 | 99,297 | 29 | done |
 | Finisher | Sonnet, medium | 78 | 83,835 | 39 | done |
 | Phase reviewer | Opus, medium | 8 | 142,467 | 46 | done (9 findings) |
+| Fixer A (2, 3, 5, 7) | Opus, medium | 11 | 130,582 | 55 | done |
