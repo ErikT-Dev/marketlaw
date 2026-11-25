@@ -1,5 +1,6 @@
 import { expect, test, type Browser, type Page } from "@playwright/test";
 import { expectScreenFits } from "./expectScreenFits";
+import { openTestSeat } from "./openTestSeat";
 import { startTestRoom } from "./startTestRoom";
 
 const FREE_TIME_MS = 75_000;
@@ -55,4 +56,23 @@ test("clocks count down, and a player out of time in a casual game keeps playing
     one.getByText("You are out of time. You can keep playing until the other players are done."),
   ).toBeVisible();
   await expectScreenFits(one, "game-out-of-time", testInfo);
+});
+
+test("a paused game goes on when a player comes back, and says who gets free time", async ({
+  browser,
+  request,
+  viewport,
+}, testInfo) => {
+  const [seatOne = ""] = await startTestRoom(request, {
+    players: 2,
+    turn: 2,
+    paused: true,
+    seats: [{ seat: 1, time_bank_ms: 0 }],
+  });
+  const page = await openTestSeat(browser, viewport, seatOne);
+  const notice = page.getByRole("status").filter({ hasText: "Game resumed" });
+  await expect(notice).toContainText("Everyone was away, so the game was paused.");
+  await expect(notice).toContainText("You get 75 seconds of free time before your time runs out.");
+  await expectScreenFits(page, "game-resumed", testInfo);
+  await page.context().close();
 });

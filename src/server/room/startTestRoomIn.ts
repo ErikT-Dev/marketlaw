@@ -13,13 +13,22 @@ import type { RoomStorage } from "./RoomStorage";
 const PLAYER_COUNTS = [1, 2, 3, 4] as const;
 const ROOM_SIZES = [2, 3, 4] as const;
 
+function withPauseStartedBy(state: GameState, shiftMs: number): GameState {
+  return state.pause === null
+    ? state
+    : { ...state, pause: { ...state.pause, at: state.pause.at + shiftMs } };
+}
+
 export function startTestRoomIn(
   storage: RoomStorage,
   room: { readonly code: RoomCode; readonly seed: number; readonly now: EpochMs },
   players: ReadonlyArray<Identity>,
   given: GameState,
 ): boolean {
-  const state = withClocksStartedAt(given, room.now);
+  const state = withPauseStartedBy(
+    withClocksStartedAt(given, room.now),
+    room.now - given.clockStartedAt,
+  );
   const playerCount = PLAYER_COUNTS.find((count) => count === state.seats.length);
   const size = ROOM_SIZES.find((candidate) => candidate === Math.max(2, state.seats.length));
   const isOnePlayerPerSeat = players.length === state.seats.length;

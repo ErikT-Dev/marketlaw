@@ -68,7 +68,10 @@ export const GAME_STATE_SCHEMA = v.object({
   drawLog: v.array(DRAW_LOG_ENTRY_SCHEMA),
   mainPhaseLog: v.optional(v.array(MAIN_PHASE_LOG_ENTRY_SCHEMA), []),
   clockStartedAt: EpochMs,
-  pause: v.optional(v.null(), null),
+  pause: v.optional(
+    v.nullable(v.object({ at: v.number(), seats: v.array(SEAT_NUMBER_SCHEMA) })),
+    null,
+  ),
   vote: v.optional(v.null(), null),
   lastVoteTurn: v.optional(v.nullable(v.number()), null),
   grace: v.optional(v.tuple([]), []),
