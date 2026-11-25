@@ -172,9 +172,12 @@ None by name: phases 03 to 29 together make all 427 scenarios required. This pha
     game) load and replay (`src/rules/savedGame.test.ts`, `roomStorage.test.ts`).
   - No message shape changes, so `PROTOCOL_VERSION` stays.
 
-- [ ] 4b. **The final data wipe** (D1; Q189, 8). **Small.**
-  - A D1 migration (`migrations/0016_...sql`) deletes every row of every table, keeping the
-    tables; the lobby's and the queue's stored state (`src/server/lobby/`, `src/server/queue/`)
+- [ ] 4b. **The final data wipe** (D1; Q189, 8; the owner's change Q191). **Small.**
+  - A D1 migration (`migrations/0016_...sql`) keeps the finished ranked game records and every
+    account that played one of them, with their logins, ratings, settings and the stored moves
+    of those games; it deletes every other game record and its moves, every account that never
+    played a ranked game (guests included) with everything that belongs to it, and the daily
+    counts (Q191). A test proves what is kept and what goes. The lobby's and the queue's stored state (`src/server/lobby/`, `src/server/queue/`)
     is cleared once on the first load after the deploy. It runs at the merge
     (`npm run db:migrate:remote` in `deploy.yml`). Not run against the live database by hand.
 
@@ -196,3 +199,4 @@ each helper's conversation size at its end.
 |---|---|---|---|---|---|
 | Starter + builder 1a | Opus, medium | 18 | 139,741 | 78 | done |
 | Builder 1b + 1c | Opus, medium | 29 | 146,871 | 87 | done |
+| Builder 2a | Opus, medium | 34 | 239,058 | 150 | done |

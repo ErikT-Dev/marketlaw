@@ -4632,3 +4632,20 @@ file.
   element was inert, so the page had no main landmark (axe `landmark-one-main`); the columns
   inside it are now inert instead.
 - **Implemented:** phase 30, item 2a.
+
+## Q191. Does the final data wipe keep ranked games and their players?
+
+- **Where:** the owner, 2026-11-25, during phase 30, about item 4b (Q189, 8).
+- **Question:** Q189, 8 wiped every row. The owner asked to keep the existing ranked games and
+  the accounts that played them.
+- **Options:** wipe everything (Q189, 8); keep ranked games and their players.
+- **Solution (the owner's decision):** the wipe keeps every finished ranked game record and
+  every account that played at least one of them, with what belongs to those accounts: their
+  logins, ratings, place in the ranking table, email address and settings, and the stored moves
+  of their ranked games where those still exist (M4.3). It deletes every casual and tutorial game
+  record (and its stored moves), every account that never played a ranked game (guests
+  included) with everything that belongs to it, and the daily counts. The lobby's and the
+  queue's stored state is cleared and rooms close through the raise of Q189, 7, as before. A kept
+  player's match history then shows only their ranked games. This replaces Q189, 8 where the two
+  differ.
+- **Implemented:** phase 30, item 4b.
