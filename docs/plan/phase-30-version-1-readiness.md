@@ -236,7 +236,7 @@ None by name: phases 03 to 29 together make all 427 scenarios required. This pha
     object starts, so they start empty after the deploy.
   - For later items (5): the wipe runs at the merge, by `npm run db:migrate:remote`.
 
-- [ ] 5. **Release checks and the owner's decision** (D8, D22; Q189, 9). For the releaser.
+- [x] 5. **Release checks and the owner's decision** (D8, D22; Q189, 9). For the releaser.
   - On the live site after the deploy: the site loads without a login (D22); the test-room
     endpoint answers 404 without the secret (`e2e/testRooms.spec.ts`'s first test, against the
     live address); the wipe took effect (an old room link shows "Room not found").
@@ -317,3 +317,32 @@ each helper's conversation size at its end.
 | Phase reviewer | Opus, medium | 8 | 142,467 | 46 | done (9 findings) |
 | Fixer A (2, 3, 5, 7) | Opus, medium | 11 | 130,582 | 55 | done |
 | Fixer B (1, 4, 8) | Opus, medium | 9 | 83,856 | 26 | done |
+
+## Report
+
+What was built: the screen-size and accessibility checks at every size (keyboard-only games, reduced
+motion), the browser tests at every size, the final data wipe (migration 0016, Q191) and the
+launch preparation (D1, D8, D22), with all 427 scenarios, 30 invariants and 19 budgets on
+`harness/required.yaml`.
+
+Known gaps of earlier phases, both fixed: 29a's focus tooltip (stat icons no longer show their own
+tooltip inside a red card name's tooltip) and 29c's R2 (card names hyphenate at a syllable break,
+S6.4). Both leave "Known gaps".
+
+The wipe (Q191, the owner's decision): ranked game records and the accounts in them stay;
+everything else is deleted. Old-unit ranked records (finished before 29c) keep the combined
+"funds and cards in hand" row, since it cannot be split; their income is converted to the current
+units. Ranked games with a test-room seat are deleted.
+
+Review: 9 findings. 1, 2, 3, 4, 5, 7, 8 fixed; 6 accepted (a row written in the short gap between
+the migration and `wrangler deploy` is harmless); 9 not fixed (follows the existing
+`STORED_ROOM_SCHEMA` pattern).
+
+What to try: the owner's final playthrough on the live site, then the decision to make version 1
+public.
+
+## Waiting for the owner
+
+- The final playthrough of version 1 on the live site.
+- The decision to make version 1 public. Findings from the playthrough are fixed, or moved to
+  after version 1 with the owner's agreement.
