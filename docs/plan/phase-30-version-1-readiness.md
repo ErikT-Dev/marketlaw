@@ -261,20 +261,33 @@ None by name: phases 03 to 29 together make all 427 scenarios required. This pha
      combined "funds + cards in hand" row, Q188); Q189 4(e) relied on the full wipe. **Fix
      (fixer A):** 0016 converts them to the current units (a record whose seats have a non-null
      `fundsAndHand` is old), with a test; record it in Q191 and correct Q189 4(e).
+     **Fixed:** 0016 multiplies the income of every seat of such a record by 10; the combined
+     `fundsAndHand` cannot be split and stays as recorded, shown in its old row (Q191). Q189
+     4(e) corrected.
   3. The lobby and queue clear has no test and deletes the old key on every wake. **Fix (fixer
      A):** delete only when the old key exists; a server test seeds the old key and checks the
      object starts empty and the key is gone.
+     **Fixed:** `deletePreLaunchRecord` deletes the old key only when it holds a value;
+     `src/server/deletePreLaunchRecord.test.ts` seeds it for the lobby and the queue and checks
+     it is gone with no launched record, and that a later wake deletes nothing. The keys moved
+     to `LOBBY_STORAGE_KEYS` and `QUEUE_STORAGE_KEYS`. The server test project cannot import
+     a Durable Object class (the test files are type-checked without the Worker types), so the
+     test drives the helper the constructors call.
   4. The keyboard-only full game never plays a card, uses influence or completes a project.
      **Fix (fixer B):** a short keyboard-only spec (test room) that plays a card to the city and
      uses influence or completes a project through `activate`.
   5. Ranked test-room games would keep their test-room seat accounts in the ranking. **Fix
      (fixer A):** 0016 also deletes ranked records with any test-room seat
      (`is_test_room_seat = 1`) and those accounts; with a test; recorded in Q191.
+     **Fixed:** 0016 first deletes every game record with a test-room seat; its accounts, and any
+     account whose only ranked games those were, go with the rest (Q191).
   6. A short gap between the migration and `wrangler deploy` at the merge. **Accepted**: a row
      written in that minute is harmless; the releaser mentions it in the report.
   7. Small additions to the wipe test (a version 21 replay unchanged; a deleted account's
      `game_record_players` row in a ranked game kept without a player row; a casual game with
      the same end and start time as a ranked one). **Fix (fixer A).**
+     **Fixed:** all three are in the test; a stored casual game whose times match a ranked one
+     is now deleted, by the kind in its setup (Q191).
   8. `Card.module.css` still has `overflow-wrap: anywhere` on card names. **Fix (fixer B):**
      remove it, so the browser test catches any name that does not fit.
   9. `parsedJsonOf` location and `STORED_REPLAY_SCHEMA` checking only the version. **Not

@@ -4574,7 +4574,9 @@ file.
      points chosen per long word if the browser's breaks are wrong), and S6.4 says so before
      the code changes; (d) the players online list without icons (29c): not a gap, since S10.2
      lists username, rating and status, not an icon; (e) Brevo's footer and spam (D30), records
-     in old units (wiped by item 4) and funds below 0 (spec, Q178) are not gaps.
+     in old units and funds below 0 (spec, Q178) are not gaps. **Corrected after the phase
+     review (finding 2):** item 4 no longer wipes every record (Q191 keeps ranked games), so the
+     records in old units are not wiped; migration 0016 converts the kept ones (Q191).
   5. **Keyboard-only run through a full game.** Options: a new full-length browser test (about
      15 minutes more per size on GitHub, and a title matching "play a whole game from the lobby"
      would drop out of every job of `check.yml`), or the existing 2-player full game played by
@@ -4649,3 +4651,29 @@ file.
   player's match history then shows only their ranked games. This replaces Q189, 8 where the two
   differ.
 - **Implemented:** phase 30, item 4b.
+- **After the phase review, findings 2, 5 and 7 (phase 30, 2026-11-25), decided without the
+  owner (D19):**
+  - **Kept records in the old units (finding 2).** A ranked record finished before phase 29c's
+    deploy holds its income in the old unit (one tenth, Q188) and one combined
+    `fundsAndHand` value instead of `funds` and `cardsInHand`. Phase 29c's two record
+    commits were deployed together, so a record whose seats hold a non-null `fundsAndHand` is
+    exactly an old one. Migration 0016 multiplies every seat's income of such a record by 10.
+    The combined value cannot be split or converted: old funds and cards in hand both counted
+    0.2 points, so neither the score nor anything else in the record tells them apart. It stays
+    as recorded, in the old whole funds, and the game record page keeps showing its one
+    **Funds + cards in hand** row for that record (29c, item 2b). Scores, F (already counted
+    in the current unit before 29c) and every other value are unchanged.
+  - **Ranked games in test rooms (finding 5).** A ranked game with any test-room seat
+    (`players.is_test_room_seat = 1`, the browser tests on the live site) is deleted with its
+    players' rows and stored moves, so the test-room accounts leave the ranking; they then
+    played no kept ranked game and are deleted with everything they own, and so is any other
+    account whose only ranked games were such games. The ratings of an account kept for other
+    ranked games are not recomputed (no account outside the test rooms is expected to have
+    played one); its ranked-game count may then include a deleted game.
+  - **Stored moves (finding 7).** The moves are matched to a kept ranked game by end and start
+    time, since the two tables share no id; a stored game whose setup names a kind other than
+    ranked is now deleted even when its times match a ranked game. Stored moves saved before
+    the setup held a kind (2026-11-11) are matched by time alone. A version 21 replay is kept
+    unchanged, and a `game_record_players` row of an account deleted earlier (A1.15) stays with
+    its kept ranked game. `tools/database-migrations/finalDataWipe.test.ts` checks every kept
+    and deleted row of these cases.
