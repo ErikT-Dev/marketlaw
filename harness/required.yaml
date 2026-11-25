@@ -330,6 +330,14 @@ scenarios:
     - a quest needing income is placed once some player has that income minus 20
     - a tier 3 quest's first completion gives 6 extra funds
     - the extra funds of a first completion add to total worth gained
+    - completing Grain fields gives its reward
+    - completing Timber town gives its reward
+    - completing Brewery town gives its reward
+    - completing Oil town gives its reward
+    - completing Trading house gives its reward
+    - completing Property market gives its reward
+    - tier 3 cards do not count for a tier 2 card requirement
+    - a product or distribution requirement needs that much of the stat
   end-of-game:
     - reaching the end goal ends the game after that main phase without end-of-turn steps
     - the game goes on until the main phase ends after the end goal is reached
@@ -601,9 +609,13 @@ budgets:
   - B7
   - B8
   - B9
+  - B10
   - B11
   - B12
   - B13
+  - B14
+  - B15
   - B16
   - B17
   - B18
+  - B19

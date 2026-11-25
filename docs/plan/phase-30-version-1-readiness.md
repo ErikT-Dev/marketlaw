@@ -66,7 +66,7 @@ None by name: phases 03 to 29 together make all 427 scenarios required. This pha
   - **Required scenarios.** The phase has none by name; item 1a puts the last ones on the list,
     so the finisher's step 1 has nothing to add.
 
-- [ ] 1a. **Every scenario and budget on the required list** (HARNESS.md points 1 and 4).
+- [x] 1a. **Every scenario and budget on the required list** (HARNESS.md points 1 and 4).
   **Small.**
   - `harness/required.yaml`: add the 8 `quests` scenarios that pass but are not required
     (#63 to #68 "completing Grain fields / Timber town / Brewery town / Oil town / Trading
@@ -78,6 +78,10 @@ None by name: phases 03 to 29 together make all 427 scenarios required. This pha
     `BUDGET_CHECKS.ts` entry is `by: "other check"` is checked by that check, a problem only if
     the file its `where` names does not exist; `reportBudgets.ts` shows it as "passes, other
     check". Tests beside them (`reportBudgets.test.ts`, the judge's tests).
+  - Done (2026-11-25). `judgeHarness.ts` leaves a required "other check" budget to its check;
+    the report keeps showing it as "other check" (not "passes": the harness does not see the
+    result; Q189 says so). A unit test in `reportBudgets.test.ts` checks that the file each
+    other check names exists. The list now holds all 548 scenarios, 30 invariants and 19 budgets.
 
 - [ ] 1b. **The "not yet" allowance ends** (`rules/testing.md`, D11; Q189, 3). **Small.**
   - `npm run harness:check` (`tools/harness-check/`) reports a problem for every scenario,

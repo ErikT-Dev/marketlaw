@@ -4559,9 +4559,9 @@ file.
      leave the four off the list (against the phase file's "every budget"), or let the list
      hold them. **Solution:** the list holds every budget. The harness runner accepts a
      required budget whose check is an "other check" in `BUDGET_CHECKS.ts` as checked by that
-     check (it fails if the named test file does not exist), and the report shows it as
-     "passes, other check". The other checks themselves run in `npm run check` (B14, B19) and
-     in the browser tests (B10, B15), so the harness does not judge them twice.
+     check, and the report keeps showing it as "other check", since the harness does not see
+     its result; a unit test fails if the file a check names does not exist. The other checks
+     themselves run in `npm run check` (B14, B19) and in the browser tests (B10, B15).
   3. **The end of the "not yet" allowance** (`rules/testing.md`, D11). **Solution:** from this
      phase on, `npm run harness:check` fails when a scenario, invariant or budget is not on
      `harness/required.yaml`, so a new scenario can no longer be added without being required.
