@@ -182,3 +182,4 @@ each helper's conversation size at its end.
 | Job | Model, effort | Minutes | Tokens | Tool calls | Result |
 |---|---|---|---|---|---|
 | Starter + builder 1a | Opus, medium | 18 | 139,741 | 78 | done |
+| Builder 1b + 1c | Opus, medium | 29 | 146,871 | 87 | done |
