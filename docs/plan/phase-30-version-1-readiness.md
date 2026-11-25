@@ -157,12 +157,21 @@ None by name: phases 03 to 29 together make all 427 scenarios required. This pha
     at all three sizes. A new browser test can make a player keyboard-only with `openLobby`'s
     fourth argument and move through `activate`.
 
-- [ ] 2c. **`prefers-reduced-motion`** (Q189, 6). **Small.**
+- [x] 2c. **`prefers-reduced-motion`** (Q189, 6). **Small.**
   - A browser test with `reducedMotion: "reduce"` checks `document.getAnimations()` is empty
     after the actions that animate on the game screen and the lobby. Today only
     `Button.module.css` and `Marketplace.module.css` animate, both behind
     `prefers-reduced-motion: no-preference`; check scripted motion too (`scrollIntoView` with
     `behavior: "smooth"` and the like).
+  - Done (2026-11-25). `e2e/reducedMotion.spec.ts`: with reduced motion, no animation after
+    hovering and focusing a lobby button, nor in the market's last seconds (S1 screens.md line
+    168: the countdown does not pulse) after hovering a marketplace card and the menu, and the
+    page's `scroll-behavior` stays `auto`; a third test checks the countdown does pulse without
+    reduced motion, so the check can see an animation. Scripted motion: the only
+    `scrollIntoView` (`HighlightFrame.tsx`) has no smooth behaviour and nothing sets
+    `scroll-behavior: smooth`; the tutorial's `requestAnimationFrame` only measures. No client
+    change was needed. `FULL_MARKETPLACE` moved to `e2e/FULL_MARKETPLACE.ts` (shared with
+    `marketPhase.spec.ts`). All three tests pass locally at all three sizes.
 
 - [ ] 3. **Browser tests: 2 to 4 players, refreshes, disconnects, second tab, restart**
   (HARNESS.md point 6). **Small.**

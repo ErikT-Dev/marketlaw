@@ -1,19 +1,9 @@
 import { expect, test, type Browser, type Page } from "@playwright/test";
+import { FULL_MARKETPLACE } from "./FULL_MARKETPLACE";
 import { expectScreenFits } from "./expectScreenFits";
 import { handOf } from "./handOf";
 import type { Player } from "./Player";
 import { startTestRoom } from "./startTestRoom";
-
-const FULL_MARKETPLACE = [
-  { place: "residential", card: "Row House" },
-  { place: "industry", card: "Metal Mining" },
-  { place: "service", card: "Liquor Shop" },
-  { place: "public_quality", card: "Fire Station" },
-  { place: "public_satisfaction", card: "Public Playground" },
-  { place: "open_1", card: "Dentist" },
-  { place: "open_2", card: "Apparel Store" },
-  { place: "open_3", card: "Forest Plantation" },
-];
 
 async function playerAt(browser: Browser, link: string): Promise<Player> {
   const page = await (await browser.newContext()).newPage();
