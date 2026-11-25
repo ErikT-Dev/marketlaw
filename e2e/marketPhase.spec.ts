@@ -180,3 +180,24 @@ test("a player whose market go timed out chooses the sector of their turn draw i
   await expect(openDraw).toHaveCount(0);
   await expect(page.getByRole("list", { name: "Your hand" }).getByRole("button")).toHaveCount(3);
 });
+
+test("in the last 5 seconds of your market go the countdown and the marketplace turn red", async ({
+  page,
+  request,
+}, testInfo) => {
+  const [seatOne = ""] = await startTestRoom(request, {
+    players: 2,
+    turn: 2,
+    phase: "market",
+    first_player: 1,
+    market_go: { seat: 1 },
+    marketplace: FULL_MARKETPLACE,
+  });
+  await page.clock.install();
+  await page.goto(seatOne);
+  const countdown = page.getByRole("timer", { name: /^Your market go 0:[23]\d left$/ });
+  await expect(countdown).toBeVisible();
+  await page.clock.fastForward(26_000);
+  await expect(page.getByRole("timer", { name: /^Your market go 0:0[1-5] left$/ })).toBeVisible();
+  await expectScreenFits(page, "market-final-seconds", testInfo);
+});
