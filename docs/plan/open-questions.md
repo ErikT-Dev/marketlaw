@@ -4607,3 +4607,28 @@ file.
   (soft hyphens, `hyphens: manual`), since the browser's own hyphenation (`hyphens: auto`) has
   no English dictionary in every Chromium build and fell back to breaking anywhere.
 - **Implemented:** phase 30, Progress items 1a to 5.
+
+## Q190. Which screen states need their own screenshot, and how much hand must stay at 1280 × 720?
+
+- **Phase:** 30, item 2a (every screen at every size; 29a's F1), decided without the owner (D19).
+- **Questions and solutions:**
+  1. **Which states get a screenshot.** `screens.md` describes many states that differ from a
+     screenshotted screen only by a line of text (each join error of S10.6, each ranked-queue
+     text of S10.4, each ranking text of S13.3, the ranked "This was 1 of 3" line of S9.4, the
+     username and icon change limits of S12.5, each daily-limit text of S16.1). **Solution:**
+     every screen, dialog, notice and layout state gets a screenshot; a state that differs
+     from a screenshotted one only in its text is covered by that screenshot and by the unit
+     tests that check its text. Item 2a added the ones missing: connection lost and new
+     version (S16.2), game resumed after a pause (S9.4), leave the tutorial (S15.4), the card
+     set during a game (S14.3), the ranked end-of-game screen with ratings (S9.5), the
+     match-declined and match-not-started notices (S10.7), a deleted account's match history
+     (S13.1) and the last 5 seconds of a market go (S4.7).
+  2. **"The hand keeps at least one card's height" (29a F1).** At 1280 × 720 the Your hand
+     panel of a normal game is 121 px high, less than a header plus a whole 102 px card, and
+     all 3 projects must stay in view (`expectAllProjectsInView`). **Solution:** the Your hand
+     panel is never lower than one hand card (102 px); Your stats keeps its full height while
+     that holds, and scrolls (S1.3) when its type counts would push the hand lower.
+- **Found while building:** with the connection lost or an old version, the whole `main`
+  element was inert, so the page had no main landmark (axe `landmark-one-main`); the columns
+  inside it are now inert instead.
+- **Implemented:** phase 30, item 2a.

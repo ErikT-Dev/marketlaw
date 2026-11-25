@@ -117,7 +117,7 @@ None by name: phases 03 to 29 together make all 427 scenarios required. This pha
   - For the report: both gaps (29a's focus tooltip, 29c's R2) are fixed. Local browser runs lost
     test-room requests ("Network connection lost") under load; they pass on a rerun.
 
-- [ ] 2a. **Every screen at every size** (S1.1, D21, HARNESS.md point 6). **Large.**
+- [x] 2a. **Every screen at every size** (S1.1, D21, HARNESS.md point 6). **Large.**
   - Compare every screen and state `harness/spec/screens.md` describes (S1 to S16, the tutorial
     included) with the folders in `harness/screens/` (110 now, each with 1280x720, 1920x1080,
     2560x1440); add a screenshot test for any screen without one, using the existing
@@ -125,6 +125,19 @@ None by name: phases 03 to 29 together make all 427 scenarios required. This pha
   - Fix 29a's F1 (Q189, 4b): late in a game with many types, Your stats wraps until the hand
     at 1280x720 is shorter than one card; a test room with many types at 1280x720 checks the
     hand keeps at least one card's height (`e2e/gameScreenSizes.spec.ts`).
+  - Done (2026-11-25). F1: Your stats and Your hand share a grid (`.statsAndHand` in
+    `GamePage.module.css`) in which Your stats is at most the column minus one hand card, so it
+    scrolls instead of pushing the hand lower; a test room with all 33 types at turn 35 checks
+    the hand panel at every size (fails without the fix). New screenshots (Q190): connection-lost,
+    new-version (`connectionNotices.spec.ts`, through `routeWebSocket`), game-resumed (a test
+    room can now start paused), leave-tutorial, card-set-during-game, game-over-ranked,
+    lobby-match-declined, lobby-match-did-not-start, match-history-deleted-account,
+    market-final-seconds. Text-only variants of screenshotted states are covered by those and
+    by unit tests (Q190, 1). The connection-lost screen failed axe (no main landmark, since
+    `main` was inert); `TableContent` now makes the columns inert instead.
+  - For later items: the 10 new screenshot folders are not committed; the finisher's copy from
+    the GitHub run adds them at all three sizes. Local runs with 2 workers still lose test-room
+    requests ("Network connection lost"); single tests pass alone.
 
 - [ ] 2b. **A keyboard-only full game** (`rules/frontend.md` "Accessible controls"; Q189, 5).
   **Large.**
