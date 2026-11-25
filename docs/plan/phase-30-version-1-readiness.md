@@ -139,13 +139,23 @@ None by name: phases 03 to 29 together make all 427 scenarios required. This pha
     the GitHub run adds them at all three sizes. Local runs with 2 workers still lose test-room
     requests ("Network connection lost"); single tests pass alone.
 
-- [ ] 2b. **A keyboard-only full game** (`rules/frontend.md` "Accessible controls"; Q189, 5).
+- [x] 2b. **A keyboard-only full game** (`rules/frontend.md` "Accessible controls"; Q189, 5).
   **Large.**
   - In the 2-player game of `e2e/fullGames.spec.ts` (`e2e/playFullGame.ts`), Ann plays every
     action from the lobby to the end screen with the keyboard only (Tab, Shift+Tab, Enter,
     Space, arrows, Escape; no `click`). Keep the test title: `check.yml` picks the full games
     by "play a whole game from the lobby". Whatever cannot be reached by keyboard is a bug to
     fix in the client. Run it locally at one size only; GitHub runs all three.
+  - Done (2026-11-25). Every move of the full-game helpers goes through `activate`
+    (`e2e/activate.ts`): a click, or for a keyboard-only player Tab until the target has focus, then Enter
+    (`tabTo.ts`, `pressWithKeyboard.ts`); the username is typed (`enterText.ts`). `Player` has
+    `isKeyboardOnly`; `fullGames.spec.ts` makes Ann keyboard-only in the 2-player game, and
+    `playFullGame` fails if any pointer event reached her page. Everything was reachable by Tab
+    and Enter; no client change was needed (arrows and Escape were not needed either). It passed
+    locally at 1280x720 and 1920x1080 (3.9 minutes each).
+  - For later items: the keyboard game adds no job; the 2-player full game on GitHub is its run
+    at all three sizes. A new browser test can make a player keyboard-only with `openLobby`'s
+    fourth argument and move through `activate`.
 
 - [ ] 2c. **`prefers-reduced-motion`** (Q189, 6). **Small.**
   - A browser test with `reducedMotion: "reduce"` checks `document.getAnimations()` is empty

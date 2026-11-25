@@ -25,9 +25,16 @@ export async function playFullGame(
   browser: Browser,
   viewport: ViewportSize,
   bases: ReadonlyArray<string>,
+  keyboardOnlyBases: ReadonlyArray<string>,
   testInfo: TestInfo,
 ): Promise<ReadonlyArray<number>> {
-  const players = await startGame(browser, viewport, bases);
+  const players = await startGame(
+    browser,
+    viewport,
+    bases,
+    async () => Promise.resolve(),
+    keyboardOnlyBases,
+  );
   test.setTimeout(FULL_GAME_TEST_MS);
   const host = players[0]?.page;
   if (host === undefined) {
@@ -36,8 +43,8 @@ export async function playFullGame(
   const screen = `full-game-${String(players.length)}-players`;
   await expectScreenFits(host, `${screen}-turn-1`, testInfo);
   expect(await hiddenCardsSentToOthers(players)).toEqual([]);
-  for (const { page } of players) {
-    await sellOneCard(page);
+  for (const player of players) {
+    await sellOneCard(player);
   }
   const times = [...(await endTurnForEveryone(players))];
   for (let turn = 2; turn <= LAST_TURN; turn += 1) {
@@ -51,6 +58,11 @@ export async function playFullGame(
   }
   await expectGameOverAtTheTurnLimit(players);
   await expectScreenFits(host, `${screen}-game-over`, testInfo);
+  for (const { page } of players.filter(({ isKeyboardOnly }) => isKeyboardOnly)) {
+    expect(
+      await page.evaluate(() => document.documentElement.dataset["pointerUsed"]),
+    ).toBeUndefined();
+  }
   await Promise.all(players.map(async ({ page }) => page.context().close()));
   return times;
 }

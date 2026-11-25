@@ -23,7 +23,7 @@ async function openPlayer(context: BrowserContext, link: string): Promise<Player
   });
   await page.goto(link);
   await expect(page.getByRole("heading", TURN_ONE)).toBeVisible();
-  return { page, frames, name: "" };
+  return { page, frames, name: "", isKeyboardOnly: false };
 }
 
 function opponent(page: Page, name: string) {

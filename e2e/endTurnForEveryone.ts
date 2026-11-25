@@ -7,9 +7,9 @@ export async function endTurnForEveryone(
   players: ReadonlyArray<Player>,
 ): Promise<ReadonlyArray<number>> {
   const times: number[] = [];
-  for (const { page } of players) {
+  for (const player of players) {
     times.push(
-      await timeMove(page, page.getByRole("button", { name: "End turn" }), END_TURN_SHOWN),
+      await timeMove(player, player.page.getByRole("button", { name: "End turn" }), END_TURN_SHOWN),
     );
   }
   return times;
