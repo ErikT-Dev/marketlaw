@@ -245,6 +245,14 @@ None by name: phases 03 to 29 together make all 427 scenarios required. This pha
 
 ### Finish
 
+- Finisher (2026-11-25). Step 1: nothing to add; item 1a put every scenario, invariant and budget on
+  `harness/required.yaml`. Local `npm run check` passed; local `npm run harness` passed (548
+  scenarios, 0 problems, phase-end simulated games). GitHub run 45614426230 on the branch: first
+  attempt failed two jobs on time-outs (quests.spec.ts four-player test, 30 s at 2560x1440;
+  playerIcon.spec.ts at 1920x1080), both passed on one rerun of the failed jobs; all 7 jobs
+  green. Screenshots of that run copied into `harness/screens/` (120 folders, 10 new from 2a).
+  `docs/enforcement.md` already lists the phase 30 checks.
+
 ### Helper log
 
 Filled in by the coordinator afterwards, from the helpers' completion notices (Q73). Tokens are
