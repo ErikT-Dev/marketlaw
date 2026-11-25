@@ -46,16 +46,17 @@ import { queueOf } from "./queueOf";
 import { LobbySockets } from "./LobbySockets";
 import type { LoginClosing } from "./LoginClosing";
 import type { PlayerRating } from "./records/PlayerRating";
+import { deletePreLaunchRecord } from "./deletePreLaunchRecord";
+import { LOBBY_STORAGE_KEYS } from "./lobby/LOBBY_STORAGE_KEYS";
 
-const PRE_LAUNCH_LOBBY_KEY = "lobby";
-const LOBBY_KEY = "launched-lobby";
+const LOBBY_KEY = LOBBY_STORAGE_KEYS.launched;
 
 export class Lobby extends DurableObject<Env> {
   private readonly sockets = new LobbySockets(this.ctx);
 
   constructor(ctx: DurableObjectState, env: Env) {
     super(ctx, env);
-    ctx.storage.kv.delete(PRE_LAUNCH_LOBBY_KEY);
+    deletePreLaunchRecord(ctx.storage.kv, LOBBY_STORAGE_KEYS.preLaunch);
   }
 
   async claim(playerId: PlayerId, code: RoomCode, now: EpochMs): Promise<ClaimRejection | null> {

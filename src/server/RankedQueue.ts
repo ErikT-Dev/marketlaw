@@ -31,16 +31,17 @@ import { QueueSockets } from "./QueueSockets";
 import type { Sender } from "./Sender";
 import { senderOfToken } from "./senderOfToken";
 import { startRankedRooms } from "./startRankedRooms";
+import { deletePreLaunchRecord } from "./deletePreLaunchRecord";
+import { QUEUE_STORAGE_KEYS } from "./queue/QUEUE_STORAGE_KEYS";
 
-const PRE_LAUNCH_QUEUE_KEY = "queue";
-const QUEUE_KEY = "launched-queue";
+const QUEUE_KEY = QUEUE_STORAGE_KEYS.launched;
 
 export class RankedQueue extends DurableObject<Env> {
   private readonly sockets = new QueueSockets(this.ctx);
 
   constructor(ctx: DurableObjectState, env: Env) {
     super(ctx, env);
-    ctx.storage.kv.delete(PRE_LAUNCH_QUEUE_KEY);
+    deletePreLaunchRecord(ctx.storage.kv, QUEUE_STORAGE_KEYS.preLaunch);
   }
 
   override async fetch(request: Request): Promise<Response> {
