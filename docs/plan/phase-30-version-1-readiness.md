@@ -253,6 +253,34 @@ None by name: phases 03 to 29 together make all 427 scenarios required. This pha
   green. Screenshots of that run copied into `harness/screens/` (120 folders, 10 new from 2a).
   `docs/enforcement.md` already lists the phase 30 checks.
 
+- Phase review (2026-11-25, `phase-reviewer`): ready after fixes; migration 0016 matches Q191.
+  Findings, with what the coordinator decided:
+  1. `src/client/components/hyphenatedCardName.test.ts` never runs (the client project takes
+     only `*.test.tsx`). **Fix (fixer B):** rename it to `.test.tsx`; the config stays.
+  2. Kept ranked records finished before 29c's deploy are in the old units (income one tenth,
+     combined "funds + cards in hand" row, Q188); Q189 4(e) relied on the full wipe. **Fix
+     (fixer A):** 0016 converts them to the current units (a record whose seats have a non-null
+     `fundsAndHand` is old), with a test; record it in Q191 and correct Q189 4(e).
+  3. The lobby and queue clear has no test and deletes the old key on every wake. **Fix (fixer
+     A):** delete only when the old key exists; a server test seeds the old key and checks the
+     object starts empty and the key is gone.
+  4. The keyboard-only full game never plays a card, uses influence or completes a project.
+     **Fix (fixer B):** a short keyboard-only spec (test room) that plays a card to the city and
+     uses influence or completes a project through `activate`.
+  5. Ranked test-room games would keep their test-room seat accounts in the ranking. **Fix
+     (fixer A):** 0016 also deletes ranked records with any test-room seat
+     (`is_test_room_seat = 1`) and those accounts; with a test; recorded in Q191.
+  6. A short gap between the migration and `wrangler deploy` at the merge. **Accepted**: a row
+     written in that minute is harmless; the releaser mentions it in the report.
+  7. Small additions to the wipe test (a version 21 replay unchanged; a deleted account's
+     `game_record_players` row in a ranked game kept without a player row; a casual game with
+     the same end and start time as a ranked one). **Fix (fixer A).**
+  8. `Card.module.css` still has `overflow-wrap: anywhere` on card names. **Fix (fixer B):**
+     remove it, so the browser test catches any name that does not fit.
+  9. `parsedJsonOf` location and `STORED_REPLAY_SCHEMA` checking only the version. **Not
+     fixed**: it follows the existing `STORED_ROOM_SCHEMA` pattern and moving it is outside the
+     phase's scope.
+
 ### Helper log
 
 Filled in by the coordinator afterwards, from the helpers' completion notices (Q73). Tokens are
@@ -268,3 +296,4 @@ each helper's conversation size at its end.
 | Builder 4a | Opus, medium | 17 | 115,742 | 54 | done |
 | Builder 4b | Opus, medium | 8 | 99,297 | 29 | done |
 | Finisher | Sonnet, medium | 78 | 83,835 | 39 | done |
+| Phase reviewer | Opus, medium | 8 | 142,467 | 46 | done (9 findings) |
