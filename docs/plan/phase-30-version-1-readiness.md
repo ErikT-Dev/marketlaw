@@ -210,3 +210,4 @@ each helper's conversation size at its end.
 | Starter + builder 1a | Opus, medium | 18 | 139,741 | 78 | done |
 | Builder 1b + 1c | Opus, medium | 29 | 146,871 | 87 | done |
 | Builder 2a | Opus, medium | 34 | 239,058 | 150 | done |
+| Builder 2b | Opus, medium | 16 | 95,954 | 33 | done |
