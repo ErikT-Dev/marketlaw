@@ -1,6 +1,6 @@
 # Phase 30: Version 1 readiness
 
-Status: approved
+Status: in progress
 Milestone: 7 Launch
 
 ## Goal
@@ -54,3 +54,110 @@ The complete harness report, every line passing, and screenshots of every screen
 ## Required scenarios
 
 None by name: phases 03 to 29 together make all 427 scenarios required. This phase checks that `harness/required.yaml` holds every scenario, every invariant and every budget.
+
+## Progress
+
+- [x] 0. Start (2026-11-25). Branch `phase-30-version-1-readiness`. The starter's decisions are
+  in Q189. `decisions.md` has nothing open. `npm run harness:check`: 548 scenarios, 0 problems.
+  - **Counts.** The phase file's "427" is old: the phase requires all **548** scenarios, all 30
+    invariants and all 19 budgets (Q189, 1).
+  - **Order.** 1a, then 1b (it fails while anything is off the list). 1c, 2a to 2c and 3 in any
+    order. 4a before 4b (the wipe relies on the raise). 5 after the release.
+  - **Required scenarios.** The phase has none by name; item 1a puts the last ones on the list,
+    so the finisher's step 1 has nothing to add.
+
+- [ ] 1a. **Every scenario and budget on the required list** (HARNESS.md points 1 and 4).
+  **Small.**
+  - `harness/required.yaml`: add the 8 `quests` scenarios that pass but are not required
+    (#63 to #68 "completing Grain fields / Timber town / Brewery town / Oil town / Trading
+    house / Property market gives its reward", #69 "tier 3 cards do not count for a tier 2 card
+    requirement", #70 "a product or distribution requirement needs that much of the stat") and
+    budgets B10, B14, B15, B19 (`HARNESS:` commit, Q189).
+  - `tools/harness-runner/judgeHarness.ts` (`budgetProblem`) reports "has no check yet" for
+    every required budget the harness cannot measure. Q189, 2: a required budget whose
+    `BUDGET_CHECKS.ts` entry is `by: "other check"` is checked by that check, a problem only if
+    the file its `where` names does not exist; `reportBudgets.ts` shows it as "passes, other
+    check". Tests beside them (`reportBudgets.test.ts`, the judge's tests).
+
+- [ ] 1b. **The "not yet" allowance ends** (`rules/testing.md`, D11; Q189, 3). **Small.**
+  - `npm run harness:check` (`tools/harness-check/`) reports a problem for every scenario,
+    invariant or budget that is not on `harness/required.yaml`, with a test. After 1a it
+    reports none. `harness/HARNESS.md` and `README.md` ("How scenarios, invariants and budgets
+    are tracked") say the allowance has ended (`HARNESS:` commit for HARNESS.md).
+    `rules/testing.md` is not edited (protected by judgment, the owner's file): propose the
+    wording in `docs/plan/proposed-rules.md`.
+
+- [ ] 1c. **Known gaps of earlier phases** (Q189, 4a and 4c; S1.6, S6.4). **Small.**
+  - A red card name's tooltip with keyboard focus: the stat icons inside it must not show their
+    own name tooltips over its lines (29a known gap; with the mouse it is clean). See
+    `e2e/tooltipsOnFocus.spec.ts`.
+  - One-word card names too wide for a tile (Telecommunication, Hydroelectricity,
+    Slaughterhouse, Pharmaceutical and more; `src/client/components/Card.module.css` line 73,
+    `overflow-wrap: anywhere`): write S6.4's hyphenation first (`HARNESS:` commit), then
+    hyphenate at a syllable break, checked on the city and card set tiles
+    (`e2e/cardTiles.spec.ts`). Remove both from "Known gaps" only in this phase's report.
+
+- [ ] 2a. **Every screen at every size** (S1.1, D21, HARNESS.md point 6). **Large.**
+  - Compare every screen and state `harness/spec/screens.md` describes (S1 to S16, the tutorial
+    included) with the folders in `harness/screens/` (110 now, each with 1280x720, 1920x1080,
+    2560x1440); add a screenshot test for any screen without one, using the existing
+    `expectScreenFits.ts` and the screenshot helpers of the specs.
+  - Fix 29a's F1 (Q189, 4b): late in a game with many types, Your stats wraps until the hand
+    at 1280x720 is shorter than one card; a test room with many types at 1280x720 checks the
+    hand keeps at least one card's height (`e2e/gameScreenSizes.spec.ts`).
+
+- [ ] 2b. **A keyboard-only full game** (`rules/frontend.md` "Accessible controls"; Q189, 5).
+  **Large.**
+  - In the 2-player game of `e2e/fullGames.spec.ts` (`e2e/playFullGame.ts`), Ann plays every
+    action from the lobby to the end screen with the keyboard only (Tab, Shift+Tab, Enter,
+    Space, arrows, Escape; no `click`). Keep the test title: `check.yml` picks the full games
+    by "play a whole game from the lobby". Whatever cannot be reached by keyboard is a bug to
+    fix in the client. Run it locally at one size only; GitHub runs all three.
+
+- [ ] 2c. **`prefers-reduced-motion`** (Q189, 6). **Small.**
+  - A browser test with `reducedMotion: "reduce"` checks `document.getAnimations()` is empty
+    after the actions that animate on the game screen and the lobby. Today only
+    `Button.module.css` and `Marketplace.module.css` animate, both behind
+    `prefers-reduced-motion: no-preference`; check scripted motion too (`scrollIntoView` with
+    `behavior: "smooth"` and the like).
+
+- [ ] 3. **Browser tests: 2 to 4 players, refreshes, disconnects, second tab, restart**
+  (HARNESS.md point 6). **Small.**
+  - They exist: `fullGames.spec.ts` (2, 3, 4 players), `connections.spec.ts` (refresh, away and
+    back, second tab, "the game goes on after its room restarts mid-game"), all run at every
+    size by `playwright.config.ts`. Check each runs at all three sizes on the last GitHub run of
+    master and that none is skipped by size; add what is missing (for example a refresh or a
+    restart in a 3- or 4-player room). Update `docs/enforcement.md` if a check now applies.
+
+- [ ] 4a. **The save format fixed** (D1, `rules/architecture.md` "One save format"; Q189, 7).
+  **Large.**
+  - `SAVE_SCHEMA_VERSION` 20 to 21 (`src/rules/SAVE_SCHEMA_VERSION.ts`), with a new
+    `FIRST_PUBLIC_SAVE_SCHEMA_VERSION` = 21. `src/server/room/loadRoom.ts`: below it, the room
+    closes itself as now; from it on, an older version goes through a migration function (one
+    step per version, none yet). The same for `ROOM_SCHEMA_VERSION` and the replay record
+    (`src/server/replays/`). Committed fixtures of version 21 saves (a running and an ended
+    game) load and replay (`src/rules/savedGame.test.ts`, `roomStorage.test.ts`).
+  - No message shape changes, so `PROTOCOL_VERSION` stays.
+
+- [ ] 4b. **The final data wipe** (D1; Q189, 8). **Small.**
+  - A D1 migration (`migrations/0016_...sql`) deletes every row of every table, keeping the
+    tables; the lobby's and the queue's stored state (`src/server/lobby/`, `src/server/queue/`)
+    is cleared once on the first load after the deploy. It runs at the merge
+    (`npm run db:migrate:remote` in `deploy.yml`). Not run against the live database by hand.
+
+- [ ] 5. **Release checks and the owner's decision** (D8, D22; Q189, 9). For the releaser.
+  - On the live site after the deploy: the site loads without a login (D22); the test-room
+    endpoint answers 404 without the secret (`e2e/testRooms.spec.ts`'s first test, against the
+    live address); the wipe took effect (an old room link shows "Room not found").
+  - Then write under **Waiting for the owner**: the owner's final playthrough and the decision
+    to make version 1 public. The phase is **waiting for the owner**, not done, until then.
+
+### Finish
+
+### Helper log
+
+Filled in by the coordinator afterwards, from the helpers' completion notices (Q73). Tokens are
+each helper's conversation size at its end.
+
+| Job | Model, effort | Minutes | Tokens | Tool calls | Result |
+|---|---|---|---|---|---|

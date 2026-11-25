@@ -4545,3 +4545,60 @@ file.
   readable makes every word fit (S6.4), and such a word still breaks inside the word.
   A clean fix needs either break points chosen per long word (shown with a hyphen) or a wider
   name area, both a change of S6.4's tile; left for a later phase.
+
+## Q189. What does phase 30 still have to build, and how are its open points settled?
+
+- **Phase:** 30 (Version 1 readiness), the starter's decisions, decided without the owner (D19).
+- **Questions and solutions:**
+  1. **Counts.** The phase file names 427 scenarios; the harness now has 548 (phases 29a to 29c
+     added them). Phase 30 requires all 548, all 30 invariants and all 19 budgets.
+  2. **What is still "not yet".** The harness report of phase 29c shows 8 `quests` scenarios
+     that pass but are not required (added in 29b by `53a755d9`, never put on the list), and
+     4 budgets off the list: B10, B14, B15 and B19, which the harness cannot measure; their
+     checks are a browser test (B10, B15), `size-limit` (B14) and a unit test (B19). Options:
+     leave the four off the list (against the phase file's "every budget"), or let the list
+     hold them. **Solution:** the list holds every budget. The harness runner accepts a
+     required budget whose check is an "other check" in `BUDGET_CHECKS.ts` as checked by that
+     check (it fails if the named test file does not exist), and the report shows it as
+     "passes, other check". The other checks themselves run in `npm run check` (B14, B19) and
+     in the browser tests (B10, B15), so the harness does not judge them twice.
+  3. **The end of the "not yet" allowance** (`rules/testing.md`, D11). **Solution:** from this
+     phase on, `npm run harness:check` fails when a scenario, invariant or budget is not on
+     `harness/required.yaml`, so a new scenario can no longer be added without being required.
+  4. **Known gaps of earlier phases**, since this phase allows none: (a) a red card name's
+     tooltip with keyboard focus shows the stat icons' own name tooltips over its lines (29a,
+     S1.6): fixed; (b) late in a game Your stats can wrap so far that the hand at 1280 x 720 is
+     shorter than one card (29a, F1): fixed with the screen sizes (item 2); (c) one-word card
+     names too wide for a tile break inside the word (29c, R2, S6.4): such a word is hyphenated
+     at a syllable break instead (`hyphens: auto` with the page language English, or break
+     points chosen per long word if the browser's breaks are wrong), and S6.4 says so before
+     the code changes; (d) the players online list without icons (29c): not a gap, since S10.2
+     lists username, rating and status, not an icon; (e) Brevo's footer and spam (D30), records
+     in old units (wiped by item 4) and funds below 0 (spec, Q178) are not gaps.
+  5. **Keyboard-only run through a full game.** Options: a new full-length browser test (about
+     15 minutes more per size on GitHub, and a title matching "play a whole game from the lobby"
+     would drop out of every job of `check.yml`), or the existing 2-player full game played by
+     its first player with the keyboard only. **Solution:** the second: Ann in the 2-player
+     full game uses only Tab, Shift+Tab, Enter, Space, the arrow keys and Escape for every
+     action from the lobby to the end screen, at every size, with no extra job.
+  6. **`prefers-reduced-motion`.** **Solution:** a browser test with reduced motion asks the
+     page for running animations (`document.getAnimations()`) after the actions that animate
+     (marketplace, buttons) on the game screen and the lobby, and expects none.
+  7. **The save format fixed (D1).** **Solution:** `SAVE_SCHEMA_VERSION` is raised once more,
+     to 21, the first public save version (`FIRST_PUBLIC_SAVE_SCHEMA_VERSION`). A room saved
+     below it still closes itself on load; from 21 on, an older saved version goes through
+     an explicit migration function, one step per version (none yet), and a committed fixture
+     of a version 21 save (a running game and an ended one) must load and replay. The same
+     holds for the room record (`ROOM_SCHEMA_VERSION`) and the replay record. The raise also
+     closes every room saved before the launch (part of the wipe).
+  8. **The final data wipe.** **Solution:** one D1 migration deletes every row of every table
+     (players, logins, records, ratings, emails, replays and the rest; the tables stay), and
+     the rooms close themselves through the raise of 7; the lobby's and the queue's stored
+     state (chat, counts, queue) is cleared too, by a storage version checked on load or an
+     equivalent one-time clear. It ships with phase 30's merge, so the owner's final
+     playthrough is the first data on the public site; the test-room secret is a Worker secret
+     and stays.
+  9. **The owner's final playthrough and the decision to go public** need the owner. After the
+     release, the phase is **waiting for the owner**; findings of the playthrough go into a fix
+     phase (30a) the way 29a to 29c did, or after version 1 with the owner's agreement.
+- **Implemented:** phase 30, Progress items 1a to 5.
