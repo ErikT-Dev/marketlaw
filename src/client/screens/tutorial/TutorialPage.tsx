@@ -32,27 +32,29 @@ export function TutorialPage(props: Props) {
       <div className={styles["page"]}>
         <TutorialTopBar view={view} onLeave={props.onLeave} isConnected={isConnected} />
         <HighlightedParts.Provider value={focus.highlighted}>
-          <main className={styles["table"]} inert={!isConnected || props.isOutdated}>
-            <div className={tutorialStyles["left"]}>
-              {progress.kind === "step" ? (
-                <TutorialMessage
-                  content={tutorialTextBoxOf(progress.step, progress.number)}
-                  isConnected={isConnected}
-                  onContinue={props.onContinue}
-                  onRestart={props.onRestart}
+          <main className={styles["table"]}>
+            <div className={styles["tableContent"]} inert={!isConnected || props.isOutdated}>
+              <div className={tutorialStyles["left"]}>
+                {progress.kind === "step" ? (
+                  <TutorialMessage
+                    content={tutorialTextBoxOf(progress.step, progress.number)}
+                    isConnected={isConnected}
+                    onContinue={props.onContinue}
+                    onRestart={props.onRestart}
+                  />
+                ) : null}
+              </div>
+              <PlayerIcons.Provider value={props.playerIcon === null ? [] : [props.playerIcon]}>
+                <TutorialColumns
+                  view={view}
+                  mine={mine}
+                  playerNames={playerNames}
+                  focus={focus}
+                  pendingActions={props.pendingActions}
+                  onAction={props.onAction}
                 />
-              ) : null}
+              </PlayerIcons.Provider>
             </div>
-            <PlayerIcons.Provider value={props.playerIcon === null ? [] : [props.playerIcon]}>
-              <TutorialColumns
-                view={view}
-                mine={mine}
-                playerNames={playerNames}
-                focus={focus}
-                pendingActions={props.pendingActions}
-                onAction={props.onAction}
-              />
-            </PlayerIcons.Provider>
           </main>
         </HighlightedParts.Provider>
         <TutorialNotices {...props} view={view} mine={mine} playerNames={playerNames} />

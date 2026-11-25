@@ -18,31 +18,36 @@ export function GameTable(props: Props) {
   const playerNames = update.room.playerNames;
   const [lookedAt, setLookedAt] = useState<LookedAtCard | null>(null);
   return (
-    <main className={styles["table"]} inert={props.connection !== "open" || props.isOutdated}>
-      <LeftColumn
-        view={view}
-        playerNames={playerNames}
-        playerIds={update.room.playerIds}
-        chat={props.chat}
-      />
-      <MiddleColumn
-        view={view}
-        seat={mine}
-        playerNames={playerNames}
-        isBusy={props.pendingActions.length > 0}
-        lookedAt={lookedAt}
-        onLookAt={setLookedAt}
-        onAction={props.onAction}
-      />
-      <RightColumn
-        view={view}
-        seat={mine}
-        playerNames={playerNames}
-        pendingActions={props.pendingActions}
-        lookedAt={lookedAt}
-        onLookAt={setLookedAt}
-        onAction={props.onAction}
-      />
+    <main className={styles["table"]}>
+      <div
+        className={styles["tableContent"]}
+        inert={props.connection !== "open" || props.isOutdated}
+      >
+        <LeftColumn
+          view={view}
+          playerNames={playerNames}
+          playerIds={update.room.playerIds}
+          chat={props.chat}
+        />
+        <MiddleColumn
+          view={view}
+          seat={mine}
+          playerNames={playerNames}
+          isBusy={props.pendingActions.length > 0}
+          lookedAt={lookedAt}
+          onLookAt={setLookedAt}
+          onAction={props.onAction}
+        />
+        <RightColumn
+          view={view}
+          seat={mine}
+          playerNames={playerNames}
+          pendingActions={props.pendingActions}
+          lookedAt={lookedAt}
+          onLookAt={setLookedAt}
+          onAction={props.onAction}
+        />
+      </div>
     </main>
   );
 }
