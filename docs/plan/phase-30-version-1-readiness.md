@@ -317,6 +317,7 @@ each helper's conversation size at its end.
 | Phase reviewer | Opus, medium | 8 | 142,467 | 46 | done (9 findings) |
 | Fixer A (2, 3, 5, 7) | Opus, medium | 11 | 130,582 | 55 | done |
 | Fixer B (1, 4, 8) | Opus, medium | 9 | 83,856 | 26 | done |
+| Releaser | Sonnet, low | 18 | 69,497 | 26 | done (waiting for the owner) |
 
 ## Report
 
