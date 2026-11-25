@@ -1,6 +1,23 @@
 import * as v from "valibot";
 import { TEST_PLAYER_ICON } from "../../shared/testing/TEST_PLAYER_ICON";
 import { describe, expect, it } from "vitest";
+import { applyToSavedGame } from "../../rules/applyToSavedGame";
+import { FIRST_PUBLIC_SAVE_SCHEMA_VERSION } from "../../rules/FIRST_PUBLIC_SAVE_SCHEMA_VERSION";
+import { replayStartOf } from "../../rules/replayStartOf";
+import { SAVE_SCHEMA_VERSION } from "../../rules/SAVE_SCHEMA_VERSION";
+import type { SavedGame } from "../../rules/SavedGame";
+import { keptReplayRecord } from "../replays/keptReplayRecord";
+import { REPLAY_MIGRATION_STEPS } from "../replays/REPLAY_MIGRATION_STEPS";
+import type { ReplayRecord } from "../replays/ReplayRecord";
+import type { ReplayRecordStatement } from "../replays/ReplayRecordStatement";
+import { replayRecordOfRoom } from "../replays/replayRecordOfRoom";
+import { FIRST_PUBLIC_ROOM_SCHEMA_VERSION } from "./FIRST_PUBLIC_ROOM_SCHEMA_VERSION";
+import endedFixture from "./fixtures/roomVersion7Ended.json" with { type: "json" };
+import runningFixture from "./fixtures/roomVersion7Running.json" with { type: "json" };
+import { loadRoom } from "./loadRoom";
+import { ROOM_MIGRATION_STEPS } from "./ROOM_MIGRATION_STEPS";
+import { ROOM_SCHEMA_VERSION } from "./ROOM_SCHEMA_VERSION";
+import { STORED_ROOM_SCHEMA } from "./STORED_ROOM_SCHEMA";
 import { randomForNextAction } from "../../rules/randomForNextAction";
 import { EpochMs } from "../../shared/EpochMs";
 import { PlayerId } from "../../shared/PlayerId";
@@ -161,5 +178,87 @@ describe("rooms in storage", () => {
     storage.write({ ...stored, schemaVersion: 0 });
     expect(send(storage, ANN, { type: "resync" })).toEqual({ isRoomGone: true });
     expect(storage.stored()).toBeUndefined();
+  });
+});
+
+function storageHolding(record: RoomRecord): CountingStorage {
+  const storage = countingStorage();
+  storage.write(record);
+  return storage;
+}
+
+function replayedStateOf(record: ReplayRecord | null): SavedGame["state"] | null {
+  if (record === null) {
+    return null;
+  }
+  return record.actionLog.reduce((game, { action, at }) => {
+    const result = applyToSavedGame(game, action, at, randomForNextAction(game));
+    if (!result.isOk) {
+      throw new Error(`replay rejected ${action.type}: ${result.error.code}`);
+    }
+    return result.value;
+  }, replayStartOf(record)).state;
+}
+
+function databaseHolding(text: string) {
+  const statement: ReplayRecordStatement = {
+    bind: () => statement,
+    run: async () => Promise.resolve(null),
+    first: async () => Promise.resolve(text),
+  };
+  return { prepare: () => statement };
+}
+
+describe("the stored room format", () => {
+  it("has one migration step for every room and replay version since the first public one", () => {
+    expect(FIRST_PUBLIC_ROOM_SCHEMA_VERSION + ROOM_MIGRATION_STEPS.length).toBe(
+      ROOM_SCHEMA_VERSION,
+    );
+    expect(FIRST_PUBLIC_SAVE_SCHEMA_VERSION + REPLAY_MIGRATION_STEPS.length).toBe(
+      SAVE_SCHEMA_VERSION,
+    );
+  });
+
+  it("loads a first public room of a running game and of an ended game and replays them", () => {
+    for (const fixture of [runningFixture, endedFixture]) {
+      const stored = v.parse(STORED_ROOM_SCHEMA, fixture);
+      const room = loadRoom(storageHolding(stored));
+      expect(room).toEqual(stored);
+      expect(replayedStateOf(replayRecordOfRoom(room))).toEqual(stored.game?.saved.state);
+    }
+    expect(endedFixture.game.saved.state.phase).toBe("ended");
+  });
+
+  it("goes on with the game of a first public room of a running game", () => {
+    const stored = v.parse(STORED_ROOM_SCHEMA, runningFixture);
+    const [first] = stored.players;
+    const outcome =
+      first === undefined ? null : send(storageHolding(stored), first, { type: "resync" });
+    expect(outcome?.isRoomGone).toBe(false);
+  });
+
+  it("removes a room whose saved game is from before the first public save version", () => {
+    const stored = v.parse(STORED_ROOM_SCHEMA, runningFixture);
+    const game =
+      stored.game === null
+        ? null
+        : {
+            ...stored.game,
+            saved: { ...stored.game.saved, schemaVersion: FIRST_PUBLIC_SAVE_SCHEMA_VERSION - 1 },
+          };
+    const storage = storageHolding({ ...stored, game });
+    expect(loadRoom(storage)).toBeNull();
+    expect(storage.stored()).toBeUndefined();
+  });
+
+  it("exports a kept replay record from the first public version on and none from before it", async () => {
+    const stored = v.parse(STORED_ROOM_SCHEMA, endedFixture);
+    const record = replayRecordOfRoom(stored);
+    const older =
+      record === null ? null : { ...record, schemaVersion: FIRST_PUBLIC_SAVE_SCHEMA_VERSION - 1 };
+    const kept = await keptReplayRecord(databaseHolding(JSON.stringify(record)), CODE, 0);
+    expect(replayedStateOf(kept)).toEqual(stored.game?.saved.state);
+    expect(await keptReplayRecord(databaseHolding(JSON.stringify(older)), CODE, 0)).toBeNull();
+    expect(await keptReplayRecord(databaseHolding("not json"), CODE, 0)).toBeNull();
   });
 });

@@ -188,7 +188,7 @@ None by name: phases 03 to 29 together make all 427 scenarios required. This pha
     and rejoins after the restart, one ends its turn before it; the turn ends for all four, no
     hidden card leaks). It passes locally at all three sizes. `docs/enforcement.md` lists it.
 
-- [ ] 4a. **The save format fixed** (D1, `rules/architecture.md` "One save format"; Q189, 7).
+- [x] 4a. **The save format fixed** (D1, `rules/architecture.md` "One save format"; Q189, 7).
   **Large.**
   - `SAVE_SCHEMA_VERSION` 20 to 21 (`src/rules/SAVE_SCHEMA_VERSION.ts`), with a new
     `FIRST_PUBLIC_SAVE_SCHEMA_VERSION` = 21. `src/server/room/loadRoom.ts`: below it, the room
@@ -197,6 +197,22 @@ None by name: phases 03 to 29 together make all 427 scenarios required. This pha
     (`src/server/replays/`). Committed fixtures of version 21 saves (a running and an ended
     game) load and replay (`src/rules/savedGame.test.ts`, `roomStorage.test.ts`).
   - No message shape changes, so `PROTOCOL_VERSION` stays.
+  - Done (2026-11-25). Save 21 and room 7 are the first public versions
+    (`FIRST_PUBLIC_SAVE_SCHEMA_VERSION`, `FIRST_PUBLIC_ROOM_SCHEMA_VERSION`); each record has an
+    empty list of migration steps (`SAVE_MIGRATION_STEPS`, `ROOM_MIGRATION_STEPS`,
+    `REPLAY_MIGRATION_STEPS`) run by `src/shared/migratedRecord.ts`, and a test checks first
+    public version + steps = current version. `loadRoom` migrates the room and its saved game
+    (`migratedRoomRecord`) or removes the room. The replay record uses the save version; the
+    export of a stored replay record now goes through `keptReplayRecord` (was
+    `keptReplayRecordText`), which parses and migrates it and answers 404 below version 21.
+    Fixtures: `src/rules/fixtures/savedGameVersion21{Running,Ended}.json` and
+    `src/server/room/fixtures/roomVersion7{Running,Ended}.json` (simulated games, seeds 1 and 2).
+    The tutorial record (`TUTORIAL_SCHEMA_VERSION`) is not named by the item and is unchanged.
+  - For later items (4b): the kept ranked games' stored moves (`replay_records` rows) are save
+    version 20, so after this deploy the export reads them as too old (404). The shape did not
+    change from 20 to 21, so 4b's migration can keep them readable by raising their version in
+    the same SQL (`UPDATE replay_records SET record = json_set(record, '$.schemaVersion', 21)`
+    for the kept rows). `game_records` rows carry no save version and are unaffected.
 
 - [ ] 4b. **The final data wipe** (D1; Q189, 8; the owner's change Q191). **Small.**
   - A D1 migration (`migrations/0016_...sql`) keeps the finished ranked game records and every

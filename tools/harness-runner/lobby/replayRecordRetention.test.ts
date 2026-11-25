@@ -1,7 +1,7 @@
 import * as v from "valibot";
 import { TEST_PLAYER_ICON } from "../../../src/shared/testing/TEST_PLAYER_ICON.ts";
 import { describe, expect, it } from "vitest";
-import { keptReplayRecordText } from "../../../src/server/replays/keptReplayRecordText.ts";
+import { keptReplayRecord } from "../../../src/server/replays/keptReplayRecord.ts";
 import { removeOldReplayRecords } from "../../../src/server/replays/removeOldReplayRecords.ts";
 import { REPLAY_RECORD_KEPT_MS } from "../../../src/server/replays/REPLAY_RECORD_KEPT_MS.ts";
 import { saveReplayRecord } from "../../../src/server/replays/saveReplayRecord.ts";
@@ -38,21 +38,17 @@ describe("replay record retention", () => {
     await save(records, young);
     await removeOldReplayRecords(records.database, REPLAY_RECORD_KEPT_MS);
     expect(records.storedCount()).toBe(1);
-    expect(await keptReplayRecordText(records.database, old.code, REPLAY_RECORD_KEPT_MS)).toBe(
+    expect(await keptReplayRecord(records.database, old.code, REPLAY_RECORD_KEPT_MS)).toBe(null);
+    expect(await keptReplayRecord(records.database, young.code, REPLAY_RECORD_KEPT_MS)).not.toBe(
       null,
     );
-    expect(
-      await keptReplayRecordText(records.database, young.code, REPLAY_RECORD_KEPT_MS),
-    ).not.toBe(null);
   });
 
   it("does not export a record older than 30 days that the daily job has not removed yet", async () => {
     const records = memoryReplayRecordDatabase();
     const room = roomEndedAt("K7QR2P", 0);
     await save(records, room);
-    expect(await keptReplayRecordText(records.database, room.code, REPLAY_RECORD_KEPT_MS)).toBe(
-      null,
-    );
+    expect(await keptReplayRecord(records.database, room.code, REPLAY_RECORD_KEPT_MS)).toBe(null);
     expect(records.storedCount()).toBe(1);
   });
 });

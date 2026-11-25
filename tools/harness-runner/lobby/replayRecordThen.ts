@@ -1,4 +1,4 @@
-import { keptReplayRecordText } from "../../../src/server/replays/keptReplayRecordText.ts";
+import { keptReplayRecord } from "../../../src/server/replays/keptReplayRecord.ts";
 import { removeOldReplayRecords } from "../../../src/server/replays/removeOldReplayRecords.ts";
 import type { EndedRoomRecords } from "./EndedRoomRecords.ts";
 
@@ -10,7 +10,7 @@ export async function replayRecordThen(ended: EndedRoomRecords, now: number): Pr
   }
   const { database, storedCount } = ended.replays;
   await removeOldReplayRecords(database, now);
-  const exported = await keptReplayRecordText(database, room.code, now);
+  const exported = await keptReplayRecord(database, room.code, now);
   if (exported !== null && storedCount() === 1) {
     return "kept";
   }

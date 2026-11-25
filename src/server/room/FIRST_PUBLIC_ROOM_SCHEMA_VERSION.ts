@@ -1,0 +1,1 @@
+export const FIRST_PUBLIC_ROOM_SCHEMA_VERSION = 7;
