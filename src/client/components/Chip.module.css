@@ -33,6 +33,6 @@
 }
 
 .chip:hover .tooltip,
-:is(button, a[href]):focus-visible .chip .tooltip {
+:is(button, a[href]):focus-visible .chip:not([role="tooltip"] *) .tooltip {
   visibility: visible;
 }
