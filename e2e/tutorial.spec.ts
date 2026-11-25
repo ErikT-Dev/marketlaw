@@ -135,6 +135,14 @@ test("a new visitor starts the tutorial from the lobby menu, plays all its steps
   await expectMessageBesideHighlight(page);
   await expectScreenFits(page, "tutorial", testInfo);
 
+  await page.getByRole("button", { name: "Leave tutorial" }).click();
+  const leaving = page.getByRole("dialog", { name: "Leave the tutorial?" });
+  await expect(leaving).toContainText("Your progress in the tutorial is lost.");
+  await expectScreenFits(page, "leave-tutorial", testInfo);
+  await leaving.getByRole("button", { name: "Stay" }).click();
+  await expect(leaving).toBeHidden();
+  await expectStep(page, 1);
+
   await playTurnOne(page, testInfo);
   await playTurnsTwoToFour(page);
   await playTurnFive(page);
