@@ -1,11 +1,14 @@
-import type { Locator, Page } from "@playwright/test";
+import type { Locator } from "@playwright/test";
+import { activate } from "./activate";
+import type { Player } from "./Player";
 import type { ShownUntilAnswered } from "./ShownUntilAnswered";
 
 export async function timeMove(
-  page: Page,
+  player: Player,
   move: Locator,
   shownUntilAnswered: ShownUntilAnswered,
 ): Promise<number> {
+  const { page } = player;
   await page.evaluate(() => {
     document.addEventListener(
       "click",
@@ -15,7 +18,7 @@ export async function timeMove(
       { capture: true, once: true },
     );
   });
-  await move.click();
+  await activate(player, move);
   const elapsed = await page.waitForFunction(
     ({ selector, texts }) => {
       const clickedAt = document.documentElement.dataset["moveClickedAt"];

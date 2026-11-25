@@ -77,6 +77,7 @@ test("the rules opened during a game leave the top bar visible and repeat the ti
   await expect(cardSet.getByRole("note")).toContainText(
     "Your clock keeps running while the card set is open.",
   );
+  await expectScreenFits(page, "card-set-during-game", testInfo);
   await page.keyboard.press("Escape");
   await expect(cardSet).toBeHidden();
 });

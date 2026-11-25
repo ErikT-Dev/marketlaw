@@ -51,6 +51,7 @@ export function loadHarnessFiles(): LoadResult {
     coverageExceptions: parseYamlFile(HARNESS_PATHS.coverageExceptions, problems),
     invariants: parseYamlFile(HARNESS_PATHS.invariants, problems),
     budgets: parseYamlFile(HARNESS_PATHS.budgets, problems),
+    required: parseYamlFile(HARNESS_PATHS.required, problems),
   };
   return { files, problems };
 }

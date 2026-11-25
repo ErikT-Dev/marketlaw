@@ -13,4 +13,5 @@ export type HarnessFiles = {
   readonly coverageExceptions: unknown;
   readonly invariants: unknown;
   readonly budgets: unknown;
+  readonly required: unknown;
 };

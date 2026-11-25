@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { parse } from "yaml";
 import { describe, expect, it } from "vitest";
 import { HARNESS_PATHS } from "../harness-check/HARNESS_PATHS.ts";
@@ -47,6 +47,11 @@ function itemOf(report: string, id: string): string {
   return report.split("<li>").find((item) => item.includes(`${id}: `)) ?? "";
 }
 
+function fileNamedIn(where: string): string {
+  const words = where.split(" ").map((word) => word.replace("(", "").replace(")", ""));
+  return words.find((word) => word.endsWith(".ts") || word.endsWith(".js")) ?? where;
+}
+
 describe("the budget report", () => {
   it("knows how every budget in budgets.yaml is checked", () => {
     expect(BUDGETS.map(({ id }) => id).filter((id) => BUDGET_CHECKS[id] === undefined)).toEqual([]);
@@ -90,6 +95,19 @@ describe("the budget report", () => {
     const item = itemOf(reportBudgets(RUN, BUDGETS, []), "B14");
     expect(item).toContain('<span class="status other-check">other check</span>');
     expect(item).toContain("checked by: size-limit");
+  });
+
+  it("keeps naming the check outside the harness for a required budget measured elsewhere", () => {
+    const run = { ...RUN, required: { ...RUN.required, budgets: ["B14"] } };
+    const item = itemOf(reportBudgets(run, BUDGETS, []), "B14");
+    expect(item).toContain('<span class="status other-check">other check</span>');
+  });
+
+  it("names an existing file for every budget checked outside the harness", () => {
+    const files = Object.values(BUDGET_CHECKS)
+      .filter(({ by }) => by === "other check")
+      .map(({ where }) => fileNamedIn(where));
+    expect(files.filter((file) => !existsSync(file))).toEqual([]);
   });
 
   it("measures the rows of a full tutorial in the tutorial scenarios", () => {

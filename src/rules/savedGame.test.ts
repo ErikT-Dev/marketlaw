@@ -1,12 +1,22 @@
+import * as v from "valibot";
 import { describe, expect, it } from "vitest";
+import endedFixture from "./fixtures/savedGameVersion21Ended.json" with { type: "json" };
+import runningFixture from "./fixtures/savedGameVersion21Running.json" with { type: "json" };
 import { GAME_STARTED_AT } from "../shared/testing/GAME_STARTED_AT";
 import { applyToSavedGame } from "./applyToSavedGame";
+import { FIRST_PUBLIC_SAVE_SCHEMA_VERSION } from "./FIRST_PUBLIC_SAVE_SCHEMA_VERSION";
 import type { GameAction } from "./GameAction";
+import { migratedSavedGame } from "./migratedSavedGame";
 import { randomForNextAction } from "./randomForNextAction";
 import { replayStartOf } from "./replayStartOf";
+import { SAVE_MIGRATION_STEPS } from "./SAVE_MIGRATION_STEPS";
 import { SAVE_SCHEMA_VERSION } from "./SAVE_SCHEMA_VERSION";
 import type { SavedGame } from "./SavedGame";
 import { startSavedGame } from "./startSavedGame";
+
+const STORED_SAVE = v.custom<SavedGame>(
+  (value) => typeof value === "object" && value !== null && "schemaVersion" in value,
+);
 
 function replay(saved: SavedGame): SavedGame {
   return saved.actionLog.reduce((game, { action, at }) => {
@@ -78,5 +88,29 @@ describe("saved games", () => {
     const played = playThreeTurns(started);
     expect(played.actionLog.length).toBeGreaterThan(0);
     expect(replay(played).state).toEqual(played.state);
+  });
+});
+
+describe("the saved game format", () => {
+  it("has one migration step for every save version since the first public one", () => {
+    expect(FIRST_PUBLIC_SAVE_SCHEMA_VERSION + SAVE_MIGRATION_STEPS.length).toBe(
+      SAVE_SCHEMA_VERSION,
+    );
+  });
+
+  it("loads and replays a first public save of a running game and of an ended game", () => {
+    for (const fixture of [runningFixture, endedFixture]) {
+      const saved = migratedSavedGame(v.parse(STORED_SAVE, fixture));
+      expect(saved?.schemaVersion).toBe(SAVE_SCHEMA_VERSION);
+      expect(saved === null ? null : replay(saved).state).toEqual(fixture.state);
+    }
+    expect(endedFixture.state.phase).toBe("ended");
+    expect(runningFixture.state.phase).not.toBe("ended");
+  });
+
+  it("refuses a save from before the first public version or from a newer version", () => {
+    const saved = v.parse(STORED_SAVE, runningFixture);
+    expect(migratedSavedGame({ ...saved, schemaVersion: FIRST_PUBLIC_SAVE_SCHEMA_VERSION - 1 })).toBeNull();
+    expect(migratedSavedGame({ ...saved, schemaVersion: SAVE_SCHEMA_VERSION + 1 })).toBeNull();
   });
 });

@@ -2,7 +2,9 @@ import { expect, test, type Page } from "@playwright/test";
 import { expectAllProjectsInView } from "./expectAllProjectsInView";
 import { expectScreenFits } from "./expectScreenFits";
 import { hiddenCardsSentToOthers } from "./hiddenCardsSentToOthers";
+import { openTestSeat } from "./openTestSeat";
 import { startFourPlayerGame } from "./startFourPlayerGame";
+import { startTestRoom } from "./startTestRoom";
 
 const TABLE_PANELS = [
   "Players",
@@ -69,4 +71,89 @@ test("the game screen fits the window with large enough targets and no accessibi
   await expectAllProjectsInView(host);
   expect(await hiddenCardsSentToOthers(players)).toEqual([]);
   await Promise.all(players.map(async (player) => player.page.context().close()));
+});
+
+const EVERY_TYPE = [
+  "Suburban Housing",
+  "Low Wealth",
+  "Town Housing",
+  "Luxury",
+  "City Housing",
+  "Raw Material",
+  "Forestry",
+  "Farm",
+  "Power Plant",
+  "Mine",
+  "Light Industry",
+  "Food",
+  "Sea",
+  "Alcohol",
+  "Grain",
+  "Heavy Industry",
+  "Petroleum",
+  "High Tech",
+  "Utility",
+  "Mass Transit",
+  "Service",
+  "Leisure",
+  "Retail",
+  "Health",
+  "Mercantile",
+  "Beautification",
+  "Culture",
+  "Office",
+  "Mass Media",
+  "Safety",
+  "Finance",
+  "Rental Space",
+  "Education",
+];
+const LATE_GAME_HAND = [
+  "Farm House",
+  "Single Family House",
+  "Brick Cottage",
+  "Garden Apartment",
+  "Historic Apartment Housing",
+  "Forest Plantation",
+  "Intensive Corn Farm",
+  "Fishing Industry",
+  "Furniture Factory",
+  "Pub",
+  "Pharmacy",
+  "Shoe Store",
+  "Restaurant",
+  "Investment Firm",
+];
+
+async function handAndCardHeights(page: Page) {
+  const hand = page.getByRole("region", { name: /^Your hand · \d+ cards$/ });
+  const handBox = await hand.boundingBox();
+  const cardBox = await hand.getByRole("listitem").first().boundingBox();
+  return { hand: handBox?.height ?? 0, card: cardBox?.height ?? Number.POSITIVE_INFINITY };
+}
+
+test("late in a game with every type, the hand keeps at least one card's height", async ({
+  browser,
+  request,
+  viewport,
+}) => {
+  const [seatOne = ""] = await startTestRoom(request, {
+    players: 2,
+    turn: 35,
+    phase: "main",
+    seats: [
+      {
+        seat: 1,
+        hand: LATE_GAME_HAND,
+        gained_types: Object.fromEntries(EVERY_TYPE.map((type, index) => [type, 10 + index])),
+      },
+    ],
+  });
+  const page = await openTestSeat(browser, viewport, seatOne);
+  await expect(
+    page.getByRole("list", { name: "Your type counts, bonus types first" }).getByRole("listitem"),
+  ).toHaveCount(EVERY_TYPE.length);
+  const { hand, card } = await handAndCardHeights(page);
+  expect(hand).toBeGreaterThanOrEqual(card);
+  await page.context().close();
 });

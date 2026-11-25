@@ -29,6 +29,8 @@ const NAMES_OF_OTHER_THINGS = [
   "bonus-type",
 ];
 
+const SOFT_HYPHENS = /\u00AD/g;
+
 const LONGEST_NAMES_FIRST = [...NAMES_OF_OTHER_THINGS].sort(
   (first, second) => second.length - first.length,
 );
@@ -62,7 +64,7 @@ function textWithoutIcons(node: Node): string {
 export function statAndTypeWordsShownIn(node: Node): ReadonlyArray<string> {
   const visible = LONGEST_NAMES_FIRST.reduce(
     (text, name) => text.replace(wholeWord(name, "gi"), " "),
-    textWithoutIcons(node),
+    textWithoutIcons(node).replace(SOFT_HYPHENS, ""),
   );
   const stats = STAT_WORDS.filter((word) => wholeWord(word, "i").test(visible));
   const types = TYPE_NAMES.filter((type) => wholeWord(type, "").test(visible));

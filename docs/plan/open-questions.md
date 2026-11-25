@@ -4545,3 +4545,135 @@ file.
   readable makes every word fit (S6.4), and such a word still breaks inside the word.
   A clean fix needs either break points chosen per long word (shown with a hyphen) or a wider
   name area, both a change of S6.4's tile; left for a later phase.
+
+## Q189. What does phase 30 still have to build, and how are its open points settled?
+
+- **Phase:** 30 (Version 1 readiness), the starter's decisions, decided without the owner (D19).
+- **Questions and solutions:**
+  1. **Counts.** The phase file names 427 scenarios; the harness now has 548 (phases 29a to 29c
+     added them). Phase 30 requires all 548, all 30 invariants and all 19 budgets.
+  2. **What is still "not yet".** The harness report of phase 29c shows 8 `quests` scenarios
+     that pass but are not required (added in 29b by `53a755d9`, never put on the list), and
+     4 budgets off the list: B10, B14, B15 and B19, which the harness cannot measure; their
+     checks are a browser test (B10, B15), `size-limit` (B14) and a unit test (B19). Options:
+     leave the four off the list (against the phase file's "every budget"), or let the list
+     hold them. **Solution:** the list holds every budget. The harness runner accepts a
+     required budget whose check is an "other check" in `BUDGET_CHECKS.ts` as checked by that
+     check, and the report keeps showing it as "other check", since the harness does not see
+     its result; a unit test fails if the file a check names does not exist. The other checks
+     themselves run in `npm run check` (B14, B19) and in the browser tests (B10, B15).
+  3. **The end of the "not yet" allowance** (`rules/testing.md`, D11). **Solution:** from this
+     phase on, `npm run harness:check` fails when a scenario, invariant or budget is not on
+     `harness/required.yaml`, so a new scenario can no longer be added without being required.
+  4. **Known gaps of earlier phases**, since this phase allows none: (a) a red card name's
+     tooltip with keyboard focus shows the stat icons' own name tooltips over its lines (29a,
+     S1.6): fixed; (b) late in a game Your stats can wrap so far that the hand at 1280 x 720 is
+     shorter than one card (29a, F1): fixed with the screen sizes (item 2); (c) one-word card
+     names too wide for a tile break inside the word (29c, R2, S6.4): such a word is hyphenated
+     at a syllable break instead (`hyphens: auto` with the page language English, or break
+     points chosen per long word if the browser's breaks are wrong), and S6.4 says so before
+     the code changes; (d) the players online list without icons (29c): not a gap, since S10.2
+     lists username, rating and status, not an icon; (e) Brevo's footer and spam (D30), records
+     in old units and funds below 0 (spec, Q178) are not gaps. **Corrected after the phase
+     review (finding 2):** item 4 no longer wipes every record (Q191 keeps ranked games), so the
+     records in old units are not wiped; migration 0016 converts the kept ones (Q191).
+  5. **Keyboard-only run through a full game.** Options: a new full-length browser test (about
+     15 minutes more per size on GitHub, and a title matching "play a whole game from the lobby"
+     would drop out of every job of `check.yml`), or the existing 2-player full game played by
+     its first player with the keyboard only. **Solution:** the second: Ann in the 2-player
+     full game uses only Tab, Shift+Tab, Enter, Space, the arrow keys and Escape for every
+     action from the lobby to the end screen, at every size, with no extra job.
+  6. **`prefers-reduced-motion`.** **Solution:** a browser test with reduced motion asks the
+     page for running animations (`document.getAnimations()`) after the actions that animate
+     (marketplace, buttons) on the game screen and the lobby, and expects none.
+  7. **The save format fixed (D1).** **Solution:** `SAVE_SCHEMA_VERSION` is raised once more,
+     to 21, the first public save version (`FIRST_PUBLIC_SAVE_SCHEMA_VERSION`). A room saved
+     below it still closes itself on load; from 21 on, an older saved version goes through
+     an explicit migration function, one step per version (none yet), and a committed fixture
+     of a version 21 save (a running game and an ended one) must load and replay. The same
+     holds for the room record (`ROOM_SCHEMA_VERSION`) and the replay record. The raise also
+     closes every room saved before the launch (part of the wipe).
+  8. **The final data wipe.** **Solution:** one D1 migration deletes every row of every table
+     (players, logins, records, ratings, emails, replays and the rest; the tables stay), and
+     the rooms close themselves through the raise of 7; the lobby's and the queue's stored
+     state (chat, counts, queue) is cleared too, by a storage version checked on load or an
+     equivalent one-time clear. It ships with phase 30's merge, so the owner's final
+     playthrough is the first data on the public site; the test-room secret is a Worker secret
+     and stays.
+  9. **The owner's final playthrough and the decision to go public** need the owner. After the
+     release, the phase is **waiting for the owner**; findings of the playthrough go into a fix
+     phase (30a) the way 29a to 29c did, or after version 1 with the owner's agreement.
+- **Harness change (item 1c):** S6.4 now says a word too wide for a card tile's name line is
+  hyphenated at a syllable break, shown with a hyphen, and never broken elsewhere inside the
+  word. The client gives every word of 9 or more letters in a card name its syllable breaks
+  (soft hyphens, `hyphens: manual`), since the browser's own hyphenation (`hyphens: auto`) has
+  no English dictionary in every Chromium build and fell back to breaking anywhere.
+- **Implemented:** phase 30, Progress items 1a to 5.
+
+## Q190. Which screen states need their own screenshot, and how much hand must stay at 1280 × 720?
+
+- **Phase:** 30, item 2a (every screen at every size; 29a's F1), decided without the owner (D19).
+- **Questions and solutions:**
+  1. **Which states get a screenshot.** `screens.md` describes many states that differ from a
+     screenshotted screen only by a line of text (each join error of S10.6, each ranked-queue
+     text of S10.4, each ranking text of S13.3, the ranked "This was 1 of 3" line of S9.4, the
+     username and icon change limits of S12.5, each daily-limit text of S16.1). **Solution:**
+     every screen, dialog, notice and layout state gets a screenshot; a state that differs
+     from a screenshotted one only in its text is covered by that screenshot and by the unit
+     tests that check its text. Item 2a added the ones missing: connection lost and new
+     version (S16.2), game resumed after a pause (S9.4), leave the tutorial (S15.4), the card
+     set during a game (S14.3), the ranked end-of-game screen with ratings (S9.5), the
+     match-declined and match-not-started notices (S10.7), a deleted account's match history
+     (S13.1) and the last 5 seconds of a market go (S4.7).
+  2. **"The hand keeps at least one card's height" (29a F1).** At 1280 × 720 the Your hand
+     panel of a normal game is 121 px high, less than a header plus a whole 102 px card, and
+     all 3 projects must stay in view (`expectAllProjectsInView`). **Solution:** the Your hand
+     panel is never lower than one hand card (102 px); Your stats keeps its full height while
+     that holds, and scrolls (S1.3) when its type counts would push the hand lower.
+- **Found while building:** with the connection lost or an old version, the whole `main`
+  element was inert, so the page had no main landmark (axe `landmark-one-main`); the columns
+  inside it are now inert instead.
+- **Implemented:** phase 30, item 2a.
+
+## Q191. Does the final data wipe keep ranked games and their players?
+
+- **Where:** the owner, 2026-11-25, during phase 30, about item 4b (Q189, 8).
+- **Question:** Q189, 8 wiped every row. The owner asked to keep the existing ranked games and
+  the accounts that played them.
+- **Options:** wipe everything (Q189, 8); keep ranked games and their players.
+- **Solution (the owner's decision):** the wipe keeps every finished ranked game record and
+  every account that played at least one of them, with what belongs to those accounts: their
+  logins, ratings, place in the ranking table, email address and settings, and the stored moves
+  of their ranked games where those still exist (M4.3). It deletes every casual and tutorial game
+  record (and its stored moves), every account that never played a ranked game (guests
+  included) with everything that belongs to it, and the daily counts. The lobby's and the
+  queue's stored state is cleared and rooms close through the raise of Q189, 7, as before. A kept
+  player's match history then shows only their ranked games. This replaces Q189, 8 where the two
+  differ.
+- **Implemented:** phase 30, item 4b.
+- **After the phase review, findings 2, 5 and 7 (phase 30, 2026-11-25), decided without the
+  owner (D19):**
+  - **Kept records in the old units (finding 2).** A ranked record finished before phase 29c's
+    deploy holds its income in the old unit (one tenth, Q188) and one combined
+    `fundsAndHand` value instead of `funds` and `cardsInHand`. Phase 29c's two record
+    commits were deployed together, so a record whose seats hold a non-null `fundsAndHand` is
+    exactly an old one. Migration 0016 multiplies every seat's income of such a record by 10.
+    The combined value cannot be split or converted: old funds and cards in hand both counted
+    0.2 points, so neither the score nor anything else in the record tells them apart. It stays
+    as recorded, in the old whole funds, and the game record page keeps showing its one
+    **Funds + cards in hand** row for that record (29c, item 2b). Scores, F (already counted
+    in the current unit before 29c) and every other value are unchanged.
+  - **Ranked games in test rooms (finding 5).** A ranked game with any test-room seat
+    (`players.is_test_room_seat = 1`, the browser tests on the live site) is deleted with its
+    players' rows and stored moves, so the test-room accounts leave the ranking; they then
+    played no kept ranked game and are deleted with everything they own, and so is any other
+    account whose only ranked games were such games. The ratings of an account kept for other
+    ranked games are not recomputed (no account outside the test rooms is expected to have
+    played one); its ranked-game count may then include a deleted game.
+  - **Stored moves (finding 7).** The moves are matched to a kept ranked game by end and start
+    time, since the two tables share no id; a stored game whose setup names a kind other than
+    ranked is now deleted even when its times match a ranked game. Stored moves saved before
+    the setup held a kind (2026-11-11) are matched by time alone. A version 21 replay is kept
+    unchanged, and a `game_record_players` row of an account deleted earlier (A1.15) stays with
+    its kept ranked game. `tools/database-migrations/finalDataWipe.test.ts` checks every kept
+    and deleted row of these cases.

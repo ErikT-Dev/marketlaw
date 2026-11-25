@@ -1,6 +1,7 @@
 import type { Card } from "../../shared/catalogue/Card";
 import styles from "./Card.module.css";
 import type { CardNameSize } from "./CardNameSize";
+import { hyphenatedCardName } from "./hyphenatedCardName";
 
 type Props = {
   readonly card: Card;
@@ -14,7 +15,7 @@ export function CardTileFace({ card, nameSize }: Props) {
         #{card.number}
       </span>
       <span className={`${styles["name"] ?? ""} ${styles[nameSize] ?? ""}`} aria-hidden="true">
-        {card.name}
+        {hyphenatedCardName(card.name)}
       </span>
     </>
   );

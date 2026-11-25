@@ -1,5 +1,6 @@
-import { expect, type Page } from "@playwright/test";
+import { expect } from "@playwright/test";
 import { Sector } from "../src/shared/catalogue/Sector";
+import { activate } from "./activate";
 import type { Player } from "./Player";
 import { timeMove } from "./timeMove";
 
@@ -30,10 +31,11 @@ async function playerWithTheGo(players: ReadonlyArray<Player>): Promise<Player> 
   return player;
 }
 
-async function marketGoMove(page: Page, turn: number, isTakingACard: boolean) {
+async function marketGoMove(player: Player, turn: number, isTakingACard: boolean) {
+  const { page } = player;
   if (isTakingACard) {
     const marketplace = page.getByRole("list", { name: "Marketplace places" });
-    await marketplace.getByRole("button").first().click();
+    await activate(player, marketplace.getByRole("button").first());
     return marketplace.getByRole("button", { name: "Draw", exact: true });
   }
   const sector = Sector.options[turn % Sector.options.length] ?? "Industry";
@@ -49,12 +51,13 @@ export async function playMarketPhase(
 ): Promise<ReadonlyArray<number>> {
   const times: number[] = [];
   for (let go = 0; go < players.length; go += 1) {
-    const { page } = await playerWithTheGo(players);
+    const player = await playerWithTheGo(players);
+    const { page } = player;
     const isMarketplaceEmpty = await page
       .getByRole("heading", { name: "The marketplace is empty" })
       .isVisible();
-    const move = await marketGoMove(page, turn, isTakingACard && !isMarketplaceEmpty);
-    times.push(await timeMove(page, move, YOUR_GO));
+    const move = await marketGoMove(player, turn, isTakingACard && !isMarketplaceEmpty);
+    times.push(await timeMove(player, move, YOUR_GO));
   }
   return times;
 }

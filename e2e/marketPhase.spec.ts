@@ -1,19 +1,9 @@
 import { expect, test, type Browser, type Page } from "@playwright/test";
+import { FULL_MARKETPLACE } from "./FULL_MARKETPLACE";
 import { expectScreenFits } from "./expectScreenFits";
 import { handOf } from "./handOf";
 import type { Player } from "./Player";
 import { startTestRoom } from "./startTestRoom";
-
-const FULL_MARKETPLACE = [
-  { place: "residential", card: "Row House" },
-  { place: "industry", card: "Metal Mining" },
-  { place: "service", card: "Liquor Shop" },
-  { place: "public_quality", card: "Fire Station" },
-  { place: "public_satisfaction", card: "Public Playground" },
-  { place: "open_1", card: "Dentist" },
-  { place: "open_2", card: "Apparel Store" },
-  { place: "open_3", card: "Forest Plantation" },
-];
 
 async function playerAt(browser: Browser, link: string): Promise<Player> {
   const page = await (await browser.newContext()).newPage();
@@ -25,7 +15,7 @@ async function playerAt(browser: Browser, link: string): Promise<Player> {
   });
   await page.goto(link);
   await expect(page.getByRole("heading", { name: "Turn 2 of 40" })).toBeVisible();
-  return { page, frames, name: "" };
+  return { page, frames, name: "", isKeyboardOnly: false };
 }
 
 async function expectMainPhase(page: Page) {
@@ -179,4 +169,25 @@ test("a player whose market go timed out chooses the sector of their turn draw i
   await openDraw.getByRole("button", { name: "Residential" }).click();
   await expect(openDraw).toHaveCount(0);
   await expect(page.getByRole("list", { name: "Your hand" }).getByRole("button")).toHaveCount(3);
+});
+
+test("in the last 5 seconds of your market go the countdown and the marketplace turn red", async ({
+  page,
+  request,
+}, testInfo) => {
+  const [seatOne = ""] = await startTestRoom(request, {
+    players: 2,
+    turn: 2,
+    phase: "market",
+    first_player: 1,
+    market_go: { seat: 1 },
+    marketplace: FULL_MARKETPLACE,
+  });
+  await page.clock.install();
+  await page.goto(seatOne);
+  const countdown = page.getByRole("timer", { name: /^Your market go 0:[23]\d left$/ });
+  await expect(countdown).toBeVisible();
+  await page.clock.fastForward(26_000);
+  await expect(page.getByRole("timer", { name: /^Your market go 0:0[1-5] left$/ })).toBeVisible();
+  await expectScreenFits(page, "market-final-seconds", testInfo);
 });

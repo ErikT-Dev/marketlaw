@@ -186,6 +186,16 @@ removed first; `git worktree remove --force` follows it and empties the main `no
 **Why:** found in the phase 25 timing fix, which compared master and the branch in a worktree.
 **Enforced by:** judgment.
 
+### "Never weaken tests": the "not yet" allowance has ended
+Replace the second and third sentences of "Never weaken tests" ("If a test is genuinely wrong,
+... only with the owner's approval.") with: "If a test is genuinely wrong, stop and explain.
+Every scenario, invariant and budget is on the required list (`harness/required.yaml`); names
+leave that list only with the owner's approval." Add `npm run harness:check` to its
+**Enforced by:** line.
+**Why:** the allowance for scenarios not yet required ended in phase 30 (Q189, 3); since then
+`npm run harness:check` reports any scenario, invariant or budget that is not on the list.
+**Enforced by:** `npm run harness:check` (`tools/harness-check/checkEverythingRequired.ts`).
+
 ## For `rules/workflow.md`
 
 ### File names differ by more than case

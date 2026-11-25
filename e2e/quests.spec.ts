@@ -135,6 +135,7 @@ test("a completed quest shows as completed, stays hidden from others until the m
     page,
     frames: [],
     name: `Seat ${String(index + 1)}`,
+    isKeyboardOnly: false,
   }));
   await playMarketPhase(players, 4);
   await endTurnForEveryone(players);

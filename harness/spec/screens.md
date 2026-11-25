@@ -272,7 +272,9 @@ the quick summary tables of the other players (S3.1).
     before the picture starts. Every tile of one kind (hand, city or marketplace) has one fixed
     size, whatever the name (a hand or marketplace tile is as wide as its column at the screen
     size, the same for every tile of that kind); a name too long for it is shown in a smaller font, chosen from its
-    length, so that every one of the 240 names fits. The tile's background is the big card's card
+    length, so that every one of the 240 names fits. A name wraps between words; a word too
+    wide for the name's line is hyphenated at a syllable break, shown with a hyphen
+    ("Tele-communication"), and never broken anywhere else inside the word (Q189). The tile's background is the big card's card
     texture (`card-texture.webp`) under its sector colour at 80% of its strength, so the texture
     shows through as on the big card (Q188). A hand card keeps its playable edge on the far right, over the
     picture.

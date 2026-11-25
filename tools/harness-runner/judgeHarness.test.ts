@@ -111,6 +111,14 @@ describe("judgeHarness", () => {
     ]);
   });
 
+  it("leaves a required budget checked outside the harness to that check", () => {
+    const run = harnessRun({
+      required: { scenarios: [], invariants: [], budgets: ["B14"] },
+      budgetIds: ["B14"],
+    });
+    expect(judgeHarness(run)).toEqual([]);
+  });
+
   it("fails the check when the card data has problems", () => {
     const run = harnessRun({ cardDataProblems: ["239 cards, not 240"] });
     expect(judgeHarness(run)).toEqual(["card-data check: 239 cards, not 240"]);

@@ -43,6 +43,39 @@ async function namesThatDoNotFit(tiles: Locator): Promise<ReadonlyArray<string>>
   }, TEXT_AREA_SHARE);
 }
 
+async function namesBrokenInsideAWord(tiles: Locator): Promise<ReadonlyArray<string>> {
+  return tiles.evaluateAll((buttons) => {
+    function bottomOf(text: Text, index: number): number {
+      const range = document.createRange();
+      range.setStart(text, index);
+      range.setEnd(text, index + 1);
+      return range.getBoundingClientRect().bottom;
+    }
+    function isTextBrokenInsideAWord(text: Text): boolean {
+      return [...Array(text.data.length).keys()].some(
+        (index) =>
+          index > 0 &&
+          /\p{L}/u.test(text.data.charAt(index)) &&
+          /\p{L}/u.test(text.data.charAt(index - 1)) &&
+          Math.abs(bottomOf(text, index) - bottomOf(text, index - 1)) > 1,
+      );
+    }
+    function isBrokenInsideAWord(tile: Element): boolean {
+      const walker = document.createTreeWalker(tile, NodeFilter.SHOW_TEXT);
+      const texts: Array<Text> = [];
+      for (let node = walker.nextNode(); node !== null; node = walker.nextNode()) {
+        if (node instanceof Text) {
+          texts.push(node);
+        }
+      }
+      return texts.some((text) => isTextBrokenInsideAWord(text));
+    }
+    return buttons
+      .filter((tile) => isBrokenInsideAWord(tile))
+      .map((tile) => tile.getAttribute("aria-label") ?? "");
+  });
+}
+
 async function tileSizes(tiles: Locator): Promise<ReadonlyArray<string>> {
   const sizes = await tiles.evaluateAll((buttons) =>
     buttons.map((tile) => {
@@ -75,6 +108,8 @@ test("every card name fits its hand and city tile, and every tile of a kind has 
   await expect(cityTiles(page)).toHaveCount(CARD_NAMES.length);
   expect(await namesThatDoNotFit(handTiles(page))).toEqual([]);
   expect(await namesThatDoNotFit(cityTiles(page))).toEqual([]);
+  expect(await namesBrokenInsideAWord(handTiles(page))).toEqual([]);
+  expect(await namesBrokenInsideAWord(cityTiles(page))).toEqual([]);
   expect(await tileSizes(handTiles(page))).toHaveLength(1);
   expect(await tileSizes(cityTiles(page))).toEqual(["140x94"]);
   await page.context().close();
@@ -119,7 +154,7 @@ test("every card name fits its marketplace tile", async ({ browser, viewport, re
     await page.goto(link);
     const tiles = page.getByRole("list", { name: "Marketplace places" }).getByRole("button");
     await expect(tiles).toHaveCount(MARKET_PLACES.length);
-    tooLong.push(...(await namesThatDoNotFit(tiles)));
+    tooLong.push(...(await namesThatDoNotFit(tiles)), ...(await namesBrokenInsideAWord(tiles)));
     for (const size of await tileSizes(tiles)) {
       sizes.add(size);
     }
@@ -140,5 +175,6 @@ test("every card name fits its card set tile beside its picture", async ({ brows
     .getByRole("button");
   await expect(tiles).toHaveCount(CARD_NAMES.length);
   expect(await namesThatDoNotFit(tiles)).toEqual([]);
+  expect(await namesBrokenInsideAWord(tiles)).toEqual([]);
   await visitor.page.context().close();
 });

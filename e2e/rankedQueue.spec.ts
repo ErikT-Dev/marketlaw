@@ -95,13 +95,22 @@ test("registered players join the ranked queue, confirm a match and play a ranke
       await Promise.all([leaveQueueIfIn(ann), leaveQueueIfIn(bea)]);
     }
   });
+
+  await bea.page.getByRole("button", { name: "Leave game" }).click();
+  await bea.page
+    .getByRole("dialog", { name: "Leave the game?" })
+    .getByRole("button", { name: "Leave the game" })
+    .click();
+  const won = ann.page.getByRole("dialog", { name: "You win: everyone else left" });
+  await expect(won.getByRole("columnheader", { name: "Rating" })).toBeVisible();
+  await expectScreenFits(ann.page, "game-over-ranked", testInfo);
 });
 
 test("a player who declines a match waits before joining again while the other stays queued", async ({
   browser,
   request,
   viewport,
-}) => {
+}, testInfo) => {
   test.setTimeout(SIGNING_IN_TEST_MS);
   const [cat, dan] = await openTwoLobbies(browser, viewport, ["Ranked Cat", "Ranked Dan"]);
   await Promise.all([signUpUnconfirmed(cat), signUpUnconfirmed(dan)]);
@@ -121,9 +130,11 @@ test("a player who declines a match waits before joining again while the other s
       await expect(cat.page.getByRole("status")).toContainText(
         /You did not confirm the match and left the queue\. You can join it again in [12]:\d\d\./,
       );
+      await expectScreenFits(cat.page, "lobby-match-declined", testInfo);
       await expect(catPanel).toContainText(/You can join the ranked queue again in [12]:\d\d\./);
       await expect(catPanel.getByRole("button", { name: "Join the ranked queue" })).toBeDisabled();
       await expect(dan.page.getByRole("status")).toContainText(NOT_STARTED);
+      await expectScreenFits(dan.page, "lobby-match-did-not-start", testInfo);
       await expect(danPanel.getByText("You are in the queue")).toBeVisible();
       await danPanel.getByRole("button", { name: "Leave the queue" }).click();
       await expect(danPanel.getByRole("button", { name: "Join the ranked queue" })).toBeEnabled();

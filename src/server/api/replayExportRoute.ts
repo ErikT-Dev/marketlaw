@@ -1,5 +1,5 @@
 import type { RoomCode } from "../../shared/RoomCode";
-import { keptReplayRecordText } from "../replays/keptReplayRecordText";
+import { keptReplayRecord } from "../replays/keptReplayRecord";
 import { hasTestRoomSecret } from "../testRooms/hasTestRoomSecret";
 
 function notFound(): Response {
@@ -18,8 +18,6 @@ export async function replayExportRoute(
   if (fromRoom !== null) {
     return Response.json(fromRoom);
   }
-  const stored = await keptReplayRecordText(env.DB, code, Date.now());
-  return stored === null
-    ? notFound()
-    : new Response(stored, { headers: { "content-type": "application/json" } });
+  const stored = await keptReplayRecord(env.DB, code, Date.now());
+  return stored === null ? notFound() : Response.json(stored);
 }

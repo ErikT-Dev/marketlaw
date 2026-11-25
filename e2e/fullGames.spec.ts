@@ -7,25 +7,29 @@ const GAMES = [
   {
     title: "two players play a whole game from the lobby to the end screen",
     bases: ["Ann", "Bea"],
+    keyboardOnlyBases: ["Ann"],
   },
   {
     title: "three players play a whole game from the lobby to the end screen",
     bases: ["Ann", "Bea", "Cyd"],
+    keyboardOnlyBases: [],
   },
   {
     title: "four players play a whole game from the lobby to the end screen",
     bases: ["Ann", "Bea", "Cyd", "Dee"],
+    keyboardOnlyBases: [],
   },
 ];
 const TURNS = 40;
 const B15_PERCENTILE = 0.95;
 
-for (const { title, bases } of GAMES) {
+for (const { title, bases, keyboardOnlyBases } of GAMES) {
   test(title, async ({ browser, viewport }, testInfo) => {
     const times = await playFullGame(
       browser,
       viewport ?? { width: 1920, height: 1080 },
       bases,
+      keyboardOnlyBases,
       testInfo,
     );
     expect(times).toHaveLength(bases.length * (2 * TURNS - 1));

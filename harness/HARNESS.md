@@ -33,7 +33,7 @@ is built; it only describes what the game does.
 | `coverage.md` | Every rule against the scenarios that test it, with gaps flagged; generated, never edited by hand |
 | `scenario-format.yaml` | The formal version of the scenario format below; every scenario file must match it |
 | `coverage-exceptions.yaml` | Rules the owner approved as checked another way instead of, or as well as, by scenarios |
-| `required.yaml` | What must pass now, while version 1 is built phase by phase (see below) |
+| `required.yaml` | What must pass: every scenario, invariant and budget (see below) |
 | `screens/` | Screenshots from the browser tests (generated) |
 | `report.html` | The result of the last test run (generated) |
 
@@ -367,20 +367,19 @@ anything outside it, or lies in an artist folder the folder's licence file does 
 So a list the game cannot handle can never be deployed: `npm run check` runs before every
 merge and deploy.
 
-## What must pass now: `required.yaml`
+## What must pass: `required.yaml`
 
-Version 1 is built phase by phase, and each phase makes part of the harness required.
-`required.yaml` lists what must pass now, in three lists:
+Version 1 was built phase by phase, each phase making part of the harness required. Since phase
+30 everything is required. `required.yaml` lists what must pass, in three lists:
 
 - `scenarios`: per scenario file (named without `.yaml`), the exact names of its scenarios
 - `invariants`: ids from `invariants.yaml`
 - `budgets`: ids from `budgets.yaml`
 
 The check fails when anything on the list fails or cannot run yet, or when a name on the list
-does not exist. Everything else is still run and shown in `report.html` as "not yet" or "passes,
-not yet required", and does not fail the check. Each phase adds the names its phase file lists;
-names leave the list only with the owner's approval. When version 1 is done, everything is on the
-list.
+does not exist. The "not yet" allowance has ended: `npm run harness:check` reports a problem for
+every scenario, invariant or budget that is not on the list, so a new one is required from the
+moment it is added. Names leave the list only with the owner's approval.
 
 ## What passing means
 
