@@ -2,6 +2,7 @@ import { writeFileSync } from "node:fs";
 import { buildCoverage } from "./buildCoverage.ts";
 import { checkCodesAndActions } from "./checkCodesAndActions.ts";
 import { checkCoveredRulesExist } from "./checkCoveredRulesExist.ts";
+import { checkEverythingRequired } from "./checkEverythingRequired.ts";
 import { checkFieldsDocumented } from "./checkFieldsDocumented.ts";
 import { checkNames } from "./checkNames.ts";
 import { checkPlayerIconFolder } from "./checkPlayerIconFolder.ts";
@@ -27,6 +28,7 @@ export function checkHarness(): number {
     ...checkScenarioFormat(files),
     ...checkUniqueNames(files),
     ...checkCoveredRulesExist(files),
+    ...checkEverythingRequired(files),
     ...checkNames(files),
     ...checkCodesAndActions(files),
     ...checkFieldsDocumented(files),

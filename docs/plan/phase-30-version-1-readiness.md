@@ -83,13 +83,19 @@ None by name: phases 03 to 29 together make all 427 scenarios required. This pha
     result; Q189 says so). A unit test in `reportBudgets.test.ts` checks that the file each
     other check names exists. The list now holds all 548 scenarios, 30 invariants and 19 budgets.
 
-- [ ] 1b. **The "not yet" allowance ends** (`rules/testing.md`, D11; Q189, 3). **Small.**
+- [x] 1b. **The "not yet" allowance ends** (`rules/testing.md`, D11; Q189, 3). **Small.**
   - `npm run harness:check` (`tools/harness-check/`) reports a problem for every scenario,
     invariant or budget that is not on `harness/required.yaml`, with a test. After 1a it
     reports none. `harness/HARNESS.md` and `README.md` ("How scenarios, invariants and budgets
     are tracked") say the allowance has ended (`HARNESS:` commit for HARNESS.md).
     `rules/testing.md` is not edited (protected by judgment, the owner's file): propose the
     wording in `docs/plan/proposed-rules.md`.
+  - Done (2026-11-25). `tools/harness-check/checkEverythingRequired.ts` (reusing the runner's
+    `readRequiredList`, `readIdentifiedEntries`, `fileKeyOf`) reports "not on
+    harness/required.yaml; everything must be required" per missing name, with a test.
+    `npm run harness:check`: 548 scenarios, 0 problems.
+  - For later items: a new scenario, invariant or budget must go on `harness/required.yaml` in
+    the same change, or `npm run harness:check` fails.
 
 - [ ] 1c. **Known gaps of earlier phases** (Q189, 4a and 4c; S1.6, S6.4). **Small.**
   - A red card name's tooltip with keyboard focus: the stat icons inside it must not show their

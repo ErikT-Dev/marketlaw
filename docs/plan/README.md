@@ -278,9 +278,10 @@ The 427 scenarios cover all of version 1, but each phase implements only part of
   during the phase.
 - The runner fails if a name on the list does not exist, so a renamed scenario cannot drop out
   silently.
-- Scenarios not yet required are run and shown in `harness/report.html` as "not yet", or as
-  "passes, not yet required"; they never fail the check. This is the only allowed form of
-  skipping, and it ends in phase 30, when all 427 are required.
+- Scenarios not yet required were run and shown in `harness/report.html` as "not yet", or as
+  "passes, not yet required", and did not fail the check. This was the only allowed form of
+  skipping, and it ended in phase 30 (Q189, 3): every scenario, invariant and budget is on the
+  list, and `npm run harness:check` reports a problem for any that is not.
 
 ## Milestones and phases
 
