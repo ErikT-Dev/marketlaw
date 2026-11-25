@@ -32,10 +32,16 @@ import type { Sender } from "./Sender";
 import { senderOfToken } from "./senderOfToken";
 import { startRankedRooms } from "./startRankedRooms";
 
-const QUEUE_KEY = "queue";
+const PRE_LAUNCH_QUEUE_KEY = "queue";
+const QUEUE_KEY = "launched-queue";
 
 export class RankedQueue extends DurableObject<Env> {
   private readonly sockets = new QueueSockets(this.ctx);
+
+  constructor(ctx: DurableObjectState, env: Env) {
+    super(ctx, env);
+    ctx.storage.kv.delete(PRE_LAUNCH_QUEUE_KEY);
+  }
 
   override async fetch(request: Request): Promise<Response> {
     const state = await this.state();

@@ -214,7 +214,7 @@ None by name: phases 03 to 29 together make all 427 scenarios required. This pha
     the same SQL (`UPDATE replay_records SET record = json_set(record, '$.schemaVersion', 21)`
     for the kept rows). `game_records` rows carry no save version and are unaffected.
 
-- [ ] 4b. **The final data wipe** (D1; Q189, 8; the owner's change Q191). **Small.**
+- [x] 4b. **The final data wipe** (D1; Q189, 8; the owner's change Q191). **Small.**
   - A D1 migration (`migrations/0016_...sql`) keeps the finished ranked game records and every
     account that played one of them, with their logins, ratings, settings and the stored moves
     of those games; it deletes every other game record and its moves, every account that never
@@ -222,6 +222,19 @@ None by name: phases 03 to 29 together make all 427 scenarios required. This pha
     counts (Q191). A test proves what is kept and what goes. The lobby's and the queue's stored state (`src/server/lobby/`, `src/server/queue/`)
     is cleared once on the first load after the deploy. It runs at the merge
     (`npm run db:migrate:remote` in `deploy.yml`). Not run against the live database by hand.
+  - Done (2026-11-25). `migrations/0016_final_data_wipe.sql` keeps the `game_records` rows whose
+    kind is ranked and their `game_record_players` rows; keeps the `replay_records` rows of those
+    games (matched by end time and start time, since the two tables share no id) and raises the
+    version 20 ones to 21; keeps `players`, `logins`, `email_links` and `ratings` of every
+    account in a kept game; deletes everything else, and every row of `email_counts`,
+    `unknown_login_failures` and `test_outbox`. Replay rows below version 20 are kept as they
+    are (the export already answers 404 for them, and they expire after 30 days).
+    `tools/database-migrations/finalDataWipe.test.ts` applies migrations 0001 to 0015 to an
+    in-memory SQLite database (`node:sqlite`), adds pre-launch rows, applies 0016 and checks
+    what is kept and what goes. The lobby and the queue now store their record under a new key
+    (`launched-lobby`, `launched-queue`) and delete the old key (`lobby`, `queue`) when the
+    object starts, so they start empty after the deploy.
+  - For later items (5): the wipe runs at the merge, by `npm run db:migrate:remote`.
 
 - [ ] 5. **Release checks and the owner's decision** (D8, D22; Q189, 9). For the releaser.
   - On the live site after the deploy: the site loads without a login (D22); the test-room

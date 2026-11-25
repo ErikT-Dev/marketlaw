@@ -47,10 +47,16 @@ import { LobbySockets } from "./LobbySockets";
 import type { LoginClosing } from "./LoginClosing";
 import type { PlayerRating } from "./records/PlayerRating";
 
-const LOBBY_KEY = "lobby";
+const PRE_LAUNCH_LOBBY_KEY = "lobby";
+const LOBBY_KEY = "launched-lobby";
 
 export class Lobby extends DurableObject<Env> {
   private readonly sockets = new LobbySockets(this.ctx);
+
+  constructor(ctx: DurableObjectState, env: Env) {
+    super(ctx, env);
+    ctx.storage.kv.delete(PRE_LAUNCH_LOBBY_KEY);
+  }
 
   async claim(playerId: PlayerId, code: RoomCode, now: EpochMs): Promise<ClaimRejection | null> {
     let rejection: ClaimRejection | null = null;
