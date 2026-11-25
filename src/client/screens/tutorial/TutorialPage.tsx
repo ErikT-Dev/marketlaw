@@ -2,6 +2,7 @@ import styles from "../game/GamePage.module.css";
 import { HighlightedParts } from "../game/HighlightedParts";
 import { PlayerIcons } from "../game/PlayerIcons";
 import { ServerClockOffset } from "../game/ServerClockOffset";
+import { TableContent } from "../game/TableContent";
 import { RULES_HASH } from "../rules/RULES_HASH";
 import { TUTORIAL_FOCUS } from "./TUTORIAL_FOCUS";
 import { TutorialColumns } from "./TutorialColumns";
@@ -33,7 +34,7 @@ export function TutorialPage(props: Props) {
         <TutorialTopBar view={view} onLeave={props.onLeave} isConnected={isConnected} />
         <HighlightedParts.Provider value={focus.highlighted}>
           <main className={styles["table"]}>
-            <div className={styles["tableContent"]} inert={!isConnected || props.isOutdated}>
+            <TableContent isUsable={isConnected && !props.isOutdated}>
               <div className={tutorialStyles["left"]}>
                 {progress.kind === "step" ? (
                   <TutorialMessage
@@ -54,7 +55,7 @@ export function TutorialPage(props: Props) {
                   onAction={props.onAction}
                 />
               </PlayerIcons.Provider>
-            </div>
+            </TableContent>
           </main>
         </HighlightedParts.Provider>
         <TutorialNotices {...props} view={view} mine={mine} playerNames={playerNames} />

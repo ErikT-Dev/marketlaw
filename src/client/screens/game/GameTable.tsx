@@ -7,6 +7,7 @@ import { LeftColumn } from "./LeftColumn";
 import type { LookedAtCard } from "./LookedAtCard";
 import { MiddleColumn } from "./MiddleColumn";
 import { RightColumn } from "./RightColumn";
+import { TableContent } from "./TableContent";
 
 type Props = GamePageProps & {
   readonly view: PlayerView;
@@ -19,10 +20,7 @@ export function GameTable(props: Props) {
   const [lookedAt, setLookedAt] = useState<LookedAtCard | null>(null);
   return (
     <main className={styles["table"]}>
-      <div
-        className={styles["tableContent"]}
-        inert={props.connection !== "open" || props.isOutdated}
-      >
+      <TableContent isUsable={props.connection === "open" && !props.isOutdated}>
         <LeftColumn
           view={view}
           playerNames={playerNames}
@@ -47,7 +45,7 @@ export function GameTable(props: Props) {
           onLookAt={setLookedAt}
           onAction={props.onAction}
         />
-      </div>
+      </TableContent>
     </main>
   );
 }
