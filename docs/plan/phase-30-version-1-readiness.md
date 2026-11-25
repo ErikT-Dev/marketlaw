@@ -97,7 +97,7 @@ None by name: phases 03 to 29 together make all 427 scenarios required. This pha
   - For later items: a new scenario, invariant or budget must go on `harness/required.yaml` in
     the same change, or `npm run harness:check` fails.
 
-- [ ] 1c. **Known gaps of earlier phases** (Q189, 4a and 4c; S1.6, S6.4). **Small.**
+- [x] 1c. **Known gaps of earlier phases** (Q189, 4a and 4c; S1.6, S6.4). **Small.**
   - A red card name's tooltip with keyboard focus: the stat icons inside it must not show their
     own name tooltips over its lines (29a known gap; with the mouse it is clean). See
     `e2e/tooltipsOnFocus.spec.ts`.
@@ -106,6 +106,16 @@ None by name: phases 03 to 29 together make all 427 scenarios required. This pha
     `overflow-wrap: anywhere`): write S6.4's hyphenation first (`HARNESS:` commit), then
     hyphenate at a syllable break, checked on the city and card set tiles
     (`e2e/cardTiles.spec.ts`). Remove both from "Known gaps" only in this phase's report.
+  - Done (2026-11-25). Tooltip: `Chip.module.css` shows a stat or type icon's name on focus only
+    when the icon is not inside a `role="tooltip"`; a new test in `tooltipsOnFocus.spec.ts`
+    (fails without the fix). Names: S6.4 says a too-wide word is hyphenated at a syllable break
+    (Q189); `CARD_NAME_WORD_SYLLABLES.ts` lists the syllables of every card-name word longer than
+    8 letters (a unit test keeps it complete), `hyphenatedCardName` puts soft hyphens there, and
+    `.name` uses `hyphens: manual` instead of `auto` (Chromium's own hyphenation broke anywhere).
+    `cardTiles.spec.ts` now also fails a name broken between two letters on hand, city,
+    marketplace and card set tiles; all its tests pass locally at all three sizes.
+  - For the report: both gaps (29a's focus tooltip, 29c's R2) are fixed. Local browser runs lost
+    test-room requests ("Network connection lost") under load; they pass on a rerun.
 
 - [ ] 2a. **Every screen at every size** (S1.1, D21, HARNESS.md point 6). **Large.**
   - Compare every screen and state `harness/spec/screens.md` describes (S1 to S16, the tutorial
