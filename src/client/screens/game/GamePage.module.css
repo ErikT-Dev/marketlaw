@@ -66,7 +66,20 @@
 
 .right {
   position: relative;
-  grid-template-rows: minmax(min-content, 300fr) minmax(0, 416fr) auto;
+  grid-template-rows: minmax(0, 1fr) auto;
+}
+
+.statsAndHand {
+  --hand-card-height: 102px;
+  display: grid;
+  gap: var(--space-md);
+  min-height: 0;
+  grid-template-rows: minmax(min-content, 300fr) minmax(0, 416fr);
+  container-type: size;
+}
+
+.statsAndHand > :first-child {
+  max-height: calc(100cqh - var(--hand-card-height) - var(--space-md));
 }
 
 .toasts {

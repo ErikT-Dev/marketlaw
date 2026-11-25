@@ -40,14 +40,16 @@ export function RightColumn(props: Props) {
   const selectedDetails = seat.handDetails.find((details) => details.card === selected);
   return (
     <div className={styles["right"]}>
-      <YourStatsPanel seat={seat} view={view} playerNames={playerNames} />
-      <HandPanel
-        handDetails={seat.handDetails}
-        newCards={seat.newCards}
-        choice={choice}
-        pendingCards={pendingCardsOf(pendingActions)}
-        onPressCard={pressCard}
-      />
+      <div className={styles["statsAndHand"]}>
+        <YourStatsPanel seat={seat} view={view} playerNames={playerNames} />
+        <HandPanel
+          handDetails={seat.handDetails}
+          newCards={seat.newCards}
+          choice={choice}
+          pendingCards={pendingCardsOf(pendingActions)}
+          onPressCard={pressCard}
+        />
+      </div>
       <ActionsPanel
         seat={seat}
         isMarketPhase={view.phase === "market"}
