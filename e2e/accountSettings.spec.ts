@@ -22,6 +22,16 @@ async function signUpAndCloseNotice(page: Page, name: string, email: string): Pr
   await expect(checkEmail).toBeHidden();
 }
 
+async function matchHistoryHashOf(page: Page): Promise<string> {
+  await page.getByRole("button", { name: "My match history" }).click();
+  const history = page.getByRole("dialog", { name: /^Match history/ });
+  await expect(history).toBeVisible();
+  const hash = new URL(page.url()).hash;
+  await history.getByRole("button", { name: "Back" }).click();
+  await expect(history).toBeHidden();
+  return hash;
+}
+
 async function openSettings(page: Page) {
   await page.getByRole("button", { name: "Your account" }).click();
   await page
@@ -42,6 +52,7 @@ test("a player whose address another account confirmed adds a new one and delete
   const bea = await openLobby(browser, "Settings Bea", size);
   const shared = emailOf(ann.name);
   await signUpAndCloseNotice(ann.page, ann.name, shared);
+  const annHistoryHash = await matchHistoryHashOf(ann.page);
   const annSettings = await openSettings(ann.page);
   await expect(annSettings).toContainText(`${shared} not confirmed`);
   await annSettings.getByRole("button", { name: "Send it again" }).click();
@@ -84,6 +95,11 @@ test("a player whose address another account confirmed adds a new one and delete
   await expectScreenFits(ann.page, "delete-account", testInfo);
   await deleting.getByRole("button", { name: "Delete account" }).click();
   await expect(ann.page.getByRole("button", { name: "Log in" })).toBeVisible();
+  await ann.page.evaluate((hash) => {
+    window.location.hash = hash;
+  }, annHistoryHash);
+  await expect(ann.page.getByText("This player's account no longer exists.")).toBeVisible();
+  await expectScreenFits(ann.page, "match-history-deleted-account", testInfo);
   await Promise.all([ann, bea].map(async (each) => each.page.context().close()));
 });
 
