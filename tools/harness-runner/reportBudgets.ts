@@ -7,11 +7,13 @@ import { highestMeasured } from "./highestMeasured.ts";
 import { statusBadge } from "./statusBadge.ts";
 
 function statusOf(run: HarnessRun, { id }: BudgetEntry, problems: ReadonlyArray<string>): string {
-  const by = BUDGET_CHECKS[id]?.by;
+  if (BUDGET_CHECKS[id]?.by === "other check") {
+    return "other check";
+  }
   if (run.required.budgets.includes(id)) {
     return problems.some((problem) => problem.startsWith(`required ${id} `)) ? "fails" : "passes";
   }
-  return by === "other check" ? "other check" : "not yet";
+  return "not yet";
 }
 
 function detail(text: string): string {
