@@ -257,6 +257,7 @@ None by name: phases 03 to 29 together make all 427 scenarios required. This pha
   Findings, with what the coordinator decided:
   1. `src/client/components/hyphenatedCardName.test.ts` never runs (the client project takes
      only `*.test.tsx`). **Fix (fixer B):** rename it to `.test.tsx`; the config stays.
+     **Fixed:** renamed to `hyphenatedCardName.test.tsx`; its 5 tests now run in the client project.
   2. Kept ranked records finished before 29c's deploy are in the old units (income one tenth,
      combined "funds + cards in hand" row, Q188); Q189 4(e) relied on the full wipe. **Fix
      (fixer A):** 0016 converts them to the current units (a record whose seats have a non-null
@@ -276,6 +277,9 @@ None by name: phases 03 to 29 together make all 427 scenarios required. This pha
   4. The keyboard-only full game never plays a card, uses influence or completes a project.
      **Fix (fixer B):** a short keyboard-only spec (test room) that plays a card to the city and
      uses influence or completes a project through `activate`.
+     **Fixed:** `e2e/keyboardMoves.spec.ts` (test room, keyboard-only seat) trades funds for
+     influence, plays Row House to the city and completes Clean up the streets, all through
+     `activate`, and checks no pointer was used; passes alone at all three sizes.
   5. Ranked test-room games would keep their test-room seat accounts in the ranking. **Fix
      (fixer A):** 0016 also deletes ranked records with any test-room seat
      (`is_test_room_seat = 1`) and those accounts; with a test; recorded in Q191.
@@ -290,6 +294,7 @@ None by name: phases 03 to 29 together make all 427 scenarios required. This pha
      is now deleted, by the kind in its setup (Q191).
   8. `Card.module.css` still has `overflow-wrap: anywhere` on card names. **Fix (fixer B):**
      remove it, so the browser test catches any name that does not fit.
+     **Fixed:** removed; `e2e/cardTiles.spec.ts` passes at all three sizes, screenshots unchanged.
   9. `parsedJsonOf` location and `STORED_REPLAY_SCHEMA` checking only the version. **Not
      fixed**: it follows the existing `STORED_ROOM_SCHEMA` pattern and moving it is outside the
      phase's scope.
