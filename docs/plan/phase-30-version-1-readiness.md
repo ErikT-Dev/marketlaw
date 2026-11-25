@@ -1,6 +1,6 @@
 # Phase 30: Version 1 readiness
 
-Status: in progress
+Status: waiting for the owner
 Milestone: 7 Launch
 
 ## Goal
@@ -346,3 +346,10 @@ public.
 - The final playthrough of version 1 on the live site.
 - The decision to make version 1 public. Findings from the playthrough are fixed, or moved to
   after version 1 with the owner's agreement.
+
+Released (2026-11-25): merged to master, Deploy run 45633240353 green (migration 0016 applied).
+Live check: the site loads without a login, the bundle is the built one (index-FQ3wFXvC.js),
+`POST /api/test-rooms` without the secret answers 404, an unknown room path answers 404.
+D1 Time Travel bookmark taken just before the merge (2026-11-25 14:21 UTC):
+`00000103-00000000-0000512e-59fd13f73fea36ace0c80734379bee28`
+(`npx wrangler d1 time-travel restore marketlaw --bookmark=<it>` restores the database to before the wipe).
