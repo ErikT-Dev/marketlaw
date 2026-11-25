@@ -4601,4 +4601,9 @@ file.
   9. **The owner's final playthrough and the decision to go public** need the owner. After the
      release, the phase is **waiting for the owner**; findings of the playthrough go into a fix
      phase (30a) the way 29a to 29c did, or after version 1 with the owner's agreement.
+- **Harness change (item 1c):** S6.4 now says a word too wide for a card tile's name line is
+  hyphenated at a syllable break, shown with a hyphen, and never broken elsewhere inside the
+  word. The client gives every word of 9 or more letters in a card name its syllable breaks
+  (soft hyphens, `hyphens: manual`), since the browser's own hyphenation (`hyphens: auto`) has
+  no English dictionary in every Chromium build and fell back to breaking anywhere.
 - **Implemented:** phase 30, Progress items 1a to 5.
