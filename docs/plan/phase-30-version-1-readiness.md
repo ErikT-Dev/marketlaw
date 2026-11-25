@@ -173,13 +173,20 @@ None by name: phases 03 to 29 together make all 427 scenarios required. This pha
     change was needed. `FULL_MARKETPLACE` moved to `e2e/FULL_MARKETPLACE.ts` (shared with
     `marketPhase.spec.ts`). All three tests pass locally at all three sizes.
 
-- [ ] 3. **Browser tests: 2 to 4 players, refreshes, disconnects, second tab, restart**
+- [x] 3. **Browser tests: 2 to 4 players, refreshes, disconnects, second tab, restart**
   (HARNESS.md point 6). **Small.**
   - They exist: `fullGames.spec.ts` (2, 3, 4 players), `connections.spec.ts` (refresh, away and
     back, second tab, "the game goes on after its room restarts mid-game"), all run at every
     size by `playwright.config.ts`. Check each runs at all three sizes on the last GitHub run of
     master and that none is skipped by size; add what is missing (for example a refresh or a
     restart in a 3- or 4-player room). Update `docs/enforcement.md` if a check now applies.
+  - Done (2026-11-25). Master's last deploy (run 45503101935) used the branch Check run
+    45501725247 of phase 29c: the 3 full games and the 5 connection tests passed at all three
+    sizes (24 of 24), none skipped; no browser test in `e2e/` skips by size. All connection
+    tests were 2-player, so `connections.spec.ts` gains "in a four-player room a refresh, a
+    disconnect and a room restart mid-game keep the game going" (one seat refreshes, one closes
+    and rejoins after the restart, one ends its turn before it; the turn ends for all four, no
+    hidden card leaks). It passes locally at all three sizes. `docs/enforcement.md` lists it.
 
 - [ ] 4a. **The save format fixed** (D1, `rules/architecture.md` "One save format"; Q189, 7).
   **Large.**

@@ -115,3 +115,40 @@ test("the game goes on after its room restarts mid-game", async ({ browser, requ
   }
   expect(await hiddenCardsSentToOthers([playerOne, playerTwo])).toEqual([]);
 });
+
+test("in a four-player room a refresh, a disconnect and a room restart mid-game keep the game going", async ({
+  browser,
+  request,
+}) => {
+  const links = await startTestRoom(request, { players: 4 });
+  const players = await Promise.all(
+    links.map(async (link) => openPlayer(await browser.newContext(), link)),
+  );
+  const [one, two, three, four] = players.map((player) => player.page);
+  if (one === undefined || two === undefined || three === undefined || four === undefined) {
+    throw new Error("a four-player test room has four seats");
+  }
+  const handOfTwo = await handOf(two);
+  await two.reload();
+  await expect(two.getByRole("heading", TURN_ONE)).toBeVisible();
+  expect(await handOf(two)).toEqual(handOfTwo);
+  await three.close();
+  await expect(opponent(one, "Seat 3")).toContainText("away");
+  await four.getByRole("button", { name: "End turn" }).click();
+  await expect(opponent(one, "Seat 4")).toContainText("done");
+  const restart = await request.post("/api/test-room-restarts", {
+    headers: { [TEST_ROOM_SECRET_HEADER]: readLocalTestRoomSecret() },
+    data: { code: roomCodeOf(links[0] ?? "") },
+  });
+  expect(restart.status()).toBe(204);
+  const rejoined = await openPlayer(await browser.newContext(), links[2] ?? "");
+  await expect(opponent(one, "Seat 3")).not.toContainText("away");
+  for (const page of [one, two, rejoined.page]) {
+    await page.getByRole("button", { name: "End turn" }).click();
+  }
+  for (const page of [one, two, rejoined.page, four]) {
+    await expect(page.getByRole("heading", TURN_ONE)).toBeHidden();
+  }
+  const stillOpen = players.filter((player) => player.page !== three);
+  expect(await hiddenCardsSentToOthers([...stillOpen, rejoined])).toEqual([]);
+});
